@@ -108,7 +108,7 @@
 
 		// Record options for all current series
 		each(oldSeries.chart.series, function (series) {
-			if (series.xAxis === xAxis && series.yAxis === yAxis) {
+			if (series.xAxis === xAxis) {
 				levelSeries.push(series);
 				levelSeriesOptions.push(series.userOptions);
 				series.levelNumber = series.levelNumber || 0;
@@ -223,13 +223,15 @@
 			drilldownLevels = chart.drilldownLevels,
 			levelNumber = drilldownLevels[drilldownLevels.length - 1].levelNumber,
 			i = drilldownLevels.length,
+			chartSeries = chart.series,
+			seriesI = chartSeries.length,
 			level,
 			oldSeries,
 			newSeries,
 			oldExtremes,
 			addSeries = function (seriesOptions) {
 				var addedSeries;
-				each(chart.series, function (series) {
+				each(chartSeries, function (series) {
 					if (series.userOptions === seriesOptions) {
 						addedSeries = series;
 					}
@@ -250,7 +252,16 @@
 			if (level.levelNumber === levelNumber) {
 				drilldownLevels.pop();
 				
+				// Get the lower series by reference or id
 				oldSeries = level.lowerSeries;
+				if (!oldSeries.chart) {  // #2786
+					while (seriesI--) {
+						if (chartSeries[seriesI].options.id === level.lowerSeriesOptions.id) {
+							oldSeries = chartSeries[seriesI];
+							break;
+						}
+					}
+				}
 
 				each(level.levelSeriesOptions, addSeries);
 				
@@ -258,12 +269,13 @@
 
 				if (newSeries.type === oldSeries.type) {
 					newSeries.drilldownLevel = level;
-					newSeries.options.animation = true;
+					newSeries.options.animation = chart.options.drilldown.animation;
 
 					if (oldSeries.animateDrillupFrom) {
 						oldSeries.animateDrillupFrom(level);
 					}
 				}
+				newSeries.levelNumber = levelNumber;
 				
 				oldSeries.remove(false);
 
@@ -369,35 +381,50 @@
 	 */
 	ColumnSeries.prototype.animateDrillupFrom = function (level) {
 		var animationOptions = this.chart.options.drilldown.animation,
-			group = this.group;
+			group = this.group,
+			series = this;
+
+		// Cancel mouse events on the series group (#2787)
+		each(series.trackerGroups, function (key) {
+			if (series[key]) { // we don't always have dataLabelsGroup
+				series[key].on('mouseover');
+			}
+		});
+			
 
 		delete this.group;
 		each(this.points, function (point) {
 			var graphic = point.graphic,
-				startColor = H.Color(point.color).rgba;
+				startColor = H.Color(point.color).rgba,
+				endColor = H.Color(level.color).rgba,
+				complete = function () {
+					graphic.destroy();
+					if (group) {
+						group = group.destroy();
+					}
+				};
 
 			if (graphic) {
 			
 				delete point.graphic;
 
-				/*jslint unparam: true*/
-				graphic.animate(level.shapeArgs, H.merge(animationOptions, {
-
-					step: function (val, fx) {
-						if (fx.prop === 'start') {
-							this.attr({
-								fill: tweenColors(startColor, H.Color(level.color).rgba, fx.pos)
-							});
-						}
-					},
-					complete: function () {
-						graphic.destroy();
-						if (group) {
-							group = group.destroy();
-						}
-					}
-				}));
-				/*jslint unparam: false*/
+				if (animationOptions) {
+					/*jslint unparam: true*/
+					graphic.animate(level.shapeArgs, H.merge(animationOptions, {
+						step: function (val, fx) {
+							if (fx.prop === 'start' && startColor.length === 4 && endColor.length === 4) {
+								this.attr({
+									fill: tweenColors(startColor, endColor, fx.pos)
+								});
+							}
+						},
+						complete: complete
+					}));
+					/*jslint unparam: false*/
+				} else {
+					graphic.attr(level.shapeArgs);
+					complete();
+				}
 			}
 		});
 	};
@@ -426,10 +453,9 @@
 							.attr(H.merge(animateFrom, {
 								start: start + i * startAngle,
 								end: start + (i + 1) * startAngle
-							}))
-							.animate(point.shapeArgs, H.merge(animationOptions, {
+							}))[animationOptions ? 'animate' : 'attr'](point.shapeArgs, H.merge(animationOptions, {
 								step: function (val, fx) {
-									if (fx.prop === 'start') {
+									if (fx.prop === 'start' && startColor.length === 4 && endColor.length === 4) {
 										this.attr({
 											fill: tweenColors(startColor, endColor, fx.pos)
 										});

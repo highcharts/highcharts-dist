@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v3.0.10 (2014-03-10)
+ * @license Highcharts JS v4.0.0 (2014-04-22)
  *
  * Standalone Highcharts Framework
  *
@@ -88,6 +88,7 @@ function augment(obj) {
 				} else if (el.attachEvent) {
 					
 					wrappedFn = function (e) {
+						e.target = e.srcElement || window; // #2820
 						fn.call(el, e);
 					};
 
@@ -450,7 +451,7 @@ return {
 	 * Internal method to return CSS value for given element and property
 	 */
 	_getStyle: function (el, prop) {
-		return window.getComputedStyle(el).getPropertyValue(prop);
+		return window.getComputedStyle(el, undefined).getPropertyValue(prop);
 	},
 
 	/**
