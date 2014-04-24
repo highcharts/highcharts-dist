@@ -2,7 +2,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license Highcharts JS v4.0.0 (2014-04-22)
+ * @license Highcharts JS v4.0.1 (2014-04-24)
  *
  * (c) 2009-2014 Torstein Honsi
  *
@@ -56,7 +56,7 @@ var UNDEFINED,
 	charts = [],
 	chartCount = 0,
 	PRODUCT = 'Highcharts',
-	VERSION = '4.0.0',
+	VERSION = '4.0.1',
 
 	// some constants for frequently used strings
 	DIV = 'div',
@@ -1315,8 +1315,8 @@ defaultOptions = {
 	global: {
 		useUTC: true,
 		//timezoneOffset: 0,
-		canvasToolsURL: 'http://code.highcharts.com/4.0.0/modules/canvas-tools.js',
-		VMLRadialGradientURL: 'http://code.highcharts.com/4.0.0/gfx/vml-radial-gradient.png'
+		canvasToolsURL: 'http://code.highcharts.com/4.0.1/modules/canvas-tools.js',
+		VMLRadialGradientURL: 'http://code.highcharts.com/4.0.1/gfx/vml-radial-gradient.png'
 	},
 	chart: {
 		//animation: true,
@@ -2813,6 +2813,7 @@ SVGElement.prototype.translateXSetter = SVGElement.prototype.translateYSetter =
 	this[key] = value;
 	this.doTransform = true;
 };
+SVGElement.prototype.strokeSetter = SVGElement.prototype.fillSetter;
 
 
 
@@ -6356,7 +6357,7 @@ Axis.prototype = {
 			//rotation: 0,
 			//side: 'outside',
 			style: {
-				color: '#707070' // docs
+				color: '#707070'
 			}
 			//x: 0,
 			//y: 0
@@ -6671,7 +6672,7 @@ Axis.prototype = {
 		}
 
 		if (ret === UNDEFINED) {
-			if (value >= 10000) { // add thousands separators
+			if (mathAbs(value) >= 10000) { // add thousands separators
 				ret = numberFormat(value, 0);
 
 			} else { // small numbers
@@ -9561,11 +9562,7 @@ Pointer.prototype = {
 		var chart = this.chart,
 			hoverPoint = chart.hoverPoint, 
 			plotLeft = chart.plotLeft,
-			plotTop = chart.plotTop,
-			inverted = chart.inverted,
-			chartPosition,
-			plotX,
-			plotY;
+			plotTop = chart.plotTop;
 		
 		e = this.normalize(e);
 		e.cancelBubble = true; // IE specific
@@ -9574,18 +9571,7 @@ Pointer.prototype = {
 			
 			// On tracker click, fire the series and point events. #783, #1583
 			if (hoverPoint && this.inClass(e.target, PREFIX + 'tracker')) {
-				chartPosition = this.chartPosition;
-				plotX = hoverPoint.plotX;
-				plotY = hoverPoint.plotY;
 
-				// add page position info
-				extend(hoverPoint, {
-					pageX: chartPosition.left + plotLeft +
-						(inverted ? chart.plotWidth - plotY : plotX),
-					pageY: chartPosition.top + plotTop +
-						(inverted ? chart.plotHeight - plotX : plotY)
-				});
-			
 				// the series click event
 				fireEvent(hoverPoint.series, 'click', extend(e, {
 					point: hoverPoint
@@ -10144,7 +10130,7 @@ Legend.prototype = {
 				if (checkbox) {
 					top = (translateY + checkbox.y + (scrollOffset || 0) + 3);
 					css(checkbox, {
-						left: (alignAttr.translateX + item.legendItemWidth + checkbox.x - 20) + PX,
+						left: (alignAttr.translateX + item.checkboxOffset + checkbox.x - 20) + PX,
 						top: top + PX,
 						display: top > translateY - 6 && top < translateY + clipHeight - 6 ? '' : NONE
 					});
@@ -10249,9 +10235,10 @@ Legend.prototype = {
 		// calculate the positions for the next line
 		bBox = li.getBBox();
 
-		itemWidth = item.legendItemWidth = 
-			options.itemWidth || item.legendItemWidth || symbolWidth + symbolPadding + bBox.width + itemDistance +
-			(showCheckbox ? 20 : 0);
+		itemWidth = item.checkboxOffset = 
+			options.itemWidth || 
+			item.legendItemWidth || 
+			symbolWidth + symbolPadding + bBox.width + itemDistance + (showCheckbox ? 20 : 0);
 		legend.itemHeight = itemHeight = mathRound(item.legendItemHeight || bBox.height);
 
 		// if the item exceeds the width, start a new line
@@ -13227,7 +13214,6 @@ Series.prototype = {
 			point.category = categories && categories[point.x] !== UNDEFINED ?
 				categories[point.x] : point.x;
 
-
 		}
 
 		// now that we have the cropped data, build the segments
@@ -15618,7 +15604,9 @@ defaultPlotOptions.pie = merge(defaultSeriesOptions, {
 		// connectorPadding: 5,
 		distance: 30,
 		enabled: true,
-		format: '{point.name}'
+		formatter: function () {
+			return this.point.name;
+		}
 		// softConnector: true,
 		//y: 0
 	},
@@ -16941,10 +16929,6 @@ if (seriesTypes.scatter) {
 	ScatterSeries.prototype.drawTracker = TrackerMixin.drawTrackerPoint;
 }
 
-if (seriesTypes.gauge) {
-	seriesTypes.gauge.prototype.drawTracker = TrackerMixin.drawTrackerPoint;
-}
-
 /* 
  * Extend Legend for item events 
  */ 
@@ -17356,11 +17340,16 @@ extend(Point.prototype, {
 
 		point.state = state;
 	},
+
 	haloPath: function (size) {
-		var chart = this.series.chart;
+		var series = this.series,
+			chart = series.chart,
+			plotBox = series.getPlotBox(),
+			inverted = chart.inverted;
+
 		return chart.renderer.symbols.circle(
-			chart.plotLeft + this.plotX - size, 
-			chart.plotTop + this.plotY - size, 
+			plotBox.translateX + (inverted ? series.yAxis.len - this.plotY : this.plotX) - size, 
+			plotBox.translateY + (inverted ? series.xAxis.len - this.plotX : this.plotY) - size, 
 			size * 2, 
 			size * 2
 		);

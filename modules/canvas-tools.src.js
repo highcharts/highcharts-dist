@@ -2908,7 +2908,7 @@ if (CanvasRenderingContext2D) {
 		});
 	}
 }/**
- * @license Highcharts JS v4.0.0 (2014-04-22)
+ * @license Highcharts JS v4.0.1 (2014-04-24)
  * CanVGRenderer Extension module
  *
  * (c) 2011-2012 Torstein Honsi, Erik Olsson

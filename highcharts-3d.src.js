@@ -2,7 +2,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license Highcharts JS v4.0.0 (2014-04-22)
+ * @license Highcharts JS v4.0.1 (2014-04-24)
  *
  * (c) 2009-2013 Torstein Hønsi
  *
@@ -187,7 +187,7 @@ Highcharts.SVGRenderer.prototype.cuboid = function (shapeArgs) {
 	};
 
 	// Apply the Z index to the cuboid group
-	result.attr({ zIndex: paths[3] });
+	result.attr({ zIndex: -paths[3] });
 
 	return result;
 };
@@ -519,17 +519,20 @@ Highcharts.Chart.prototype.retrieveStacks = function () {
 		type = this.options.chart.type,
 		typeOptions = this.options.plotOptions[type],
 		stacking = typeOptions.stacking,
-		grouping = typeOptions.grouping;
+		grouping = typeOptions.grouping,
+		i = 1;
 
 	if (grouping || !stacking) { return this.series; }
 
 	Highcharts.each(this.series, function (S) {
 		if (!stacks[S.options.stack || 0]) {
-			stacks[S.options.stack || 0] = [S];
+			stacks[S.options.stack || 0] = { series: [S], position: i};
+			i++;
 		} else {
-			stacks[S.options.stack || 0].push(S);
+			stacks[S.options.stack || 0].series.push(S);
 		}
 	});
+	stacks.totalStacks = i + 1;
 	return stacks;
 };
 
@@ -862,13 +865,13 @@ Highcharts.wrap(Highcharts.seriesTypes.column.prototype, 'init', function (proce
 			if (!(grouping !== undefined && !grouping) && stacking) {
 				var stacks = this.chart.retrieveStacks(),
 					stack = this.options.stack || 0,
-					i;
-				for (i = 0; i < stacks[stack].length; i++) {
-					if (stacks[stack][i] === this) {
+					i; // position within the stack
+				for (i = 0; i < stacks[stack].series.length; i++) {
+					if (stacks[stack].series[i] === this) {
 						break;
 					}
 				}
-				z = 100 - 10 * i + this.index;
+				z = (stacks.totalStacks * 10) - (10 * (stacks.totalStacks - stacks[stack].position)) - i;
 				
 				this.options.zIndex = z;
 			}

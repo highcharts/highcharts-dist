@@ -2,7 +2,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license Highcharts JS v4.0.0 (2014-04-22)
+ * @license Highcharts JS v4.0.1 (2014-04-24)
  *
  * (c) 2009-2014 Torstein Honsi
  *
@@ -31,6 +31,7 @@ var arrayMin = Highcharts.arrayMin,
 	Point = Highcharts.Point,
 	Pointer = Highcharts.Pointer,
 	CenteredSeriesMixin = Highcharts.CenteredSeriesMixin,
+	TrackerMixin = Highcharts.TrackerMixin,
 	Series = Highcharts.Series,
 	math = Math,
 	mathRound = math.round,
@@ -653,7 +654,7 @@ defaultPlotOptions.arearange = merge(defaultPlotOptions.area, {
 	marker: null,
 	threshold: null,
 	tooltip: {
-		pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: <b>{point.low}</b> - <b>{point.high}</b><br/>' // docs
+		pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: <b>{point.low}</b> - <b>{point.high}</b><br/>'
 	},
 	trackByArea: true,
 	dataLabels: {
@@ -1175,7 +1176,12 @@ var GaugeSeries = {
 		if (pick(redraw, true)) {
 			this.chart.redraw();
 		}
-	}
+	},
+
+	/**
+	 * If the tracking module is loaded, add the point tracker
+	 */
+	drawTracker: TrackerMixin && TrackerMixin.drawTrackerPoint
 };
 seriesTypes.gauge = extendClass(seriesTypes.line, GaugeSeries);
 
@@ -1199,7 +1205,7 @@ defaultPlotOptions.boxplot = merge(defaultPlotOptions.column, {
 	//stemWidth: null,
 	threshold: null,
 	tooltip: {
-		pointFormat: '<span style="color:{series.color}">\u25CF</span> <b> {series.name}</b><br/>' + // docs
+		pointFormat: '<span style="color:{series.color}">\u25CF</span> <b> {series.name}</b><br/>' +
 			'Maximum: {point.high}<br/>' +
 			'Upper quartile: {point.q3}<br/>' +
 			'Median: {point.median}<br/>' +
@@ -1743,7 +1749,7 @@ seriesTypes.waterfall = extendClass(seriesTypes.column, {
 // 1 - set default options
 defaultPlotOptions.bubble = merge(defaultPlotOptions.scatter, {
 	dataLabels: {
-		format: '{point.z}', // docs?
+		format: '{point.z}',
 		inside: true,
 		style: {
 			color: 'white',
@@ -1764,7 +1770,7 @@ defaultPlotOptions.bubble = merge(defaultPlotOptions.scatter, {
 	states: {
 		hover: {
 			halo: {
-				size: 5 // docs
+				size: 5
 			}
 		}
 	},
