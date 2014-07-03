@@ -24,8 +24,9 @@
  * - complete : Function(chartOptions)
  * The callback that is evaluated when the data is finished loading, optionally from an 
  * external source, and parsed. The first argument passed is a finished chart options
- * object, containing series and an xAxis with categories if applicable. Thise options
- * can be extended with additional options and passed directly to the chart constructor.
+ * object, containing the series. Thise options
+ * can be extended with additional options and passed directly to the chart constructor. This is 
+ * related to the parsed callback, that goes in at an earlier stage.
  *
  * - csv : String
  * A comma delimited string to be parsed. Related options are startRow, endRow, startColumn
@@ -57,7 +58,9 @@
  *
  * - parsed : Function
  * A callback function to access the parsed columns, the two-dimentional input data
- * array directly, before they are interpreted into series data and categories.
+ * array directly, before they are interpreted into series data and categories. See also
+ * the complete callback, that goes in on a later stage where the raw columns are interpreted
+ * into a Highcharts option structure.
  *
  * - parseDate : Function
  * A callback function to parse string representations of dates into JavaScript timestamps.
@@ -84,7 +87,7 @@
 // JSLint options:
 /*global jQuery */
 
-(function (Highcharts) {	
+(function (Highcharts) { // docs
 	
 	// Utilities
 	var each = Highcharts.each;
@@ -339,7 +342,7 @@
 				headerRow = null;
 			}
 		});
-		this.headerRow = 0;			
+		this.headerRow = 0;
 	},
 	
 	/**
@@ -485,10 +488,11 @@
 			data,
 			i,
 			j,
-			seriesIndex;
+			seriesIndex,
+			chartOptions;
 			
 		
-		if (options.complete) {
+		if (options.complete || options.afterComplete) {
 
 			this.getColumnDistribution();
 			
@@ -557,12 +561,20 @@
 			}
 			
 			// Do the callback
-			options.complete({
+			chartOptions = {
 				xAxis: {
 					type: type
 				},
 				series: series
-			});
+			};
+			if (options.complete) {
+				options.complete(chartOptions);
+			}
+			// The afterComplete hook is used internally to avoid conflict with the externally
+			// available complete option.
+			if (options.afterComplete) {
+				options.afterComplete(chartOptions);
+			}
 		}
 	}
 	});
@@ -580,14 +592,17 @@
 
 		if (userOptions && userOptions.data) {
 			Highcharts.data(Highcharts.extend(userOptions.data, {
-				complete: function (dataOptions) {
+				afterComplete: function (dataOptions) {
+					var i, series;
 					
 					// Merge series configs
 					if (userOptions.hasOwnProperty('series')) {
 						if (typeof userOptions.series === 'object') {
-							each(userOptions.series, function (series, i) {
+							i = Math.max(userOptions.series.length, dataOptions.series.length);
+							while (i--) {
+								series = userOptions.series[i] || {};
 								userOptions.series[i] = Highcharts.merge(series, dataOptions.series[i]);
-							});
+							}
 						} else { // Allow merging in dataOptions.series (#2856)
 							delete userOptions.series;
 						}
