@@ -24,7 +24,8 @@
 		PieSeries = seriesTypes.pie,
 		ColumnSeries = seriesTypes.column,
 		fireEvent = HighchartsAdapter.fireEvent,
-		inArray = HighchartsAdapter.inArray;
+		inArray = HighchartsAdapter.inArray,
+		dupes = [];
 
 	// Utilities
 	function tweenColors(startColor, endColor, pos) {
@@ -112,10 +113,10 @@
 			if (series.xAxis === xAxis) {
 				levelSeries.push(series);
 				levelSeriesOptions.push(series.userOptions);
-				series.levelNumber = series.levelNumber || 0;
+				series.levelNumber = series.levelNumber || levelNumber; // #3182
 			}
 		});
-		
+
 		// Add a record of properties for each drilldown level
 		level = {
 			levelNumber: levelNumber,
@@ -159,26 +160,33 @@
 
 	Chart.prototype.applyDrilldown = function () {
 		var drilldownLevels = this.drilldownLevels, 
-			levelToRemove = drilldownLevels[drilldownLevels.length - 1].levelNumber;
+			levelToRemove;
 		
-		each(this.drilldownLevels, function (level) {
-			if (level.levelNumber === levelToRemove) {
-				each(level.levelSeries, function (series) {
-					if (series.levelNumber === levelToRemove) { // Not removed, not added as part of a multi-series drilldown
-						series.remove(false);
-					}
-				});
-			}
-		});
+		if (drilldownLevels && drilldownLevels.length > 0) { // #3352, async loading
+			levelToRemove = drilldownLevels[drilldownLevels.length - 1].levelNumber;
+			each(this.drilldownLevels, function (level) {
+				if (level.levelNumber === levelToRemove) {
+					each(level.levelSeries, function (series) {
+						if (series.levelNumber === levelToRemove) { // Not removed, not added as part of a multi-series drilldown
+							series.remove(false);
+						}
+					});
+				}
+			});
+		}
 		
 		this.redraw();
 		this.showDrillUpButton();
 	};
 
 	Chart.prototype.getDrilldownBackText = function () {
-		var lastLevel = this.drilldownLevels[this.drilldownLevels.length - 1];
-		lastLevel.series = lastLevel.seriesOptions;
-		return format(this.options.lang.drillUpText, lastLevel);
+		var drilldownLevels = this.drilldownLevels,
+			lastLevel;
+		if (drilldownLevels && drilldownLevels.length > 0) { // #3352, async loading
+			lastLevel = drilldownLevels[drilldownLevels.length - 1];
+			lastLevel.series = lastLevel.seriesOptions;
+			return format(this.options.lang.drillUpText, lastLevel);
+		}
 
 	};
 
@@ -300,6 +308,8 @@
 			})
 			.align();
 		}
+
+		dupes.length = []; // #3315
 	};
 
 
@@ -480,8 +490,9 @@
 			seriesOptions;
 		
 		while (i-- && !seriesOptions) {
-			if (drilldown.series[i].id === this.drilldown) {
+			if (drilldown.series[i].id === this.drilldown && inArray(this.drilldown, dupes) === -1) {
 				seriesOptions = drilldown.series[i];
+				dupes.push(this.drilldown);
 			}
 		}
 
@@ -510,15 +521,23 @@
 		
 		if (point.drilldown) {
 			
-			// Add the click event to the point label
+			// Add the click event to the point 
 			H.addEvent(point, 'click', function () {
 				point.doDrilldown();
 			});
-			
+			/*wrap(point, 'importEvents', function (proceed) { // wrapping importEvents makes point.click event work
+				if (!this.hasImportedEvents) {
+					proceed.call(this);
+					H.addEvent(this, 'click', function () {
+						this.doDrilldown();
+					});
+				}
+			});*/
+
 			// Make axis labels clickable
 			if (tickLabel) {
-				if (!tickLabel._basicStyle) {
-					tickLabel._basicStyle = tickLabel.element.getAttribute('style');
+				if (!tickLabel.basicStyles) {
+					tickLabel.basicStyles = H.merge(tickLabel.styles);
 				}
 				tickLabel
 					.addClass('highcharts-drilldown-axis-label')
@@ -537,8 +556,9 @@
 				tickLabel.ddPoints.push(point);
 					
 			}
-		} else if (tickLabel && tickLabel._basicStyle) {
-			tickLabel.element.setAttribute('style', tickLabel._basicStyle);
+		} else if (tickLabel && tickLabel.basicStyles) {
+			tickLabel.styles = {}; // reset for full overwrite of styles
+			tickLabel.css(tickLabel.basicStyles);
 		}
 		
 		return point;
