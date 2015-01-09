@@ -1,3 +1,6 @@
-This is the official shim repo for Highcharts JS releases including minified files. It is optimized for inclusion by Bower.
+highcharts-release
+=================
 
-For the Highcharts source code, issue tracker and support utilities, see [the highcharts.com repo](https://github.com/highslide-software/highcharts.com).
+Official shim repo for Highcharts releases
+
+This repo only reflects official versions of Highcharts. For bug reporting, please use the [highcharts.com](https://github.com/highslide-software/highcharts.com) working repo.
