@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v4.0.4 (2014-09-02)
+ * @license Highcharts JS v4.1.0 (2015-02-16)
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2014 Highsoft AS
@@ -57,7 +57,7 @@
 	}
 
 	H.Series.prototype.hasData = function () {
-		return this.dataMax !== undefined && this.dataMin !== undefined;
+		return this.visible && this.dataMax !== undefined && this.dataMin !== undefined; // #3703
 	};
 	
 	/**
