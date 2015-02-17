@@ -1,5 +1,5 @@
 /*
- Highcharts JS v4.1.0 ()
+ Highcharts JS v4.1.1 (2015-02-17)
 
  Standalone Highcharts Framework
 
