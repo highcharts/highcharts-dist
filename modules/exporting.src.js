@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v4.1.2 (2015-02-27)
+ * @license Highcharts JS v4.1.3 (2015-02-27)
  * Exporting module
  *
  * (c) 2010-2014 Torstein Honsi
@@ -320,10 +320,10 @@ extend(Chart.prototype, {
 			}
 		});
 
-		// Axis options must be merged in one by one, since it may be an array or an object (#2022)
+		// Axis options must be merged in one by one, since it may be an array or an object (#2022, #3900)
 		if (additionalOptions) {
-			each(['xAxis', 'yAxis'], function (axisType, i) {
-				each(splat(additionalOptions[axisType]), function (axisOptions) {
+			each(['xAxis', 'yAxis'], function (axisType) {
+				each(splat(additionalOptions[axisType]), function (axisOptions, i) {
 					options[axisType][i] = merge(options[axisType][i], axisOptions);
 				});
 			});
@@ -364,30 +364,33 @@ extend(Chart.prototype, {
 		return svg;
 	},
 
+	getSVGForExport: function (options, chartOptions) {
+		var chartExportingOptions = this.options.exporting;
+
+		return this.getSVG(merge(
+			{ chart: { borderRadius: 0 } },
+			chartExportingOptions.chartOptions,
+			chartOptions,
+			{
+				exporting: {
+					sourceWidth: (options && options.sourceWidth) || chartExportingOptions.sourceWidth,
+					sourceHeight: (options && options.sourceHeight) || chartExportingOptions.sourceHeight
+				}
+			}
+		));
+	},
+
 	/**
 	 * Submit the SVG representation of the chart to the server
 	 * @param {Object} options Exporting options. Possible members are url, type, width and formAttributes.
 	 * @param {Object} chartOptions Additional chart options for the SVG representation of the chart
 	 */
 	exportChart: function (options, chartOptions) {
-		options = options || {};
-
-		var chart = this,
-			chartExportingOptions = chart.options.exporting,
-			svg = chart.getSVG(merge(
-				{ chart: { borderRadius: 0 } },
-				chartExportingOptions.chartOptions,
-				chartOptions,
-				{
-					exporting: {
-						sourceWidth: options.sourceWidth || chartExportingOptions.sourceWidth,
-						sourceHeight: options.sourceHeight || chartExportingOptions.sourceHeight
-					}
-				}
-			));
+		
+		var svg = this.getSVGForExport(options, chartOptions);
 
 		// merge the options
-		options = merge(chart.options.exporting, options);
+		options = merge(this.options.exporting, options);
 
 		// do the post
 		Highcharts.post(options.url, {
