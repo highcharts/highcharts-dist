@@ -2,7 +2,7 @@
 // @compilation_level SIMPLE_OPTIMIZATIONS
 
 /**
- * @license Highcharts JS v4.1.1 (2015-02-17)
+ * @license Highcharts JS v4.1.2 (2015-02-27)
  *
  * (c) 2009-2013 Torstein Hønsi
  *
@@ -590,21 +590,22 @@ Highcharts.Chart.prototype.renderSeries = function () {
 	}
 };
 
-Highcharts.Chart.prototype.retrieveStacks = function (grouping, stacking) {
-
-	var stacks = {},
+Highcharts.Chart.prototype.retrieveStacks = function (stacking) {
+	var series = this.series,
+		stacks = {},
+		stackNumber,
 		i = 1;
 
-	if (grouping || !stacking) { return this.series; }
-
 	Highcharts.each(this.series, function (S) {
-		if (!stacks[S.options.stack || 0]) {
-			stacks[S.options.stack || 0] = { series: [S], position: i};
+		stackNumber = stacking ? (S.options.stack || 0) : series.length - 1 - S.index; // #3841
+		if (!stacks[stackNumber]) {
+			stacks[stackNumber] = { series: [S], position: i};
 			i++;
 		} else {
-			stacks[S.options.stack || 0].series.push(S);
+			stacks[stackNumber].series.push(S);
 		}
 	});
+
 	stacks.totalStacks = i + 1;
 	return stacks;
 };
@@ -904,8 +905,8 @@ Highcharts.wrap(Highcharts.seriesTypes.column.prototype, 'init', function (proce
 			stacking = seriesOptions.stacking,
 			z = 0;	
 		
-		if (!(grouping !== undefined && !grouping) && stacking) {
-			var stacks = this.chart.retrieveStacks(grouping, stacking),
+		if (!(grouping !== undefined && !grouping)) {
+			var stacks = this.chart.retrieveStacks(stacking),
 				stack = seriesOptions.stack || 0,
 				i; // position within the stack
 			for (i = 0; i < stacks[stack].series.length; i++) {
@@ -1150,7 +1151,7 @@ Highcharts.wrap(Highcharts.seriesTypes.pie.prototype, 'addPoint', function (proc
 	proceed.apply(this, [].slice.call(arguments, 1));	
 	if (this.chart.is3d()) {
 		// destroy (and rebuild) everything!!!
-		this.update();
+		this.update(this.userOptions, true); // #3845 pass the old options
 	}
 });
 

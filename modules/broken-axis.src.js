@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v4.1.1 (2015-02-17)
+ * Highcharts JS v4.1.2 (2015-02-27)
  * Highcharts Broken Axis module
  * 
  * Author: Stephane Vanraes, Torstein Honsi
@@ -101,7 +101,7 @@
 
 			var axis = this;
 			
-			axis.postTranslate = true;
+			axis.doPostTranslate = true;
 
 			this.val2lin = function (val) {
 				var nval = val,
@@ -255,6 +255,7 @@
 
 				if (xAxis.isInAnyBreak(point.x, true) || yAxis.isInAnyBreak(point.y, true)) {
 					points.splice(i, 1);
+					this.data[i].destroyElements(); // removes the graphics for this point if they exist
 				}
 			}
 		}

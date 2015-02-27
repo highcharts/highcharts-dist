@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v4.1.1 (2015-02-17)
+ * @license Highcharts JS v4.1.2 (2015-02-27)
  *
  * Standalone Highcharts Framework
  *

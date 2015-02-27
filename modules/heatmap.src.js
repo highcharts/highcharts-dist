@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v4.1.1 (2015-02-17)
+ * @license Highcharts JS v4.1.2 (2015-02-27)
  *
  * (c) 2011-2014 Torstein Honsi
  *
@@ -336,8 +336,7 @@ extend(ColorAxis.prototype, {
 		}
 	},
 	drawCrosshair: function (e, point) {
-		var newCross = !this.cross,
-			plotX = point && point.plotX,
+		var plotX = point && point.plotX,
 			plotY = point && point.plotY,
 			crossPos,
 			axisPos = this.pos,
@@ -357,7 +356,7 @@ extend(ColorAxis.prototype, {
 			point.plotX = plotX;
 			point.plotY = plotY;
 			
-			if (!newCross && this.cross) {
+			if (this.cross) {
 				this.cross
 					.attr({
 						fill: this.crosshair.color
@@ -556,7 +555,8 @@ defaultOptions.plotOptions.heatmap = merge(defaultOptions.plotOptions.scatter, {
 		inside: true,
 		verticalAlign: 'middle',
 		crop: false,
-		overflow: false
+		overflow: false,
+		padding: 0 // #3837
 	},
 	marker: null,
 	tooltip: {
