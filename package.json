@@ -1,4 +1,10 @@
 {
-    "name": "highcharts-release",
-    "version": "4.1.5"
+  "name": "highcharts-release",
+  "description": "Official shim repo for Highcharts releases.",
+  "homepage": "http://www.highcharts.com",
+  "version": "4.1.5",
+  "repository" : { 
+    "type" : "git",
+    "url" : "https://github.com/highslide-software/highcharts-release"
+  }
 }
