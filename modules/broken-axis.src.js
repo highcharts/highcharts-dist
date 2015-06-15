@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v4.1.5 (2015-04-13)
+ * Highcharts JS v4.1.6 (2015-06-12)
  * Highcharts Broken Axis module
  * 
  * Author: Stephane Vanraes, Torstein Honsi
@@ -168,14 +168,15 @@
 					i,
 					j;
 
-				// Min & Max Check
+				// Min & max check (#4247)
 				for (i in breaks) {
 					brk = breaks[i];
+					repeat = brk.repeat || Infinity;
 					if (axis.isInBreak(brk, min)) {
-						min += (brk.to % brk.repeat) - (min % brk.repeat);
+						min += (brk.to % repeat) - (min % repeat);
 					}
 					if (axis.isInBreak(brk, max)) {
-						max -= (max % brk.repeat) - (brk.from % brk.repeat);
+						max -= (max % repeat) - (brk.from % repeat);
 					}
 				}
 
@@ -242,7 +243,6 @@
 
 				axis.min = min;
 				axis.max = max;
-
 			};
 		}
 	});
@@ -265,7 +265,9 @@
 
 				if (xAxis.isInAnyBreak(point.x, true) || yAxis.isInAnyBreak(point.y, true)) {
 					points.splice(i, 1);
-					this.data[i].destroyElements(); // removes the graphics for this point if they exist
+					if (this.data[i]) {
+						this.data[i].destroyElements(); // removes the graphics for this point if they exist
+					}
 				}
 			}
 		}
