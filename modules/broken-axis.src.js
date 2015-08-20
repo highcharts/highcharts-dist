@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v4.1.7 (2015-06-26)
+ * Highcharts JS v4.1.8 (2015-08-20)
  * Highcharts Broken Axis module
  * 
  * Author: Stephane Vanraes, Torstein Honsi
@@ -24,16 +24,18 @@
 
 	extend(Axis.prototype, {
 		isInBreak: function (brk, val) {
-			var repeat = brk.repeat || Infinity,
+			var ret,
+				repeat = brk.repeat || Infinity,
 				from = brk.from,
 				length = brk.to - brk.from,
 				test = (val >= from ? (val - from) % repeat :  repeat - ((from - val) % repeat));
 
 			if (!brk.inclusive) {
-				return (test < length && test !== 0);
+				ret = test < length && test !== 0;
 			} else {
-				return (test <= length);
+				ret = test <= length;
 			}
+			return ret;
 		},
 
 		isInAnyBreak: function (val, testKeep) {
@@ -286,6 +288,8 @@
 			points = series.points,
 			yAxis = series.yAxis,
 			breaks = yAxis.breakArray || [],
+			threshold = pick(this.options.threshold, yAxis.min),
+			eventName,
 			point,
 			brk,
 			i,
@@ -297,12 +301,15 @@
 			y = point.stackY || point.y;
 			for (j = 0; j < breaks.length; j++) {
 				brk = breaks[j];
-				if (y < brk.from) {
-					break;
-				} else if (y > brk.to) {
-					fireEvent(yAxis, 'pointBreak', {point: point, brk: brk});
-				} else {
-					fireEvent(yAxis, 'pointInBreak', {point: point, brk: brk});
+				eventName = false;
+
+				if ((threshold < brk.from && y > brk.to) || (threshold > brk.from && y < brk.from)) { 
+						eventName = 'pointBreak';
+				} else if ((threshold < brk.from && y > brk.from && y < brk.to) || (threshold > brk.from && y > brk.to && y < brk.from)) { // point falls inside the break
+						eventName = 'pointInBreak'; // docs
+				} 
+				if (eventName) {
+					fireEvent(yAxis, eventName, {point: point, brk: brk});
 				}
 			}
 		}
