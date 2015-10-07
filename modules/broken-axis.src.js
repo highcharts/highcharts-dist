@@ -1,5 +1,5 @@
 /**
- * Highcharts JS v4.1.8 (2015-08-20)
+ * Highcharts JS v4.1.9 (2015-10-07)
  * Highcharts Broken Axis module
  * 
  * Author: Stephane Vanraes, Torstein Honsi
@@ -77,10 +77,6 @@
 				info = this.tickPositions.info,
 				newPositions = [],
 				i;
-
-			if (info && info.totalRange >= axis.closestPointRange) { 
-				return;
-			}
 
 			for (i = 0; i < tickPositions.length; i++) {
 				if (!axis.isInAnyBreak(tickPositions[i])) {
