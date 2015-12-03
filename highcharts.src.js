@@ -6094,6 +6094,13 @@ Tick.prototype = {
 	 * @param old {Boolean} Use old coordinates to prepare an animation into new position
 	 */
 	render: function (index, old, opacity) {
+		var pos, toString = Object.prototype.toString;
+
+		if (toString.call(old) === '[object Number]') {
+			pos = old;
+			old = undefined;
+		}
+
 		var tick = this,
 			axis = tick.axis,
 			options = axis.options,
@@ -6111,6 +6118,7 @@ Tick.prototype = {
 			gridLineColor = options[gridPrefix + 'LineColor'],
 			dashStyle = options[gridPrefix + 'LineDashStyle'],
 			tickLength = options[tickPrefix + 'Length'],
+			tickFormatter = options.tickFormatter,
 			tickWidth = pick(options[tickPrefix + 'Width'], !type && axis.isXAxis ? 1 : 0), // X axis defaults to 1
 			tickColor = options[tickPrefix + 'Color'],
 			tickPosition = options[tickPrefix + 'Position'],
@@ -6124,7 +6132,8 @@ Tick.prototype = {
 			xy = tick.getPosition(horiz, pos, tickmarkOffset, old),
 			x = xy.x,
 			y = xy.y,
-			reverseCrisp = ((horiz && x === axis.pos + axis.len) || (!horiz && y === axis.pos)) ? -1 : 1; // #1480, #1687
+			reverseCrisp = ((horiz && x === axis.pos + axis.len) || (!horiz && y === axis.pos)) ? -1 : 1, // #1480, #1687
+			tickFormatterRet;
 
 		opacity = pick(opacity, 1);
 		this.isActive = true;
@@ -6166,6 +6175,16 @@ Tick.prototype = {
 
 		// create the tick mark
 		if (tickWidth && tickLength) {
+
+			if (toString.call(tickFormatter) === '[object Function]') {
+				tickFormatterRet = tickFormatter.call(this, pos, index, labelOptions.step, tickLength, tickColor);
+
+				// Rewrite tick color.
+				tickColor = tickFormatterRet.tickColor;
+
+				// Rewrite tick length.
+				tickLength = tickFormatterRet.tickLength;
+			}
 
 			// negate the length
 			if (tickPosition === 'inside') {
@@ -6579,6 +6598,7 @@ Axis.prototype = {
 		tickColor: '#C0D0E0',
 		//tickInterval: null,
 		tickLength: 10,
+		tickFormatter: undefined,
 		tickmarkPlacement: 'between', // on or between
 		tickPixelInterval: 100,
 		tickPosition: 'outside',
@@ -8456,7 +8476,7 @@ Axis.prototype = {
 							ticks[pos].render(i, true, 0.1);
 						}
 
-						ticks[pos].render(i);
+						ticks[pos].render(i, pos);
 					}
 
 				});
