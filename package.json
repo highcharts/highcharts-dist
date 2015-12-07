@@ -2,7 +2,7 @@
   "name": "highcharts-release",
   "description": "Official shim repo for Highcharts releases.",
   "homepage": "http://www.highcharts.com",
-  "version": "v4.1.9",
+  "version": "v4.1.10",
   "main": "highcharts.js",
   "repository": {
     "type": "git",
