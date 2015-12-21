@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v4.2.0 (2105-12-15)
+ * @license Highcharts JS v4.2.1 (2015-12-21)
  * Client side exporting module
  *
  * (c) 2015 Torstein Honsi / Oystein Moseng

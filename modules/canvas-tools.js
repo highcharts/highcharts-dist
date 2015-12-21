@@ -11,7 +11,7 @@
 
  Requires: rgbcolor.js - http://www.phpied.com/rgb-color-parser-in-javascript/
 
- Highcharts JS v4.2.0 (2105-12-15)
+ Highcharts JS v4.2.1 (2015-12-21)
  CanVGRenderer Extension module
 
  (c) 2011-2012 Torstein Honsi, Erik Olsson
