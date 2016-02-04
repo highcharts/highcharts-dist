@@ -1,8 +1,8 @@
 /*
- Highcharts JS v4.2.1 (2015-12-21)
+ Highcharts JS v4.2.2 (2016-02-04)
  Data module
 
- (c) 2012-2014 Torstein Honsi
+ (c) 2012-2016 Torstein Honsi
 
  License: www.highcharts.com/license
 */

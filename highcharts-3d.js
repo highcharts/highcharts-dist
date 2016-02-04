@@ -1,5 +1,5 @@
 /*
- Highcharts JS v4.2.1 (2015-12-21)
+ Highcharts JS v4.2.2 (2016-02-04)
 
  3D features for Highcharts JS
 

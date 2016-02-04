@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v4.2.1 (2015-12-21)
+ * @license Highcharts JS v4.2.2 (2016-02-04)
  *
  * (c) 2014 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
