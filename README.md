@@ -1,4 +1,4 @@
-Highcharts JS is a JavaScript charting library based on SVG, with fallbacks to VML and canvas for old browsers.
+Highcharts is a JavaScript charting library based on SVG, with fallbacks to VML and canvas for old browsers. This package also contains Highstock, the financial charting package, and Highmaps for geo maps.
 
 _For NPM users, please note that this module replaces the previous [Highcharts Server](https://www.npmjs.com/package/highcharts-server) module._
 
