@@ -9663,6 +9663,8 @@
                 }
 
                 if (
+                    // after setting "e = this.cross && this.cross.e", e may still be null when options.yAxis.crosshair.snap === false
+                    !e || 
                     // Disabled in options
                     !this.crosshair ||
                     // Snap
