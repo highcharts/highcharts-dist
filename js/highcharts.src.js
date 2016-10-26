@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.1 (2016-10-26)
+ * @license Highcharts JS v5.0.2 (2016-10-26)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -36,7 +36,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highcharts',
-            version: '5.0.1',
+            version: '5.0.2',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -3001,7 +3001,7 @@
 
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 5.0.1'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 5.0.2'));
 
 
                 renderer.defs = this.createElement('defs').add();
@@ -19266,7 +19266,7 @@
                     return;
                 }
 
-                if (markerOptions) {
+                if (markerOptions && series.markerAttribs) {
                     markerAttribs = series.markerAttribs(point, state);
                 }
 
@@ -19378,13 +19378,11 @@
              */
             haloPath: function(size) {
                 var series = this.series,
-                    chart = series.chart,
-                    inverted = chart.inverted,
-                    plotX = Math.floor(this.plotX);
+                    chart = series.chart;
 
                 return chart.renderer.symbols.circle(
-                    (inverted ? series.yAxis.len - this.plotY : plotX) - size,
-                    (inverted ? series.xAxis.len - plotX : this.plotY) - size,
+                    Math.floor(this.plotX) - size,
+                    this.plotY - size,
                     size * 2,
                     size * 2
                 );
