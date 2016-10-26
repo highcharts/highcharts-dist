@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.1 (2016-10-26)
  * Data module
  *
  * (c) 2012-2016 Torstein Honsi
@@ -776,7 +776,7 @@
                             type: type
                         };
                         if (type === 'category') {
-                            chartOptions.xAxis.nameToX = false;
+                            chartOptions.xAxis.uniqueNames = false;
                         }
                     }
 

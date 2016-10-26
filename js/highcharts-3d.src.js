@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.1 (2016-10-26)
  *
  * 3D features for Highcharts JS
  *
@@ -638,6 +638,7 @@
                 if (anim.duration) {
                     params = merge(params); // Don't mutate the original object
                     ca = suckOutCustom(params);
+                    params.dummy = 1; // Params need to have a property in order for the step to run (#5765)
 
                     if (ca) {
                         to = ca;
@@ -645,14 +646,17 @@
                             function interpolate(key) {
                                 return from[key] + (pick(to[key], from[key]) - from[key]) * fx.pos;
                             }
-                            fx.elem.setPaths(merge(from, {
-                                x: interpolate('x'),
-                                y: interpolate('y'),
-                                r: interpolate('r'),
-                                innerR: interpolate('innerR'),
-                                start: interpolate('start'),
-                                end: interpolate('end')
-                            }));
+
+                            if (fx.prop === 'dummy') {
+                                fx.elem.setPaths(merge(from, {
+                                    x: interpolate('x'),
+                                    y: interpolate('y'),
+                                    r: interpolate('r'),
+                                    innerR: interpolate('innerR'),
+                                    start: interpolate('start'),
+                                    end: interpolate('end')
+                                }));
+                            }
                         };
                     }
                     animation = anim; // Only when duration (#5572)

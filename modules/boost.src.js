@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.1 (2016-10-26)
  * Boost module
  *
  * (c) 2010-2016 Highsoft AS
@@ -28,14 +28,14 @@
          * 
          * Development plan
          * - Column range.
-         * - Heatmap.
+         * - Heatmap. Modify the heatmap-canvas demo so that it uses this module.
          * - Treemap.
          * - Check how it works with Highstock and data grouping. Currently it only works when navigator.adaptToUpdatedData
          *   is false. It is also recommended to set scrollbar.liveRedraw to false.
          * - Check inverted charts.
          * - Check reversed axes.
          * - Chart callback should be async after last series is drawn. (But not necessarily, we don't do
-             that with initial series animation).
+        	 that with initial series animation).
          * - Cache full-size image so we don't have to redraw on hide/show and zoom up. But k-d-tree still
          *   needs to be built.
          * - Test IE9 and IE10.

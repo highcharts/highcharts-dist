@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.1 (2016-10-26)
  * Exporting module
  *
  * (c) 2010-2016 Torstein Honsi
@@ -526,7 +526,6 @@
                     menuPadding = Math.max(width, height), // for mouse leave detection
                     innerMenu,
                     hide,
-                    hideTimer,
                     menuStyle,
                     docMouseUpHandler = function(e) {
                         if (!chart.pointer.inClass(e.target, className)) {
@@ -572,10 +571,10 @@
 
                     // Hide the menu some time after mouse leave (#1357)
                     addEvent(menu, 'mouseleave', function() {
-                        hideTimer = setTimeout(hide, 500);
+                        menu.hideTimer = setTimeout(hide, 500);
                     });
                     addEvent(menu, 'mouseenter', function() {
-                        clearTimeout(hideTimer);
+                        clearTimeout(menu.hideTimer);
                     });
 
 
@@ -794,6 +793,7 @@
                     each(exportDivElements, function(elem, i) {
 
                         // Remove the event handler
+                        clearTimeout(elem.hideTimer); // #5427
                         removeEvent(elem, 'mouseleave');
 
                         // Remove inline events

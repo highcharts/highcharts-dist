@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.1 (2016-10-26)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -775,7 +775,8 @@
              */
             translate: function() {
                 var series = this,
-                    yAxis = series.yAxis;
+                    yAxis = series.yAxis,
+                    hasModifyValue = !!series.modifyValue;
 
                 seriesTypes.area.prototype.translate.apply(series);
 
@@ -790,7 +791,16 @@
                         point.isNull = true;
                     } else {
                         point.plotLow = plotY;
-                        point.plotHigh = yAxis.translate(high, 0, 1, 0, 1);
+                        point.plotHigh = yAxis.translate(
+                            hasModifyValue ? series.modifyValue(high, point) : high,
+                            0,
+                            1,
+                            0,
+                            1
+                        );
+                        if (hasModifyValue) {
+                            point.yBottom = point.plotHigh;
+                        }
                     }
                 });
 
@@ -1012,8 +1022,10 @@
          * License: www.highcharts.com/license
          */
         'use strict';
+
         var seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
+
         /**
          * The areasplinerange series type
          */
@@ -1459,7 +1471,7 @@
                     color = (point && point.color) || this.color;
 
                 return {
-                    'fill': options.fillColor || color,
+                    'fill': point.fillColor || options.fillColor || color,
                     'stroke': options.lineColor || color,
                     'stroke-width': options.lineWidth || 0
                 };

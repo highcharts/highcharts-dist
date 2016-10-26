@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.1 (2016-10-26)
  * Accessibility module
  *
  * (c) 2010-2016 Highsoft AS
@@ -117,7 +117,7 @@
         // Put accessible info on series and points of a series
         H.Series.prototype.setA11yDescription = function() {
             var a11yOptions = this.chart.options.accessibility,
-                firstPointEl = this.points && this.points[0].graphic && this.points[0].graphic.element,
+                firstPointEl = this.points && this.points.length && this.points[0].graphic && this.points[0].graphic.element,
                 seriesEl = firstPointEl && firstPointEl.parentNode || this.graph && this.graph.element || this.group && this.group.element; // Could be tracker series depending on series type
 
             if (seriesEl) {
@@ -340,6 +340,7 @@
         H.Chart.prototype.highlightAdjacentPoint = function(next) {
             var series = this.series,
                 curPoint = this.highlightedPoint,
+                curPointIndex = curPoint && curPoint.index || 0,
                 newSeries,
                 newPoint;
 
@@ -353,13 +354,19 @@
                 return series[0].points[0].highlight();
             }
 
+            // Find index of current point in series.points array. Necessary for dataGrouping (and maybe zoom?)
+            if (curPoint.series.points[curPointIndex] !== curPoint) {
+                for (var i = 0; i < curPoint.series.points.length; ++i) {
+                    if (curPoint.series.points[i] === curPoint) {
+                        curPointIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            // Try to grab next/prev point
             newSeries = series[curPoint.series.index + (next ? 1 : -1)];
-            newPoint = next ?
-                // Try to grab next point
-                curPoint.series.points[curPoint.index + 1] || newSeries && newSeries.points[0] :
-                // Try to grab previous point
-                curPoint.series.points[curPoint.index - 1] ||
-                newSeries && newSeries.points[newSeries.points.length - 1];
+            newPoint = curPoint.series.points[curPointIndex + (next ? 1 : -1)] || newSeries && newSeries.points[next ? 0 : newSeries.points.length - 1];
 
             // If there is no adjacent point, we return false
             if (newPoint === undefined) {
@@ -420,6 +427,23 @@
                 }
                 this.oldRangeSelectorItemState = buttons[ix].state;
                 buttons[ix].setState(2);
+                return true;
+            }
+            return false;
+        };
+
+        // Highlight legend item by index
+        H.Chart.prototype.highlightLegendItem = function(ix) {
+            var items = this.legend.allItems;
+            if (items[this.highlightedLegendItemIx]) {
+                fireEvent(items[this.highlightedLegendItemIx].legendGroup.element, 'mouseout');
+            }
+            this.highlightedLegendItemIx = ix;
+            if (items[ix]) {
+                if (items[ix].legendGroup.element.focus) {
+                    items[ix].legendGroup.element.focus();
+                }
+                fireEvent(items[ix].legendGroup.element, 'mouseover');
                 return true;
             }
             return false;
@@ -773,24 +797,55 @@
                 ], {
                     // Only run if we have range selector with input boxes
                     validate: function() {
-                        return chart.rangeSelector && chart.options.rangeSelector.inputEnabled !== false && chart.rangeSelector.minInput && chart.rangeSelector.maxInput;
+                        var inputVisible = chart.rangeSelector && chart.rangeSelector.inputGroup && chart.rangeSelector.inputGroup.element.getAttribute('visibility') !== 'hidden';
+                        return inputVisible && chart.options.rangeSelector.inputEnabled !== false && chart.rangeSelector.minInput && chart.rangeSelector.maxInput;
                     },
 
                     // Handle tabs different from left/right (because we don't want to catch left/right in a text area)
                     transformTabs: false,
 
-                    // Make boxes focusable by script, and accessible
+                    // Highlight first/last input box
                     init: function(direction) {
-                        each(['minInput', 'maxInput'], function(key, i) {
-                            if (chart.rangeSelector[key]) {
-                                chart.rangeSelector[key].setAttribute('tabindex', '-1');
-                                chart.rangeSelector[key].setAttribute('role', 'textbox');
-                                chart.rangeSelector[key].setAttribute('aria-label', 'Select ' + (i ? 'end' : 'start') + ' date.');
-                            }
-                        });
-                        // Highlight first/last input box
                         chart.highlightedInputRangeIx = direction > 0 ? 0 : 1;
                         chart.rangeSelector[chart.highlightedInputRangeIx ? 'maxInput' : 'minInput'].focus();
+                    }
+                }),
+
+                // Legend navigation
+                navModuleFactory([
+                    // Left/Right/Up/Down
+                    [
+                        [37, 39, 38, 40],
+                        function(keyCode) {
+                            var direction = (keyCode === 37 || keyCode === 38) ? -1 : 1;
+                            // Try to highlight next/prev legend item
+                            if (!chart.highlightLegendItem(chart.highlightedLegendItemIx + direction)) {
+                                return this.move(direction);
+                            }
+                        }
+                    ],
+                    // Enter/Spacebar
+                    [
+                        [13, 32],
+                        function() {
+                            fakeClickEvent(chart.legend.allItems[chart.highlightedLegendItemIx].legendItem.element.parentNode);
+                        }
+                    ]
+                ], {
+                    // Only run this module if we have at least one legend - wait for it - item.
+                    validate: function() {
+                        return chart.legend && chart.legend.allItems && !chart.colorAxis;
+                    },
+
+                    // Make elements focusable and accessible
+                    init: function(direction) {
+                        each(chart.legend.allItems, function(item) {
+                            item.legendGroup.element.setAttribute('tabindex', '-1');
+                            item.legendGroup.element.setAttribute('role', 'button');
+                            item.legendGroup.element.setAttribute('aria-label', 'Toggle visibility of series ' + item.name);
+                        });
+                        // Focus first/last item
+                        chart.highlightLegendItem(direction > 0 ? 0 : chart.legend.allItems.length - 1);
                     }
                 })
             ];
@@ -913,6 +968,18 @@
                 exportGroupElement.setAttribute('role', 'region');
                 exportGroupElement.setAttribute('aria-label', 'Chart export menu');
                 parent.appendChild(exportGroupElement);
+            }
+
+            // Set screen reader properties on input boxes for range selector. We need to do this regardless of whether or not these are visible, as they are 
+            // by default part of the page's tabindex unless we set them to -1.
+            if (chart.rangeSelector) {
+                each(['minInput', 'maxInput'], function(key, i) {
+                    if (chart.rangeSelector[key]) {
+                        chart.rangeSelector[key].setAttribute('tabindex', '-1');
+                        chart.rangeSelector[key].setAttribute('role', 'textbox');
+                        chart.rangeSelector[key].setAttribute('aria-label', 'Select ' + (i ? 'end' : 'start') + ' date.');
+                    }
+                });
             }
 
             // Hide text elements from screen readers

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.0 (2016-09-29)
+ * @license Highcharts JS v5.0.1 (2016-10-26)
  *
  * (c) 2014 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -21,6 +21,7 @@
          * License: www.highcharts.com/license
          */
         'use strict';
+
         var seriesType = H.seriesType,
             seriesTypes = H.seriesTypes,
             map = H.map,
@@ -29,6 +30,7 @@
             noop = H.noop,
             each = H.each,
             grep = H.grep,
+            isNumber = H.isNumber,
             pick = H.pick,
             Series = H.Series,
             stableSort = H.stableSort,
@@ -862,6 +864,9 @@
                     className += ' highcharts-internal-node';
                 }
                 return className;
+            },
+            isValid: function() {
+                return isNumber(this.value);
             },
             setState: function(state) {
                 H.Point.prototype.setState.call(this, state);
