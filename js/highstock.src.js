@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v5.0.2 (2016-10-26)
+ * @license Highstock JS v5.0.3 (2016-11-18)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -36,7 +36,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highstock',
-            version: '5.0.2',
+            version: '5.0.3',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -46,7 +46,6 @@
             isFirefox: isFirefox,
             isTouchDevice: /(Mobile|Android|Windows Phone)/.test(userAgent),
             SVG_NS: SVG_NS,
-            idCounter: 0,
             chartCount: 0,
             seriesTypes: {},
             symbolSizes: {},
@@ -67,7 +66,15 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: ["warn", 80, 4] */
         'use strict';
+
+        /**
+         * The Highcharts object is the placeholder for all other members, and various
+         * utility functions.
+         * @namespace Highcharts
+         */
+
         var timers = [];
 
         var charts = H.charts,
@@ -75,10 +82,20 @@
             win = H.win;
 
         /**
-         * Provide error messages for debugging, with links to online explanation
+         * Provide error messages for debugging, with links to online explanation. This
+         * function can be overridden to provide custom error handling.
+         *
+         * @function #error
+         * @memberOf Highcharts
+         * @param {Number} code - The error code. See [errors.xml]{@link 
+         *     https://github.com/highcharts/highcharts/blob/master/errors/errors.xml}
+         *     for available codes.
+         * @param {Boolean} [stop=false] - Whether to throw an error or just log a 
+         *     warning in the console.
          */
         H.error = function(code, stop) {
-            var msg = 'Highcharts error #' + code + ': www.highcharts.com/errors/' + code;
+            var msg = 'Highcharts error #' + code + ': www.highcharts.com/errors/' +
+                code;
             if (stop) {
                 throw new Error(msg);
             }
@@ -89,12 +106,14 @@
         };
 
         /**
-         * An animator object. One instance applies to one property (attribute or style prop) 
-         * on one element.
-         * 
-         * @param {object} elem	The element to animate. May be a DOM element or a Highcharts SVGElement wrapper.
-         * @param {object} options Animation options, including duration, easing, step and complete.
-         * @param {object} prop	The property to animate.
+         * An animator object. One instance applies to one property (attribute or style
+         * prop) on one element.
+         *
+         * @constructor Fx
+         * @memberOf Highcharts
+         * @param {HTMLDOMElement|SVGElement} elem - The element to animate.
+         * @param {AnimationOptions} options - Animation options.
+         * @param {string} prop - The single attribute or CSS property to animate.
          */
         H.Fx = function(elem, options, prop) {
             this.options = options;
@@ -104,8 +123,10 @@
         H.Fx.prototype = {
 
             /**
-             * Animating a path definition on SVGElement
-             * @returns {undefined} 
+             * Set the current step of a path definition on SVGElement.
+             *
+             * @function #dSetter
+             * @memberOf Highcharts.Fx
              */
             dSetter: function() {
                 var start = this.paths[0],
@@ -115,7 +136,8 @@
                     i = start.length,
                     startVal;
 
-                if (now === 1) { // land on the final path without adjustment points appended in the ends
+                // Land on the final path without adjustment points appended in the ends
+                if (now === 1) {
                     ret = this.toD;
 
                 } else if (i === end.length && now < 1) {
@@ -127,15 +149,18 @@
                             now * (parseFloat(end[i] - startVal)) + startVal;
 
                     }
-                } else { // if animation is finished or length not matching, land on right value
+                    // If animation is finished or length not matching, land on right value
+                } else {
                     ret = end;
                 }
                 this.elem.attr('d', ret);
             },
 
             /**
-             * Update the element with the current animation step
-             * @returns {undefined}
+             * Update the element with the current animation step.
+             *
+             * @function #update
+             * @memberOf Highcharts.Fx
              */
             update: function() {
                 var elem = this.elem,
@@ -165,7 +190,14 @@
             },
 
             /**
-             * Run an animation
+             * Run an animation.
+             *
+             * @function #run
+             * @memberOf Highcharts.Fx
+             * @param {Number} from - The current value, value to start from.
+             * @param {Number} to - The end value, value to land on.
+             * @param {String} [unit] - The property unit, for example `px`.
+             * @returns {void}
              */
             run: function(from, to, unit) {
                 var self = this,
@@ -200,9 +232,13 @@
             },
 
             /**
-             * Run a single step in the animation
-             * @param   {Boolean} gotoEnd Whether to go to then endpoint of the animation after abort
-             * @returns {Boolean} True if animation continues
+             * Run a single step in the animation.
+             *
+             * @function #step
+             * @memberOf Highcharts.Fx
+             * @param   {Boolean} [gotoEnd] - Whether to go to the endpoint of the
+             *     animation after abort.
+             * @returns {Boolean} Returns `true` if animation continues.
              */
             step: function(gotoEnd) {
                 var t = +new Date(),
@@ -215,7 +251,7 @@
                     curAnim = options.curAnim,
                     i;
 
-                if (elem.attr && !elem.element) { // #2616, element including flag is destroyed
+                if (elem.attr && !elem.element) { // #2616, element is destroyed
                     ret = false;
 
                 } else if (gotoEnd || t >= duration + this.startTime) {
@@ -247,7 +283,15 @@
             },
 
             /**
-             * Prepare start and end values so that the path can be animated one to one
+             * Prepare start and end values so that the path can be animated one to one.
+             *
+             * @function #initPath
+             * @memberOf Highcharts.Fx
+             * @param {SVGElement} elem - The SVGElement item.
+             * @param {String} fromD - Starting path definition.
+             * @param {Array} toD - Ending path definition.
+             * @returns {Array} An array containing start and end paths in array form
+             * so that they can be animated in parallel.
              */
             initPath: function(elem, fromD, toD) {
                 fromD = fromD || '';
@@ -272,7 +316,11 @@
                     i = arr.length;
                     while (i--) {
                         if (arr[i] === 'M' || arr[i] === 'L') {
-                            arr.splice(i + 1, 0, arr[i + 1], arr[i + 2], arr[i + 1], arr[i + 2]);
+                            arr.splice(
+                                i + 1, 0,
+                                arr[i + 1], arr[i + 2],
+                                arr[i + 1], arr[i + 2]
+                            );
                         }
                     }
                 }
@@ -298,10 +346,13 @@
                         // Prepend a copy of the first point
                         insertSlice(arr, arr.slice(0, numParams), 0);
 
-                        // For areas, the bottom path goes back again to the left, so we need
-                        // to append a copy of the last point.
+                        // For areas, the bottom path goes back again to the left, so we
+                        // need to append a copy of the last point.
                         if (isArea) {
-                            insertSlice(arr, arr.slice(arr.length - numParams), arr.length);
+                            insertSlice(
+                                arr,
+                                arr.slice(arr.length - numParams), arr.length
+                            );
                             i--;
                         }
                     }
@@ -315,11 +366,12 @@
                     var i = (fullLength - arr.length) / numParams;
                     while (i > 0 && i--) {
 
-                        // Pull out the slice that is going to be appended or inserted. In a line graph,
-                        // the positionFactor is 1, and the last point is sliced out. In an area graph,
-                        // the positionFactor is 2, causing the middle two points to be sliced out, since
-                        // an area path starts at left, follows the upper path then turns and follows the
-                        // bottom back. 
+                        // Pull out the slice that is going to be appended or inserted.
+                        // In a line graph, the positionFactor is 1, and the last point
+                        // is sliced out. In an area graph, the positionFactor is 2,
+                        // causing the middle two points to be sliced out, since an area
+                        // path starts at left, follows the upper path then turns and
+                        // follows the bottom back. 
                         slice = arr.slice().splice(
                             (arr.length / positionFactor) - numParams,
                             numParams * positionFactor
@@ -334,7 +386,8 @@
                             slice[numParams - 5] = slice[numParams - 1];
                         }
 
-                        // Now insert the slice, either in the middle (for areas) or at the end (for lines)
+                        // Now insert the slice, either in the middle (for areas) or at
+                        // the end (for lines)
                         insertSlice(arr, slice, arr.length / positionFactor);
 
                         if (isArea) {
@@ -348,14 +401,17 @@
                     sixify(end);
                 }
 
-                // For sideways animation, find out how much we need to shift to get the start path Xs
-                // to match the end path Xs.
+                // For sideways animation, find out how much we need to shift to get the
+                // start path Xs to match the end path Xs.
                 if (startX && endX) {
                     for (i = 0; i < startX.length; i++) {
-                        if (startX[i] === endX[0]) { // Moving left, new points coming in on right
+                        // Moving left, new points coming in on right
+                        if (startX[i] === endX[0]) {
                             shift = i;
                             break;
-                        } else if (startX[0] === endX[endX.length - startX.length + i]) { // Moving right
+                            // Moving right
+                        } else if (startX[0] ===
+                            endX[endX.length - startX.length + i]) {
                             shift = i;
                             reverse = true;
                             break;
@@ -387,9 +443,13 @@
 
 
         /**
-         * Extend an object with the members of another
-         * @param {Object} a The object to be extended
-         * @param {Object} b The object to add to the first one
+         * Utility function to extend an object with the members of another.
+         *
+         * @function #extend
+         * @memberOf Highcharts
+         * @param {Object} a - The object to be extended.
+         * @param {Object} b - The object to add to the first one.
+         * @returns {Object} Object a, the original object.
          */
         H.extend = function(a, b) {
             var n;
@@ -403,11 +463,20 @@
         };
 
         /**
-         * Deep merge two or more objects and return a third object. If the first argument is
-         * true, the contents of the second object is copied into the first object.
-         * Previously this function redirected to jQuery.extend(true), but this had two limitations.
-         * First, it deep merged arrays, which lead to workarounds in Highcharts. Second,
-         * it copied properties from extended prototypes.
+         * Utility function to deep merge two or more objects and return a third object.
+         * If the first argument is true, the contents of the second object is copied
+         * into the first object. The merge function can also be used with a single 
+         * object argument to create a deep copy of an object.
+         *
+         * @function #merge
+         * @memberOf Highcharts
+         * @param {Boolean} [extend] - Whether to extend the left-side object (a) or
+                  return a whole new object.
+         * @param {Object} a - The first object to extend. When only this is given, the
+                  function returns a deep copy.
+         * @param {...Object} [n] - An object to merge into the previous one.
+         * @returns {Object} - The merged object. If the first argument is true, the 
+         * return is the same as the second argument.
          */
         H.merge = function() {
             var i,
@@ -428,7 +497,8 @@
 
                             // Copy the contents of objects, but not arrays or DOM nodes
                             if (H.isObject(value, true) &&
-                                key !== 'renderTo' && typeof value.nodeType !== 'number') {
+                                key !== 'renderTo' &&
+                                typeof value.nodeType !== 'number') {
                                 copy[key] = doCopy(copy[key] || {}, value);
 
                                 // Primitives and arrays are copied over directly
@@ -440,7 +510,8 @@
                     return copy;
                 };
 
-            // If first argument is true, copy into the existing object. Used in setOptions.
+            // If first argument is true, copy into the existing object. Used in
+            // setOptions.
             if (args[0] === true) {
                 ret = args[1];
                 args = Array.prototype.slice.call(args, 2);
@@ -457,6 +528,7 @@
 
         /**
          * Shortcut for parseInt
+         * @ignore
          * @param {Object} s
          * @param {Number} mag Magnitude
          */
@@ -465,17 +537,24 @@
         };
 
         /**
-         * Check for string
-         * @param {Object} s
+         * Utility function to check for string type.
+         *
+         * @function #isString
+         * @memberOf Highcharts
+         * @param {Object} s - The item to check.
+         * @returns {Boolean} - True if the argument is a string.
          */
         H.isString = function(s) {
             return typeof s === 'string';
         };
 
         /**
-         * Check for object
-         * @param {Object} obj
-         * @param {Boolean} strict Also checks that the object is not an array
+         * Utility function to check if an item is an array.
+         *
+         * @function #isArray
+         * @memberOf Highcharts
+         * @param {Object} obj - The item to check.
+         * @returns {Boolean} - True if the argument is an array.
          */
         H.isArray = function(obj) {
             var str = Object.prototype.toString.call(obj);
@@ -483,25 +562,38 @@
         };
 
         /**
-         * Check for array
-         * @param {Object} obj
+         * Utility function to check if an item is of type object.
+         *
+         * @function #isObject
+         * @memberOf Highcharts
+         * @param {Object} obj - The item to check.
+         * @param {Boolean} [strict=false] - Also checks that the object is not an
+         *    array.
+         * @returns {Boolean} - True if the argument is an object.
          */
         H.isObject = function(obj, strict) {
             return obj && typeof obj === 'object' && (!strict || !H.isArray(obj));
         };
 
         /**
-         * Check for number
-         * @param {Object} n
+         * Utility function to check if an item is of type number.
+         *
+         * @function #isNumber
+         * @memberOf Highcharts
+         * @param {Object} n - The item to check.
+         * @returns {Boolean} - True if the item is a number and is not NaN.
          */
         H.isNumber = function(n) {
             return typeof n === 'number' && !isNaN(n);
         };
 
         /**
-         * Remove last occurence of an item from an array
-         * @param {Array} arr
-         * @param {Mixed} item
+         * Remove the last occurence of an item from an array.
+         *
+         * @function #erase
+         * @memberOf Highcharts
+         * @param {Array} arr - The array.
+         * @param {*} item - The item to remove.
          */
         H.erase = function(arr, item) {
             var i = arr.length;
@@ -511,24 +603,32 @@
                     break;
                 }
             }
-            //return arr;
         };
 
         /**
-         * Returns true if the object is not null or undefined.
-         * @param {Object} obj
+         * Check if an object is null or undefined.
+         *
+         * @function #defined
+         * @memberOf Highcharts
+         * @param {Object} obj - The object to check.
+         * @returns {Boolean} - False if the object is null or undefined, otherwise
+         *        true.
          */
         H.defined = function(obj) {
             return obj !== undefined && obj !== null;
         };
 
         /**
-         * Set or get an attribute or an object of attributes. Can't use jQuery attr because
-         * it attempts to set expando properties on the SVG element, which is not allowed.
+         * Set or get an attribute or an object of attributes. To use as a setter, pass
+         * a key and a value, or let the second argument be a collection of keys and
+         * values. To use as a getter, pass only a string as the second argument.
          *
-         * @param {Object} elem The DOM element to receive the attribute(s)
-         * @param {String|Object} prop The property or an abject of key-value pairs
-         * @param {String} value The value if a single property is set
+         * @function #attr
+         * @memberOf Highcharts
+         * @param {Object} elem - The DOM element to receive the attribute(s).
+         * @param {String|Object} [prop] - The property or an object of key-value pairs.
+         * @param {String} [value] - The value if a single property is set.
+         * @returns {*} When used as a getter, return the value.
          */
         H.attr = function(elem, prop, value) {
             var key,
@@ -541,7 +641,7 @@
                     elem.setAttribute(prop, value);
 
                     // get the value
-                } else if (elem && elem.getAttribute) { // elem not defined when printing pie demo...
+                } else if (elem && elem.getAttribute) {
                     ret = elem.getAttribute(prop);
                 }
 
@@ -553,19 +653,30 @@
             }
             return ret;
         };
+
         /**
          * Check if an element is an array, and if not, make it into an array.
+         *
+         * @function #splat
+         * @memberOf Highcharts
+         * @param obj {*} - The object to splat.
+         * @returns {Array} The produced or original array.
          */
         H.splat = function(obj) {
             return H.isArray(obj) ? obj : [obj];
         };
 
         /**
-         * Set a timeout if the delay is given, otherwise perform the function synchronously
-         * @param   {Function} fn	  The function to perform
-         * @param   {Number}   delay   Delay in milliseconds
-         * @param   {Ojbect}   context The context
-         * @returns {Nubmer}		   An identifier for the timeout
+         * Set a timeout if the delay is given, otherwise perform the function
+         * synchronously.
+         *
+         * @function #syncTimeout
+         * @memberOf Highcharts
+         * @param   {Function} fn - The function callback.
+         * @param   {Number}   delay - Delay in milliseconds.
+         * @param   {Object}   [context] - The context.
+         * @returns {Number} An identifier for the timeout that can later be cleared
+         * with clearTimeout.
          */
         H.syncTimeout = function(fn, delay, context) {
             if (delay) {
@@ -576,7 +687,12 @@
 
 
         /**
-         * Return the first value that is defined.
+         * Return the first value that is not null or undefined.
+         *
+         * @function #pick
+         * @memberOf Highcharts
+         * @param {...*} items - Variable number of arguments to inspect.
+         * @returns {*} The value of the first argument that is not null or undefined.
          */
         H.pick = function() {
             var args = arguments,
@@ -592,9 +708,23 @@
         };
 
         /**
-         * Set CSS on a given element
-         * @param {Object} el
-         * @param {Object} styles Style object with camel case property names
+         * @typedef {Object} CSSObject - A style object with camel case property names.
+         * The properties can be whatever styles are supported on the given SVG or HTML
+         * element.
+         * @example
+         * {
+         *    fontFamily: 'monospace',
+         *    fontSize: '1.2em'
+         * }
+         */
+        /**
+         * Set CSS on a given element.
+         *
+         * @function #css
+         * @memberOf Highcharts
+         * @param {HTMLDOMElement} el - A HTML DOM element.
+         * @param {CSSObject} styles - Style object with camel case property names.
+         * @returns {void}
          */
         H.css = function(el, styles) {
             if (H.isMS && !H.svg) { // #2686
@@ -606,12 +736,22 @@
         };
 
         /**
-         * Utility function to create element with attributes and styles
-         * @param {Object} tag
-         * @param {Object} attribs
-         * @param {Object} styles
-         * @param {Object} parent
-         * @param {Object} nopad
+         * A HTML DOM element.
+         * @typedef {Object} HTMLDOMElement
+         */
+
+        /**
+         * Utility function to create an HTML element with attributes and styles.
+         *
+         * @function #createElement
+         * @memberOf Highcharts
+         * @param {String} tag - The HTML tag.
+         * @param {Object} [attribs] - Attributes as an object of key-value pairs.
+         * @param {CSSObject} [styles] - Styles as an object of key-value pairs.
+         * @param {Object} [parent] - The parent HTML object.
+         * @param {Boolean} [nopad=false] - If true, remove all padding, border and
+         *    margin.
+         * @returns {HTMLDOMElement} The created DOM element.
          */
         H.createElement = function(tag, attribs, styles, parent, nopad) {
             var el = doc.createElement(tag),
@@ -636,61 +776,114 @@
         };
 
         /**
-         * Extend a prototyped class by new members
-         * @param {Object} parent
-         * @param {Object} members
+         * Extend a prototyped class by new members.
+         *
+         * @function #extendClass
+         * @memberOf Highcharts
+         * @param {Object} parent - The parent prototype to inherit.
+         * @param {Object} members - A collection of prototype members to add or
+         *        override compared to the parent prototype.
+         * @returns {Object} A new prototype.
          */
-        H.extendClass = function(Parent, members) {
+        H.extendClass = function(parent, members) {
             var object = function() {};
-            object.prototype = new Parent();
+            object.prototype = new parent(); // eslint-disable-line new-cap
             H.extend(object.prototype, members);
             return object;
         };
 
         /**
-         * Pad a string to a given length by adding 0 to the beginning
-         * @param {Number} number
-         * @param {Number} length
+         * Left-pad a string to a given length by adding a character repetetively.
+         *
+         * @function #pad
+         * @memberOf Highcharts
+         * @param {Number} number - The input string or number.
+         * @param {Number} length - The desired string length.
+         * @param {String} [padder=0] - The character to pad with.
+         * @returns {String} The padded string.
          */
         H.pad = function(number, length, padder) {
-            return new Array((length || 2) + 1 - String(number).length).join(padder || 0) + number;
+            return new Array((length || 2) + 1 -
+                String(number).length).join(padder || 0) + number;
         };
 
+        /**
+         * @typedef {Number|String} RelativeSize - If a number is given, it defines the
+         *    pixel length. If a percentage string is given, like for example `'50%'`,
+         *    the setting defines a length relative to a base size, for example the size
+         *    of a container.
+         */
         /**
          * Return a length based on either the integer value, or a percentage of a base.
+         *
+         * @function #relativeLength
+         * @memberOf Highcharts
+         * @param {RelativeSize} value - A percentage string or a number.
+         * @param {Number} base - The full length that represents 100%.
+         * @returns {Number} The computed length.
          */
         H.relativeLength = function(value, base) {
-            return (/%$/).test(value) ? base * parseFloat(value) / 100 : parseFloat(value);
+            return (/%$/).test(value) ?
+                base * parseFloat(value) / 100 :
+                parseFloat(value);
         };
 
         /**
-         * Wrap a method with extended functionality, preserving the original function
-         * @param {Object} obj The context object that the method belongs to
-         * @param {String} method The name of the method to extend
-         * @param {Function} func A wrapper function callback. This function is called with the same arguments
-         * as the original function, except that the original function is unshifted and passed as the first
-         * argument.
+         * Wrap a method with extended functionality, preserving the original function.
+         *
+         * @function #wrap
+         * @memberOf Highcharts
+         * @param {Object} obj - The context object that the method belongs to. In real
+         *        cases, this is often a prototype.
+         * @param {String} method - The name of the method to extend.
+         * @param {Function} func - A wrapper function callback. This function is called
+         *        with the same arguments as the original function, except that the
+         *        original function is unshifted and passed as the first argument.
+         * @returns {void}
          */
         H.wrap = function(obj, method, func) {
             var proceed = obj[method];
             obj[method] = function() {
-                var args = Array.prototype.slice.call(arguments);
+                var args = Array.prototype.slice.call(arguments),
+                    outerArgs = arguments,
+                    ctx = this,
+                    ret;
+                ctx.proceed = function() {
+                    proceed.apply(ctx, arguments.length ? arguments : outerArgs);
+                };
                 args.unshift(proceed);
-                return func.apply(this, args);
+                ret = func.apply(this, args);
+                ctx.proceed = null;
+                return ret;
             };
         };
 
-
+        /**
+         * Get the time zone offset based on the current timezone information as set in
+         * the global options.
+         *
+         * @function #getTZOffset
+         * @memberOf Highcharts
+         * @param  {Number} timestamp - The JavaScript timestamp to inspect.
+         * @return {Number} - The timezone offset in minutes compared to UTC.
+         */
         H.getTZOffset = function(timestamp) {
             var d = H.Date;
-            return ((d.hcGetTimezoneOffset && d.hcGetTimezoneOffset(timestamp)) || d.hcTimezoneOffset || 0) * 60000;
+            return ((d.hcGetTimezoneOffset && d.hcGetTimezoneOffset(timestamp)) ||
+                d.hcTimezoneOffset || 0) * 60000;
         };
 
         /**
-         * Based on http://www.php.net/manual/en/function.strftime.php
-         * @param {String} format
-         * @param {Number} timestamp
-         * @param {Boolean} capitalize
+         * Format a date, based on the syntax for PHP's [strftime]{@link
+         * http://www.php.net/manual/en/function.strftime.php} function.
+         *
+         * @function #dateFormat
+         * @memberOf Highcharts
+         * @param {String} format - The desired format where various time
+         *        representations are prefixed with %.
+         * @param {Number} timestamp - The JavaScript timestamp.
+         * @param {Boolean} [capitalize=false] - Upper case first letter in the return.
+         * @returns {String} The formatted date.
          */
         H.dateFormat = function(format, timestamp, capitalize) {
             if (!H.defined(timestamp) || isNaN(timestamp)) {
@@ -715,41 +908,61 @@
                 // List all format keys. Custom formats can be added from the outside. 
                 replacements = H.extend({
 
-                    // Day
-                    'a': shortWeekdays ? shortWeekdays[day] : langWeekdays[day].substr(0, 3), // Short weekday, like 'Mon'
-                    'A': langWeekdays[day], // Long weekday, like 'Monday'
-                    'd': pad(dayOfMonth), // Two digit day of the month, 01 to 31
-                    'e': pad(dayOfMonth, 2, ' '), // Day of the month, 1 through 31
+                    //-- Day
+                    // Short weekday, like 'Mon'
+                    'a': shortWeekdays ?
+                        shortWeekdays[day] : langWeekdays[day].substr(0, 3),
+                    // Long weekday, like 'Monday'
+                    'A': langWeekdays[day],
+                    // Two digit day of the month, 01 to 31
+                    'd': pad(dayOfMonth),
+                    // Day of the month, 1 through 31
+                    'e': pad(dayOfMonth, 2, ' '),
                     'w': day,
 
                     // Week (none implemented)
                     //'W': weekNumber(),
 
-                    // Month
-                    'b': lang.shortMonths[month], // Short month, like 'Jan'
-                    'B': lang.months[month], // Long month, like 'January'
-                    'm': pad(month + 1), // Two digit month number, 01 through 12
+                    //-- Month
+                    // Short month, like 'Jan'
+                    'b': lang.shortMonths[month],
+                    // Long month, like 'January'
+                    'B': lang.months[month],
+                    // Two digit month number, 01 through 12
+                    'm': pad(month + 1),
 
-                    // Year
-                    'y': fullYear.toString().substr(2, 2), // Two digits year, like 09 for 2009
-                    'Y': fullYear, // Four digits year, like 2009
+                    //-- Year
+                    // Two digits year, like 09 for 2009
+                    'y': fullYear.toString().substr(2, 2),
+                    // Four digits year, like 2009
+                    'Y': fullYear,
 
-                    // Time
-                    'H': pad(hours), // Two digits hours in 24h format, 00 through 23
-                    'k': hours, // Hours in 24h format, 0 through 23
-                    'I': pad((hours % 12) || 12), // Two digits hours in 12h format, 00 through 11
-                    'l': (hours % 12) || 12, // Hours in 12h format, 1 through 12
-                    'M': pad(date[D.hcGetMinutes]()), // Two digits minutes, 00 through 59
-                    'p': hours < 12 ? 'AM' : 'PM', // Upper case AM or PM
-                    'P': hours < 12 ? 'am' : 'pm', // Lower case AM or PM
-                    'S': pad(date.getSeconds()), // Two digits seconds, 00 through  59
-                    'L': pad(Math.round(timestamp % 1000), 3) // Milliseconds (naming from Ruby)
+                    //-- Time
+                    // Two digits hours in 24h format, 00 through 23
+                    'H': pad(hours),
+                    // Hours in 24h format, 0 through 23
+                    'k': hours,
+                    // Two digits hours in 12h format, 00 through 11
+                    'I': pad((hours % 12) || 12),
+                    // Hours in 12h format, 1 through 12
+                    'l': (hours % 12) || 12,
+                    // Two digits minutes, 00 through 59
+                    'M': pad(date[D.hcGetMinutes]()),
+                    // Upper case AM or PM
+                    'p': hours < 12 ? 'AM' : 'PM',
+                    // Lower case AM or PM
+                    'P': hours < 12 ? 'am' : 'pm',
+                    // Two digits seconds, 00 through  59
+                    'S': pad(date.getSeconds()),
+                    // Milliseconds (naming from Ruby)
+                    'L': pad(Math.round(timestamp % 1000), 3)
                 }, H.dateFormats);
 
 
-            // do the replaces
+            // Do the replaces
             for (key in replacements) {
-                while (format.indexOf('%' + key) !== -1) { // regex would do it in one line, but this is faster
+                // Regex would do it in one line, but this is faster
+                while (format.indexOf('%' + key) !== -1) {
                     format = format.replace(
                         '%' + key,
                         typeof replacements[key] === 'function' ?
@@ -760,11 +973,22 @@
             }
 
             // Optionally capitalize the string and return
-            return capitalize ? format.substr(0, 1).toUpperCase() + format.substr(1) : format;
+            return capitalize ?
+                format.substr(0, 1).toUpperCase() + format.substr(1) :
+                format;
         };
 
         /**
          * Format a single variable. Similar to sprintf, without the % prefix.
+         *
+         * @example
+         * formatSingle('.2f', 5); // => '5.00'.
+         *
+         * @function #formatSingle
+         * @memberOf Highcharts
+         * @param {String} format The format string.
+         * @param {*} val The value.
+         * @returns {String} The formatted representation of the value.
          */
         H.formatSingle = function(format, val) {
             var floatRegex = /f$/,
@@ -790,7 +1014,22 @@
         };
 
         /**
-         * Format a string according to a subset of the rules of Python's String.format method.
+         * Format a string according to a subset of the rules of Python's String.format
+         * method.
+         *
+         * @function #format
+         * @memberOf Highcharts
+         * @param {String} str The string to format.
+         * @param {Object} ctx The context, a collection of key-value pairs where each
+         *        key is replaced by its value.
+         * @returns {String} The formatted string.
+         *
+         * @example
+         * var s = Highcharts.format(
+         *     'The {color} fox was {len:.2f} feet long',
+         *     { color: 'red', len: Math.PI }
+         * );
+         * // => The red fox was 3.14 feet long
          */
         H.format = function(str, ctx) {
             var splitter = '{',
@@ -814,7 +1053,7 @@
                 if (isInside) { // we're on the closing bracket looking back
 
                     valueAndFormat = segment.split(':');
-                    path = valueAndFormat.shift().split('.'); // get first and leave format
+                    path = valueAndFormat.shift().split('.'); // get first and leave
                     len = path.length;
                     val = ctx;
 
@@ -844,20 +1083,35 @@
         };
 
         /**
-         * Get the magnitude of a number
+         * Get the magnitude of a number.
+         *
+         * @function #getMagnitude
+         * @memberOf Highcharts
+         * @param {Number} number The number.
+         * @returns {Number} The magnitude, where 1-9 are magnitude 1, 10-99 magnitude 2
+         *        etc.
          */
         H.getMagnitude = function(num) {
             return Math.pow(10, Math.floor(Math.log(num) / Math.LN10));
         };
 
         /**
-         * Take an interval and normalize it to multiples of 1, 2, 2.5 and 5
-         * @param {Number} interval
-         * @param {Array} multiples
-         * @param {Number} magnitude
-         * @param {Object} options
+         * Take an interval and normalize it to multiples of round numbers.
+         *
+         * @todo  Move this function to the Axis prototype. It is here only for
+         *        historical reasons.
+         * @function #normalizeTickInterval
+         * @memberOf Highcharts
+         * @param {Number} interval - The raw, un-rounded interval.
+         * @param {Array} [multiples] - Allowed multiples.
+         * @param {Number} [magnitude] - The magnitude of the number.
+         * @param {Boolean} [allowDecimals] - Whether to allow decimals.
+         * @param {Boolean} [hasTickAmount] - If it has tickAmount, avoid landing
+         *        on tick intervals lower than original.
+         * @returns {Number} The normalized interval.
          */
-        H.normalizeTickInterval = function(interval, multiples, magnitude, allowDecimals, preventExceed) {
+        H.normalizeTickInterval = function(interval, multiples, magnitude,
+            allowDecimals, hasTickAmount) {
             var normalized,
                 i,
                 retInterval = interval;
@@ -868,12 +1122,21 @@
 
             // multiples for a linear scale
             if (!multiples) {
-                multiples = [1, 2, 2.5, 5, 10];
+                multiples = hasTickAmount ?
+                    // Finer grained ticks when the tick amount is hard set, including
+                    // when alignTicks is true on multiple axes (#4580).
+                    [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10] :
+
+                    // Else, let ticks fall on rounder numbers
+                    [1, 2, 2.5, 5, 10];
+
 
                 // the allowDecimals option
                 if (allowDecimals === false) {
                     if (magnitude === 1) {
-                        multiples = [1, 2, 5, 10];
+                        multiples = H.grep(multiples, function(num) {
+                            return num % 1 === 0;
+                        });
                     } else if (magnitude <= 0.1) {
                         multiples = [1 / magnitude];
                     }
@@ -883,8 +1146,10 @@
             // normalize the interval to the nearest multiple
             for (i = 0; i < multiples.length; i++) {
                 retInterval = multiples[i];
-                if ((preventExceed && retInterval * magnitude >= interval) || // only allow tick amounts smaller than natural
-                    (!preventExceed && (normalized <= (multiples[i] + (multiples[i + 1] || multiples[i])) / 2))) {
+                // only allow tick amounts smaller than natural
+                if ((hasTickAmount && retInterval * magnitude >= interval) ||
+                    (!hasTickAmount && (normalized <= (multiples[i] +
+                        (multiples[i + 1] || multiples[i])) / 2))) {
                     break;
                 }
             }
@@ -897,8 +1162,15 @@
 
 
         /**
-         * Utility method that sorts an object array and keeping the order of equal items.
-         * ECMA script standard does not specify the behaviour when items are equal.
+         * Sort an object array and keep the order of equal items. The ECMAScript
+         * standard does not specify the behaviour when items are equal.
+         *
+         * @function #stableSort
+         * @memberOf Highcharts
+         * @param {Array} arr - The array to sort.
+         * @param {Function} sortFunction - The function to sort it with, like with 
+         *        regular Array.prototype.sort.
+         * @returns {void}
          */
         H.stableSort = function(arr, sortFunction) {
             var length = arr.length,
@@ -922,9 +1194,14 @@
         };
 
         /**
-         * Non-recursive method to find the lowest member of an array. Math.min raises a maximum
-         * call stack size exceeded error in Chrome when trying to apply more than 150.000 points. This
-         * method is slightly slower, but safe.
+         * Non-recursive method to find the lowest member of an array. `Math.min` raises
+         * a maximum call stack size exceeded error in Chrome when trying to apply more
+         * than 150.000 points. This method is slightly slower, but safe.
+         *
+         * @function #arrayMin
+         * @memberOf  Highcharts
+         * @param {Array} data An array of numbers.
+         * @returns {Number} The lowest number.
          */
         H.arrayMin = function(data) {
             var i = data.length,
@@ -939,9 +1216,14 @@
         };
 
         /**
-         * Non-recursive method to find the lowest member of an array. Math.min raises a maximum
-         * call stack size exceeded error in Chrome when trying to apply more than 150.000 points. This
-         * method is slightly slower, but safe.
+         * Non-recursive method to find the lowest member of an array. `Math.max` raises
+         * a maximum call stack size exceeded error in Chrome when trying to apply more
+         * than 150.000 points. This method is slightly slower, but safe.
+         *
+         * @function #arrayMax
+         * @memberOf  Highcharts
+         * @param {Array} data - An array of numbers.
+         * @returns {Number} The highest number.
          */
         H.arrayMax = function(data) {
             var i = data.length,
@@ -956,11 +1238,16 @@
         };
 
         /**
-         * Utility method that destroys any SVGElement or VMLElement that are properties on the given object.
-         * It loops all properties and invokes destroy if there is a destroy method. The property is
-         * then delete'ed.
-         * @param {Object} The object to destroy properties on
-         * @param {Object} Exception, do not destroy this property, only delete it.
+         * Utility method that destroys any SVGElement instances that are properties on
+         * the given object. It loops all properties and invokes destroy if there is a
+         * destroy method. The property is then delete.
+         *
+         * @function #destroyObjectProperties
+         * @memberOf Highcharts
+         * @param {Object} obj - The object to destroy properties on.
+         * @param {Object} [except] - Exception, do not destroy this property, only
+         *    delete it.
+         * @returns {void}
          */
         H.destroyObjectProperties = function(obj, except) {
             var n;
@@ -978,8 +1265,12 @@
 
 
         /**
-         * Discard an element by moving it to the bin and delete
-         * @param {Object} The HTML node to discard
+         * Discard a HTML element by moving it to the bin and delete.
+         *
+         * @function #discardElement
+         * @memberOf Highcharts
+         * @param {HTMLDOMElement} element - The HTML node to discard.
+         * @returns {void}
          */
         H.discardElement = function(element) {
             var garbageBin = H.garbageBin;
@@ -996,8 +1287,13 @@
         };
 
         /**
-         * Fix JS round off float errors
-         * @param {Number} num
+         * Fix JS round off float errors.
+         *
+         * @function #correctFloat
+         * @memberOf Highcharts
+         * @param {Number} num - A float number to fix.
+         * @param {Number} [prec=14] - The precision.
+         * @returns {Number} The corrected float number.
          */
         H.correctFloat = function(num, prec) {
             return parseFloat(
@@ -1006,23 +1302,41 @@
         };
 
         /**
-         * Set the global animation to either a given value, or fall back to the
-         * given chart's animation option
-         * @param {Object} animation
-         * @param {Object} chart
+         * Set the global animation to either a given value, or fall back to the given
+         * chart's animation option.
+         *
+         * @function #setAnimation
+         * @memberOf Highcharts
+         * @param {Boolean|Animation} animation - The animation object.
+         * @param {Object} chart - The chart instance.
+         * @returns {void}
+         * @todo This function always relates to a chart, and sets a property on the
+         *        renderer, so it should be moved to the SVGRenderer.
          */
         H.setAnimation = function(animation, chart) {
-            chart.renderer.globalAnimation = H.pick(animation, chart.options.chart.animation, true);
+            chart.renderer.globalAnimation = H.pick(
+                animation,
+                chart.options.chart.animation,
+                true
+            );
         };
 
         /**
          * Get the animation in object form, where a disabled animation is always
-         * returned with duration: 0
+         * returned as `{ duration: 0 }`.
+         *
+         * @function #animObject
+         * @memberOf Highcharts
+         * @param {Boolean|AnimationOptions} animation - An animation setting. Can be an
+         *        object with duration, complete and easing properties, or a boolean to
+         *        enable or disable.
+         * @returns {AnimationOptions} An object with at least a duration property.
          */
         H.animObject = function(animation) {
-            return H.isObject(animation) ? H.merge(animation) : {
-                duration: animation ? 500 : 0
-            };
+            return H.isObject(animation) ?
+                H.merge(animation) : {
+                    duration: animation ? 500 : 0
+                };
         };
 
         /**
@@ -1040,11 +1354,17 @@
         };
 
         /**
-         * Format a number and return a string based on input settings
-         * @param {Number} number The input number to format
-         * @param {Number} decimals The amount of decimals
-         * @param {String} decimalPoint The decimal point, defaults to the one given in the lang options
-         * @param {String} thousandsSep The thousands separator, defaults to the one given in the lang options
+         * Format a number and return a string based on input settings.
+         *
+         * @function #numberFormat
+         * @memberOf Highcharts
+         * @param {Number} number - The input number to format.
+         * @param {Number} decimals - The amount of decimals.
+         * @param {String} [decimalPoint] - The decimal point, defaults to the one given
+         *        in the lang options.
+         * @param {String} [thousandsSep] - The thousands separator, defaults to the one
+         *        given in the lang options.
+         * @returns {String} The formatted number.
          */
         H.numberFormat = function(number, decimals, decimalPoint, thousandsSep) {
 
@@ -1060,7 +1380,8 @@
                 ret;
 
             if (decimals === -1) {
-                decimals = Math.min(origDec, 20); // Preserve decimals. Not huge numbers (#3793).
+                // Preserve decimals. Not huge numbers (#3793).
+                decimals = Math.min(origDec, 20);
             } else if (!H.isNumber(decimals)) {
                 decimals = 2;
             }
@@ -1078,17 +1399,21 @@
             // Start building the return
             ret = number < 0 ? '-' : '';
 
-            // Add the leftover after grouping into thousands. For example, in the number 42 000 000,
-            // this line adds 42.
+            // Add the leftover after grouping into thousands. For example, in the
+            // number 42 000 000, this line adds 42.
             ret += thousands ? strinteger.substr(0, thousands) + thousandsSep : '';
 
             // Add the remaining thousands groups, joined by the thousands separator
-            ret += strinteger.substr(thousands).replace(/(\d{3})(?=\d)/g, '$1' + thousandsSep);
+            ret += strinteger
+                .substr(thousands)
+                .replace(/(\d{3})(?=\d)/g, '$1' + thousandsSep);
 
             // Add the decimal point and the decimal component
             if (decimals) {
-                // Get the decimal component, and add power to avoid rounding errors with float numbers (#4573)
-                decimalComponent = Math.abs(absNumber - strinteger + Math.pow(10, -Math.max(decimals, origDec) - 1));
+                // Get the decimal component, and add power to avoid rounding errors
+                // with float numbers (#4573)
+                decimalComponent = Math.abs(absNumber - strinteger +
+                    Math.pow(10, -Math.max(decimals, origDec) - 1));
                 ret += decimalPoint + decimalComponent.toFixed(decimals).slice(2);
             }
 
@@ -1097,14 +1422,23 @@
 
         /**
          * Easing definition
-         * @param   {Number} pos Current position, ranging from 0 to 1
+         * @ignore
+         * @param   {Number} pos Current position, ranging from 0 to 1.
          */
         Math.easeInOutSine = function(pos) {
             return -0.5 * (Math.cos(Math.PI * pos) - 1);
         };
 
         /**
-         * Internal method to return CSS value for given element and property
+         * Get the computed CSS value for given element and property, only for numerical
+         * properties. For width and height, the dimension of the inner box (excluding
+         * padding) is returned. Used for fitting the chart within the container.
+         *
+         * @function #getStyle
+         * @memberOf Highcharts
+         * @param {HTMLDOMElement} el - A HTML element.
+         * @param {String} prop - The property name.
+         * @returns {Number} - The numeric value.
          */
         H.getStyle = function(el, prop) {
 
@@ -1127,21 +1461,42 @@
         };
 
         /**
-         * Return the index of an item in an array, or -1 if not found
+         * Search for an item in an array.
+         *
+         * @function #inArray
+         * @memberOf Highcharts
+         * @param {*} item - The item to search for.
+         * @param {arr} arr - The array or node collection to search in.
+         * @returns {Number} - The index within the array, or -1 if not found.
          */
         H.inArray = function(item, arr) {
             return arr.indexOf ? arr.indexOf(item) : [].indexOf.call(arr, item);
         };
 
         /**
-         * Filter an array
+         * Filter an array by a callback.
+         *
+         * @function #grep
+         * @memberOf Highcharts
+         * @param {Array} arr - The array to filter.
+         * @param {Function} callback - The callback function. The function receives the
+         *        item as the first argument. Return `true` if the item is to be
+         *        preserved.
+         * @returns {Array} - A new, filtered array.
          */
-        H.grep = function(elements, callback) {
-            return [].filter.call(elements, callback);
+        H.grep = function(arr, callback) {
+            return [].filter.call(arr, callback);
         };
 
         /**
-         * Map an array
+         * Map an array by a callback.
+         *
+         * @function #map
+         * @memberOf Highcharts
+         * @param {Array} arr - The array to map.
+         * @param {Function} fn - The callback function. Return the new value for the 
+         *        new array.
+         * @returns {Array} - A new array item with modified items.
          */
         H.map = function(arr, fn) {
             var results = [],
@@ -1156,25 +1511,39 @@
         };
 
         /**
-         * Get the element's offset position, corrected by overflow:auto.
+         * Get the element's offset position, corrected for `overflow: auto`.
+         *
+         * @function #offset
+         * @memberOf Highcharts
+         * @param {HTMLDOMElement} el - The HTML element.
+         * @returns {Object} An object containing `left` and `top` properties for the
+         * position in the page.
          */
         H.offset = function(el) {
             var docElem = doc.documentElement,
                 box = el.getBoundingClientRect();
 
             return {
-                top: box.top + (win.pageYOffset || docElem.scrollTop) - (docElem.clientTop || 0),
-                left: box.left + (win.pageXOffset || docElem.scrollLeft) - (docElem.clientLeft || 0)
+                top: box.top + (win.pageYOffset || docElem.scrollTop) -
+                    (docElem.clientTop || 0),
+                left: box.left + (win.pageXOffset || docElem.scrollLeft) -
+                    (docElem.clientLeft || 0)
             };
         };
 
         /**
          * Stop running animation.
-         * A possible extension to this would be to stop a single property, when
+         *
+         * @todo A possible extension to this would be to stop a single property, when
          * we want to continue animating others. Then assign the prop to the timer
-         * in the Fx.run method, and check for the prop here. This would be an improvement
-         * in all cases where we stop the animation from .attr. Instead of stopping
-         * everything, we can just stop the actual attributes we're setting.
+         * in the Fx.run method, and check for the prop here. This would be an
+         * improvement in all cases where we stop the animation from .attr. Instead of
+         * stopping everything, we can just stop the actual attributes we're setting.
+         *
+         * @function #stop
+         * @memberOf Highcharts
+         * @param {SVGElement} el - The SVGElement to stop animation on.
+         * @returns {void}
          */
         H.stop = function(el) {
 
@@ -1189,16 +1558,31 @@
         };
 
         /**
-         * Utility for iterating over an array.
-         * @param {Array} arr
-         * @param {Function} fn
+         * Iterate over an array.
+         *
+         * @function #each
+         * @memberOf Highcharts
+         * @param {Array} arr - The array to iterate over.
+         * @param {Function} fn - The iterator callback. It passes two arguments:
+         * * item - The array item.
+         * * index - The item's index in the array.
+         * @param {Object} [ctx] The context.
          */
         H.each = function(arr, fn, ctx) { // modern browsers
             return Array.prototype.forEach.call(arr, fn, ctx);
         };
 
         /**
-         * Add an event listener
+         * Add an event listener.
+         *
+         * @function #addEvent
+         * @memberOf Highcharts
+         * @param {Object} el - The element or object to add a listener to. It can be a
+         *        {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
+         * @param {String} type - The event type.
+         * @param {Function} fn - The function callback to execute when the event is 
+         *        fired.
+         * @returns {Function} A callback function to remove the added event.
          */
         H.addEvent = function(el, type, fn) {
 
@@ -1231,10 +1615,24 @@
             }
 
             events[type].push(fn);
+
+            // Return a function that can be called to remove this event.
+            return function() {
+                H.removeEvent(el, type, fn);
+            };
         };
 
         /**
-         * Remove event added with addEvent
+         * Remove an event that was added with {@link Highcharts#addEvent}.
+         *
+         * @function #removeEvent
+         * @memberOf Highcharts
+         * @param {Object} el - The element to remove events on.
+         * @param {String} [type] - The type of events to remove. If undefined, all
+         *        events are removed from the element.
+         * @param {Function} [fn] - The specific callback to remove. If undefined, all
+         *        events that match the element and optionally the type are removed.
+         * @returns {void}
          */
         H.removeEvent = function(el, type, fn) {
 
@@ -1300,7 +1698,18 @@
         };
 
         /**
-         * Fire an event on a custom object
+         * Fire an event that was registered with {@link Highcharts#addEvent}.
+         *
+         * @function #fireEvent
+         * @memberOf Highcharts
+         * @param {Object} el - The object to fire the event on. It can be a
+         *        {@link HTMLDOMElement}, an {@link SVGElement} or any other object.
+         * @param {String} type - The type of event.
+         * @param {Object} [eventArguments] - Custom event arguments that are passed on
+         *        as an argument to the event handler.
+         * @param {Function} [defaultFunction] - The default function to execute if the 
+         *        other listeners haven't returned false.
+         * @returns {void}
          */
         H.fireEvent = function(el, type, eventArguments, defaultFunction) {
             var e,
@@ -1333,16 +1742,18 @@
                 if (!eventArguments.target) { // We're running a custom event
 
                     H.extend(eventArguments, {
-                        // Attach a simple preventDefault function to skip default handler if called. 
-                        // The built-in defaultPrevented property is not overwritable (#5112)
+                        // Attach a simple preventDefault function to skip default
+                        // handler if called. The built-in defaultPrevented property is
+                        // not overwritable (#5112)
                         preventDefault: function() {
                             eventArguments.defaultPrevented = true;
                         },
-                        // Setting target to native events fails with clicking the zoom-out button in Chrome.
+                        // Setting target to native events fails with clicking the
+                        // zoom-out button in Chrome.
                         target: el,
-                        // If the type is not set, we're running a custom event (#2297). If it is set,
-                        // we're running a browser event, and setting it will cause en error in
-                        // IE8 (#2465).		
+                        // If the type is not set, we're running a custom event (#2297).
+                        // If it is set, we're running a browser event, and setting it
+                        // will cause en error in IE8 (#2465).		
                         type: type
                     });
                 }
@@ -1351,7 +1762,8 @@
                 for (i = 0; i < len; i++) {
                     fn = events[i];
 
-                    // If the event handler return false, prevent the default handler from executing
+                    // If the event handler return false, prevent the default handler
+                    // from executing
                     if (fn && fn.call(el, eventArguments) === false) {
                         eventArguments.preventDefault();
                     }
@@ -1365,7 +1777,31 @@
         };
 
         /**
+         * An animation configuration. Animation configurations can also be defined as
+         * booleans, where `false` turns off animation and `true` defaults to a duration
+         * of 500ms.
+         * @typedef {Object} AnimationOptions
+         * @property {Number} duration - The animation duration in milliseconds.
+         * @property {String} [easing] - The name of an easing function as defined on
+         *     the `Math` object.
+         * @property {Function} [complete] - A callback function to exectute when the
+         *     animation finishes.
+         * @property {Function} [step] - A callback function to execute on each step of
+         *     each attribute or CSS property that's being animated. The first argument
+         *     contains information about the animation and progress.
+         */
+
+
+        /**
          * The global animate method, which uses Fx to create individual animators.
+         *
+         * @function #animate
+         * @memberOf Highcharts
+         * @param {HTMLDOMElement|SVGElement} el - The element to animate.
+         * @param {Object} params - An object containing key-value pairs of the
+         *        properties to animate. Supports numeric as pixel-based CSS properties
+         *        for HTML objects and attributes for SVGElements.
+         * @param {AnimationOptions} [opt] - Animation options.
          */
         H.animate = function(el, params, opt) {
             var start,
@@ -1386,7 +1822,9 @@
             if (!H.isNumber(opt.duration)) {
                 opt.duration = 400;
             }
-            opt.easing = typeof opt.easing === 'function' ? opt.easing : (Math[opt.easing] || Math.easeInOutSine);
+            opt.easing = typeof opt.easing === 'function' ?
+                opt.easing :
+                (Math[opt.easing] || Math.easeInOutSine);
             opt.curAnim = H.merge(params);
 
             for (prop in params) {
@@ -1422,15 +1860,25 @@
         };
 
         /**
-         * The series type factory.
+         * Factory to create new series prototypes.
          *
-         * @param {string} type The series type name.
-         * @param {string} parent The parent series type name.
-         * @param {object} options The additional default options that is merged with the parent's options.
-         * @param {object} props The properties (functions and primitives) to set on the new prototype.
-         * @param {object} pointProps Members for a series-specific Point prototype if needed.
+         * @function #seriesType
+         * @memberOf Highcharts
+         *
+         * @param {String} type - The series type name.
+         * @param {String} parent - The parent series type name. Use `line` to inherit
+         *        from the basic {@link Series} object.
+         * @param {Object} options - The additional default options that is merged with
+         *        the parent's options.
+         * @param {Object} props - The properties (functions and primitives) to set on
+         *        the new prototype.
+         * @param {Object} [pointProps] - Members for a series-specific extension of the
+         *        {@link Point} prototype if needed.
+         * @returns {*} - The newly created prototype as extended from {@link Series}
+         * or its derivatives.
          */
-        H.seriesType = function(type, parent, options, props, pointProps) { // docs: add to API + extending Highcharts
+        // docs: add to API + extending Highcharts
+        H.seriesType = function(type, parent, options, props, pointProps) {
             var defaultOptions = H.getOptions(),
                 seriesTypes = H.seriesTypes;
 
@@ -1441,16 +1889,38 @@
             );
 
             // Create the class
-            seriesTypes[type] = H.extendClass(seriesTypes[parent] || function() {}, props);
+            seriesTypes[type] = H.extendClass(seriesTypes[parent] ||
+                function() {}, props);
             seriesTypes[type].prototype.type = type;
 
             // Create the point class if needed
             if (pointProps) {
-                seriesTypes[type].prototype.pointClass = H.extendClass(H.Point, pointProps);
+                seriesTypes[type].prototype.pointClass =
+                    H.extendClass(H.Point, pointProps);
             }
 
             return seriesTypes[type];
         };
+
+        /**
+         * Get a unique key for using in internal element id's and pointers. The key
+         * is composed of a random hash specific to this Highcharts instance, and a 
+         * counter.
+         * @function #uniqueKey
+         * @memberOf Highcharts
+         * @return {string} The key.
+         * @example
+         * var id = H.uniqueKey(); // => 'highcharts-x45f6hp-0'
+         */
+        H.uniqueKey = (function() {
+
+            var uniqueKeyHash = Math.random().toString(36).substring(2, 9),
+                idCounter = 0;
+
+            return function() {
+                return 'highcharts-' + uniqueKeyHash + '-' + idCounter++;
+            };
+        }());
 
         /**
          * Register Highcharts as a plugin in jQuery
@@ -1464,12 +1934,14 @@
                     // Create the chart
                     if (args[0]) {
                         new H[ // eslint-disable-line no-new
-                            H.isString(args[0]) ? args.shift() : 'Chart' // Constructor defaults to Chart
+                            // Constructor defaults to Chart
+                            H.isString(args[0]) ? args.shift() : 'Chart'
                         ](this[0], args[0], args[1]);
                         return this;
                     }
 
-                    // When called without parameters or with the return argument, return an existing chart
+                    // When called without parameters or with the return argument,
+                    // return an existing chart
                     return charts[H.attr(this[0], 'data-highcharts-chart')];
                 }
             };
@@ -1477,8 +1949,8 @@
 
 
         /**
-         * Compatibility section to add support for legacy IE. This can be removed if old IE 
-         * support is not needed.
+         * Compatibility section to add support for legacy IE. This can be removed if
+         * old IE support is not needed.
          */
         if (doc && !doc.defaultView) {
             H.getStyle = function(el, prop) {
@@ -1579,6 +2051,15 @@
             map = H.map,
             merge = H.merge,
             pInt = H.pInt;
+
+        /**
+         * @typedef {string} ColorString
+         * A valid color to be parsed and handled by Highcharts. Highcharts internally 
+         * supports hex colors like `#ffffff`, rgb colors like `rgb(255,255,255)` and
+         * rgba colors like `rgba(255,255,255,1)`. Other colors may be supported by the
+         * browsers and displayed correctly, but Highcharts is not able to process them
+         * and apply concepts like opacity and brightening.
+         */
         /**
          * Handle color operations. The object methods are chainable.
          * @param {String} input The input color in either rbga or hex format
@@ -1772,7 +2253,22 @@
             win = H.win;
 
         /**
-         * A wrapper object for SVG elements
+         * @typedef {Object} SVGDOMElement - An SVG DOM element.
+         */
+        /**
+         * The SVGElement prototype is a JavaScript wrapper for SVG elements used in the
+         * rendering layer of Highcharts. Combined with the {@link SVGRenderer} object,
+         * these prototypes allow freeform annotation in the charts or even in HTML
+         * pages without instanciating a chart. The SVGElement can also wrap HTML
+         * labels, when `text` or `label` elements are created with the `useHTML`
+         * parameter.
+         *
+         * The SVGElement instances are created through factory functions on the 
+         * {@link SVGRenderer} object, like [rect]{@link SVGRenderer#rect},
+         * [path]{@link SVGRenderer#path}, [text]{@link SVGRenderer#text}, [label]{@link
+         * SVGRenderer#label}, [g]{@link SVGRenderer#g} and more.
+         *
+         * @class
          */
         SVGElement = H.SVGElement = function() {
             return this;
@@ -1782,29 +2278,49 @@
             // Default base for animation
             opacity: 1,
             SVG_NS: SVG_NS,
-            // For labels, these CSS properties are applied to the <text> node directly
-            textProps: ['direction', 'fontSize', 'fontWeight', 'fontFamily', 'fontStyle', 'color',
-                'lineHeight', 'width', 'textDecoration', 'textOverflow', 'textShadow'
+
+            /**
+             * For labels, these CSS properties are applied to the `text` node directly.
+             * @type {Array.<string>}
+             */
+            textProps: ['direction', 'fontSize', 'fontWeight', 'fontFamily',
+                'fontStyle', 'color', 'lineHeight', 'width', 'textDecoration',
+                'textOverflow', 'textOutline'
             ],
 
             /**
-             * Initialize the SVG renderer
-             * @param {Object} renderer
-             * @param {String} nodeName
+             * Initialize the SVG renderer. This function only exists to make the
+             * initiation process overridable. It should not be called directly.
+             *
+             * @param {SVGRenderer} renderer The SVGRenderer instance to initialize to.
+             * @param {String} nodeName The SVG node name.
+             * @returns {void}
              */
             init: function(renderer, nodeName) {
-                var wrapper = this;
-                wrapper.element = nodeName === 'span' ?
+
+                /** 
+                 * The DOM node. Each SVGRenderer instance wraps a main DOM node, but 
+                 * may also represent more nodes.
+                 * @type {SVGDOMNode|HTMLDOMNode}
+                 */
+                this.element = nodeName === 'span' ?
                     createElement(nodeName) :
-                    doc.createElementNS(wrapper.SVG_NS, nodeName);
-                wrapper.renderer = renderer;
+                    doc.createElementNS(this.SVG_NS, nodeName);
+
+                /**
+                 * The renderer that the SVGElement belongs to.
+                 * @type {SVGRenderer}
+                 */
+                this.renderer = renderer;
             },
 
             /**
-             * Animate a given attribute
-             * @param {Object} params
-             * @param {Number} options Options include duration, easing, step and complete
-             * @param {Function} complete Function to perform at the end of animation
+             * Animate to given attributes or CSS properties.
+             * 
+             * @param {SVGAttributes} params SVG attributes or CSS to animate.
+             * @param {AnimationOptions} [options] Animation options.
+             * @param {Function} [complete] Function to perform at the end of animation.
+             * @returns {SVGElement} Returns the SVGElement for chaining.
              */
             animate: function(params, options, complete) {
                 var animOptions = pick(options, this.renderer.globalAnimation, true);
@@ -1821,7 +2337,52 @@
             },
 
             /**
-             * Build an SVG gradient out of a common JavaScript configuration object
+             * @typedef {Object} GradientOptions
+             * @property {Object} linearGradient Holds an object that defines the start
+             *    position and the end position relative to the shape.
+             * @property {Number} linearGradient.x1 Start horizontal position of the
+             *    gradient. Ranges 0-1.
+             * @property {Number} linearGradient.x2 End horizontal position of the
+             *    gradient. Ranges 0-1.
+             * @property {Number} linearGradient.y1 Start vertical position of the
+             *    gradient. Ranges 0-1.
+             * @property {Number} linearGradient.y2 End vertical position of the
+             *    gradient. Ranges 0-1.
+             * @property {Object} radialGradient Holds an object that defines the center
+             *    position and the radius.
+             * @property {Number} radialGradient.cx Center horizontal position relative
+             *    to the shape. Ranges 0-1.
+             * @property {Number} radialGradient.cy Center vertical position relative
+             *    to the shape. Ranges 0-1.
+             * @property {Number} radialGradient.r Radius relative to the shape. Ranges
+             *    0-1.
+             * @property {Array.<Array>} stops The first item in each tuple is the
+             *    position in the gradient, where 0 is the start of the gradient and 1
+             *    is the end of the gradient. Multiple stops can be applied. The second
+             *    item is the color for each stop. This color can also be given in the
+             *    rgba format.
+             *
+             * @example
+             * // Linear gradient used as a color option
+             * color: {
+             *     linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+             *         stops: [
+             *             [0, '#003399'], // start
+             *             [0.5, '#ffffff'], // middle
+             *             [1, '#3366AA'] // end
+             *         ]
+             *     }
+             * }
+             */
+            /**
+             * Build and apply an SVG gradient out of a common JavaScript configuration
+             * object. This function is called from the attribute setters.
+             *
+             * @private
+             * @param {GradientOptions} color The gradient options structure.
+             * @param {string} prop The property to apply, can either be `fill` or
+             * `stroke`. 
+             * @param {SVGDOMElement} elem SVG DOM element to apply the gradient on.
              */
             colorGradient: function(color, prop, elem) {
                 var renderer = this.renderer,
@@ -1892,7 +2453,7 @@
                     } else {
 
                         // Set the id and create the element
-                        gradAttr.id = id = 'highcharts-' + H.idCounter++;
+                        gradAttr.id = id = H.uniqueKey();
                         gradients[key] = gradientObject = renderer.createElement(gradName)
                             .attr(gradAttr)
                             .add(renderer.defs);
@@ -1935,97 +2496,160 @@
             },
 
             /**
-             * Apply a polyfill to the text-stroke CSS property, by copying the text element
-             * and apply strokes to the copy.
+             * Apply a text outline through a custom CSS property, by copying the text
+             * element and apply stroke to the copy. Used internally. Contrast checks
+             * at http://jsfiddle.net/highcharts/43soe9m1/2/ .
              *
-             * Contrast checks at http://jsfiddle.net/highcharts/43soe9m1/2/
+             * @private
+             * @param {String} textOutline A custom CSS `text-outline` setting, defined
+             *    by `width color`. 
+             * @example
+             * // Specific color
+             * text.css({
+             *    textOutline: '1px black'
+             * });
+             * // Automatic contrast
+             * text.css({
+             *    color: '#000000', // black text
+             *    textOutline: '1px contrast' // => white outline
+             * });
              */
-            applyTextShadow: function(textShadow) {
+            applyTextOutline: function(textOutline) {
                 var elem = this.element,
                     tspans,
-                    hasContrast = textShadow.indexOf('contrast') !== -1,
+                    hasContrast = textOutline.indexOf('contrast') !== -1,
                     styles = {},
-                    forExport = this.renderer.forExport,
-                    // IE10 and IE11 report textShadow in elem.style even though it doesn't work. Check
-                    // this again with new IE release. In exports, the rendering is passed to PhantomJS.
-                    supports = this.renderer.forExport || (elem.style.textShadow !== undefined && !isMS);
+                    color,
+                    strokeWidth;
 
-                // When the text shadow is set to contrast, use dark stroke for light text and vice versa
+                // When the text shadow is set to contrast, use dark stroke for light
+                // text and vice versa.
                 if (hasContrast) {
-                    styles.textShadow = textShadow = textShadow.replace(/contrast/g, this.renderer.getContrast(elem.style.fill));
+                    styles.textOutline = textOutline = textOutline.replace(
+                        /contrast/g,
+                        this.renderer.getContrast(elem.style.fill)
+                    );
                 }
 
-                // Safari with retina displays as well as PhantomJS bug (#3974). Firefox does not tolerate this,
-                // it removes the text shadows.
-                if (isWebKit || forExport) {
-                    styles.textRendering = 'geometricPrecision';
-                }
+                this.fakeTS = true; // Fake text shadow
 
-                /* Selective side-by-side testing in supported browser (http://jsfiddle.net/highcharts/73L1ptrh/)
-                if (elem.textContent.indexOf('2.') === 0) {
-                	elem.style['text-shadow'] = 'none';
-                	supports = false;
-                }
-                // */
+                // In order to get the right y position of the clone,
+                // copy over the y setter
+                this.ySetter = this.xSetter;
 
-                // No reason to polyfill, we've got native support
-                if (supports) {
-                    this.css(styles); // Apply altered textShadow or textRendering workaround
-                } else {
+                tspans = [].slice.call(elem.getElementsByTagName('tspan'));
 
-                    this.fakeTS = true; // Fake text shadow
+                // Extract the stroke width and color
+                textOutline = textOutline.split(' ');
+                color = textOutline[textOutline.length - 1];
+                strokeWidth = textOutline[0];
 
-                    // In order to get the right y position of the clones,
-                    // copy over the y setter
-                    this.ySetter = this.xSetter;
+                if (strokeWidth && strokeWidth !== 'none') {
 
-                    tspans = [].slice.call(elem.getElementsByTagName('tspan'));
-                    each(textShadow.split(/\s?,\s?/g), function(textShadow) {
-                        var firstChild = elem.firstChild,
-                            color,
-                            strokeWidth;
-
-                        textShadow = textShadow.split(' ');
-                        color = textShadow[textShadow.length - 1];
-
-                        // Approximately tune the settings to the text-shadow behaviour
-                        strokeWidth = textShadow[textShadow.length - 2];
-
-                        if (strokeWidth) {
-                            each(tspans, function(tspan, y) {
-                                var clone;
-
-                                // Let the first line start at the correct X position
-                                if (y === 0) {
-                                    tspan.setAttribute('x', elem.getAttribute('x'));
-                                    y = elem.getAttribute('y');
-                                    tspan.setAttribute('y', y || 0);
-                                    if (y === null) {
-                                        elem.setAttribute('y', 0);
-                                    }
-                                }
-
-                                // Create the clone and apply shadow properties
-                                clone = tspan.cloneNode(1);
-                                attr(clone, {
-                                    'class': 'highcharts-text-shadow',
-                                    'fill': color,
-                                    'stroke': color,
-                                    'stroke-opacity': 1 / Math.max(pInt(strokeWidth), 3),
-                                    'stroke-width': strokeWidth,
-                                    'stroke-linejoin': 'round'
-                                });
-                                elem.insertBefore(clone, firstChild);
-                            });
+                    // Since the stroke is applied on center of the actual outline, we
+                    // need to double it to get the correct stroke-width outside the 
+                    // glyphs.
+                    strokeWidth = strokeWidth.replace(
+                        /(^[\d\.]+)(.*?)$/g,
+                        function(match, digit, unit) {
+                            return (2 * digit) + unit;
                         }
+                    );
+
+                    // Remove shadows from previous runs
+                    each(tspans, function(tspan) {
+                        if (tspan.getAttribute('class') === 'highcharts-text-outline') {
+                            // Remove then erase
+                            erase(tspans, elem.removeChild(tspan));
+                        }
+                    });
+
+                    this.realBox = elem.getBBox();
+
+                    // For each of the tspans, create a stroked copy behind it.
+                    each(tspans, function(tspan, y) {
+                        var clone;
+
+                        // Let the first line start at the correct X position
+                        if (y === 0) {
+                            tspan.setAttribute('x', elem.getAttribute('x'));
+                            y = elem.getAttribute('y');
+                            tspan.setAttribute('y', y || 0);
+                            if (y === null) {
+                                elem.setAttribute('y', 0);
+                            }
+                        }
+
+                        // Create the clone and apply outline properties
+                        clone = tspan.cloneNode(1);
+                        attr(clone, {
+                            'class': 'highcharts-text-outline',
+                            'fill': color,
+                            'stroke': color,
+                            'stroke-width': strokeWidth,
+                            'stroke-linejoin': 'round'
+                        });
+                        elem.insertBefore(clone, elem.firstChild);
                     });
                 }
             },
 
             /**
-             * Set or get a given attribute
-             * @param {Object|String} hash
-             * @param {Mixed|Undefined} val
+             *
+             * @typedef {Object} SVGAttributes An object of key-value pairs for SVG
+             *   attributes. Attributes in Highcharts elements for the most parts
+             *   correspond to SVG, but some are specific to Highcharts, like `zIndex`,
+             *   `rotation`, `translateX`, `translateY`, `scaleX` and `scaleY`. SVG
+             *   attributes containing a hyphen are _not_ camel-cased, they should be
+             *   quoted to preserve the hyphen.
+             * @example
+             * {
+             *     'stroke': '#ff0000', // basic
+             *     'stroke-width': 2, // hyphenated
+             *     'rotation': 45 // custom
+             *     'd': ['M', 10, 10, 'L', 30, 30, 'z'] // path definition, note format
+             * }
+             */
+            /**
+             * Apply native and custom attributes to the SVG elements.
+             * 
+             * In order to set the rotation center for rotation, set x and y to 0 and
+             * use `translateX` and `translateY` attributes to position the element
+             * instead.
+             *
+             * Attributes frequently used in Highcharts are `fill`, `stroke`,
+             * `stroke-width`.
+             *
+             * @param {SVGAttributes|String} hash - The native and custom SVG
+             *    attributes. 
+             * @param {string} [val] - If the type of the first argument is `string`, 
+             *    the second can be a value, which will serve as a single attribute
+             *    setter. If the first argument is a string and the second is undefined,
+             *    the function serves as a getter and the current value of the property
+             *    is returned.
+             * @param {Function} complete - A callback function to execute after setting
+             *    the attributes. This makes the function compliant and interchangeable
+             *    with the {@link SVGElement#animate} function.
+             *    
+             * @returns {SVGElement|string|number} If used as a setter, it returns the 
+             *    current {@link SVGElement} so the calls can be chained. If used as a 
+             *    getter, the current value of the attribute is returned.
+             * 
+             * @example
+             * // Set multiple attributes
+             * element.attr({
+             *     stroke: 'red',
+             *     fill: 'blue',
+             *     x: 10,
+             *     y: 10
+             * });
+             *
+             * // Set a single attribute
+             * element.attr('stroke', 'red');
+             *
+             * // Get an attribute
+             * element.attr('stroke'); // => 'red'
+             * 
              */
             attr: function(hash, val, complete) {
                 var key,
@@ -2096,22 +2720,42 @@
 
 
             /**
-             * Add a class name to an element
+             * Add a class name to an element.
+             *
+             * @param {string} className - The new class name to add.
+             * @param {boolean} [replace=false] - When true, the existing class name(s)
+             *    will be overwritten with the new one. When false, the new one is
+             *    added.
+             * @returns {SVGElement} Return the SVG element for chainability.
              */
             addClass: function(className, replace) {
                 var currentClassName = this.attr('class') || '';
 
                 if (currentClassName.indexOf(className) === -1) {
                     if (!replace) {
-                        className = (currentClassName + (currentClassName ? ' ' : '') + className).replace('  ', ' ');
+                        className =
+                            (currentClassName + (currentClassName ? ' ' : '') +
+                                className).replace('  ', ' ');
                     }
                     this.attr('class', className);
                 }
                 return this;
             },
+
+            /**
+             * Check if an element has the given class name.
+             * @param  {string}  className - The class name to check for.
+             * @return {Boolean}
+             */
             hasClass: function(className) {
                 return attr(this.element, 'class').indexOf(className) !== -1;
             },
+
+            /**
+             * Remove a class name from the element.
+             * @param  {string} className The class name to remove.
+             * @return {SVGElement} Returns the SVG element for chainability.
+             */
             removeClass: function(className) {
                 attr(this.element, 'class', (attr(this.element, 'class') || '').replace(className, ''));
                 return this;
@@ -2121,7 +2765,8 @@
              * If one of the symbol size affecting parameters are changed,
              * check all the others only once for each call to an element's
              * .attr() method
-             * @param {Object} hash
+             * @param {Object} hash - The attributes to set.
+             * @private
              */
             symbolAttr: function(hash) {
                 var wrapper = this;
@@ -2142,21 +2787,36 @@
             },
 
             /**
-             * Apply a clipping path to this object
-             * @param {String} id
+             * Apply a clipping rectangle to this element.
+             * 
+             * @param {ClipRect} [clipRect] - The clipping rectangle. If skipped, the
+             *    current clip is removed.
+             * @returns {SVGElement} Returns the SVG element to allow chaining.
              */
             clip: function(clipRect) {
-                return this.attr('clip-path', clipRect ? 'url(' + this.renderer.url + '#' + clipRect.id + ')' : 'none');
+                return this.attr(
+                    'clip-path',
+                    clipRect ?
+                    'url(' + this.renderer.url + '#' + clipRect.id + ')' :
+                    'none'
+                );
             },
 
             /**
-             * Calculate the coordinates needed for drawing a rectangle crisply and return the
-             * calculated attributes
-             * @param {Number} strokeWidth
-             * @param {Number} x
-             * @param {Number} y
-             * @param {Number} width
-             * @param {Number} height
+             * Calculate the coordinates needed for drawing a rectangle crisply and
+             * return the calculated attributes.
+             * 
+             * @param {Object} rect - A rectangle.
+             * @param {number} rect.x - The x position.
+             * @param {number} rect.y - The y position.
+             * @param {number} rect.width - The width.
+             * @param {number} rect.height - The height.
+             * @param {number} [strokeWidth] - The stroke width to consider when
+             *    computing crisp positioning. It can also be set directly on the rect
+             *    parameter.
+             *
+             * @returns {{x: Number, y: Number, width: Number, height: Number}} The
+             *    modified rectangle arguments.
              */
             crisp: function(rect, strokeWidth) {
 
@@ -2187,8 +2847,12 @@
             },
 
             /**
-             * Set styles for the element
-             * @param {Object} styles
+             * Set styles for the element. In addition to CSS styles supported by 
+             * native SVG and HTML elements, there are also some custom made for 
+             * Highcharts, like `width`, `ellipsis` and `textOverflow` for SVG text
+             * elements.
+             * @param {CSSObject} styles The new CSS styles.
+             * @returns {SVGElement} Return the SVG element for chaining.
              */
             css: function(styles) {
                 var elemWrapper = this,
@@ -2249,9 +2913,16 @@
                     }
 
 
-                    // Rebuild text after added
-                    if (elemWrapper.added && textWidth) {
-                        elemWrapper.renderer.buildText(elemWrapper);
+                    if (elemWrapper.added) {
+                        // Rebuild text after added
+                        if (textWidth) {
+                            elemWrapper.renderer.buildText(elemWrapper);
+                        }
+
+                        // Apply text outline after added
+                        if (styles && styles.textOutline) {
+                            elemWrapper.applyTextOutline(styles.textOutline);
+                        }
                     }
                 }
 
@@ -2260,14 +2931,33 @@
 
 
             /**
-             * Get a computed style
+             * Get the computed style. Only in styled mode.
+             * @param {string} prop - The property name to check for.
+             * @returns {string} The current computed value.
+             * @example
+             * chart.series[0].points[0].graphic.getStyle('stroke-width'); // => '1px'
              */
             getStyle: function(prop) {
-                return win.getComputedStyle(this.element || this, '').getPropertyValue(prop);
+                return win.getComputedStyle(this.element || this, '')
+                    .getPropertyValue(prop);
             },
 
             /**
-             * Get a computed style in pixel values
+             * Get the computed stroke width in pixel values. This is used extensively
+             * when drawing shapes to ensure the shapes are rendered crsip and
+             * positioned correctly relative to each other. Using `shape-rendering: 
+             * crispEdges` leaves us less control over positioning, for example when we
+             * want to stack columns next to each other, or position things 
+             * pixel-perfectly within the plot box.
+             *
+             * The common pattern when placing a shape is:
+             * * Create the SVGElement and add it to the DOM.
+             * * Read the computed `elem.strokeWidth()`.
+             * * Place it based on the stroke width.
+             *
+             * @returns {number} The stroke width in pixels. Even if the given stroke
+             * widtch (in CSS or by attributes) is based on `em` or other units, the 
+             * pixel size is returned.
              */
             strokeWidth: function() {
                 var val = this.getStyle('stroke-width'),
@@ -2293,9 +2983,15 @@
             },
 
             /**
-             * Add an event listener
-             * @param {String} eventType
-             * @param {Function} handler
+             * Add an event listener. This is a simple setter that replaces all other
+             * events of the same type, opposed to the {@link Highcharts#addEvent}
+             * function.
+             * @param {string} eventType - The event type. If the type is `click`, 
+             *    Highcharts will internally translate it to a `touchstart` event on 
+             *    touch devices, to prevent the browser from waiting for a click event
+             *    from firing.
+             * @param {Function} handler - The handler callback.
+             * @returns {SVGElement} The SVGElement for chaining.
              */
             on: function(eventType, handler) {
                 var svgElement = this,
@@ -2304,12 +3000,13 @@
                 // touch
                 if (hasTouch && eventType === 'click') {
                     element.ontouchstart = function(e) {
-                        svgElement.touchEventFired = Date.now();
+                        svgElement.touchEventFired = Date.now(); // #2269
                         e.preventDefault();
                         handler.call(element, e);
                     };
                     element.onclick = function(e) {
-                        if (win.navigator.userAgent.indexOf('Android') === -1 || Date.now() - (svgElement.touchEventFired || 0) > 1100) { // #2269
+                        if (win.navigator.userAgent.indexOf('Android') === -1 ||
+                            Date.now() - (svgElement.touchEventFired || 0) > 1100) {
                             handler.call(element, e);
                         }
                     };
@@ -2322,8 +3019,12 @@
 
             /**
              * Set the coordinates needed to draw a consistent radial gradient across
-             * pie slices regardless of positioning inside the chart. The format is
-             * [centerX, centerY, diameter] in pixels.
+             * a shape regardless of positioning inside the chart. Used on pie slices
+             * to make all the slices have the same radial reference point.
+             *
+             * @param {Array} coordinates The center reference. The format is
+             *    `[centerX, centerY, diameter]` in pixels.
+             * @returns {SVGElement} Returns the SVGElement for chaining.
              */
             setRadialReference: function(coordinates) {
                 var existingGradient = this.renderer.gradients[this.element.gradient];
@@ -2345,9 +3046,10 @@
             },
 
             /**
-             * Move an object and its children by x and y values
-             * @param {Number} x
-             * @param {Number} y
+             * Move an object and its children by x and y values.
+             * 
+             * @param {number} x - The x value.
+             * @param {number} y - The y value.
              */
             translate: function(x, y) {
                 return this.attr({
@@ -2357,7 +3059,13 @@
             },
 
             /**
-             * Invert a group, rotate and flip
+             * Invert a group, rotate and flip. This is used internally on inverted 
+             * charts, where the points and graphs are drawn as if not inverted, then
+             * the series group elements are inverted.
+             *
+             * @param {boolean} inverted - Whether to invert or not. An inverted shape
+             *    can be un-inverted by setting it to false.
+             * @returns {SVGElement} Return the SVGElement for chaining.
              */
             invert: function(inverted) {
                 var wrapper = this;
@@ -2367,8 +3075,11 @@
             },
 
             /**
-             * Private method to update the transform attribute based on internal
-             * properties
+             * Update the transform attribute based on internal properties. Deals with
+             * the custom `translateX`, `translateY`, `rotation`, `scaleX` and `scaleY`
+             * attributes and updates the SVG `transform` attribute.
+             * @private
+             * @returns {void}
              */
             updateTransform: function() {
                 var wrapper = this,
@@ -2410,8 +3121,11 @@
                     element.setAttribute('transform', transform.join(' '));
                 }
             },
+
             /**
-             * Bring the element to the front
+             * Bring the element to the front.
+             *
+             * @returns {SVGElement} Returns the SVGElement for chaining.
              */
             toFront: function() {
                 var element = this.element;
@@ -2421,16 +3135,26 @@
 
 
             /**
-             * Break down alignment options like align, verticalAlign, x and y
-             * to x and y relative to the chart.
-             *
-             * @param {Object} alignOptions
-             * @param {Boolean} alignByTranslate
-             * @param {String[Object} box The box to align to, needs a width and height. When the
-             *		box is a string, it refers to an object in the Renderer. For example, when
-             *		box is 'spacingBox', it refers to Renderer.spacingBox which holds width, height
-             *		x and y properties.
-             *
+             * Align the element relative to the chart or another box.
+             * ß
+             * @param {Object} [alignOptions] The alignment options. The function can be
+             *   called without this parameter in order to re-align an element after the
+             *   box has been updated.
+             * @param {string} [alignOptions.align=left] Horizontal alignment. Can be
+             *   one of `left`, `center` and `right`.
+             * @param {string} [alignOptions.verticalAlign=top] Vertical alignment. Can
+             *   be one of `top`, `middle` and `bottom`.
+             * @param {number} [alignOptions.x=0] Horizontal pixel offset from
+             *   alignment.
+             * @param {number} [alignOptions.y=0] Vertical pixel offset from alignment.
+             * @param {Boolean} [alignByTranslate=false] Use the `transform` attribute
+             *   with translateX and translateY custom attributes to align this elements
+             *   rather than `x` and `y` attributes.
+             * @param {String|Object} box The box to align to, needs a width and height.
+             *   When the box is a string, it refers to an object in the Renderer. For
+             *   example, when box is `spacingBox`, it refers to `Renderer.spacingBox`
+             *   which holds `width`, `height`, `x` and `y` properties.
+             * @returns {SVGElement} Returns the SVGElement for chaining.
              */
             align: function(alignOptions, alignByTranslate, box) {
                 var align,
@@ -2502,7 +3226,20 @@
             },
 
             /**
-             * Get the bounding box (width, height, x and y) for the element
+             * Get the bounding box (width, height, x and y) for the element. Generally
+             * used to get rendered text size. Since this is called a lot in charts,
+             * the results are cached based on text properties, in order to save DOM
+             * traffic. The returned bounding box includes the rotation, so for example
+             * a single text line of rotation 90 will report a greater height, and a
+             * width corresponding to the line-height.
+             *
+             * @param {boolean} [reload] Skip the cache and get the updated DOM bouding
+             *   box.
+             * @param {number} [rot] Override the element's rotation. This is internally
+             *   used on axis labels with a value of 0 to find out what the bounding box
+             *   would be have been if it were not rotated.
+             * @returns {Object} The bounding box with `x`, `y`, `width` and `height`
+             * properties.
              */
             getBBox: function(reload, rot) {
                 var wrapper = this,
@@ -2516,8 +3253,6 @@
                     styles = wrapper.styles,
                     fontSize,
                     textStr = wrapper.textStr,
-                    textShadow,
-                    elemStyle = element.style,
                     toggleTextShadowShim,
                     cache = renderer.cache,
                     cacheKeys = renderer.cacheKeys,
@@ -2532,15 +3267,25 @@
 
                 if (textStr !== undefined) {
 
-                    cacheKey =
+                    cacheKey = textStr.toString();
 
-                        // Since numbers are monospaced, and numerical labels appear a lot in a chart,
-                        // we assume that a label of n characters has the same bounding box as others
-                        // of the same length.
-                        textStr.toString().replace(/[0-9]/g, '0') +
+                    // Since numbers are monospaced, and numerical labels appear a lot
+                    // in a chart, we assume that a label of n characters has the same
+                    // bounding box as others of the same length. Unless there is inner
+                    // HTML in the label. In that case, leave the numbers as is (#5899).
+                    if (cacheKey.indexOf('<') === -1) {
+                        cacheKey = cacheKey.replace(/[0-9]/g, '0');
+                    }
 
-                        // Properties that affect bounding box
-                        ['', rotation || 0, fontSize, element.style.width].join(',');
+                    // Properties that affect bounding box
+                    cacheKey += [
+                            '',
+                            rotation || 0,
+                            fontSize,
+                            element.style.width,
+                            element.style['text-overflow'] // #5968
+                        ]
+                        .join(',');
 
                 }
 
@@ -2558,16 +3303,13 @@
                             // When the text shadow shim is used, we need to hide the fake shadows
                             // to get the correct bounding box (#3872)
                             toggleTextShadowShim = this.fakeTS && function(display) {
-                                each(element.querySelectorAll('.highcharts-text-shadow'), function(tspan) {
+                                each(element.querySelectorAll('.highcharts-text-outline'), function(tspan) {
                                     tspan.style.display = display;
                                 });
                             };
 
                             // Workaround for #3842, Firefox reporting wrong bounding box for shadows
-                            if (isFirefox && elemStyle.textShadow) {
-                                textShadow = elemStyle.textShadow;
-                                elemStyle.textShadow = '';
-                            } else if (toggleTextShadowShim) {
+                            if (toggleTextShadowShim) {
                                 toggleTextShadowShim('none');
                             }
 
@@ -2582,9 +3324,7 @@
                                 };
 
                             // #3842
-                            if (textShadow) {
-                                elemStyle.textShadow = textShadow;
-                            } else if (toggleTextShadowShim) {
+                            if (toggleTextShadowShim) {
                                 toggleTextShadowShim('');
                             }
                         } catch (e) {}
@@ -2643,7 +3383,13 @@
             },
 
             /**
-             * Show the element
+             * Show the element after it has been hidden. 
+             *
+             * @param {boolean} [inherit=false] Set the visibility attribute to
+             * `inherit` rather than `visible`. The difference is that an element with
+             * `visibility="visible"` will be visible even if the parent is hidden.
+             *
+             * @returns {SVGElement} Returns the SVGElement for chaining.
              */
             show: function(inherit) {
                 return this.attr({
@@ -2652,7 +3398,10 @@
             },
 
             /**
-             * Hide the element
+             * Hide the element, equivalent to setting the `visibility` attribute to
+             * `hidden`.
+             *
+             * @returns {SVGElement} Returns the SVGElement for chaining.
              */
             hide: function() {
                 return this.attr({
@@ -2660,6 +3409,12 @@
                 });
             },
 
+            /**
+             * Fade out an element by animating its opacity down to 0, and hide it on
+             * complete. Used internally for the tooltip.
+             * 
+             * @param {number} [duration=150] The fade duration in milliseconds.
+             */
             fadeOut: function(duration) {
                 var elemWrapper = this;
                 elemWrapper.animate({
@@ -2675,9 +3430,14 @@
             },
 
             /**
-             * Add the element
-             * @param {Object|Undefined} parent Can be an element, an element wrapper or undefined
-             *	to append the element to the renderer.box.
+             * Add the element to the DOM. All elements must be added this way.
+             * 
+             * @param {SVGElement|SVGDOMElement} [parent] The parent item to add it to.
+             *   If undefined, the element is added to the {@link SVGRenderer.box}.
+             *
+             * @returns {SVGElement} Returns the SVGElement for chaining.
+             *
+             * @sample highcharts/members/renderer-g - Elements added to a group
              */
             add: function(parent) {
 
@@ -2720,8 +3480,10 @@
             },
 
             /**
-             * Removes a child either by removeChild or move to garbageBin.
-             * Issue 490; in VML removeChild results in Orphaned nodes according to sIEve, discardElement does not.
+             * Removes an element from the DOM.
+             *
+             * @private
+             * @param {SVGDOMElement|HTMLDOMElement} element The DOM node to remove.
              */
             safeRemoveChild: function(element) {
                 var parentNode = element.parentNode;
@@ -2731,7 +3493,10 @@
             },
 
             /**
-             * Destroy the element and element wrapper
+             * Destroy the element and element wrapper and clear up the DOM and event
+             * hooks.
+             *
+             * @returns {void}
              */
             destroy: function() {
                 var wrapper = this,
@@ -2797,7 +3562,10 @@
 
             /**
              * Get the current value of an attribute or pseudo attribute, used mainly
-             * for animation.
+             * for animation. Called internally from the {@link SVGRenderer#attr}
+             * function.
+             *
+             * @private
              */
             _defaultGetter: function(key) {
                 var ret = pick(this[key], this.element ? this.element.getAttribute(key) : null, 0);
@@ -2951,20 +3719,45 @@
 
 
         /**
-         * The default SVG renderer
+         * Allows direct access to the Highcharts rendering layer in order to draw
+         * primitive shapes like circles, rectangles, paths or text directly on a chart,
+         * or independent from any chart. The SVGRenderer represents a wrapper object
+         * for SVGin modern browsers and through the VMLRenderer, for VML in IE < 8.
+         *
+         * An existing chart's renderer can be accessed through {@link Chart#renderer}.
+         * The renderer can also be used completely decoupled from a chart.
+         *
+         * @param {HTMLDOMElement} container - Where to put the SVG in the web page.
+         * @param {number} width - The width of the SVG.
+         * @param {number} height - The height of the SVG.
+         * @param {boolean} [forExport=false] - Whether the rendered content is intended
+         *   for export.
+         * @param {boolean} [allowHTML=true] - Whether the renderer is allowed to
+         *   include HTML text, which will be projected on top of the SVG.
+         *
+         * @example
+         * // Use directly without a chart object.
+         * var renderer = new Highcharts.Renderer(parentNode, 600, 400);
+         *
+         * @sample highcharts/members/renderer-on-chart - Annotating a chart programmatically.
+         * @sample highcharts/members/renderer-basic - Independedt SVG drawing.
+         *
+         * @class
          */
         SVGRenderer = H.SVGRenderer = function() {
             this.init.apply(this, arguments);
         };
         SVGRenderer.prototype = {
+            /**
+             * A pointer to the renderer's associated Element class. The VMLRenderer
+             * will have a pointer to VMLElement here.
+             * @type {SVGElement}
+             */
             Element: SVGElement,
             SVG_NS: SVG_NS,
             /**
-             * Initialize the SVGRenderer
-             * @param {Object} container
-             * @param {Number} width
-             * @param {Number} height
-             * @param {Boolean} forExport
+             * Initialize the SVGRenderer. Overridable initiator function that takes
+             * the same parameters as the constructor.
              */
             init: function(container, width, height, style, forExport, allowHTML) {
                 var renderer = this,
@@ -2987,12 +3780,25 @@
 
                 // object properties
                 renderer.isSVG = true;
-                renderer.box = element;
-                renderer.boxWrapper = boxWrapper;
+
+                /** 
+                 * The root `svg` node of the renderer.
+                 * @type {SVGDOMElement}
+                 */
+                this.box = element;
+                /** 
+                 * The wrapper for the root `svg` node of the renderer.
+                 * @type {SVGElement}
+                 */
+                this.boxWrapper = boxWrapper;
                 renderer.alignedObjects = [];
 
-                // Page url used for internal references. #24, #672, #1070
-                renderer.url = (isFirefox || isWebKit) && doc.getElementsByTagName('base').length ?
+                /**
+                 * Page url used for internal references.
+                 * @type {string}
+                 */
+                // #24, #672, #1070
+                this.url = (isFirefox || isWebKit) && doc.getElementsByTagName('base').length ?
                     win.location.href
                     .replace(/#.*?$/, '') // remove the hash
                     .replace(/([\('\)])/g, '\\$1') // escape parantheses and quotes
@@ -3001,7 +3807,7 @@
 
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highstock 5.0.2'));
+                desc.element.appendChild(doc.createTextNode('Created with Highstock 5.0.3'));
 
 
                 renderer.defs = this.createElement('defs').add();
@@ -3024,7 +3830,7 @@
                 // iframes though (like in jsFiddle).
                 var subPixelFix, rect;
                 if (isFirefox && container.getBoundingClientRect) {
-                    renderer.subPixelFix = subPixelFix = function() {
+                    subPixelFix = function() {
                         css(container, {
                             left: 0,
                             top: 0
@@ -3040,14 +3846,21 @@
                     subPixelFix();
 
                     // run it on resize
-                    addEvent(win, 'resize', subPixelFix);
+                    renderer.unSubPixelFix = addEvent(win, 'resize', subPixelFix);
                 }
             },
 
             /**
-             * General method for adding a definition. Can be used for gradients, fills, filters etc.
+             * General method for adding a definition to the SVG `defs` tag. Can be used
+             *   for gradients, fills, filters etc. Styled mode only. A hook for adding
+             *   general definitions to the SVG's defs tag. Definitions can be
+             *   referenced from the CSS by its `id`. Read more in
+             *   [gradients, shadows and patterns]{@link http://www.highcharts.com/docs/chart-design-and-style/gradients-shadows-and-patterns}.
              *
-             * @return SVGElement The inserted node 
+             * @param {Object} def - A serialized form of an SVG definition, including
+             *   children
+             *
+             * @return {SVGElement} The inserted node. 
              */
             definition: function(def) {
                 var ren = this;
@@ -3091,10 +3904,14 @@
 
 
             /**
-             * Detect whether the renderer is hidden. This happens when one of the parent elements
-             * has display: none. #608.
+             * Detect whether the renderer is hidden. This happens when one of the
+             * parent elements has display: none. Used internally to detect when we need
+             * to render preliminarily in another div to get the text bounding boxes 
+             * right.
+             *
+             * @returns {boolean} True if it is hidden.
              */
-            isHidden: function() {
+            isHidden: function() { // #608
                 return !this.boxWrapper.getBBox().width;
             },
 
@@ -3117,11 +3934,9 @@
                     renderer.defs = rendererDefs.destroy();
                 }
 
-                // Remove sub pixel fix handler
-                // We need to check that there is a handler, otherwise all functions that are registered for event 'resize' are removed
-                // See issue #982
-                if (renderer.subPixelFix) {
-                    removeEvent(win, 'resize', renderer.subPixelFix);
+                // Remove sub pixel fix handler (#982)
+                if (renderer.unSubPixelFix) {
+                    renderer.unSubPixelFix();
                 }
 
                 renderer.alignedObjects = null;
@@ -3130,8 +3945,13 @@
             },
 
             /**
-             * Create a wrapper for an SVG element
-             * @param {Object} nodeName
+             * Create a wrapper for an SVG element. Serves as a factory for 
+             * {@link SVGElement}, but this function is itself mostly called from 
+             * primitive factories like {@link SVGRenderer#path}, {@link
+             * SVGRenderer#rect} or {@link SVGRenderer#text}.
+             * 
+             * @param {string} nodeName - The node name, for example `rect`, `g` etc.
+             * @returns {SVGElement} The generated SVGElement.
              */
             createElement: function(nodeName) {
                 var wrapper = new this.Element();
@@ -3140,12 +3960,18 @@
             },
 
             /**
-             * Dummy function for plugins
+             * Dummy function for plugins, called every time the renderer is updated.
+             * Prior to Highcharts 5, this was used for the canvg renderer.
+             * @function
              */
             draw: noop,
 
             /**
-             * Get converted radial gradient attributes
+             * Get converted radial gradient attributes according to the radial
+             * reference. Used internally from the {@link SVGElement#colorGradient}
+             * function.
+             *
+             * @private
              */
             getRadialAttr: function(radialReference, gradAttr) {
                 return {
@@ -3156,9 +3982,12 @@
             },
 
             /**
-             * Parse a simple HTML string into SVG tspans
-             *
-             * @param {Object} textNode The parent text SVG node
+             * Parse a simple HTML string into SVG tspans. Called internally when text
+             *   is set on an SVGElement. The function supports a subset of HTML tags,
+             *   CSS text features like `width`, `text-overflow`, `white-space`, and
+             *   also attributes like `href` and `style`.
+             * @private
+             * @param {SVGElement} wrapper The parent SVGElement.
              */
             buildText: function(wrapper) {
                 var textNode = wrapper.element,
@@ -3176,7 +4005,7 @@
                     textStyles = wrapper.styles,
                     width = wrapper.textWidth,
                     textLineHeight = textStyles && textStyles.lineHeight,
-                    textShadow = textStyles && textStyles.textShadow,
+                    textOutline = textStyles && textStyles.textOutline,
                     ellipsis = textStyles && textStyles.textOverflow === 'ellipsis',
                     i = childNodes.length,
                     tempParent = width && !wrapper.added && this.box,
@@ -3188,7 +4017,8 @@
                             pInt(textLineHeight) :
                             renderer.fontMetrics(
                                 fontSizeStyle,
-                                tspan
+                                // Get the computed size from parent if not explicit
+                                tspan.getAttribute('style') ? tspan : textNode
                             ).h;
                     },
                     unescapeAngleBrackets = function(inputStr) {
@@ -3202,7 +4032,7 @@
 
                 // Skip tspans, add text directly to text node. The forceTSpan is a hook
                 // used in text outline hack.
-                if (!hasMarkup && !textShadow && !ellipsis && !width && textStr.indexOf(' ') === -1) {
+                if (!hasMarkup && !textOutline && !ellipsis && !width && textStr.indexOf(' ') === -1) {
                     textNode.appendChild(doc.createTextNode(unescapeAngleBrackets(textStr)));
 
                     // Complex strings, add more logic
@@ -3396,9 +4226,9 @@
                         tempParent.removeChild(textNode); // attach it to the DOM to read offset width
                     }
 
-                    // Apply the text shadow
-                    if (textShadow && wrapper.applyTextShadow) {
-                        wrapper.applyTextShadow(textShadow);
+                    // Apply the text outline
+                    if (textOutline && wrapper.applyTextOutline) {
+                        wrapper.applyTextOutline(textOutline);
                     }
                 }
             },
@@ -3439,7 +4269,10 @@
             */
 
             /**
-             * Returns white for dark colors and black for bright colors
+             * Returns white for dark colors and black for bright colors.
+             *
+             * @param {ColorString} rgba - The color to get the contrast for.
+             * @returns {string} The contrast color, either `#000000` or `#FFFFFF`.
              */
             getContrast: function(rgba) {
                 rgba = color(rgba).rgba;
@@ -3447,14 +4280,21 @@
             },
 
             /**
-             * Create a button with preset states
-             * @param {String} text
-             * @param {Number} x
-             * @param {Number} y
-             * @param {Function} callback
-             * @param {Object} normalState
-             * @param {Object} hoverState
-             * @param {Object} pressedState
+             * Create a button with preset states.
+             * @param {string} text - The text or HTML to draw.
+             * @param {number} x - The x position of the button's left side.
+             * @param {number} y - The y position of the button's top side.
+             * @param {Function} callback - The function to execute on button click or 
+             *    touch.
+             * @param {SVGAttributes} [normalState] - SVG attributes for the normal
+             *    state.
+             * @param {SVGAttributes} [hoverState] - SVG attributes for the hover state.
+             * @param {SVGAttributes} [pressedState] - SVG attributes for the pressed
+             *    state.
+             * @param {SVGAttributes} [disabledState] - SVG attributes for the disabled
+             *    state.
+             * @param {Symbol} [shape=rect] - The shape type.
+             * @returns {SVGRenderer} The button element.
              */
             button: function(text, x, y, callback, normalState, hoverState, pressedState, disabledState, shape) {
                 var label = this.label(text, x, y, shape, null, null, null, null, 'button'),
@@ -3504,12 +4344,15 @@
             },
 
             /**
-             * Make a straight line crisper by not spilling out to neighbour pixels
-             * @param {Array} points
-             * @param {Number} width
+             * Make a straight line crisper by not spilling out to neighbour pixels.
+             * 
+             * @param {Array} points - The original points on the format `['M', 0, 0,
+             *    'L', 100, 0]`.
+             * @param {number} width - The width of the line.
+             * @returns {Array} The original points array, but modified to render
+             * crisply.
              */
             crispLine: function(points, width) {
-                // points format: ['M', 0, 0, 'L', 100, 0]
                 // normalize to a crisp line
                 if (points[1] === points[4]) {
                     // Substract due to #1129. Now bottom and left axis gridlines behave the same.
@@ -3523,8 +4366,21 @@
 
 
             /**
-             * Draw a path
-             * @param {Array} path An SVG path in array form
+             * Draw a path, wraps the SVG `path` element.
+             * 
+             * @param {Array} [path] An SVG path definition in array form.
+             * 
+             * @example
+             * var path = renderer.path(['M', 10, 10, 'L', 30, 30, 'z'])
+             *     .attr({ stroke: '#ff00ff' })
+             *     .add();
+             * @returns {SVGElement} The generated wrapper element.
+             */
+            /**
+             * Draw a path, wraps the SVG `path` element.
+             * 
+             * @param {SVGAttributes} [attribs] The initial attributes.
+             * @returns {SVGElement} The generated wrapper element.
              */
             path: function(path) {
                 var attribs = {
@@ -3539,10 +4395,18 @@
             },
 
             /**
-             * Draw and return an SVG circle
-             * @param {Number} x The x position
-             * @param {Number} y The y position
-             * @param {Number} r The radius
+             * Draw a circle, wraps the SVG `circle` element.
+             * 
+             * @param {number} [x] The center x position.
+             * @param {number} [y] The center y position.
+             * @param {number} [r] The radius.
+             * @returns {SVGElement} The generated wrapper element.
+             */
+            /**
+             * Draw a circle, wraps the SVG `circle` element.
+             * 
+             * @param {SVGAttributes} [attribs] The initial attributes.
+             * @returns {SVGElement} The generated wrapper element.
              */
             circle: function(x, y, r) {
                 var attribs = isObject(x) ? x : {
@@ -3561,13 +4425,21 @@
             },
 
             /**
-             * Draw and return an arc
-             * @param {Number} x X position
-             * @param {Number} y Y position
-             * @param {Number} r Radius
-             * @param {Number} innerR Inner radius like used in donut charts
-             * @param {Number} start Starting angle
-             * @param {Number} end Ending angle
+             * Draw and return an arc.
+             * @param {number} [x=0] Center X position.
+             * @param {number} [y=0] Center Y position.
+             * @param {number} [r=0] The outer radius of the arc.
+             * @param {number} [innerR=0] Inner radius like used in donut charts.
+             * @param {number} [start=0] The starting angle of the arc in radians, where
+             *    0 is to the right and `-Math.PI/2` is up.
+             * @param {number} [end=0] The ending angle of the arc in radians, where 0
+             *    is to the right and `-Math.PI/2` is up.
+             * @returns {SVGElement} The generated wrapper element.
+             */
+            /**
+             * Draw and return an arc. Overloaded function that takes arguments object.
+             * @param {SVGAttributes} attribs Initial SVG attributes.
+             * @returns {SVGElement} The generated wrapper element.
              */
             arc: function(x, y, r, innerR, start, end) {
                 var arc;
@@ -3593,13 +4465,21 @@
             },
 
             /**
-             * Draw and return a rectangle
-             * @param {Number} x Left position
-             * @param {Number} y Top position
-             * @param {Number} width
-             * @param {Number} height
-             * @param {Number} r Border corner radius
-             * @param {Number} strokeWidth A stroke width can be supplied to allow crisp drawing
+             * Draw and return a rectangle.
+             * @param {number} [x] Left position.
+             * @param {number} [y] Top position.
+             * @param {number} [width] Width of the rectangle.
+             * @param {number} [height] Height of the rectangle.
+             * @param {number} [r] Border corner radius.
+             * @param {number} [strokeWidth] A stroke width can be supplied to allow
+             *    crisp drawing.
+             * @returns {SVGElement} The generated wrapper element.
+             */
+            /**
+             * Draw and return a rectangle.
+             * @param {SVGAttributes} [attributes] General SVG attributes for the 
+             *    rectangle.
+             * @returns {SVGElement} The generated wrapper element.
              */
             rect: function(x, y, width, height, r, strokeWidth) {
 
@@ -3630,11 +4510,11 @@
             },
 
             /**
-             * Resize the box and re-align all aligned elements
-             * @param {Object} width
-             * @param {Object} height
-             * @param {Boolean} animate
-             *
+             * Resize the {@link SVGRenderer#box} and re-align all aligned child
+             * elements.
+             * @param {number} width The new pixel width.
+             * @param {number} height The new pixel height.
+             * @param {boolean} animate Whether to animate.
              */
             setSize: function(width, height, animate) {
                 var renderer = this,
@@ -3662,9 +4542,11 @@
             },
 
             /**
-             * Create a group
-             * @param {String} name The group will be given a class name of 'highcharts-{name}'.
-             *	 This can be used for styling and scripting.
+             * Create and return an svg group element.
+             * 
+             * @param {string} [name] The group will be given a class name of
+             * `highcharts-{name}`. This can be used for styling and scripting.
+             * @returns {SVGElement} The generated wrapper element.
              */
             g: function(name) {
                 var elem = this.createElement('g');
@@ -3674,12 +4556,15 @@
             },
 
             /**
-             * Display an image
-             * @param {String} src
-             * @param {Number} x
-             * @param {Number} y
-             * @param {Number} width
-             * @param {Number} height
+             * Display an image.
+             * @param {string} src The image source.
+             * @param {number} [x] The X position.
+             * @param {number} [y] The Y position.
+             * @param {number} [width] The image width. If omitted, it defaults to the 
+             *    image file width.
+             * @param {number} [height] The image height. If omitted it defaults to the
+             *    image file height.
+             * @returns {SVGElement} The generated wrapper element.
              */
             image: function(src, x, y, width, height) {
                 var attribs = {
@@ -3712,13 +4597,27 @@
             },
 
             /**
-             * Draw a symbol out of pre-defined shape paths from the namespace 'symbol' object.
+             * Draw a symbol out of pre-defined shape paths from {@SVGRenderer#symbols}.
+             * It is used in Highcharts for point makers, which cake a `symbol` option,
+             * and label and button backgrounds like in the tooltip and stock flags.
              *
-             * @param {Object} symbol
-             * @param {Object} x
-             * @param {Object} y
-             * @param {Object} radius
-             * @param {Object} options
+             * @param {Symbol} symbol - The symbol name.
+             * @param {number} x - The X coordinate for the top left position.
+             * @param {number} y - The Y coordinate for the top left position.
+             * @param {number} width - The pixel width.
+             * @param {number} height - The pixel height.
+             * @param {Object} [options] - Additional options, depending on the actual
+             *    symbol drawn. 
+             * @param {number} [options.anchorX] - The anchor X position for the
+             *    `callout` symbol. This is where the chevron points to.
+             * @param {number} [options.anchorY] - The anchor Y position for the
+             *    `callout` symbol. This is where the chevron points to.
+             * @param {number} [options.end] - The end angle of an `arc` symbol.
+             * @param {boolean} [options.open] - Whether to draw `arc` symbol open or
+             *    closed.
+             * @param {number} [options.r] - The radius of an `arc` symbol, or the
+             *    border radius for the `callout` symbol.
+             * @param {number} [options.start] - The start angle of an `arc` symbol.
              */
             symbol: function(symbol, x, y, width, height, options) {
 
@@ -3879,6 +4778,14 @@
             },
 
             /**
+             * @typedef {string} Symbol
+             * 
+             * Can be one of `arc`, `callout`, `circle`, `diamond`, `square`,
+             * `triangle`, `triangle-down`. Symbols are used internally for point
+             * markers, button and label borders and backgrounds, or custom shapes.
+             * Extendable by adding to {@link SVGRenderer#symbols}.
+             */
+            /**
              * An extendable collection of functions for defining symbol paths.
              */
             symbols: {
@@ -3989,23 +4896,53 @@
                         'L', x + r, y + h, // bottom side
                         'C', x, y + h, x, y + h, x, y + h - r, // bottom-left corner
                         'L', x, y + r, // left side
-                        'C', x, y, x, y, x + r, y // top-right corner
+                        'C', x, y, x, y, x + r, y // top-left corner
                     ];
 
-                    if (anchorX && anchorX > w && anchorY > y + safeDistance && anchorY < y + h - safeDistance) { // replace right side
-                        path.splice(13, 3,
-                            'L', x + w, anchorY - halfDistance,
-                            x + w + arrowLength, anchorY,
-                            x + w, anchorY + halfDistance,
-                            x + w, y + h - r
-                        );
-                    } else if (anchorX && anchorX < 0 && anchorY > y + safeDistance && anchorY < y + h - safeDistance) { // replace left side
-                        path.splice(33, 3,
-                            'L', x, anchorY + halfDistance,
-                            x - arrowLength, anchorY,
-                            x, anchorY - halfDistance,
-                            x, y + r
-                        );
+                    // Anchor on right side
+                    if (anchorX && anchorX > w) {
+
+                        // Chevron
+                        if (anchorY > y + safeDistance && anchorY < y + h - safeDistance) {
+                            path.splice(13, 3,
+                                'L', x + w, anchorY - halfDistance,
+                                x + w + arrowLength, anchorY,
+                                x + w, anchorY + halfDistance,
+                                x + w, y + h - r
+                            );
+
+                            // Simple connector
+                        } else {
+                            path.splice(13, 3,
+                                'L', x + w, h / 2,
+                                anchorX, anchorY,
+                                x + w, h / 2,
+                                x + w, y + h - r
+                            );
+                        }
+
+                        // Anchor on left side
+                    } else if (anchorX && anchorX < 0) {
+
+                        // Chevron
+                        if (anchorY > y + safeDistance && anchorY < y + h - safeDistance) {
+                            path.splice(33, 3,
+                                'L', x, anchorY + halfDistance,
+                                x - arrowLength, anchorY,
+                                x, anchorY - halfDistance,
+                                x, y + r
+                            );
+
+                            // Simple connector
+                        } else {
+                            path.splice(33, 3,
+                                'L', x, h / 2,
+                                anchorX, anchorY,
+                                x, h / 2,
+                                x, y + r
+                            );
+                        }
+
                     } else if (anchorY && anchorY > h && anchorX > x + safeDistance && anchorX < x + w - safeDistance) { // replace bottom
                         path.splice(23, 3,
                             'L', anchorX + halfDistance, y + h,
@@ -4021,21 +4958,38 @@
                             w - r, y
                         );
                     }
+
                     return path;
                 }
             },
 
             /**
+             * @typedef {SVGElement} ClipRect - A clipping rectangle that can be applied
+             * to one or more {@link SVGElement} instances. It is instanciated with the
+             * {@link SVGRenderer#clipRect} function and applied with the {@link 
+             * SVGElement#clip} function.
+             *
+             * @example
+             * var circle = renderer.circle(100, 100, 100)
+             *     .attr({ fill: 'red' })
+             *     .add();
+             * var clipRect = renderer.clipRect(100, 100, 100, 100);
+             *
+             * // Leave only the lower right quarter visible
+             * circle.clip(clipRect);
+             */
+            /**
              * Define a clipping rectangle
              * @param {String} id
-             * @param {Number} x
-             * @param {Number} y
-             * @param {Number} width
-             * @param {Number} height
+             * @param {number} x
+             * @param {number} y
+             * @param {number} width
+             * @param {number} height
+             * @returns {ClipRect} A clipping rectangle.
              */
             clipRect: function(x, y, width, height) {
                 var wrapper,
-                    id = 'highcharts-' + H.idCounter++,
+                    id = H.uniqueKey(),
 
                     clipPath = this.createElement('clipPath').attr({
                         id: id
@@ -4056,8 +5010,8 @@
             /**
              * Add text to the SVG object
              * @param {String} str
-             * @param {Number} x Left position
-             * @param {Number} y Top position
+             * @param {number} x Left position
+             * @param {number} y Top position
              * @param {Boolean} useHTML Use HTML to render the text
              */
             text: function(str, x, y, useHTML) {
@@ -4111,20 +5065,41 @@
             },
 
             /**
-             * Utility to return the baseline offset and total line height from the font size
+             * Utility to return the baseline offset and total line height from the font
+             * size.
+             *
+             * @param {?string} fontSize The current font size to inspect. If not given,
+             *   the font size will be found from the DOM element.
+             * @param {SVGElement|SVGDOMElement} [elem] The element to inspect for a
+             *   current font size.
+             * @returns {Object} An object containing `h`: the line height, `b`: the
+             * baseline relative to the top of the box, and `f`: the font size.
              */
-            fontMetrics: function(fontSize, elem) { // eslint-disable-line no-unused-vars
+            fontMetrics: function(fontSize, elem) {
                 var lineHeight,
                     baseline;
 
 
-                fontSize = elem && SVGElement.prototype.getStyle.call(elem, 'font-size');
+                fontSize = elem && SVGElement.prototype.getStyle.call(
+                    elem,
+                    'font-size'
+                );
 
 
-                fontSize = /px/.test(fontSize) ? pInt(fontSize) : /em/.test(fontSize) ? parseFloat(fontSize) * 12 : 12;
+                // Handle different units
+                if (/px/.test(fontSize)) {
+                    fontSize = pInt(fontSize);
+                } else if (/em/.test(fontSize)) {
+                    // The em unit depends on parent items
+                    fontSize = parseFloat(fontSize) *
+                        (elem ? this.fontMetrics(null, elem.parentNode).f : 16);
+                } else {
+                    fontSize = 12;
+                }
 
-                // Empirical values found by comparing font size and bounding box height.
-                // Applies to the default font family. http://jsfiddle.net/highcharts/7xvn7/
+                // Empirical values found by comparing font size and bounding box
+                // height. Applies to the default font family.
+                // http://jsfiddle.net/highcharts/7xvn7/
                 lineHeight = fontSize < 24 ? fontSize + 3 : Math.round(fontSize * 1.2);
                 baseline = Math.round(lineHeight * 0.8);
 
@@ -4151,14 +5126,16 @@
 
             /**
              * Add a label, a text item that can hold a colored or gradient background
-             * as well as a border and shadow.
+             * as well as a border and shadow. Supported custom attributes include
+             * `padding`. 
+             * 
              * @param {string} str
-             * @param {Number} x
-             * @param {Number} y
+             * @param {number} x
+             * @param {number} y
              * @param {String} shape
-             * @param {Number} anchorX In case the shape has a pointer, like a flag, this is the
+             * @param {number} anchorX In case the shape has a pointer, like a flag, this is the
              *	coordinates it should be pinned to
-             * @param {Number} anchorY
+             * @param {number} anchorY
              * @param {Boolean} baseline Whether to position the label relative to the text baseline,
              *	like renderer.text, or to the upper border of the rectangle.
              * @param {String} className Class name for the group
@@ -4408,7 +5385,9 @@
                 var baseCss = wrapper.css;
                 return extend(wrapper, {
                     /**
-                     * Pick up some properties and apply them to the text instead of the wrapper
+                     * Pick up some properties and apply them to the text instead of the
+                     * wrapper.
+                     * @ignore
                      */
                     css: function(styles) {
                         if (styles) {
@@ -4425,7 +5404,8 @@
                         return baseCss.call(wrapper, styles);
                     },
                     /**
-                     * Return the bounding box of the box, not the group
+                     * Return the bounding box of the box, not the group.
+                     * @ignore
                      */
                     getBBox: function() {
                         return {
@@ -4438,6 +5418,7 @@
 
                     /**
                      * Destroy and release memory.
+                     * @ignore
                      */
                     destroy: function() {
 
@@ -4488,8 +5469,8 @@
             win = H.win,
             wrap = H.wrap;
 
-        // extend SvgElement for useHTML option
-        extend(SVGElement.prototype, {
+        // Extend SvgElement for useHTML option
+        extend(SVGElement.prototype, /** @lends SVGElement.prototype */ {
             /**
              * Apply CSS to HTML elements. This is used in text within SVG rendering and
              * by the VML renderer
@@ -4656,7 +5637,7 @@
         });
 
         // Extend SvgRenderer for useHTML option.
-        extend(SVGRenderer.prototype, {
+        extend(SVGRenderer.prototype, /** @lends SVGRenderer.prototype */ {
             /**
              * Create HTML text node. This is used by the VML renderer as well as the SVG
              * renderer through the useHTML option.
@@ -4903,45 +5884,6 @@
 
 
             },
-
-            defs: {
-                dropShadow: { // used by tooltip
-                    tagName: 'filter',
-                    id: 'drop-shadow',
-                    opacity: 0.5,
-                    children: [{
-                        tagName: 'feGaussianBlur',
-                        in: 'SourceAlpha',
-                        stdDeviation: 1
-                    }, {
-                        tagName: 'feOffset',
-                        dx: 1,
-                        dy: 1
-                    }, {
-                        tagName: 'feComponentTransfer',
-                        children: [{
-                            tagName: 'feFuncA',
-                            type: 'linear',
-                            slope: 0.3
-                        }]
-                    }, {
-                        tagName: 'feMerge',
-                        children: [{
-                            tagName: 'feMergeNode'
-                        }, {
-                            tagName: 'feMergeNode',
-                            in: 'SourceGraphic'
-                        }]
-                    }]
-                },
-                style: {
-                    tagName: 'style',
-                    textContent: '.highcharts-tooltip{' +
-                        'filter:url(#drop-shadow)' +
-                        '}'
-                }
-            },
-
             title: {
                 text: 'Chart title',
                 align: 'center',
@@ -5076,8 +6018,11 @@
 
 
         /**
-         * Set the time methods globally based on the useUTC option. Time method can be either
-         * local time or UTC (default).
+         * Set the time methods globally based on the useUTC option. Time method can be
+         *   either local time or UTC (default). It is called internally on initiating
+         *   Highcharts and after running `Highcharts.setOptions`.
+         *
+         * @private
          */
         function setTimeMethods() {
             var globalOptions = H.defaultOptions.global,
@@ -5384,7 +6329,8 @@
                         toPath[4],
                         toPath[5],
                         toPath[1],
-                        toPath[2]
+                        toPath[2],
+                        'z' // #5909
                     );
                 } else { // outside the axis area
                     path = null;
@@ -5883,7 +6829,8 @@
             Tick = H.Tick;
 
         /**
-         * Create a new axis object
+         * Create a new axis object.
+         * @constructor Axis
          * @param {Object} chart
          * @param {Object} options
          */
@@ -6243,7 +7190,9 @@
                     value = this.value,
                     categories = axis.categories,
                     dateTimeLabelFormat = this.dateTimeLabelFormat,
-                    numericSymbols = defaultOptions.lang.numericSymbols,
+                    lang = defaultOptions.lang,
+                    numericSymbols = lang.numericSymbols,
+                    numSymMagnitude = lang.numericSymbolMagnitude || 1000,
                     i = numericSymbols && numericSymbols.length,
                     multi,
                     ret,
@@ -6266,7 +7215,7 @@
                     // If we are to enable this in tooltip or other places as well, we can move this
                     // logic to the numberFormatter and enable it by a parameter.
                     while (i-- && ret === undefined) {
-                        multi = Math.pow(1000, i + 1);
+                        multi = Math.pow(numSymMagnitude, i + 1);
                         if (numericSymbolDetector >= multi && (value * 10) % multi === 0 && numericSymbols[i] !== null && value !== 0) { // #5480
                             ret = H.numberFormat(value / multi, -1) + numericSymbols[i];
                         }
@@ -6413,11 +7362,9 @@
                     if (doPostTranslate) { // log and ordinal axes
                         val = axis.val2lin(val);
                     }
-                    if (pointPlacement === 'between') {
-                        pointPlacement = 0.5;
-                    }
-                    returnValue = sign * (val - localMin) * localA + cvsOffset + (sign * minPixelPadding) +
-                        (isNumber(pointPlacement) ? localA * pointPlacement * axis.pointRange : 0);
+                    returnValue = sign * (val - localMin) * localA + cvsOffset +
+                        (sign * minPixelPadding) +
+                        (isNumber(pointPlacement) ? localA * pointPlacement : 0);
                 }
 
                 return returnValue;
@@ -6573,7 +7520,13 @@
                             )
                         );
                     } else {
-                        for (pos = min + (tickPositions[0] - min) % minorTickInterval; pos <= max; pos += minorTickInterval) {
+                        for (
+                            pos = min + (tickPositions[0] - min) % minorTickInterval; pos <= max; pos += minorTickInterval
+                        ) {
+                            // Very, very, tight grid lines (#5771)
+                            if (pos === minorTickPositions[0]) {
+                                break;
+                            }
                             minorTickPositions.push(pos);
                         }
                     }
@@ -6673,8 +7626,14 @@
                     ret = 1;
                 } else {
                     each(this.series, function(series) {
-                        var seriesClosest = series.closestPointRange;
-                        if (!series.noSharedTooltip && defined(seriesClosest)) {
+                        var seriesClosest = series.closestPointRange,
+                            visible = series.visible ||
+                            !series.chart.options.chart.ignoreHiddenSeries;
+
+                        if (!series.noSharedTooltip &&
+                            defined(seriesClosest) &&
+                            visible
+                        ) {
                             ret = defined(ret) ?
                                 Math.min(ret, seriesClosest) :
                                 seriesClosest;
@@ -6725,6 +7684,9 @@
                     this.names.length = 0;
                     this.minRange = undefined;
                     each(this.series || [], function(series) {
+
+                        // Reset incrementer (#5928)
+                        series.xIncrement = null;
 
                         // When adding a series, points are not yet generated
                         if (!series.points || series.isDirtyData) {
@@ -7937,7 +8899,6 @@
 
             /**
              * Render the axis line
-             * @returns {[type]} [description]
              */
             renderLine: function() {
                 if (!this.axisLine) {
@@ -8195,6 +9156,10 @@
 
             },
 
+            // Properties to survive after destroy, needed for Axis.update (#4317,
+            // #5773, #5881).
+            keepProps: ['extKey', 'hcEvents', 'names', 'series', 'userMax', 'userMin'],
+
             /**
              * Destroys an Axis instance.
              */
@@ -8204,8 +9169,7 @@
                     stackKey,
                     plotLinesAndBands = axis.plotLinesAndBands,
                     i,
-                    n,
-                    keepProps;
+                    n;
 
                 // Remove the events
                 if (!keepEvents) {
@@ -8237,12 +9201,9 @@
                     }
                 });
 
-
                 // Delete all properties and fall back to the prototype.
-                // Preserve some properties, needed for Axis.update (#4317, #5773).
-                keepProps = ['extKey', 'hcEvents', 'names', 'series', 'userMax', 'userMin'];
                 for (n in axis) {
-                    if (axis.hasOwnProperty(n) && inArray(n, keepProps) === -1) {
+                    if (axis.hasOwnProperty(n) && inArray(n, axis.keepProps) === -1) {
                         delete axis[n];
                     }
                 }
@@ -8381,7 +9342,6 @@
                 useUTC = defaultOptions.global.useUTC,
                 minYear, // used in months and years as a basis for Date.UTC()
                 minDate = new Date(min - getTZOffset(min)),
-                minHours,
                 makeTime = Date.hcMakeTime,
                 interval = normalizedInterval.unitRange,
                 count = normalizedInterval.count,
@@ -8404,7 +9364,6 @@
                 if (interval >= timeUnits.hour) { // hour
                     minDate[Date.hcSetHours](interval >= timeUnits.day ? 0 :
                         count * Math.floor(minDate[Date.hcGetHours]() / count));
-                    minHours = minDate[Date.hcGetHours]();
                 }
 
                 if (interval >= timeUnits.day) { // day
@@ -8430,8 +9389,13 @@
                         pick(startOfWeek, 1));
                 }
 
-                // get tick positions
-                i = 1;
+
+                // Get basics for variable time spans
+                minYear = minDate[Date.hcGetFullYear]();
+                var minMonth = minDate[Date.hcGetMonth](),
+                    minDateDate = minDate[Date.hcGetDate](),
+                    minHours = minDate[Date.hcGetHours]();
+
 
                 // Handle local timezone offset
                 if (Date.hcTimezoneOffset || Date.hcGetTimezoneOffset) {
@@ -8457,12 +9421,9 @@
                 }
 
 
-                minYear = minDate[Date.hcGetFullYear]();
-                var time = minDate.getTime(),
-                    minMonth = minDate[Date.hcGetMonth](),
-                    minDateDate = minDate[Date.hcGetDate]();
-
-                // iterate and add tick positions at appropriate values
+                // Iterate and add tick positions at appropriate values
+                var time = minDate.getTime();
+                i = 1;
                 while (time < max) {
                     tickPositions.push(time);
 
@@ -8800,6 +9761,55 @@
                 });
             },
 
+
+            /**
+             * In styled mode, apply the default filter for the tooltip drop-shadow. It
+             * needs to have an id specific to the chart, otherwise there will be issues
+             * when one tooltip adopts the filter of a different chart, specifically one
+             * where the container is hidden.
+             */
+            applyFilter: function() {
+
+                var chart = this.chart;
+                chart.renderer.definition({
+                    tagName: 'filter',
+                    id: 'drop-shadow-' + chart.index,
+                    opacity: 0.5,
+                    children: [{
+                        tagName: 'feGaussianBlur',
+                        in: 'SourceAlpha',
+                        stdDeviation: 1
+                    }, {
+                        tagName: 'feOffset',
+                        dx: 1,
+                        dy: 1
+                    }, {
+                        tagName: 'feComponentTransfer',
+                        children: [{
+                            tagName: 'feFuncA',
+                            type: 'linear',
+                            slope: 0.3
+                        }]
+                    }, {
+                        tagName: 'feMerge',
+                        children: [{
+                            tagName: 'feMergeNode'
+                        }, {
+                            tagName: 'feMergeNode',
+                            in: 'SourceGraphic'
+                        }]
+                    }]
+                });
+                chart.renderer.definition({
+                    tagName: 'style',
+                    textContent: '.highcharts-tooltip-' + chart.index + '{' +
+                        'filter:url(#drop-shadow-' + chart.index + ')' +
+                        '}'
+                });
+            },
+
+
+
             /**
              * Create the Tooltip label element if it doesn't exist, then return the
              * label.
@@ -8832,6 +9842,13 @@
 
 
                     }
+
+
+                    // Apply the drop-shadow filter
+                    this.applyFilter();
+                    this.label.addClass('highcharts-tooltip-' + this.chart.index);
+
+
                     this.label
                         .attr({
                             zIndex: 8
@@ -9110,7 +10127,7 @@
             refresh: function(point, mouseEvent) {
                 var tooltip = this,
                     chart = tooltip.chart,
-                    label = tooltip.getLabel(),
+                    label,
                     options = tooltip.options,
                     x,
                     y,
@@ -9172,6 +10189,8 @@
                     this.hide();
                 } else {
 
+                    label = tooltip.getLabel();
+
                     // show it
                     if (tooltip.isHidden) {
                         stop(label);
@@ -9185,7 +10204,7 @@
                         this.renderSplit(text, chart.hoverPoints);
                     } else {
                         label.attr({
-                            text: text.join ? text.join('') : text
+                            text: text && text.join ? text.join('') : text
                         });
 
                         // Set the stroke color of the box to reflect the point
@@ -9241,7 +10260,7 @@
 
                     // Store the tooltip referance on the series
                     if (!tt) {
-                        owner.tt = tt = ren.label(null, null, null, point.isHeader && 'callout')
+                        owner.tt = tt = ren.label(null, null, null, 'callout')
                             .addClass('highcharts-tooltip-box ' + colorClass)
                             .attr({
                                 'padding': options.padding,
@@ -9249,22 +10268,13 @@
 
                             })
                             .add(tooltipLabel);
-
-                        // Add a connector back to the point
-                        if (point.series) {
-                            tt.connector = ren.path()
-                                .addClass('highcharts-tooltip-connector ' + colorClass)
-
-                            // Add it inside the label group so we will get hide and
-                            // destroy for free
-                            .add(tt);
-                        }
                     }
 
                     tt.isActive = true;
                     tt.attr({
                         text: str
                     });
+
 
                     // Get X position now, so we can move all to the other side in case of overflow
                     bBox = tt.getBBox();
@@ -9308,37 +10318,19 @@
                 // Distribute and put in place
                 H.distribute(boxes, chart.plotHeight + headerHeight);
                 each(boxes, function(box) {
-                    var point = box.point,
-                        tt = box.tt,
-                        attr;
+                    var point = box.point;
 
                     // Put the label in place
-                    attr = {
+                    box.tt.attr({
                         visibility: box.pos === undefined ? 'hidden' : 'inherit',
-                        x: (rightAligned || point.isHeader ? box.x : point.plotX + chart.plotLeft + pick(options.distance, 16)),
-                        y: box.pos + chart.plotTop
-                    };
-                    if (point.isHeader) {
-                        attr.anchorX = point.plotX + chart.plotLeft;
-                        attr.anchorY = attr.y - 100;
-                    }
-                    tt.attr(attr);
-
-                    // Draw the connector to the point
-                    if (!point.isHeader) {
-                        tt.connector.attr({
-                            d: [
-                                'M',
-                                point.plotX + chart.plotLeft - attr.x,
-                                point.plotY + point.series.yAxis.pos - attr.y,
-                                'L',
-                                (rightAligned ? -1 : 1) * pick(options.distance, 16) +
-                                point.plotX + chart.plotLeft - attr.x,
-                                box.pos + chart.plotTop + tt.getBBox().height / 2 -
-                                attr.y
-                            ]
-                        });
-                    }
+                        x: (rightAligned || point.isHeader ?
+                            box.x :
+                            point.plotX + chart.plotLeft + pick(options.distance, 16)),
+                        y: box.pos + chart.plotTop,
+                        anchorX: point.plotX + chart.plotLeft,
+                        anchorY: point.isHeader ?
+                            box.pos + chart.plotTop - 15 : point.plotY + chart.plotTop
+                    });
                 });
             },
 
@@ -9491,8 +10483,11 @@
             win = H.win;
 
         /**
-         * The mouse tracker object. All methods starting with "on" are primary DOM event handlers.
-         * Subsequent methods should be named differently from what they are doing.
+         * The mouse tracker object. All methods starting with "on" are primary DOM
+         * event handlers. Subsequent methods should be named differently from what they
+         * are doing.
+         *
+         * @constructor Pointer
          * @param {Object} chart The Chart instance
          * @param {Object} options The root options object
          */
@@ -9525,17 +10520,24 @@
             },
 
             /**
-             * Resolve the zoomType option
+             * Resolve the zoomType option, this is reset on all touch start and mouse
+             * down events.
              */
-            zoomOption: function() {
+            zoomOption: function(e) {
                 var chart = this.chart,
-                    zoomType = chart.options.chart.zoomType,
-                    zoomX = /x/.test(zoomType),
-                    zoomY = /y/.test(zoomType),
-                    inverted = chart.inverted;
+                    options = chart.options.chart,
+                    zoomType = options.zoomType || '',
+                    inverted = chart.inverted,
+                    zoomX,
+                    zoomY;
 
-                this.zoomX = zoomX;
-                this.zoomY = zoomY;
+                // Look for the pinchType option
+                if (/touch/.test(e.type)) {
+                    zoomType = pick(options.pinchType, zoomType);
+                }
+
+                this.zoomX = zoomX = /x/.test(zoomType);
+                this.zoomY = zoomY = /y/.test(zoomType);
                 this.zoomHor = (zoomX && !inverted) || (zoomY && inverted);
                 this.zoomVert = (zoomY && !inverted) || (zoomX && inverted);
                 this.hasZoom = zoomX || zoomY;
@@ -9664,7 +10666,8 @@
                     kdpoints.sort(function(p1, p2) {
                         var isCloserX = p1.distX - p2.distX,
                             isCloser = p1.dist - p2.dist,
-                            isAbove = p1.series.group.zIndex > p2.series.group.zIndex ? -1 : 1;
+                            isAbove = p2.series.group.zIndex - p1.series.group.zIndex;
+
                         // We have two points which are not in the same place on xAxis and shared tooltip:
                         if (isCloserX !== 0 && shared) { // #5721
                             return isCloserX;
@@ -9674,7 +10677,12 @@
                             return isCloser;
                         }
                         // The same xAxis and yAxis position, sort by z-index:
-                        return isAbove;
+                        if (isAbove !== 0) {
+                            return isAbove;
+                        }
+
+                        // The same zIndex, sort by array index:
+                        return p1.series.index > p2.series.index ? -1 : 1;
                     });
                 }
 
@@ -9727,13 +10735,12 @@
                 }
 
                 // Start the event listener to pick up the tooltip and crosshairs
-                if (!pointer._onDocumentMouseMove) {
-                    pointer._onDocumentMouseMove = function(e) {
+                if (!pointer.unDocMouseMove) {
+                    pointer.unDocMouseMove = addEvent(doc, 'mousemove', function(e) {
                         if (charts[H.hoverChartIndex]) {
                             charts[H.hoverChartIndex].pointer.onDocumentMouseMove(e);
                         }
-                    };
-                    addEvent(doc, 'mousemove', pointer._onDocumentMouseMove);
+                    });
                 }
 
                 // Crosshair. For each hover point, loop over axes and draw cross if that point
@@ -9806,9 +10813,8 @@
                         tooltip.hide(delay);
                     }
 
-                    if (pointer._onDocumentMouseMove) {
-                        removeEvent(doc, 'mousemove', pointer._onDocumentMouseMove);
-                        pointer._onDocumentMouseMove = null;
+                    if (pointer.unDocMouseMove) {
+                        pointer.unDocMouseMove = pointer.unDocMouseMove();
                     }
 
                     // Remove crosshairs
@@ -10029,7 +11035,7 @@
 
                 e = this.normalize(e);
 
-                this.zoomOption();
+                this.zoomOption(e);
 
                 // issue #295, dragging not always working in Firefox
                 if (e.preventDefault) {
@@ -10245,16 +11251,16 @@
             Pointer = H.Pointer;
 
         /* Support for touch devices */
-        extend(Pointer.prototype, {
+        extend(Pointer.prototype, /** @lends Pointer.prototype */ {
 
             /**
              * Run translation operations
              */
             pinchTranslate: function(pinchDown, touches, transform, selectionMarker, clip, lastValidTouch) {
-                if (this.zoomHor || this.pinchHor) {
+                if (this.zoomHor) {
                     this.pinchTranslateDirection(true, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
                 }
-                if (this.zoomVert || this.pinchVert) {
+                if (this.zoomVert) {
                     this.pinchTranslateDirection(false, pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
                 }
             },
@@ -10401,6 +11407,10 @@
                     });
                     self.res = true; // reset on next move
 
+                    // Optionally move the tooltip on touchmove
+                } else if (self.followTouchMove && touchesLength === 1) {
+                    this.runPointActions(self.normalize(e));
+
                     // Event type is touchmove, handle panning and pinching
                 } else if (pinchDown.length) { // can be 0 when releasing, if touchend fires first
 
@@ -10420,10 +11430,7 @@
                     // Scale and translate the groups to provide visual feedback during pinching
                     self.scaleGroups(transform, clip);
 
-                    // Optionally move the tooltip on touchmove
-                    if (!hasZoom && self.followTouchMove && touchesLength === 1) {
-                        this.runPointActions(self.normalize(e));
-                    } else if (self.res) {
+                    if (self.res) {
                         self.res = false;
                         this.reset(false, 0);
                     }
@@ -10436,7 +11443,8 @@
             touch: function(e, start) {
                 var chart = this.chart,
                     hasMoved,
-                    pinchDown;
+                    pinchDown,
+                    isInside;
 
                 H.hoverChartIndex = chart.index;
 
@@ -10444,7 +11452,11 @@
 
                     e = this.normalize(e);
 
-                    if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop) && !chart.openMenu) {
+                    isInside = chart.isInsidePlot(
+                        e.chartX - chart.plotLeft,
+                        e.chartY - chart.plotTop
+                    );
+                    if (isInside && !chart.openMenu) {
 
                         // Run mouse events and display tooltip etc
                         if (start) {
@@ -10479,7 +11491,7 @@
             },
 
             onContainerTouchStart: function(e) {
-                this.zoomOption();
+                this.zoomOption(e);
                 this.touch(e, true);
             },
 
@@ -10553,7 +11565,7 @@
             /**
              * Extend the Pointer prototype with methods for each event handler and more
              */
-            extend(Pointer.prototype, {
+            extend(Pointer.prototype, /** @lends Pointer.prototype */ {
                 onContainerPointerDown: function(e) {
                     translateMSPointer(e, 'onContainerTouchStart', 'touchstart', function(e) {
                         touches[e.pointerId] = {
@@ -10640,7 +11652,8 @@
             win = H.win,
             wrap = H.wrap;
         /**
-         * The overview of the chart's series
+         * The overview of the chart's series.
+         * @class
          */
         Legend = H.Legend = function(chart, options) {
             this.init(chart, options);
@@ -10786,13 +11799,14 @@
                 if (legendGroup) {
                     legend.group = legendGroup.destroy();
                 }
+                legend.display = null; // Reset in .render on update.
             },
 
             /**
              * Position the checkboxes after the width is determined
              */
             positionCheckboxes: function(scrollOffset) {
-                var alignAttr = this.group.alignAttr,
+                var alignAttr = this.group && this.group.alignAttr,
                     translateY,
                     clipHeight = this.clipHeight || this.legendHeight,
                     titleHeight = this.titleHeight;
@@ -10890,9 +11904,9 @@
                     // Generate the group box
                     // A group to hold the symbol and text. Text is to be appended in Legend class.
                     item.legendGroup = renderer.g('legend-item')
-                        .addClass('highcharts-' + series.type + '-series highcharts-color-' + item.colorIndex + ' ' +
-                            (item.options.className || '') +
-                            (isSeries ? 'highcharts-series-' + item.index : '')
+                        .addClass('highcharts-' + series.type + '-series highcharts-color-' + item.colorIndex +
+                            (item.options.className ? ' ' + item.options.className : '') +
+                            (isSeries ? ' highcharts-series-' + item.index : '')
                         )
                         .attr({
                             zIndex: 1
@@ -11207,19 +12221,27 @@
                     lastY,
                     allItems = this.allItems,
                     clipToHeight = function(height) {
-                        clipRect.attr({
-                            height: height
-                        });
+                        if (height) {
+                            clipRect.attr({
+                                height: height
+                            });
+                        } else if (clipRect) { // Reset (#5912)
+                            legend.clipRect = clipRect.destroy();
+                            legend.contentGroup.clip();
+                        }
 
                         // useHTML
                         if (legend.contentGroup.div) {
-                            legend.contentGroup.div.style.clip = 'rect(' + padding + 'px,9999px,' + (padding + height) + 'px,0)';
+                            legend.contentGroup.div.style.clip = height ?
+                                'rect(' + padding + 'px,9999px,' +
+                                (padding + height) + 'px,0)' :
+                                'auto';
                         }
                     };
 
 
                 // Adjust the height
-                if (options.layout === 'horizontal') {
+                if (options.layout === 'horizontal' && options.verticalAlign !== 'middle' && !options.floating) {
                     spaceHeight /= 2;
                 }
                 if (maxHeight) {
@@ -11288,8 +12310,9 @@
 
                     legendHeight = spaceHeight;
 
+                    // Reset
                 } else if (nav) {
-                    clipToHeight(chart.chartHeight);
+                    clipToHeight();
                     nav.hide();
                     this.scrollGroup.attr({
                         translateY: 1
@@ -11505,10 +12528,13 @@
             win = H.win,
             Renderer = H.Renderer;
         /**
-         * The Chart class
-         * @param {String|Object} renderTo The DOM element to render to, or its id
-         * @param {Object} options
-         * @param {Function} callback Function to run when the chart has loaded
+         * The Chart class.
+         * @class Highcharts.Chart
+         * @memberOf Highcharts
+         * @param {String|HTMLDOMElement} renderTo - The DOM element to render to, or its
+         * id.
+         * @param {ChartOptions} options - The chart options structure.
+         * @param {Function} callback - Function to run when the chart has loaded.
          */
         var Chart = H.Chart = function() {
             this.getArgs.apply(this, arguments);
@@ -12096,7 +13122,7 @@
                     indexAttrName = 'data-highcharts-chart',
                     oldChartIndex,
                     Ren,
-                    containerId = 'highcharts-' + H.idCounter++,
+                    containerId = H.uniqueKey(),
                     containerStyle,
                     key;
 
@@ -12128,11 +13154,11 @@
                 // remove previous chart
                 renderTo.innerHTML = '';
 
-                // If the container doesn't have an offsetWidth, it has or is a child of a node
-                // that has display:none. We need to temporarily move it out to a visible
-                // state to determine the size, else the legend and tooltips won't render
-                // properly. The allowClone option is used in sparklines as a micro optimization,
-                // saving about 1-2 ms each chart.
+                // If the container doesn't have an offsetWidth, it has or is a child of
+                // a node that has display:none. We need to temporarily move it out to a
+                // visible state to determine the size, else the legend and tooltips
+                // won't render properly. The skipClone option is used in sparklines as
+                // a micro optimization, saving about 1-2 ms each chart.
                 if (!optionsChart.skipClone && !renderTo.offsetWidth) {
                     chart.cloneRenderTo();
                 }
@@ -12274,15 +13300,12 @@
              */
             initReflow: function() {
                 var chart = this,
-                    reflow = function(e) {
-                        chart.reflow(e);
-                    };
+                    unbind;
 
-
-                addEvent(win, 'resize', reflow);
-                addEvent(chart, 'destroy', function() {
-                    removeEvent(win, 'resize', reflow);
+                unbind = addEvent(win, 'resize', function(e) {
+                    chart.reflow(e);
                 });
+                addEvent(chart, 'destroy', unbind);
 
                 // The following will add listeners to re-fit the chart before and after
                 // printing (#2284). However it only works in WebKit. Should have worked
@@ -12973,15 +13996,23 @@
             removeEvent = H.removeEvent;
 
         /**
-         * The Point object and prototype. Inheritable and used as base for PiePoint
+         * The Point object. The point objects are generated from the series.data 
+         * configuration objects or raw numbers. They can be accessed from the
+         * Series.points array.
+         * @constructor Point
          */
         Point = H.Point = function() {};
         Point.prototype = {
 
             /**
-             * Initialize the point
-             * @param {Object} series The series object containing this point
-             * @param {Object} options The data in either number, array or object format
+             * Initialize the point. Called internally based on the series.data option.
+             * @function #init
+             * @memberOf Point
+             * @param {Object} series The series object containing this point.
+             * @param {Object} options The data in either number, array or object
+             *        format.
+             * @param {Number} x Optionally, the X value of the.
+             * @returns {Object} The Point instance.
              */
             init: function(series, options, x) {
 
@@ -13011,10 +14042,14 @@
                 return point;
             },
             /**
-             * Apply the options containing the x and y data and possible some extra properties.
-             * This is called on point init or from point.update.
+             * Apply the options containing the x and y data and possible some extra
+             * properties. Called on point init or from point.update.
              *
-             * @param {Object} options
+             * @function #applyOptions
+             * @memberOf Point
+             * @param {Object} options The point options as defined in series.data.
+             * @param {Number} x Optionally, the X value.
+             * @returns {Object} The Point instance.
              */
             applyOptions: function(options, x) {
                 var point = this,
@@ -13319,7 +14354,7 @@
             win = H.win;
 
         /**
-         * @classDescription The base function which all other series types inherit from. The data in the series is stored
+         * The base function which all other series types inherit from. The data in the series is stored
          * in various arrays.
          *
          * - First, series.options.data contains all the original config options for
@@ -13332,10 +14367,11 @@
          * compared to series.data and series.options.data. If however the series data is grouped, these can't
          * be correlated one to one.
          * - series.xData and series.processedXData contain clean x values, equivalent to series.data and series.points.
-         * - series.yData and series.processedYData contain clean x values, equivalent to series.data and series.points.
+         * - series.yData and series.processedYData contain clean y values, equivalent to series.data and series.points.
          *
-         * @param {Object} chart
-         * @param {Object} options
+         * @constructor Series
+         * @param {Object} chart - The chart instance.
+         * @param {Object} options - The series options.
          */
         H.Series = H.seriesType('line', null, { // base series options
 
@@ -13378,11 +14414,6 @@
                     return this.y === null ? '' : H.numberFormat(this.y, -1);
                 },
 
-                /*style: {
-                	color: 'contrast',
-                	textShadow: '0 0 6px contrast, 0 0 3px contrast'
-                },*/
-
                 verticalAlign: 'bottom', // above singular point
                 x: 0,
                 y: 0,
@@ -13424,8 +14455,7 @@
                 // zIndex: null
 
 
-            // Prototype properties
-        }, {
+        }, /** @lends Series.prototype */ {
             isCartesian: true,
             pointClass: Point,
             sorted: true, // requires the data to be sorted
@@ -13440,6 +14470,7 @@
                     eventType,
                     events,
                     chartSeries = chart.series,
+                    lastSeries,
                     sortByIndex = function(a, b) {
                         return pick(a.options.index, a._i) - pick(b.options.index, b._i);
                     };
@@ -13486,9 +14517,13 @@
                     chart.hasCartesianSeries = true;
                 }
 
-                // Register it in the chart
+                // Get the index and register the series in the chart. The index is one
+                // more than the current latest series index (#5960).
+                if (chartSeries.length) {
+                    lastSeries = chartSeries[chartSeries.length - 1];
+                }
+                series._i = pick(lastSeries && lastSeries._i, -1) + 1;
                 chartSeries.push(series);
-                series._i = chartSeries.length - 1;
 
                 // Sort series according to index option (#248, #1123, #2456)
                 stableSort(chartSeries, sortByIndex);
@@ -13504,8 +14539,12 @@
             },
 
             /**
-             * Set the xAxis and yAxis properties of cartesian series, and register the series
-             * in the axis.series array
+             * Set the xAxis and yAxis properties of cartesian series, and register the
+             * series in the `axis.series` array.
+             *
+             * @function #bindAxes
+             * @memberOf Series
+             * @returns {void}
              */
             bindAxes: function() {
                 var series = this,
@@ -13996,18 +15035,17 @@
                 for (i = 0; i < processedDataLength; i++) {
                     cursor = cropStart + i;
                     if (!hasGroupedData) {
-                        if (data[cursor]) {
-                            point = data[cursor];
-                        } else if (dataOptions[cursor] !== undefined) { // #970
+                        point = data[cursor];
+                        if (!point && dataOptions[cursor] !== undefined) { // #970
                             data[cursor] = point = (new PointClass()).init(series, dataOptions[cursor], processedXData[i]);
                         }
-                        points[i] = point;
                     } else {
                         // splat the y data in case of ohlc data array
-                        points[i] = (new PointClass()).init(series, [processedXData[i]].concat(splat(processedYData[i])));
-                        points[i].dataGroup = series.groupMap[i];
+                        point = (new PointClass()).init(series, [processedXData[i]].concat(splat(processedYData[i])));
+                        point.dataGroup = series.groupMap[i];
                     }
-                    points[i].index = cursor; // For faster access in Point.update
+                    point.index = cursor; // For faster access in Point.update
+                    points[i] = point;
                 }
 
                 // Hide cropped-away points - this only runs when the number of points is above cropThreshold, or when
@@ -14081,8 +15119,12 @@
             },
 
             /**
-             * Translate data points from raw data values to chart specific positioning data
-             * needed later in drawPoints, drawGraph and drawTracker.
+             * Translate data points from raw data values to chart specific positioning
+             * data needed later in drawPoints, drawGraph and drawTracker.
+             *
+             * @function #translate
+             * @memberOf Series
+             * @returns {void}
              */
             translate: function() {
                 if (!this.processedXData) { // hidden series
@@ -14109,6 +15151,14 @@
                     stackIndicator,
                     closestPointRangePx = Number.MAX_VALUE;
 
+                // Point placement is relative to each series pointRange (#5889)
+                if (pointPlacement === 'between') {
+                    pointPlacement = 0.5;
+                }
+                if (isNumber(pointPlacement)) {
+                    pointPlacement *= pick(options.pointRange || xAxis.pointRange);
+                }
+
                 // Translate each point
                 for (i = 0; i < dataLength; i++) {
                     var point = points[i],
@@ -14126,7 +15176,15 @@
 
                     // Get the plotX translation
                     point.plotX = plotX = correctFloat( // #5236
-                        Math.min(Math.max(-1e5, xAxis.translate(xValue, 0, 0, 0, 1, pointPlacement, this.type === 'flags')), 1e5) // #3923
+                        Math.min(Math.max(-1e5, xAxis.translate(
+                            xValue,
+                            0,
+                            0,
+                            0,
+                            1,
+                            pointPlacement,
+                            this.type === 'flags'
+                        )), 1e5) // #3923
                     );
 
                     // Calculate the bottom y value for stacked series
@@ -14317,7 +15375,11 @@
             },
 
             /**
-             * Draw the markers
+             * Draw the markers.
+             *
+             * @function #drawPoints
+             * @memberOf Series
+             * @returns {void}
              */
             drawPoints: function() {
                 var series = this,
@@ -14791,14 +15853,9 @@
              */
             invertGroups: function(inverted) {
                 var series = this,
-                    chart = series.chart;
+                    chart = series.chart,
+                    remover;
 
-                // Pie, go away (#1736)
-                if (!series.xAxis) {
-                    return;
-                }
-
-                // A fixed size is needed for inversion to work
                 function setInvert() {
                     var size = {
                         width: series.yAxis.len,
@@ -14812,10 +15869,14 @@
                     });
                 }
 
-                addEvent(chart, 'resize', setInvert); // do it on resize
-                addEvent(series, 'destroy', function() {
-                    removeEvent(chart, 'resize', setInvert);
-                });
+                // Pie, go away (#1736)
+                if (!series.xAxis) {
+                    return;
+                }
+
+                // A fixed size is needed for inversion to work
+                remover = addEvent(chart, 'resize', setInvert);
+                addEvent(series, 'destroy', remover);
 
                 // Do it now
                 setInvert(inverted); // do it now
@@ -15147,8 +16208,12 @@
             format = H.format,
             pick = H.pick,
             Series = H.Series;
+
         /**
-         * The class for stack items
+         * The class for stacks. Each stack, on a specific X value and either negative
+         * or positive, has its own stack item.
+         *
+         * @class
          */
         function StackItem(axis, options, isNegative, x, stackOption) {
 
@@ -15643,7 +16708,7 @@
             splat = H.splat;
 
         // Extend the Chart prototype for dynamic methods
-        extend(Chart.prototype, {
+        extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
 
             /**
              * Add a series dynamically after  time
@@ -15773,9 +16838,12 @@
             ],
 
             /** 
-             * These properties cause all series to be updated when updating. Can be extended from plugins.
+             * These properties cause all series to be updated when updating. Can be
+             * extended from plugins.
              */
-            propsRequireUpdateSeries: ['chart.polar', 'chart.ignoreHiddenSeries', 'chart.type', 'colors', 'plotOptions'],
+            propsRequireUpdateSeries: ['chart.inverted', 'chart.polar',
+                'chart.ignoreHiddenSeries', 'chart.type', 'colors', 'plotOptions'
+            ],
 
             /**
              * Chart.update function that takes the whole options stucture.
@@ -15907,7 +16975,7 @@
         });
 
         // extend the Point prototype for dynamic methods
-        extend(Point.prototype, {
+        extend(Point.prototype, /** @lends Point.prototype */ {
             /**
              * Point.update with new options (typically x/y data) and optionally redraw the series.
              *
@@ -15990,14 +17058,14 @@
         });
 
         // Extend the series prototype for dynamic methods
-        extend(Series.prototype, {
+        extend(Series.prototype, /** @lends Series.prototype */ {
             /**
              * Add a point dynamically after chart load time
              * @param {Object} options Point options as given in series.data
              * @param {Boolean} redraw Whether to redraw the chart or wait for an explicit call
              * @param {Boolean} shift If shift is true, a point is shifted off the start
              *    of the series as one is appended to the end.
-             * @param {Boolean|Object} animation Whether to apply animation, and optionally animation
+             * @param {Boolean|AnimationOptions} animation Whether to apply animation, and optionally animation
              *    configuration
              */
             addPoint: function(options, redraw, shift, animation) {
@@ -16207,7 +17275,7 @@
         });
 
         // Extend the Axis.prototype for dynamic methods
-        extend(Axis.prototype, {
+        extend(Axis.prototype, /** @lends Axis.prototype */ {
 
             /**
              * Axis.update with a new options structure
@@ -16297,8 +17365,11 @@
             pick = H.pick,
             Series = H.Series,
             seriesType = H.seriesType;
+
         /**
-         * Area series type
+         * Area series type.
+         * @constructor seriesTypes.area
+         * @extends {Series}
          */
         seriesType('area', 'line', {
             softThreshold: false,
@@ -16307,7 +17378,7 @@
                 // lineColor: null, // overrides color, but lets fillColor be unaltered
                 // fillOpacity: 0.75,
                 // fillColor: null
-        }, {
+        }, /** @lends seriesTypes.area.prototype */ {
             singleStacks: false,
             /** 
              * Return an array of stacked points, where null and missing points are replaced by 
@@ -16606,25 +17677,15 @@
          * License: www.highcharts.com/license
          */
         'use strict';
-        var defaultPlotOptions = H.defaultPlotOptions,
-            defaultSeriesOptions = H.defaultPlotOptions.line,
-            extendClass = H.extendClass,
-            merge = H.merge,
-            pick = H.pick,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes;
+        var pick = H.pick,
+            seriesType = H.seriesType;
 
         /**
-         * Set the default options for spline
+         * Spline series type.
+         * @constructor seriesTypes.spline
+         * @extends {Series}
          */
-        defaultPlotOptions.spline = merge(defaultSeriesOptions);
-
-        /**
-         * SplineSeries object
-         */
-        seriesTypes.spline = extendClass(Series, {
-            type: 'spline',
-
+        seriesType('spline', 'line', {}, /** @lends seriesTypes.spline.prototype */ {
             /**
              * Get the spline segment from a given point's previous neighbour to the given point
              */
@@ -16789,7 +17850,10 @@
             stop = H.stop,
             svg = H.svg;
         /**
-         * The column series type
+         * The column series type.
+         *
+         * @constructor seriesTypes.column
+         * @augments Series
          */
         seriesType('column', 'line', {
             borderRadius: 0,
@@ -16820,11 +17884,10 @@
             tooltip: {
                 distance: 6
             },
-            threshold: 0,
+            threshold: 0
 
 
-            // Prototype members
-        }, {
+        }, /** @lends seriesTypes.column.prototype */ {
             cropShoulder: 0,
             directTouch: true, // When tooltip is not shared, this series (and derivatives) requires direct touch/hover. KD-tree does not apply.
             trackerGroups: ['group', 'dataLabelsGroup'],
@@ -16832,7 +17895,12 @@
             // point is substracted from previous (#1910)
 
             /**
-             * Initialize the series
+             * Initialize the series. Extends the basic Series.init method by
+             * marking other series of the same type as dirty.
+             *
+             * @function #init
+             * @memberOf seriesTypes.column
+             * @returns {void}
              */
             init: function() {
                 Series.prototype.init.apply(this, arguments);
@@ -17284,8 +18352,12 @@
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes,
             setAnimation = H.setAnimation;
+
         /**
-         * Pie series type
+         * The pie series type.
+         *
+         * @constructor seriesTypes.pie
+         * @augments Series
          */
         seriesType('pie', 'line', {
             center: [null, null],
@@ -17315,11 +18387,10 @@
             stickyTracking: false,
             tooltip: {
                 followPointer: true
-            },
+            }
 
 
-            // Prototype members
-        }, {
+        }, /** @lends seriesTypes.pie.prototype */ {
             isCartesian: false,
             requireSorting: false,
             directTouch: true,
@@ -17595,8 +18666,12 @@
              */
             getSymbol: noop
 
-            // Point class overrides
-        }, {
+
+            /**
+             * @constructor seriesTypes.pie.prototype.pointClass
+             * @extends {Point}
+             */
+        }, /** @lends seriesTypes.pie.prototype.pointClass.prototype */ {
             /**
              * Initiate the pie slice
              */
@@ -18376,7 +19451,7 @@
             seriesTypes.pie.prototype.connectorPath = function(labelPos) {
                 var x = labelPos.x,
                     y = labelPos.y;
-                return pick(this.options.softConnector, true) ? [
+                return pick(this.options.dataLabels.softConnector, true) ? [
                     'M',
                     x + (labelPos[6] === 'left' ? 5 : -5), y, // end of the string at the label
                     'C',
@@ -18719,11 +19794,17 @@
             seriesTypes = H.seriesTypes,
             svg = H.svg,
             TrackerMixin;
+
         /**
-         * TrackerMixin for points and graphs
+         * TrackerMixin for points and graphs.
+         *
+         * @mixin
          */
         TrackerMixin = H.TrackerMixin = {
 
+            /**
+             * Draw the tracker for a point.
+             */
             drawTrackerPoint: function() {
                 var series = this,
                     chart = series.chart,
@@ -18969,7 +20050,7 @@
          * Extend the Chart object with interaction
          */
 
-        extend(Chart.prototype, {
+        extend(Chart.prototype, /** @lends Chart.prototype */ {
             /**
              * Display the zoom button
              */
@@ -19030,7 +20111,7 @@
                             isXAxis = axis.isXAxis;
 
                         // don't zoom more than minRange
-                        if (pointer[isXAxis ? 'zoomX' : 'zoomY'] || pointer[isXAxis ? 'pinchX' : 'pinchY']) {
+                        if (pointer[isXAxis ? 'zoomX' : 'zoomY']) {
                             hasZoomed = axis.zoom(axisData.min, axisData.max);
                             if (axis.displayBtn) {
                                 displayButton = true;
@@ -19110,7 +20191,7 @@
         /*
          * Extend the Point object with interaction
          */
-        extend(Point.prototype, {
+        extend(Point.prototype, /** @lends Point.prototype */ {
             /**
              * Toggle the selection status of a point
              * @param {Boolean} selected Whether to select or unselect the point.
@@ -19246,6 +20327,7 @@
                     halo = series.halo,
                     haloOptions,
                     markerAttribs,
+                    hasMarkers = markerOptions && series.markerAttribs,
                     newSymbol;
 
                 state = state || ''; // empty string
@@ -19266,7 +20348,7 @@
                     return;
                 }
 
-                if (markerOptions && series.markerAttribs) {
+                if (hasMarkers) {
                     markerAttribs = series.markerAttribs(point, state);
                 }
 
@@ -19351,7 +20433,8 @@
                 if (haloOptions && haloOptions.size) {
                     if (!halo) {
                         series.halo = halo = chart.renderer.path()
-                            .add(series.markerGroup || series.group);
+                            // #5818, #5903
+                            .add(hasMarkers ? series.markerGroup : series.group);
                     }
                     H.stop(halo);
                     halo[move ? 'animate' : 'attr']({
@@ -19373,7 +20456,7 @@
 
             /**
              * Get the circular path definition for the halo
-             * @param  {Number} size The radius of the circular halo
+             * @param  {Number} size The radius of the circular halo.
              * @returns {Array} The path definition
              */
             haloPath: function(size) {
@@ -19393,7 +20476,7 @@
          * Extend the Series object with interaction
          */
 
-        extend(Series.prototype, {
+        extend(Series.prototype, /** @lends Series.prototype */ {
             /**
              * Series mouse over handler
              */
@@ -19621,7 +20704,7 @@
             var respRules = this.respRules,
                 condition = rule.condition,
                 matches,
-                fn = rule.callback || function() {
+                fn = condition.callback || function() {
                     return this.chartWidth <= pick(condition.maxWidth, Number.MAX_VALUE) &&
                         this.chartHeight <= pick(condition.maxHeight, Number.MAX_VALUE) &&
                         this.chartWidth >= pick(condition.minWidth, 0) &&
@@ -19630,7 +20713,7 @@
 
 
             if (rule._id === undefined) {
-                rule._id = H.idCounter++;
+                rule._id = H.uniqueKey();
             }
             matches = fn.call(this);
 
@@ -19898,7 +20981,7 @@
         });
 
         // Extend the Axis prototype
-        extend(Axis.prototype, {
+        extend(Axis.prototype, /** @lends Axis.prototype */ {
 
             /**
              * Calculate the ordinal positions before tick positions are calculated.
@@ -21351,9 +22434,12 @@
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
-        /* ****************************************************************************
-         * Start OHLC series code													 *
-         *****************************************************************************/
+        /**
+         * The ohlc series type.
+         *
+         * @constructor seriesTypes.ohlc
+         * @augments seriesTypes.column
+         */
         seriesType('ohlc', 'column', {
             lineWidth: 1,
             tooltip: {
@@ -21365,11 +22451,10 @@
                     'Close: {point.close}<br/>'
 
             },
-            threshold: null,
+            threshold: null
 
 
-            // Prototype members
-        }, {
+        }, /** @lends seriesTypes.ohlc */ {
             pointArrayMap: ['open', 'high', 'low', 'close'], // array point configs are mapped to this
             toYData: function(point) { // return a plain array for speedy calculation
                 return [point.open, point.high, point.low, point.close];
@@ -21482,15 +22567,15 @@
 
             },
 
-            /**
-             * Disable animation
-             */
-            animate: null
+            animate: null // Disable animation
 
-            // Point class override
-        }, {
             /**
-             * Add up or down to the class name
+             * @constructor seriesTypes.ohlc.prototype.pointClass
+             * @extends {Point}
+             */
+        }, /** @lends seriesTypes.ohlc.prototype.pointClass.prototype */ {
+            /**
+             * Extend the parent method by adding up or down to the class name.
              */
             getClassName: function() {
                 return Point.prototype.getClassName.call(this) +
@@ -21515,9 +22600,12 @@
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
-        /* ****************************************************************************
-         * Start Candlestick series code											  *
-         *****************************************************************************/
+        /**
+         * The candlestick series type.
+         *
+         * @constructor seriesTypes.candlestick
+         * @augments seriesTypes.ohlc
+         */
         seriesType('candlestick', 'ohlc', merge(defaultPlotOptions.column, {
             states: {
                 hover: {
@@ -21525,11 +22613,10 @@
                 }
             },
             tooltip: defaultPlotOptions.ohlc.tooltip,
-            threshold: null,
+            threshold: null
 
 
-            // Prototype members
-        }), {
+        }), /** @lends seriesTypes.candlestick */ {
 
             /**
              * Draw the data points
@@ -21639,9 +22726,13 @@
             TrackerMixin = H.TrackerMixin,
             VMLRenderer = H.VMLRenderer,
             symbols = SVGRenderer.prototype.symbols;
-        /* ****************************************************************************
-         * Start Flags series code													*
-         *****************************************************************************/
+
+        /**
+         * The flags series type.
+         *
+         * @constructor seriesTypes.flags
+         * @augments seriesTypes.column
+         */
         seriesType('flags', 'column', {
             pointRange: 0, // #673
             //radius: 2,
@@ -21652,11 +22743,10 @@
                 pointFormat: '{point.text}<br/>'
             },
             threshold: null,
-            y: -30,
+            y: -30
 
 
-            // Prototype members
-        }, {
+        }, /** @lends seriesTypes.flags.prototype */ {
             sorted: false,
             noSharedTooltip: true,
             allowDG: false,
@@ -21664,7 +22754,7 @@
             trackerGroups: ['markerGroup'],
             forceCrop: true,
             /**
-             * Inherit the initialization from base Series
+             * Inherit the initialization from base Series.
              */
             init: Series.prototype.init,
 
@@ -21896,10 +22986,7 @@
                 });
             },
 
-            /**
-             * Disable animation
-             */
-            animate: noop,
+            animate: noop, // Disable animation
             buildKDTree: noop,
             setClip: noop
 
@@ -21998,7 +23085,10 @@
         defaultOptions.scrollbar = merge(true, defaultScrollbarOptions, defaultOptions.scrollbar);
 
         /**
-         * The Scrollbar class 
+         * A reusable scrollbar, internally used in Highstock's navigator and optionally
+         * on individual axes.
+         *
+         * @class
          * @param {Object} renderer
          * @param {Object} options
          * @param {Object} chart
@@ -22767,7 +23857,9 @@
         });
 
         /**
-         * The Navigator class
+         * The Navigator class.
+         *
+         * @class
          * @param {Object} chart
          */
         function Navigator(chart) {
@@ -22813,8 +23905,11 @@
 
                 // Place it
                 handles[index][scroller.rendered && !scroller.hasDragged ? 'animate' : 'attr']({
-                    translateX: scroller.scrollerLeft + scroller.scrollbarHeight + parseInt(x, 10),
-                    translateY: scroller.top + scroller.height / 2 - 8
+                    translateX: Math.round(
+                        scroller.scrollerLeft + scroller.scrollbarHeight +
+                        parseInt(x, 10)
+                    ),
+                    translateY: Math.round(scroller.top + scroller.height / 2 - 8)
                 });
             },
 
@@ -23444,7 +24539,7 @@
                 if (this.series) {
                     this.removeBaseSeriesEvents();
                     each(this.series, function(s) {
-                        s.remove();
+                        s.destroy();
                     });
                 }
 
@@ -23825,6 +24920,7 @@
             createElement = H.createElement,
             dateFormat = H.dateFormat,
             defaultOptions = H.defaultOptions,
+            useUTC = defaultOptions.global.useUTC,
             defined = H.defined,
             destroyObjectProperties = H.destroyObjectProperties,
             discardElement = H.discardElement,
@@ -23836,7 +24932,6 @@
             merge = H.merge,
             pick = H.pick,
             pInt = H.pInt,
-            removeEvent = H.removeEvent,
             splat = H.splat,
             wrap = H.wrap;
 
@@ -23874,7 +24969,8 @@
         });
 
         /**
-         * The object constructor for the range selector
+         * The range selector.
+         * @class
          * @param {Object} chart
          */
         function RangeSelector(chart) {
@@ -23892,9 +24988,7 @@
              */
             clickButton: function(i, redraw) {
                 var rangeSelector = this,
-                    selected = rangeSelector.selected,
                     chart = rangeSelector.chart,
-                    buttons = rangeSelector.buttons,
                     rangeOptions = rangeSelector.buttonOptions[i],
                     baseAxis = chart.xAxis[0],
                     unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || baseAxis || {},
@@ -23902,19 +24996,17 @@
                     dataMax = unionExtremes.dataMax,
                     newMin,
                     newMax = baseAxis && Math.round(Math.min(baseAxis.max, pick(dataMax, baseAxis.max))), // #1568
-                    now,
                     type = rangeOptions.type,
                     baseXAxisOptions,
                     range = rangeOptions._range,
                     rangeMin,
-                    year,
                     minSetting,
                     rangeSetting,
                     ctx,
+                    ytdExtremes,
                     dataGrouping = rangeOptions.dataGrouping;
 
-                if (dataMin === null || dataMax === null || // chart has no data, base series is removed
-                    i === rangeSelector.selected) { // same button is clicked twice
+                if (dataMin === null || dataMax === null) { // chart has no data, base series is removed
                     return;
                 }
 
@@ -23958,7 +25050,6 @@
                     // On user clicks on the buttons, or a delayed action running from the beforeRender
                     // event (below), the baseAxis is defined.
                     if (baseAxis) {
-
                         // When "ytd" is the pre-selected button for the initial view, its calculation
                         // is delayed and rerun in the beforeRender event (below). When the series
                         // are initialized, but before the chart is rendered, we have access to the xData
@@ -23973,11 +25064,9 @@
                             });
                             redraw = false;
                         }
-                        now = new HCDate(dataMax);
-                        year = now[HCDate.hcGetFullYear]();
-                        newMin = rangeMin = Math.max(dataMin || 0, HCDate.UTC(year, 0, 1)); // eslint-disable-line new-cap
-                        now = now.getTime();
-                        newMax = Math.min(dataMax || now, now);
+                        ytdExtremes = rangeSelector.getYTDExtremes(dataMax, dataMin, useUTC);
+                        newMin = rangeMin = ytdExtremes.min;
+                        newMax = ytdExtremes.max;
 
                         // "ytd" is pre-selected. We don't yet have access to processed point and extremes data
                         // (things like pointStart and pointInterval are missing), so we delay the process (#942)
@@ -23991,16 +25080,7 @@
                     newMin = dataMin;
                     newMax = dataMax;
                 }
-
-                // Deselect previous button
-                if (buttons[selected]) {
-                    buttons[selected].setState(0);
-                }
-                // Select this button
-                if (buttons[i]) {
-                    buttons[i].setState(2);
-                    rangeSelector.lastSelected = i;
-                }
+                rangeSelector.setSelected(i);
 
                 // Update the chart
                 if (!baseAxis) {
@@ -24011,7 +25091,6 @@
                     baseXAxisOptions.range = range;
                     minSetting = baseXAxisOptions.min;
                     baseXAxisOptions.min = rangeMin;
-                    rangeSelector.setSelected(i);
                     addEvent(chart, 'load', function resetMinAndRange() {
                         baseXAxisOptions.range = rangeSetting;
                         baseXAxisOptions.min = minSetting;
@@ -24028,7 +25107,6 @@
                             rangeSelectorButton: rangeOptions
                         }
                     );
-                    rangeSelector.setSelected(i);
                 }
             },
 
@@ -24075,7 +25153,7 @@
                     options = chart.options.rangeSelector,
                     buttonOptions = options.buttons || [].concat(rangeSelector.defaultButtons),
                     selectedOption = options.selected,
-                    blurInputs = rangeSelector.blurInputs = function() {
+                    blurInputs = function() {
                         var minInput = rangeSelector.minInput,
                             maxInput = rangeSelector.maxInput;
                         if (minInput && minInput.blur) { //#3274 in some case blur is not defined
@@ -24093,8 +25171,8 @@
                 chart.extraTopMargin = options.height;
                 rangeSelector.buttonOptions = buttonOptions;
 
-                addEvent(chart.container, 'mousedown', blurInputs);
-                addEvent(chart, 'resize', blurInputs);
+                this.unMouseDown = addEvent(chart.container, 'mousedown', blurInputs);
+                this.unResize = addEvent(chart, 'resize', blurInputs);
 
                 // Extend the buttonOptions with actual range
                 each(buttonOptions, rangeSelector.computeButtonRange);
@@ -24113,76 +25191,94 @@
                             this.setDataGrouping(false, false);
                         }
                     });
-                    // Normalize the pressed button whenever a new range is selected
-                    addEvent(chart.xAxis[0], 'afterSetExtremes', function() {
-                        rangeSelector.updateButtonStates(true);
-                    });
                 });
             },
 
             /**
              * Dynamically update the range selector buttons after a new range has been set
              */
-            updateButtonStates: function(updating) {
+            updateButtonStates: function() {
                 var rangeSelector = this,
                     chart = this.chart,
                     baseAxis = chart.xAxis[0],
+                    actualRange = Math.round(baseAxis.max - baseAxis.min),
+                    hasNoData = !baseAxis.hasVisibleSeries,
+                    day = 24 * 36e5, // A single day in milliseconds
                     unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || baseAxis,
                     dataMin = unionExtremes.dataMin,
                     dataMax = unionExtremes.dataMax,
+                    ytdExtremes = rangeSelector.getYTDExtremes(dataMax, dataMin, useUTC),
+                    ytdMin = ytdExtremes.min,
+                    ytdMax = ytdExtremes.max,
                     selected = rangeSelector.selected,
+                    selectedExists = isNumber(selected),
                     allButtonsEnabled = rangeSelector.options.allButtonsEnabled,
                     buttons = rangeSelector.buttons;
 
-                if (updating && chart.fixedRange !== Math.round(baseAxis.max - baseAxis.min)) {
-                    if (buttons[selected]) {
-                        buttons[selected].setState(0);
-                    }
-                    rangeSelector.setSelected(null);
-                }
-
                 each(rangeSelector.buttonOptions, function(rangeOptions, i) {
-                    var actualRange = Math.round(baseAxis.max - baseAxis.min),
-                        range = rangeOptions._range,
+                    var range = rangeOptions._range,
                         type = rangeOptions.type,
                         count = rangeOptions.count || 1,
+                        button = buttons[i],
+                        state = 0,
+                        disable,
+                        select,
+                        isSelected = i === selected,
                         // Disable buttons where the range exceeds what is allowed in the current view
                         isTooGreatRange = range > dataMax - dataMin,
                         // Disable buttons where the range is smaller than the minimum range
                         isTooSmallRange = range < baseAxis.minRange,
+                        // Do not select the YTD button if not explicitly told so
+                        isYTDButNotSelected = false,
                         // Disable the All button if we're already showing all
-                        isAllButAlreadyShowingAll = rangeOptions.type === 'all' && baseAxis.max - baseAxis.min >= dataMax - dataMin &&
-                        buttons[i].state !== 2,
-                        // Set a button on export
-                        isSelectedForExport = chart.renderer.forExport && i === selected,
-
-                        isSameRange = range === actualRange,
-
-                        hasNoData = !baseAxis.hasVisibleSeries;
-
+                        isAllButAlreadyShowingAll = false,
+                        isSameRange = range === actualRange;
                     // Months and years have a variable range so we check the extremes
-                    if ((type === 'month' || type === 'year') && (actualRange >= {
+                    if (
+                        (type === 'month' || type === 'year') &&
+                        (actualRange >= {
                             month: 28,
                             year: 365
-                        }[type] * 24 * 36e5 * count) &&
+                        }[type] * day * count) &&
                         (actualRange <= {
                             month: 31,
                             year: 366
-                        }[type] * 24 * 36e5 * count)) {
+                        }[type] * day * count)
+                    ) {
                         isSameRange = true;
+                    } else if (type === 'ytd') {
+                        isSameRange = (ytdMax - ytdMin) === actualRange;
+                        isYTDButNotSelected = !isSelected;
+                    } else if (type === 'all') {
+                        isSameRange = baseAxis.max - baseAxis.min >= dataMax - dataMin;
+                        isAllButAlreadyShowingAll = !isSelected && selectedExists && isSameRange;
                     }
                     // The new zoom area happens to match the range for a button - mark it selected.
                     // This happens when scrolling across an ordinal gap. It can be seen in the intraday
                     // demos when selecting 1h and scroll across the night gap.
-                    if (isSelectedForExport || (isSameRange && i !== selected) && i === rangeSelector.lastSelected) {
-                        rangeSelector.setSelected(i);
-                        buttons[i].setState(2);
+                    disable = (!allButtonsEnabled &&
+                        (
+                            isTooGreatRange ||
+                            isTooSmallRange ||
+                            isAllButAlreadyShowingAll ||
+                            hasNoData
+                        )
+                    );
+                    select = (
+                        (isSelected && isSameRange) ||
+                        (isSameRange && !selectedExists && !isYTDButNotSelected)
+                    );
 
-                    } else if (!allButtonsEnabled && (isTooGreatRange || isTooSmallRange || isAllButAlreadyShowingAll || hasNoData)) {
-                        buttons[i].setState(3);
+                    if (disable) {
+                        state = 3;
+                    } else if (select) {
+                        selectedExists = true; // Only one button can be selected
+                        state = 2;
+                    }
 
-                    } else if (buttons[i].state === 3) {
-                        buttons[i].setState(0);
+                    // If state has changed, update the button
+                    if (button.state !== state) {
+                        button.setState(state);
                     }
                 });
             },
@@ -24298,7 +25394,7 @@
                         if (isNumber(value)) {
 
                             // Correct for timezone offset (#433)
-                            if (!defaultOptions.global.useUTC) {
+                            if (!useUTC) {
                                 value = value + new Date().getTimezoneOffset() * 60 * 1000;
                             }
 
@@ -24407,6 +25503,27 @@
                     inputTop: buttonTop - 10
                 };
             },
+            /**
+             * Get the extremes of YTD. 
+             * Will choose dataMax if its value is lower than the current timestamp.
+             * Will choose dataMin if its value is higher than the timestamp for
+             * 	the start of current year.
+             * @param  {number} dataMax
+             * @param  {number} dataMin
+             * @return {object} Returns min and max for the YTD
+             */
+            getYTDExtremes: function(dataMax, dataMin, useUTC) {
+                var min,
+                    now = new HCDate(dataMax),
+                    year = now[HCDate.hcGetFullYear](),
+                    startOfYear = useUTC ? HCDate.UTC(year, 0, 1) : +new HCDate(year, 0, 1); // eslint-disable-line new-cap
+                min = Math.max(dataMin || 0, startOfYear);
+                now = now.getTime();
+                return {
+                    max: Math.min(dataMax || now, now),
+                    min: min
+                };
+            },
 
             /**
              * Render the range selector including the buttons and the inputs. The first time render
@@ -24477,13 +25594,7 @@
 
                         // increase button position for the next button
                         buttonLeft += buttons[i].width + pick(options.buttonSpacing, 5);
-
-                        if (rangeSelector.selected === i) {
-                            buttons[i].setState(2);
-                        }
                     });
-
-                    rangeSelector.updateButtonStates();
 
                     // first create a wrapper outside the container in order to make
                     // the inputs work and make export correct
@@ -24505,6 +25616,7 @@
                         rangeSelector.drawInput('max');
                     }
                 }
+                rangeSelector.updateButtonStates();
 
                 // Set or update the group position
                 buttonGroup[rendered ? 'animate' : 'attr']({
@@ -24526,7 +25638,6 @@
                     if (!defined(inputEnabled)) {
                         buttonBBox = buttonGroup.getBBox();
                         inputGroup[inputGroup.alignAttr.translateX < buttonBBox.x + buttonBBox.width + 10 ? 'hide' : 'show']();
-                        // docs: From the responsive docs and api, add links to the new stock responsive demo.
                     }
 
                     // Set or reset the input values
@@ -24553,12 +25664,10 @@
             destroy: function() {
                 var minInput = this.minInput,
                     maxInput = this.maxInput,
-                    chart = this.chart,
-                    blurInputs = this.blurInputs,
                     key;
 
-                removeEvent(chart.container, 'mousedown', blurInputs);
-                removeEvent(chart, 'resize', blurInputs);
+                this.unMouseDown();
+                this.unResize();
 
                 // Destroy elements in collections
                 destroyObjectProperties(this.buttons);
@@ -24616,6 +25725,14 @@
             };
         };
 
+        /**
+         * Get the axis min value based on the range option and the current max. For
+         * stock charts this is extended via the {@link RangeSelector} so that if the
+         * selected range is a multiple of months or years, it is compensated for
+         * various month lengths.
+         * 
+         * @return {number} The new minimum value.
+         */
         Axis.prototype.minFromRange = function() {
             var rangeOptions = this.range,
                 type = rangeOptions.type,
@@ -24635,10 +25752,15 @@
                 };
 
             if (isNumber(rangeOptions)) {
-                min = this.max - rangeOptions;
+                min = max - rangeOptions;
                 range = rangeOptions;
             } else {
                 min = max + getTrueRange(max, -rangeOptions.count);
+
+                // Let the fixedRange reflect initial settings (#5930)
+                if (this.chart) {
+                    this.chart.fixedRange = max - min;
+                }
             }
 
             dataMin = pick(this.dataMin, Number.MIN_VALUE);
@@ -24689,29 +25811,19 @@
         'use strict';
         var addEvent = H.addEvent,
             Chart = H.Chart,
-            isNumber = H.isNumber,
-            removeEvent = H.removeEvent;
+            isNumber = H.isNumber;
 
         Chart.prototype.callbacks.push(function(chart) {
             var extremes,
                 scroller = chart.scroller,
-                rangeSelector = chart.rangeSelector;
+                rangeSelector = chart.rangeSelector,
+                unbindRender,
+                unbindSetExtremes;
 
             function renderRangeSelector() {
                 extremes = chart.xAxis[0].getExtremes();
                 if (isNumber(extremes.min)) {
                     rangeSelector.render(extremes.min, extremes.max);
-                }
-            }
-
-            function afterSetExtremesHandlerRangeSelector(e) {
-                rangeSelector.render(e.min, e.max);
-            }
-
-            function destroyEvents() {
-                if (rangeSelector) {
-                    removeEvent(chart, 'redraw', renderRangeSelector);
-                    removeEvent(chart.xAxis[0], 'afterSetExtremes', afterSetExtremesHandlerRangeSelector);
                 }
             }
 
@@ -24722,17 +25834,28 @@
             }
             if (rangeSelector) {
                 // redraw the scroller on setExtremes
-                addEvent(chart.xAxis[0], 'afterSetExtremes', afterSetExtremesHandlerRangeSelector);
+                unbindSetExtremes = addEvent(
+                    chart.xAxis[0],
+                    'afterSetExtremes',
+                    function(e) {
+                        rangeSelector.render(e.min, e.max);
+                    }
+                );
 
                 // redraw the scroller chart resize
-                addEvent(chart, 'redraw', renderRangeSelector);
+                unbindRender = addEvent(chart, 'redraw', renderRangeSelector);
 
                 // do it now
                 renderRangeSelector();
             }
 
             // Remove resize/afterSetExtremes at chart destroy
-            addEvent(chart, 'destroy', destroyEvents);
+            addEvent(chart, 'destroy', function destroyEvents() {
+                if (rangeSelector) {
+                    unbindRender();
+                    unbindSetExtremes();
+                }
+            });
         });
 
     }(Highcharts));
@@ -24758,7 +25881,6 @@
             merge = H.merge,
             pick = H.pick,
             Point = H.Point,
-            Pointer = H.Pointer,
             Renderer = H.Renderer,
             Series = H.Series,
             splat = H.splat,
@@ -24779,6 +25901,7 @@
             var hasRenderToArg = isString(a) || a.nodeName,
                 options = arguments[hasRenderToArg ? 1 : 0],
                 seriesOptions = options.series, // to increase performance, don't merge the data
+                defaultOptions = H.getOptions(),
                 opposite,
 
                 // Always disable startOnTick:true on the main axis when the navigator is enabled (#1090)
@@ -24814,7 +25937,9 @@
                             overflow: 'justify'
                         },
                         showLastLabel: true
-                    }, xAxisOptions, // user options
+                    },
+                    defaultOptions.xAxis, // #3802
+                    xAxisOptions, // user options
                     { // forced options
                         type: 'datetime',
                         categories: null
@@ -24835,7 +25960,9 @@
                         title: {
                             text: null
                         }
-                    }, yAxisOptions // user options
+                    },
+                    defaultOptions.yAxis, // #3802
+                    yAxisOptions // user options
                 );
             });
 
@@ -24899,19 +26026,6 @@
                 new Chart(a, options, c) :
                 new Chart(options, b);
         };
-
-        // Implement the pinchType option
-        wrap(Pointer.prototype, 'init', function(proceed, chart, options) {
-
-            var pinchType = options.chart.pinchType || '';
-
-            proceed.call(this, chart, options);
-
-            // Pinch status
-            this.pinchX = this.pinchHor = pinchType.indexOf('x') !== -1;
-            this.pinchY = this.pinchVert = pinchType.indexOf('y') !== -1;
-            this.hasZoom = this.hasZoom || this.pinchHor || this.pinchVert;
-        });
 
         // Override the automatic label alignment so that the first Y axis' labels
         // are drawn on top of the grid line, and subsequent axes are drawn outside
@@ -25067,8 +26181,13 @@
             if (path && toPath && path.toString() !== toPath.toString()) {
                 // Go over each subpath
                 for (i = 0; i < path.length; i += 6) {
-                    result.push('M', path[i + 1], path[i + 2], 'L', path[i + 4],
-                        path[i + 5], toPath[i + 4], toPath[i + 5], toPath[i + 1], toPath[i + 2]);
+                    result.push(
+                        'M', path[i + 1], path[i + 2],
+                        'L', path[i + 4], path[i + 5],
+                        toPath[i + 4], toPath[i + 5],
+                        toPath[i + 1], toPath[i + 2],
+                        'z'
+                    );
                 }
             } else { // outside the axis area
                 result = null;

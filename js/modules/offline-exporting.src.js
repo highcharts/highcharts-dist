@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.2 (2016-10-26)
+ * @license Highcharts JS v5.0.3 (2016-11-18)
  * Client side exporting module
  *
  * (c) 2015 Torstein Honsi / Oystein Moseng
@@ -344,10 +344,18 @@
                 };
 
             // Hook into getSVG to get a copy of the chart copy's container
-            Highcharts.wrap(Highcharts.Chart.prototype, 'getChartHTML', function(proceed) {
-                chartCopyContainer = this.container.cloneNode(true);
-                return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
-            });
+            Highcharts.wrap(
+                Highcharts.Chart.prototype,
+                'getChartHTML',
+                function(proceed) {
+                    var ret = proceed.apply(
+                        this,
+                        Array.prototype.slice.call(arguments, 1)
+                    );
+                    chartCopyContainer = this.container.cloneNode(true);
+                    return ret;
+                }
+            );
 
             // Trigger hook to get chart copy
             chart.getSVGForExport(options, chartOptions);
@@ -401,8 +409,9 @@
                     Highcharts.downloadSVGLocal(svg, options, fallbackToExportServer);
                 };
 
-            // If we have embedded images and are exporting to JPEG/PNG, Microsoft browsers won't handle it, so fall back
-            if ((isMSBrowser && options.imageType !== 'image/svg+xml' || options.imageType !== 'application/pdf') && chart.container.getElementsByTagName('image').length) {
+            // If we have embedded images and are exporting to JPEG/PNG, Microsoft browsers won't handle it, so fall back.
+            // Also fall back for embedded images with PDF.
+            if ((isMSBrowser && options.type !== 'image/svg+xml' || options.type === 'application/pdf') && chart.container.getElementsByTagName('image').length) {
                 fallbackToExportServer();
                 return;
             }
@@ -412,7 +421,7 @@
 
         // Extend the default options to use the local exporter logic
         merge(true, Highcharts.getOptions().exporting, {
-            libURL: 'http://code.highcharts.com/5.0.2/lib/',
+            libURL: 'https://code.highcharts.com/5.0.3/lib/',
             buttons: {
                 contextButton: {
                     menuItems: [{

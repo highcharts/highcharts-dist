@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.2 (2016-10-26)
+ * @license Highcharts JS v5.0.3 (2016-11-18)
  * Exporting module
  *
  * (c) 2010-2016 Torstein Honsi
@@ -331,7 +331,9 @@
                 if (allowHTML) {
                     html = svg.match(/<\/svg>(.*?$)/);
                     if (html) {
-                        html = '<foreignObject x="0" y="0" width="200" height="200">' +
+                        html = '<foreignObject x="0" y="0" ' +
+                            'width="' + sourceWidth + '" ' +
+                            'height="' + sourceHeight + '">' +
                             '<body xmlns="http://www.w3.org/1999/xhtml">' +
                             html[1] +
                             '</body>' +
@@ -484,11 +486,7 @@
                     innerMenu,
                     hide,
                     menuStyle,
-                    docMouseUpHandler = function(e) {
-                        if (!chart.pointer.inClass(e.target, className)) {
-                            hide();
-                        }
-                    };
+                    removeMouseUp;
 
                 // create the menu only the first time
                 if (!menu) {
@@ -528,11 +526,14 @@
                     });
 
 
-                    // Hide it on clicking or touching outside the menu (#2258, #2335, #2407)
-                    addEvent(doc, 'mouseup', docMouseUpHandler);
-                    addEvent(chart, 'destroy', function() {
-                        removeEvent(doc, 'mouseup', docMouseUpHandler);
+                    // Hide it on clicking or touching outside the menu (#2258, #2335,
+                    // #2407)
+                    removeMouseUp = addEvent(doc, 'mouseup', function(e) {
+                        if (!chart.pointer.inClass(e.target, className)) {
+                            hide();
+                        }
                     });
+                    addEvent(chart, 'destroy', removeMouseUp);
 
 
                     // create the items

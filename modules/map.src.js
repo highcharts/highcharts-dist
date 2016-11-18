@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v5.0.2 (2016-10-26)
+ * @license Highmaps JS v5.0.3 (2016-11-18)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
  * (c) 2011-2016 Torstein Honsi
@@ -186,6 +186,14 @@
                 tickLength: 5,
                 showInLegend: true
             },
+
+            // Properties to preserve after destroy, for Axis.update (#5881)
+            keepProps: ['legendGroup', 'legendItem', 'legendSymbol']
+                .concat(Axis.prototype.keepProps),
+
+            /**
+             * Initialize the color axis
+             */
             init: function(chart, userOptions) {
                 var horiz = chart.options.legend.layout !== 'vertical',
                     options;
@@ -1069,17 +1077,19 @@
             }
         });
 
-        // Implement the pinchType option
+        // The pinchType is inferred from mapNavigation options.
         wrap(Pointer.prototype, 'zoomOption', function(proceed) {
+
 
             var mapNavigation = this.chart.options.mapNavigation;
 
-            proceed.apply(this, [].slice.call(arguments, 1));
-
             // Pinch status
             if (pick(mapNavigation.enableTouchZoom, mapNavigation.enabled)) {
-                this.pinchX = this.pinchHor = this.pinchY = this.pinchVert = this.hasZoom = true;
+                this.chart.options.chart.pinchType = 'xy';
             }
+
+            proceed.apply(this, [].slice.call(arguments, 1));
+
         });
 
         // Extend the pinchTranslate method to preserve fixed ratio when zooming
@@ -2580,6 +2590,9 @@
                     credits: {
                         mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">{geojson.copyrightShort}</a>'),
                         mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                    },
+                    tooltip: {
+                        followTouchMove: false
                     },
                     xAxis: hiddenAxis,
                     yAxis: merge(hiddenAxis, {

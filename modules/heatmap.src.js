@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.2 (2016-10-26)
+ * @license Highcharts JS v5.0.3 (2016-11-18)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -67,6 +67,14 @@
                 tickLength: 5,
                 showInLegend: true
             },
+
+            // Properties to preserve after destroy, for Axis.update (#5881)
+            keepProps: ['legendGroup', 'legendItem', 'legendSymbol']
+                .concat(Axis.prototype.keepProps),
+
+            /**
+             * Initialize the color axis
+             */
             init: function(chart, userOptions) {
                 var horiz = chart.options.legend.layout !== 'vertical',
                     options;

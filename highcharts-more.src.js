@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.2 (2016-10-26)
+ * @license Highcharts JS v5.0.3 (2016-11-18)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -1420,9 +1420,12 @@
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
-        /* ****************************************************************************
-         * Start Box plot series code											      *
-         *****************************************************************************/
+        /**
+         * The boxplot series type.
+         *
+         * @constructor seriesTypes.boxplot
+         * @augments seriesTypes.column
+         */
         seriesType('boxplot', 'column', {
             threshold: null,
             tooltip: {
@@ -1454,8 +1457,7 @@
             whiskerWidth: 2
 
 
-            // Prototype members
-        }, {
+        }, /** @lends seriesTypes.boxplot */ {
             pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'], // array point configs are mapped to this
             toYData: function(point) { // return a plain array for speedy calculation
                 return [point.low, point.q1, point.median, point.q3, point.high];
@@ -2372,8 +2374,11 @@
 
             // Point class
         }, {
-            haloPath: function() {
-                return Point.prototype.haloPath.call(this, this.shapeArgs.r + this.series.options.states.hover.halo.size);
+            haloPath: function(size) {
+                return Point.prototype.haloPath.call(
+                    this,
+                    this.shapeArgs.r + size
+                );
             },
             ttBelow: false
         });
@@ -2427,7 +2432,9 @@
 
                         });
                         series.minPxSize = extremes.minSize;
-                        series.maxPxSize = extremes.maxSize;
+                        // Prioritize min size if conflict to make sure bubbles are
+                        // always visible. #5873
+                        series.maxPxSize = Math.max(extremes.maxSize, extremes.minSize);
 
                         // Find the min and max Z
                         zData = series.zData;
