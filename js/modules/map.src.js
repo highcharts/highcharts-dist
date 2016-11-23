@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v5.0.3 (2016-11-18)
+ * @license Highcharts JS v5.0.4 (2016-11-22)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
  * (c) 2011-2016 Torstein Honsi
@@ -1548,7 +1548,12 @@
                     scaleY,
                     translateX,
                     translateY,
-                    baseTrans = this.baseTrans;
+                    baseTrans = this.baseTrans,
+                    transformGroup,
+                    startTranslateX,
+                    startTranslateY,
+                    startScaleX,
+                    startScaleY;
 
                 // Set a group that handles transform during zooming and panning in order to preserve clipping
                 // on series.group
@@ -1617,12 +1622,53 @@
                         translateY = Math.round(translateY);
                     }
 
-                    this.transformGroup.animate({
-                        translateX: translateX,
-                        translateY: translateY,
-                        scaleX: scaleX,
-                        scaleY: scaleY
-                    });
+                    // Animate or move to the new zoom level. In order to prevent
+                    // flickering as the different transform components are set out of 
+                    // sync (#5991), we run a fake animator attribute and set scale and
+                    // translation synchronously in the same step.
+                    // A possible improvement to the API would be to handle this in the
+                    // renderer or animation engine itself, to ensure that when we are 
+                    // animating multiple properties, we make sure that each step for
+                    // each property is performed in the same step. Also, for symbols
+                    // and for transform properties, it should induce a single 
+                    // updateTransform and symbolAttr call.
+                    transformGroup = this.transformGroup;
+                    if (chart.renderer.globalAnimation) {
+                        startTranslateX = transformGroup.attr('translateX');
+                        startTranslateY = transformGroup.attr('translateY');
+                        startScaleX = transformGroup.attr('scaleX');
+                        startScaleY = transformGroup.attr('scaleY');
+                        transformGroup
+                            .attr({
+                                animator: 0
+                            })
+                            .animate({
+                                animator: 1
+                            }, {
+                                step: function(now, fx) {
+                                    transformGroup.attr({
+                                        translateX: startTranslateX +
+                                            (translateX - startTranslateX) * fx.pos,
+                                        translateY: startTranslateY +
+                                            (translateY - startTranslateY) * fx.pos,
+                                        scaleX: startScaleX +
+                                            (scaleX - startScaleX) * fx.pos,
+                                        scaleY: startScaleY +
+                                            (scaleY - startScaleY) * fx.pos
+                                    });
+
+                                }
+                            });
+
+                        // When dragging, animation is off.
+                    } else {
+                        transformGroup.attr({
+                            translateX: translateX,
+                            translateY: translateY,
+                            scaleX: scaleX,
+                            scaleY: scaleY
+                        });
+                    }
 
                 }
 

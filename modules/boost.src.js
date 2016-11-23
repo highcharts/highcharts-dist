@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.3 (2016-11-18)
+ * @license Highcharts JS v5.0.4 (2016-11-22)
  * Boost module
  *
  * (c) 2010-2016 Highsoft AS
@@ -52,6 +52,7 @@
          * - Point markers are not drawn on line-type series
          * - Lines are not drawn on scatter charts
          * - Zones and negativeColor don't work
+         * - Initial point colors aren't rendered
          * - Columns are always one pixel wide. Don't set the threshold too low.
          *
          * Optimizing tips for users

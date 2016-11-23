@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.3 (2016-11-18)
+ * @license Highcharts JS v5.0.4 (2016-11-22)
  * Highcharts Drilldown module
  * 
  * Author: Torstein Honsi
