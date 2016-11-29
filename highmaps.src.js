@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.4 (2016-11-22)
+ * @license Highmaps JS v5.0.5 (2016-11-29)
  *
  * (c) 2011-2016 Torstein Honsi
  *
@@ -35,8 +35,8 @@
             hasBidiBug = isFirefox && parseInt(userAgent.split('Firefox/')[1], 10) < 4; // issue #38
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
-            product: 'Highcharts',
-            version: '5.0.4',
+            product: 'Highmaps',
+            version: '5.0.5',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -153,9 +153,7 @@
                 } else {
                     ret = end;
                 }
-                this.elem.animProp = 'd';
-                this.elem.attr('d', ret);
-                this.elem.animProp = null;
+                this.elem.attr('d', ret, null, true);
             },
 
             /**
@@ -177,9 +175,7 @@
                     // Other animations on SVGElement
                 } else if (elem.attr) {
                     if (elem.element) {
-                        elem.animProp = prop;
-                        elem.attr(prop, now);
-                        elem.animProp = null;
+                        elem.attr(prop, now, null, true);
                     }
 
                     // HTML styles, raw HTML content like container size
@@ -328,7 +324,7 @@
                         // three places behind (#5788)
                         isOperator = arr[i] === 'M' || arr[i] === 'L';
                         nextIsOperator = /[a-zA-Z]/.test(arr[i + 3]);
-                        if (isOperator && !nextIsOperator) {
+                        if (isOperator && nextIsOperator) {
                             arr.splice(
                                 i + 1, 0,
                                 arr[i + 1], arr[i + 2],
@@ -435,11 +431,11 @@
                     }
                 }
 
-                if (start.length && H.isNumber(shift)) {
+                if (start.length) {
 
                     // The common target length for the start and end array, where both 
                     // arrays are padded in opposite ends
-                    fullLength = end.length + shift * positionFactor * numParams;
+                    fullLength = end.length + (shift || 0) * positionFactor * numParams;
 
                     if (!reverse) {
                         prepend(end, start);
@@ -2269,7 +2265,7 @@
                 useUTC: true,
                 //timezoneOffset: 0,
 
-                VMLRadialGradientURL: 'http://code.highcharts.com/5.0.4/gfx/vml-radial-gradient.png'
+                VMLRadialGradientURL: 'http://code.highcharts.com/5.0.5/gfx/vml-radial-gradient.png'
 
             },
             chart: {
@@ -2331,12 +2327,7 @@
                 // x: 0,
                 // verticalAlign: 'top',
                 // y: null,
-
-                style: {
-                    color: '#333333',
-                    fontSize: '18px'
-                },
-
+                // style: {}, // defined inline
                 widthAdjust: -44
 
             },
@@ -2347,11 +2338,7 @@
                 // x: 0,
                 // verticalAlign: 'top',
                 // y: null,
-
-                style: {
-                    color: '#666666'
-                },
-
+                // style: {}, // defined inline
                 widthAdjust: -44
             },
 
@@ -3006,6 +2993,9 @@
              * @param {Function} complete - A callback function to execute after setting
              *    the attributes. This makes the function compliant and interchangeable
              *    with the {@link SVGElement#animate} function.
+             * @param {boolean} continueAnimation - Used internally when `.attr` is
+             *    called as part of an animation step. Otherwise, calling `.attr` for an
+             *    attribute will stop animation for that attribute.
              *    
              * @returns {SVGElement|string|number} If used as a setter, it returns the 
              *    current {@link SVGElement} so the calls can be chained. If used as a 
@@ -3027,7 +3017,7 @@
              * element.attr('stroke'); // => 'red'
              * 
              */
-            attr: function(hash, val, complete) {
+            attr: function(hash, val, complete, continueAnimation) {
                 var key,
                     value,
                     element = this.element,
@@ -3056,7 +3046,7 @@
 
                         // Unless .attr is from the animator update, stop current
                         // running animation of this property
-                        if (key !== this.animProp) {
+                        if (!continueAnimation) {
                             stop(this, key);
                         }
 
@@ -4322,7 +4312,7 @@
 
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 5.0.4'));
+                desc.element.appendChild(doc.createTextNode('Created with Highmaps 5.0.5'));
 
 
                 renderer.defs = this.createElement('defs').add();
@@ -6348,6 +6338,12 @@
                                     // Set listeners to update the HTML div's position whenever the SVG group
                                     // position is changed
                                     extend(parentGroup, {
+                                        on: function() {
+                                            wrapper.on.apply({
+                                                element: parents[0].div
+                                            }, arguments);
+                                            return parentGroup;
+                                        },
                                         translateXSetter: function(value, key) {
                                             htmlGroupStyle.left = value + 'px';
                                             parentGroup[key] = value;
@@ -9246,15 +9242,14 @@
 
                 // Adjust translation for padding. Y axis with categories need to go through the same (#1784).
                 if (isXAxis || hasCategories || pointRange) {
+
+                    // Get the closest points
+                    closestPointRange = axis.getClosest();
+
                     if (linkedParent) {
                         minPointOffset = linkedParent.minPointOffset;
                         pointRangePadding = linkedParent.pointRangePadding;
-
                     } else {
-
-                        // Get the closest points
-                        closestPointRange = axis.getClosest();
-
                         each(axis.series, function(series) {
                             var seriesPointRange = hasCategories ?
                                 1 :
@@ -9842,11 +9837,22 @@
 
                     // Prevent pinch zooming out of range. Check for defined is for #1946. #1734.
                     if (!this.allowZoomOutside) {
-                        if (defined(dataMin) && newMin <= min) {
-                            newMin = min;
+                        // #6014, sometimes newMax will be smaller than min (or newMin will be larger than max).
+                        if (defined(dataMin)) {
+                            if (newMin < min) {
+                                newMin = min;
+                            }
+                            if (newMin > max) {
+                                newMin = max;
+                            }
                         }
-                        if (defined(dataMax) && newMax >= max) {
-                            newMax = max;
+                        if (defined(dataMax)) {
+                            if (newMax < min) {
+                                newMax = min;
+                            }
+                            if (newMax > max) {
+                                newMax = max;
+                            }
                         }
                     }
 
@@ -14290,8 +14296,31 @@
                     chartTitleOptions,
                     chartSubtitleOptions;
 
-                chartTitleOptions = options.title = merge(options.title, titleOptions);
-                chartSubtitleOptions = options.subtitle = merge(options.subtitle, subtitleOptions);
+                chartTitleOptions = options.title = merge(
+
+                    // Default styles
+                    {
+                        style: {
+                            color: '#333333',
+                            fontSize: options.isStock ? '16px' : '18px' // #2944
+                        }
+                    },
+
+                    options.title,
+                    titleOptions
+                );
+                chartSubtitleOptions = options.subtitle = merge(
+
+                    // Default styles
+                    {
+                        style: {
+                            color: '#666666'
+                        }
+                    },
+
+                    options.subtitle,
+                    subtitleOptions
+                );
 
                 // add title and subtitle
                 each([
@@ -19239,7 +19268,11 @@
                                 )
                                 .attr(attr);
 
-                            dataLabel.addClass('highcharts-data-label-color-' + point.colorIndex + ' ' + (options.className || ''));
+                            dataLabel.addClass(
+                                'highcharts-data-label-color-' + point.colorIndex +
+                                ' ' + (options.className || '') +
+                                (options.useHTML ? 'highcharts-tracker' : '') // #3398
+                            );
 
 
                             // Styles must be applied before add in order to read text bounding box
@@ -20585,7 +20618,16 @@
          */
         each(['fill', 'stroke'], function(prop) {
             H.Fx.prototype[prop + 'Setter'] = function() {
-                this.elem.attr(prop, ColorAxis.prototype.tweenColors(color(this.start), color(this.end), this.pos));
+                this.elem.attr(
+                    prop,
+                    ColorAxis.prototype.tweenColors(
+                        color(this.start),
+                        color(this.end),
+                        this.pos
+                    ),
+                    null,
+                    true
+                );
             };
         });
 
@@ -21542,8 +21584,8 @@
                             clearTimeout(point.colorInterval);
                         }
                     }, 13);
+                    point.isFading = true;
                 }
-                point.isFading = true;
                 Point.prototype.onMouseOut.call(point);
                 point.isFading = null;
             },
@@ -22056,7 +22098,7 @@
             trackerGroups: ['group', 'dataLabelsGroup'],
             bubblePadding: true,
             zoneAxis: 'z',
-            markerAttribs: null,
+            markerAttribs: noop,
 
 
             pointAttribs: function(point, state) {
@@ -22200,7 +22242,10 @@
              */
             drawLegendSymbol: function(legend, item) {
                 var renderer = this.chart.renderer,
-                    radius = renderer.fontMetrics(legend.itemStyle.fontSize).f / 2;
+                    radius = renderer.fontMetrics(
+                        legend.itemStyle && legend.itemStyle.fontSize,
+                        item.legendItem
+                    ).f / 2;
 
                 item.legendSymbol = renderer.circle(
                     radius,
@@ -23032,7 +23077,11 @@
                         point.graphic.element.point = point;
                     }
                     if (point.dataLabel) {
-                        point.dataLabel.element.point = point;
+                        if (point.dataLabel.div) {
+                            point.dataLabel.div.point = point;
+                        } else {
+                            point.dataLabel.element.point = point;
+                        }
                     }
                 });
 
@@ -23382,14 +23431,24 @@
                 each(panning === 'xy' ? [1, 0] : [1], function(isX) { // xy is used in maps
                     var axis = chart[isX ? 'xAxis' : 'yAxis'][0],
                         horiz = axis.horiz,
+                        reversed = axis.reversed,
                         mousePos = e[horiz ? 'chartX' : 'chartY'],
                         mouseDown = horiz ? 'mouseDownX' : 'mouseDownY',
                         startPos = chart[mouseDown],
-                        halfPointRange = (axis.pointRange || 0) / 2,
+                        halfPointRange = (axis.pointRange || 0) / (reversed ? -2 : 2),
                         extremes = axis.getExtremes(),
                         newMin = axis.toValue(startPos - mousePos, true) + halfPointRange,
                         newMax = axis.toValue(startPos + axis.len - mousePos, true) - halfPointRange,
-                        goingLeft = startPos > mousePos; // #3613
+                        goingLeft = startPos > mousePos, // #3613
+                        tmp;
+
+                    // Swap min/max for reversed axes (#5997)
+                    if (reversed) {
+                        goingLeft = !goingLeft;
+                        tmp = newMin;
+                        newMin = newMax;
+                        newMax = tmp;
+                    }
 
                     if (axis.series.length &&
                         (goingLeft || newMin > Math.min(extremes.dataMin, extremes.min)) &&

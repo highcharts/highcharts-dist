@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.4 (2016-11-22)
+ * @license Highcharts JS v5.0.5 (2016-11-29)
  *
  * 3D features for Highcharts JS
  *
@@ -2047,7 +2047,7 @@
          */
         wrap(seriesTypes.scatter.prototype, 'pointAttribs', function(proceed, point) {
             var pointOptions = proceed.apply(this, [].slice.call(arguments, 1));
-            if (point) {
+            if (this.chart.is3d() && point) {
                 pointOptions.zIndex = H.pointCameraDistance(point, this.chart);
             }
             return pointOptions;

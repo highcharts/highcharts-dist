@@ -1,5 +1,5 @@
 /*
- Highcharts JS v5.0.4 (2016-11-22)
+ Highcharts JS v5.0.5 (2016-11-29)
 
  3D features for Highcharts JS
 
@@ -45,4 +45,4 @@ c=g.r,h=(g.start+g.end)/2,f=b.labelPos,d=-c*(1-Math.cos((g.alpha||e.alpha)*r))*M
 q&&(!0===h&&(h={}),e?(c.oldtranslateX=c.translateX,c.oldtranslateY=c.translateY,e={translateX:g[0],translateY:g[1],scaleX:.001,scaleY:.001},c.attr(e),m&&(m.attrSetters=c.attrSetters,m.attr(e))):(e={translateX:c.oldtranslateX,translateY:c.oldtranslateY,scaleX:1,scaleY:1},c.animate(e,h),m&&m.animate(e,h),this.animate=null))}else b.apply(this,[].slice.call(arguments,1))})})(w);(function(b){var r=b.perspective,n=b.pick,p=b.seriesTypes,q=b.wrap;q(p.scatter.prototype,"translate",function(b){b.apply(this,
 [].slice.call(arguments,1));if(this.chart.is3d()){var e=this.chart,h=n(this.zAxis,e.options.zAxis[0]),g=[],c,m,f;for(f=0;f<this.data.length;f++)c=this.data[f],m=h.isLog&&h.val2lin?h.val2lin(c.z):c.z,c.plotZ=h.translate(m),c.isInside=c.isInside?m>=h.min&&m<=h.max:!1,g.push({x:c.plotX,y:c.plotY,z:c.plotZ});e=r(g,e,!0);for(f=0;f<this.data.length;f++)c=this.data[f],h=e[f],c.plotXold=c.plotX,c.plotYold=c.plotY,c.plotZold=c.plotZ,c.plotX=h.x,c.plotY=h.y,c.plotZ=h.z}});q(p.scatter.prototype,"init",function(b,
 e,h){e.is3d()&&(this.axisTypes=["xAxis","yAxis","zAxis"],this.pointArrayMap=["x","y","z"],this.parallelArrays=["x","y","z"],this.directTouch=!0);b=b.apply(this,[e,h]);this.chart.is3d()&&(this.tooltipOptions.pointFormat=this.userOptions.tooltip?this.userOptions.tooltip.pointFormat||"x: \x3cb\x3e{point.x}\x3c/b\x3e\x3cbr/\x3ey: \x3cb\x3e{point.y}\x3c/b\x3e\x3cbr/\x3ez: \x3cb\x3e{point.z}\x3c/b\x3e\x3cbr/\x3e":"x: \x3cb\x3e{point.x}\x3c/b\x3e\x3cbr/\x3ey: \x3cb\x3e{point.y}\x3c/b\x3e\x3cbr/\x3ez: \x3cb\x3e{point.z}\x3c/b\x3e\x3cbr/\x3e");
-return b});q(p.scatter.prototype,"pointAttribs",function(n,e){var h=n.apply(this,[].slice.call(arguments,1));e&&(h.zIndex=b.pointCameraDistance(e,this.chart));return h})})(w)});
+return b});q(p.scatter.prototype,"pointAttribs",function(n,e){var h=n.apply(this,[].slice.call(arguments,1));this.chart.is3d()&&e&&(h.zIndex=b.pointCameraDistance(e,this.chart));return h})})(w)});
