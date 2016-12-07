@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v5.0.5 (2016-11-29)
+ * @license Highmaps JS v5.0.6 (2016-12-07)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
  * (c) 2011-2016 Torstein Honsi
@@ -730,6 +730,14 @@
                         point[key][method]();
                     }
                 });
+            },
+            setState: function(state) {
+                H.Point.prototype.setState.call(this, state);
+                if (this.graphic) {
+                    this.graphic.attr({
+                        zIndex: state === 'hover' ? 1 : 0
+                    });
+                }
             }
         };
 
@@ -1520,10 +1528,15 @@
             },
 
             /**
-             * Get presentational attributes
+             * Get presentational attributes. In the maps series this runs in both 
+             * styled and non-styled mode, because colors hold data when a colorAxis
+             * is used.
              */
             pointAttribs: function(point, state) {
-                var attr = seriesTypes.column.prototype.pointAttribs.call(this, point, state);
+                var attr;
+
+                attr = this.colorAttribs(point);
+
 
                 // Prevent flickering whan called from setState
                 if (point.isFading) {
@@ -1596,6 +1609,12 @@
                             if (point.properties && point.properties['hc-key']) {
                                 point.graphic.addClass('highcharts-key-' + point.properties['hc-key'].toLowerCase());
                             }
+
+
+                            point.graphic.css(
+                                series.pointAttribs(point, point.selected && 'select')
+                            );
+
                         }
                     });
 
@@ -2113,7 +2132,11 @@
                 seriesTypes.column.prototype.drawPoints.call(this);
 
                 each(this.points, function(point) {
-                    point.graphic.attr(this.colorAttribs(point, point.state));
+
+                    // In styled mode, use CSS, otherwise the fill used in the style
+                    // sheet will take precesence over the fill attribute.
+                    point.graphic.css(this.colorAttribs(point));
+
                 }, this);
             },
             animate: noop,
@@ -2143,7 +2166,6 @@
         var Chart = H.Chart,
             each = H.each,
             extend = H.extend,
-            error = H.error,
             format = H.format,
             merge = H.merge,
             win = H.win,
@@ -2176,7 +2198,7 @@
          */
         Chart.prototype.transformFromLatLon = function(latLon, transform) {
             if (win.proj4 === undefined) {
-                error(21);
+                H.error(21);
                 return {
                     x: 0,
                     y: null
@@ -2199,7 +2221,7 @@
          */
         Chart.prototype.transformToLatLon = function(point, transform) {
             if (win.proj4 === undefined) {
-                error(21);
+                H.error(21);
                 return;
             }
 
@@ -2226,7 +2248,7 @@
                 transform;
 
             if (!transforms) {
-                error(22);
+                H.error(22);
                 return;
             }
 
@@ -2249,7 +2271,7 @@
                 coords;
 
             if (!transforms) {
-                error(22);
+                H.error(22);
                 return {
                     x: 0,
                     y: null

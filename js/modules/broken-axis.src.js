@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.5 (2016-11-29)
+ * @license Highcharts JS v5.0.6 (2016-12-07)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -302,6 +302,10 @@
                 threshold,
                 eventName,
                 y;
+
+            if (!axis) {
+                return; // #5950
+            }
 
             each(keys, function(key) {
                 breaks = axis.breakArray || [];

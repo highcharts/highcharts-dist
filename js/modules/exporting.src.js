@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.5 (2016-11-29)
+ * @license Highcharts JS v5.0.6 (2016-12-07)
  * Exporting module
  *
  * (c) 2010-2016 Torstein Honsi
@@ -309,6 +309,11 @@
                     }
                 });
 
+                // Assign an internal key to ensure a one-to-one mapping (#5924)
+                each(chart.axes, function(axis) {
+                    axis.userOptions.internalKey = H.uniqueKey();
+                });
+
                 // generate the chart copy
                 chartCopy = new H.Chart(options, chart.callback);
 
@@ -323,18 +328,19 @@
                     });
                 }
 
-                // reflect axis extremes in the export
-                each(['xAxis', 'yAxis'], function(axisType) {
-                    each(chart[axisType], function(axis, i) {
-                        var axisCopy = chartCopy[axisType][i],
-                            extremes = axis.getExtremes(),
-                            userMin = extremes.userMin,
-                            userMax = extremes.userMax;
+                // Reflect axis extremes in the export (#5924)
+                each(chart.axes, function(axis) {
+                    var axisCopy = H.find(chartCopy.axes, function(copy) {
+                            return copy.options.internalKey ===
+                                axis.userOptions.internalKey;
+                        }),
+                        extremes = axis.getExtremes(),
+                        userMin = extremes.userMin,
+                        userMax = extremes.userMax;
 
-                        if (axisCopy && (userMin !== undefined || userMax !== undefined)) {
-                            axisCopy.setExtremes(userMin, userMax, true, false);
-                        }
-                    });
+                    if (axisCopy && (userMin !== undefined || userMax !== undefined)) {
+                        axisCopy.setExtremes(userMin, userMax, true, false);
+                    }
                 });
 
                 // Get the SVG from the container's innerHTML

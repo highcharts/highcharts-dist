@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.5 (2016-11-29)
+ * @license Highcharts JS v5.0.6 (2016-12-07)
  * Client side exporting module
  *
  * (c) 2015 Torstein Honsi / Oystein Moseng
@@ -200,15 +200,22 @@
             function downloadPDF() {
                 dummySVGContainer.innerHTML = svg;
                 var textElements = dummySVGContainer.getElementsByTagName('text'),
+                    titleElements,
                     svgElementStyle = dummySVGContainer.getElementsByTagName('svg')[0].style;
                 // Workaround for the text styling. Making sure it does pick up the root element
                 each(textElements, function(el) {
+                    // Workaround for the text styling. making sure it does pick up the root element
                     each(['font-family', 'font-size'], function(property) {
                         if (!el.style[property] && svgElementStyle[property]) {
                             el.style[property] = svgElementStyle[property];
                         }
                     });
                     el.style['font-family'] = el.style['font-family'] && el.style['font-family'].split(' ').splice(-1);
+                    // Workaround for plotband with width, removing title from text nodes
+                    titleElements = el.getElementsByTagName('title');
+                    each(titleElements, function(titleElement) {
+                        el.removeChild(titleElement);
+                    });
                 });
                 var svgData = svgToPdf(dummySVGContainer.firstChild, 0);
                 Highcharts.downloadURL(svgData, filename);
@@ -440,7 +447,7 @@
 
         // Extend the default options to use the local exporter logic
         merge(true, Highcharts.getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/5.0.5/lib/',
+            libURL: 'https://code.highcharts.com/5.0.6/lib/',
             buttons: {
                 contextButton: {
                     menuItems: [{

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.5 (2016-11-29)
+ * @license Highcharts JS v5.0.6 (2016-12-07)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -621,6 +621,14 @@
                         point[key][method]();
                     }
                 });
+            },
+            setState: function(state) {
+                H.Point.prototype.setState.call(this, state);
+                if (this.graphic) {
+                    this.graphic.attr({
+                        zIndex: state === 'hover' ? 1 : 0
+                    });
+                }
             }
         };
 
@@ -777,7 +785,9 @@
                 seriesTypes.column.prototype.drawPoints.call(this);
 
                 each(this.points, function(point) {
-                    point.graphic.attr(this.colorAttribs(point, point.state));
+
+                    point.graphic.attr(this.colorAttribs(point));
+
                 }, this);
             },
             animate: noop,

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.5 (2016-11-29)
+ * @license Highcharts JS v5.0.6 (2016-12-07)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -1712,6 +1712,7 @@
                     // Separate offsets for negative and positive columns:
                     positiveOffset = 0,
                     negativeOffset = 0,
+                    stackIndicator,
                     tooltipY;
 
                 // run column series translate
@@ -1728,8 +1729,9 @@
 
                     // get current stack
                     stack = stacking && yAxis.stacks[(series.negStacks && yValue < threshold ? '-' : '') + series.stackKey];
+                    stackIndicator = series.getStackIndicator(stackIndicator, point.x);
                     range = stack ?
-                        stack[point.x].points[series.index + ',' + i] : [0, yValue];
+                        stack[point.x].points[series.index + ',' + i + ',' + stackIndicator.index] : [0, yValue];
 
                     // override point value for sums
                     // #3710 Update point does not propagate to sum
@@ -1776,7 +1778,8 @@
                     // Before minPointLength, apply negative offset:
                     shapeArgs.y -= negativeOffset;
 
-                    if (shapeArgs.height <= minPointLength) {
+
+                    if (shapeArgs.height <= minPointLength && !point.isNull) {
                         shapeArgs.height = minPointLength;
                         if (point.y < 0) {
                             negativeOffset -= minPointLength;
@@ -2072,7 +2075,7 @@
             trackerGroups: ['group', 'dataLabelsGroup'],
             bubblePadding: true,
             zoneAxis: 'z',
-            markerAttribs: noop,
+            markerAttribs: null,
 
 
 
@@ -2230,7 +2233,7 @@
             haloPath: function(size) {
                 return Point.prototype.haloPath.call(
                     this,
-                    this.shapeArgs.r + size
+                    size === 0 ? 0 : this.shapeArgs.r + size // #6067
                 );
             },
             ttBelow: false
