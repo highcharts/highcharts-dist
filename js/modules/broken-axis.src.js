@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.6 (2016-12-07)
+ * @license Highcharts JS v5.0.7 (2017-01-17)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -24,6 +24,7 @@
             wrap = H.wrap,
             each = H.each,
             extend = H.extend,
+            isArray = H.isArray,
             fireEvent = H.fireEvent,
             Axis = H.Axis,
             Series = H.Series;
@@ -100,20 +101,17 @@
         });
 
         wrap(Axis.prototype, 'init', function(proceed, chart, userOptions) {
+            var axis = this,
+                breaks;
             // Force Axis to be not-ordinal when breaks are defined
             if (userOptions.breaks && userOptions.breaks.length) {
                 userOptions.ordinal = false;
             }
-
             proceed.call(this, chart, userOptions);
-
-            if (this.options.breaks) {
-
-                var axis = this;
-
-                axis.isBroken = true;
-
-                this.val2lin = function(val) {
+            breaks = this.options.breaks;
+            axis.isBroken = (isArray(breaks) && !!breaks.length);
+            if (axis.isBroken) {
+                axis.val2lin = function(val) {
                     var nval = val,
                         brk,
                         i;
@@ -133,7 +131,7 @@
                     return nval;
                 };
 
-                this.lin2val = function(val) {
+                axis.lin2val = function(val) {
                     var nval = val,
                         brk,
                         i;
@@ -151,7 +149,7 @@
                     return nval;
                 };
 
-                this.setExtremes = function(newMin, newMax, redraw, animation, eventArguments) {
+                axis.setExtremes = function(newMin, newMax, redraw, animation, eventArguments) {
                     // If trying to set extremes inside a break, extend it to before and after the break ( #3857 )
                     while (this.isInAnyBreak(newMin)) {
                         newMin -= this.closestPointRange;
@@ -162,7 +160,7 @@
                     Axis.prototype.setExtremes.call(this, newMin, newMax, redraw, animation, eventArguments);
                 };
 
-                this.setAxisTranslation = function(saveOld) {
+                axis.setAxisTranslation = function(saveOld) {
                     Axis.prototype.setAxisTranslation.call(this, saveOld);
 
                     var breaks = axis.options.breaks,

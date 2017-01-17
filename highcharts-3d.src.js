@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.6 (2016-12-07)
+ * @license Highcharts JS v5.0.7 (2017-01-17)
  *
  * 3D features for Highcharts JS
  *
@@ -246,6 +246,7 @@
         SVGRenderer.prototype.cuboid = function(shapeArgs) {
 
             var result = this.g(),
+                destroy = result.destroy,
                 paths = this.cuboidPath(shapeArgs);
 
 
@@ -358,7 +359,7 @@
                 this.top.destroy();
                 this.side.destroy();
 
-                return null;
+                return destroy.call(this);
             };
 
             // Apply the Z index to the cuboid group
@@ -1401,6 +1402,15 @@
                 }
             }
             proceed.apply(this, [].slice.call(args, 1));
+        });
+
+        wrap(Axis.prototype, 'destroy', function(proceed) {
+            each(['backFrame', 'bottomFrame', 'sideFrame'], function(prop) {
+                if (this[prop]) {
+                    this[prop] = this[prop].destroy();
+                }
+            }, this);
+            proceed.apply(this, [].slice.call(arguments, 1));
         });
 
         /***

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.6 (2016-12-07)
+ * @license Highcharts JS v5.0.7 (2017-01-17)
  * Boost module
  *
  * (c) 2010-2016 Highsoft AS
@@ -604,10 +604,16 @@
          * @returns {Object}   A Point object as per http://api.highcharts.com/highcharts#Point
          */
         Series.prototype.getPoint = function(boostPoint) {
-            var point = boostPoint;
+            var point = boostPoint,
+                xData = this.xData || this.options.xData || this.processedXData || false;
 
             if (boostPoint && !(boostPoint instanceof this.pointClass)) {
-                point = (new this.pointClass()).init(this, this.options.data[boostPoint.i]); // eslint-disable-line new-cap
+                point = (new this.pointClass()).init( // eslint-disable-line new-cap
+                    this,
+                    this.options.data[boostPoint.i],
+                    xData ? xData[boostPoint.i] : undefined
+                );
+
                 point.category = point.x;
 
                 point.dist = boostPoint.dist;

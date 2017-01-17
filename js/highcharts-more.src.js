@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.6 (2016-12-07)
+ * @license Highcharts JS v5.0.7 (2017-01-17)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -805,6 +805,7 @@
                     linePath,
                     lowerPath,
                     options = this.options,
+                    connectEnds = this.chart.polar && options.connectEnds !== false,
                     step = options.step,
                     higherPath,
                     higherAreaPath;
@@ -819,7 +820,10 @@
                 while (i--) {
                     point = points[i];
 
-                    if (!point.isNull && !options.connectEnds && (!points[i + 1] || points[i + 1].isNull)) {
+                    if (!point.isNull &&
+                        !connectEnds &&
+                        (!points[i + 1] || points[i + 1].isNull)
+                    ) {
                         highAreaPoints.push({
                             plotX: point.plotX,
                             plotY: point.plotY,
@@ -837,7 +841,11 @@
                     };
                     highAreaPoints.push(pointShim);
                     highPoints.push(pointShim);
-                    if (!point.isNull && !options.connectEnds && (!points[i - 1] || points[i - 1].isNull)) {
+
+                    if (!point.isNull &&
+                        !connectEnds &&
+                        (!points[i - 1] || points[i - 1].isNull)
+                    ) {
                         highAreaPoints.push({
                             plotX: point.plotX,
                             plotY: point.plotY,
@@ -1093,10 +1101,12 @@
 
                         point.tooltipPos = chart.inverted ? [
                             yAxis.len + yAxis.pos - chart.plotLeft - y - height / 2,
-                            xAxis.len + xAxis.pos - chart.plotTop - shapeArgs.x - shapeArgs.width / 2,
+                            xAxis.len + xAxis.pos - chart.plotTop - shapeArgs.x -
+                            shapeArgs.width / 2,
                             height
                         ] : [
-                            xAxis.left - chart.plotLeft + shapeArgs.x + shapeArgs.width / 2,
+                            xAxis.left - chart.plotLeft + shapeArgs.x +
+                            shapeArgs.width / 2,
                             yAxis.pos - chart.plotTop + y + height / 2,
                             height
                         ]; // don't inherit from column tooltip position - #3372
@@ -2047,7 +2057,8 @@
                     hover: {
                         radiusPlus: 0
                     }
-                }
+                },
+                symbol: 'circle'
             },
             minSize: 8,
             maxSize: '20%',
@@ -2072,10 +2083,9 @@
         }, {
             pointArrayMap: ['y', 'z'],
             parallelArrays: ['x', 'y', 'z'],
-            trackerGroups: ['group', 'dataLabelsGroup'],
+            trackerGroups: ['markerGroup', 'dataLabelsGroup'],
             bubblePadding: true,
             zoneAxis: 'z',
-            markerAttribs: null,
 
 
 
@@ -2138,16 +2148,26 @@
                 if (!init) { // run the animation
                     each(this.points, function(point) {
                         var graphic = point.graphic,
-                            shapeArgs = point.shapeArgs;
+                            animationTarget;
 
-                        if (graphic && shapeArgs) {
-                            // start values
-                            graphic.attr('r', 1);
+                        if (graphic && graphic.width) { // URL symbols don't have width
+                            animationTarget = {
+                                x: graphic.x,
+                                y: graphic.y,
+                                width: graphic.width,
+                                height: graphic.height
+                            };
 
-                            // animate
-                            graphic.animate({
-                                r: shapeArgs.r
-                            }, animation);
+                            // Start values
+                            graphic.attr({
+                                x: point.plotX,
+                                y: point.plotY,
+                                width: 1,
+                                height: 1
+                            });
+
+                            // Run animation
+                            graphic.animate(animationTarget, animation);
                         }
                     });
 
@@ -2179,11 +2199,10 @@
 
                     if (isNumber(radius) && radius >= this.minPxSize / 2) {
                         // Shape arguments
-                        point.shapeType = 'circle';
-                        point.shapeArgs = {
-                            x: point.plotX,
-                            y: point.plotY,
-                            r: radius
+                        point.marker = {
+                            radius: radius,
+                            width: 2 * radius,
+                            height: 2 * radius
                         };
 
                         // Alignment box for the data label
@@ -2199,31 +2218,6 @@
                 }
             },
 
-            /**
-             * Get the series' symbol in the legend
-             *
-             * @param {Object} legend The legend object
-             * @param {Object} item The series (this) or point
-             */
-            drawLegendSymbol: function(legend, item) {
-                var renderer = this.chart.renderer,
-                    radius = renderer.fontMetrics(
-                        legend.itemStyle && legend.itemStyle.fontSize,
-                        item.legendItem
-                    ).f / 2;
-
-                item.legendSymbol = renderer.circle(
-                    radius,
-                    legend.baseline - radius,
-                    radius
-                ).attr({
-                    zIndex: 3
-                }).add(item.legendGroup);
-                item.legendSymbol.isMarker = true;
-
-            },
-
-            drawPoints: seriesTypes.column.prototype.drawPoints,
             alignDataLabel: seriesTypes.column.prototype.alignDataLabel,
             buildKDTree: noop,
             applyZones: noop
@@ -2233,7 +2227,7 @@
             haloPath: function(size) {
                 return Point.prototype.haloPath.call(
                     this,
-                    size === 0 ? 0 : this.shapeArgs.r + size // #6067
+                    size === 0 ? 0 : this.marker.radius + size // #6067
                 );
             },
             ttBelow: false

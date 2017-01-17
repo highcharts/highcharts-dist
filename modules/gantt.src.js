@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.6 (2016-12-07)
+ * @license Highcharts JS v5.0.7 (2017-01-17)
  * Gantt series
  *
  * (c) 2016 Lars A. V. Cabrera
@@ -663,6 +663,10 @@
 
                     plotX = Math.max(plotX, -10);
                     plotX2 = Math.min(Math.max(plotX2, -10), xAxis.len + 10);
+
+                    if (plotX2 < plotX) { // #6107
+                        plotX2 = plotX;
+                    }
 
                     point.shapeArgs = {
                         x: plotX,

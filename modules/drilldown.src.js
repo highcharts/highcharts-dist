@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.6 (2016-12-07)
+ * @license Highcharts JS v5.0.7 (2017-01-17)
  * Highcharts Drilldown module
  * 
  * Author: Torstein Honsi
@@ -403,15 +403,25 @@
                 var newSeries = this,
                     level = newSeries.drilldownLevel;
 
+                // First hide all items before animating in again
                 each(this.points, function(point) {
+                    var dataLabel = point.dataLabel;
+
                     if (point.graphic) { // #3407
                         point.graphic.hide();
                     }
-                    if (point.dataLabel) {
-                        point.dataLabel.hide();
-                    }
-                    if (point.connector) {
-                        point.connector.hide();
+
+                    if (dataLabel) {
+                        // The data label is initially hidden, make sure it is not faded
+                        // in (#6127)
+                        dataLabel.hidden = dataLabel.attr('visibility') === 'hidden';
+
+                        if (!dataLabel.hidden) {
+                            dataLabel.hide();
+                            if (point.connector) {
+                                point.connector.hide();
+                            }
+                        }
                     }
                 });
 
@@ -421,16 +431,21 @@
                     if (newSeries.points) { // May be destroyed in the meantime, #3389
                         each(newSeries.points, function(point, i) {
                             // Fade in other points			  
-                            var verb = i === (level && level.pointIndex) ? 'show' : 'fadeIn',
-                                inherit = verb === 'show' ? true : undefined;
+                            var verb =
+                                i === (level && level.pointIndex) ? 'show' : 'fadeIn',
+                                inherit = verb === 'show' ? true : undefined,
+                                dataLabel = point.dataLabel;
+
+
                             if (point.graphic) { // #3407
                                 point.graphic[verb](inherit);
                             }
-                            if (point.dataLabel) {
-                                point.dataLabel[verb](inherit);
-                            }
-                            if (point.connector) {
-                                point.connector[verb](inherit);
+
+                            if (dataLabel && !dataLabel.hidden) { // #6127
+                                dataLabel[verb](inherit);
+                                if (point.connector) {
+                                    point.connector[verb](inherit);
+                                }
                             }
                         });
                     }

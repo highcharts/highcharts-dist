@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.6 (2016-12-07)
+ * @license Highcharts JS v5.0.7 (2017-01-17)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -60,7 +60,8 @@
 
                 },
                 labels: {
-                    overflow: 'justify'
+                    overflow: 'justify',
+                    rotation: 0
                 },
                 minColor: '#e6ebf5',
                 maxColor: '#003399',
@@ -371,11 +372,15 @@
             visible: true,
             setVisible: noop,
             getSeriesExtremes: function() {
-                var series;
-                if (this.series.length) {
-                    series = this.series[0];
-                    this.dataMin = series.valueMin;
-                    this.dataMax = series.valueMax;
+                var series = this.series,
+                    i = series.length;
+                this.dataMin = Infinity;
+                this.dataMax = -Infinity;
+                while (i--) {
+                    if (series[i].valueMin !== undefined) {
+                        this.dataMin = Math.min(this.dataMin, series[i].valueMin);
+                        this.dataMax = Math.max(this.dataMax, series[i].valueMax);
+                    }
                 }
             },
             drawCrosshair: function(e, point) {
