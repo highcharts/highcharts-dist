@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v5.0.8 (2017-03-08)
+ * @license Highstock JS v5.0.9 (2017-03-08)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -35,7 +35,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highstock',
-            version: '5.0.8',
+            version: '5.0.9',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -4061,7 +4061,7 @@
 
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highstock 5.0.8'));
+                desc.element.appendChild(doc.createTextNode('Created with Highstock 5.0.9'));
 
 
                 renderer.defs = this.createElement('defs').add();
@@ -7366,7 +7366,7 @@
                 useUTC: true,
                 //timezoneOffset: 0,
 
-                VMLRadialGradientURL: 'http://code.highcharts.com/5.0.8/gfx/vml-radial-gradient.png'
+                VMLRadialGradientURL: 'http://code.highcharts.com/5.0.9/gfx/vml-radial-gradient.png'
 
             },
             chart: {
