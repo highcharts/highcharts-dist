@@ -23,6 +23,14 @@
   stroke-width: 0;
 }
 
+.highcharts-strong {
+  font-weight: bold;
+}
+
+.highcharts-emphasized {
+  font-style: italic;
+}
+
 .highcharts-background {
   fill: #ffffff;
 }
@@ -162,12 +170,17 @@
 }
 
 /* Legend hover affects points and series */
-g.highcharts-series, .highcharts-point {
+g.highcharts-series,
+.highcharts-point,
+.highcharts-markers,
+.highcharts-data-labels {
   transition: opacity 250ms;
 }
 
 .highcharts-legend-series-active g.highcharts-series:not(.highcharts-series-hover),
-.highcharts-legend-point-active .highcharts-point:not(.highcharts-point-hover) {
+.highcharts-legend-point-active .highcharts-point:not(.highcharts-point-hover),
+.highcharts-legend-series-active .highcharts-markers:not(.highcharts-series-hover),
+.highcharts-legend-series-active .highcharts-data-labels:not(.highcharts-series-hover) {
   opacity: 0.2;
 }
 
@@ -269,8 +282,11 @@ g.highcharts-series, .highcharts-point {
   stroke: #000000;
 }
 
-.highcharts-column-series .highcharts-point {
+.highcharts-column-series rect.highcharts-point {
   stroke: #ffffff;
+}
+
+.highcharts-column-series .highcharts-point {
   transition: fill-opacity 250ms;
 }
 
@@ -466,10 +482,8 @@ g.highcharts-series, .highcharts-point {
 }
 
 /* Highstock */
-.highcharts-navigator-mask {
-  fill: #6685c2;
-  /* navigator.maskFill option */
-  fill-opacity: 0.25;
+.highcharts-navigator-mask-outside {
+  fill-opacity: 0;
 }
 
 .highcharts-navigator-mask-inside {
@@ -686,11 +700,6 @@ input.highcharts-range-selector {
 /* 3d charts */
 .highcharts-3d-frame {
   fill: transparent;
-}
-
-.highcharts-column-series .highcharts-point {
-  stroke: inherit;
-  /* use point color */
 }
 
 /* Exporting module */

@@ -1,10 +1,11 @@
 /**
- * @license Highcharts JS v5.0.7 (2017-01-17)
+ * @license Highcharts JS v5.0.8 (2017-03-08)
  *
  * 3D features for Highcharts JS
  *
  * @license: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -18,7 +19,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         /**
          *	Mathematical Functionility
          */
@@ -141,7 +141,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var cos = Math.cos,
             PI = Math.PI,
             sin = Math.sin;
@@ -300,6 +299,13 @@
             };
 
             result.attr = function(args) {
+
+                // Resolve setting attributes by string name
+                if (typeof args === 'string' && arguments[1] !== undefined) {
+                    args = {};
+                    args[arguments[0]] = arguments[1];
+                }
+
                 if (args.shapeArgs || defined(args.x)) {
                     var shapeArgs = args.shapeArgs || args;
                     var paths = this.renderer.cuboidPath(shapeArgs);
@@ -384,38 +390,46 @@
 
             // The 8 corners of the cube
             var pArr = [{
-                x: x,
-                y: y,
-                z: z
-            }, {
-                x: x + w,
-                y: y,
-                z: z
-            }, {
-                x: x + w,
-                y: y + h,
-                z: z
-            }, {
-                x: x,
-                y: y + h,
-                z: z
-            }, {
-                x: x,
-                y: y + h,
-                z: z + d
-            }, {
-                x: x + w,
-                y: y + h,
-                z: z + d
-            }, {
-                x: x + w,
-                y: y,
-                z: z + d
-            }, {
-                x: x,
-                y: y,
-                z: z + d
-            }];
+                    x: x,
+                    y: y,
+                    z: z
+                },
+                {
+                    x: x + w,
+                    y: y,
+                    z: z
+                },
+                {
+                    x: x + w,
+                    y: y + h,
+                    z: z
+                },
+                {
+                    x: x,
+                    y: y + h,
+                    z: z
+                },
+                {
+                    x: x,
+                    y: y + h,
+                    z: z + d
+                },
+                {
+                    x: x + w,
+                    y: y + h,
+                    z: z + d
+                },
+                {
+                    x: x + w,
+                    y: y,
+                    z: z + d
+                },
+                {
+                    x: x,
+                    y: y,
+                    z: z + d
+                }
+            ];
 
             // apply perspective
             pArr = perspective(pArr, chart, shapeArgs.insidePlotArea);
@@ -860,7 +874,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Chart = H.Chart,
             each = H.each,
             merge = H.merge,
@@ -1099,7 +1112,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var ZAxis,
 
             Axis = H.Axis,
@@ -1118,7 +1130,7 @@
         wrap(Axis.prototype, 'setOptions', function(proceed, userOptions) {
             var options;
             proceed.call(this, userOptions);
-            if (this.chart.is3d()) {
+            if (this.chart.is3d() && this.coll !== 'colorAxis') {
                 options = this.options;
                 options.tickWidth = pick(options.tickWidth, 0);
                 options.gridLineWidth = pick(options.gridLineWidth, 1);
@@ -1129,7 +1141,7 @@
             proceed.apply(this, [].slice.call(arguments, 1));
 
             // Do not do this if the chart is not 3D
-            if (!this.chart.is3d()) {
+            if (!this.chart.is3d() || this.coll === 'colorAxis') {
                 return;
             }
 
@@ -1232,7 +1244,7 @@
             var path = proceed.apply(this, [].slice.call(arguments, 1));
 
             // Do not do this if the chart is not 3D
-            if (!this.chart.is3d()) {
+            if (!this.chart.is3d() || this.coll === 'colorAxis') {
                 return path;
             }
 
@@ -1283,7 +1295,7 @@
 
         wrap(Axis.prototype, 'getPlotBandPath', function(proceed) {
             // Do not do this if the chart is not 3D
-            if (!this.chart.is3d()) {
+            if (!this.chart.is3d() || this.coll === 'colorAxis') {
                 return proceed.apply(this, [].slice.call(arguments, 1));
             }
 
@@ -1323,7 +1335,7 @@
             var path = proceed.apply(this, [].slice.call(arguments, 1));
 
             // Do not do this if the chart is not 3D
-            if (!this.axis.chart.is3d()) {
+            if (!this.axis.chart.is3d() || this.coll === 'colorAxis') {
                 return path;
             }
 
@@ -1352,7 +1364,7 @@
             var pos = proceed.apply(this, [].slice.call(arguments, 1));
 
             // Do not do this if the chart is not 3D
-            if (this.axis.chart.is3d()) {
+            if (this.axis.chart.is3d() && this.coll !== 'colorAxis') {
                 pos = perspective([this.axis.swapZ({
                     x: pos.x,
                     y: pos.y,
@@ -1363,7 +1375,7 @@
         });
 
         H.wrap(Axis.prototype, 'getTitlePosition', function(proceed) {
-            var is3d = this.chart.is3d(),
+            var is3d = this.chart.is3d() && this.coll !== 'colorAxis',
                 pos,
                 axisTitleMargin;
 
@@ -1431,11 +1443,11 @@
         };
 
         ZAxis = H.ZAxis = function() {
-            this.isZAxis = true;
             this.init.apply(this, arguments);
         };
         extend(ZAxis.prototype, Axis.prototype);
         extend(ZAxis.prototype, {
+            isZAxis: true,
             setOptions: function(userOptions) {
                 userOptions = merge({
                     offset: 0,
@@ -1474,7 +1486,7 @@
                         axis.hasVisibleSeries = true;
 
                         // Validate threshold in logarithmic axes
-                        if (axis.isLog && threshold <= 0) {
+                        if (axis.positiveValuesOnly && threshold <= 0) {
                             threshold = null;
                         }
 
@@ -1518,7 +1530,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var each = H.each,
             perspective = H.perspective,
             pick = H.pick,
@@ -1774,7 +1785,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var deg2rad = H.deg2rad,
             each = H.each,
             pick = H.pick,
@@ -1965,7 +1975,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var perspective = H.perspective,
             pick = H.pick,
             Point = H.Point,
@@ -2081,7 +2090,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
 
         var Axis = H.Axis,
             SVGRenderer = H.SVGRenderer,

@@ -1,10 +1,11 @@
 /**
- * @license Highcharts JS v5.0.7 (2017-01-17)
+ * @license Highcharts JS v5.0.8 (2017-03-08)
  *
  * (c) 2009-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -33,7 +34,6 @@
          * http://jsfiddle.net/highcharts/y5A37/
          */
 
-        'use strict';
 
         var labelDistance = 3,
             wrap = H.wrap,

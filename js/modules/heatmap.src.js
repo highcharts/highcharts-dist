@@ -1,10 +1,11 @@
 /**
- * @license Highcharts JS v5.0.7 (2017-01-17)
+ * @license Highcharts JS v5.0.8 (2017-03-08)
  *
  * (c) 2009-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -18,7 +19,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             Chart = H.Chart,
             color = H.color,
@@ -67,9 +67,14 @@
                 showInLegend: true
             },
 
-            // Properties to preserve after destroy, for Axis.update (#5881)
-            keepProps: ['legendGroup', 'legendItem', 'legendSymbol']
-                .concat(Axis.prototype.keepProps),
+            // Properties to preserve after destroy, for Axis.update (#5881, #6025)
+            keepProps: [
+                'legendGroup',
+                'legendItemHeight',
+                'legendItemWidth',
+                'legendItem',
+                'legendSymbol'
+            ].concat(Axis.prototype.keepProps),
 
             /**
              * Initialize the color axis
@@ -586,7 +591,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var defined = H.defined,
             each = H.each,
             noop = H.noop,
@@ -679,7 +683,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
             each = H.each,

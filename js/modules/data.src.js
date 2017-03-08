@@ -1,11 +1,12 @@
 /**
- * @license Highcharts JS v5.0.7 (2017-01-17)
+ * @license Highcharts JS v5.0.8 (2017-03-08)
  * Data module
  *
  * (c) 2012-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -23,7 +24,6 @@
          */
 
         /* global jQuery */
-        'use strict';
 
         // Utilities
         var win = Highcharts.win,

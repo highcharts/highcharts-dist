@@ -1,10 +1,11 @@
 /**
- * @license Highcharts JS v5.0.7 (2017-01-17)
+ * @license Highcharts JS v5.0.8 (2017-03-08)
  *
  * (c) 2009-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -18,7 +19,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var each = H.each,
             extend = H.extend,
             merge = H.merge,
@@ -79,7 +79,7 @@
                 center: ['50%', '50%'],
                 size: '85%',
                 startAngle: 0
-                    //endAngle: startAngle + 360
+                //endAngle: startAngle + 360
             },
 
             /**
@@ -106,7 +106,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             CenteredSeriesMixin = H.CenteredSeriesMixin,
             each = H.each,
@@ -691,7 +690,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var each = H.each,
             noop = H.noop,
             pick = H.pick,
@@ -1007,7 +1005,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
 
         var seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
@@ -1026,7 +1023,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var defaultPlotOptions = H.defaultPlotOptions,
             each = H.each,
             merge = H.merge,
@@ -1136,7 +1132,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var each = H.each,
             isNumber = H.isNumber,
             merge = H.merge,
@@ -1375,7 +1370,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var each = H.each,
             noop = H.noop,
             pick = H.pick,
@@ -1617,7 +1611,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var each = H.each,
             noop = H.noop,
             seriesType = H.seriesType,
@@ -1675,7 +1668,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var correctFloat = H.correctFloat,
             isNumber = H.isNumber,
             noop = H.noop,
@@ -1717,11 +1709,9 @@
                     previousIntermediate,
                     range,
                     minPointLength = pick(options.minPointLength, 5),
+                    halfMinPointLength = minPointLength / 2,
                     threshold = options.threshold,
                     stacking = options.stacking,
-                    // Separate offsets for negative and positive columns:
-                    positiveOffset = 0,
-                    negativeOffset = 0,
                     stackIndicator,
                     tooltipY;
 
@@ -1759,12 +1749,12 @@
                     if (point.isSum) {
                         shapeArgs.y = yAxis.toPixels(range[1], true);
                         shapeArgs.height = Math.min(yAxis.toPixels(range[0], true), yAxis.len) -
-                            shapeArgs.y + positiveOffset + negativeOffset; // #4256
+                            shapeArgs.y; // #4256
 
                     } else if (point.isIntermediateSum) {
                         shapeArgs.y = yAxis.toPixels(range[1], true);
                         shapeArgs.height = Math.min(yAxis.toPixels(previousIntermediate, true), yAxis.len) -
-                            shapeArgs.y + positiveOffset + negativeOffset;
+                            shapeArgs.y;
                         previousIntermediate = range[1];
 
                         // If it's not the sum point, update previous stack end position and get
@@ -1785,25 +1775,22 @@
                     shapeArgs.height = Math.max(Math.round(shapeArgs.height), 0.001); // #3151
                     point.yBottom = shapeArgs.y + shapeArgs.height;
 
-                    // Before minPointLength, apply negative offset:
-                    shapeArgs.y -= negativeOffset;
-
-
                     if (shapeArgs.height <= minPointLength && !point.isNull) {
                         shapeArgs.height = minPointLength;
+                        shapeArgs.y -= halfMinPointLength;
+                        point.plotY = shapeArgs.y;
                         if (point.y < 0) {
-                            negativeOffset -= minPointLength;
+                            point.minPointLengthOffset = -halfMinPointLength;
                         } else {
-                            positiveOffset += minPointLength;
+                            point.minPointLengthOffset = halfMinPointLength;
                         }
+                    } else {
+                        point.minPointLengthOffset = 0;
                     }
 
-                    // After minPointLength is updated, apply positive offset:
-                    shapeArgs.y -= positiveOffset;
-
                     // Correct tooltip placement (#3014)
-                    tooltipY = point.plotY - negativeOffset - positiveOffset +
-                        (point.negative && negativeOffset >= 0 ? shapeArgs.height : 0);
+                    tooltipY = point.plotY + (point.negative ? shapeArgs.height : 0);
+
                     if (series.chart.inverted) {
                         point.tooltipPos[0] = yAxis.len - tooltipY;
                     } else {
@@ -1899,9 +1886,11 @@
 
                     d = [
                         'M',
-                        prevArgs.x + prevArgs.width, prevArgs.y + normalizer,
+                        prevArgs.x + prevArgs.width,
+                        prevArgs.y + data[i - 1].minPointLengthOffset + normalizer,
                         'L',
-                        pointArgs.x, prevArgs.y + normalizer
+                        pointArgs.x,
+                        prevArgs.y + data[i - 1].minPointLengthOffset + normalizer
                     ];
 
                     if (data[i - 1].y < 0) {
@@ -1963,7 +1952,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var LegendSymbolMixin = H.LegendSymbolMixin,
             noop = H.noop,
             Series = H.Series,
@@ -2021,7 +2009,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var arrayMax = H.arrayMax,
             arrayMin = H.arrayMin,
             Axis = H.Axis,
@@ -2199,11 +2186,11 @@
 
                     if (isNumber(radius) && radius >= this.minPxSize / 2) {
                         // Shape arguments
-                        point.marker = {
+                        point.marker = H.extend(point.marker, {
                             radius: radius,
                             width: 2 * radius,
                             height: 2 * radius
-                        };
+                        });
 
                         // Alignment box for the data label
                         point.dlBox = {
@@ -2227,7 +2214,7 @@
             haloPath: function(size) {
                 return Point.prototype.haloPath.call(
                     this,
-                    size === 0 ? 0 : this.marker.radius + size // #6067
+                    size === 0 ? 0 : (this.marker ? this.marker.radius || 0 : 0) + size // #6067
                 );
             },
             ttBelow: false
@@ -2348,7 +2335,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
 
         /**
          * Extensions for polar charts. Additionally, much of the geometry required for polar charts is

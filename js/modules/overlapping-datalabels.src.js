@@ -1,10 +1,11 @@
 /**
- * @license Highcharts JS v5.0.7 (2017-01-17)
+ * @license Highcharts JS v5.0.8 (2017-03-08)
  *
  * (c) 2009-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -18,7 +19,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         /**
          * Highcharts module to hide overlapping data labels. This module is included in Highcharts.
          */
@@ -33,7 +33,7 @@
             function collectAndHide() {
                 var labels = [];
 
-                each(chart.series, function(series) {
+                each(chart.series || [], function(series) {
                     var dlOptions = series.options.dataLabels,
                         collections = series.dataLabelCollections || ['dataLabel']; // Range series have two collections
                     if ((dlOptions.enabled || series._hasPointLabels) && !dlOptions.allowOverlap && series.visible) { // #3866

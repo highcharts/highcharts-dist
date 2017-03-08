@@ -1,10 +1,11 @@
 /**
- * @license Highcharts JS v5.0.7 (2017-01-17)
+ * @license Highcharts JS v5.0.8 (2017-03-08)
  *
  * (c) 2009-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -18,7 +19,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
 
         var pick = H.pick,
             wrap = H.wrap,
@@ -172,6 +172,7 @@
                         brk,
                         min = axis.userMin || axis.min,
                         max = axis.userMax || axis.max,
+                        pointRangePadding = pick(axis.pointRangePadding, 0),
                         start,
                         i,
                         j;
@@ -247,9 +248,22 @@
 
                     axis.breakArray = breakArray;
 
+                    // Used with staticScale, and below, the actual axis length when
+                    // breaks are substracted.
+                    axis.unitLength = max - min - length + pointRangePadding;
+
                     fireEvent(axis, 'afterBreaks');
 
-                    axis.transA *= ((max - axis.min) / (max - min - length));
+                    if (axis.options.staticScale) {
+                        axis.transA = axis.options.staticScale;
+                    } else {
+                        axis.transA *= (max - axis.min + pointRangePadding) /
+                            axis.unitLength;
+                    }
+
+                    if (pointRangePadding) {
+                        axis.minPixelPadding = axis.transA * axis.minPointOffset;
+                    }
 
                     axis.min = min;
                     axis.max = max;

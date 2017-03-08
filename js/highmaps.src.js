@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v5.0.7 (2017-01-17)
+ * @license Highmaps JS v5.0.8 (2017-03-08)
  *
  * (c) 2011-2016 Torstein Honsi
  *
@@ -21,7 +21,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         /* global window */
         var win = window,
             doc = win.document;
@@ -36,7 +35,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highmaps',
-            version: '5.0.7',
+            version: '5.0.8',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -67,7 +66,6 @@
          * License: www.highcharts.com/license
          */
         /* eslint max-len: ["warn", 80, 4] */
-        'use strict';
 
         /**
          * The Highcharts object is the placeholder for all other members, and various
@@ -1597,9 +1595,10 @@
          * @function #each
          * @memberOf Highcharts
          * @param {Array} arr - The array to iterate over.
-         * @param {Function} fn - The iterator callback. It passes two arguments:
+         * @param {Function} fn - The iterator callback. It passes three arguments:
          * * item - The array item.
          * * index - The item's index in the array.
+         * * arr - The array that each is being applied to.
          * @param {Object} [ctx] The context.
          */
         H.each = function(arr, fn, ctx) { // modern browsers
@@ -1890,7 +1889,7 @@
                 if (!end) {
                     end = params[prop];
                 }
-                if (end.match && end.match('px')) {
+                if (end && end.match && end.match('px')) {
                     end = end.replace(/px/g, ''); // #4351
                 }
                 fx.run(start, end, unit);
@@ -2096,7 +2095,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var each = H.each,
             isNumber = H.isNumber,
             map = H.map,
@@ -2134,12 +2132,6 @@
                     return [pInt(result[1]), pInt(result[2]), pInt(result[3]), parseFloat(result[4], 10)];
                 }
             }, {
-                // HEX color
-                regex: /#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})/,
-                parse: function(result) {
-                    return [pInt(result[1], 16), pInt(result[2], 16), pInt(result[3], 16), 1];
-                }
-            }, {
                 // RGB color
                 regex: /rgb\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*\)/,
                 parse: function(result) {
@@ -2162,7 +2154,8 @@
                 var result,
                     rgba,
                     i,
-                    parser;
+                    parser,
+                    len;
 
                 this.input = input = this.names[input] || input;
 
@@ -2174,12 +2167,46 @@
 
                     // Solid colors
                 } else {
-                    i = this.parsers.length;
-                    while (i-- && !rgba) {
-                        parser = this.parsers[i];
-                        result = parser.regex.exec(input);
-                        if (result) {
-                            rgba = parser.parse(result);
+
+                    // Check if it's possible to do bitmasking instead of regex
+                    if (input && input[0] === '#') {
+
+                        len = input.length;
+                        input = parseInt(input.substr(1), 16);
+
+                        // Handle long-form, e.g. #AABBCC
+                        if (len === 7) {
+
+                            rgba = [
+                                (input & 0xFF0000) >> 16,
+                                (input & 0xFF00) >> 8,
+                                (input & 0xFF),
+                                1
+                            ];
+
+                            // Handle short-form, e.g. #ABC
+                            // In short form, the value is assumed to be the same 
+                            // for both nibbles for each component. e.g. #ABC = #AABBCC
+                        } else if (len === 4) {
+
+                            rgba = [
+                                ((input & 0xF00) >> 4) | (input & 0xF00) >> 8,
+                                ((input & 0xF0) >> 4) | (input & 0xF0),
+                                ((input & 0xF) << 4) | (input & 0xF),
+                                1
+                            ];
+                        }
+                    }
+
+                    // Otherwise, check regex parsers
+                    if (!rgba) {
+                        i = this.parsers.length;
+                        while (i-- && !rgba) {
+                            parser = this.parsers[i];
+                            result = parser.regex.exec(input);
+                            if (result) {
+                                rgba = parser.parse(result);
+                            }
                         }
                     }
                 }
@@ -2265,7 +2292,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var color = H.color,
             each = H.each,
             getTZOffset = H.getTZOffset,
@@ -2457,7 +2483,9 @@
                 snap: isTouchDevice ? 25 : 10,
 
                 headerFormat: '<span class="highcharts-header">{point.key}</span><br/>',
-                pointFormat: '<span class="highcharts-color-{point.colorIndex}">\u25CF</span> {series.name}: <b>{point.y}</b><br/>',
+                pointFormat: '<span class="highcharts-color-{point.colorIndex}">' +
+                    '\u25CF</span> {series.name}: <span class="highcharts-strong">' +
+                    '{point.y}</span><br/>',
 
                 //xDateFormat: '%A, %b %e, %Y',
                 //valueDecimals: null,
@@ -2591,7 +2619,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var SVGElement,
             SVGRenderer,
 
@@ -2662,8 +2689,8 @@
              * @type {Array.<string>}
              */
             textProps: ['direction', 'fontSize', 'fontWeight', 'fontFamily',
-                'fontStyle', 'color', 'lineHeight', 'width', 'textDecoration',
-                'textOverflow', 'textOutline'
+                'fontStyle', 'color', 'lineHeight', 'width', 'textAlign',
+                'textDecoration', 'textOverflow', 'textOutline'
             ],
 
             /**
@@ -2711,6 +2738,9 @@
                     animate(this, params, animOptions);
                 } else {
                     this.attr(params, null, complete);
+                    if (animOptions.step) {
+                        animOptions.step.call(this);
+                    }
                 }
                 return this;
             },
@@ -3241,10 +3271,9 @@
              * @returns {SVGElement} Return the SVG element for chaining.
              */
             css: function(styles) {
-                var elemWrapper = this,
-                    oldStyles = elemWrapper.styles,
+                var oldStyles = this.styles,
                     newStyles = {},
-                    elem = elemWrapper.element,
+                    elem = this.element,
                     textWidth,
                     n,
                     serializedCss = '',
@@ -3271,9 +3300,6 @@
                     }
                 }
                 if (hasNew) {
-                    textWidth = elemWrapper.textWidth =
-                        (styles && styles.width && elem.nodeName.toLowerCase() === 'text' && pInt(styles.width)) ||
-                        elemWrapper.textWidth; // #3501
 
                     // Merge the new styles with the old ones
                     if (oldStyles) {
@@ -3283,16 +3309,25 @@
                         );
                     }
 
-                    // store object
-                    elemWrapper.styles = styles;
+                    // Get the text width from style
+                    textWidth = this.textWidth = (
+                        styles &&
+                        styles.width &&
+                        styles.width !== 'auto' &&
+                        elem.nodeName.toLowerCase() === 'text' &&
+                        pInt(styles.width)
+                    );
 
-                    if (textWidth && (!svg && elemWrapper.renderer.forExport)) {
+                    // store object
+                    this.styles = styles;
+
+                    if (textWidth && (!svg && this.renderer.forExport)) {
                         delete styles.width;
                     }
 
                     // serialize and set style attribute
                     if (isMS && !svg) {
-                        css(elemWrapper.element, styles);
+                        css(this.element, styles);
                     } else {
                         hyphenate = function(a, b) {
                             return '-' + b.toLowerCase();
@@ -3310,20 +3345,22 @@
                     }
 
 
-                    if (elemWrapper.added) {
-                        // Rebuild text after added
-                        if (textWidth) {
-                            elemWrapper.renderer.buildText(elemWrapper);
+                    if (this.added) {
+
+                        // Rebuild text after added. Cache mechanisms in the buildText
+                        // will prevent building if there are no significant changes.
+                        if (this.element.nodeName === 'text') {
+                            this.renderer.buildText(this);
                         }
 
                         // Apply text outline after added
                         if (styles && styles.textOutline) {
-                            elemWrapper.applyTextOutline(styles.textOutline);
+                            this.applyTextOutline(styles.textOutline);
                         }
                     }
                 }
 
-                return elemWrapper;
+                return this;
             },
 
 
@@ -4216,7 +4253,7 @@
 
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highmaps 5.0.7'));
+                desc.element.appendChild(doc.createTextNode('Created with Highmaps 5.0.8'));
 
 
                 renderer.defs = this.createElement('defs').add();
@@ -4476,8 +4513,10 @@
 
                     if (hasMarkup) {
                         lines = textStr
-                            .replace(/<(b|strong)>/g, '<span style="font-weight:bold">')
-                            .replace(/<(i|em)>/g, '<span style="font-style:italic">')
+
+                            .replace(/<(b|strong)>/g, '<span class="highcharts-strong">')
+                            .replace(/<(i|em)>/g, '<span class="highcharts-emphasized">')
+
                             .replace(/<a/g, '<span')
                             .replace(/<\/(b|strong|i|em|a)>/g, '</span>')
                             .split(/<br.*?>/g);
@@ -4878,24 +4917,28 @@
              * @returns {SVGElement} The generated wrapper element.
              */
             arc: function(x, y, r, innerR, start, end) {
-                var arc;
+                var arc,
+                    options;
 
                 if (isObject(x)) {
-                    y = x.y;
-                    r = x.r;
-                    innerR = x.innerR;
-                    start = x.start;
-                    end = x.end;
-                    x = x.x;
+                    options = x;
+                    y = options.y;
+                    r = options.r;
+                    innerR = options.innerR;
+                    start = options.start;
+                    end = options.end;
+                    x = options.x;
+                } else {
+                    options = {
+                        innerR: innerR,
+                        start: start,
+                        end: end
+                    };
                 }
 
                 // Arcs are defined as symbols for the ability to set
                 // attributes in attr and animate
-                arc = this.symbol('arc', x || 0, y || 0, r || 0, r || 0, {
-                    innerR: innerR || 0,
-                    start: start || 0,
-                    end: end || 0
-                });
+                arc = this.symbol('arc', x, y, r, r, options);
                 arc.r = r; // #959
                 return arc;
             },
@@ -5740,7 +5783,7 @@
 
                 // only change local variables
                 wrapper.widthSetter = function(value) {
-                    width = value;
+                    width = H.isNumber(value) ? value : null; // width:auto => null
                 };
                 wrapper.heightSetter = function(value) {
                     height = value;
@@ -5896,7 +5939,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var attr = H.attr,
             createElement = H.createElement,
             css = H.css,
@@ -6247,7 +6289,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
 
 
     }(Highcharts));
@@ -6257,7 +6298,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var correctFloat = H.correctFloat,
             defined = H.defined,
             destroyObjectProperties = H.destroyObjectProperties,
@@ -6341,7 +6381,7 @@
                             labelOptions.useHTML
                         )
 
-                    .add(axis.labelGroup):
+                        .add(axis.labelGroup) :
                         null;
                     tick.labelLength = label && label.getBBox().width; // Un-rotated length
                     tick.rotation = 0; // Base value to detect change for new calls to getBBox
@@ -6515,44 +6555,26 @@
             },
 
             /**
-             * Put everything in place
-             *
-             * @param index {Number}
-             * @param old {Boolean} Use old coordinates to prepare an animation into new position
+             * Renders the gridLine.
+             * @param  {Boolean} old         Whether or not the tick is old
+             * @param  {number} opacity      The opacity of the grid line
+             * @param  {number} reverseCrisp Modifier for avoiding overlapping 1 or -1
+             * @return {undefined}
              */
-            render: function(index, old, opacity) {
+            renderGridLine: function(old, opacity, reverseCrisp) {
                 var tick = this,
                     axis = tick.axis,
                     options = axis.options,
-                    chart = axis.chart,
-                    renderer = chart.renderer,
-                    horiz = axis.horiz,
-                    type = tick.type,
-                    label = tick.label,
-                    pos = tick.pos,
-                    labelOptions = options.labels,
                     gridLine = tick.gridLine,
-                    tickPrefix = type ? type + 'Tick' : 'tick',
-                    tickSize = axis.tickSize(tickPrefix),
                     gridLinePath,
-                    mark = tick.mark,
-                    isNewMark = !mark,
-                    step = labelOptions.step,
                     attribs = {},
-                    show = true,
+                    pos = tick.pos,
+                    type = tick.type,
                     tickmarkOffset = axis.tickmarkOffset,
-                    xy = tick.getPosition(horiz, pos, tickmarkOffset, old),
-                    x = xy.x,
-                    y = xy.y,
-                    reverseCrisp = ((horiz && x === axis.pos + axis.len) ||
-                        (!horiz && y === axis.pos)) ? -1 : 1; // #1480, #1687
+                    renderer = axis.chart.renderer;
 
 
 
-                opacity = pick(opacity, 1);
-                this.isActive = true;
-
-                // Create the grid line
                 if (!gridLine) {
 
                     if (!type) {
@@ -6563,14 +6585,20 @@
                     }
                     tick.gridLine = gridLine = renderer.path()
                         .attr(attribs)
-                        .addClass('highcharts-' + (type ? type + '-' : '') + 'grid-line')
+                        .addClass(
+                            'highcharts-' + (type ? type + '-' : '') + 'grid-line'
+                        )
                         .add(axis.gridGroup);
                 }
 
                 // If the parameter 'old' is set, the current call will be followed
                 // by another call, therefore do not do any animations this time
                 if (!old && gridLine) {
-                    gridLinePath = axis.getPlotLinePath(pos + tickmarkOffset, gridLine.strokeWidth() * reverseCrisp, old, true);
+                    gridLinePath = axis.getPlotLinePath(
+                        pos + tickmarkOffset,
+                        gridLine.strokeWidth() * reverseCrisp,
+                        old, true
+                    );
                     if (gridLinePath) {
                         gridLine[tick.isNew ? 'attr' : 'animate']({
                             d: gridLinePath,
@@ -6578,8 +6606,32 @@
                         });
                     }
                 }
+            },
 
-                // create the tick mark
+            /**
+             * Renders the tick mark.
+             * @param  {Object} xy           The position vector of the mark
+             * @param  {number} xy.x         The x position of the mark
+             * @param  {number} xy.y         The y position of the mark
+             * @param  {number} opacity      The opacity of the mark
+             * @param  {number} reverseCrisp Modifier for avoiding overlapping 1 or -1
+             * @return {undefined}
+             */
+            renderMark: function(xy, opacity, reverseCrisp) {
+                var tick = this,
+                    axis = tick.axis,
+                    options = axis.options,
+                    renderer = axis.chart.renderer,
+                    type = tick.type,
+                    tickPrefix = type ? type + 'Tick' : 'tick',
+                    tickSize = axis.tickSize(tickPrefix),
+                    mark = tick.mark,
+                    isNewMark = !mark,
+                    x = xy.x,
+                    y = xy.y;
+
+
+
                 if (tickSize) {
 
                     // negate the length
@@ -6596,20 +6648,70 @@
 
                     }
                     mark[isNewMark ? 'attr' : 'animate']({
-                        d: tick.getMarkPath(x, y, tickSize[0], mark.strokeWidth() * reverseCrisp, horiz, renderer),
+                        d: tick.getMarkPath(
+                            x,
+                            y,
+                            tickSize[0],
+                            mark.strokeWidth() * reverseCrisp,
+                            axis.horiz,
+                            renderer),
                         opacity: opacity
                     });
 
                 }
+            },
 
-                // the label is created on init - now move it into place
+            /**
+             * Renders the tick label.
+             * Note: The label should already be created in init(), so it should only
+             * have to be moved into place.
+             * @param  {Object} xy      The position vector of the label
+             * @param  {number} xy.x    The x position of the label
+             * @param  {number} xy.y    The y position of the label
+             * @param  {Boolean} old    Whether or not the tick is old
+             * @param  {number} opacity The opacity of the label
+             * @param  {number} index   The index of the tick
+             * @return {undefined}
+             */
+            renderLabel: function(xy, old, opacity, index) {
+                var tick = this,
+                    axis = tick.axis,
+                    horiz = axis.horiz,
+                    options = axis.options,
+                    label = tick.label,
+                    labelOptions = options.labels,
+                    step = labelOptions.step,
+                    tickmarkOffset = axis.tickmarkOffset,
+                    show = true,
+                    x = xy.x,
+                    y = xy.y;
                 if (label && isNumber(x)) {
-                    label.xy = xy = tick.getLabelPosition(x, y, label, horiz, labelOptions, tickmarkOffset, index, step);
+                    label.xy = xy = tick.getLabelPosition(
+                        x,
+                        y,
+                        label,
+                        horiz,
+                        labelOptions,
+                        tickmarkOffset,
+                        index,
+                        step
+                    );
 
-                    // Apply show first and show last. If the tick is both first and last, it is
-                    // a single centered tick, in which case we show the label anyway (#2100).
-                    if ((tick.isFirst && !tick.isLast && !pick(options.showFirstLabel, 1)) ||
-                        (tick.isLast && !tick.isFirst && !pick(options.showLastLabel, 1))) {
+                    // Apply show first and show last. If the tick is both first and
+                    // last, it is a single centered tick, in which case we show the
+                    // label anyway (#2100).
+                    if (
+                        (
+                            tick.isFirst &&
+                            !tick.isLast &&
+                            !pick(options.showFirstLabel, 1)
+                        ) ||
+                        (
+                            tick.isLast &&
+                            !tick.isFirst &&
+                            !pick(options.showLastLabel, 1)
+                        )
+                    ) {
                         show = false;
 
                         // Handle label overflow and show or hide accordingly
@@ -6636,6 +6738,38 @@
             },
 
             /**
+             * Put everything in place
+             *
+             * @param index {Number}
+             * @param old {Boolean} Use old coordinates to prepare an animation into new
+             *                      position
+             */
+            render: function(index, old, opacity) {
+                var tick = this,
+                    axis = tick.axis,
+                    horiz = axis.horiz,
+                    pos = tick.pos,
+                    tickmarkOffset = axis.tickmarkOffset,
+                    xy = tick.getPosition(horiz, pos, tickmarkOffset, old),
+                    x = xy.x,
+                    y = xy.y,
+                    reverseCrisp = ((horiz && x === axis.pos + axis.len) ||
+                        (!horiz && y === axis.pos)) ? -1 : 1; // #1480, #1687
+
+                opacity = pick(opacity, 1);
+                this.isActive = true;
+
+                // Create the grid line
+                this.renderGridLine(old, opacity, reverseCrisp);
+
+                // create the tick mark
+                this.renderMark(xy, opacity, reverseCrisp);
+
+                // the label is created on init - now move it into place
+                this.renderLabel(xy, old, opacity, index);
+            },
+
+            /**
              * Destructor for the tick prototype
              */
             destroy: function() {
@@ -6650,7 +6784,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var arrayMax = H.arrayMax,
             arrayMin = H.arrayMin,
             defined = H.defined,
@@ -6955,7 +7088,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
 
         var addEvent = H.addEvent,
             animObject = H.animObject,
@@ -7026,10 +7158,10 @@
                     // step: null,
 
                     x: 0
-                        //y: undefined
-                        /*formatter: function () {
-                        	return this.value;
-                        },*/
+                    //y: undefined
+                    /*formatter: function () {
+                    	return this.value;
+                    },*/
                 },
                 //linkedTo: null,
                 //max: undefined,
@@ -7142,8 +7274,8 @@
                 labels: {
                     autoRotation: [-45],
                     x: 0
-                        // overflow: undefined,
-                        // staggerLines: null
+                    // overflow: undefined,
+                    // staggerLines: null
                 },
                 title: {
                     rotation: 0
@@ -7156,8 +7288,8 @@
                 labels: {
                     autoRotation: [-45],
                     x: 0
-                        // overflow: undefined
-                        // staggerLines: null
+                    // overflow: undefined
+                    // staggerLines: null
                 },
                 title: {
                     rotation: 0
@@ -7221,6 +7353,7 @@
                 // Shorthand types
                 axis.isLog = type === 'logarithmic';
                 axis.isDatetimeAxis = isDatetimeAxis;
+                axis.positiveValuesOnly = axis.isLog && !axis.allowNegativeLog;
 
                 // Flag, if axis is linked to another axis
                 axis.isLinked = defined(options.linkedTo);
@@ -7319,6 +7452,7 @@
                 }
 
                 // extend logarithmic axis
+                axis.lin2log = options.linearToLogConverter || axis.lin2log;
                 if (axis.isLog) {
                     axis.val2lin = axis.log2lin;
                     axis.lin2val = axis.lin2log;
@@ -7358,7 +7492,7 @@
                     formatOption = axis.options.labels.format,
 
                     // make sure the same symbol is added for all labels on a linear axis
-                    numericSymbolDetector = axis.isLog ? value : axis.tickInterval;
+                    numericSymbolDetector = axis.isLog ? Math.abs(value) : axis.tickInterval;
 
                 if (formatOption) {
                     ret = format(formatOption, this);
@@ -7422,7 +7556,7 @@
                         axis.hasVisibleSeries = true;
 
                         // Validate threshold in logarithmic axes
-                        if (axis.isLog && threshold <= 0) {
+                        if (axis.positiveValuesOnly && threshold <= 0) {
                             threshold = null;
                         }
 
@@ -7467,7 +7601,7 @@
                                 axis.threshold = threshold;
                             }
                             // If any series has a hard threshold, it takes precedence
-                            if (!seriesOptions.softThreshold || axis.isLog) {
+                            if (!seriesOptions.softThreshold || axis.positiveValuesOnly) {
                                 axis.softThreshold = false;
                             }
                         }
@@ -7614,8 +7748,9 @@
                     roundedMax = correctFloat(Math.ceil(max / tickInterval) * tickInterval),
                     tickPositions = [];
 
-                // For single points, add a tick regardless of the relative position (#2662)
-                if (min === max && isNumber(min)) {
+                // For single points, add a tick regardless of the relative position
+                // (#2662, #6274)
+                if (this.single) {
                     return [min];
                 }
 
@@ -7652,23 +7787,31 @@
                     minorTickInterval = axis.minorTickInterval,
                     minorTickPositions = [],
                     pos,
-                    i,
                     pointRangePadding = axis.pointRangePadding || 0,
                     min = axis.min - pointRangePadding, // #1498
                     max = axis.max + pointRangePadding, // #1498
-                    range = max - min,
-                    len;
+                    range = max - min;
 
                 // If minor ticks get too dense, they are hard to read, and may cause long running script. So we don't draw them.
                 if (range && range / minorTickInterval < axis.len / 3) { // #3875
 
                     if (axis.isLog) {
-                        len = tickPositions.length;
-                        for (i = 1; i < len; i++) {
-                            minorTickPositions = minorTickPositions.concat(
-                                axis.getLogTickPositions(minorTickInterval, tickPositions[i - 1], tickPositions[i], true)
-                            );
-                        }
+                        // For each interval in the major ticks, compute the minor ticks
+                        // separately.
+                        each(this.paddedTicks, function(pos, i, paddedTicks) {
+                            if (i) {
+                                minorTickPositions.push.apply(
+                                    minorTickPositions,
+                                    axis.getLogTickPositions(
+                                        minorTickInterval,
+                                        paddedTicks[i - 1],
+                                        paddedTicks[i],
+                                        true
+                                    )
+                                );
+                            }
+                        });
+
                     } else if (axis.isDatetimeAxis && options.minorTickInterval === 'auto') { // #1314
                         minorTickPositions = minorTickPositions.concat(
                             axis.getTimeTicks(
@@ -7691,8 +7834,8 @@
                     }
                 }
 
-                if (minorTickPositions.length !== 0) { // don't change the extremes, when there is no minor ticks
-                    axis.trimTicks(minorTickPositions, options.startOnTick, options.endOnTick); // #3652 #3743 #1498
+                if (minorTickPositions.length !== 0) {
+                    axis.trimTicks(minorTickPositions); // #3652 #3743 #1498 #6330
                 }
                 return minorTickPositions;
             },
@@ -7942,7 +8085,9 @@
                 if (saveOld) {
                     axis.oldTransA = transA;
                 }
-                axis.translationSlope = axis.transA = transA = axis.len / ((range + pointRangePadding) || 1);
+                axis.translationSlope = axis.transA = transA =
+                    axis.options.staticScale ||
+                    axis.len / ((range + pointRangePadding) || 1);
                 axis.transB = axis.horiz ? axis.left : axis.bottom; // translation addend
                 axis.minPixelPadding = transA * minPointOffset;
             },
@@ -8017,7 +8162,11 @@
                 }
 
                 if (isLog) {
-                    if (!secondPass && Math.min(axis.min, pick(axis.dataMin, axis.min)) <= 0) { // #978
+                    if (
+                        axis.positiveValuesOnly &&
+                        !secondPass &&
+                        Math.min(axis.min, pick(axis.dataMin, axis.min)) <= 0
+                    ) { // #978
                         H.error(10, 1); // Can't plot negative values on log axis
                     }
                     // The correctFloat cures #934, float errors on full tens. But it
@@ -8166,8 +8315,7 @@
                     tickPositionsOption = options.tickPositions,
                     tickPositioner = options.tickPositioner,
                     startOnTick = options.startOnTick,
-                    endOnTick = options.endOnTick,
-                    single;
+                    endOnTick = options.endOnTick;
 
                 // Set the tickmarkOffset
                 this.tickmarkOffset = (this.categories && options.tickmarkPlacement === 'between' &&
@@ -8177,6 +8325,13 @@
                 // get minorTickInterval
                 this.minorTickInterval = options.minorTickInterval === 'auto' && this.tickInterval ?
                     this.tickInterval / 5 : options.minorTickInterval;
+
+                // When there is only one point, or all points have the same value on
+                // this axis, then min and max are equal and tickPositions.length is 0
+                // or 1. In this case, add some padding in order to center the point,
+                // but leave it with one tick. #1337.
+                this.single = this.min === this.max && defined(this.min) &&
+                    !this.tickAmount && options.allowDecimals !== false;
 
                 // Find the tick positions
                 this.tickPositions = tickPositions = tickPositionsOption && tickPositionsOption.slice(); // Work on a copy (#1565)
@@ -8215,19 +8370,16 @@
 
                 }
 
-                // reset min/max or remove extremes based on start/end on tick
+                // Reset min/max or remove extremes based on start/end on tick
+                this.paddedTicks = tickPositions.slice(0); // Used for logarithmic minor
                 this.trimTicks(tickPositions, startOnTick, endOnTick);
                 if (!this.isLinked) {
-                    // When there is only one point, or all points have the same value on this axis, then min
-                    // and max are equal and tickPositions.length is 0 or 1. In this case, add some padding
-                    // in order to center the point, but leave it with one tick. #1337.
-                    if (this.min === this.max && defined(this.min) && !this.tickAmount) {
-                        // Substract half a unit (#2619, #2846, #2515, #3390)
-                        single = true;
+
+                    // Substract half a unit (#2619, #2846, #2515, #3390)
+                    if (this.single) {
                         this.min -= 0.5;
                         this.max += 0.5;
                     }
-                    this.single = single;
                     if (!tickPositionsOption && !tickPositioner) {
                         this.adjustTickAmount();
                     }
@@ -8899,7 +9051,7 @@
                         })
                         .addClass('highcharts-axis-title')
 
-                    .add(axis.axisGroup);
+                        .add(axis.axisGroup);
                     axis.axisTitle.isNew = true;
                 }
 
@@ -9062,7 +9214,9 @@
                     axisOffset[side],
                     axis.axisTitleMargin + titleOffset + directionFactor * axis.offset,
                     labelOffsetPadded, // #3027
-                    hasData && tickPositions.length && tickSize ? tickSize[0] : 0 // #4866
+                    hasData && tickPositions.length && tickSize ?
+                    tickSize[0] + directionFactor * axis.offset :
+                    0 // #4866
                 );
 
                 // Decide the clipping needed to keep the graph inside the plot area and axis lines
@@ -9540,7 +9694,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             getMagnitude = H.getMagnitude,
             map = H.map,
@@ -9664,7 +9817,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var dateFormat = H.dateFormat,
             each = H.each,
             extend = H.extend,
@@ -10096,21 +10248,20 @@
 
             /**
              * Refresh the tooltip's text and position.
-             * @param {Object} point
+             * @param {Object|Array} pointOrPoints Rither a point or an array of points
              */
-            refresh: function(point, mouseEvent) {
+            refresh: function(pointOrPoints, mouseEvent) {
                 var tooltip = this,
-                    chart = tooltip.chart,
                     label,
                     options = tooltip.options,
                     x,
                     y,
+                    point = pointOrPoints,
                     anchor,
                     textConfig = {},
                     text,
                     pointConfig = [],
                     formatter = options.formatter || tooltip.defaultFormatter,
-                    hoverPoints = chart.hoverPoints,
                     shared = tooltip.shared,
                     currentSeries;
 
@@ -10124,16 +10275,6 @@
 
                 // shared tooltip, array is sent over
                 if (shared && !(point.series && point.series.noSharedTooltip)) {
-
-                    // hide previous hoverPoints and set new
-
-                    chart.hoverPoints = point;
-                    if (hoverPoints) {
-                        each(hoverPoints, function(point) {
-                            point.setState();
-                        });
-                    }
-
                     each(point, function(item) {
                         item.setState('hover');
 
@@ -10174,7 +10315,7 @@
 
                     // update text
                     if (tooltip.split) {
-                        this.renderSplit(text, chart.hoverPoints);
+                        this.renderSplit(text, pointOrPoints);
                     } else {
                         label.attr({
                             text: text && text.join ? text.join('') : text
@@ -10459,7 +10600,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             attr = H.attr,
             charts = H.charts,
@@ -10596,91 +10736,57 @@
                 });
                 return coordinates;
             },
-
             /**
-             * With line type charts with a single tracker, get the point closest to the mouse.
-             * Run Point.onMouseOver and display tooltip for the point or points.
+             * Collects the points closest to a mouseEvent
+             * @param  {Array} series Array of series to gather points from
+             * @param  {Boolean} shared True if shared tooltip, otherwise false
+             * @param  {Object} e Mouse event which possess a position to compare against
+             * @return {Array} KDPoints sorted by distance
              */
-            runPointActions: function(e) {
-
-                var pointer = this,
-                    chart = pointer.chart,
-                    series = chart.series,
-                    tooltip = chart.tooltip,
-                    shared = tooltip ? tooltip.shared : false,
-                    followPointer,
-                    updatePosition = true,
-                    hoverPoint = chart.hoverPoint,
-                    hoverSeries = chart.hoverSeries,
-                    i,
-                    anchor,
+            getKDPoints: function(series, shared, e) {
+                var kdpoints = [],
                     noSharedTooltip,
-                    stickToHoverSeries,
                     directTouch,
-                    kdpoints = [],
-                    kdpointT;
+                    kdpointT,
+                    i;
 
-                // For hovering over the empty parts of the plot area (hoverSeries is undefined).
-                // If there is one series with point tracking (combo chart), don't go to nearest neighbour.
-                if (!shared && !hoverSeries) {
-                    for (i = 0; i < series.length; i++) {
-                        if (series[i].directTouch || !series[i].options.stickyTracking) {
-                            series = [];
+                // Find nearest points on all series
+                each(series, function(s) {
+                    // Skip hidden series
+                    noSharedTooltip = s.noSharedTooltip && shared;
+                    directTouch = !shared && s.directTouch;
+                    if (s.visible && !noSharedTooltip && !directTouch && pick(s.options.enableMouseTracking, true)) { // #3821
+                        kdpointT = s.searchPoint(e, !noSharedTooltip && s.kdDimensions === 1); // #3828
+                        if (kdpointT && kdpointT.series) { // Point.series becomes null when reset and before redraw (#5197)
+                            kdpoints.push(kdpointT);
                         }
                     }
-                }
+                });
 
-                // If it has a hoverPoint and that series requires direct touch (like columns, #3899), or we're on
-                // a noSharedTooltip series among shared tooltip series (#4546), use the hoverPoint . Otherwise,
-                // search the k-d tree.
-                stickToHoverSeries = hoverSeries && (shared ? hoverSeries.noSharedTooltip : hoverSeries.directTouch);
-                if (stickToHoverSeries && hoverPoint) {
-                    kdpoints = [hoverPoint];
+                // Sort kdpoints by distance to mouse pointer
+                kdpoints.sort(function(p1, p2) {
+                    var isCloserX = p1.distX - p2.distX,
+                        isCloser = p1.dist - p2.dist,
+                        isAbove =
+                        (p2.series.group && p2.series.group.zIndex) -
+                        (p1.series.group && p1.series.group.zIndex),
+                        result;
 
-                    // Handle shared tooltip or cases where a series is not yet hovered
-                } else {
-                    // When we have non-shared tooltip and sticky tracking is disabled,
-                    // search for the closest point only on hovered series: #5533, #5476
-                    if (!shared && hoverSeries && !hoverSeries.options.stickyTracking) {
-                        series = [hoverSeries];
-                    }
-                    // Find nearest points on all series
-                    each(series, function(s) {
-                        // Skip hidden series
-                        noSharedTooltip = s.noSharedTooltip && shared;
-                        directTouch = !shared && s.directTouch;
-                        if (s.visible && !noSharedTooltip && !directTouch && pick(s.options.enableMouseTracking, true)) { // #3821
-                            kdpointT = s.searchPoint(e, !noSharedTooltip && s.kdDimensions === 1); // #3828
-                            if (kdpointT && kdpointT.series) { // Point.series becomes null when reset and before redraw (#5197)
-                                kdpoints.push(kdpointT);
-                            }
-                        }
-                    });
-
-                    // Sort kdpoints by distance to mouse pointer
-                    kdpoints.sort(function(p1, p2) {
-                        var isCloserX = p1.distX - p2.distX,
-                            isCloser = p1.dist - p2.dist,
-                            isAbove = (p2.series.group && p2.series.group.zIndex) -
-                            (p1.series.group && p1.series.group.zIndex);
-
-                        // We have two points which are not in the same place on xAxis and shared tooltip:
-                        if (isCloserX !== 0 && shared) { // #5721
-                            return isCloserX;
-                        }
+                    // We have two points which are not in the same place on xAxis and shared tooltip:
+                    if (isCloserX !== 0 && shared) { // #5721
+                        result = isCloserX;
                         // Points are not exactly in the same place on x/yAxis:
-                        if (isCloser !== 0) {
-                            return isCloser;
-                        }
+                    } else if (isCloser !== 0) {
+                        result = isCloser;
                         // The same xAxis and yAxis position, sort by z-index:
-                        if (isAbove !== 0) {
-                            return isAbove;
-                        }
-
+                    } else if (isAbove !== 0) {
+                        result = isAbove;
                         // The same zIndex, sort by array index:
-                        return p1.series.index > p2.series.index ? -1 : 1;
-                    });
-                }
+                    } else {
+                        result = p1.series.index > p2.series.index ? -1 : 1;
+                    }
+                    return result;
+                });
 
                 // Remove points with different x-positions, required for shared tooltip and crosshairs (#4645):
                 if (shared) {
@@ -10691,57 +10797,173 @@
                         }
                     }
                 }
+                return kdpoints;
+            },
+            getPointFromEvent: function(e) {
+                var target = e.target,
+                    point;
 
-                // Refresh tooltip for kdpoint if new hover point or tooltip was hidden // #3926, #4200
-                if (kdpoints[0] && (kdpoints[0] !== this.prevKDPoint || (tooltip && tooltip.isHidden))) {
-                    // Draw tooltip if necessary
-                    if (shared && !kdpoints[0].series.noSharedTooltip) {
-                        // Do mouseover on all points (#3919, #3985, #4410, #5622)
-                        for (i = 0; i < kdpoints.length; i++) {
-                            kdpoints[i].onMouseOver(e, kdpoints[i] !== ((hoverSeries && hoverSeries.directTouch && hoverPoint) || kdpoints[0]));
-                        }
+                while (target && !point) {
+                    point = target.point;
+                    target = target.parentNode;
+                }
+                return point;
+            },
 
-                        if (kdpoints.length && tooltip) {
-                            // Keep the order of series in tooltip:
-                            tooltip.refresh(kdpoints.sort(function(p1, p2) {
-                                return p1.series.index - p2.series.index;
-                            }), e);
+            getHoverData: function(existingHoverPoint, existingHoverSeries, series, isDirectTouch, shared, e) {
+                var i,
+                    hoverPoint = existingHoverPoint,
+                    hoverSeries = existingHoverSeries,
+                    hoverPoints;
+
+                // If it has a hoverPoint and that series requires direct touch (like columns, #3899), or we're on
+                // a noSharedTooltip series among shared tooltip series (#4546), use the hoverPoint . Otherwise,
+                // search the k-d tree.
+                // Handle shared tooltip or cases where a series is not yet hovered
+                if (isDirectTouch) {
+                    if (shared) {
+                        hoverPoints = [];
+                        each(series, function(s) {
+                            // Skip hidden series
+                            var noSharedTooltip = s.noSharedTooltip && shared,
+                                directTouch = !shared && s.directTouch,
+                                kdpointT;
+                            if (s.visible && !noSharedTooltip && !directTouch && pick(s.options.enableMouseTracking, true)) { // #3821
+                                kdpointT = s.searchKDTree({
+                                    clientX: hoverPoint.clientX,
+                                    plotY: hoverPoint.plotY
+                                }, !noSharedTooltip && s.kdDimensions === 1);
+                                if (kdpointT && kdpointT.series) { // Point.series becomes null when reset and before redraw (#5197)
+                                    hoverPoints.push(kdpointT);
+                                }
+                            }
+                        });
+                        // If kdTree is not built
+                        if (hoverPoints.length === 0) {
+                            hoverPoints = [hoverPoint];
                         }
                     } else {
-                        if (tooltip) {
-                            tooltip.refresh(kdpoints[0], e);
-                        }
-                        if (!hoverSeries || !hoverSeries.directTouch) { // #4448
-                            kdpoints[0].onMouseOver(e);
+                        hoverPoints = [hoverPoint];
+                    }
+                } else if (hoverSeries && !hoverSeries.options.stickyTracking) {
+                    hoverPoints = this.getKDPoints([hoverSeries], shared, e);
+                    hoverPoint = hoverPoints[0];
+                    hoverSeries = hoverPoint && hoverPoint.series;
+                } else {
+                    if (!shared) {
+                        // For hovering over the empty parts of the plot area (hoverSeries is undefined).
+                        // If there is one series with point tracking (combo chart), don't go to nearest neighbour.
+                        if (!hoverSeries) {
+                            for (i = 0; i < series.length; i++) {
+                                if (series[i].directTouch || !series[i].options.stickyTracking) {
+                                    series = [];
+                                }
+                            }
+                            // When we have non-shared tooltip and sticky tracking is disabled,
+                            // search for the closest point only on hovered series: #5533, #5476
+                        } else if (!hoverSeries.options.stickyTracking) {
+                            series = [hoverSeries];
                         }
                     }
-                    this.prevKDPoint = kdpoints[0];
-                    updatePosition = false;
+                    hoverPoints = this.getKDPoints(series, shared, e);
+                    hoverPoint = hoverPoints[0];
+                    hoverSeries = hoverPoint && hoverPoint.series;
                 }
-                // Update positions (regardless of kdpoint or hoverPoint)
-                if (updatePosition) {
-                    followPointer = hoverSeries && hoverSeries.tooltipOptions.followPointer;
-                    if (tooltip && followPointer && !tooltip.isHidden) {
-                        anchor = tooltip.getAnchor([{}], e);
-                        tooltip.updatePosition({
-                            plotX: anchor[0],
-                            plotY: anchor[1]
-                        });
+                // Keep the order of series in tooltip
+                // Must be done after assigning of hoverPoint
+                hoverPoints.sort(function(p1, p2) {
+                    return p1.series.index - p2.series.index;
+                });
+
+                return {
+                    hoverPoint: hoverPoint,
+                    hoverSeries: hoverSeries,
+                    hoverPoints: hoverPoints
+                };
+            },
+            /**
+             * With line type charts with a single tracker, get the point closest to the mouse.
+             * Run Point.onMouseOver and display tooltip for the point or points.
+             */
+            runPointActions: function(e, p) {
+                var pointer = this,
+                    chart = pointer.chart,
+                    series = chart.series,
+                    tooltip = chart.tooltip,
+                    shared = tooltip ? tooltip.shared : false,
+                    hoverPoint = p || chart.hoverPoint,
+                    hoverSeries = hoverPoint && hoverPoint.series || chart.hoverSeries,
+                    // onMouseOver or already hovering a series with directTouch
+                    isDirectTouch = !!p || (hoverSeries && hoverSeries.directTouch),
+                    hoverData = this.getHoverData(hoverPoint, hoverSeries, series, isDirectTouch, shared, e),
+                    useSharedTooltip,
+                    followPointer,
+                    anchor,
+                    points;
+
+                // Update variables from hoverData.
+                hoverPoint = hoverData.hoverPoint;
+                hoverSeries = hoverData.hoverSeries;
+                followPointer = hoverSeries && hoverSeries.tooltipOptions.followPointer;
+                useSharedTooltip = shared && hoverPoint && !hoverPoint.series.noSharedTooltip;
+                points = useSharedTooltip ? hoverData.hoverPoints : [hoverPoint];
+
+                // Refresh tooltip for kdpoint if new hover point or tooltip was hidden // #3926, #4200
+                if (
+                    hoverPoint &&
+                    // !(hoverSeries && hoverSeries.directTouch) &&
+                    (hoverPoint !== chart.hoverPoint || (tooltip && tooltip.isHidden))
+                ) {
+                    each(chart.hoverPoints || [], function(p) {
+                        if (H.inArray(p, points) === -1) {
+                            p.setState();
+                        }
+                    });
+                    // Do mouseover on all points (#3919, #3985, #4410, #5622)
+                    each(points || [], function(p) {
+                        p.setState('hover');
+                    });
+                    // set normal state to previous series
+                    if (chart.hoverSeries !== hoverSeries) {
+                        hoverSeries.onMouseOver();
                     }
+
+                    // If tracking is on series in stead of on each point, 
+                    // fire mouseOver on hover point. 
+                    if (hoverSeries && !hoverSeries.directTouch) { // #4448
+                        if (chart.hoverPoint) {
+                            chart.hoverPoint.firePointEvent('mouseOut');
+                        }
+                        hoverPoint.firePointEvent('mouseOver');
+                    }
+                    chart.hoverPoints = points;
+                    chart.hoverPoint = hoverPoint;
+                    // Draw tooltip if necessary
+                    if (tooltip) {
+                        tooltip.refresh(useSharedTooltip ? points : hoverPoint, e);
+                    }
+                    // Update positions (regardless of kdpoint or hoverPoint)
+                } else if (followPointer && tooltip && !tooltip.isHidden) {
+                    anchor = tooltip.getAnchor([{}], e);
+                    tooltip.updatePosition({
+                        plotX: anchor[0],
+                        plotY: anchor[1]
+                    });
                 }
 
                 // Start the event listener to pick up the tooltip and crosshairs
                 if (!pointer.unDocMouseMove) {
                     pointer.unDocMouseMove = addEvent(doc, 'mousemove', function(e) {
-                        if (charts[H.hoverChartIndex]) {
-                            charts[H.hoverChartIndex].pointer.onDocumentMouseMove(e);
+                        var chart = charts[H.hoverChartIndex];
+                        if (chart) {
+                            chart.pointer.onDocumentMouseMove(e);
                         }
                     });
                 }
 
                 // Crosshair. For each hover point, loop over axes and draw cross if that point
                 // belongs to the axis (#4927).
-                each(shared ? kdpoints : [pick(hoverPoint, kdpoints[0])], function drawPointCrosshair(point) { // #5269
+                each(points, function drawPointCrosshair(point) { // #5269
                     each(chart.axes, function drawAxisCrosshair(axis) {
                         // In case of snap = false, point is undefined, and we draw the crosshair anyway (#5066)
                         if (!point || point.series && point.series[axis.coll] === axis) { // #5658
@@ -10818,7 +11040,7 @@
                         axis.hideCrosshair();
                     });
 
-                    pointer.hoverX = pointer.prevKDPoint = chart.hoverPoints = chart.hoverPoint = null;
+                    pointer.hoverX = chart.hoverPoints = chart.hoverPoint = null;
                 }
             },
 
@@ -11237,7 +11459,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var charts = H.charts,
             each = H.each,
             extend = H.extend,
@@ -11515,7 +11736,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             charts = H.charts,
             css = H.css,
@@ -11635,7 +11855,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Legend,
 
             addEvent = H.addEvent,
@@ -11643,7 +11862,6 @@
             discardElement = H.discardElement,
             defined = H.defined,
             each = H.each,
-            extend = H.extend,
             isFirefox = H.isFirefox,
             marginNames = H.marginNames,
             merge = H.merge,
@@ -11791,7 +12009,17 @@
                     each(['legendItem', 'legendGroup'], destroyItems, item);
                 });
 
-                each(['box', 'title', 'group'], destroyItems, this);
+                // Destroy legend elements
+                each([
+                    'clipRect',
+                    'up',
+                    'down',
+                    'pager',
+                    'nav',
+                    'box',
+                    'title',
+                    'group'
+                ], destroyItems, this);
                 this.display = null; // Reset in .render on update.
             },
 
@@ -11839,7 +12067,7 @@
                                 zIndex: 1
                             })
 
-                        .add(this.group);
+                            .add(this.group);
                     }
                     bBox = this.title.getBBox();
                     titleHeight = bBox.height;
@@ -11908,13 +12136,13 @@
 
                     // Generate the list item text and add it to the group
                     item.legendItem = li = renderer.text(
-                        '',
-                        ltr ? symbolWidth + symbolPadding : -symbolPadding,
-                        legend.baseline || 0,
-                        useHTML
-                    )
+                            '',
+                            ltr ? symbolWidth + symbolPadding : -symbolPadding,
+                            legend.baseline || 0,
+                            useHTML
+                        )
 
-                    .attr({
+                        .attr({
                             align: ltr ? 'left' : 'right',
                             zIndex: 2
                         })
@@ -12180,10 +12408,10 @@
                 }*/
 
                 if (display) {
-                    legendGroup.align(extend({
+                    legendGroup.align(merge(options, {
                         width: legendWidth,
                         height: legendHeight
-                    }, options), true, 'spacingBox');
+                    }), true, 'spacingBox');
                 }
 
                 if (!chart.isResizing) {
@@ -12291,7 +12519,7 @@
                         this.pager = renderer.text('', 15, 10)
                             .addClass('highcharts-legend-navigation')
 
-                        .add(nav);
+                            .add(nav);
                         this.down = renderer.symbol('triangle-down', 0, 0, arrowSize, arrowSize)
                             .on('click', function() {
                                 legend.scroll(1, animation);
@@ -12307,7 +12535,7 @@
                     // Reset
                 } else if (nav) {
                     clipToHeight();
-                    nav.hide();
+                    this.nav = nav.destroy(); // #6322
                     this.scrollGroup.attr({
                         translateY: 1
                     });
@@ -12503,7 +12731,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             animate = H.animate,
             animObject = H.animObject,
@@ -12590,7 +12817,6 @@
                 options = merge(defaultOptions, userOptions); // do the merge
                 options.series = userOptions.series = seriesOptions; // set back the series data
                 this.userOptions = userOptions;
-                this.respRules = [];
 
                 var optionsChart = options.chart;
 
@@ -12739,8 +12965,7 @@
                     hasDirtyStacks,
                     hasCartesianSeries = chart.hasCartesianSeries,
                     isDirtyBox = chart.isDirtyBox,
-                    seriesLength = series.length,
-                    i = seriesLength,
+                    i,
                     serie,
                     renderer = chart.renderer,
                     isHiddenChart = renderer.isHidden(),
@@ -12761,6 +12986,7 @@
                 chart.layOutTitles();
 
                 // link stacked series
+                i = series.length;
                 while (i--) {
                     serie = series[i];
 
@@ -12774,7 +13000,7 @@
                     }
                 }
                 if (hasDirtyStacks) { // mark others as dirty
-                    i = seriesLength;
+                    i = series.length;
                     while (i--) {
                         serie = series[i];
                         if (serie.options.stacking) {
@@ -13102,7 +13328,10 @@
                 );
                 chart.chartHeight = Math.max(
                     0,
-                    heightOption || chart.containerHeight || 400
+                    H.relativeLength(
+                        heightOption,
+                        chart.chartWidth
+                    ) || chart.containerHeight || 400
                 );
             },
 
@@ -13831,7 +14060,7 @@
                             zIndex: 8
                         })
 
-                    .add()
+                        .add()
                         .align(credits.position);
 
                     // Dynamically update
@@ -14025,7 +14254,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Point,
 
             each = H.each,
@@ -14370,7 +14598,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             animObject = H.animObject,
             arrayMax = H.arrayMax,
@@ -14474,6 +14701,9 @@
             states: { // states for the entire series
                 hover: {
                     //enabled: false,
+                    animation: {
+                        duration: 50
+                    },
                     lineWidthPlus: 1,
                     marker: {
                         // lineWidth: base + 1,
@@ -14497,7 +14727,7 @@
             //ySuffix: ''
             //}
             turboThreshold: 1000
-                // zIndex: null
+            // zIndex: null
 
 
         }, /** @lends Series.prototype */ {
@@ -15170,7 +15400,7 @@
 
                     // For points within the visible range, including the first point outside the
                     // visible range, consider y extremes
-                    validValue = (isNumber(y, true) || isArray(y)) && (!yAxis.isLog || (y.length || y > 0));
+                    validValue = (isNumber(y, true) || isArray(y)) && (!yAxis.positiveValuesOnly || (y.length || y > 0));
                     withinRange = this.getExtremesFromAll || this.options.getExtremesFromAll || this.cropped ||
                         ((xData[i + 1] || x) >= xMin && (xData[i - 1] || x) <= xMax);
 
@@ -15244,7 +15474,7 @@
                         stackValues;
 
                     // Discard disallowed y values for log axes (#3434)
-                    if (yAxis.isLog && yValue !== null && yValue <= 0) {
+                    if (yAxis.positiveValuesOnly && yValue !== null && yValue <= 0) {
                         point.isNull = true;
                     }
 
@@ -15272,7 +15502,7 @@
                         if (yBottom === stackThreshold && stackIndicator.key === stack[xValue].base) {
                             yBottom = pick(threshold, yAxis.min);
                         }
-                        if (yAxis.isLog && yBottom <= 0) { // #1200, #1232
+                        if (yAxis.positiveValuesOnly && yBottom <= 0) { // #1200, #1232
                             yBottom = null;
                         }
 
@@ -15479,7 +15709,8 @@
                     globallyEnabled = pick(
                         seriesMarkerOptions.enabled,
                         xAxis.isRadial ? true : null,
-                        series.closestPointRangePx > 2 * seriesMarkerOptions.radius
+                        // Use larger or equal as radius is null in bubbles (#6321)
+                        series.closestPointRangePx >= 2 * seriesMarkerOptions.radius
                     );
 
                 if (seriesMarkerOptions.enabled !== false || series._hasPointMarkers) {
@@ -15935,6 +16166,15 @@
                 function setInvert() {
                     each(['group', 'markerGroup'], function(groupName) {
                         if (series[groupName]) {
+
+                            // VML/HTML needs explicit attributes for flipping
+                            if (chart.renderer.isVML) {
+                                series[groupName].attr({
+                                    width: series.yAxis.len,
+                                    height: series.xAxis.len
+                                });
+                            }
+
                             series[groupName].width = series.yAxis.len;
                             series[groupName].height = series.xAxis.len;
                             series[groupName].invert(inverted);
@@ -16282,7 +16522,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             animate = H.animate,
             Axis = H.Axis,
@@ -16496,6 +16735,7 @@
                 // options.title => chart.title
                 // options.tooltip => chart.tooltip
                 // options.subtitle => chart.subtitle
+                // options.mapNavigation => chart.mapNavigation
                 // options.navigator => chart.navigator
                 // options.scrollbar => chart.scrollbar
                 for (key in options) {
@@ -16523,7 +16763,6 @@
                 // item in the collection, so setting one series without an id, will
                 // update the first series in the chart. Setting two series without
                 // an id will update the first and the second respectively (#6019)
-                // // docs: New behaviour for unidentified items, add it to docs for 
                 // chart.update and responsive.
                 each(['xAxis', 'yAxis', 'series'], function(coll) {
                     if (options[coll]) {
@@ -16623,9 +16862,15 @@
                     i = point.index;
                     series.updateParallelArrays(point, i);
 
-                    // Record the options to options.data. If there is an object from before,
-                    // use point options, otherwise use raw options. (#4701)
-                    seriesOptions.data[i] = isObject(seriesOptions.data[i], true) ? point.options : options;
+                    // Record the options to options.data. If the old or the new config
+                    // is an object, use point options, otherwise use raw options
+                    // (#4701, #4916).
+                    seriesOptions.data[i] = (
+                            isObject(seriesOptions.data[i], true) ||
+                            isObject(options, true)
+                        ) ?
+                        point.options :
+                        options;
 
                     // redraw
                     series.isDirty = series.isDirtyData = true;
@@ -16832,7 +17077,7 @@
                     // must use user options when changing type because this.options is merged
                     // in with type specific plotOptions
                     oldOptions = this.userOptions,
-                    oldType = this.type,
+                    oldType = this.oldType || this.type,
                     newType = newOptions.type || oldOptions.type || chart.options.chart.type,
                     proto = seriesTypes[oldType].prototype,
                     preserve = ['group', 'markerGroup', 'dataLabelsGroup'],
@@ -16872,6 +17117,7 @@
                 });
 
                 this.init(chart, newOptions);
+                this.oldType = oldType;
                 chart.linkSeries(); // Links are lost in this.remove (#3028)
                 if (pick(redraw, true)) {
                     chart.redraw(false);
@@ -16962,7 +17208,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var animObject = H.animObject,
             color = H.color,
             each = H.each,
@@ -17273,12 +17518,12 @@
 
                         } else {
                             point.graphic = graphic = renderer[point.shapeType](shapeArgs)
-                                .attr({
-                                    'class': point.getClassName()
-                                })
                                 .add(point.group || series.group);
                         }
 
+
+
+                        graphic.addClass(point.getClassName(), true);
 
 
                     } else if (graphic) {
@@ -17356,7 +17601,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Series = H.Series,
             seriesType = H.seriesType;
         /**
@@ -17397,7 +17641,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             arrayMax = H.arrayMax,
             defined = H.defined,
@@ -17867,6 +18110,21 @@
                     return;
                 }
 
+                // Reset all labels that have been shortened
+                each(data, function(point) {
+                    if (point.dataLabel && point.visible && point.dataLabel.shortened) {
+                        point.dataLabel
+                            .attr({
+                                width: 'auto'
+                            }).css({
+                                width: 'auto',
+                                textOverflow: 'clip'
+                            });
+                        point.dataLabel.shortened = false;
+                    }
+                });
+
+
                 // run parent method
                 Series.prototype.drawDataLabels.apply(series);
 
@@ -17891,6 +18149,7 @@
                         length = points.length,
                         positions,
                         naturalY,
+                        sideOverflow,
                         size;
 
                     if (!length) {
@@ -17966,24 +18225,39 @@
 
                         // Detect overflowing data labels
                         if (series.options.size === null) {
-                            dataLabelWidth = dataLabel.width;
+                            dataLabelWidth = dataLabel.getBBox().width;
+
+                            sideOverflow = null;
                             // Overflow left
                             if (x - dataLabelWidth < connectorPadding) {
-                                overflow[3] = Math.max(Math.round(dataLabelWidth - x + connectorPadding), overflow[3]);
+                                sideOverflow = Math.round(
+                                    dataLabelWidth - x + connectorPadding
+                                );
+                                overflow[3] = Math.max(sideOverflow, overflow[3]);
 
                                 // Overflow right
                             } else if (x + dataLabelWidth > plotWidth - connectorPadding) {
-                                overflow[1] = Math.max(Math.round(x + dataLabelWidth - plotWidth + connectorPadding), overflow[1]);
+                                sideOverflow = Math.round(
+                                    x + dataLabelWidth - plotWidth + connectorPadding
+                                );
+                                overflow[1] = Math.max(sideOverflow, overflow[1]);
                             }
 
                             // Overflow top
                             if (y - labelHeight / 2 < 0) {
-                                overflow[0] = Math.max(Math.round(-y + labelHeight / 2), overflow[0]);
+                                overflow[0] = Math.max(
+                                    Math.round(-y + labelHeight / 2),
+                                    overflow[0]
+                                );
 
                                 // Overflow left
                             } else if (y + labelHeight / 2 > plotHeight) {
-                                overflow[2] = Math.max(Math.round(y + labelHeight / 2 - plotHeight), overflow[2]);
+                                overflow[2] = Math.max(
+                                    Math.round(y + labelHeight / 2 - plotHeight),
+                                    overflow[2]
+                                );
                             }
+                            dataLabel.sideOverflow = sideOverflow;
                         }
                     } // for each point
                 }); // for each half
@@ -18062,10 +18336,22 @@
                 each(this.points, function(point) {
                     var dataLabel = point.dataLabel,
                         _pos;
-
                     if (dataLabel && point.visible) {
                         _pos = dataLabel._pos;
                         if (_pos) {
+
+                            // Shorten data labels with ellipsis if they still overflow
+                            // after the pie has reached minSize (#223).
+                            if (dataLabel.sideOverflow) {
+                                dataLabel._attr.width =
+                                    dataLabel.getBBox().width - dataLabel.sideOverflow;
+                                dataLabel.css({
+                                    width: dataLabel._attr.width + 'px',
+                                    textOverflow: 'ellipsis'
+                                });
+                                dataLabel.shortened = true;
+                            }
+
                             dataLabel.attr(dataLabel._attr);
                             dataLabel[dataLabel.moved ? 'animate' : 'attr'](_pos);
                             dataLabel.moved = true;
@@ -18075,7 +18361,7 @@
                             });
                         }
                     }
-                });
+                }, this);
             };
 
             seriesTypes.pie.prototype.alignDataLabel = noop;
@@ -18208,7 +18494,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         /**
          * Highcharts module to hide overlapping data labels. This module is included in Highcharts.
          */
@@ -18223,7 +18508,7 @@
             function collectAndHide() {
                 var labels = [];
 
-                each(chart.series, function(series) {
+                each(chart.series || [], function(series) {
                     var dlOptions = series.options.dataLabels,
                         collections = series.dataLabelCollections || ['dataLabel']; // Range series have two collections
                     if ((dlOptions.enabled || series._hasPointLabels) && !dlOptions.allowOverlap && series.visible) { // #3866
@@ -18357,7 +18642,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             Chart = H.Chart,
             createElement = H.createElement,
@@ -18394,15 +18678,10 @@
                     chart = series.chart,
                     pointer = chart.pointer,
                     onMouseOver = function(e) {
-                        var target = e.target,
-                            point;
+                        var point = pointer.getPointFromEvent(e);
 
-                        while (target && !point) {
-                            point = target.point;
-                            target = target.parentNode;
-                        }
-
-                        if (point !== undefined && point !== chart.hoverPoint) { // undefined on graph in scatterchart
+                        // undefined on graph in scatterchart
+                        if (point !== undefined) {
                             point.onMouseOver(e);
                         }
                     };
@@ -18563,7 +18842,7 @@
 
             setItemEvents: function(item, legendItem, useHTML) {
                 var legend = this,
-                    chart = legend.chart,
+                    boxWrapper = legend.chart.renderer.boxWrapper,
                     activeClass = 'highcharts-legend-' + (item.series ? 'point' : 'series') + '-active';
 
                 // Set the events on the item group, or in case of useHTML, the item itself (#1249)
@@ -18571,7 +18850,7 @@
                         item.setState('hover');
 
                         // A CSS class to dim or hide other than the hovered series
-                        chart.seriesGroup.addClass(activeClass);
+                        boxWrapper.addClass(activeClass);
 
 
                     })
@@ -18579,7 +18858,7 @@
 
 
                         // A CSS class to dim or hide other than the hovered series
-                        chart.seriesGroup.removeClass(activeClass);
+                        boxWrapper.removeClass(activeClass);
 
                         item.setState();
                     })
@@ -18758,8 +19037,14 @@
                         flipped = panMax < panMin,
                         newMin = flipped ? panMax : panMin,
                         newMax = flipped ? panMin : panMax,
-                        distMin = Math.min(extremes.dataMin, extremes.min) - newMin,
-                        distMax = newMax - Math.max(extremes.dataMax, extremes.max);
+                        paddedMin = axis.toValue(
+                            axis.toPixels(extremes.min) - axis.minPixelPadding
+                        ),
+                        paddedMax = axis.toValue(
+                            axis.toPixels(extremes.max) + axis.minPixelPadding
+                        ),
+                        distMin = Math.min(extremes.dataMin, paddedMin) - newMin,
+                        distMax = newMax - Math.max(extremes.dataMax, paddedMax);
 
                     // Negative distMin and distMax means that we're still inside the
                     // data range.
@@ -18829,58 +19114,29 @@
 
             /**
              * Runs on mouse over the point
-             *
+             * 
              * @param {Object} e The event arguments
-             * @param {Boolean} byProximity Falsy for kd points that are closest to the mouse, or to
-             *        actually hovered points. True for other points in shared tooltip.
              */
-            onMouseOver: function(e, byProximity) {
+            onMouseOver: function(e) {
                 var point = this,
                     series = point.series,
                     chart = series.chart,
-                    tooltip = chart.tooltip,
-                    hoverPoint = chart.hoverPoint;
-
-                if (point.series) { // It may have been destroyed, #4130
-                    // In shared tooltip, call mouse over when point/series is actually hovered: (#5766)
-                    if (!byProximity) {
-                        // set normal state to previous series
-                        if (hoverPoint && hoverPoint !== point) {
-                            hoverPoint.onMouseOut();
-                        }
-                        if (chart.hoverSeries !== series) {
-                            series.onMouseOver();
-                        }
-                        chart.hoverPoint = point;
-                    }
-
-                    // update the tooltip
-                    if (tooltip && (!tooltip.shared || series.noSharedTooltip)) {
-                        // hover point only for non shared points: (#5766)
-                        point.setState('hover');
-                        tooltip.refresh(point, e);
-                    } else if (!tooltip) {
-                        point.setState('hover');
-                    }
-
-                    // trigger the event
-                    point.firePointEvent('mouseOver');
-                }
+                    pointer = chart.pointer;
+                point.firePointEvent('mouseOver');
+                pointer.runPointActions(e, point);
             },
 
             /**
              * Runs on mouse out from the point
              */
             onMouseOut: function() {
-                var chart = this.series.chart,
-                    hoverPoints = chart.hoverPoints;
-
-                this.firePointEvent('mouseOut');
-
-                if (!hoverPoints || inArray(this, hoverPoints) === -1) { // #887, #2240
-                    this.setState();
-                    chart.hoverPoint = null;
-                }
+                var point = this,
+                    chart = point.series.chart;
+                point.firePointEvent('mouseOut');
+                each(chart.hoverPoints || [], function(p) {
+                    p.setState();
+                });
+                chart.hoverPoints = chart.hoverPoint = null;
             },
 
             /**
@@ -19153,7 +19409,11 @@
                 if (series.state !== state) {
 
                     // Toggle class names
-                    each([series.group, series.markerGroup], function(group) {
+                    each([
+                        series.group,
+                        series.markerGroup,
+                        series.dataLabelsGroup
+                    ], function(group) {
                         if (group) {
                             // Old state
                             if (series.state) {
@@ -19278,34 +19538,76 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Chart = H.Chart,
             each = H.each,
             inArray = H.inArray,
+            isArray = H.isArray,
             isObject = H.isObject,
             pick = H.pick,
             splat = H.splat;
 
         /**
-         * Update the chart based on the current chart/document size and options for responsiveness
+         * Update the chart based on the current chart/document size and options for
+         * responsiveness.
          */
         Chart.prototype.setResponsive = function(redraw) {
-            var options = this.options.responsive;
+            var options = this.options.responsive,
+                ruleIds = [],
+                currentResponsive = this.currentResponsive,
+                currentRuleIds;
 
             if (options && options.rules) {
                 each(options.rules, function(rule) {
-                    this.matchResponsiveRule(rule, redraw);
+                    if (rule._id === undefined) {
+                        rule._id = H.uniqueKey();
+                    }
+
+                    this.matchResponsiveRule(rule, ruleIds, redraw);
                 }, this);
+            }
+
+            // Merge matching rules
+            var mergedOptions = H.merge.apply(0, H.map(ruleIds, function(ruleId) {
+                return H.find(options.rules, function(rule) {
+                    return rule._id === ruleId;
+                }).chartOptions;
+            }));
+
+            // Stringified key for the rules that currently apply.
+            ruleIds = ruleIds.toString() || undefined;
+            currentRuleIds = currentResponsive && currentResponsive.ruleIds;
+
+
+            // Changes in what rules apply
+            if (ruleIds !== currentRuleIds) {
+
+                // Undo previous rules. Before we apply a new set of rules, we need to
+                // roll back completely to base options (#6291).
+                if (currentResponsive) {
+                    this.update(currentResponsive.undoOptions, redraw);
+                }
+
+                if (ruleIds) {
+                    // Get undo-options for matching rules
+                    this.currentResponsive = {
+                        ruleIds: ruleIds,
+                        mergedOptions: mergedOptions,
+                        undoOptions: this.currentOptions(mergedOptions)
+                    };
+
+                    this.update(mergedOptions, redraw);
+
+                } else {
+                    this.currentResponsive = undefined;
+                }
             }
         };
 
         /**
          * Handle a single responsiveness rule
          */
-        Chart.prototype.matchResponsiveRule = function(rule, redraw) {
-            var respRules = this.respRules,
-                condition = rule.condition,
-                matches,
+        Chart.prototype.matchResponsiveRule = function(rule, matches) {
+            var condition = rule.condition,
                 fn = condition.callback || function() {
                     return this.chartWidth <= pick(condition.maxWidth, Number.MAX_VALUE) &&
                         this.chartHeight <= pick(condition.maxHeight, Number.MAX_VALUE) &&
@@ -19313,27 +19615,10 @@
                         this.chartHeight >= pick(condition.minHeight, 0);
                 };
 
-
-            if (rule._id === undefined) {
-                rule._id = H.uniqueKey();
+            if (fn.call(this)) {
+                matches.push(rule._id);
             }
-            matches = fn.call(this);
 
-            // Apply a rule
-            if (!respRules[rule._id] && matches) {
-
-                // Store the current state of the options
-                if (rule.chartOptions) {
-                    respRules[rule._id] = this.currentOptions(rule.chartOptions);
-                    this.update(rule.chartOptions, redraw);
-                }
-
-                // Unapply a rule based on the previous options before the rule
-                // was applied
-            } else if (respRules[rule._id] && !matches) {
-                this.update(respRules[rule._id], redraw);
-                delete respRules[rule._id];
-            }
         };
 
         /**
@@ -19356,17 +19641,22 @@
                         options[key] = splat(options[key]);
 
                         ret[key] = [];
+
+                        // Iterate over collections like series, xAxis or yAxis and map
+                        // the items by index.
                         for (i = 0; i < options[key].length; i++) {
-                            ret[key][i] = {};
-                            getCurrent(
-                                options[key][i],
-                                curr[key][i],
-                                ret[key][i],
-                                depth + 1
-                            );
+                            if (curr[key][i]) { // Item exists in current data (#6347)
+                                ret[key][i] = {};
+                                getCurrent(
+                                    options[key][i],
+                                    curr[key][i],
+                                    ret[key][i],
+                                    depth + 1
+                                );
+                            }
                         }
                     } else if (isObject(options[key])) {
-                        ret[key] = {};
+                        ret[key] = isArray(options[key]) ? [] : {};
                         getCurrent(
                             options[key],
                             curr[key] || {},
@@ -19390,7 +19680,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             each = H.each,
             pick = H.pick,
@@ -19508,7 +19797,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             Chart = H.Chart,
             color = H.color,
@@ -19557,9 +19845,14 @@
                 showInLegend: true
             },
 
-            // Properties to preserve after destroy, for Axis.update (#5881)
-            keepProps: ['legendGroup', 'legendItem', 'legendSymbol']
-                .concat(Axis.prototype.keepProps),
+            // Properties to preserve after destroy, for Axis.update (#5881, #6025)
+            keepProps: [
+                'legendGroup',
+                'legendItemHeight',
+                'legendItemWidth',
+                'legendItem',
+                'legendSymbol'
+            ].concat(Axis.prototype.keepProps),
 
             /**
              * Initialize the color axis
@@ -20076,7 +20369,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var defined = H.defined,
             each = H.each,
             noop = H.noop,
@@ -20169,7 +20461,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             Chart = H.Chart,
             doc = H.doc,
@@ -20191,63 +20482,156 @@
             }
         }
 
-        // Add events to the Chart object itself
-        extend(Chart.prototype, {
-            renderMapNavigation: function() {
-                var chart = this,
-                    options = this.options.mapNavigation,
-                    buttons = options.buttons,
-                    n,
-                    button,
-                    buttonOptions,
-                    attr,
-                    states,
-                    hoverStates,
-                    selectStates,
-                    outerHandler = function(e) {
-                        this.handler.call(chart, e);
-                        stopEvent(e); // Stop default click event (#4444)
-                    };
+        /**
+         * The MapNavigation handles buttons for navigation in addition to mousewheel
+         * and doubleclick handlers for chart zooming.
+         * @param {Chart} chart The Chart instance.
+         * @class
+         */
+        function MapNavigation(chart) {
+            this.init(chart);
+        }
 
-                if (pick(options.enableButtons, options.enabled) && !chart.renderer.forExport) {
-                    chart.mapNavButtons = [];
-                    for (n in buttons) {
-                        if (buttons.hasOwnProperty(n)) {
-                            buttonOptions = merge(options.buttonOptions, buttons[n]);
+        /**
+         * Initiator function.
+         * @param  {Chart} chart The Chart instance.
+         */
+        MapNavigation.prototype.init = function(chart) {
+            this.chart = chart;
+            chart.mapNavButtons = [];
+        };
+
+        /**
+         * Update the map navigation with new options. Calling this is the same as 
+         * calling `chart.update({ mapNavigation: {} })`. 
+         * @param  {Object} options New options for the map navigation.
+         */
+        MapNavigation.prototype.update = function(options) {
+            var chart = this.chart,
+                o = chart.options.mapNavigation,
+                buttons,
+                n,
+                button,
+                buttonOptions,
+                attr,
+                states,
+                hoverStates,
+                selectStates,
+                outerHandler = function(e) {
+                    this.handler.call(chart, e);
+                    stopEvent(e); // Stop default click event (#4444)
+                },
+                mapNavButtons = chart.mapNavButtons;
+
+            // Merge in new options in case of update, and register back to chart
+            // options.
+            if (options) {
+                o = chart.options.mapNavigation =
+                    merge(chart.options.mapNavigation, options);
+            }
+
+            // Destroy buttons in case of dynamic update
+            while (mapNavButtons.length) {
+                mapNavButtons.pop().destroy();
+            }
+
+            if (pick(o.enableButtons, o.enabled) && !chart.renderer.forExport) {
+
+                buttons = o.buttons;
+                for (n in buttons) {
+
+                    if (buttons.hasOwnProperty(n)) {
+                        buttonOptions = merge(o.buttonOptions, buttons[n]);
 
 
 
-                            button = chart.renderer.button(
-                                    buttonOptions.text,
-                                    0,
-                                    0,
-                                    outerHandler,
-                                    attr,
-                                    hoverStates,
-                                    selectStates,
-                                    0,
-                                    n === 'zoomIn' ? 'topbutton' : 'bottombutton'
-                                )
-                                .addClass('highcharts-map-navigation')
-                                .attr({
-                                    width: buttonOptions.width,
-                                    height: buttonOptions.height,
-                                    title: chart.options.lang[n],
-                                    padding: buttonOptions.padding,
-                                    zIndex: 5
-                                })
-                                .add();
-                            button.handler = buttonOptions.onclick;
-                            button.align(extend(buttonOptions, {
+                        button = chart.renderer.button(
+                                buttonOptions.text,
+                                0,
+                                0,
+                                outerHandler,
+                                attr,
+                                hoverStates,
+                                selectStates,
+                                0,
+                                n === 'zoomIn' ? 'topbutton' : 'bottombutton'
+                            )
+                            .addClass('highcharts-map-navigation')
+                            .attr({
+                                width: buttonOptions.width,
+                                height: buttonOptions.height,
+                                title: chart.options.lang[n],
+                                padding: buttonOptions.padding,
+                                zIndex: 5
+                            })
+                            .add();
+                        button.handler = buttonOptions.onclick;
+                        button.align(
+                            extend(buttonOptions, {
                                 width: button.width,
                                 height: 2 * button.height
-                            }), null, buttonOptions.alignTo);
-                            addEvent(button.element, 'dblclick', stopEvent); // Stop double click event (#4444)
-                            chart.mapNavButtons.push(button);
-                        }
+                            }),
+                            null,
+                            buttonOptions.alignTo
+                        );
+                        // Stop double click event (#4444)
+                        addEvent(button.element, 'dblclick', stopEvent);
+
+                        mapNavButtons.push(button);
                     }
                 }
-            },
+            }
+
+            this.updateEvents(o);
+        };
+
+        /**
+         * Update events, called internally from the update function. Add new event
+         * handlers, or unbinds events if disabled.
+         * @param  {Object} options Options for map navigation.
+         */
+        MapNavigation.prototype.updateEvents = function(options) {
+            var chart = this.chart;
+
+            // Add the double click event
+            if (
+                pick(options.enableDoubleClickZoom, options.enabled) ||
+                options.enableDoubleClickZoomTo
+            ) {
+                this.unbindDblClick = this.unbindDblClick || addEvent(
+                    chart.container,
+                    'dblclick',
+                    function(e) {
+                        chart.pointer.onContainerDblClick(e);
+                    }
+                );
+            } else if (this.unbindDblClick) {
+                // Unbind and set unbinder to undefined
+                this.unbindDblClick = this.unbindDblClick();
+            }
+
+            // Add the mousewheel event
+            if (pick(options.enableMouseWheelZoom, options.enabled)) {
+                this.unbindMouseWheel = this.unbindMouseWheel || addEvent(
+                    chart.container,
+                    doc.onmousewheel === undefined ? 'DOMMouseScroll' : 'mousewheel',
+                    function(e) {
+                        chart.pointer.onContainerMouseWheel(e);
+                        // Issue #5011, returning false from non-jQuery event does
+                        // not prevent default
+                        stopEvent(e);
+                        return false;
+                    }
+                );
+            } else if (this.unbindMouseWheel) {
+                // Unbind and set unbinder to undefined
+                this.unbindMouseWheel = this.unbindMouseWheel();
+            }
+
+        };
+
+        // Add events to the Chart object itself
+        extend(Chart.prototype, {
 
             /**
              * Fit an inner box to an outer. If the inner box overflows left or right, align it to the sides of the
@@ -20364,29 +20748,11 @@
          * Extend the Chart.render method to add zooming and panning
          */
         wrap(Chart.prototype, 'render', function(proceed) {
-            var chart = this,
-                mapNavigation = chart.options.mapNavigation;
-
             // Render the plus and minus buttons. Doing this before the shapes makes getBBox much quicker, at least in Chrome.
-            chart.renderMapNavigation();
+            this.mapNavigation = new MapNavigation(this);
+            this.mapNavigation.update();
 
-            proceed.call(chart);
-
-            // Add the double click event
-            if (pick(mapNavigation.enableDoubleClickZoom, mapNavigation.enabled) || mapNavigation.enableDoubleClickZoomTo) {
-                addEvent(chart.container, 'dblclick', function(e) {
-                    chart.pointer.onContainerDblClick(e);
-                });
-            }
-
-            // Add the mousewheel event
-            if (pick(mapNavigation.enableMouseWheelZoom, mapNavigation.enabled)) {
-                addEvent(chart.container, doc.onmousewheel === undefined ? 'DOMMouseScroll' : 'mousewheel', function(e) {
-                    chart.pointer.onContainerMouseWheel(e);
-                    stopEvent(e); // Issue #5011, returning false from non-jQuery event does not prevent default
-                    return false;
-                });
-            }
+            proceed.call(this);
         });
 
     }(Highcharts));
@@ -20396,7 +20762,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var extend = H.extend,
             pick = H.pick,
             Pointer = H.Pointer,
@@ -20493,7 +20858,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var color = H.color,
             ColorAxis = H.ColorAxis,
             colorPointMixin = H.colorPointMixin,
@@ -21297,7 +21661,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
@@ -21318,7 +21681,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var merge = H.merge,
             Point = H.Point,
             seriesType = H.seriesType;
@@ -21358,7 +21720,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var arrayMax = H.arrayMax,
             arrayMin = H.arrayMin,
             Axis = H.Axis,
@@ -21536,11 +21897,11 @@
 
                     if (isNumber(radius) && radius >= this.minPxSize / 2) {
                         // Shape arguments
-                        point.marker = {
+                        point.marker = H.extend(point.marker, {
                             radius: radius,
                             width: 2 * radius,
                             height: 2 * radius
-                        };
+                        });
 
                         // Alignment box for the data label
                         point.dlBox = {
@@ -21564,7 +21925,7 @@
             haloPath: function(size) {
                 return Point.prototype.haloPath.call(
                     this,
-                    size === 0 ? 0 : this.marker.radius + size // #6067
+                    size === 0 ? 0 : (this.marker ? this.marker.radius || 0 : 0) + size // #6067
                 );
             },
             ttBelow: false
@@ -21685,7 +22046,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var merge = H.merge,
             Point = H.Point,
             seriesType = H.seriesType,
@@ -21738,7 +22098,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
             each = H.each,
@@ -21865,7 +22224,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Chart = H.Chart,
             each = H.each,
             extend = H.extend,
@@ -22116,7 +22474,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Chart = H.Chart,
             defaultOptions = H.defaultOptions,
             each = H.each,
@@ -22164,12 +22521,12 @@
                 }
             },
             mouseWheelSensitivity: 1.1
-                // enabled: false,
-                // enableButtons: null, // inherit from enabled
-                // enableTouchZoom: null, // inherit from enabled
-                // enableDoubleClickZoom: null, // inherit from enabled
-                // enableDoubleClickZoomTo: false
-                // enableMouseWheelZoom: null, // inherit from enabled
+            // enabled: false,
+            // enableButtons: null, // inherit from enabled
+            // enableTouchZoom: null, // inherit from enabled
+            // enableDoubleClickZoom: null, // inherit from enabled
+            // enableDoubleClickZoomTo: false
+            // enableMouseWheelZoom: null, // inherit from enabled
         };
 
         /**
@@ -22314,7 +22671,6 @@
     }(Highcharts));
     (function() {
 
-        'use strict';
 
     }());
     return Highcharts

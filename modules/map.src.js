@@ -1,11 +1,12 @@
 /**
- * @license Highmaps JS v5.0.7 (2017-01-17)
+ * @license Highmaps JS v5.0.8 (2017-03-08)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
  * (c) 2011-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -19,7 +20,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             each = H.each,
             pick = H.pick,
@@ -137,7 +137,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Axis = H.Axis,
             Chart = H.Chart,
             color = H.color,
@@ -188,9 +187,14 @@
                 showInLegend: true
             },
 
-            // Properties to preserve after destroy, for Axis.update (#5881)
-            keepProps: ['legendGroup', 'legendItem', 'legendSymbol']
-                .concat(Axis.prototype.keepProps),
+            // Properties to preserve after destroy, for Axis.update (#5881, #6025)
+            keepProps: [
+                'legendGroup',
+                'legendItemHeight',
+                'legendItemWidth',
+                'legendItem',
+                'legendSymbol'
+            ].concat(Axis.prototype.keepProps),
 
             /**
              * Initialize the color axis
@@ -715,7 +719,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var defined = H.defined,
             each = H.each,
             noop = H.noop,
@@ -810,7 +813,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var addEvent = H.addEvent,
             Chart = H.Chart,
             doc = H.doc,
@@ -832,70 +834,166 @@
             }
         }
 
-        // Add events to the Chart object itself
-        extend(Chart.prototype, {
-            renderMapNavigation: function() {
-                var chart = this,
-                    options = this.options.mapNavigation,
-                    buttons = options.buttons,
-                    n,
-                    button,
-                    buttonOptions,
-                    attr,
-                    states,
-                    hoverStates,
-                    selectStates,
-                    outerHandler = function(e) {
-                        this.handler.call(chart, e);
-                        stopEvent(e); // Stop default click event (#4444)
-                    };
+        /**
+         * The MapNavigation handles buttons for navigation in addition to mousewheel
+         * and doubleclick handlers for chart zooming.
+         * @param {Chart} chart The Chart instance.
+         * @class
+         */
+        function MapNavigation(chart) {
+            this.init(chart);
+        }
 
-                if (pick(options.enableButtons, options.enabled) && !chart.renderer.forExport) {
-                    chart.mapNavButtons = [];
-                    for (n in buttons) {
-                        if (buttons.hasOwnProperty(n)) {
-                            buttonOptions = merge(options.buttonOptions, buttons[n]);
+        /**
+         * Initiator function.
+         * @param  {Chart} chart The Chart instance.
+         */
+        MapNavigation.prototype.init = function(chart) {
+            this.chart = chart;
+            chart.mapNavButtons = [];
+        };
+
+        /**
+         * Update the map navigation with new options. Calling this is the same as 
+         * calling `chart.update({ mapNavigation: {} })`. 
+         * @param  {Object} options New options for the map navigation.
+         */
+        MapNavigation.prototype.update = function(options) {
+            var chart = this.chart,
+                o = chart.options.mapNavigation,
+                buttons,
+                n,
+                button,
+                buttonOptions,
+                attr,
+                states,
+                hoverStates,
+                selectStates,
+                outerHandler = function(e) {
+                    this.handler.call(chart, e);
+                    stopEvent(e); // Stop default click event (#4444)
+                },
+                mapNavButtons = chart.mapNavButtons;
+
+            // Merge in new options in case of update, and register back to chart
+            // options.
+            if (options) {
+                o = chart.options.mapNavigation =
+                    merge(chart.options.mapNavigation, options);
+            }
+
+            // Destroy buttons in case of dynamic update
+            while (mapNavButtons.length) {
+                mapNavButtons.pop().destroy();
+            }
+
+            if (pick(o.enableButtons, o.enabled) && !chart.renderer.forExport) {
+
+                buttons = o.buttons;
+                for (n in buttons) {
+
+                    if (buttons.hasOwnProperty(n)) {
+                        buttonOptions = merge(o.buttonOptions, buttons[n]);
 
 
-                            // Presentational
-                            attr = buttonOptions.theme;
-                            attr.style = merge(buttonOptions.theme.style, buttonOptions.style); // #3203
-                            states = attr.states;
-                            hoverStates = states && states.hover;
-                            selectStates = states && states.select;
+                        // Presentational
+                        attr = buttonOptions.theme;
+                        attr.style = merge(
+                            buttonOptions.theme.style,
+                            buttonOptions.style // #3203
+                        );
+                        states = attr.states;
+                        hoverStates = states && states.hover;
+                        selectStates = states && states.select;
 
 
-                            button = chart.renderer.button(
-                                    buttonOptions.text,
-                                    0,
-                                    0,
-                                    outerHandler,
-                                    attr,
-                                    hoverStates,
-                                    selectStates,
-                                    0,
-                                    n === 'zoomIn' ? 'topbutton' : 'bottombutton'
-                                )
-                                .addClass('highcharts-map-navigation')
-                                .attr({
-                                    width: buttonOptions.width,
-                                    height: buttonOptions.height,
-                                    title: chart.options.lang[n],
-                                    padding: buttonOptions.padding,
-                                    zIndex: 5
-                                })
-                                .add();
-                            button.handler = buttonOptions.onclick;
-                            button.align(extend(buttonOptions, {
+                        button = chart.renderer.button(
+                                buttonOptions.text,
+                                0,
+                                0,
+                                outerHandler,
+                                attr,
+                                hoverStates,
+                                selectStates,
+                                0,
+                                n === 'zoomIn' ? 'topbutton' : 'bottombutton'
+                            )
+                            .addClass('highcharts-map-navigation')
+                            .attr({
+                                width: buttonOptions.width,
+                                height: buttonOptions.height,
+                                title: chart.options.lang[n],
+                                padding: buttonOptions.padding,
+                                zIndex: 5
+                            })
+                            .add();
+                        button.handler = buttonOptions.onclick;
+                        button.align(
+                            extend(buttonOptions, {
                                 width: button.width,
                                 height: 2 * button.height
-                            }), null, buttonOptions.alignTo);
-                            addEvent(button.element, 'dblclick', stopEvent); // Stop double click event (#4444)
-                            chart.mapNavButtons.push(button);
-                        }
+                            }),
+                            null,
+                            buttonOptions.alignTo
+                        );
+                        // Stop double click event (#4444)
+                        addEvent(button.element, 'dblclick', stopEvent);
+
+                        mapNavButtons.push(button);
                     }
                 }
-            },
+            }
+
+            this.updateEvents(o);
+        };
+
+        /**
+         * Update events, called internally from the update function. Add new event
+         * handlers, or unbinds events if disabled.
+         * @param  {Object} options Options for map navigation.
+         */
+        MapNavigation.prototype.updateEvents = function(options) {
+            var chart = this.chart;
+
+            // Add the double click event
+            if (
+                pick(options.enableDoubleClickZoom, options.enabled) ||
+                options.enableDoubleClickZoomTo
+            ) {
+                this.unbindDblClick = this.unbindDblClick || addEvent(
+                    chart.container,
+                    'dblclick',
+                    function(e) {
+                        chart.pointer.onContainerDblClick(e);
+                    }
+                );
+            } else if (this.unbindDblClick) {
+                // Unbind and set unbinder to undefined
+                this.unbindDblClick = this.unbindDblClick();
+            }
+
+            // Add the mousewheel event
+            if (pick(options.enableMouseWheelZoom, options.enabled)) {
+                this.unbindMouseWheel = this.unbindMouseWheel || addEvent(
+                    chart.container,
+                    doc.onmousewheel === undefined ? 'DOMMouseScroll' : 'mousewheel',
+                    function(e) {
+                        chart.pointer.onContainerMouseWheel(e);
+                        // Issue #5011, returning false from non-jQuery event does
+                        // not prevent default
+                        stopEvent(e);
+                        return false;
+                    }
+                );
+            } else if (this.unbindMouseWheel) {
+                // Unbind and set unbinder to undefined
+                this.unbindMouseWheel = this.unbindMouseWheel();
+            }
+
+        };
+
+        // Add events to the Chart object itself
+        extend(Chart.prototype, {
 
             /**
              * Fit an inner box to an outer. If the inner box overflows left or right, align it to the sides of the
@@ -1012,29 +1110,11 @@
          * Extend the Chart.render method to add zooming and panning
          */
         wrap(Chart.prototype, 'render', function(proceed) {
-            var chart = this,
-                mapNavigation = chart.options.mapNavigation;
-
             // Render the plus and minus buttons. Doing this before the shapes makes getBBox much quicker, at least in Chrome.
-            chart.renderMapNavigation();
+            this.mapNavigation = new MapNavigation(this);
+            this.mapNavigation.update();
 
-            proceed.call(chart);
-
-            // Add the double click event
-            if (pick(mapNavigation.enableDoubleClickZoom, mapNavigation.enabled) || mapNavigation.enableDoubleClickZoomTo) {
-                addEvent(chart.container, 'dblclick', function(e) {
-                    chart.pointer.onContainerDblClick(e);
-                });
-            }
-
-            // Add the mousewheel event
-            if (pick(mapNavigation.enableMouseWheelZoom, mapNavigation.enabled)) {
-                addEvent(chart.container, doc.onmousewheel === undefined ? 'DOMMouseScroll' : 'mousewheel', function(e) {
-                    chart.pointer.onContainerMouseWheel(e);
-                    stopEvent(e); // Issue #5011, returning false from non-jQuery event does not prevent default
-                    return false;
-                });
-            }
+            proceed.call(this);
         });
 
     }(Highcharts));
@@ -1044,7 +1124,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var extend = H.extend,
             pick = H.pick,
             Pointer = H.Pointer,
@@ -1141,7 +1220,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var color = H.color,
             ColorAxis = H.ColorAxis,
             colorPointMixin = H.colorPointMixin,
@@ -1989,7 +2067,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
@@ -2029,7 +2106,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var merge = H.merge,
             Point = H.Point,
             seriesType = H.seriesType;
@@ -2069,7 +2145,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var arrayMax = H.arrayMax,
             arrayMin = H.arrayMin,
             Axis = H.Axis,
@@ -2263,11 +2338,11 @@
 
                     if (isNumber(radius) && radius >= this.minPxSize / 2) {
                         // Shape arguments
-                        point.marker = {
+                        point.marker = H.extend(point.marker, {
                             radius: radius,
                             width: 2 * radius,
                             height: 2 * radius
-                        };
+                        });
 
                         // Alignment box for the data label
                         point.dlBox = {
@@ -2291,7 +2366,7 @@
             haloPath: function(size) {
                 return Point.prototype.haloPath.call(
                     this,
-                    size === 0 ? 0 : this.marker.radius + size // #6067
+                    size === 0 ? 0 : (this.marker ? this.marker.radius || 0 : 0) + size // #6067
                 );
             },
             ttBelow: false
@@ -2412,7 +2487,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var merge = H.merge,
             Point = H.Point,
             seriesType = H.seriesType,
@@ -2465,7 +2539,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
             each = H.each,
@@ -2592,7 +2665,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Chart = H.Chart,
             each = H.each,
             extend = H.extend,
@@ -2843,7 +2915,6 @@
          *
          * License: www.highcharts.com/license
          */
-        'use strict';
         var Chart = H.Chart,
             defaultOptions = H.defaultOptions,
             each = H.each,
@@ -2900,12 +2971,12 @@
                 }
             },
             mouseWheelSensitivity: 1.1
-                // enabled: false,
-                // enableButtons: null, // inherit from enabled
-                // enableTouchZoom: null, // inherit from enabled
-                // enableDoubleClickZoom: null, // inherit from enabled
-                // enableDoubleClickZoomTo: false
-                // enableMouseWheelZoom: null, // inherit from enabled
+            // enabled: false,
+            // enableButtons: null, // inherit from enabled
+            // enableTouchZoom: null, // inherit from enabled
+            // enableDoubleClickZoom: null, // inherit from enabled
+            // enableDoubleClickZoomTo: false
+            // enableMouseWheelZoom: null, // inherit from enabled
         };
 
         /**

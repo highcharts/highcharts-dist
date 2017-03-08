@@ -1,5 +1,5 @@
 /*
- Highcharts JS v5.0.7 (2017-01-17)
+ Highcharts JS v5.0.8 (2017-03-08)
  Gantt series
 
  (c) 2016 Lars A. V. Cabrera

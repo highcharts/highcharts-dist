@@ -1,11 +1,12 @@
 /**
- * @license Highcharts JS v5.0.7 (2017-01-17)
+ * @license Highcharts JS v5.0.8 (2017-03-08)
  * Exporting module
  *
  * (c) 2010-2016 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
+'use strict';
 (function(factory) {
     if (typeof module === 'object' && module.exports) {
         module.exports = factory;
@@ -23,7 +24,6 @@
          */
 
         /* eslint indent:0 */
-        'use strict';
 
         // create shortcuts
         var defaultOptions = H.defaultOptions,
@@ -244,8 +244,8 @@
                     	return s2 +'.'+ s3[0];
                     })*/
 
-                // Replace HTML entities, issue #347
-                .replace(/&nbsp;/g, '\u00A0') // no-break space
+                    // Replace HTML entities, issue #347
+                    .replace(/&nbsp;/g, '\u00A0') // no-break space
                     .replace(/&shy;/g, '\u00AD'); // soft hyphen
 
 
