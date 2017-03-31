@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v5.0.9 (2017-03-08)
+ * @license Highcharts JS v5.0.10 (2017-03-31)
  * Boost module
  *
- * (c) 2010-2016 Highsoft AS
+ * (c) 2010-2017 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -77,12 +77,10 @@
             extend = H.extend,
             addEvent = H.addEvent,
             fireEvent = H.fireEvent,
-            grep = H.grep,
             isNumber = H.isNumber,
             merge = H.merge,
             pick = H.pick,
             wrap = H.wrap,
-            plotOptions = H.getOptions().plotOptions,
             CHUNK_SIZE = 50000,
             destroyLoadingDiv;
 
@@ -303,8 +301,8 @@
                     });
 
                     target.boostClipRect.attr({
-                        x: 0, //chart.plotLeft,
-                        y: 0, //chart.plotTop,
+                        x: 0,
+                        y: 0,
                         width: chart.plotWidth,
                         height: chart.chartHeight
                     });
@@ -386,7 +384,6 @@
                         maxI,
                         kdIndex,
                         sdata = isStacked ? series.data : (xData || rawData),
-                        boostingOnChartLevel = isChartSeriesBoosting(chart),
                         fillColor = series.fillOpacity ?
                         new Color(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
                         series.color,
@@ -515,7 +512,7 @@
                     }
 
                     if (boostSettings.timeRendering) {
-                        console.time('canvas rendering');
+                        console.time('canvas rendering'); // eslint-disable-line no-console
                     }
 
                     // Loop over the points
@@ -650,7 +647,7 @@
                         series.canvasToSVG();
 
                         if (boostSettings.timeRendering) {
-                            console.timeEnd('canvas rendering');
+                            console.timeEnd('canvas rendering'); // eslint-disable-line no-console
                         }
 
                         fireEvent(series, 'renderedCanvas');
@@ -769,5 +766,6 @@
                 addEvent(chart, 'render', canvasToSVG);
             });
         };
+
     }(Highcharts));
 }));

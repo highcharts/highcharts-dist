@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v5.0.9 (2017-03-08)
+ * @license Highcharts JS v5.0.10 (2017-03-31)
  * Boost module
  *
- * (c) 2010-2016 Highsoft AS
+ * (c) 2010-2017 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -1933,9 +1933,7 @@
                 if (target instanceof H.Chart) {
                     target.markerGroup = target.renderer.g().add(targetGroup);
 
-                    target.markerGroup.translateX = series.xAxis.pos;
-                    target.markerGroup.translateY = series.yAxis.pos;
-                    target.markerGroup.updateTransform();
+                    target.markerGroup.translate(series.xAxis.pos, series.yAxis.pos);
                 }
             }
 
@@ -2626,6 +2624,14 @@
                 if (chart.canvas && chart.ogl && isChartSeriesBoosting(chart)) {
                     // Allocate
                     chart.ogl.allocateBuffer(chart);
+                }
+
+                //see #6518
+                if (chart.markerGroup) {
+                    chart.markerGroup.translate(
+                        chart.xAxis[0].pos,
+                        chart.yAxis[0].pos
+                    );
                 }
             }
 

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v5.0.9 (2017-03-08)
+ * @license Highstock JS v5.0.10 (2017-03-31)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -17,7 +17,7 @@
 }(typeof window !== 'undefined' ? window : this, function(win) {
     var Highcharts = (function() {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -35,7 +35,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highstock',
-            version: '5.0.9',
+            version: '5.0.10',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -61,7 +61,7 @@
     }());
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -2091,7 +2091,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -2139,8 +2139,8 @@
                 }
             }],
 
-            // Collection of named colors. Can be extended from the outside by adding colors
-            // to Highcharts.Color.prototype.names.
+            // Collection of named colors. Can be extended from the outside by adding
+            // colors to Highcharts.Color.prototype.names.
             names: {
                 white: '#ffffff',
                 black: '#000000'
@@ -2157,7 +2157,11 @@
                     parser,
                     len;
 
-                this.input = input = this.names[input] || input;
+                this.input = input = this.names[
+                    input && input.toLowerCase ?
+                    input.toLowerCase() :
+                    ''
+                ] || input;
 
                 // Gradients
                 if (input && input.stops) {
@@ -2288,7 +2292,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -2484,10 +2488,10 @@
                     value;
 
                 // Apply linear or radial gradients
-                if (color.linearGradient) {
-                    gradName = 'linearGradient';
-                } else if (color.radialGradient) {
+                if (color.radialGradient) {
                     gradName = 'radialGradient';
+                } else if (color.linearGradient) {
+                    gradName = 'linearGradient';
                 }
 
                 if (gradName) {
@@ -2508,9 +2512,14 @@
                     }
 
                     // Correct the radial gradient for the radial reference system
-                    if (gradName === 'radialGradient' && radialReference && !defined(gradAttr.gradientUnits)) {
+                    if (
+                        gradName === 'radialGradient' &&
+                        radialReference &&
+                        !defined(gradAttr.gradientUnits)
+                    ) {
                         radAttr = gradAttr; // Save the radial attributes for updating
-                        gradAttr = merge(gradAttr,
+                        gradAttr = merge(
+                            gradAttr,
                             renderer.getRadialAttr(radialReference, radAttr), {
                                 gradientUnits: 'userSpaceOnUse'
                             }
@@ -2599,11 +2608,13 @@
             applyTextOutline: function(textOutline) {
                 var elem = this.element,
                     tspans,
+                    tspan,
                     hasContrast = textOutline.indexOf('contrast') !== -1,
                     styles = {},
                     color,
                     strokeWidth,
-                    firstRealChild;
+                    firstRealChild,
+                    i;
 
                 // When the text shadow is set to contrast, use dark stroke for light
                 // text and vice versa.
@@ -2614,20 +2625,20 @@
                     );
                 }
 
-                this.fakeTS = true; // Fake text shadow
-
-                // In order to get the right y position of the clone,
-                // copy over the y setter
-                this.ySetter = this.xSetter;
-
-                tspans = [].slice.call(elem.getElementsByTagName('tspan'));
-
                 // Extract the stroke width and color
                 textOutline = textOutline.split(' ');
                 color = textOutline[textOutline.length - 1];
                 strokeWidth = textOutline[0];
 
-                if (strokeWidth && strokeWidth !== 'none') {
+                if (strokeWidth && strokeWidth !== 'none' && H.svg) {
+
+                    this.fakeTS = true; // Fake text shadow
+
+                    tspans = [].slice.call(elem.getElementsByTagName('tspan'));
+
+                    // In order to get the right y position of the clone,
+                    // copy over the y setter
+                    this.ySetter = this.xSetter;
 
                     // Since the stroke is applied on center of the actual outline, we
                     // need to double it to get the correct stroke-width outside the 
@@ -2639,13 +2650,16 @@
                         }
                     );
 
-                    // Remove shadows from previous runs
-                    each(tspans, function(tspan) {
+                    // Remove shadows from previous runs. Iterate from the end to
+                    // support removing items inside the cycle (#6472).
+                    i = tspans.length;
+                    while (i--) {
+                        tspan = tspans[i];
                         if (tspan.getAttribute('class') === 'highcharts-text-outline') {
                             // Remove then erase
                             erase(tspans, elem.removeChild(tspan));
                         }
-                    });
+                    }
 
                     // For each of the tspans, create a stroked copy behind it.
                     firstRealChild = elem.firstChild;
@@ -2769,7 +2783,12 @@
                             stop(this, key);
                         }
 
-                        if (this.symbolName && /^(x|y|width|height|r|start|end|innerR|anchorX|anchorY)/.test(key)) {
+                        // Special handling of symbol attributes
+                        if (
+                            this.symbolName &&
+                            /^(x|y|width|height|r|start|end|innerR|anchorX|anchorY)$/
+                            .test(key)
+                        ) {
                             if (!hasSetSymbolSize) {
                                 this.symbolAttr(hash);
                                 hasSetSymbolSize = true;
@@ -2955,8 +2974,8 @@
                     // These CSS properties are interpreted internally by the SVG
                     // renderer, but are not supported by SVG and should not be added to
                     // the DOM. In styled mode, no CSS should find its way to the DOM
-                    // whatsoever (#6173).
-                    svgPseudoProps = ['textOverflow', 'width'];
+                    // whatsoever (#6173, #6474).
+                    svgPseudoProps = ['textOutline', 'textOverflow', 'width'];
 
                 // convert legacy
                 if (styles && styles.color) {
@@ -3629,6 +3648,17 @@
                 stop(wrapper); // stop running animations
 
                 if (wrapper.clipPath) {
+                    // Look for existing references to this clipPath and remove them
+                    // before destroying the element (#6196).
+                    each(
+                        wrapper.element.ownerSVGElement.querySelectorAll('[clip-path]'),
+                        function(el) {
+                            if (el.getAttribute('clip-path')
+                                .indexOf(wrapper.clipPath.element.id) > -1) {
+                                el.removeAttribute('clip-path');
+                            }
+                        }
+                    );
                     wrapper.clipPath = wrapper.clipPath.destroy();
                 }
 
@@ -3926,7 +3956,7 @@
 
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highstock 5.0.9'));
+                desc.element.appendChild(doc.createTextNode('Created with Highstock 5.0.10'));
 
 
                 renderer.defs = this.createElement('defs').add();
@@ -4100,6 +4130,58 @@
                 };
             },
 
+            getSpanWidth: function(wrapper, tspan) {
+                var renderer = this,
+                    bBox = wrapper.getBBox(true),
+                    actualWidth = bBox.width;
+
+                // Old IE cannot measure the actualWidth for SVG elements (#2314)
+                if (!svg && renderer.forExport) {
+                    actualWidth = renderer.measureSpanWidth(tspan.firstChild.data, wrapper.styles);
+                }
+                return actualWidth;
+            },
+
+            applyEllipsis: function(wrapper, tspan, text, width) {
+                var renderer = this,
+                    actualWidth = renderer.getSpanWidth(wrapper, tspan),
+                    wasTooLong = actualWidth > width,
+                    str = text,
+                    currentIndex,
+                    minIndex = 0,
+                    maxIndex = text.length,
+                    updateTSpan = function(s) {
+                        tspan.removeChild(tspan.firstChild);
+                        if (s) {
+                            tspan.appendChild(doc.createTextNode(s));
+                        }
+                    };
+                if (wasTooLong) {
+                    while (minIndex <= maxIndex) {
+                        currentIndex = Math.ceil((minIndex + maxIndex) / 2);
+                        str = text.substring(0, currentIndex) + '\u2026';
+                        updateTSpan(str);
+                        actualWidth = renderer.getSpanWidth(wrapper, tspan);
+                        if (minIndex === maxIndex) {
+                            // Complete
+                            minIndex = maxIndex + 1;
+                        } else if (actualWidth > width) {
+                            // Too large. Set max index to current.
+                            maxIndex = currentIndex - 1;
+                        } else {
+                            // Within width. Set min index to current.
+                            minIndex = currentIndex;
+                        }
+                    }
+                    // If max index was 0 it means just ellipsis was also to large.
+                    if (maxIndex === 0) {
+                        // Remove ellipses.
+                        updateTSpan('');
+                    }
+                }
+                return wasTooLong;
+            },
+
             /**
              * Parse a simple HTML string into SVG tspans. Called internally when text
              *   is set on an SVGElement. The function supports a subset of HTML tags,
@@ -4129,6 +4211,7 @@
                     noWrap = textStyles && textStyles.whiteSpace === 'nowrap',
                     fontSize = textStyles && textStyles.fontSize,
                     textCache,
+                    isSubsequentLine,
                     i = childNodes.length,
                     tempParent = width && !wrapper.added && this.box,
                     getLineHeight = function(tspan) {
@@ -4259,7 +4342,7 @@
                                     textNode.appendChild(tspan);
 
                                     // first span on subsequent line, add the line height
-                                    if (!spanNo && lineNo) {
+                                    if (!spanNo && isSubsequentLine) {
 
                                         // allow getting the right offset height in exporting in IE
                                         if (!svg && forExport) {
@@ -4286,44 +4369,28 @@
                                         var words = span.replace(/([^\^])-/g, '$1- ').split(' '), // #1273
                                             hasWhiteSpace = spans.length > 1 || lineNo || (words.length > 1 && !noWrap),
                                             tooLong,
-                                            actualWidth,
                                             rest = [],
+                                            actualWidth,
                                             dy = getLineHeight(tspan),
-                                            rotation = wrapper.rotation,
-                                            wordStr = span, // for ellipsis
-                                            cursor = wordStr.length, // binary search cursor
-                                            bBox;
+                                            rotation = wrapper.rotation;
 
-                                        while ((hasWhiteSpace || ellipsis) && (words.length || rest.length)) {
+                                        if (ellipsis) {
+                                            wasTooLong = renderer.applyEllipsis(wrapper, tspan, span, width);
+                                        }
+
+                                        while (!ellipsis && hasWhiteSpace && (words.length || rest.length)) {
                                             wrapper.rotation = 0; // discard rotation when computing box
-                                            bBox = wrapper.getBBox(true);
-                                            actualWidth = bBox.width;
-
-                                            // Old IE cannot measure the actualWidth for SVG elements (#2314)
-                                            if (!svg && renderer.forExport) {
-                                                actualWidth = renderer.measureSpanWidth(tspan.firstChild.data, wrapper.styles);
-                                            }
-
+                                            actualWidth = renderer.getSpanWidth(wrapper, tspan);
                                             tooLong = actualWidth > width;
 
                                             // For ellipsis, do a binary search for the correct string length
                                             if (wasTooLong === undefined) {
                                                 wasTooLong = tooLong; // First time
                                             }
-                                            if (ellipsis && wasTooLong) {
-                                                cursor /= 2;
 
-                                                if (wordStr === '' || (!tooLong && cursor < 0.5)) {
-                                                    words = []; // All ok, break out
-                                                } else {
-                                                    wordStr = span.substring(0, wordStr.length + (tooLong ? -1 : 1) * Math.ceil(cursor));
-                                                    words = [wordStr + (width > 3 ? '\u2026' : '')];
-                                                    tspan.removeChild(tspan.firstChild);
-                                                }
-
-                                                // Looping down, this is the first word sequence that is not too long,
-                                                // so we can move on to build the next line.
-                                            } else if (!tooLong || words.length === 1) {
+                                            // Looping down, this is the first word sequence that is not too long,
+                                            // so we can move on to build the next line.
+                                            if (!tooLong || words.length === 1) {
                                                 words = rest;
                                                 rest = [];
 
@@ -4356,6 +4423,8 @@
                                 }
                             }
                         });
+                        // To avoid beginning lines that doesn't add to the textNode (#6144)
+                        isSubsequentLine = isSubsequentLine || textNode.childNodes.length;
                     });
 
                     if (wasTooLong) {
@@ -5608,7 +5677,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -5958,7 +6027,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -5967,7 +6036,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -6294,7 +6363,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -6367,9 +6436,9 @@
                 groupAttribs.zIndex = zIndex;
                 groupName += '-' + zIndex;
 
-                group = axis[groupName];
+                group = axis.plotLinesAndBandsGroups[groupName];
                 if (!group) {
-                    axis[groupName] = group = renderer.g('plot-' + groupName)
+                    axis.plotLinesAndBandsGroups[groupName] = group = renderer.g('plot-' + groupName)
                         .attr(groupAttribs).add();
                 }
 
@@ -6520,19 +6589,26 @@
              */
             getPlotBandPath: function(from, to) {
                 var toPath = this.getPlotLinePath(to, null, null, true),
-                    path = this.getPlotLinePath(from, null, null, true);
+                    path = this.getPlotLinePath(from, null, null, true),
+                    // #4964 check if chart is inverted or plotband is on yAxis 
+                    horiz = this.horiz,
+                    plus = 1,
+                    outside =
+                    (from < this.min && to < this.min) ||
+                    (from > this.max && to > this.max);
 
                 if (path && toPath) {
 
                     // Flat paths don't need labels (#3836)
-                    path.flat = path.toString() === toPath.toString();
+                    if (outside) {
+                        path.flat = path.toString() === toPath.toString();
+                        plus = 0;
+                    }
 
+                    // Add 1 pixel, when coordinates are the same
                     path.push(
-                        toPath[4],
-                        toPath[5],
-                        toPath[1],
-                        toPath[2],
-                        'z' // #5909
+                        horiz && toPath[4] === path[4] ? toPath[4] + plus : toPath[4], !horiz && toPath[5] === path[5] ? toPath[5] + plus : toPath[5],
+                        horiz && toPath[1] === path[1] ? toPath[1] + plus : toPath[1], !horiz && toPath[2] === path[2] ? toPath[2] + plus : toPath[2]
                     );
                 } else { // outside the axis area
                     path = null;
@@ -6598,7 +6674,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -7084,7 +7160,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -7349,6 +7425,9 @@
                 //axis.gridGroup = undefined;
                 //axis.axisTitle = undefined;
                 //axis.axisLine = undefined;
+
+                // Placeholder for plotlines and plotbands groups
+                axis.plotLinesAndBandsGroups = {};
 
                 // Shorthand types
                 axis.isLog = type === 'logarithmic';
@@ -7971,7 +8050,9 @@
                 }
 
                 // Write the last point's name to the names array
-                this.names[x] = point.name;
+                if (x !== undefined) {
+                    this.names[x] = point.name;
+                }
 
                 return x;
             },
@@ -8000,7 +8081,7 @@
                             var x;
                             if (point.options) {
                                 x = axis.nameToX(point);
-                                if (x !== point.x) {
+                                if (x !== undefined && x !== point.x) {
                                     point.x = x;
                                     series.xData[i] = x;
                                 }
@@ -8209,17 +8290,20 @@
                     }
                 }
 
-                // Handle options for floor, ceiling, softMin and softMax
+                // Handle options for floor, ceiling, softMin and softMax (#6359)
+                if (isNumber(options.softMin)) {
+                    axis.min = Math.min(axis.min, options.softMin);
+                }
+                if (isNumber(options.softMax)) {
+                    axis.max = Math.max(axis.max, options.softMax);
+                }
                 if (isNumber(options.floor)) {
                     axis.min = Math.max(axis.min, options.floor);
-                } else if (isNumber(options.softMin)) {
-                    axis.min = Math.min(axis.min, options.softMin);
                 }
                 if (isNumber(options.ceiling)) {
                     axis.max = Math.min(axis.max, options.ceiling);
-                } else if (isNumber(options.softMax)) {
-                    axis.max = Math.max(axis.max, options.softMax);
                 }
+
 
                 // When the threshold is soft, adjust the extreme value only if
                 // the data extreme and the padded extreme land on either side of the threshold. For example,
@@ -8395,7 +8479,7 @@
                     minPointOffset = this.minPointOffset || 0;
 
                 if (!this.isLinked) {
-                    if (startOnTick) {
+                    if (startOnTick && roundedMin !== -Infinity) { // #6502
                         this.min = roundedMin;
                     } else {
                         while (this.min - minPointOffset > tickPositions[0]) {
@@ -9551,6 +9635,7 @@
                     stacks = axis.stacks,
                     stackKey,
                     plotLinesAndBands = axis.plotLinesAndBands,
+                    plotGroup,
                     i,
                     n;
 
@@ -9583,6 +9668,11 @@
                         axis[prop] = axis[prop].destroy();
                     }
                 });
+
+                // Destroy each generated group for plotlines and plotbands
+                for (plotGroup in axis.plotLinesAndBandsGroups) {
+                    axis.plotLinesAndBandsGroups[plotGroup] = axis.plotLinesAndBandsGroups[plotGroup].destroy();
+                }
 
                 // Delete all properties and fall back to the prototype.
                 for (n in axis) {
@@ -9690,7 +9780,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -9950,7 +10040,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -10073,7 +10163,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -10856,7 +10946,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -11015,8 +11105,11 @@
                     // Skip hidden series
                     noSharedTooltip = s.noSharedTooltip && shared;
                     directTouch = !shared && s.directTouch;
-                    if (s.visible && !noSharedTooltip && !directTouch && pick(s.options.enableMouseTracking, true)) { // #3821
-                        kdpointT = s.searchPoint(e, !noSharedTooltip && s.kdDimensions === 1); // #3828
+                    if (s.visible && !directTouch && pick(s.options.enableMouseTracking, true)) { // #3821
+                        // #3828
+                        kdpointT = s.searchPoint(
+                            e, !noSharedTooltip && s.options.findNearestPointBy.indexOf('y') < 0
+                        );
                         if (kdpointT && kdpointT.series) { // Point.series becomes null when reset and before redraw (#5197)
                             kdpoints.push(kdpointT);
                         }
@@ -11049,7 +11142,7 @@
                 });
 
                 // Remove points with different x-positions, required for shared tooltip and crosshairs (#4645):
-                if (shared) {
+                if (shared && kdpoints[0] && !kdpoints[0].series.noSharedTooltip) {
                     i = kdpoints.length;
                     while (i--) {
                         if (kdpoints[i].x !== kdpoints[0].x || kdpoints[i].series.noSharedTooltip) {
@@ -11071,9 +11164,9 @@
             },
 
             getHoverData: function(existingHoverPoint, existingHoverSeries, series, isDirectTouch, shared, e) {
-                var i,
-                    hoverPoint = existingHoverPoint,
+                var hoverPoint = existingHoverPoint,
                     hoverSeries = existingHoverSeries,
+                    searchSeries,
                     hoverPoints;
 
                 // If it has a hoverPoint and that series requires direct touch (like columns, #3899), or we're on
@@ -11105,29 +11198,28 @@
                     } else {
                         hoverPoints = [hoverPoint];
                     }
-                } else if (hoverSeries && !hoverSeries.options.stickyTracking) {
-                    hoverPoints = this.getKDPoints([hoverSeries], shared, e);
-                    hoverPoint = hoverPoints[0];
-                    hoverSeries = hoverPoint && hoverPoint.series;
-                } else {
+                    // When the hovered series has stickyTracking false.
+                } else if (hoverSeries && !hoverSeries.stickyTracking) {
                     if (!shared) {
-                        // For hovering over the empty parts of the plot area (hoverSeries is undefined).
-                        // If there is one series with point tracking (combo chart), don't go to nearest neighbour.
-                        if (!hoverSeries) {
-                            for (i = 0; i < series.length; i++) {
-                                if (series[i].directTouch || !series[i].options.stickyTracking) {
-                                    series = [];
-                                }
-                            }
-                            // When we have non-shared tooltip and sticky tracking is disabled,
-                            // search for the closest point only on hovered series: #5533, #5476
-                        } else if (!hoverSeries.options.stickyTracking) {
-                            series = [hoverSeries];
-                        }
+                        series = [hoverSeries];
                     }
                     hoverPoints = this.getKDPoints(series, shared, e);
+                    hoverPoint = H.find(hoverPoints, function(p) {
+                        return p.series === hoverSeries;
+                    });
+                    // When the hoverSeries has stickyTracking or there is no series hovered.
+                } else {
+                    // Avoid series with stickyTracking
+                    searchSeries = H.grep(series, function(s) {
+                        return s.stickyTracking;
+                    });
+                    hoverPoints = this.getKDPoints(searchSeries, shared, e);
                     hoverPoint = hoverPoints[0];
                     hoverSeries = hoverPoint && hoverPoint.series;
+                    // If 
+                    if (shared) {
+                        hoverPoints = this.getKDPoints(series, shared, e);
+                    }
                 }
                 // Keep the order of series in tooltip
                 // Must be done after assigning of hoverPoint
@@ -11154,7 +11246,7 @@
                     hoverPoint = p || chart.hoverPoint,
                     hoverSeries = hoverPoint && hoverPoint.series || chart.hoverSeries,
                     // onMouseOver or already hovering a series with directTouch
-                    isDirectTouch = !!p || (hoverSeries && hoverSeries.directTouch),
+                    isDirectTouch = !!p || (!shared && hoverSeries && hoverSeries.directTouch),
                     hoverData = this.getHoverData(hoverPoint, hoverSeries, series, isDirectTouch, shared, e),
                     useSharedTooltip,
                     followPointer,
@@ -11166,7 +11258,10 @@
                 hoverSeries = hoverData.hoverSeries;
                 followPointer = hoverSeries && hoverSeries.tooltipOptions.followPointer;
                 useSharedTooltip = shared && hoverPoint && !hoverPoint.series.noSharedTooltip;
-                points = useSharedTooltip ? hoverData.hoverPoints : [hoverPoint];
+                points = (useSharedTooltip ?
+                    hoverData.hoverPoints :
+                    (hoverPoint ? [hoverPoint] : [])
+                );
 
                 // Refresh tooltip for kdpoint if new hover point or tooltip was hidden // #3926, #4200
                 if (
@@ -11221,15 +11316,20 @@
                     });
                 }
 
-                // Crosshair. For each hover point, loop over axes and draw cross if that point
-                // belongs to the axis (#4927).
-                each(points, function drawPointCrosshair(point) { // #5269
-                    each(chart.axes, function drawAxisCrosshair(axis) {
-                        // In case of snap = false, point is undefined, and we draw the crosshair anyway (#5066)
-                        if (!point || point.series && point.series[axis.coll] === axis) { // #5658
-                            axis.drawCrosshair(e, point);
-                        }
-                    });
+                // Draw crosshairs (#4927, #5269 #5066, #5658)
+                each(chart.axes, function drawAxisCrosshair(axis) {
+                    // Snap is true. For each hover point, loop over the axes and draw a
+                    // crosshair if that point belongs to the axis.
+                    // @todo Consider only one crosshair per axis.
+                    if (pick(axis.crosshair.snap, true)) {
+                        each(points, function(p) {
+                            if (p.series[axis.coll] === axis) {
+                                axis.drawCrosshair(e, p);
+                            }
+                        });
+                    } else {
+                        axis.drawCrosshair(e);
+                    }
                 });
             },
 
@@ -11607,7 +11707,7 @@
                 var series = this.chart.hoverSeries,
                     relatedTarget = e.relatedTarget || e.toElement;
 
-                if (series && relatedTarget && !series.options.stickyTracking &&
+                if (series && relatedTarget && !series.stickyTracking &&
                     !this.inClass(relatedTarget, 'highcharts-tooltip') &&
                     (!this.inClass(relatedTarget, 'highcharts-series-' + series.index) || // #2499, #4465
                         !this.inClass(relatedTarget, 'highcharts-tracker') // #5553
@@ -11697,7 +11797,15 @@
             destroy: function() {
                 var prop;
 
-                removeEvent(this.chart.container, 'mouseleave', this.onContainerMouseLeave);
+                if (this.unDocMouseMove) {
+                    this.unDocMouseMove();
+                }
+
+                removeEvent(
+                    this.chart.container,
+                    'mouseleave',
+                    this.onContainerMouseLeave
+                );
                 if (!H.chartCount) {
                     removeEvent(doc, 'mouseup', this.onDocumentMouseUp);
                     removeEvent(doc, 'touchend', this.onDocumentTouchEnd);
@@ -11715,7 +11823,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -11992,7 +12100,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -12111,7 +12219,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -12170,8 +12278,7 @@
 
                 this.itemMarginTop = options.itemMarginTop || 0;
                 this.padding = padding;
-                this.initialItemX = padding;
-                this.initialItemY = padding - 5; // 5 is the number of pixels above the text
+                this.initialItemY = padding - 5; // 5 is pixels above the text
                 this.maxItemWidth = 0;
                 this.itemHeight = 0;
                 this.symbolWidth = pick(options.symbolWidth, 16);
@@ -12180,8 +12287,8 @@
             },
 
             /**
-             * Update the legend with new options. Equivalent to running chart.update with a legend
-             * configuration option.
+             * Update the legend with new options. Equivalent to running chart.update
+             * with a legend configuration option.
              * @param {Object} options Legend options
              * @param {Boolean} redraw Whether to redraw the chart, defaults to true.
              */
@@ -12202,7 +12309,9 @@
              * @param {Object} visible Dimmed or colored
              */
             colorizeItem: function(item, visible) {
-                item.legendGroup[visible ? 'removeClass' : 'addClass']('highcharts-legend-item-hidden');
+                item.legendGroup[visible ? 'removeClass' : 'addClass'](
+                    'highcharts-legend-item-hidden'
+                );
 
 
             },
@@ -12224,7 +12333,9 @@
 
                 if (legendGroup && legendGroup.element) {
                     legendGroup.translate(
-                        ltr ? itemX : legend.legendWidth - itemX - 2 * symbolPadding - 4,
+                        ltr ?
+                        itemX :
+                        legend.legendWidth - itemX - 2 * symbolPadding - 4,
                         itemY
                     );
                 }
@@ -12243,11 +12354,14 @@
                 var checkbox = item.checkbox;
 
                 // destroy SVG elements
-                each(['legendItem', 'legendLine', 'legendSymbol', 'legendGroup'], function(key) {
-                    if (item[key]) {
-                        item[key] = item[key].destroy();
+                each(
+                    ['legendItem', 'legendLine', 'legendSymbol', 'legendGroup'],
+                    function(key) {
+                        if (item[key]) {
+                            item[key] = item[key].destroy();
+                        }
                     }
-                });
+                );
 
                 if (checkbox) {
                     discardElement(item.checkbox);
@@ -12299,11 +12413,14 @@
                             top;
 
                         if (checkbox) {
-                            top = translateY + titleHeight + checkbox.y + (scrollOffset || 0) + 3;
+                            top = translateY + titleHeight + checkbox.y +
+                                (scrollOffset || 0) + 3;
                             css(checkbox, {
-                                left: (alignAttr.translateX + item.checkboxOffset + checkbox.x - 20) + 'px',
+                                left: (alignAttr.translateX + item.checkboxOffset +
+                                    checkbox.x - 20) + 'px',
                                 top: top + 'px',
-                                display: top > translateY - 6 && top < translateY + clipHeight - 6 ? '' : 'none'
+                                display: top > translateY - 6 && top < translateY +
+                                    clipHeight - 6 ? '' : 'none'
                             });
                         }
                     });
@@ -12322,7 +12439,17 @@
 
                 if (titleOptions.text) {
                     if (!this.title) {
-                        this.title = this.chart.renderer.label(titleOptions.text, padding - 3, padding - 4, null, null, null, null, null, 'legend-title')
+                        this.title = this.chart.renderer.label(
+                                titleOptions.text,
+                                padding - 3,
+                                padding - 4,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                'legend-title'
+                            )
                             .attr({
                                 zIndex: 1
                             })
@@ -12345,7 +12472,8 @@
             setText: function(item) {
                 var options = this.options;
                 item.legendItem.attr({
-                    text: options.labelFormat ? H.format(options.labelFormat, item) : options.labelFormatter.call(item)
+                    text: options.labelFormat ?
+                        H.format(options.labelFormat, item) : options.labelFormatter.call(item)
                 });
             },
 
@@ -12369,24 +12497,30 @@
                     widthOption = options.width,
                     itemMarginBottom = options.itemMarginBottom || 0,
                     itemMarginTop = legend.itemMarginTop,
-                    initialItemX = legend.initialItemX,
                     bBox,
                     itemWidth,
                     li = item.legendItem,
                     isSeries = !item.series,
-                    series = !isSeries && item.series.drawLegendSymbol ? item.series : item,
+                    series = !isSeries && item.series.drawLegendSymbol ?
+                    item.series :
+                    item,
                     seriesOptions = series.options,
-                    showCheckbox = legend.createCheckboxForItem && seriesOptions && seriesOptions.showCheckbox,
+                    showCheckbox = legend.createCheckboxForItem &&
+                    seriesOptions &&
+                    seriesOptions.showCheckbox,
                     useHTML = options.useHTML,
-                    fontSize = 12;
+                    fontSize = 12,
+                    itemClassName = item.options.className;
 
                 if (!li) { // generate it once, later move it
 
-                    // Generate the group box
-                    // A group to hold the symbol and text. Text is to be appended in Legend class.
+                    // Generate the group box, a group to hold the symbol and text. Text
+                    // is to be appended in Legend class.
                     item.legendGroup = renderer.g('legend-item')
-                        .addClass('highcharts-' + series.type + '-series highcharts-color-' + item.colorIndex +
-                            (item.options.className ? ' ' + item.options.className : '') +
+                        .addClass(
+                            'highcharts-' + series.type + '-series ' +
+                            'highcharts-color-' + item.colorIndex +
+                            (itemClassName ? ' ' + itemClassName : '') +
                             (isSeries ? ' highcharts-series-' + item.index : '')
                         )
                         .attr({
@@ -12408,7 +12542,8 @@
                         })
                         .add(item.legendGroup);
 
-                    // Get the baseline for the first item - the font size is equal for all
+                    // Get the baseline for the first item - the font size is equal for
+                    // all
                     if (!legend.baseline) {
 
                         legend.fontMetrics = renderer.fontMetrics(
@@ -12445,19 +12580,30 @@
                 itemWidth = item.checkboxOffset =
                     options.itemWidth ||
                     item.legendItemWidth ||
-                    symbolWidth + symbolPadding + bBox.width + itemDistance + (showCheckbox ? 20 : 0);
-                legend.itemHeight = itemHeight = Math.round(item.legendItemHeight || bBox.height);
+                    symbolWidth + symbolPadding + bBox.width + itemDistance +
+                    (showCheckbox ? 20 : 0);
+                legend.itemHeight = itemHeight = Math.round(
+                    item.legendItemHeight || bBox.height || legend.symbolHeight
+                );
 
-                // if the item exceeds the width, start a new line
-                if (horizontal && legend.itemX - initialItemX + itemWidth >
-                    (widthOption || (chart.chartWidth - 2 * padding - initialItemX - options.x))) {
-                    legend.itemX = initialItemX;
-                    legend.itemY += itemMarginTop + legend.lastLineHeight + itemMarginBottom;
+                // If the item exceeds the width, start a new line
+                if (
+                    horizontal &&
+                    legend.itemX - padding + itemWidth > (
+                        widthOption || (
+                            chart.spacingBox.width - 2 * padding - options.x
+                        )
+                    )
+                ) {
+                    legend.itemX = padding;
+                    legend.itemY += itemMarginTop + legend.lastLineHeight +
+                        itemMarginBottom;
                     legend.lastLineHeight = 0; // reset for next line (#915, #3976)
                 }
 
                 // If the item exceeds the height, start a new column
-                /*if (!horizontal && legend.itemY + options.y + itemHeight > chart.chartHeight - spacingTop - spacingBottom) {
+                /*if (!horizontal && legend.itemY + options.y +
+                		itemHeight > chart.chartHeight - spacingTop - spacingBottom) {
                 	legend.itemY = legend.initialItemY;
                 	legend.itemX += legend.maxItemWidth;
                 	legend.maxItemWidth = 0;
@@ -12466,7 +12612,10 @@
                 // Set the edge positions
                 legend.maxItemWidth = Math.max(legend.maxItemWidth, itemWidth);
                 legend.lastItemY = itemMarginTop + legend.itemY + itemMarginBottom;
-                legend.lastLineHeight = Math.max(itemHeight, legend.lastLineHeight); // #915
+                legend.lastLineHeight = Math.max( // #915
+                    itemHeight,
+                    legend.lastLineHeight
+                );
 
                 // cache the position of the newly generated or reordered items
                 item._legendItemPos = [legend.itemX, legend.itemY];
@@ -12482,29 +12631,36 @@
 
                 // the width of the widest item
                 legend.offsetWidth = widthOption || Math.max(
-                    (horizontal ? legend.itemX - initialItemX - itemDistance : itemWidth) + padding,
+                    (horizontal ? legend.itemX - padding - itemDistance : itemWidth) +
+                    padding,
                     legend.offsetWidth
                 );
             },
 
             /**
-             * Get all items, which is one item per series for normal series and one item per point
-             * for pie series.
+             * Get all items, which is one item per series for normal series and one
+             * item per point for pie series.
              */
             getAllItems: function() {
                 var allItems = [];
                 each(this.chart.series, function(series) {
                     var seriesOptions = series && series.options;
 
-                    // Handle showInLegend. If the series is linked to another series, defaults to false.
-                    if (series && pick(seriesOptions.showInLegend, !defined(seriesOptions.linkedTo) ? undefined : false, true)) {
+                    // Handle showInLegend. If the series is linked to another series,
+                    // defaults to false.
+                    if (series && pick(
+                            seriesOptions.showInLegend, !defined(seriesOptions.linkedTo) ? undefined : false, true
+                        )) {
 
-                        // Use points or series for the legend item depending on legendType
+                        // Use points or series for the legend item depending on
+                        // legendType
                         allItems = allItems.concat(
                             series.legendItems ||
-                            (seriesOptions.legendType === 'point' ?
+                            (
+                                seriesOptions.legendType === 'point' ?
                                 series.data :
-                                series)
+                                series
+                            )
                         );
                     }
                 });
@@ -12512,15 +12668,18 @@
             },
 
             /**
-             * Adjust the chart margins by reserving space for the legend on only one side
-             * of the chart. If the position is set to a corner, top or bottom is reserved
-             * for horizontal legends and left or right for vertical ones.
+             * Adjust the chart margins by reserving space for the legend on only one
+             * side of the chart. If the position is set to a corner, top or bottom is
+             * reserved for horizontal legends and left or right for vertical ones.
              */
             adjustMargins: function(margin, spacing) {
                 var chart = this.chart,
                     options = this.options,
-                    // Use the first letter of each alignment option in order to detect the side
-                    alignment = options.align.charAt(0) + options.verticalAlign.charAt(0) + options.layout.charAt(0); // #4189 - use charAt(x) notation instead of [x] for IE7
+                    // Use the first letter of each alignment option in order to detect
+                    // the side. (#4189 - use charAt(x) notation instead of [x] for IE7)
+                    alignment = options.align.charAt(0) +
+                    options.verticalAlign.charAt(0) +
+                    options.layout.charAt(0);
 
                 if (!options.floating) {
 
@@ -12531,12 +12690,19 @@
                         /(lbv|lm|ltv)/
                     ], function(alignments, side) {
                         if (alignments.test(alignment) && !defined(margin[side])) {
-                            // Now we have detected on which side of the chart we should reserve space for the legend
+                            // Now we have detected on which side of the chart we should
+                            // reserve space for the legend
                             chart[marginNames[side]] = Math.max(
                                 chart[marginNames[side]],
-                                chart.legend[(side + 1) % 2 ? 'legendHeight' : 'legendWidth'] + [1, -1, -1, 1][side] * options[(side % 2) ? 'x' : 'y'] +
-                                pick(options.margin, 12) +
-                                spacing[side]
+                                (
+                                    chart.legend[
+                                        (side + 1) % 2 ? 'legendHeight' : 'legendWidth'
+                                    ] + [1, -1, -1, 1][side] * options[
+                                        (side % 2) ? 'x' : 'y'
+                                    ] +
+                                    pick(options.margin, 12) +
+                                    spacing[side]
+                                )
                             );
                         }
                     });
@@ -12561,7 +12727,7 @@
                     options = legend.options,
                     padding = legend.padding;
 
-                legend.itemX = legend.initialItemX;
+                legend.itemX = padding;
                 legend.itemY = legend.initialItemY;
                 legend.offsetWidth = 0;
                 legend.lastItemY = 0;
@@ -12588,7 +12754,8 @@
 
                 // sort by legendIndex
                 stableSort(allItems, function(a, b) {
-                    return ((a.options && a.options.legendIndex) || 0) - ((b.options && b.options.legendIndex) || 0);
+                    return ((a.options && a.options.legendIndex) || 0) -
+                        ((b.options && b.options.legendIndex) || 0);
                 });
 
                 // reversed legend
@@ -12607,7 +12774,8 @@
 
                 // Get the box
                 legendWidth = (options.width || legend.offsetWidth) + padding;
-                legendHeight = legend.lastItemY + legend.lastLineHeight + legend.titleHeight;
+                legendHeight = legend.lastItemY + legend.lastLineHeight +
+                    legend.titleHeight;
                 legendHeight = legend.handleOverflow(legendHeight);
                 legendHeight += padding;
 
@@ -12649,8 +12817,8 @@
                 legend.legendWidth = legendWidth;
                 legend.legendHeight = legendHeight;
 
-                // Now that the legend width and height are established, put the items in the
-                // final position
+                // Now that the legend width and height are established, put the items
+                // in the final position
                 each(allItems, function(item) {
                     legend.positionItem(item);
                 });
@@ -12663,7 +12831,8 @@
                 	prop = props[i];
                 	if (options.style[prop] && options.style[prop] !== 'auto') {
                 		options[i < 2 ? 'align' : 'verticalAlign'] = prop;
-                		options[i < 2 ? 'x' : 'y'] = pInt(options.style[prop]) * (i % 2 ? -1 : 1);
+                		options[i < 2 ? 'x' : 'y'] = 
+                			pInt(options.style[prop]) * (i % 2 ? -1 : 1);
                 	}
                 }*/
 
@@ -12680,8 +12849,8 @@
             },
 
             /**
-             * Set up the overflow handling by adding navigation with up and down arrows below the
-             * legend.
+             * Set up the overflow handling by adding navigation with up and down arrows
+             * below the legend.
              */
             handleOverflow: function(legendHeight) {
                 var legend = this,
@@ -12690,7 +12859,9 @@
                     options = this.options,
                     optionsY = options.y,
                     alignTop = options.verticalAlign === 'top',
-                    spaceHeight = chart.spacingBox.height + (alignTop ? -optionsY : optionsY) - this.padding,
+                    padding = this.padding,
+                    spaceHeight = chart.spacingBox.height +
+                    (alignTop ? -optionsY : optionsY) - padding,
                     maxHeight = options.maxHeight,
                     clipHeight,
                     clipRect = this.clipRect,
@@ -12699,7 +12870,6 @@
                     arrowSize = navOptions.arrowSize || 12,
                     nav = this.nav,
                     pages = this.pages,
-                    padding = this.padding,
                     lastY,
                     allItems = this.allItems,
                     clipToHeight = function(height) {
@@ -12723,7 +12893,11 @@
 
 
                 // Adjust the height
-                if (options.layout === 'horizontal' && options.verticalAlign !== 'middle' && !options.floating) {
+                if (
+                    options.layout === 'horizontal' &&
+                    options.verticalAlign !== 'middle' &&
+                    !options.floating
+                ) {
                     spaceHeight /= 2;
                 }
                 if (maxHeight) {
@@ -12734,23 +12908,26 @@
                 pages.length = 0;
                 if (legendHeight > spaceHeight && navOptions.enabled !== false) {
 
-                    this.clipHeight = clipHeight = Math.max(spaceHeight - 20 - this.titleHeight - padding, 0);
+                    this.clipHeight = clipHeight =
+                        Math.max(spaceHeight - 20 - this.titleHeight - padding, 0);
                     this.currentPage = pick(this.currentPage, 1);
                     this.fullHeight = legendHeight;
 
-                    // Fill pages with Y positions so that the top of each a legend item defines
-                    // the scroll top for each page (#2098)
+                    // Fill pages with Y positions so that the top of each a legend item
+                    // defines the scroll top for each page (#2098)
                     each(allItems, function(item, i) {
                         var y = item._legendItemPos[1],
                             h = Math.round(item.legendItem.getBBox().height),
                             len = pages.length;
 
-                        if (!len || (y - pages[len - 1] > clipHeight && (lastY || y) !== pages[len - 1])) {
+                        if (!len || (y - pages[len - 1] > clipHeight &&
+                                (lastY || y) !== pages[len - 1])) {
                             pages.push(lastY || y);
                             len++;
                         }
 
-                        if (i === allItems.length - 1 && y + h - pages[len - 1] > clipHeight) {
+                        if (i === allItems.length - 1 &&
+                            y + h - pages[len - 1] > clipHeight) {
                             pages.push(y);
                         }
                         if (y !== lastY) {
@@ -12758,9 +12935,11 @@
                         }
                     });
 
-                    // Only apply clipping if needed. Clipping causes blurred legend in PDF export (#1787)
+                    // Only apply clipping if needed. Clipping causes blurred legend in
+                    // PDF export (#1787)
                     if (!clipRect) {
-                        clipRect = legend.clipRect = renderer.clipRect(0, padding, 9999, 0);
+                        clipRect = legend.clipRect =
+                            renderer.clipRect(0, padding, 9999, 0);
                         legend.contentGroup.clip(clipRect);
                     }
 
@@ -12768,19 +12947,38 @@
 
                     // Add navigation elements
                     if (!nav) {
-                        this.nav = nav = renderer.g().attr({
-                            zIndex: 1
-                        }).add(this.group);
-                        this.up = renderer.symbol('triangle', 0, 0, arrowSize, arrowSize)
+                        this.nav = nav = renderer.g()
+                            .attr({
+                                zIndex: 1
+                            })
+                            .add(this.group);
+
+                        this.up = renderer
+                            .symbol(
+                                'triangle',
+                                0,
+                                0,
+                                arrowSize,
+                                arrowSize
+                            )
                             .on('click', function() {
                                 legend.scroll(-1, animation);
                             })
                             .add(nav);
+
                         this.pager = renderer.text('', 15, 10)
                             .addClass('highcharts-legend-navigation')
 
                             .add(nav);
-                        this.down = renderer.symbol('triangle-down', 0, 0, arrowSize, arrowSize)
+
+                        this.down = renderer
+                            .symbol(
+                                'triangle-down',
+                                0,
+                                0,
+                                arrowSize,
+                                arrowSize
+                            )
                             .on('click', function() {
                                 legend.scroll(1, animation);
                             })
@@ -12837,14 +13035,16 @@
                         visibility: 'visible'
                     });
                     this.up.attr({
-                        'class': currentPage === 1 ? 'highcharts-legend-nav-inactive' : 'highcharts-legend-nav-active'
+                        'class': currentPage === 1 ?
+                            'highcharts-legend-nav-inactive' : 'highcharts-legend-nav-active'
                     });
                     pager.attr({
                         text: currentPage + '/' + pageCount
                     });
                     this.down.attr({
                         'x': 18 + this.pager.getBBox().width, // adjust to text width
-                        'class': currentPage === pageCount ? 'highcharts-legend-nav-inactive' : 'highcharts-legend-nav-active'
+                        'class': currentPage === pageCount ?
+                            'highcharts-legend-nav-inactive' : 'highcharts-legend-nav-active'
                     });
 
 
@@ -12896,8 +13096,9 @@
             },
 
             /**
-             * Get the series' symbol in the legend. This method should be overridable to create custom
-             * symbols through Highcharts.seriesTypes[type].prototype.drawLegendSymbols.
+             * Get the series' symbol in the legend. This method should be overridable
+             * to create custom symbols through
+             * Highcharts.seriesTypes[type].prototype.drawLegendSymbols.
              *
              * @param {Object} legend The legend object
              */
@@ -12912,7 +13113,8 @@
                     generalRadius = symbolHeight / 2,
                     renderer = this.chart.renderer,
                     legendItemGroup = this.legendGroup,
-                    verticalCenter = legend.baseline - Math.round(legend.fontMetrics.b * 0.3),
+                    verticalCenter = legend.baseline -
+                    Math.round(legend.fontMetrics.b * 0.3),
                     attr = {};
 
                 // Draw the line
@@ -12966,11 +13168,13 @@
         // Workaround for #2030, horizontal legend items not displaying in IE11 Preview,
         // and for #2580, a similar drawing flaw in Firefox 26.
         // Explore if there's a general cause for this. The problem may be related
-        // to nested group elements, as the legend item texts are within 4 group elements.
+        // to nested group elements, as the legend item texts are within 4 group
+        // elements.
         if (/Trident\/7\.0/.test(win.navigator.userAgent) || isFirefox) {
             wrap(Legend.prototype, 'positionItem', function(proceed, item) {
                 var legend = this,
-                    runPositionItem = function() { // If chart destroyed in sync, this is undefined (#2030)
+                    // If chart destroyed in sync, this is undefined (#2030)
+                    runPositionItem = function() {
                         if (item._legendItemPos) {
                             proceed.call(legend, item);
                         }
@@ -12987,7 +13191,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -13520,7 +13724,8 @@
             },
 
             /**
-             * Lay out the chart titles and cache the full offset height for use in getMargins
+             * Lay out the chart titles and cache the full offset height for use
+             * in getMargins
              */
             layOutTitles: function(redraw) {
                 var titleOffset = 0,
@@ -13540,14 +13745,19 @@
 
                         title
                             .css({
-                                width: (titleOptions.width || spacingBox.width + titleOptions.widthAdjust) + 'px'
+                                width: (titleOptions.width ||
+                                    spacingBox.width + titleOptions.widthAdjust) + 'px'
                             })
                             .align(extend({
                                 y: titleOffset + titleSize + (key === 'title' ? -3 : 2)
                             }, titleOptions), false, 'spacingBox');
 
                         if (!titleOptions.floating && !titleOptions.verticalAlign) {
-                            titleOffset = Math.ceil(titleOffset + title.getBBox().height);
+                            titleOffset = Math.ceil(
+                                titleOffset +
+                                // Skip the cache for HTML (#3481)
+                                title.getBBox(titleOptions.useHTML).height
+                            );
                         }
                     }
                 }, this);
@@ -14510,7 +14720,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -14854,7 +15064,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -14986,9 +15196,9 @@
             //valuePrefix: '',
             //ySuffix: ''
             //}
-            turboThreshold: 1000
+            turboThreshold: 1000,
             // zIndex: null
-
+            findNearestPointBy: 'x'
 
         }, /** @lends Series.prototype */ {
             isCartesian: true,
@@ -15230,6 +15440,19 @@
                     userPlotOptions.series && userPlotOptions.series.tooltip,
                     userPlotOptions[this.type] && userPlotOptions[this.type].tooltip,
                     itemOptions.tooltip
+                );
+
+                // When shared tooltip, stickyTracking is true by default,
+                // unless user says otherwise.
+                this.stickyTracking = pick(
+                    itemOptions.stickyTracking,
+                    userPlotOptions[this.type] && userPlotOptions[this.type].stickyTracking,
+                    userPlotOptions.series && userPlotOptions.series.stickyTracking,
+                    (
+                        this.tooltipOptions.shared && !this.noSharedTooltip ?
+                        true :
+                        options.stickyTracking
+                    )
                 );
 
                 // Delete marker object if not allowed (#1125)
@@ -15608,8 +15831,10 @@
                         point = (new PointClass()).init(series, [processedXData[i]].concat(splat(processedYData[i])));
                         point.dataGroup = series.groupMap[i];
                     }
-                    point.index = cursor; // For faster access in Point.update
-                    points[i] = point;
+                    if (point) { // #6279
+                        point.index = cursor; // For faster access in Point.update
+                        points[i] = point;
+                    }
                 }
 
                 // Hide cropped-away points - this only runs when the number of points is above cropThreshold, or when
@@ -15662,7 +15887,7 @@
                     // visible range, consider y extremes
                     validValue = (isNumber(y, true) || isArray(y)) && (!yAxis.positiveValuesOnly || (y.length || y > 0));
                     withinRange = this.getExtremesFromAll || this.options.getExtremesFromAll || this.cropped ||
-                        ((xData[i + 1] || x) >= xMin && (xData[i - 1] || x) <= xMax);
+                        ((xData[i] || x) >= xMin && (xData[i] || x) <= xMax);
 
                     if (validValue && withinRange) {
 
@@ -15678,6 +15903,7 @@
                         }
                     }
                 }
+
                 this.dataMin = arrayMin(activeYData);
                 this.dataMax = arrayMax(activeYData);
             },
@@ -15890,7 +16116,6 @@
                             chart[sharedClipKey] = chart[sharedClipKey].destroy();
                         }
                         if (chart[sharedClipKey + 'm']) {
-                            this.markerGroup.clip();
                             chart[sharedClipKey + 'm'] = chart[sharedClipKey + 'm'].destroy();
                         }
                     }
@@ -16639,7 +16864,6 @@
              * KD Tree && PointSearching Implementation
              */
 
-            kdDimensions: 1,
             kdAxisArray: ['clientX', 'plotY'],
 
             searchPoint: function(e, compareX) {
@@ -16666,7 +16890,8 @@
                 this.buildingKdTree = true;
 
                 var series = this,
-                    dimensions = series.kdDimensions;
+                    dimensions = series.options.findNearestPointBy.indexOf('y') > -1 ?
+                    2 : 1;
 
                 // Internal function
                 function _kdtree(points, depth, dimensions) {
@@ -16717,7 +16942,9 @@
                 var series = this,
                     kdX = this.kdAxisArray[0],
                     kdY = this.kdAxisArray[1],
-                    kdComparer = compareX ? 'distX' : 'dist';
+                    kdComparer = compareX ? 'distX' : 'dist',
+                    kdDimensions = series.options.findNearestPointBy.indexOf('y') > -1 ?
+                    2 : 1;
 
                 // Set the one and two dimensional distance on the point object
                 function setDistance(p1, p2) {
@@ -16768,8 +16995,7 @@
                 }
 
                 if (this.kdTree) {
-                    return _search(point,
-                        this.kdTree, this.kdDimensions, this.kdDimensions);
+                    return _search(point, this.kdTree, kdDimensions, kdDimensions);
                 }
             }
 
@@ -16778,7 +17004,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -17263,7 +17489,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -17453,7 +17679,13 @@
                     }
 
                     if ('inverted' in optionsChart || 'polar' in optionsChart) {
-                        this.propFromSeries(); // Parses options.chart.inverted and options.chart.polar together with the available series
+                        // Parse options.chart.inverted and options.chart.polar together
+                        // with the available series.
+                        this.propFromSeries();
+                        updateAllAxes = true;
+                    }
+
+                    if ('alignTicks' in optionsChart) { // #6452
                         updateAllAxes = true;
                     }
 
@@ -17509,7 +17741,7 @@
                 // update the first series in the chart. Setting two series without
                 // an id will update the first and the second respectively (#6019)
                 // chart.update and responsive.
-                each(['xAxis', 'yAxis', 'series'], function(coll) {
+                each(['xAxis', 'yAxis', 'series', 'colorAxis', 'pane'], function(coll) {
                     if (options[coll]) {
                         each(splat(options[coll]), function(newOptions, i) {
                             var item = (
@@ -17949,7 +18181,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -18269,7 +18501,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -18407,7 +18639,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -18429,7 +18661,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -18454,6 +18686,7 @@
         seriesType('column', 'line', {
             borderRadius: 0,
             //colorByPoint: undefined,
+            crisp: true,
             groupPadding: 0.2,
             //grouping: true,
             marker: null, // point options are specified in the base options
@@ -18600,9 +18833,11 @@
 
                 // Horizontal. We need to first compute the exact right edge, then round it
                 // and compute the width from there.
-                right = Math.round(x + w) + xCrisp;
-                x = Math.round(x) + xCrisp;
-                w = right - x;
+                if (this.options.crisp) {
+                    right = Math.round(x + w) + xCrisp;
+                    x = Math.round(x) + xCrisp;
+                    w = right - x;
+                }
 
                 // Vertical
                 bottom = Math.round(y + h) + yCrisp;
@@ -18822,7 +19057,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -18839,7 +19074,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -18850,6 +19085,7 @@
          */
         seriesType('scatter', 'line', {
             lineWidth: 0,
+            findNearestPointBy: 'xy',
             marker: {
                 enabled: true // Overrides auto-enabling in line series (#3647)
             },
@@ -18868,7 +19104,6 @@
             noSharedTooltip: true,
             trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
             takeOrdinalPosition: false, // #2342
-            kdDimensions: 2,
             drawGraph: function() {
                 if (this.options.lineWidth) {
                     Series.prototype.drawGraph.call(this);
@@ -18879,7 +19114,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -18928,7 +19163,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -19389,7 +19624,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -19735,7 +19970,14 @@
 
                 // Handle justify or crop
                 if (justify) {
-                    this.justifyDataLabel(dataLabel, options, alignAttr, bBox, alignTo, isNew);
+                    point.isLabelJustified = this.justifyDataLabel(
+                        dataLabel,
+                        options,
+                        alignAttr,
+                        bBox,
+                        alignTo,
+                        isNew
+                    );
 
                     // Now check that the data label is within the plot area
                 } else if (pick(options.crop, true)) {
@@ -19821,6 +20063,8 @@
                 dataLabel.placed = !isNew;
                 dataLabel.align(options, null, alignTo);
             }
+
+            return justified;
         };
 
         /**
@@ -20236,38 +20480,56 @@
 
                 // Call the parent method
                 Series.prototype.alignDataLabel.call(this, point, dataLabel, options, alignTo, isNew);
+
+                // If label was justified and we have contrast, set it:
+                if (point.isLabelJustified && point.contrastColor) {
+                    point.dataLabel.css({
+                        color: point.contrastColor
+                    });
+                }
             };
         }
 
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2009-2016 Torstein Honsi
+         * (c) 2009-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
         /**
-         * Highcharts module to hide overlapping data labels. This module is included in Highcharts.
+         * Highcharts module to hide overlapping data labels. This module is included in
+         * Highcharts.
          */
         var Chart = H.Chart,
             each = H.each,
             pick = H.pick,
             addEvent = H.addEvent;
 
-        // Collect potensial overlapping data labels. Stack labels probably don't need to be 
-        // considered because they are usually accompanied by data labels that lie inside the columns.
+        // Collect potensial overlapping data labels. Stack labels probably don't need
+        // to be considered because they are usually accompanied by data labels that lie
+        // inside the columns.
         Chart.prototype.callbacks.push(function(chart) {
             function collectAndHide() {
                 var labels = [];
 
                 each(chart.series || [], function(series) {
                     var dlOptions = series.options.dataLabels,
-                        collections = series.dataLabelCollections || ['dataLabel']; // Range series have two collections
-                    if ((dlOptions.enabled || series._hasPointLabels) && !dlOptions.allowOverlap && series.visible) { // #3866
+                        // Range series have two collections
+                        collections = series.dataLabelCollections || ['dataLabel'];
+
+                    if (
+                        (dlOptions.enabled || series._hasPointLabels) &&
+                        !dlOptions.allowOverlap &&
+                        series.visible
+                    ) { // #3866
                         each(collections, function(coll) {
                             each(series.points, function(point) {
                                 if (point[coll]) {
-                                    point[coll].labelrank = pick(point.labelrank, point.shapeArgs && point.shapeArgs.height); // #4118
+                                    point[coll].labelrank = pick(
+                                        point.labelrank,
+                                        point.shapeArgs && point.shapeArgs.height
+                                    ); // #4118
                                     labels.push(point[coll]);
                                 }
                             });
@@ -20286,8 +20548,8 @@
         });
 
         /**
-         * Hide overlapping labels. Labels are moved and faded in and out on zoom to provide a smooth 
-         * visual imression.
+         * Hide overlapping labels. Labels are moved and faded in and out on zoom to
+         * provide a smooth visual imression.
          */
         Chart.prototype.hideOverlappingLabels = function(labels) {
 
@@ -20321,9 +20583,8 @@
                 }
             }
 
-            // Prevent a situation in a gradually rising slope, that each label
-            // will hide the previous one because the previous one always has
-            // lower rank.
+            // Prevent a situation in a gradually rising slope, that each label will
+            // hide the previous one because the previous one always has lower rank.
             labels.sort(function(a, b) {
                 return (b.labelrank || 0) - (a.labelrank || 0);
             });
@@ -20334,12 +20595,19 @@
 
                 for (j = i + 1; j < len; ++j) {
                     label2 = labels[j];
-                    if (label1 && label2 && label1.placed && label2.placed && label1.newOpacity !== 0 && label2.newOpacity !== 0) {
+                    if (
+                        label1 && label2 &&
+                        label1 !== label2 && // #6465, polar chart with connectEnds
+                        label1.placed && label2.placed &&
+                        label1.newOpacity !== 0 && label2.newOpacity !== 0
+                    ) {
                         pos1 = label1.alignAttr;
                         pos2 = label2.alignAttr;
-                        parent1 = label1.parentGroup; // Different panes have different positions
+                        // Different panes have different positions
+                        parent1 = label1.parentGroup;
                         parent2 = label2.parentGroup;
-                        padding = 2 * (label1.box ? 0 : label1.padding); // Substract the padding if no background or border (#4333)
+                        // Substract the padding if no background or border (#4333)
+                        padding = 2 * (label1.box ? 0 : label1.padding);
                         isIntersecting = intersectRect(
                             pos1.x + parent1.translateX,
                             pos1.y + parent1.translateY,
@@ -20352,7 +20620,8 @@
                         );
 
                         if (isIntersecting) {
-                            (label1.labelrank < label2.labelrank ? label1 : label2).newOpacity = 0;
+                            (label1.labelrank < label2.labelrank ? label1 : label2)
+                            .newOpacity = 0;
                         }
                     }
                 }
@@ -20368,7 +20637,8 @@
 
                     if (label.oldOpacity !== newOpacity && label.placed) {
 
-                        // Make sure the label is completely hidden to avoid catching clicks (#4362)
+                        // Make sure the label is completely hidden to avoid catching
+                        // clicks (#4362)
                         if (newOpacity) {
                             label.show(true);
                         } else {
@@ -20379,7 +20649,11 @@
 
                         // Animate or set the opacity					
                         label.alignAttr.opacity = newOpacity;
-                        label[label.isOld ? 'animate' : 'attr'](label.alignAttr, null, complete);
+                        label[label.isOld ? 'animate' : 'attr'](
+                            label.alignAttr,
+                            null,
+                            complete
+                        );
 
                     }
                     label.isOld = true;
@@ -20390,7 +20664,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -21136,7 +21410,7 @@
 
 
                 // hide the tooltip
-                if (tooltip && !options.stickyTracking && (!tooltip.shared || series.noSharedTooltip)) {
+                if (tooltip && !series.stickyTracking && (!tooltip.shared || series.noSharedTooltip)) {
                     tooltip.hide();
                 }
 
@@ -21286,7 +21560,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -21432,7 +21706,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -22141,7 +22415,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2009-2016 Torstein Honsi
+         * (c) 2009-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -22479,7 +22753,7 @@
     }());
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -23111,7 +23385,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -23141,6 +23415,7 @@
 
 
         }, /** @lends seriesTypes.ohlc */ {
+            directTouch: false,
             pointArrayMap: ['open', 'high', 'low', 'close'], // array point configs are mapped to this
             toYData: function(point) { // return a plain array for speedy calculation
                 return [point.open, point.high, point.low, point.close];
@@ -23156,18 +23431,18 @@
                 var series = this,
                     yAxis = series.yAxis,
                     hasModifyValue = !!series.modifyValue,
-                    translatedOLC = ['plotOpen', 'yBottom', 'plotClose'];
+                    translated = ['plotOpen', 'plotHigh', 'plotLow', 'plotClose', 'yBottom']; // translate OHLC for
 
                 seriesTypes.column.prototype.translate.apply(series);
 
                 // Do the translation
                 each(series.points, function(point) {
-                    each([point.open, point.low, point.close], function(value, i) {
+                    each([point.open, point.high, point.low, point.close, point.low], function(value, i) {
                         if (value !== null) {
                             if (hasModifyValue) {
                                 value = series.modifyValue(value);
                             }
-                            point[translatedOLC[i]] = yAxis.toPixels(value, true);
+                            point[translated[i]] = yAxis.toPixels(value, true);
                         }
                     });
                 });
@@ -23275,7 +23550,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -23394,7 +23669,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -23409,7 +23684,8 @@
             SVGRenderer = H.SVGRenderer,
             TrackerMixin = H.TrackerMixin,
             VMLRenderer = H.VMLRenderer,
-            symbols = SVGRenderer.prototype.symbols;
+            symbols = SVGRenderer.prototype.symbols,
+            stableSort = H.stableSort;
 
         /**
          * The flags series type.
@@ -23465,6 +23741,7 @@
                     onData = onSeries && onSeries.points,
                     i = onData && onData.length,
                     xAxis = series.xAxis,
+                    yAxis = series.yAxis,
                     xAxisExt = xAxis.getExtremes(),
                     xOffset = 0,
                     leftPoint,
@@ -23479,7 +23756,7 @@
                     lastX = onData[i - 1].x + (currentDataGrouping ? currentDataGrouping.totalRange : 0); // #2374
 
                     // sort the data points
-                    points.sort(function(a, b) {
+                    stableSort(points, function(a, b) {
                         return (a.x - b.x);
                     });
 
@@ -23516,12 +23793,16 @@
 
                     var stackIndex;
 
-                    // Undefined plotY means the point is either on axis, outside series range or hidden series.
-                    // If the series is outside the range of the x axis it should fall through with
-                    // an undefined plotY, but then we must remove the shapeArgs (#847).
+                    // Undefined plotY means the point is either on axis, outside series
+                    // range or hidden series. If the series is outside the range of the
+                    // x axis it should fall through with an undefined plotY, but then
+                    // we must remove the shapeArgs (#847).
                     if (point.plotY === undefined) {
-                        if (point.x >= xAxisExt.min && point.x <= xAxisExt.max) { // we're inside xAxis range
-                            point.plotY = chart.chartHeight - xAxis.bottom - (xAxis.opposite ? xAxis.height : 0) + xAxis.offset - chart.plotTop;
+                        if (point.x >= xAxisExt.min && point.x <= xAxisExt.max) {
+                            // we're inside xAxis range
+                            point.plotY = chart.chartHeight - xAxis.bottom -
+                                (xAxis.opposite ? xAxis.height : 0) +
+                                xAxis.offset - yAxis.top; // #3517
                         } else {
                             point.shapeArgs = {}; // 847
                         }
@@ -23604,6 +23885,11 @@
                                 .addClass('highcharts-point')
                                 .add(series.markerGroup);
 
+                            // Add reference to the point for tracker (#6303)
+                            if (point.graphic.div) {
+                                point.graphic.div.point = point;
+                            }
+
 
                         }
 
@@ -23627,6 +23913,15 @@
                         point.graphic = graphic.destroy();
                     }
 
+                }
+
+                // Might be a mix of SVG and HTML and we need events for both (#6303)
+                if (options.useHTML) {
+                    H.wrap(series.markerGroup, 'on', function(proceed) {
+                        return H.SVGElement.prototype.on.apply(
+                            proceed.apply(this, [].slice.call(arguments, 1)), // for HTML
+                            [].slice.call(arguments, 1)); // and for SVG
+                    });
                 }
 
             },
@@ -23728,7 +24023,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -24022,8 +24317,7 @@
                 }
 
                 from = Math.max(from, 0);
-
-                fromPX = fullWidth * from;
+                fromPX = Math.ceil(fullWidth * from);
                 toPX = fullWidth * Math.min(to, 1);
                 scroller.calculatedWidth = newSize = correctFloat(toPX - fromPX);
 
@@ -24316,7 +24610,7 @@
          */
         wrap(Axis.prototype, 'init', function(proceed) {
             var axis = this;
-            proceed.apply(axis, [].slice.call(arguments, 1));
+            proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
 
             if (axis.options.scrollbar && axis.options.scrollbar.enabled) {
                 // Predefined options:
@@ -24354,26 +24648,37 @@
                 scrollMin = Math.min(pick(axis.options.min, axis.min), axis.min, axis.dataMin),
                 scrollMax = Math.max(pick(axis.options.max, axis.max), axis.max, axis.dataMax),
                 scrollbar = axis.scrollbar,
+                offsetsIndex,
                 from,
                 to;
 
-            proceed.apply(axis, [].slice.call(arguments, 1));
+            proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
 
             if (scrollbar) {
+
                 if (axis.horiz) {
                     scrollbar.position(
                         axis.left,
-                        axis.top + axis.height + axis.offset + 2 + (axis.opposite ? 0 : axis.axisTitleMargin),
+                        axis.top + axis.height + 2 + axis.chart.scrollbarsOffsets[1] +
+                        (axis.opposite ? 0 : axis.axisTitleMargin + axis.offset),
                         axis.width,
                         axis.height
                     );
+                    offsetsIndex = 1;
                 } else {
                     scrollbar.position(
-                        axis.left + axis.width + 2 + axis.offset + (axis.opposite ? axis.axisTitleMargin : 0),
+                        axis.left + axis.width + 2 + axis.chart.scrollbarsOffsets[0] +
+                        (axis.opposite ? axis.axisTitleMargin + axis.offset : 0),
                         axis.top,
                         axis.width,
                         axis.height
                     );
+                    offsetsIndex = 0;
+                }
+
+                if ((!axis.opposite && !axis.horiz) || (axis.opposite && axis.horiz)) {
+                    axis.chart.scrollbarsOffsets[offsetsIndex] +=
+                        axis.scrollbar.size + axis.scrollbar.options.margin;
                 }
 
                 if (isNaN(scrollMin) || isNaN(scrollMax) || !defined(axis.min) || !defined(axis.max)) {
@@ -24399,9 +24704,10 @@
                 index = axis.horiz ? 2 : 1,
                 scrollbar = axis.scrollbar;
 
-            proceed.apply(axis, [].slice.call(arguments, 1));
+            proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
 
             if (scrollbar) {
+                axis.chart.scrollbarsOffsets = [0, 0]; // reset scrollbars offsets
                 axis.chart.axisOffset[index] += scrollbar.size + scrollbar.options.margin;
             }
         });
@@ -24414,7 +24720,7 @@
                 this.scrollbar = this.scrollbar.destroy();
             }
 
-            proceed.apply(this, [].slice.call(arguments, 1));
+            proceed.apply(this, Array.prototype.slice.call(arguments, 1));
         });
 
         H.Scrollbar = Scrollbar;
@@ -24422,7 +24728,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -24934,8 +25240,9 @@
                     );
                     // Keep scale 0-1
                     navigator.scrollbar.setRange(
-                        zoomedMin / navigatorSize,
-                        zoomedMax / navigatorSize
+                        // Use real value, not rounded because range can be very small (#1716)
+                        navigator.zoomedMin / navigatorSize,
+                        navigator.zoomedMax / navigatorSize
                     );
                 }
                 navigator.rendered = true;
@@ -24950,10 +25257,7 @@
                     container = chart.container,
                     eventsToUnbind = [],
                     mouseMoveHandler,
-                    mouseUpHandler,
-                    // iOS calls both events: mousedown+touchstart and mouseup+touchend
-                    // So we add them just once, #6187
-                    eventNames = hasTouch ? ['touchstart', 'touchmove', 'touchend'] : ['mousedown', 'mousemove', 'mouseup'];
+                    mouseUpHandler;
 
                 /**
                  * Create mouse events' handlers.
@@ -24967,13 +25271,22 @@
                 };
 
                 // Add shades and handles mousedown events
-                eventsToUnbind = navigator.getPartsEvents(eventNames[0]);
+                eventsToUnbind = navigator.getPartsEvents('mousedown');
                 // Add mouse move and mouseup events. These are bind to doc/container,
                 // because Navigator.grabbedSomething flags are stored in mousedown events:
                 eventsToUnbind.push(
-                    addEvent(container, eventNames[1], mouseMoveHandler),
-                    addEvent(doc, eventNames[2], mouseUpHandler)
+                    addEvent(container, 'mousemove', mouseMoveHandler),
+                    addEvent(doc, 'mouseup', mouseUpHandler)
                 );
+
+                // Touch events
+                if (hasTouch) {
+                    eventsToUnbind.push(
+                        addEvent(container, 'touchmove', mouseMoveHandler),
+                        addEvent(doc, 'touchend', mouseUpHandler)
+                    );
+                    eventsToUnbind.concat(navigator.getPartsEvents('touchstart'));
+                }
 
                 navigator.eventsToUnbind = eventsToUnbind;
 
@@ -25911,7 +26224,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -26845,7 +27158,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -27351,7 +27664,7 @@
         });
 
         /* ****************************************************************************
-         * Start value compare logic                                                  *
+         * Start value compare logic												  *
          *****************************************************************************/
 
         /**
@@ -27500,7 +27813,7 @@
         };
 
         /* ****************************************************************************
-         * End value compare logic                                                    *
+         * End value compare logic													*
          *****************************************************************************/
 
 

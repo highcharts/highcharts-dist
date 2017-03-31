@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v5.0.9 (2017-03-08)
+ * @license Highcharts JS v5.0.10 (2017-03-31)
  * X-range series
  *
- * (c) 2010-2016 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2010-2017 Torstein Honsi, Lars A. V. Cabrera
  *
  * --- WORK IN PROGRESS ---
  *
@@ -18,7 +18,7 @@
 }(function(Highcharts) {
     (function(H) {
         /**
-         * (c) 2014-2016 Highsoft AS
+         * (c) 2014-2017 Highsoft AS
          * Authors: Torstein Honsi, Lars A. V. Cabrera
          *
          * License: www.highcharts.com/license

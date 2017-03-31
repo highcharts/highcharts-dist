@@ -433,7 +433,7 @@ g.highcharts-series,
 }
 
 /* Plot bands and polar pane backgrounds */
-.highcharts-plot-band {
+.highcharts-plot-band, .highcharts-pane {
   fill: #000000;
   fill-opacity: 0.05;
 }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.9 (2017-03-08)
+ * @license Highcharts JS v5.0.10 (2017-03-31)
  * Client side exporting module
  *
  * (c) 2015 Torstein Honsi / Oystein Moseng
@@ -500,7 +500,7 @@
 
         // Extend the default options to use the local exporter logic
         merge(true, Highcharts.getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/5.0.9/lib/',
+            libURL: 'https://code.highcharts.com/5.0.10/lib/',
             buttons: {
                 contextButton: {
                     menuItems: [{

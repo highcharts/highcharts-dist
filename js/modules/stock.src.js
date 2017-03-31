@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.9 (2017-03-08)
+ * @license Highcharts JS v5.0.10 (2017-03-31)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -16,7 +16,7 @@
 }(function(Highcharts) {
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -725,7 +725,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2009-2016 Torstein Honsi
+         * (c) 2009-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -1063,7 +1063,7 @@
     }());
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -1695,7 +1695,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -1725,6 +1725,7 @@
 
 
         }, /** @lends seriesTypes.ohlc */ {
+            directTouch: false,
             pointArrayMap: ['open', 'high', 'low', 'close'], // array point configs are mapped to this
             toYData: function(point) { // return a plain array for speedy calculation
                 return [point.open, point.high, point.low, point.close];
@@ -1740,18 +1741,18 @@
                 var series = this,
                     yAxis = series.yAxis,
                     hasModifyValue = !!series.modifyValue,
-                    translatedOLC = ['plotOpen', 'yBottom', 'plotClose'];
+                    translated = ['plotOpen', 'plotHigh', 'plotLow', 'plotClose', 'yBottom']; // translate OHLC for
 
                 seriesTypes.column.prototype.translate.apply(series);
 
                 // Do the translation
                 each(series.points, function(point) {
-                    each([point.open, point.low, point.close], function(value, i) {
+                    each([point.open, point.high, point.low, point.close, point.low], function(value, i) {
                         if (value !== null) {
                             if (hasModifyValue) {
                                 value = series.modifyValue(value);
                             }
-                            point[translatedOLC[i]] = yAxis.toPixels(value, true);
+                            point[translated[i]] = yAxis.toPixels(value, true);
                         }
                     });
                 });
@@ -1859,7 +1860,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -1978,7 +1979,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -1993,7 +1994,8 @@
             SVGRenderer = H.SVGRenderer,
             TrackerMixin = H.TrackerMixin,
             VMLRenderer = H.VMLRenderer,
-            symbols = SVGRenderer.prototype.symbols;
+            symbols = SVGRenderer.prototype.symbols,
+            stableSort = H.stableSort;
 
         /**
          * The flags series type.
@@ -2049,6 +2051,7 @@
                     onData = onSeries && onSeries.points,
                     i = onData && onData.length,
                     xAxis = series.xAxis,
+                    yAxis = series.yAxis,
                     xAxisExt = xAxis.getExtremes(),
                     xOffset = 0,
                     leftPoint,
@@ -2063,7 +2066,7 @@
                     lastX = onData[i - 1].x + (currentDataGrouping ? currentDataGrouping.totalRange : 0); // #2374
 
                     // sort the data points
-                    points.sort(function(a, b) {
+                    stableSort(points, function(a, b) {
                         return (a.x - b.x);
                     });
 
@@ -2100,12 +2103,16 @@
 
                     var stackIndex;
 
-                    // Undefined plotY means the point is either on axis, outside series range or hidden series.
-                    // If the series is outside the range of the x axis it should fall through with
-                    // an undefined plotY, but then we must remove the shapeArgs (#847).
+                    // Undefined plotY means the point is either on axis, outside series
+                    // range or hidden series. If the series is outside the range of the
+                    // x axis it should fall through with an undefined plotY, but then
+                    // we must remove the shapeArgs (#847).
                     if (point.plotY === undefined) {
-                        if (point.x >= xAxisExt.min && point.x <= xAxisExt.max) { // we're inside xAxis range
-                            point.plotY = chart.chartHeight - xAxis.bottom - (xAxis.opposite ? xAxis.height : 0) + xAxis.offset - chart.plotTop;
+                        if (point.x >= xAxisExt.min && point.x <= xAxisExt.max) {
+                            // we're inside xAxis range
+                            point.plotY = chart.chartHeight - xAxis.bottom -
+                                (xAxis.opposite ? xAxis.height : 0) +
+                                xAxis.offset - yAxis.top; // #3517
                         } else {
                             point.shapeArgs = {}; // 847
                         }
@@ -2188,6 +2195,11 @@
                                 .addClass('highcharts-point')
                                 .add(series.markerGroup);
 
+                            // Add reference to the point for tracker (#6303)
+                            if (point.graphic.div) {
+                                point.graphic.div.point = point;
+                            }
+
 
                         }
 
@@ -2211,6 +2223,15 @@
                         point.graphic = graphic.destroy();
                     }
 
+                }
+
+                // Might be a mix of SVG and HTML and we need events for both (#6303)
+                if (options.useHTML) {
+                    H.wrap(series.markerGroup, 'on', function(proceed) {
+                        return H.SVGElement.prototype.on.apply(
+                            proceed.apply(this, [].slice.call(arguments, 1)), // for HTML
+                            [].slice.call(arguments, 1)); // and for SVG
+                    });
                 }
 
             },
@@ -2312,7 +2333,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -2606,8 +2627,7 @@
                 }
 
                 from = Math.max(from, 0);
-
-                fromPX = fullWidth * from;
+                fromPX = Math.ceil(fullWidth * from);
                 toPX = fullWidth * Math.min(to, 1);
                 scroller.calculatedWidth = newSize = correctFloat(toPX - fromPX);
 
@@ -2900,7 +2920,7 @@
          */
         wrap(Axis.prototype, 'init', function(proceed) {
             var axis = this;
-            proceed.apply(axis, [].slice.call(arguments, 1));
+            proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
 
             if (axis.options.scrollbar && axis.options.scrollbar.enabled) {
                 // Predefined options:
@@ -2938,26 +2958,37 @@
                 scrollMin = Math.min(pick(axis.options.min, axis.min), axis.min, axis.dataMin),
                 scrollMax = Math.max(pick(axis.options.max, axis.max), axis.max, axis.dataMax),
                 scrollbar = axis.scrollbar,
+                offsetsIndex,
                 from,
                 to;
 
-            proceed.apply(axis, [].slice.call(arguments, 1));
+            proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
 
             if (scrollbar) {
+
                 if (axis.horiz) {
                     scrollbar.position(
                         axis.left,
-                        axis.top + axis.height + axis.offset + 2 + (axis.opposite ? 0 : axis.axisTitleMargin),
+                        axis.top + axis.height + 2 + axis.chart.scrollbarsOffsets[1] +
+                        (axis.opposite ? 0 : axis.axisTitleMargin + axis.offset),
                         axis.width,
                         axis.height
                     );
+                    offsetsIndex = 1;
                 } else {
                     scrollbar.position(
-                        axis.left + axis.width + 2 + axis.offset + (axis.opposite ? axis.axisTitleMargin : 0),
+                        axis.left + axis.width + 2 + axis.chart.scrollbarsOffsets[0] +
+                        (axis.opposite ? axis.axisTitleMargin + axis.offset : 0),
                         axis.top,
                         axis.width,
                         axis.height
                     );
+                    offsetsIndex = 0;
+                }
+
+                if ((!axis.opposite && !axis.horiz) || (axis.opposite && axis.horiz)) {
+                    axis.chart.scrollbarsOffsets[offsetsIndex] +=
+                        axis.scrollbar.size + axis.scrollbar.options.margin;
                 }
 
                 if (isNaN(scrollMin) || isNaN(scrollMax) || !defined(axis.min) || !defined(axis.max)) {
@@ -2983,9 +3014,10 @@
                 index = axis.horiz ? 2 : 1,
                 scrollbar = axis.scrollbar;
 
-            proceed.apply(axis, [].slice.call(arguments, 1));
+            proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
 
             if (scrollbar) {
+                axis.chart.scrollbarsOffsets = [0, 0]; // reset scrollbars offsets
                 axis.chart.axisOffset[index] += scrollbar.size + scrollbar.options.margin;
             }
         });
@@ -2998,7 +3030,7 @@
                 this.scrollbar = this.scrollbar.destroy();
             }
 
-            proceed.apply(this, [].slice.call(arguments, 1));
+            proceed.apply(this, Array.prototype.slice.call(arguments, 1));
         });
 
         H.Scrollbar = Scrollbar;
@@ -3006,7 +3038,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -3518,8 +3550,9 @@
                     );
                     // Keep scale 0-1
                     navigator.scrollbar.setRange(
-                        zoomedMin / navigatorSize,
-                        zoomedMax / navigatorSize
+                        // Use real value, not rounded because range can be very small (#1716)
+                        navigator.zoomedMin / navigatorSize,
+                        navigator.zoomedMax / navigatorSize
                     );
                 }
                 navigator.rendered = true;
@@ -3534,10 +3567,7 @@
                     container = chart.container,
                     eventsToUnbind = [],
                     mouseMoveHandler,
-                    mouseUpHandler,
-                    // iOS calls both events: mousedown+touchstart and mouseup+touchend
-                    // So we add them just once, #6187
-                    eventNames = hasTouch ? ['touchstart', 'touchmove', 'touchend'] : ['mousedown', 'mousemove', 'mouseup'];
+                    mouseUpHandler;
 
                 /**
                  * Create mouse events' handlers.
@@ -3551,13 +3581,22 @@
                 };
 
                 // Add shades and handles mousedown events
-                eventsToUnbind = navigator.getPartsEvents(eventNames[0]);
+                eventsToUnbind = navigator.getPartsEvents('mousedown');
                 // Add mouse move and mouseup events. These are bind to doc/container,
                 // because Navigator.grabbedSomething flags are stored in mousedown events:
                 eventsToUnbind.push(
-                    addEvent(container, eventNames[1], mouseMoveHandler),
-                    addEvent(doc, eventNames[2], mouseUpHandler)
+                    addEvent(container, 'mousemove', mouseMoveHandler),
+                    addEvent(doc, 'mouseup', mouseUpHandler)
                 );
+
+                // Touch events
+                if (hasTouch) {
+                    eventsToUnbind.push(
+                        addEvent(container, 'touchmove', mouseMoveHandler),
+                        addEvent(doc, 'touchend', mouseUpHandler)
+                    );
+                    eventsToUnbind.concat(navigator.getPartsEvents('touchstart'));
+                }
 
                 navigator.eventsToUnbind = eventsToUnbind;
 
@@ -4495,7 +4534,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -5429,7 +5468,7 @@
     }(Highcharts));
     (function(H) {
         /**
-         * (c) 2010-2016 Torstein Honsi
+         * (c) 2010-2017 Torstein Honsi
          *
          * License: www.highcharts.com/license
          */
@@ -5935,7 +5974,7 @@
         });
 
         /* ****************************************************************************
-         * Start value compare logic                                                  *
+         * Start value compare logic												  *
          *****************************************************************************/
 
         /**
@@ -6084,7 +6123,7 @@
         };
 
         /* ****************************************************************************
-         * End value compare logic                                                    *
+         * End value compare logic													*
          *****************************************************************************/
 
 
