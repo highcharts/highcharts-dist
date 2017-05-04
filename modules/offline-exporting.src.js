@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.10 (2017-03-31)
+ * @license Highcharts JS v5.0.11 (2017-05-04)
  * Client side exporting module
  *
  * (c) 2015 Torstein Honsi / Oystein Moseng
@@ -109,7 +109,6 @@
             if (a.download !== undefined) {
                 a.href = dataURL;
                 a.download = filename; // HTML5 download attribute
-                a.target = '_blank';
                 doc.body.appendChild(a);
                 a.click();
                 doc.body.removeChild(a);
@@ -443,7 +442,16 @@
         };
 
         /**
-         * Add a new method to the Chart object to perform a local download
+         * Exporting and offline-exporting modules required. Export a chart to an image
+         * locally in the user's browser.
+         *
+         * @param  {Object} exportingOptions
+         *         Exporting options, the same as in {@link
+         *         Highcharts.Chart#exportChart}.
+         * @param  {Options} chartOptions
+         *         Additional chart options for the exported chart. For example a
+         *         different background color can be added here, or `dataLabels`
+         *         for export only.
          */
         Highcharts.Chart.prototype.exportChartLocal = function(exportingOptions, chartOptions) {
             var chart = this,
@@ -500,7 +508,7 @@
 
         // Extend the default options to use the local exporter logic
         merge(true, Highcharts.getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/5.0.10/lib/',
+            libURL: 'https://code.highcharts.com/5.0.11/lib/',
             buttons: {
                 contextButton: {
                     menuItems: [{

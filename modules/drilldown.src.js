@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.10 (2017-03-31)
+ * @license Highcharts JS v5.0.11 (2017-05-04)
  * Highcharts Drilldown module
  * 
  * Author: Torstein Honsi
@@ -30,6 +30,7 @@
             each = H.each,
             extend = H.extend,
             format = H.format,
+            objectEach = H.objectEach,
             pick = H.pick,
             wrap = H.wrap,
             Chart = H.Chart,
@@ -133,8 +134,26 @@
                 });
         };
 
-        Chart.prototype.addSeriesAsDrilldown = function(point, ddOptions) {
-            this.addSingleSeriesAsDrilldown(point, ddOptions);
+        /**
+         * Add a series to the chart as drilldown from a specific point in the parent
+         * series. This method is used for async drilldown, when clicking a point in a
+         * series should result in loading and displaying a more high-resolution series.
+         * When not async, the setup is simpler using the {@link 
+         * https://api.highcharts.com/highcharts/drilldown.series|drilldown.series}
+         * options structure.
+         *
+         * @memberOf Highcharts.Chart
+         * @function #addSeriesAsDrilldown
+         * 
+         * @param  {Highcharts.Point} point
+         *         The point from which the drilldown will start.
+         * @param  {SeriesOptions} options
+         *         The series options for the new, detailed series.
+         *
+         * @sample highcharts/drilldown/async/ Async drilldown
+         */
+        Chart.prototype.addSeriesAsDrilldown = function(point, options) {
+            this.addSingleSeriesAsDrilldown(point, options);
             this.applyDrilldown();
         };
         Chart.prototype.addSingleSeriesAsDrilldown = function(point, ddOptions) {
@@ -299,6 +318,13 @@
             }
         };
 
+        /**
+         * When the chart is drilled down to a child series, calling `chart.drillUp()`
+         * will drill up to the parent series.
+         *
+         * @memberOf Highcharts.Chart
+         * @name #drillUp
+         */
         Chart.prototype.drillUp = function() {
             var chart = this,
                 drilldownLevels = chart.drilldownLevels,
@@ -511,6 +537,9 @@
         ColumnSeries.prototype.animateDrillupFrom = function(level) {
             var animationOptions = this.chart.options.drilldown.animation,
                 group = this.group,
+                // For 3d column series all columns are added to one group 
+                // so we should not delete the whole group. #5297
+                removeGroup = group !== this.chart.seriesGroup,
                 series = this;
 
             // Cancel mouse events on the series group (#2787)
@@ -520,14 +549,16 @@
                 }
             });
 
+            if (removeGroup) {
+                delete this.group;
+            }
 
-            delete this.group;
             each(this.points, function(point) {
                 var graphic = point.graphic,
                     animateTo = level.shapeArgs,
                     complete = function() {
                         graphic.destroy();
-                        if (group) {
+                        if (group && removeGroup) {
                             group = group.destroy();
                         }
                     };
@@ -640,15 +671,11 @@
          * Drill down to a given category. This is the same as clicking on an axis label.
          */
         H.Axis.prototype.drilldownCategory = function(x, e) {
-            var key,
-                point,
-                ddPointsX = this.getDDPoints(x);
-            for (key in ddPointsX) {
-                point = ddPointsX[key];
+            objectEach(this.getDDPoints(x), function(point) {
                 if (point && point.series && point.series.visible && point.doDrilldown) { // #3197
                     point.doDrilldown(true, x, e);
                 }
-            }
+            });
             this.chart.applyDrilldown();
         };
 
@@ -787,26 +814,26 @@
         });
 
         // Mark the trackers with a pointer 
-        var type,
-            drawTrackerWrapper = function(proceed) {
-                proceed.call(this);
-                each(this.points, function(point) {
-                    if (point.drilldown && point.graphic) {
-                        point.graphic.addClass('highcharts-drilldown-point');
+        var drawTrackerWrapper = function(proceed) {
+            proceed.call(this);
+            each(this.points, function(point) {
+                if (point.drilldown && point.graphic) {
+                    point.graphic.addClass('highcharts-drilldown-point');
 
 
-                        point.graphic.css({
-                            cursor: 'pointer'
-                        });
+                    point.graphic.css({
+                        cursor: 'pointer'
+                    });
 
-                    }
-                });
-            };
-        for (type in seriesTypes) {
-            if (seriesTypes[type].prototype.supportsDrilldown) {
-                wrap(seriesTypes[type].prototype, 'drawTracker', drawTrackerWrapper);
+                }
+            });
+        };
+
+        objectEach(seriesTypes, function(seriesType) {
+            if (seriesType.prototype.supportsDrilldown) {
+                wrap(seriesType.prototype, 'drawTracker', drawTrackerWrapper);
             }
-        }
+        });
 
     }(Highcharts));
 }));

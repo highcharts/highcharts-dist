@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.10 (2017-03-31)
+ * @license Highcharts JS v5.0.11 (2017-05-04)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -169,17 +169,14 @@
                         length = 0,
                         inBrk,
                         repeat,
-                        brk,
                         min = axis.userMin || axis.min,
                         max = axis.userMax || axis.max,
                         pointRangePadding = pick(axis.pointRangePadding, 0),
                         start,
-                        i,
-                        j;
+                        i;
 
                     // Min & max check (#4247)
-                    for (i in breaks) {
-                        brk = breaks[i];
+                    each(breaks, function(brk) {
                         repeat = brk.repeat || Infinity;
                         if (axis.isInBreak(brk, min)) {
                             min += (brk.to % repeat) - (min % repeat);
@@ -187,11 +184,10 @@
                         if (axis.isInBreak(brk, max)) {
                             max -= (max % repeat) - (brk.from % repeat);
                         }
-                    }
+                    });
 
                     // Construct an array holding all breaks in the axis
-                    for (i in breaks) {
-                        brk = breaks[i];
+                    each(breaks, function(brk) {
                         start = brk.from;
                         repeat = brk.repeat || Infinity;
 
@@ -202,18 +198,18 @@
                             start += repeat;
                         }
 
-                        for (j = start; j < max; j += repeat) {
+                        for (i = start; i < max; i += repeat) {
                             breakArrayT.push({
-                                value: j,
+                                value: i,
                                 move: 'in'
                             });
                             breakArrayT.push({
-                                value: j + (brk.to - brk.from),
+                                value: i + (brk.to - brk.from),
                                 move: 'out',
                                 size: brk.breakSize
                             });
                         }
-                    }
+                    });
 
                     breakArrayT.sort(function(a, b) {
                         var ret;
@@ -229,8 +225,7 @@
                     inBrk = 0;
                     start = min;
 
-                    for (i in breakArrayT) {
-                        brk = breakArrayT[i];
+                    each(breakArrayT, function(brk) {
                         inBrk += (brk.move === 'in' ? 1 : -1);
 
                         if (inBrk === 1 && brk.move === 'in') {
@@ -244,7 +239,7 @@
                             });
                             length += brk.value - start - (brk.size || 0);
                         }
-                    }
+                    });
 
                     axis.breakArray = breakArray;
 
@@ -256,7 +251,7 @@
 
                     if (axis.options.staticScale) {
                         axis.transA = axis.options.staticScale;
-                    } else {
+                    } else if (axis.unitLength) {
                         axis.transA *= (max - axis.min + pointRangePadding) /
                             axis.unitLength;
                     }
@@ -341,6 +336,36 @@
                     });
                 });
             });
+        };
+
+
+        /**
+         * Extend getGraphPath by identifying gaps in the data so that we can draw a gap
+         * in the line or area. This was moved from ordinal axis module to broken axis
+         * module as of #5045.
+         */
+        H.Series.prototype.gappedPath = function() {
+            var gapSize = this.options.gapSize,
+                points = this.points.slice(),
+                i = points.length - 1;
+
+            if (gapSize && i > 0) { // #5008
+
+                // extension for ordinal breaks
+                while (i--) {
+                    if (points[i + 1].x - points[i].x > this.closestPointRange * gapSize) {
+                        points.splice( // insert after this one
+                            i + 1,
+                            0, {
+                                isNull: true
+                            }
+                        );
+                    }
+                }
+            }
+
+            // Call base method
+            return this.getGraphPath(points);
         };
 
         wrap(H.seriesTypes.column.prototype, 'drawPoints', drawPointsWrapped);

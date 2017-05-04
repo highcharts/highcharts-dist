@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.10 (2017-03-31)
+ * @license Highcharts JS v5.0.11 (2017-05-04)
  *
  * 3D features for Highcharts JS
  *
@@ -181,15 +181,6 @@
             return area / 2;
         }
 
-        function averageZ(vertexes) {
-            var z = 0,
-                i;
-            for (i = 0; i < vertexes.length; i++) {
-                z += vertexes[i].z;
-            }
-            return vertexes.length ? z / vertexes.length : 0;
-        }
-
         /** Method to construct a curved path
          * Can 'wrap' around more then 180 degrees
          */
@@ -289,16 +280,13 @@
 
             // create the 3 sides
             result.front = this.path(paths[0]).attr({
-                'class': 'highcharts-3d-front',
-                zIndex: paths[3]
-            }).add(result);
+                'class': 'highcharts-3d-front'
+            }).add(result); // Front, top and side are never overlapping in our case so it is redundant to set zIndex of every element.
             result.top = this.path(paths[1]).attr({
-                'class': 'highcharts-3d-top',
-                zIndex: paths[4]
+                'class': 'highcharts-3d-top'
             }).add(result);
             result.side = this.path(paths[2]).attr({
-                'class': 'highcharts-3d-side',
-                zIndex: paths[5]
+                'class': 'highcharts-3d-side'
             }).add(result);
 
             // apply the fill everywhere, the top a bit brighter, the side a bit darker
@@ -344,16 +332,13 @@
                     var shapeArgs = args.shapeArgs || args;
                     var paths = this.renderer.cuboidPath(shapeArgs);
                     this.front.attr({
-                        d: paths[0],
-                        zIndex: paths[3]
+                        d: paths[0]
                     });
                     this.top.attr({
-                        d: paths[1],
-                        zIndex: paths[4]
+                        d: paths[1]
                     });
                     this.side.attr({
-                        d: paths[2],
-                        zIndex: paths[5]
+                        d: paths[2]
                     });
                 } else {
                     return H.SVGElement.prototype.attr.call(this, args); // getter returns value
@@ -365,23 +350,17 @@
             result.animate = function(args, duration, complete) {
                 if (defined(args.x) && defined(args.y)) {
                     var paths = this.renderer.cuboidPath(args);
-                    this.front.attr({
-                        zIndex: paths[3]
-                    }).animate({
+                    this.front.animate({
                         d: paths[0]
                     }, duration, complete);
-                    this.top.attr({
-                        zIndex: paths[4]
-                    }).animate({
+                    this.top.animate({
                         d: paths[1]
                     }, duration, complete);
-                    this.side.attr({
-                        zIndex: paths[5]
-                    }).animate({
+                    this.side.animate({
                         d: paths[2]
                     }, duration, complete);
                     this.attr({
-                        zIndex: -paths[6] // #4774
+                        zIndex: -paths[3] // #4774
                     });
                 } else if (args.opacity) {
                     this.front.animate(args, duration, complete);
@@ -404,7 +383,7 @@
 
             // Apply the Z index to the cuboid group
             result.attr({
-                zIndex: -paths[6]
+                zIndex: -paths[3]
             });
 
             return result;
@@ -413,57 +392,72 @@
         /**
          *	Generates a cuboid
          */
-        SVGRenderer.prototype.cuboidPath = function(shapeArgs) {
+        H.SVGRenderer.prototype.cuboidPath = function(shapeArgs) {
             var x = shapeArgs.x,
                 y = shapeArgs.y,
                 z = shapeArgs.z,
                 h = shapeArgs.height,
                 w = shapeArgs.width,
                 d = shapeArgs.depth,
-                chart = charts[this.chartIndex];
+                chart = charts[this.chartIndex],
+                front,
+                back,
+                top,
+                bottom,
+                left,
+                right,
+                shape,
+                path1,
+                path2,
+                path3,
+                isFront,
+                isTop,
+                isRight,
+                options3d = chart.options.chart.options3d,
+                alpha = options3d.alpha,
+                // Priority for x axis is the biggest, 
+                // because of x direction has biggest influence on zIndex
+                incrementX = 10000,
+                // y axis has the smallest priority in case of our charts 
+                // (needs to be set because of stacking)
+                incrementY = 10,
+                incrementZ = 100,
+                zIndex = 0;
 
             // The 8 corners of the cube
             var pArr = [{
-                    x: x,
-                    y: y,
-                    z: z
-                },
-                {
-                    x: x + w,
-                    y: y,
-                    z: z
-                },
-                {
-                    x: x + w,
-                    y: y + h,
-                    z: z
-                },
-                {
-                    x: x,
-                    y: y + h,
-                    z: z
-                },
-                {
-                    x: x,
-                    y: y + h,
-                    z: z + d
-                },
-                {
-                    x: x + w,
-                    y: y + h,
-                    z: z + d
-                },
-                {
-                    x: x + w,
-                    y: y,
-                    z: z + d
-                },
-                {
-                    x: x,
-                    y: y,
-                    z: z + d
-                }
-            ];
+                x: x,
+                y: y,
+                z: z
+            }, {
+                x: x + w,
+                y: y,
+                z: z
+            }, {
+                x: x + w,
+                y: y + h,
+                z: z
+            }, {
+                x: x,
+                y: y + h,
+                z: z
+            }, {
+                x: x,
+                y: y + h,
+                z: z + d
+            }, {
+                x: x + w,
+                y: y + h,
+                z: z + d
+            }, {
+                x: x + w,
+                y: y,
+                z: z + d
+            }, {
+                x: x,
+                y: y,
+                z: z + d
+            }];
 
             // apply perspective
             pArr = perspective(pArr, chart, shapeArgs.insidePlotArea);
@@ -472,34 +466,81 @@
             function mapPath(i) {
                 return pArr[i];
             }
+
+            /*
+             * First value - path with specific side
+             * Second  value - added information about side for later calculations. 
+             * Possible second values are 0 for path1, 1 for path2 and -1 for no path choosed.
+             */
             var pickShape = function(path1, path2) {
-                var ret = [];
+                var ret = [
+                    [], -1
+                ];
                 path1 = map(path1, mapPath);
                 path2 = map(path2, mapPath);
                 if (shapeArea(path1) < 0) {
-                    ret = path1;
+                    ret = [path1, 0];
                 } else if (shapeArea(path2) < 0) {
-                    ret = path2;
+                    ret = [path2, 1];
                 }
                 return ret;
             };
 
             // front or back
-            var front = [3, 2, 1, 0];
-            var back = [7, 6, 5, 4];
-            var path1 = pickShape(front, back);
+            front = [3, 2, 1, 0];
+            back = [7, 6, 5, 4];
+            shape = pickShape(front, back);
+            path1 = shape[0];
+            isFront = shape[1];
+
 
             // top or bottom
-            var top = [1, 6, 7, 0];
-            var bottom = [4, 5, 2, 3];
-            var path2 = pickShape(top, bottom);
+            top = [1, 6, 7, 0];
+            bottom = [4, 5, 2, 3];
+            shape = pickShape(top, bottom);
+            path2 = shape[0];
+            isTop = shape[1];
 
             // side
-            var right = [1, 2, 5, 6];
-            var left = [0, 7, 4, 3];
-            var path3 = pickShape(right, left);
+            right = [1, 2, 5, 6];
+            left = [0, 7, 4, 3];
+            shape = pickShape(right, left);
+            path3 = shape[0];
+            isRight = shape[1];
 
-            return [this.toLinePath(path1, true), this.toLinePath(path2, true), this.toLinePath(path3, true), averageZ(path1), averageZ(path2), averageZ(path3), averageZ(map(bottom, mapPath)) * 9e9]; // #4774
+            /*
+             * New block used for calculating zIndex. It is basing on X, Y and Z position of specific columns.
+             * All zIndexes (for X, Y and Z values) are added to the final zIndex, where every value has different priority.
+             * The biggest priority is in X and Z directions, the lowest index is for stacked columns (Y direction and the same X and Z positions).
+             * Big differents between priorities is made because we need to ensure that even for big changes in Y and Z parameters
+             * all columns will be drawn correctly.
+             */
+
+            if (isRight === 1) {
+                zIndex += incrementX * (1000 - x);
+            } else if (!isRight) {
+                zIndex += incrementX * x;
+            }
+
+            zIndex += incrementY * (!isTop ||
+                (alpha >= 0 && alpha <= 180 || alpha < 360 && alpha > 357.5) ? // Numbers checked empirically
+                chart.plotHeight - y : 10 + y
+            );
+
+            if (isFront === 1) {
+                zIndex += incrementZ * (z);
+            } else if (!isFront) {
+                zIndex += incrementZ * (1000 - z);
+            }
+
+            zIndex = -Math.round(zIndex);
+
+            return [
+                this.toLinePath(path1, true),
+                this.toLinePath(path2, true),
+                this.toLinePath(path3, true),
+                zIndex
+            ]; // #4774
         };
 
         ////// SECTORS //////
@@ -1374,7 +1415,7 @@
             var path = proceed.apply(this, [].slice.call(arguments, 1));
 
             // Do not do this if the chart is not 3D
-            if (!this.axis.chart.is3d() || this.coll === 'colorAxis') {
+            if (!this.axis.chart.is3d() || this.axis.coll === 'colorAxis') {
                 return path;
             }
 
@@ -1403,7 +1444,7 @@
             var pos = proceed.apply(this, [].slice.call(arguments, 1));
 
             // Do not do this if the chart is not 3D
-            if (this.axis.chart.is3d() && this.coll !== 'colorAxis') {
+            if (this.axis.chart.is3d() && this.axis.coll !== 'colorAxis') {
                 pos = perspective([this.axis.swapZ({
                     x: pos.x,
                     y: pos.y,
@@ -1574,8 +1615,10 @@
             pick = H.pick,
             Series = H.Series,
             seriesTypes = H.seriesTypes,
+            inArray = H.inArray,
             svg = H.svg,
             wrap = H.wrap;
+
         /***
         	EXTENSION FOR 3D COLUMNS
         ***/
@@ -1590,9 +1633,17 @@
             var series = this,
                 chart = series.chart,
                 seriesOptions = series.options,
-                depth = seriesOptions.depth || 25;
+                depth = seriesOptions.depth || 25,
+                borderCrisp = series.borderWidth % 2 ? 0.5 : 0;
 
-            var stack = seriesOptions.stacking ? (seriesOptions.stack || 0) : series._i;
+            if (
+                (chart.inverted && !series.yAxis.reversed) ||
+                (!chart.inverted && series.yAxis.reversed)
+            ) {
+                borderCrisp *= -1;
+            }
+
+            var stack = seriesOptions.stacking ? (seriesOptions.stack || 0) : series.index; // #4743
             var z = stack * (depth + (seriesOptions.groupZPadding || 1));
 
             if (seriesOptions.grouping !== false) {
@@ -1600,11 +1651,37 @@
             }
 
             z += (seriesOptions.groupZPadding || 1);
-
             each(series.data, function(point) {
                 if (point.y !== null) {
                     var shapeArgs = point.shapeArgs,
-                        tooltipPos = point.tooltipPos;
+                        tooltipPos = point.tooltipPos,
+                        // Array for final shapeArgs calculation.
+                        // We are checking two dimensions (x and y).
+                        dimensions = [
+                            ['x', 'width'],
+                            ['y', 'height']
+                        ],
+                        borderlessBase; // crisped rects can have +/- 0.5 pixels offset
+
+                    // #3131 We need to check if column shape arguments are inside plotArea.
+                    each(dimensions, function(d) {
+                        borderlessBase = shapeArgs[d[0]] - borderCrisp;
+                        if (
+                            borderlessBase + shapeArgs[d[1]] < 0 || // End column position is smaller than axis start.
+                            borderlessBase > series[d[0] + 'Axis'].len // Start column position is bigger than axis end.
+                        ) {
+                            for (var key in shapeArgs) { // Set args to 0 if column is outside the chart.
+                                shapeArgs[key] = 0;
+                            }
+                        }
+                        if (borderlessBase < 0) {
+                            shapeArgs[d[1]] += shapeArgs[d[0]];
+                            shapeArgs[d[0]] = 0;
+                        }
+                        if (borderlessBase + shapeArgs[d[1]] > series[d[0] + 'Axis'].len) {
+                            shapeArgs[d[1]] = series[d[0] + 'Axis'].len - shapeArgs[d[0]];
+                        }
+                    });
 
                     point.shapeType = 'cuboid';
                     shapeArgs.z = z;
@@ -1673,6 +1750,44 @@
             }
         });
 
+        /*
+         * In case of 3d columns there is no sense to add this columns
+         * to a specific series group - if series is added to a group
+         * all columns will have the same zIndex in comparison with different series
+         */
+
+        wrap(seriesTypes.column.prototype, 'plotGroup', function(proceed, prop, name, visibility, zIndex, parent) {
+            if (this.chart.is3d() && parent && !this[prop]) {
+                this[prop] = parent;
+                parent.attr(this.getPlotBox());
+                this[prop].survive = true;
+            }
+            return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+        });
+
+        /*
+         * When series is not added to group it is needed to change 
+         * setVisible method to allow correct Legend funcionality
+         * This wrap is basing on pie chart series
+         */
+        wrap(seriesTypes.column.prototype, 'setVisible', function(proceed, vis) {
+            var series = this,
+                pointVis;
+            if (series.chart.is3d()) {
+                each(series.data, function(point) {
+                    point.visible = point.options.visible = vis = vis === undefined ? !point.visible : vis;
+                    pointVis = vis ? 'visible' : 'hidden';
+                    series.options.data[inArray(point, series.data)] = point.options;
+                    if (point.graphic) {
+                        point.graphic.attr({
+                            visibility: pointVis
+                        });
+                    }
+                });
+            }
+            proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+        });
+
         wrap(seriesTypes.column.prototype, 'init', function(proceed) {
             proceed.apply(this, [].slice.call(arguments, 1));
 
@@ -1706,21 +1821,6 @@
 
 
 
-        function draw3DPoints(proceed) {
-            // Do not do this if the chart is not 3D
-            if (this.chart.is3d()) {
-                var grouping = this.chart.options.plotOptions.column.grouping;
-                if (grouping !== undefined && !grouping && this.group.zIndex !== undefined && !this.zIndexSet) {
-                    this.group.attr({
-                        zIndex: this.group.zIndex * 10
-                    });
-                    this.zIndexSet = true; // #4062 set zindex only once
-                }
-            }
-
-            proceed.apply(this, [].slice.call(arguments, 1));
-        }
-
         wrap(Series.prototype, 'alignDataLabel', function(proceed) {
 
             // Only do this for 3D columns and columnranges
@@ -1743,12 +1843,6 @@
 
             proceed.apply(this, [].slice.call(arguments, 1));
         });
-
-        if (seriesTypes.columnrange) {
-            wrap(seriesTypes.columnrange.prototype, 'drawPoints', draw3DPoints);
-        }
-
-        wrap(seriesTypes.column.prototype, 'drawPoints', draw3DPoints);
 
         /***
         	EXTENSION FOR 3D CYLINDRICAL COLUMNS

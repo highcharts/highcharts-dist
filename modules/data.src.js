@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.10 (2017-03-31)
+ * @license Highcharts JS v5.0.11 (2017-05-04)
  * Data module
  *
  * (c) 2012-2017 Torstein Honsi
@@ -29,6 +29,7 @@
         var win = Highcharts.win,
             doc = win.document,
             each = Highcharts.each,
+            objectEach = Highcharts.objectEach,
             pick = Highcharts.pick,
             inArray = Highcharts.inArray,
             isNumber = Highcharts.isNumber,
@@ -118,7 +119,6 @@
                 // the mapping options.
                 each((options && options.seriesMapping) || [], function(mapping) {
                     var builder = new SeriesBuilder(),
-                        name,
                         numberOfValueColumnsNeeded = individualCounts[seriesIndex] || getValueCount(globalType),
                         seriesArr = (chartOptions && chartOptions.series) || [],
                         series = seriesArr[seriesIndex] || {},
@@ -129,11 +129,11 @@
                     builder.addColumnReader(mapping.x, 'x');
 
                     // Add all column mappings
-                    for (name in mapping) {
-                        if (mapping.hasOwnProperty(name) && name !== 'x') {
-                            builder.addColumnReader(mapping[name], name);
+                    objectEach(mapping, function(val, name) {
+                        if (name !== 'x') {
+                            builder.addColumnReader(val, name);
                         }
-                    }
+                    });
 
                     // Add missing columns
                     for (i = 0; i < numberOfValueColumnsNeeded; i++) {

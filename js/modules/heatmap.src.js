@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.10 (2017-03-31)
+ * @license Highcharts JS v5.0.11 (2017-05-04)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -430,7 +430,7 @@
                 // When updating data classes, destroy old items and make sure new ones are created (#3207)
                 if (newOptions.dataClasses && legend.allItems) {
                     each(legend.allItems, function(item) {
-                        if (item.isDataClass) {
+                        if (item.isDataClass && item.legendGroup) {
                             item.legendGroup.destroy();
                         }
                     });
@@ -446,6 +446,16 @@
                     this.setLegendColor();
                     legend.colorizeItem(this, true);
                 }
+            },
+
+            /**
+             * Extend basic axis remove by also removing the legend item.
+             */
+            remove: function() {
+                if (this.legendItem) {
+                    this.chart.legend.destroyItem(this);
+                }
+                Axis.prototype.remove.call(this);
             },
 
             /**

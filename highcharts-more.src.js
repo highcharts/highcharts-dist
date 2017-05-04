@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.10 (2017-03-31)
+ * @license Highcharts JS v5.0.11 (2017-05-04)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -87,13 +87,14 @@
                 // Render the backgrounds
                 if (backgroundOption) {
                     backgroundOption = splat(backgroundOption);
+
                     len = Math.max(
                         backgroundOption.length,
                         this.background.length || 0
                     );
 
                     for (i = 0; i < len; i++) {
-                        if (backgroundOption[i]) {
+                        if (backgroundOption[i] && this.axis) { // #6641 - if axis exists, chart is circular and apply background
                             this.renderBackground(
                                 merge(
                                     this.defaultBackgroundOptions,
@@ -1959,17 +1960,17 @@
                     }
                     // up points
                     y = Math.max(previousY, previousY + point.y) + range[0];
-                    shapeArgs.y = yAxis.toPixels(y, true);
+                    shapeArgs.y = yAxis.translate(y, 0, 1, 0, 1);
 
                     // sum points
                     if (point.isSum) {
-                        shapeArgs.y = yAxis.toPixels(range[1], true);
-                        shapeArgs.height = Math.min(yAxis.toPixels(range[0], true), yAxis.len) -
+                        shapeArgs.y = yAxis.translate(range[1], 0, 1, 0, 1);
+                        shapeArgs.height = Math.min(yAxis.translate(range[0], 0, 1, 0, 1), yAxis.len) -
                             shapeArgs.y; // #4256
 
                     } else if (point.isIntermediateSum) {
-                        shapeArgs.y = yAxis.toPixels(range[1], true);
-                        shapeArgs.height = Math.min(yAxis.toPixels(previousIntermediate, true), yAxis.len) -
+                        shapeArgs.y = yAxis.translate(range[1], 0, 1, 0, 1);
+                        shapeArgs.height = Math.min(yAxis.translate(previousIntermediate, 0, 1, 0, 1), yAxis.len) -
                             shapeArgs.y;
                         previousIntermediate = range[1];
 
@@ -1977,8 +1978,8 @@
                         // shape height (#3886)
                     } else {
                         shapeArgs.height = yValue > 0 ?
-                            yAxis.toPixels(previousY, true) - shapeArgs.y :
-                            yAxis.toPixels(previousY, true) - yAxis.toPixels(previousY - yValue, true);
+                            yAxis.translate(previousY, 0, 1, 0, 1) - shapeArgs.y :
+                            yAxis.translate(previousY, 0, 1, 0, 1) - yAxis.translate(previousY - yValue, 0, 1, 0, 1);
 
                         previousY += stack && stack[point.x] ? stack[point.x].total : yValue;
                     }
@@ -2116,6 +2117,7 @@
                     length = data.length,
                     lineWidth = this.graph.strokeWidth() + this.borderWidth,
                     normalizer = Math.round(lineWidth) % 2 / 2,
+                    reversedYAxis = this.yAxis.reversed,
                     path = [],
                     prevArgs,
                     pointArgs,
@@ -2135,7 +2137,10 @@
                         prevArgs.y + data[i - 1].minPointLengthOffset + normalizer
                     ];
 
-                    if (data[i - 1].y < 0) {
+                    if (
+                        (data[i - 1].y < 0 && !reversedYAxis) ||
+                        (data[i - 1].y > 0 && reversedYAxis)
+                    ) {
                         d[2] += prevArgs.height;
                         d[5] += prevArgs.height;
                     }
@@ -2348,7 +2353,8 @@
         }, {
             pointArrayMap: ['y', 'z'],
             parallelArrays: ['x', 'y', 'z'],
-            trackerGroups: ['markerGroup', 'dataLabelsGroup'],
+            trackerGroups: ['group', 'dataLabelsGroup'],
+            specialGroup: 'group', // To allow clipping (#6296)
             bubblePadding: true,
             zoneAxis: 'z',
             directTouch: true,

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v5.0.10 (2017-03-31)
+ * @license Highmaps JS v5.0.11 (2017-05-04)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
  * (c) 2011-2017 Torstein Honsi
@@ -548,7 +548,7 @@
                 // When updating data classes, destroy old items and make sure new ones are created (#3207)
                 if (newOptions.dataClasses && legend.allItems) {
                     each(legend.allItems, function(item) {
-                        if (item.isDataClass) {
+                        if (item.isDataClass && item.legendGroup) {
                             item.legendGroup.destroy();
                         }
                     });
@@ -564,6 +564,16 @@
                     this.setLegendColor();
                     legend.colorizeItem(this, true);
                 }
+            },
+
+            /**
+             * Extend basic axis remove by also removing the legend item.
+             */
+            remove: function() {
+                if (this.legendItem) {
+                    this.chart.legend.destroyItem(this);
+                }
+                Axis.prototype.remove.call(this);
             },
 
             /**
@@ -849,9 +859,6 @@
         MapNavigation.prototype.update = function(options) {
             var chart = this.chart,
                 o = chart.options.mapNavigation,
-                buttons,
-                n,
-                button,
                 buttonOptions,
                 attr,
                 states,
@@ -877,49 +884,46 @@
 
             if (pick(o.enableButtons, o.enabled) && !chart.renderer.forExport) {
 
-                buttons = o.buttons;
-                for (n in buttons) {
-
-                    if (buttons.hasOwnProperty(n)) {
-                        buttonOptions = merge(o.buttonOptions, buttons[n]);
+                H.objectEach(o.buttons, function(button, n) {
+                    buttonOptions = merge(o.buttonOptions, button);
 
 
 
-                        button = chart.renderer.button(
-                                buttonOptions.text,
-                                0,
-                                0,
-                                outerHandler,
-                                attr,
-                                hoverStates,
-                                selectStates,
-                                0,
-                                n === 'zoomIn' ? 'topbutton' : 'bottombutton'
-                            )
-                            .addClass('highcharts-map-navigation')
-                            .attr({
-                                width: buttonOptions.width,
-                                height: buttonOptions.height,
-                                title: chart.options.lang[n],
-                                padding: buttonOptions.padding,
-                                zIndex: 5
-                            })
-                            .add();
-                        button.handler = buttonOptions.onclick;
-                        button.align(
-                            extend(buttonOptions, {
-                                width: button.width,
-                                height: 2 * button.height
-                            }),
-                            null,
-                            buttonOptions.alignTo
-                        );
-                        // Stop double click event (#4444)
-                        addEvent(button.element, 'dblclick', stopEvent);
+                    button = chart.renderer.button(
+                            buttonOptions.text,
+                            0,
+                            0,
+                            outerHandler,
+                            attr,
+                            hoverStates,
+                            selectStates,
+                            0,
+                            n === 'zoomIn' ? 'topbutton' : 'bottombutton'
+                        )
+                        .addClass('highcharts-map-navigation')
+                        .attr({
+                            width: buttonOptions.width,
+                            height: buttonOptions.height,
+                            title: chart.options.lang[n],
+                            padding: buttonOptions.padding,
+                            zIndex: 5
+                        })
+                        .add();
+                    button.handler = buttonOptions.onclick;
+                    button.align(
+                        extend(buttonOptions, {
+                            width: button.width,
+                            height: 2 * button.height
+                        }),
+                        null,
+                        buttonOptions.alignTo
+                    );
+                    // Stop double click event (#4444)
+                    addEvent(button.element, 'dblclick', stopEvent);
 
-                        mapNavButtons.push(button);
-                    }
-                }
+                    mapNavButtons.push(button);
+
+                });
             }
 
             this.updateEvents(o);
@@ -1433,7 +1437,6 @@
                     dataUsed = [],
                     mapMap = {},
                     mapPoint,
-                    transform,
                     mapTransforms = this.chart.mapTransforms,
                     props,
                     i;
@@ -1487,12 +1490,12 @@
 
                 // Cache cos/sin of transform rotation angle
                 if (mapTransforms) {
-                    for (transform in mapTransforms) {
-                        if (mapTransforms.hasOwnProperty(transform) && transform.rotation) {
+                    H.objectEach(mapTransforms, function(transform) {
+                        if (transform.rotation) {
                             transform.cosAngle = Math.cos(transform.rotation);
                             transform.sinAngle = Math.sin(transform.rotation);
                         }
-                    }
+                    });
                 }
 
                 if (mapData) {
@@ -1965,7 +1968,7 @@
              */
             onMouseOver: function(e) {
                 clearTimeout(this.colorInterval);
-                if (this.value !== null) {
+                if (this.value !== null || this.series.options.nullInteraction) {
                     Point.prototype.onMouseOver.call(this, e);
                 } else { //#3401 Tooltip doesn't hide when hovering over null points
                     this.series.onMouseOut(e);
@@ -2121,7 +2124,8 @@
         }, {
             pointArrayMap: ['y', 'z'],
             parallelArrays: ['x', 'y', 'z'],
-            trackerGroups: ['markerGroup', 'dataLabelsGroup'],
+            trackerGroups: ['group', 'dataLabelsGroup'],
+            specialGroup: 'group', // To allow clipping (#6296)
             bubblePadding: true,
             zoneAxis: 'z',
             directTouch: true,

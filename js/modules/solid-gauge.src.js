@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v5.0.10 (2017-03-31)
+ * @license  Highcharts JS v5.0.11 (2017-05-04)
  * Solid angular gauge module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -313,7 +313,7 @@
                         }
                     } else {
                         point.graphic = renderer.arc(shapeArgs)
-                            .addClass('highcharts-point')
+                            .addClass(point.getClassName(), true)
                             .attr({
                                 fill: toColor,
                                 'sweep-flag': 0
