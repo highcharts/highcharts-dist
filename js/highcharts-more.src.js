@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -896,6 +896,7 @@
                     lowerPath,
                     options = this.options,
                     connectEnds = this.chart.polar && options.connectEnds !== false,
+                    connectNulls = options.connectNulls,
                     step = options.step,
                     higherPath,
                     higherAreaPath;
@@ -912,6 +913,7 @@
 
                     if (!point.isNull &&
                         !connectEnds &&
+                        !connectNulls &&
                         (!points[i + 1] || points[i + 1].isNull)
                     ) {
                         highAreaPoints.push({
@@ -929,11 +931,14 @@
                         plotY: point.plotHigh,
                         isNull: point.isNull
                     };
+
                     highAreaPoints.push(pointShim);
+
                     highPoints.push(pointShim);
 
                     if (!point.isNull &&
                         !connectEnds &&
+                        !connectNulls &&
                         (!points[i - 1] || points[i - 1].isNull)
                     ) {
                         highAreaPoints.push({

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2017 Highsoft AS
@@ -56,19 +56,28 @@
         };
 
 
-        /**
-         * Define hasData functions for series. These return true if there are data points on this series within the plot area
-         */
-        function hasDataPie() {
-            return !!this.points.length; /* != 0 */
-        }
 
-        each(['pie', 'gauge', 'waterfall', 'bubble', 'treemap'], function(type) {
+        // Define hasData function for non-cartesian seris. Returns true if the series
+        // has points at all.
+        each([
+            'bubble',
+            'gauge',
+            'heatmap',
+            'pie',
+            'treemap',
+            'waterfall'
+        ], function(type) {
             if (seriesTypes[type]) {
-                seriesTypes[type].prototype.hasData = hasDataPie;
+                seriesTypes[type].prototype.hasData = function() {
+                    return !!this.points.length; /* != 0 */
+                };
             }
         });
 
+        /**
+         * Define hasData functions for series. These return true if there are data
+         * points on this series within the plot area.
+         */
         H.Series.prototype.hasData = function() {
             return this.visible && this.dataMax !== undefined && this.dataMin !== undefined; // #3703
         };
@@ -134,7 +143,7 @@
                 }
             }
 
-            return false;
+            return chart.loadingShown; // #4588
         };
 
         /**

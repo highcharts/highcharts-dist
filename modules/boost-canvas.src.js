@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -135,7 +135,9 @@
                             if (plotY !== undefined && !isNaN(plotY) && point.y !== null) {
                                 shapeArgs = point.shapeArgs;
 
-                                pointAttr = (point.pointAttr && point.pointAttr['']) || point.series.pointAttribs(point);
+
+                                pointAttr = point.series.pointAttribs(point);
+
 
                                 ctx.fillStyle = pointAttr.fill;
                                 ctx.fillRect(shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height);

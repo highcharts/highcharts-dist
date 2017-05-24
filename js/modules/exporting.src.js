@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -42,9 +42,11 @@
             extend = H.extend,
             isTouchDevice = H.isTouchDevice,
             win = H.win,
-            SVGRenderer = H.SVGRenderer;
-
-        var symbols = H.Renderer.prototype.symbols;
+            userAgent = win.navigator.userAgent,
+            SVGRenderer = H.SVGRenderer,
+            symbols = H.Renderer.prototype.symbols,
+            isMSBrowser = /Edge\/|Trident\/|MSIE /.test(userAgent),
+            isFirefoxBrowser = /firefox/i.test(userAgent);
 
         // Add language
         extend(defaultOptions.lang, {
@@ -393,6 +395,8 @@
              *         PDF type and custom filename
              * @sample highcharts/members/chart-exportchart-custom-background/
              *         Different chart background in export
+             * @sample stock/members/chart-exportchart/
+             *         Export with Highstock
              */
             exportChart: function(exportingOptions, chartOptions) {
 
@@ -817,6 +821,7 @@
             var renderer = this.renderer,
                 inlineToAttributes = renderer.inlineToAttributes,
                 blacklist = renderer.inlineBlacklist,
+                whitelist = renderer.inlineWhitelist, // For IE
                 unstyledElements = renderer.unstyledElements,
                 defaultStyles = {},
                 dummySVG;
@@ -843,8 +848,48 @@
                     dummy,
                     styleAttr,
                     blacklisted,
-                    i,
-                    prop;
+                    whitelisted,
+                    i;
+
+                // Check computed styles and whether they are in the white/blacklist for
+                // styles or atttributes
+                function filterStyles(val, prop) {
+
+                    // Check against whitelist & blacklist
+                    blacklisted = whitelisted = false;
+                    if (whitelist) {
+                        // Styled mode in IE has a whitelist instead.
+                        // Exclude all props not in this list.
+                        i = whitelist.length;
+                        while (i-- && !whitelisted) {
+                            whitelisted = whitelist[i].test(prop);
+                        }
+                        blacklisted = !whitelisted;
+                    }
+
+                    // Explicitly remove empty transforms
+                    if (prop === 'transform' && val === 'none') {
+                        blacklisted = true;
+                    }
+
+                    i = blacklist.length;
+                    while (i-- && !blacklisted) {
+                        blacklisted = blacklist[i].test(prop) || typeof val === 'function';
+                    }
+
+                    if (!blacklisted) {
+                        // If parent node has the same style, it gets inherited, no need to inline it
+                        if (parentStyles[prop] !== val && defaultStyles[node.nodeName][prop] !== val) {
+                            // Attributes
+                            if (inlineToAttributes.indexOf(prop) !== -1) {
+                                node.setAttribute(hyphenate(prop), val);
+                                // Styles
+                            } else {
+                                cssText += hyphenate(prop) + ':' + val + ';';
+                            }
+                        }
+                    }
+                }
 
                 if (node.nodeType === 1 && unstyledElements.indexOf(node.nodeName) === -1) {
                     styles = win.getComputedStyle(node, null);
@@ -863,45 +908,25 @@
                         dummySVG.removeChild(dummy);
                     }
 
-                    // Loop over all the computed styles and check whether they are in
-                    // the white list for styles or atttributes. Use a plain for-in loop
-                    // because the styles object also contains numerically indexed
-                    // pointers to its keys, and objectEach will fail in Firefox.
-                    for (prop in styles) {
-                        // Check against blacklist
-                        blacklisted = false;
-                        i = blacklist.length;
-                        while (i-- && !blacklisted) {
-                            blacklisted = blacklist[i].test(prop) ||
-                                typeof styles[prop] === 'function';
+                    // Loop through all styles and add them inline if they are ok
+                    if (isFirefoxBrowser || isMSBrowser) {
+                        // Some browsers put lots of styles on the prototype
+                        for (var p in styles) {
+                            filterStyles(styles[p], p);
                         }
-
-                        if (!blacklisted) {
-
-                            // If parent node has the same style, it gets inherited, no
-                            // need to inline it
-                            if (
-                                parentStyles[prop] !== styles[prop] &&
-                                defaultStyles[node.nodeName][prop] !== styles[prop]
-                            ) {
-
-                                // Attributes
-                                if (inlineToAttributes.indexOf(prop) !== -1) {
-                                    node.setAttribute(hyphenate(prop), styles[prop]);
-
-                                    // Styles
-                                } else {
-                                    cssText += hyphenate(prop) + ':' +
-                                        styles[prop] + ';';
-                                }
-                            }
-                        }
+                    } else {
+                        objectEach(styles, filterStyles);
                     }
 
                     // Apply styles
                     if (cssText) {
                         styleAttr = node.getAttribute('style');
                         node.setAttribute('style', (styleAttr ? styleAttr + ';' : '') + cssText);
+                    }
+
+                    // Set default stroke width (needed at least for IE)
+                    if (node.nodeName === 'svg') {
+                        node.setAttribute('stroke-width', '1px');
                     }
 
                     if (node.nodeName === 'text') {

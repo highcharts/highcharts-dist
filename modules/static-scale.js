@@ -1,5 +1,5 @@
 /*
- Highcharts JS v5.0.11 (2017-05-04)
+ Highcharts JS v5.0.12 (2017-05-24)
  StaticScale
 
  (c) 2016 Torstein Honsi, Lars A. V. Cabrera

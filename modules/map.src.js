@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v5.0.11 (2017-05-04)
+ * @license Highmaps JS v5.0.12 (2017-05-24)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
  * (c) 2011-2017 Torstein Honsi
@@ -224,7 +224,7 @@
                 if (userOptions.dataClasses) {
                     this.initDataClasses(userOptions);
                 }
-                this.initStops(userOptions);
+                this.initStops();
 
                 // Override original axis properties
                 this.horiz = horiz;
@@ -234,39 +234,8 @@
                 this.defaultLegendLength = 200;
             },
 
-            /*
-             * Return an intermediate color between two colors, according to pos where 0
-             * is the from color and 1 is the to color.
-             * NOTE: Changes here should be copied
-             * to the same function in drilldown.src.js and solid-gauge-src.js.
-             */
-            tweenColors: function(from, to, pos) {
-                // Check for has alpha, because rgba colors perform worse due to lack of
-                // support in WebKit.
-                var hasAlpha,
-                    ret;
-
-                // Unsupported color, return to-color (#3920)
-                if (!to.rgba.length || !from.rgba.length) {
-                    ret = to.input || 'none';
-
-                    // Interpolate
-                } else {
-                    from = from.rgba;
-                    to = to.rgba;
-                    hasAlpha = (to[3] !== 1 || from[3] !== 1);
-                    ret = (hasAlpha ? 'rgba(' : 'rgb(') +
-                        Math.round(to[0] + (from[0] - to[0]) * (1 - pos)) + ',' +
-                        Math.round(to[1] + (from[1] - to[1]) * (1 - pos)) + ',' +
-                        Math.round(to[2] + (from[2] - to[2]) * (1 - pos)) +
-                        (hasAlpha ? (',' + (to[3] + (from[3] - to[3]) * (1 - pos))) : '') + ')';
-                }
-                return ret;
-            },
-
             initDataClasses: function(userOptions) {
-                var axis = this,
-                    chart = this.chart,
+                var chart = this.chart,
                     dataClasses,
                     colorCounter = 0,
                     colorCount = chart.options.chart.colorCount,
@@ -295,8 +264,7 @@
                                 colorCounter = 0;
                             }
                         } else {
-                            dataClass.color = axis.tweenColors(
-                                color(options.minColor),
+                            dataClass.color = color(options.minColor).tweenTo(
                                 color(options.maxColor),
                                 len < 2 ? 0.5 : i / (len - 1) // #3219
                             );
@@ -305,8 +273,8 @@
                 });
             },
 
-            initStops: function(userOptions) {
-                this.stops = userOptions.stops || [
+            initStops: function() {
+                this.stops = this.options.stops || [
                     [0, this.options.minColor],
                     [1, this.options.maxColor]
                 ];
@@ -350,6 +318,13 @@
                 }
             },
 
+            normalizedValue: function(value) {
+                if (this.isLog) {
+                    value = this.val2lin(value);
+                }
+                return 1 - ((this.max - value) / ((this.max - this.min) || 1));
+            },
+
             /**
              * Translate from a value to a color
              */
@@ -381,10 +356,7 @@
 
                 } else {
 
-                    if (this.isLog) {
-                        value = this.val2lin(value);
-                    }
-                    pos = 1 - ((this.max - value) / ((this.max - this.min) || 1));
+                    pos = this.normalizedValue(value);
                     i = stops.length;
                     while (i--) {
                         if (pos > stops[i][0]) {
@@ -397,8 +369,7 @@
                     // The position within the gradient
                     pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
 
-                    color = this.tweenColors(
-                        from.color,
+                    color = from.color.tweenTo(
                         to.color,
                         pos
                     );
@@ -440,7 +411,6 @@
             setLegendColor: function() {
                 var grad,
                     horiz = this.horiz,
-                    options = this.options,
                     reversed = this.reversed,
                     one = reversed ? 1 : 0,
                     zero = reversed ? 0 : 1;
@@ -453,10 +423,7 @@
                         x2: grad[2],
                         y2: grad[3]
                     },
-                    stops: options.stops || [
-                        [0, options.minColor],
-                        [1, options.maxColor]
-                    ]
+                    stops: this.stops
                 };
             },
 
@@ -656,8 +623,7 @@
             H.Fx.prototype[prop + 'Setter'] = function() {
                 this.elem.attr(
                     prop,
-                    ColorAxis.prototype.tweenColors(
-                        color(this.start),
+                    color(this.start).tweenTo(
                         color(this.end),
                         this.pos
                     ),
@@ -848,7 +814,6 @@
          * The MapNavigation handles buttons for navigation in addition to mousewheel
          * and doubleclick handlers for chart zooming.
          * @param {Chart} chart The Chart instance.
-         * @class
          */
         function MapNavigation(chart) {
             this.init(chart);
@@ -997,7 +962,7 @@
         };
 
         // Add events to the Chart object itself
-        extend(Chart.prototype, {
+        extend(Chart.prototype, /** @lends Chart.prototype */ {
 
             /**
              * Fit an inner box to an outer. If the inner box overflows left or right, align it to the sides of the
@@ -1033,7 +998,24 @@
             },
 
             /**
-             * Zoom the map in or out by a certain amount. Less than 1 zooms in, greater than 1 zooms out.
+             * Highmaps only. Zoom in or out of the map. See also {@link Point#zoomTo}.
+             * See {@link Chart#fromLatLonToPoint} for how to get the `centerX` and
+             * `centerY` parameters for a geographic location.
+             *
+             * @param  {Number} [howMuch]
+             *         How much to zoom the map. Values less than 1 zooms in. 0.5 zooms
+             *         in to half the current view. 2 zooms to twice the current view.
+             *         If omitted, the zoom is reset.
+             * @param  {Number} [centerX]
+             *         The X axis position to center around if available space.
+             * @param  {Number} [centerY]
+             *         The Y axis position to center around if available space.
+             * @param  {Number} [mouseX]
+             *         Fix the zoom to this position if possible. This is used for
+             *         example in mousewheel events, where the area under the mouse
+             *         should be fixed as we zoom in.
+             * @param  {Number} [mouseY]
+             *         Fix the zoom to this position if possible.
              */
             mapZoom: function(howMuch, centerXArg, centerYArg, mouseX, mouseY) {
                 /*if (this.isMapZooming) {
@@ -1225,7 +1207,6 @@
          * License: www.highcharts.com/license
          */
         var color = H.color,
-            ColorAxis = H.ColorAxis,
             colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
             doc = H.doc,
@@ -2029,7 +2010,10 @@
                             pos = 1;
                         }
                         if (graphic) {
-                            graphic.attr('fill', ColorAxis.prototype.tweenColors.call(0, hoverColor, normalColor, pos));
+                            graphic.attr(
+                                'fill',
+                                hoverColor.tweenTo(normalColor, pos)
+                            );
                         }
                         if (pos >= 1) {
                             clearTimeout(point.colorInterval);
@@ -2043,7 +2027,12 @@
 
 
             /**
-             * Zoom the chart to view a specific area point
+             * Highmaps only. Zoom in on the point using the global animation.
+             *
+             * @function #zoomTo
+             * @memberOf Point
+             * @sample maps/members/point-zoomto/
+             *         Zoom to points from butons
              */
             zoomTo: function() {
                 var point = this,
@@ -2701,7 +2690,27 @@
         }
 
         /**
-         * Get point from latLon using specified transform definition
+         * Highmaps only. Get point from latitude and longitude using specified
+         * transform definition.
+         *
+         * @function transformFromLatLon
+         * @memberOf Chart.prototype
+         *
+         * @param  {Object} latLon
+         *         A latitude/longitude object.
+         * @param  {Number} latLon.lat
+         *         The latitude.
+         * @param  {Number} latLon.lon
+         *         The longitude.
+         * @param  {Object} transform
+         *         The transform definition to use as explained in the {@link
+         *         https://www.highcharts.com/docs/maps/latlon|documentation}.
+         *
+         * @return {Object}
+         *         An object with `x` and `y` properties.
+         *
+         * @sample maps/series/latlon-transform/
+         *         Use specific transformation for lat/lon
          */
         Chart.prototype.transformFromLatLon = function(latLon, transform) {
             if (win.proj4 === undefined) {
@@ -2724,7 +2733,25 @@
         };
 
         /**
-         * Get latLon from point using specified transform definition
+         * Highmaps only. Get latLon from point using specified transform definition.
+         * The method returns an object with the numeric properties `lat` and `lon`.
+         *
+         * @function transformToLatLon
+         * @memberOf Chart.prototype
+         *
+         * @param  {Point|Object} point
+         *         A `Point` instance, or or any object containing the properties `x`
+         *         and `y` with numeric values.
+         * @param  {Object} transform
+         *         The transform definition to use as explained in the {@link
+         *         https://www.highcharts.com/docs/maps/latlon|documentation}.
+         *
+         * @return {Object}
+         *         An object with `lat` and `lon` properties.
+         *
+         * @sample maps/series/latlon-transform/
+         *         Use specific transformation for lat/lon
+         *                         
          */
         Chart.prototype.transformToLatLon = function(point, transform) {
             if (win.proj4 === undefined) {
@@ -2750,6 +2777,22 @@
             };
         };
 
+        /**
+         * Highmaps only. Calculate latitude/longitude values for a point. Returns an
+         * object with the numeric properties `lat` and `lon`.
+         *
+         * @function fromPointToLatLon
+         * @memberOf Chart.prototype
+         * 
+         * @param  {Point|Object} point
+         *         A `Point` instance or anything containing `x` and `y` properties
+         *         with numeric values
+         * @return {Object}
+         *         An object with `lat` and `lon` properties.
+         *
+         * @sample maps/demo/latlon-advanced/
+         *         Advanced lat/lon demo
+         */
         Chart.prototype.fromPointToLatLon = function(point) {
             var transforms = this.mapTransforms,
                 transform;
@@ -2772,6 +2815,26 @@
             return this.transformToLatLon(point, transforms['default']); // eslint-disable-line dot-notation
         };
 
+        /**
+         * Highmaps only. Get chart coordinates from latitude/longitude. Returns an
+         * object with x and y values corresponding to the `xAxis` and `yAxis`.
+         *
+         * @function fromLatLonToPoint
+         * @memberOf Chart.prototype
+         * 
+         * @param  {Object} latLon
+         *         Coordinates.
+         * @param  {Number} latLon.lat
+         *         The latitude.
+         * @param  {Number} latLon.lon
+         *         The longitude.
+         *
+         * @sample maps/series/latlon-to-point/
+         *         Find a point from lat/lon
+         *         
+         * @return {Object}
+         *         X and Y coordinates in terms of chart axis values.
+         */
         Chart.prototype.fromLatLonToPoint = function(latLon) {
             var transforms = this.mapTransforms,
                 transform,
@@ -2801,7 +2864,34 @@
         };
 
         /**
-         * Convert a geojson object to map data of a given Highcharts type (map, mappoint or mapline).
+         * Highmaps only. Restructure a GeoJSON object in preparation to be read
+         * directly by the {@link
+         * https://api.highcharts.com/highmaps/plotOptions.series.mapData|
+         * series.mapData} option. The GeoJSON will be broken down to fit a specific
+         * Highcharts type, either `map`, `mapline` or `mappoint`. Meta data in
+         * GeoJSON's properties object will be copied directly over to 
+         * {@link Point.properties} in Highmaps.
+         *
+         * @function #geojson
+         * @memberOf Highcharts
+         *
+         * @param  {Object} geojson
+         *         The GeoJSON structure to parse, represented as a JavaScript object
+         *         rather than a JSON string.
+         * @param  {String} [hType=map]
+         *         The Highmaps series type to prepare for. Setting "map" will return
+         *         GeoJSON polygons and multipolygons. Setting "mapline" will return
+         *         GeoJSON linestrings and multilinestrings. Setting "mappoint" will
+         *         return GeoJSON points and multipoints.
+         *
+         * @return {Object}
+         *         An object ready for the `mapData` option.
+         *
+         * @sample samples/maps/demo/geojson/
+         *         Simple areas
+         * @sample maps/demo/geojson-multiple-types/
+         *         Multiple types
+         *         
          */
         H.geojson = function(geojson, hType, series) {
             var mapData = [],
@@ -2872,6 +2962,15 @@
                 if (point) {
                     mapData.push(extend(point, {
                         name: properties.name || properties.NAME,
+
+                        /**
+                         * In Highmaps, when data is loaded from GeoJSON, the GeoJSON
+                         * item's properies are copied over here.
+                         *
+                         * @name #properties
+                         * @memberOf Point
+                         * @type {Object}
+                         */
                         properties: properties
                     }));
                 }
@@ -3062,7 +3161,29 @@
 
 
         /**
-         * A wrapper for Chart with all the default values for a Map
+         * The factory function for creating new map charts. Creates a new {@link
+         * Chart|Chart} object with different default options than the basic Chart.
+         * 
+         * @function #mapChart
+         * @memberOf Highcharts
+         *
+         * @param  {String|HTMLDOMElement} renderTo
+         *         The DOM element to render to, or its id.
+         * @param  {Options} options
+         *         The chart options structure as described in the {@link
+         *         https://api.highcharts.com/highstock|options reference}.
+         * @param  {Function} callback
+         *         A function to execute when the chart object is finished loading and
+         *         rendering. In most cases the chart is built in one thread, but in
+         *         Internet Explorer version 8 or less the chart is sometimes initiated
+         *         before the document is ready, and in these cases the chart object
+         *         will not be finished synchronously. As a consequence, code that
+         *         relies on the newly built Chart object should always run in the
+         *         callback. Defining a {@link https://api.highcharts.com/highstock/chart.events.load|
+         *         chart.event.load} handler is equivalent.
+         *
+         * @return {Chart}
+         *         The chart object.
          */
         H.Map = H.mapChart = function(a, b, c) {
 

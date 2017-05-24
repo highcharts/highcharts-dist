@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -284,6 +284,51 @@
             yellowgreen: '#9acd32'
         };
 
+        /**
+         * Tolerant max() funciton
+         * @return {number} max value
+         */
+        function patientMax() {
+            var args = Array.prototype.slice.call(arguments),
+                r = -Number.MAX_VALUE;
+
+            each(args, function(t) {
+                if (typeof t !== 'undefined' && typeof t.length !== 'undefined') {
+                    //r = r < t.length ? t.length : r;
+                    if (t.length > 0) {
+                        r = t.length;
+                        return true;
+                    }
+                }
+            });
+
+            return r;
+        }
+
+        /*
+         * Returns true if we should force chart series boosting
+         */
+        function shouldForceChartSeriesBoosting(chart) {
+            // If there are more than five series currently boosting,
+            // we should boost the whole chart to avoid running out of webgl contexts.
+            var sboostCount = 0,
+                series;
+
+            if (chart.series.length > 1) {
+                for (var i = 0; i < chart.series.length; i++) {
+                    series = chart.series[i];
+                    if (patientMax(
+                            series.processedXData,
+                            series.options.data,
+                            series.points
+                        ) >= (series.options.boostThreshold || Number.MAX_VALUE)) {
+                        sboostCount++;
+                    }
+                }
+            }
+
+            return sboostCount > 5;
+        }
 
         /*
          * Returns true if the chart is in series boost mode
@@ -291,9 +336,9 @@
          * @returns {Boolean} - true if the chart is in series boost mode
          */
         function isChartSeriesBoosting(chart) {
-            return chart.series.length >= pick(
-                chart.options.boost && chart.options.boost.seriesThreshold, // docs
-                10
+            return shouldForceChartSeriesBoosting(chart) || chart.series.length >= pick(
+                chart.options.boost && chart.options.boost.seriesThreshold,
+                50
             );
         }
 
@@ -303,23 +348,6 @@
          * @returns {boolean} - true if the series is in boost mode
          */
         function isSeriesBoosting(series) {
-            function patientMax() {
-                var args = Array.prototype.slice.call(arguments),
-                    r = -Number.MAX_VALUE;
-
-                each(args, function(t) {
-                    if (typeof t !== 'undefined' && typeof t.length !== 'undefined') {
-                        //r = r < t.length ? t.length : r;
-                        if (t.length > 0) {
-                            r = t.length;
-                            return true;
-                        }
-                    }
-                });
-
-                return r;
-            }
-
             return isChartSeriesBoosting(series.chart) ||
                 patientMax(
                     series.processedXData,
@@ -1662,7 +1690,7 @@
                     }
 
                     //Blending
-                    if (options.boostBlending === 'add') { // docs
+                    if (options.boostBlending === 'add') {
                         gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
                         gl.blendEquation(gl.FUNC_ADD);
 
@@ -2656,18 +2684,32 @@
 
                 /* Clear chart-level canvas */
                 function preRender() {
+
+                    if (!isChartSeriesBoosting(chart) && chart.didBoost) {
+                        chart.didBoost = false;
+                        // Clear the canvas
+                        if (chart.image) {
+                            chart.image.attr({
+                                href: ''
+                            });
+                        }
+                    }
+
                     if (chart.canvas && chart.ogl && isChartSeriesBoosting(chart)) {
+                        chart.didBoost = true;
+
                         // Allocate
                         chart.ogl.allocateBuffer(chart);
                     }
 
-                    //see #6518
-                    if (chart.markerGroup) {
+                    //see #6518 + #6739
+                    if (chart.markerGroup && chart.xAxis && chart.xAxis.length > 0 && chart.yAxis && chart.yAxis.length > 0) {
                         chart.markerGroup.translate(
                             chart.xAxis[0].pos,
                             chart.yAxis[0].pos
                         );
                     }
+
                 }
 
                 addEvent(chart, 'predraw', preRender);

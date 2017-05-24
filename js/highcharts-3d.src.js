@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  *
  * 3D features for Highcharts JS
  *
@@ -134,6 +134,29 @@
             return distance;
         };
 
+        /**
+         * Calculate area of a 2D polygon using Shoelace algorithm
+         * http://en.wikipedia.org/wiki/Shoelace_formula
+         */
+        H.shapeArea = function(vertexes) {
+            var area = 0,
+                i,
+                j;
+            for (i = 0; i < vertexes.length; i++) {
+                j = (i + 1) % vertexes.length;
+                area += vertexes[i].x * vertexes[j].y - vertexes[j].x * vertexes[i].y;
+            }
+            return area / 2;
+        };
+
+        /**
+         * Calculate area of a 3D polygon after perspective projection
+         */
+        H.shapeArea3d = function(vertexes, chart, insidePlotArea) {
+            return H.shapeArea(H.perspective(vertexes, chart, insidePlotArea));
+        };
+
+
     }(Highcharts));
     (function(H) {
         /**
@@ -167,19 +190,6 @@
         ////// HELPER METHODS //////
 
         var dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
-
-
-        //Shoelace algorithm -- http://en.wikipedia.org/wiki/Shoelace_formula
-        function shapeArea(vertexes) {
-            var area = 0,
-                i,
-                j;
-            for (i = 0; i < vertexes.length; i++) {
-                j = (i + 1) % vertexes.length;
-                area += vertexes[i].x * vertexes[j].y - vertexes[j].x * vertexes[i].y;
-            }
-            return area / 2;
-        }
 
         /** Method to construct a curved path
          * Can 'wrap' around more then 180 degrees
@@ -267,6 +277,135 @@
             }
 
             return result;
+        };
+
+        SVGRenderer.prototype.toLineSegments = function(points) {
+            var result = [];
+
+            var m = true;
+            each(points, function(point) {
+                result.push(m ? 'M' : 'L', point.x, point.y);
+                m = !m;
+            });
+
+            return result;
+        };
+
+        /**
+         * A 3-D Face is defined by it's 3D vertexes, and is only
+         * visible if it's vertexes are counter-clockwise (Back-face culling).
+         * It is used as a polyhedron Element
+         */
+        SVGRenderer.prototype.face3d = function(args) {
+            var renderer = this,
+                ret = this.createElement('path');
+            ret.vertexes = [];
+            ret.insidePlotArea = false;
+            ret.enabled = true;
+
+            wrap(ret, 'attr', function(proceed, hash) {
+                if (typeof hash === 'object' &&
+                    (defined(hash.enabled) || defined(hash.vertexes) || defined(hash.insidePlotArea))) {
+                    this.enabled = pick(hash.enabled, this.enabled);
+                    this.vertexes = pick(hash.vertexes, this.vertexes);
+                    this.insidePlotArea = pick(hash.insidePlotArea, this.insidePlotArea);
+                    delete hash.enabled;
+                    delete hash.vertexes;
+                    delete hash.insidePlotArea;
+
+                    var chart = charts[renderer.chartIndex],
+                        vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea),
+                        path = renderer.toLinePath(vertexes2d, true),
+                        area = H.shapeArea(vertexes2d),
+                        visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
+
+                    hash.d = path;
+                    hash.visibility = visibility;
+                }
+                return proceed.apply(this, [].slice.call(arguments, 1));
+            });
+
+            wrap(ret, 'animate', function(proceed, params) {
+                if (typeof params === 'object' &&
+                    (defined(params.enabled) || defined(params.vertexes) || defined(params.insidePlotArea))) {
+                    this.enabled = pick(params.enabled, this.enabled);
+                    this.vertexes = pick(params.vertexes, this.vertexes);
+                    this.insidePlotArea = pick(params.insidePlotArea, this.insidePlotArea);
+                    delete params.enabled;
+                    delete params.vertexes;
+                    delete params.insidePlotArea;
+
+                    var chart = charts[renderer.chartIndex],
+                        vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea),
+                        path = renderer.toLinePath(vertexes2d, true),
+                        area = H.shapeArea(vertexes2d),
+                        visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
+
+                    params.d = path;
+                    this.attr('visibility', visibility);
+                }
+
+                return proceed.apply(this, [].slice.call(arguments, 1));
+            });
+
+            return ret.attr(args);
+        };
+
+        /**
+         * A Polyhedron is a handy way of defining a group of 3-D faces.
+         * It's only attribute is `faces`, an array of attributes of each one of it's Face3D instances.
+         */
+        SVGRenderer.prototype.polyhedron = function(args) {
+            var renderer = this,
+                result = this.g(),
+                destroy = result.destroy;
+
+
+
+            result.faces = [];
+
+
+            // destroy all children
+            result.destroy = function() {
+                for (var i = 0; i < result.faces.length; i++) {
+                    result.faces[i].destroy();
+                }
+                return destroy.call(this);
+            };
+
+            wrap(result, 'attr', function(proceed, hash, val, complete, continueAnimation) {
+                if (typeof hash === 'object' && defined(hash.faces)) {
+                    while (result.faces.length > hash.faces.length) {
+                        result.faces.pop().destroy();
+                    }
+                    while (result.faces.length < hash.faces.length) {
+                        result.faces.push(renderer.face3d().add(result));
+                    }
+                    for (var i = 0; i < hash.faces.length; i++) {
+                        result.faces[i].attr(hash.faces[i], null, complete, continueAnimation);
+                    }
+                    delete hash.faces;
+                }
+                return proceed.apply(this, [].slice.call(arguments, 1));
+            });
+
+            wrap(result, 'animate', function(proceed, params, duration, complete) {
+                if (params && params.faces) {
+                    while (result.faces.length > params.faces.length) {
+                        result.faces.pop().destroy();
+                    }
+                    while (result.faces.length < params.faces.length) {
+                        result.faces.push(renderer.face3d().add(result));
+                    }
+                    for (var i = 0; i < params.faces.length; i++) {
+                        result.faces[i].animate(params.faces[i], duration, complete);
+                    }
+                    delete params.faces;
+                }
+                return proceed.apply(this, [].slice.call(arguments, 1));
+            });
+
+            return result.attr(args);
         };
 
         ////// CUBOIDS //////
@@ -478,9 +617,9 @@
                 ];
                 path1 = map(path1, mapPath);
                 path2 = map(path2, mapPath);
-                if (shapeArea(path1) < 0) {
+                if (H.shapeArea(path1) < 0) {
                     ret = [path1, 0];
-                } else if (shapeArea(path2) < 0) {
+                } else if (H.shapeArea(path2) < 0) {
                     ret = [path2, 1];
                 }
                 return ret;
@@ -1082,16 +1221,16 @@
                     depth: 100,
                     fitToPlot: true,
                     viewDistance: 25,
+                    axisLabelPosition: 'default',
                     frame: {
-                        bottom: {
-                            size: 1
-                        },
-                        side: {
-                            size: 1
-                        },
-                        back: {
-                            size: 1
-                        }
+                        visible: 'default',
+                        size: 1,
+                        bottom: {},
+                        top: {},
+                        left: {},
+                        right: {},
+                        back: {},
+                        front: {}
                     }
                 }
             }
@@ -1157,6 +1296,14 @@
             if (this.is3d()) {
                 // Set to force a redraw of all elements
                 this.isDirtyBox = true;
+                this.frame3d = this.get3dFrame();
+            }
+            proceed.apply(this, [].slice.call(arguments, 1));
+        });
+
+        wrap(Chart.prototype, 'render', function(proceed) {
+            if (this.is3d()) {
+                this.frame3d = this.get3dFrame();
             }
             proceed.apply(this, [].slice.call(arguments, 1));
         });
@@ -1175,6 +1322,830 @@
             } else {
                 proceed.call(this);
             }
+        });
+
+        wrap(Chart.prototype, 'drawChartBox', function(proceed) {
+            if (this.is3d()) {
+                var chart = this,
+                    renderer = chart.renderer,
+                    options3d = this.options.chart.options3d,
+                    frame = chart.get3dFrame(),
+                    xm = this.plotLeft,
+                    xp = this.plotLeft + this.plotWidth,
+                    ym = this.plotTop,
+                    yp = this.plotTop + this.plotHeight,
+                    zm = 0,
+                    zp = options3d.depth,
+                    xmm = xm - (frame.left.visible ? frame.left.size : 0),
+                    xpp = xp + (frame.right.visible ? frame.right.size : 0),
+                    ymm = ym - (frame.top.visible ? frame.top.size : 0),
+                    ypp = yp + (frame.bottom.visible ? frame.bottom.size : 0),
+                    zmm = zm - (frame.front.visible ? frame.front.size : 0),
+                    zpp = zp + (frame.back.visible ? frame.back.size : 0),
+                    verb = chart.hasRendered ? 'animate' : 'attr';
+
+                this.frame3d = frame;
+
+                if (!this.frameShapes) {
+                    this.frameShapes = {
+                        bottom: renderer.polyhedron().add(),
+                        top: renderer.polyhedron().add(),
+                        left: renderer.polyhedron().add(),
+                        right: renderer.polyhedron().add(),
+                        back: renderer.polyhedron().add(),
+                        front: renderer.polyhedron().add()
+                    };
+                }
+
+                this.frameShapes.bottom[verb]({
+                    'class': 'highcharts-3d-frame highcharts-3d-frame-bottom',
+                    zIndex: frame.bottom.frontFacing ? -1000 : 1000,
+                    faces: [{ //bottom
+                            fill: H.color(frame.bottom.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }],
+                            enabled: frame.bottom.visible
+                        },
+                        { //top
+                            fill: H.color(frame.bottom.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }],
+                            enabled: frame.bottom.visible
+                        },
+                        { //left
+                            fill: H.color(frame.bottom.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }],
+                            enabled: frame.bottom.visible && !frame.left.visible
+                        },
+                        { //right
+                            fill: H.color(frame.bottom.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }],
+                            enabled: frame.bottom.visible && !frame.right.visible
+                        },
+                        { //front
+                            fill: H.color(frame.bottom.color).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }],
+                            enabled: frame.bottom.visible && !frame.front.visible
+                        },
+                        { //back
+                            fill: H.color(frame.bottom.color).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }],
+                            enabled: frame.bottom.visible && !frame.back.visible
+                        }
+                    ]
+                });
+                this.frameShapes.top[verb]({
+                    'class': 'highcharts-3d-frame highcharts-3d-frame-top',
+                    zIndex: frame.top.frontFacing ? -1000 : 1000,
+                    faces: [{ //bottom
+                            fill: H.color(frame.top.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }],
+                            enabled: frame.top.visible
+                        },
+                        { //top
+                            fill: H.color(frame.top.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }],
+                            enabled: frame.top.visible
+                        },
+                        { //left
+                            fill: H.color(frame.top.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }],
+                            enabled: frame.top.visible && !frame.left.visible
+                        },
+                        { //right
+                            fill: H.color(frame.top.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }],
+                            enabled: frame.top.visible && !frame.right.visible
+                        },
+                        { //front
+                            fill: H.color(frame.top.color).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }],
+                            enabled: frame.top.visible && !frame.front.visible
+                        },
+                        { //back
+                            fill: H.color(frame.top.color).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }],
+                            enabled: frame.top.visible && !frame.back.visible
+                        }
+                    ]
+                });
+                this.frameShapes.left[verb]({
+                    'class': 'highcharts-3d-frame highcharts-3d-frame-left',
+                    zIndex: frame.left.frontFacing ? -1000 : 1000,
+                    faces: [{ //bottom
+                            fill: H.color(frame.left.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }],
+                            enabled: frame.left.visible && !frame.bottom.visible
+                        },
+                        { //top
+                            fill: H.color(frame.left.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }],
+                            enabled: frame.left.visible && !frame.top.visible
+                        },
+                        { //left
+                            fill: H.color(frame.left.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }],
+                            enabled: frame.left.visible
+                        },
+                        { //right
+                            fill: H.color(frame.left.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }],
+                            enabled: frame.left.visible
+                        },
+                        { //front
+                            fill: H.color(frame.left.color).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }],
+                            enabled: frame.left.visible && !frame.front.visible
+                        },
+                        { //back
+                            fill: H.color(frame.left.color).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }],
+                            enabled: frame.left.visible && !frame.back.visible
+                        }
+                    ]
+                });
+                this.frameShapes.right[verb]({
+                    'class': 'highcharts-3d-frame highcharts-3d-frame-right',
+                    zIndex: frame.right.frontFacing ? -1000 : 1000,
+                    faces: [{ //bottom
+                            fill: H.color(frame.right.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }],
+                            enabled: frame.right.visible && !frame.bottom.visible
+                        },
+                        { //top
+                            fill: H.color(frame.right.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }],
+                            enabled: frame.right.visible && !frame.top.visible
+                        },
+                        { //left
+                            fill: H.color(frame.right.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }],
+                            enabled: frame.right.visible
+                        },
+                        { //right
+                            fill: H.color(frame.right.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }],
+                            enabled: frame.right.visible
+                        },
+                        { //front
+                            fill: H.color(frame.right.color).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }],
+                            enabled: frame.right.visible && !frame.front.visible
+                        },
+                        { //back
+                            fill: H.color(frame.right.color).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }],
+                            enabled: frame.right.visible && !frame.back.visible
+                        }
+                    ]
+                });
+                this.frameShapes.back[verb]({
+                    'class': 'highcharts-3d-frame highcharts-3d-frame-back',
+                    zIndex: frame.back.frontFacing ? -1000 : 1000,
+                    faces: [{ //bottom
+                            fill: H.color(frame.back.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }],
+                            enabled: frame.back.visible && !frame.bottom.visible
+                        },
+                        { //top
+                            fill: H.color(frame.back.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }],
+                            enabled: frame.back.visible && !frame.top.visible
+                        },
+                        { //left
+                            fill: H.color(frame.back.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }],
+                            enabled: frame.back.visible && !frame.left.visible
+                        },
+                        { //right
+                            fill: H.color(frame.back.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }],
+                            enabled: frame.back.visible && !frame.right.visible
+                        },
+                        { //front
+                            fill: H.color(frame.back.color).get(),
+                            vertexes: [{
+                                x: xm,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zp
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zp
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zp
+                            }],
+                            enabled: frame.back.visible
+                        },
+                        { //back
+                            fill: H.color(frame.back.color).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zpp
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zpp
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zpp
+                            }],
+                            enabled: frame.back.visible
+                        }
+                    ]
+                });
+                this.frameShapes.front[verb]({
+                    'class': 'highcharts-3d-frame highcharts-3d-frame-front',
+                    zIndex: frame.front.frontFacing ? -1000 : 1000,
+                    faces: [{ //bottom
+                            fill: H.color(frame.front.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }],
+                            enabled: frame.front.visible && !frame.bottom.visible
+                        },
+                        { //top
+                            fill: H.color(frame.front.color).brighten(0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }],
+                            enabled: frame.front.visible && !frame.top.visible
+                        },
+                        { //left
+                            fill: H.color(frame.front.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }],
+                            enabled: frame.front.visible && !frame.left.visible
+                        },
+                        { //right
+                            fill: H.color(frame.front.color).brighten(-0.1).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }],
+                            enabled: frame.front.visible && !frame.right.visible
+                        },
+                        { //front
+                            fill: H.color(frame.front.color).get(),
+                            vertexes: [{
+                                x: xp,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: ym,
+                                z: zm
+                            }, {
+                                x: xm,
+                                y: yp,
+                                z: zm
+                            }, {
+                                x: xp,
+                                y: yp,
+                                z: zm
+                            }],
+                            enabled: frame.front.visible
+                        },
+                        { //back
+                            fill: H.color(frame.front.color).get(),
+                            vertexes: [{
+                                x: xpp,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ypp,
+                                z: zmm
+                            }, {
+                                x: xmm,
+                                y: ymm,
+                                z: zmm
+                            }, {
+                                x: xpp,
+                                y: ymm,
+                                z: zmm
+                            }],
+                            enabled: frame.front.visible
+                        }
+                    ]
+                });
+            }
+
+            return proceed.apply(this, [].slice.call(arguments, 1));
         });
 
         Chart.prototype.retrieveStacks = function(stacking) {
@@ -1199,6 +2170,401 @@
             stacks.totalStacks = i + 1;
             return stacks;
         };
+
+        Chart.prototype.get3dFrame = function() {
+            var chart = this,
+                options3d = chart.options.chart.options3d,
+                frameOptions = options3d.frame,
+                xm = chart.plotLeft,
+                xp = chart.plotLeft + chart.plotWidth,
+                ym = chart.plotTop,
+                yp = chart.plotTop + chart.plotHeight,
+                zm = 0,
+                zp = options3d.depth,
+                bottomOrientation = H.shapeArea3d([{
+                    x: xm,
+                    y: yp,
+                    z: zp
+                }, {
+                    x: xp,
+                    y: yp,
+                    z: zp
+                }, {
+                    x: xp,
+                    y: yp,
+                    z: zm
+                }, {
+                    x: xm,
+                    y: yp,
+                    z: zm
+                }], chart),
+                topOrientation = H.shapeArea3d([{
+                    x: xm,
+                    y: ym,
+                    z: zm
+                }, {
+                    x: xp,
+                    y: ym,
+                    z: zm
+                }, {
+                    x: xp,
+                    y: ym,
+                    z: zp
+                }, {
+                    x: xm,
+                    y: ym,
+                    z: zp
+                }], chart),
+                leftOrientation = H.shapeArea3d([{
+                    x: xm,
+                    y: ym,
+                    z: zm
+                }, {
+                    x: xm,
+                    y: ym,
+                    z: zp
+                }, {
+                    x: xm,
+                    y: yp,
+                    z: zp
+                }, {
+                    x: xm,
+                    y: yp,
+                    z: zm
+                }], chart),
+                rightOrientation = H.shapeArea3d([{
+                    x: xp,
+                    y: ym,
+                    z: zp
+                }, {
+                    x: xp,
+                    y: ym,
+                    z: zm
+                }, {
+                    x: xp,
+                    y: yp,
+                    z: zm
+                }, {
+                    x: xp,
+                    y: yp,
+                    z: zp
+                }], chart),
+                frontOrientation = H.shapeArea3d([{
+                    x: xm,
+                    y: yp,
+                    z: zm
+                }, {
+                    x: xp,
+                    y: yp,
+                    z: zm
+                }, {
+                    x: xp,
+                    y: ym,
+                    z: zm
+                }, {
+                    x: xm,
+                    y: ym,
+                    z: zm
+                }], chart),
+                backOrientation = H.shapeArea3d([{
+                    x: xm,
+                    y: ym,
+                    z: zp
+                }, {
+                    x: xp,
+                    y: ym,
+                    z: zp
+                }, {
+                    x: xp,
+                    y: yp,
+                    z: zp
+                }, {
+                    x: xm,
+                    y: yp,
+                    z: zp
+                }], chart),
+                defaultShowBottom = false,
+                defaultShowTop = false,
+                defaultShowLeft = false,
+                defaultShowRight = false,
+                defaultShowFront = false,
+                defaultShowBack = true;
+
+            // The 'default' criteria to visible faces of the frame is looking up every
+            // axis to decide whenever the left/right//top/bottom sides of the frame
+            // will be shown
+            each([].concat(chart.xAxis, chart.yAxis, chart.zAxis), function(axis) {
+                if (axis) {
+                    if (axis.horiz) {
+                        if (axis.opposite) {
+                            defaultShowTop = true;
+                        } else {
+                            defaultShowBottom = true;
+                        }
+                    } else {
+                        if (axis.opposite) {
+                            defaultShowRight = true;
+                        } else {
+                            defaultShowLeft = true;
+                        }
+                    }
+                }
+            });
+
+            var getFaceOptions = function(sources, faceOrientation, defaultVisible) {
+                var faceAttrs = ['size', 'color', 'visible'];
+                var options = {};
+                for (var i = 0; i < faceAttrs.length; i++) {
+                    var attr = faceAttrs[i];
+                    for (var j = 0; j < sources.length; j++) {
+                        if (typeof sources[j] === 'object') {
+                            var val = sources[j][attr];
+                            if (val !== undefined && val !== null) {
+                                options[attr] = val;
+                                break;
+                            }
+                        }
+                    }
+                }
+                var isVisible = defaultVisible;
+                if (options.visible === true || options.visible === false) {
+                    isVisible = options.visible;
+                } else if (options.visible === 'auto') {
+                    isVisible = faceOrientation >= 0;
+                }
+
+                return {
+                    size: pick(options.size, 1),
+                    color: pick(options.color, 'none'),
+                    frontFacing: faceOrientation > 0,
+                    visible: isVisible
+                };
+            };
+
+            // docs @TODO: Add all frame options (left, right, top, bottom, front, back) to
+            // apioptions JSDoc once the new system is up.
+            var ret = {
+                // FIXME: Previously, left/right, top/bottom and front/back pairs shared
+                // size and color.
+                // For compatibility and consistency sake, when one face have
+                // size/color/visibility set, the opposite face will default to the same
+                // values. Also, left/right used to be called 'side', so that's also
+                // added as a fallback
+                bottom: getFaceOptions(
+                    [frameOptions.bottom, frameOptions.top, frameOptions],
+                    bottomOrientation,
+                    defaultShowBottom
+                ),
+                top: getFaceOptions(
+                    [frameOptions.top, frameOptions.bottom, frameOptions],
+                    topOrientation,
+                    defaultShowTop
+                ),
+                left: getFaceOptions(
+                    [
+                        frameOptions.left,
+                        frameOptions.right,
+                        frameOptions.side,
+                        frameOptions
+                    ],
+                    leftOrientation,
+                    defaultShowLeft
+                ),
+                right: getFaceOptions(
+                    [
+                        frameOptions.right,
+                        frameOptions.left,
+                        frameOptions.side,
+                        frameOptions
+                    ],
+                    rightOrientation,
+                    defaultShowRight
+                ),
+                back: getFaceOptions(
+                    [frameOptions.back, frameOptions.front, frameOptions],
+                    backOrientation,
+                    defaultShowBack
+                ),
+                front: getFaceOptions(
+                    [frameOptions.front, frameOptions.back, frameOptions],
+                    frontOrientation,
+                    defaultShowFront
+                )
+            };
+
+
+            // Decide the bast place to put axis title/labels based on the visible faces.
+            // Ideally, The labels can only be on the edge between a visible face and an invisble one.
+            // Also, the Y label should be one the left-most edge (right-most if opposite),
+            if (options3d.axisLabelPosition === 'auto') {
+                var isValidEdge = function(face1, face2) {
+                    return (face1.visible !== face2.visible) ||
+                        (face1.visible && face2.visible && (face1.frontFacing !== face2.frontFacing));
+                };
+
+                var yEdges = [];
+                if (isValidEdge(ret.left, ret.front)) {
+                    yEdges.push({
+                        y: (ym + yp) / 2,
+                        x: xm,
+                        z: zm
+                    });
+                }
+                if (isValidEdge(ret.left, ret.back)) {
+                    yEdges.push({
+                        y: (ym + yp) / 2,
+                        x: xm,
+                        z: zp
+                    });
+                }
+                if (isValidEdge(ret.right, ret.front)) {
+                    yEdges.push({
+                        y: (ym + yp) / 2,
+                        x: xp,
+                        z: zm
+                    });
+                }
+                if (isValidEdge(ret.right, ret.back)) {
+                    yEdges.push({
+                        y: (ym + yp) / 2,
+                        x: xp,
+                        z: zp
+                    });
+                }
+
+                var xBottomEdges = [];
+                if (isValidEdge(ret.bottom, ret.front)) {
+                    xBottomEdges.push({
+                        x: (xm + xp) / 2,
+                        y: yp,
+                        z: zm
+                    });
+                }
+                if (isValidEdge(ret.bottom, ret.back)) {
+                    xBottomEdges.push({
+                        x: (xm + xp) / 2,
+                        y: yp,
+                        z: zp
+                    });
+                }
+
+                var xTopEdges = [];
+                if (isValidEdge(ret.top, ret.front)) {
+                    xTopEdges.push({
+                        x: (xm + xp) / 2,
+                        y: ym,
+                        z: zm
+                    });
+                }
+                if (isValidEdge(ret.top, ret.back)) {
+                    xTopEdges.push({
+                        x: (xm + xp) / 2,
+                        y: ym,
+                        z: zp
+                    });
+                }
+
+                var zBottomEdges = [];
+                if (isValidEdge(ret.bottom, ret.left)) {
+                    zBottomEdges.push({
+                        z: (zm + zp) / 2,
+                        y: yp,
+                        x: xm
+                    });
+                }
+                if (isValidEdge(ret.bottom, ret.right)) {
+                    zBottomEdges.push({
+                        z: (zm + zp) / 2,
+                        y: yp,
+                        x: xp
+                    });
+                }
+
+                var zTopEdges = [];
+                if (isValidEdge(ret.top, ret.left)) {
+                    zTopEdges.push({
+                        z: (zm + zp) / 2,
+                        y: ym,
+                        x: xm
+                    });
+                }
+                if (isValidEdge(ret.top, ret.right)) {
+                    zTopEdges.push({
+                        z: (zm + zp) / 2,
+                        y: ym,
+                        x: xp
+                    });
+                }
+
+                var pickEdge = function(edges, axis, mult) {
+                    if (edges.length === 0) {
+                        return null;
+                    } else if (edges.length === 1) {
+                        return edges[0];
+                    }
+                    var best = 0,
+                        projections = perspective(edges, chart, false);
+                    for (var i = 1; i < projections.length; i++) {
+                        if (mult * projections[i][axis] > mult * projections[best][axis]) {
+                            best = i;
+                        } else if ((mult * projections[i][axis] === mult * projections[best][axis]) && (projections[i].z < projections[best].z)) {
+                            best = i;
+                        }
+                    }
+                    return edges[best];
+                };
+                ret.axes = {
+                    y: {
+                        'left': pickEdge(yEdges, 'x', -1),
+                        'right': pickEdge(yEdges, 'x', +1)
+                    },
+                    x: {
+                        'top': pickEdge(xTopEdges, 'y', -1),
+                        'bottom': pickEdge(xBottomEdges, 'y', +1)
+                    },
+                    z: {
+                        'top': pickEdge(zTopEdges, 'y', -1),
+                        'bottom': pickEdge(zBottomEdges, 'y', +1)
+                    }
+                };
+            } else {
+                ret.axes = {
+                    y: {
+                        'left': {
+                            x: xm,
+                            z: zm
+                        },
+                        'right': {
+                            x: xp,
+                            z: zm
+                        }
+                    },
+                    x: {
+                        'top': {
+                            y: ym,
+                            z: zm
+                        },
+                        'bottom': {
+                            y: yp,
+                            z: zm
+                        }
+                    },
+                    z: {
+                        'top': {
+                            x: defaultShowLeft ? xp : xm,
+                            y: ym
+                        },
+                        'bottom': {
+                            x: defaultShowLeft ? xp : xm,
+                            y: yp
+                        }
+                    }
+                };
+            }
+
+            return ret;
+        };
+
 
     }(Highcharts));
     (function(H) {
@@ -1232,94 +2598,6 @@
             }
         });
 
-        wrap(Axis.prototype, 'render', function(proceed) {
-            proceed.apply(this, [].slice.call(arguments, 1));
-
-            // Do not do this if the chart is not 3D
-            if (!this.chart.is3d() || this.coll === 'colorAxis') {
-                return;
-            }
-
-            var chart = this.chart,
-                renderer = chart.renderer,
-                options3d = chart.options.chart.options3d,
-                frame = options3d.frame,
-                fbottom = frame.bottom,
-                fback = frame.back,
-                fside = frame.side,
-                depth = options3d.depth,
-                height = this.height,
-                width = this.width,
-                left = this.left,
-                top = this.top;
-
-            if (this.isZAxis) {
-                return;
-            }
-            if (this.horiz) {
-                var bottomShape = {
-                    x: left,
-                    y: top + (chart.xAxis[0].opposite ? -fbottom.size : height),
-                    z: 0,
-                    width: width,
-                    height: fbottom.size,
-                    depth: depth,
-                    insidePlotArea: false
-                };
-                if (!this.bottomFrame) {
-                    this.bottomFrame = renderer.cuboid(bottomShape).attr({
-                        'class': 'highcharts-3d-frame highcharts-3d-frame-bottom',
-                        'zIndex': (chart.yAxis[0].reversed && options3d.alpha > 0 ? 4 : -1)
-                    }).add();
-
-
-                } else {
-                    this.bottomFrame.animate(bottomShape);
-                }
-            } else {
-                // BACK
-                var backShape = {
-                    x: left + (chart.yAxis[0].opposite ? 0 : -fside.size),
-                    y: top + (chart.xAxis[0].opposite ? -fbottom.size : 0),
-                    z: depth,
-                    width: width + fside.size,
-                    height: height + fbottom.size,
-                    depth: fback.size,
-                    insidePlotArea: false
-                };
-                if (!this.backFrame) {
-                    this.backFrame = renderer.cuboid(backShape).attr({
-                        'class': 'highcharts-3d-frame highcharts-3d-frame-back',
-                        zIndex: -3
-                    }).add();
-
-
-                } else {
-                    this.backFrame.animate(backShape);
-                }
-                var sideShape = {
-                    x: left + (chart.yAxis[0].opposite ? width : -fside.size),
-                    y: top + (chart.xAxis[0].opposite ? -fbottom.size : 0),
-                    z: 0,
-                    width: fside.size,
-                    height: height + fbottom.size,
-                    depth: depth,
-                    insidePlotArea: false
-                };
-                if (!this.sideFrame) {
-                    this.sideFrame = renderer.cuboid(sideShape).attr({
-                        'class': 'highcharts-3d-frame highcharts-3d-frame-side',
-                        zIndex: -2
-                    }).add();
-
-
-
-                } else {
-                    this.sideFrame.animate(sideShape);
-                }
-            }
-        });
-
         wrap(Axis.prototype, 'getPlotLinePath', function(proceed) {
             var path = proceed.apply(this, [].slice.call(arguments, 1));
 
@@ -1335,15 +2613,13 @@
             var chart = this.chart,
                 options3d = chart.options.chart.options3d,
                 d = this.isZAxis ? chart.plotWidth : options3d.depth,
-                opposite = this.opposite;
-            if (this.horiz) {
-                opposite = !opposite;
-            }
+                frame = chart.frame3d;
+
             var pArr = [
                 this.swapZ({
                     x: path[1],
                     y: path[2],
-                    z: (opposite ? d : 0)
+                    z: 0
                 }),
                 this.swapZ({
                     x: path[1],
@@ -1353,19 +2629,60 @@
                 this.swapZ({
                     x: path[4],
                     y: path[5],
-                    z: d
+                    z: 0
                 }),
                 this.swapZ({
                     x: path[4],
                     y: path[5],
-                    z: (opposite ? 0 : d)
+                    z: d
                 })
             ];
 
-            pArr = perspective(pArr, this.chart, false);
-            path = this.chart.renderer.toLinePath(pArr, false);
+            var pathSegments = [];
+            if (!this.horiz) { // Y-Axis
+                if (frame.front.visible) {
+                    pathSegments.push(pArr[0], pArr[2]);
+                }
+                if (frame.back.visible) {
+                    pathSegments.push(pArr[1], pArr[3]);
+                }
+                if (frame.left.visible) {
+                    pathSegments.push(pArr[0], pArr[1]);
+                }
+                if (frame.right.visible) {
+                    pathSegments.push(pArr[2], pArr[3]);
+                }
+            } else if (this.isZAxis) { // Z-Axis
+                if (frame.left.visible) {
+                    pathSegments.push(pArr[0], pArr[2]);
+                }
+                if (frame.right.visible) {
+                    pathSegments.push(pArr[1], pArr[3]);
+                }
+                if (frame.top.visible) {
+                    pathSegments.push(pArr[0], pArr[1]);
+                }
+                if (frame.bottom.visible) {
+                    pathSegments.push(pArr[2], pArr[3]);
+                }
+            } else { // X-Axis
+                if (frame.front.visible) {
+                    pathSegments.push(pArr[0], pArr[2]);
+                }
+                if (frame.back.visible) {
+                    pathSegments.push(pArr[1], pArr[3]);
+                }
+                if (frame.top.visible) {
+                    pathSegments.push(pArr[0], pArr[1]);
+                }
+                if (frame.bottom.visible) {
+                    pathSegments.push(pArr[2], pArr[3]);
+                }
+            }
 
-            return path;
+            pathSegments = perspective(pathSegments, this.chart, false);
+
+            return this.chart.renderer.toLineSegments(pathSegments);
         });
 
         // Do not draw axislines in 3D
@@ -1382,30 +2699,98 @@
             var args = arguments,
                 from = args[1],
                 to = args[2],
-                toPath = this.getPlotLinePath(to),
-                path = this.getPlotLinePath(from);
+                path = [],
+                fromPath = this.getPlotLinePath(from),
+                toPath = this.getPlotLinePath(to);
 
-            if (path && toPath) {
-                path.push(
-                    'L',
-                    toPath[10], // These two do not exist in the regular getPlotLine
-                    toPath[11], // ---- # 3005
-                    'L',
-                    toPath[7],
-                    toPath[8],
-                    'L',
-                    toPath[4],
-                    toPath[5],
-                    'L',
-                    toPath[1],
-                    toPath[2]
-                );
-            } else { // outside the axis area
-                path = null;
+            if (fromPath && toPath) {
+                for (var i = 0; i < fromPath.length; i += 6) {
+                    path.push(
+                        'M', fromPath[i + 1], fromPath[i + 2],
+                        'L', fromPath[i + 4], fromPath[i + 5],
+                        'L', toPath[i + 4], toPath[i + 5],
+                        'L', toPath[i + 1], toPath[i + 2],
+                        'Z');
+                }
             }
 
             return path;
         });
+
+
+        function fix3dPosition(axis, pos) {
+            if (axis.chart.is3d() && axis.coll !== 'colorAxis') {
+                var chart = axis.chart,
+                    frame = chart.frame3d,
+                    plotLeft = chart.plotLeft,
+                    plotRight = chart.plotWidth + plotLeft,
+                    plotTop = chart.plotTop,
+                    plotBottom = chart.plotHeight + plotTop,
+                    dx = 0,
+                    dy = 0;
+
+                pos = axis.swapZ({
+                    x: pos.x,
+                    y: pos.y,
+                    z: 0
+                });
+
+
+                if (axis.isZAxis) { // Z Axis
+                    if (axis.opposite) {
+                        if (frame.axes.z.top === null) {
+                            return {};
+                        }
+                        dy = pos.y - plotTop;
+                        pos.x = frame.axes.z.top.x;
+                        pos.y = frame.axes.z.top.y;
+                    } else {
+                        if (frame.axes.z.bottom === null) {
+                            return {};
+                        }
+                        dy = pos.y - plotBottom;
+                        pos.x = frame.axes.z.bottom.x;
+                        pos.y = frame.axes.z.bottom.y;
+                    }
+                } else if (axis.horiz) { // X Axis
+                    if (axis.opposite) {
+                        if (frame.axes.x.top === null) {
+                            return {};
+                        }
+                        dy = pos.y - plotTop;
+                        pos.y = frame.axes.x.top.y;
+                        pos.z = frame.axes.x.top.z;
+                    } else {
+                        if (frame.axes.x.bottom === null) {
+                            return {};
+                        }
+                        dy = pos.y - plotBottom;
+                        pos.y = frame.axes.x.bottom.y;
+                        pos.z = frame.axes.x.bottom.z;
+                    }
+                } else { //Y Axis
+                    if (axis.opposite) {
+                        if (frame.axes.y.right === null) {
+                            return {};
+                        }
+                        dx = pos.x - plotRight;
+                        pos.x = frame.axes.y.right.x;
+                        pos.z = frame.axes.y.right.z;
+                    } else {
+                        if (frame.axes.y.left === null) {
+                            return {};
+                        }
+                        dx = pos.x - plotLeft;
+                        pos.x = frame.axes.y.left.x;
+                        pos.z = frame.axes.y.left.z;
+                    }
+                }
+                pos = perspective([pos], axis.chart)[0];
+                pos.x += dx;
+                pos.y += dy;
+            }
+            return pos;
+        }
 
         /***
         	EXTENSION TO THE TICKS
@@ -1414,73 +2799,30 @@
         wrap(Tick.prototype, 'getMarkPath', function(proceed) {
             var path = proceed.apply(this, [].slice.call(arguments, 1));
 
-            // Do not do this if the chart is not 3D
-            if (!this.axis.chart.is3d() || this.axis.coll === 'colorAxis') {
-                return path;
-            }
-
             var pArr = [
-                this.axis.swapZ({
+                fix3dPosition(this.axis, {
                     x: path[1],
                     y: path[2],
                     z: 0
                 }),
-                this.axis.swapZ({
+                fix3dPosition(this.axis, {
                     x: path[4],
                     y: path[5],
                     z: 0
                 })
             ];
 
-            pArr = perspective(pArr, this.axis.chart, false);
-            path = [
-                'M', pArr[0].x, pArr[0].y,
-                'L', pArr[1].x, pArr[1].y
-            ];
-            return path;
+            return this.axis.chart.renderer.toLineSegments(pArr);
         });
 
         wrap(Tick.prototype, 'getLabelPosition', function(proceed) {
             var pos = proceed.apply(this, [].slice.call(arguments, 1));
-
-            // Do not do this if the chart is not 3D
-            if (this.axis.chart.is3d() && this.axis.coll !== 'colorAxis') {
-                pos = perspective([this.axis.swapZ({
-                    x: pos.x,
-                    y: pos.y,
-                    z: 0
-                })], this.axis.chart, false)[0];
-            }
-            return pos;
+            return fix3dPosition(this.axis, pos);
         });
 
         H.wrap(Axis.prototype, 'getTitlePosition', function(proceed) {
-            var is3d = this.chart.is3d() && this.coll !== 'colorAxis',
-                pos,
-                axisTitleMargin;
-
-            // Pull out the axis title margin, that is not subject to the perspective
-            if (is3d) {
-                axisTitleMargin = this.axisTitleMargin;
-                this.axisTitleMargin = 0;
-            }
-
-            pos = proceed.apply(this, [].slice.call(arguments, 1));
-
-            if (is3d) {
-                pos = perspective([this.swapZ({
-                    x: pos.x,
-                    y: pos.y,
-                    z: 0
-                })], this.chart, false)[0];
-
-                // Re-apply the axis title margin outside the perspective
-                pos[this.horiz ? 'y' : 'x'] += (this.horiz ? 1 : -1) * // horizontal axis reverses the margin ...
-                    (this.opposite ? -1 : 1) * // ... so does opposite axes
-                    axisTitleMargin;
-                this.axisTitleMargin = axisTitleMargin;
-            }
-            return pos;
+            var pos = proceed.apply(this, [].slice.call(arguments, 1));
+            return fix3dPosition(this, pos);
         });
 
         wrap(Axis.prototype, 'drawCrosshair', function(proceed) {
@@ -1512,9 +2854,8 @@
         Axis.prototype.swapZ = function(p, insidePlotArea) {
             if (this.isZAxis) {
                 var plotLeft = insidePlotArea ? 0 : this.chart.plotLeft;
-                var chart = this.chart;
                 return {
-                    x: plotLeft + (chart.yAxis[0].opposite ? p.z : chart.xAxis[0].width - p.z),
+                    x: plotLeft + p.z,
                     y: p.y,
                     z: p.x - plotLeft
                 };

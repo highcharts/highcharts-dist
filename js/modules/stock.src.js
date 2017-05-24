@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -1246,6 +1246,8 @@
 
                     if (isNumber(low) || isNumber(high)) {
                         return [low, high];
+                    } else if (low === null && high === null) {
+                        return null;
                     }
                     // else, return is undefined
                 }
@@ -1421,6 +1423,7 @@
                     hasGroupedData = true;
 
                     series.isDirty = true; // force recreation of point instances in series.translate, #5699
+                    series.points = null; // #6709
 
                     var extremes = xAxis.getExtremes(),
                         xMin = extremes.min,
@@ -1677,7 +1680,17 @@
         };
 
         /**
-         * Force data grouping on all the axis' series.
+         * Highstock only. Force data grouping on all the axis' series.
+         *
+         * @param  {SeriesDatagroupingOptions} [dataGrouping]
+         *         A `dataGrouping` configuration. Use `false` to disable data grouping
+         *         dynamically.
+         * @param  {Boolean} [redraw=true]
+         *         Whether to redraw the chart or wait for a later call to {@link
+         *         Chart#redraw}.
+         *
+         * @function setDataGrouping
+         * @memberOf Axis.prototype
          */
         Axis.prototype.setDataGrouping = function(dataGrouping, redraw) {
             var i;
@@ -3572,7 +3585,10 @@
                     if (inverted) {
                         scrollbarTop = navigator.top - scrollbarHeight;
                         scrollbarLeft = navigator.left - scrollbarHeight +
-                            (navigatorEnabled ? 0 : (scrollbarXAxis.titleOffset || 0) +
+                            (navigatorEnabled || !scrollbarXAxis.opposite ? 0 :
+                                // Multiple axes has offsets:
+                                (scrollbarXAxis.titleOffset || 0) +
+                                // Self margin from the axis.title
                                 scrollbarXAxis.axisTitleMargin
                             );
                         scrollbarHeight = navigatorSize + 2 * scrollbarHeight;
@@ -5547,8 +5563,39 @@
             seriesInit = seriesProto.init,
             seriesProcessData = seriesProto.processData,
             pointTooltipFormatter = Point.prototype.tooltipFormatter;
+
         /**
-         * A wrapper for Chart with all the default values for a Stock chart
+         * Factory function for creating new stock charts. Creates a new {@link Chart|
+         * Chart} object with different default options than the basic Chart.
+         * 
+         * @function #stockChart
+         * @memberOf Highcharts
+         *
+         * @param  {String|HTMLDOMElement} renderTo
+         *         The DOM element to render to, or its id.
+         * @param  {Options} options
+         *         The chart options structure as described in the {@link
+         *         https://api.highcharts.com/highstock|options reference}.
+         * @param  {Function} callback
+         *         A function to execute when the chart object is finished loading and
+         *         rendering. In most cases the chart is built in one thread, but in
+         *         Internet Explorer version 8 or less the chart is sometimes initiated
+         *         before the document is ready, and in these cases the chart object
+         *         will not be finished synchronously. As a consequence, code that
+         *         relies on the newly built Chart object should always run in the
+         *         callback. Defining a {@link https://api.highcharts.com/highstock/chart.events.load|
+         *         chart.event.load} handler is equivalent.
+         *
+         * @return {Chart}
+         *         The chart object.
+         *
+         * @example
+         * var chart = Highcharts.stockChart('container', {
+         *     series: [{
+         *         data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+         *         pointInterval: 24 * 60 * 60 * 1000
+         *     }]
+         * });
          */
         H.StockChart = H.stockChart = function(a, b, c) {
             var hasRenderToArg = isString(a) || a.nodeName,
@@ -5759,8 +5806,8 @@
                 });
             }
 
-            // Ignore in case of color Axis. #3360, #3524
-            if (axis.coll === 'colorAxis') {
+            // Ignore in case of colorAxis or zAxis. #3360, #3524, #6720
+            if (axis.coll !== 'xAxis' && axis.coll !== 'yAxis') {
                 return proceed.apply(this, [].slice.call(arguments, 1));
             }
 
@@ -6046,7 +6093,17 @@
         };
 
         /**
-         * The setCompare method can be called also from the outside after render time
+         * Highstock only. Set the {@link
+         * http://api.highcharts.com/highstock/plotOptions.series.compare|
+         * compare} mode of the series after render time. In most cases it is more
+         * useful running {@link Axis#setCompare} on the X axis to update all its
+         * series.
+         *
+         * @function setCompare
+         * @memberOf Series.prototype
+         *
+         * @param  {String} compare
+         *         Can be one of `null`, `"percent"` or `"value"`.
          */
         seriesProto.setCompare = function(compare) {
 
@@ -6147,7 +6204,23 @@
         });
 
         /**
-         * Add a utility method, setCompare, to the Y axis
+         * Highstock only. Set the compare mode on all series belonging to an Y axis
+         * after render time.
+         *
+         * @param  {String} compare
+         *         The compare mode. Can be one of `null`, `"value"` or `"percent"`.
+         * @param  {Boolean} [redraw=true]
+         *         Whether to redraw the chart or to wait for a later call to {@link
+         *         Chart#redraw},
+         *
+         * @function setCompare
+         * @memberOf Axis.prototype
+         *
+         * @see    {@link https://api.highcharts.com/highstock/series.plotOptions.compare|
+         *         series.plotOptions.compare}
+         *
+         * @sample stock/members/axis-setcompare/
+         *         Set compoare
          */
         Axis.prototype.setCompare = function(compare, redraw) {
             if (!this.isXAxis) {

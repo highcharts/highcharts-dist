@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -42,9 +42,11 @@
             extend = H.extend,
             isTouchDevice = H.isTouchDevice,
             win = H.win,
-            SVGRenderer = H.SVGRenderer;
-
-        var symbols = H.Renderer.prototype.symbols;
+            userAgent = win.navigator.userAgent,
+            SVGRenderer = H.SVGRenderer,
+            symbols = H.Renderer.prototype.symbols,
+            isMSBrowser = /Edge\/|Trident\/|MSIE /.test(userAgent),
+            isFirefoxBrowser = /firefox/i.test(userAgent);
 
         // Add language
         extend(defaultOptions.lang, {
@@ -436,6 +438,8 @@
              *         PDF type and custom filename
              * @sample highcharts/members/chart-exportchart-custom-background/
              *         Different chart background in export
+             * @sample stock/members/chart-exportchart/
+             *         Export with Highstock
              */
             exportChart: function(exportingOptions, chartOptions) {
 

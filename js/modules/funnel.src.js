@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.11 (2017-05-04)
+ * @license Highcharts JS v5.0.12 (2017-05-24)
  * Highcharts funnel module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -216,13 +216,6 @@
                         }
                     });
                 },
-                /**
-                 * Draw a single point (wedge)
-                 * @param {Object} point The point object
-                 * @param {Object} color The color of the point
-                 * @param {Number} brightness The brightness relative to the color
-                 */
-                drawPoints: seriesTypes.column.prototype.drawPoints,
 
                 /**
                  * Funnel items don't have angles (#2289)
