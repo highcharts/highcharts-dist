@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.13 (2017-07-27)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -109,7 +109,7 @@
                     }
 
                     each(series.points, function(point, pIdx) {
-                        var key = requireSorting ? point.x : pIdx,
+                        var key = requireSorting ? point.x : point.x + '|' + pIdx,
                             prop,
                             val;
 
@@ -261,7 +261,7 @@
                         html += '<' + tag + ' class="number">' + val + '</' + tag + '>';
 
                     } else {
-                        html += '<' + tag + '>' + (val === undefined ? '' : val) + '</' + tag + '>';
+                        html += '<' + tag + ' class="text">' + (val === undefined ? '' : val) + '</' + tag + '>';
                     }
                 }
 
@@ -278,6 +278,11 @@
             return html;
         };
 
+        /**
+         * Use download attribute if supported, else  run a simple PHP script that
+         * returns a file. The source code for the PHP script can be viewed at
+         * https://raw.github.com/highcharts/highcharts/master/studies/csv-export/csv.php
+         */
         Highcharts.Chart.prototype.fileDownload = function(href, extension, content, MIME) {
             var a,
                 blobObject,
@@ -303,7 +308,6 @@
             } else if (downloadAttrSupported) {
                 a = doc.createElement('a');
                 a.href = href;
-                a.target = '_blank';
                 a.download = name + '.' + extension;
                 this.container.append(a); // #111
                 a.click();
@@ -341,7 +345,7 @@
                 '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>' +
                 '<x:Name>Ark1</x:Name>' +
                 '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' +
-                '<style>td{border:none;font-family: Calibri, sans-serif;} .number{mso-number-format:"0.00";}</style>' +
+                '<style>td{border:none;font-family: Calibri, sans-serif;} .number{mso-number-format:"0.00";} .text{ mso-number-format:"\@";}</style>' +
                 '<meta name=ProgId content=Excel.Sheet>' +
                 '<meta charset=UTF-8>' +
                 '</head><body>' +
@@ -377,26 +381,37 @@
         };
 
 
-        // Add "Download CSV" to the exporting menu. Use download attribute if supported, else
-        // run a simple PHP script that returns a file. The source code for the PHP script can be viewed at
-        // https://raw.github.com/highslide-software/highcharts.com/master/studies/csv-export/csv.php
-        if (Highcharts.getOptions().exporting) {
-            Highcharts.getOptions().exporting.buttons.contextButton.menuItems.push({
-                textKey: 'downloadCSV',
-                onclick: function() {
-                    this.downloadCSV();
-                }
-            }, {
-                textKey: 'downloadXLS',
-                onclick: function() {
-                    this.downloadXLS();
-                }
-            }, {
-                textKey: 'viewData',
-                onclick: function() {
-                    this.viewData();
+        // Add "Download CSV" to the exporting menu.
+        var exportingOptions = Highcharts.getOptions().exporting;
+        if (exportingOptions) {
+
+            Highcharts.extend(exportingOptions.menuItemDefinitions, {
+                downloadCSV: {
+                    textKey: 'downloadCSV',
+                    onclick: function() {
+                        this.downloadCSV();
+                    }
+                },
+                downloadXLS: {
+                    textKey: 'downloadXLS',
+                    onclick: function() {
+                        this.downloadXLS();
+                    }
+                },
+                viewData: {
+                    textKey: 'viewData',
+                    onclick: function() {
+                        this.viewData();
+                    }
                 }
             });
+
+            exportingOptions.buttons.contextButton.menuItems.push(
+                'separator',
+                'downloadCSV',
+                'downloadXLS',
+                'viewData'
+            );
         }
 
         // Series specific

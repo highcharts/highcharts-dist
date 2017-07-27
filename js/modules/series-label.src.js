@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.13 (2017-07-27)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -47,13 +47,31 @@
         H.setOptions({
             plotOptions: {
                 series: {
+
+                    /**
+                     */
                     label: {
+
+                        /**
+                         */
                         enabled: true,
                         // Allow labels to be placed distant to the graph if necessary, and
                         // draw a connector line to the graph
+
+                        /**
+                         */
                         connectorAllowed: true,
+
+                        /**
+                         */
                         connectorNeighbourDistance: 24, // If the label is closer than this to a neighbour graph, draw a connector
+
+                        /**
+                         */
                         styles: {
+
+                            /**
+                             */
                             fontWeight: 'bold'
                         }
                         // boxesToAvoid: []

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.13 (2017-07-27)
  *
  * (c) 2014 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -62,31 +62,213 @@
             };
 
         // The Treemap series type
+        /**
+         * @extends {plotOptions.scatter}
+         * @optionparent plotOptions.treemap
+         */
         seriesType('treemap', 'scatter', {
+
+            /**
+             * Whether to display this series type or specific series item in the
+             * legend.
+             * 
+             * @type {Boolean}
+             * @default false
+             * @product highcharts
+             */
             showInLegend: false,
+
+            /**
+             */
             marker: false,
+
+            /**
+             * @extends plotOptions.heatmap.dataLabels
+             * @since 4.1.0
+             * @product highcharts
+             */
             dataLabels: {
+
+                /**
+                 * Enable or disable the data labels.
+                 * 
+                 * @type {Boolean}
+                 * @sample {highcharts} highcharts/plotoptions/series-datalabels-enabled/ Data labels enabled
+                 * @default true
+                 * @since 4.1.0
+                 * @product highcharts
+                 */
                 enabled: true,
+
+                /**
+                 * Whether to defer displaying the data labels until the initial series
+                 * animation has finished.
+                 * 
+                 * @type {Boolean}
+                 * @default false
+                 * @since 4.1.0
+                 * @product highcharts
+                 */
                 defer: false,
+
+                /**
+                 * The vertical alignment of a data label. Can be one of top, middle
+                 * or bottom. The default value depends on the data, for instance
+                 * in a column chart, the label is above positive values and below
+                 * negative values.
+                 * 
+                 * @type {String}
+                 * @default middle
+                 * @since 4.1.0
+                 * @product highcharts
+                 */
                 verticalAlign: 'middle',
+
+                /**
+                 */
                 formatter: function() { // #2945
                     return this.point.name || this.point.id;
                 },
+
+                /**
+                 * Whether to align the data label inside the box or to the actual
+                 * value point.
+                 * 
+                 * @type {Boolean}
+                 * @default true
+                 * @since 4.1.0
+                 * @product highcharts
+                 */
                 inside: true
             },
+
+            /**
+             * @extends plotOptions.heatmap.tooltip
+             * @since 4.1.0
+             * @product highcharts
+             */
             tooltip: {
+
+                /**
+                 * The HTML of the tooltip header line. Variables are enclosed by
+                 * curly brackets. Available variables are point.key, series.name,
+                 * series.color and other members from the point and series objects.
+                 * The point.key variable contains the category name, x value or
+                 * datetime string depending on the type of axis. For datetime axes,
+                 * the point.key date format can be set using tooltip.xDateFormat.
+                 * 
+                 * @type {String}
+                 * @sample {highcharts} highcharts/tooltip/footerformat/ A HTML table in the tooltip
+                 * @default ""
+                 * @since 4.1.0
+                 * @product highcharts
+                 */
                 headerFormat: '',
+
+                /**
+                 * The HTML of the point's line in the tooltip. Variables are enclosed
+                 * by curly brackets. Available variables are point.x, point.y, series.
+                 * name and series.color and other properties on the same form. Furthermore,
+                 * point.y can be extended by the tooltip.yPrefix and tooltip.ySuffix
+                 * variables. This can also be overridden for each series, which makes
+                 * it a good hook for displaying units.
+                 * 
+                 * @type {String}
+                 * @sample {highcharts} highcharts/tooltip/pointformat/ A different point format with value suffix
+                 * @default "&#60;b&#62;{point.name}&#60;/b&#62;: {point.value}&#60;/b&#62;&#60;br/&#62;"
+                 * @since 4.1.0
+                 * @product highcharts
+                 */
                 pointFormat: '<b>{point.name}</b>: {point.value}</b><br/>'
             },
+
+            /**
+             * Whether to ignore hidden points when the layout algorithm runs.
+             * If `false`, hidden points will leave open spaces.
+             * 
+             * @type {Boolean}
+             * @default true
+             * @since 5.0.8
+             * @product highcharts
+             */
             ignoreHiddenPoint: true,
+
+            /**
+             * This option decides which algorithm is used for setting position
+             * and dimensions of the points. Can be one of `sliceAndDice`, `stripes`,
+             *  `squarified` or `strip`.
+             * 
+             * @validvalue ["sliceAndDice", "stripes", "squarified", "strip"]
+             * @type {String}
+             * @see [How to write your own algorithm](http://www.highcharts.com/docs/chart-
+             * and-series-types/treemap)
+             * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-sliceanddice/ SliceAndDice by default
+             * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-stripes/ Stripes
+             * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-squarified/ Squarified
+             * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-strip/ Strip
+             * @default sliceAndDice
+             * @since 4.1.0
+             * @product highcharts
+             */
             layoutAlgorithm: 'sliceAndDice',
+
+            /**
+             * Defines which direction the layout algorithm will start drawing.
+             *  Possible values are "vertical" and "horizontal".
+             * 
+             * @validvalue ["vertical", "horizontal"]
+             * @type {String}
+             * @default vertical
+             * @since 4.1.0
+             * @product highcharts
+             */
             layoutStartingDirection: 'vertical',
+
+            /**
+             * Enabling this option will make the treemap alternate the drawing
+             * direction between vertical and horizontal. The next levels starting
+             * direction will always be the opposite of the previous.
+             * 
+             * @type {Boolean}
+             * @sample {highcharts} highcharts/plotoptions/treemap-alternatestartingdirection-true/ Enabled
+             * @default false
+             * @since 4.1.0
+             * @product highcharts
+             */
             alternateStartingDirection: false,
+
+            /**
+             * Used together with the levels and allowDrillToNode options. When
+             * set to false the first level visible when drilling is considered
+             * to be level one. Otherwise the level will be the same as the tree
+             * structure.
+             * 
+             * @validvalue [true, false]
+             * @type {Boolean}
+             * @default true
+             * @since 4.1.0
+             * @product highcharts
+             */
             levelIsConstant: true,
+
+            /**
+             */
             drillUpButton: {
+
+                /**
+                 */
                 position: {
+
+                    /**
+                     */
                     align: 'right',
+
+                    /**
+                     */
                     x: -10,
+
+                    /**
+                     */
                     y: 10
                 }
             },
@@ -96,6 +278,7 @@
         }, {
             pointArrayMap: ['value'],
             axisTypes: seriesTypes.heatmap ? ['xAxis', 'yAxis', 'colorAxis'] : ['xAxis', 'yAxis'],
+            directTouch: true,
             optionalAxis: 'colorAxis',
             getSymbol: noop,
             parallelArrays: ['x', 'y', 'value', 'colorValue'],
@@ -183,51 +366,13 @@
                     children = [],
                     val,
                     point = series.points[tree.i];
-                // Parents of the root node is by default visible
-                recursive(series.nodeMap[series.rootNode], function(node) {
-                    var next = false,
-                        p = node.parent;
-                    node.visible = true;
-                    if (p || p === '') {
-                        next = series.nodeMap[p];
-                    }
-                    return next;
-                });
-                // Children of the root node is by default visible
-                recursive(series.nodeMap[series.rootNode].children, function(children) {
-                    var next = false;
-                    each(children, function(child) {
-                        child.visible = true;
-                        if (child.children.length) {
-                            next = (next || []).concat(child.children);
-                        }
-                    });
-                    return next;
-                });
 
                 // First give the children some values
                 each(tree.children, function(child) {
                     child = series.setTreeValues(child);
                     children.push(child);
-
                     if (!child.ignore) {
                         childrenTotal += child.val;
-                    } else {
-                        // @todo Add predicate to avoid looping already ignored children
-                        recursive(child.children, function(children) {
-                            var next = false;
-                            each(children, function(node) {
-                                extend(node, {
-                                    ignore: true,
-                                    isLeaf: false,
-                                    visible: false
-                                });
-                                if (node.children.length) {
-                                    next = (next || []).concat(node.children);
-                                }
-                            });
-                            return next;
-                        });
                     }
                 });
                 // Sort the children
@@ -245,7 +390,7 @@
                     // Ignore this node if point is not visible
                     ignore: !(pick(point && point.visible, true) && (val > 0)),
                     isLeaf: tree.visible && !childrenTotal,
-                    levelDynamic: (options.levelIsConstant ? tree.level : (tree.level - series.nodeMap[series.rootNode].level)),
+                    levelDynamic: tree.level - (options.levelIsConstant ? series.nodeMap[series.rootNode].level : 0),
                     name: pick(point && point.name, ''),
                     sortIndex: pick(point && point.sortIndex, -val),
                     val: val
@@ -584,6 +729,27 @@
                     rootId = series.rootNode;
                     rootNode = series.nodeMap[rootId];
                 }
+                // Parents of the root node is by default visible
+                recursive(series.nodeMap[series.rootNode], function(node) {
+                    var next = false,
+                        p = node.parent;
+                    node.visible = true;
+                    if (p || p === '') {
+                        next = series.nodeMap[p];
+                    }
+                    return next;
+                });
+                // Children of the root node is by default visible
+                recursive(series.nodeMap[series.rootNode].children, function(children) {
+                    var next = false;
+                    each(children, function(child) {
+                        child.visible = true;
+                        if (child.children.length) {
+                            next = (next || []).concat(child.children);
+                        }
+                    });
+                    return next;
+                });
                 series.setTreeValues(tree);
 
                 // Calculate plotting values.
@@ -673,8 +839,9 @@
             alignDataLabel: function(point) {
                 seriesTypes.column.prototype.alignDataLabel.apply(this, arguments);
                 if (point.dataLabel) {
+                    // point.node.zIndex could be undefined (#6956)
                     point.dataLabel.attr({
-                        zIndex: point.node.zIndex + 1
+                        zIndex: (point.node.zIndex || 0) + 1
                     });
                 }
             },
@@ -731,7 +898,7 @@
              * Finds the drill id for a parent node.
              * Returns false if point should not have a click event
              * @param {Object} point
-             * @return {string || boolean} Drill to id or false when point should not have a click event
+             * @return {String|Boolean} Drill to id or false when point should not have a click event
              */
             drillToByGroup: function(point) {
                 var series = this,
@@ -745,7 +912,7 @@
              * Finds the drill id for a leaf node.
              * Returns false if point should not have a click event
              * @param {Object} point
-             * @return {string || boolean} Drill to id or false when point should not have a click event
+             * @return {String|Boolean} Drill to id or false when point should not have a click event
              */
             drillToByLeaf: function(point) {
                 var series = this,

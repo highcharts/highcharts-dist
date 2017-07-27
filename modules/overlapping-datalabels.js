@@ -1,10 +1,11 @@
 /*
- Highcharts JS v5.0.12 (2017-05-24)
+ Highcharts JS v5.0.13 (2017-07-27)
 
  (c) 2009-2017 Torstein Honsi
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?module.exports=a:a(Highcharts)})(function(a){(function(a){var h=a.Chart,k=a.each,q=a.pick,r=a.addEvent;h.prototype.callbacks.push(function(f){function a(){var a=[];k(f.series||[],function(b){var c=b.options.dataLabels,d=b.dataLabelCollections||["dataLabel"];(c.enabled||b._hasPointLabels)&&!c.allowOverlap&&b.visible&&k(d,function(c){k(b.points,function(b){b[c]&&(b[c].labelrank=q(b.labelrank,b.shapeArgs&&b.shapeArgs.height),a.push(b[c]))})})});f.hideOverlappingLabels(a)}
-a();r(f,"redraw",a)});h.prototype.hideOverlappingLabels=function(a){var f=a.length,e,b,c,d,l,m,n,p,g,h=function(a,b,c,d,e,f,g,h){return!(e>a+c||e+g<a||f>b+d||f+h<b)};for(b=0;b<f;b++)if(e=a[b])e.oldOpacity=e.opacity,e.newOpacity=1;a.sort(function(a,b){return(b.labelrank||0)-(a.labelrank||0)});for(b=0;b<f;b++)for(c=a[b],e=b+1;e<f;++e)if(d=a[e],c&&d&&c!==d&&c.placed&&d.placed&&0!==c.newOpacity&&0!==d.newOpacity&&(l=c.alignAttr,m=d.alignAttr,n=c.parentGroup,p=d.parentGroup,g=2*(c.box?0:c.padding),l=h(l.x+
-n.translateX,l.y+n.translateY,c.width-g,c.height-g,m.x+p.translateX,m.y+p.translateY,d.width-g,d.height-g)))(c.labelrank<d.labelrank?c:d).newOpacity=0;k(a,function(a){var b,c;a&&(c=a.newOpacity,a.oldOpacity!==c&&a.placed&&(c?a.show(!0):b=function(){a.hide()},a.alignAttr.opacity=c,a[a.isOld?"animate":"attr"](a.alignAttr,null,b)),a.isOld=!0)})}})(a)});
+(function(d){"object"===typeof module&&module.exports?module.exports=d:d(Highcharts)})(function(d){(function(g){var d=g.Chart,h=g.each,l=g.objectEach,q=g.pick,r=g.addEvent;d.prototype.callbacks.push(function(f){function d(){var c=[];h(f.yAxis,function(b){b.options.stackLabels&&!b.options.stackLabels.allowOverlap&&l(b.stacks,function(a){l(a,function(a){c.push(a.label)})})});h(f.series||[],function(b){var a=b.options.dataLabels,e=b.dataLabelCollections||["dataLabel"];(a.enabled||b._hasPointLabels)&&
+!a.allowOverlap&&b.visible&&h(e,function(a){h(b.points,function(b){b[a]&&(b[a].labelrank=q(b.labelrank,b.shapeArgs&&b.shapeArgs.height),c.push(b[a]))})})});f.hideOverlappingLabels(c)}d();r(f,"redraw",d)});d.prototype.hideOverlappingLabels=function(f){var d=f.length,c,b,a,e,g,m,n,p,k,l=function(a,b,c,d,e,f,g,h){return!(e>a+c||e+g<a||f>b+d||f+h<b)};for(b=0;b<d;b++)if(c=f[b])c.oldOpacity=c.opacity,c.newOpacity=1,c.width||(a=c.getBBox(),c.width=a.width,c.height=a.height);f.sort(function(a,b){return(b.labelrank||
+0)-(a.labelrank||0)});for(b=0;b<d;b++)for(a=f[b],c=b+1;c<d;++c)if(e=f[c],a&&e&&a!==e&&a.placed&&e.placed&&0!==a.newOpacity&&0!==e.newOpacity&&(g=a.alignAttr,m=e.alignAttr,n=a.parentGroup,p=e.parentGroup,k=2*(a.box?0:a.padding||0),g=l(g.x+n.translateX,g.y+n.translateY,a.width-k,a.height-k,m.x+p.translateX,m.y+p.translateY,e.width-k,e.height-k)))(a.labelrank<e.labelrank?a:e).newOpacity=0;h(f,function(a){var b,c;a&&(c=a.newOpacity,a.oldOpacity!==c&&a.placed&&(c?a.show(!0):b=function(){a.hide()},a.alignAttr.opacity=
+c,a[a.isOld?"animate":"attr"](a.alignAttr,null,b)),a.isOld=!0)})}})(d)});

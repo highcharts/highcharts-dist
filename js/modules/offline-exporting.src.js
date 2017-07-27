@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.13 (2017-07-27)
  * Client side exporting module
  *
  * (c) 2015 Torstein Honsi / Oystein Moseng
@@ -91,14 +91,19 @@
                 windowRef;
 
             // IE specific blob implementation
-            if (nav.msSaveOrOpenBlob) {
+            // Don't use for normal dataURLs
+            if (
+                typeof dataURL !== 'string' &&
+                !(dataURL instanceof String) &&
+                nav.msSaveOrOpenBlob
+            ) {
                 nav.msSaveOrOpenBlob(dataURL, filename);
                 return;
             }
 
             // Some browsers have limitations for data URL lengths. Try to convert to
-            // Blob or fall back.
-            if (dataURL.length > 2000000) {
+            // Blob or fall back. Edge always needs that blob.
+            if (isEdgeBrowser || dataURL.length > 2000000) {
                 dataURL = Highcharts.dataURLtoBlob(dataURL);
                 if (!dataURL) {
                     throw 'Data URL length limit reached';
@@ -520,7 +525,6 @@
 
             // Always fall back on:
             // - MS browsers: Embedded images JPEG/PNG, or any PDF
-            // - Edge: PNG/JPEG all cases
             // - Embedded images and PDF
             if (
                 (
@@ -530,8 +534,6 @@
                         chart.container.getElementsByTagName('image').length &&
                         options.type !== 'image/svg+xml'
                     )
-                ) || (
-                    isEdgeBrowser && options.type !== 'image/svg+xml'
                 ) || (
                     options.type === 'application/pdf' &&
                     chart.container.getElementsByTagName('image').length
@@ -546,44 +548,42 @@
 
         // Extend the default options to use the local exporter logic
         merge(true, Highcharts.getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/5.0.12/lib/',
-            buttons: {
-                contextButton: {
-                    menuItems: [{
-                        textKey: 'printChart',
-                        onclick: function() {
-                            this.print();
-                        }
-                    }, {
-                        separator: true
-                    }, {
-                        textKey: 'downloadPNG',
-                        onclick: function() {
-                            this.exportChartLocal();
-                        }
-                    }, {
-                        textKey: 'downloadJPEG',
-                        onclick: function() {
-                            this.exportChartLocal({
-                                type: 'image/jpeg'
-                            });
-                        }
-                    }, {
-                        textKey: 'downloadSVG',
-                        onclick: function() {
-                            this.exportChartLocal({
-                                type: 'image/svg+xml'
-                            });
-                        }
-                    }, {
-                        textKey: 'downloadPDF',
-                        onclick: function() {
-                            this.exportChartLocal({
-                                type: 'application/pdf'
-                            });
-                        }
-                    }]
+            libURL: 'https://code.highcharts.com/5.0.13/lib/',
+
+            // When offline-exporting is loaded, redefine the menu item definitions
+            // related to download.
+            menuItemDefinitions: {
+                downloadPNG: {
+                    textKey: 'downloadPNG',
+                    onclick: function() {
+                        this.exportChartLocal();
+                    }
+                },
+                downloadJPEG: {
+                    textKey: 'downloadJPEG',
+                    onclick: function() {
+                        this.exportChartLocal({
+                            type: 'image/jpeg'
+                        });
+                    }
+                },
+                downloadSVG: {
+                    textKey: 'downloadSVG',
+                    onclick: function() {
+                        this.exportChartLocal({
+                            type: 'image/svg+xml'
+                        });
+                    }
+                },
+                downloadPDF: {
+                    textKey: 'downloadPDF',
+                    onclick: function() {
+                        this.exportChartLocal({
+                            type: 'application/pdf'
+                        });
+                    }
                 }
+
             }
         });
 

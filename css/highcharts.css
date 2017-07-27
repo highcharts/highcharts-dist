@@ -643,12 +643,13 @@ input.highcharts-range-selector {
   stroke-width: 3px;
 }
 
-.highcharts-flags-series .highcharts-point {
+.highcharts-flags-series .highcharts-point .highcharts-label-box {
   stroke: #999999;
   fill: #ffffff;
+  transition: fill 250ms;
 }
 
-.highcharts-flags-series .highcharts-point-hover {
+.highcharts-flags-series .highcharts-point-hover .highcharts-label-box {
   stroke: #000000;
   fill: #ccd6eb;
 }

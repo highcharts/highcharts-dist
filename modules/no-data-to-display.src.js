@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.13 (2017-07-27)
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2017 Highsoft AS
@@ -37,11 +37,61 @@
         });
 
         // Add default display options for message
+        /**
+         * Options for displaying a message like "No data to display". 
+         * This feature requires the file no-data-to-display.js to be loaded in the page. 
+         * The actual text to display is set in the lang.noData option.
+         * @type {Object}
+         * @optionparent noData
+         */
         defaultOptions.noData = {
+
+            /**
+             * The position of the no-data label, relative to the plot area.
+             * 
+             * @type {Object}
+             * @default { "x": 0, "y": 0, "align": "center", "verticalAlign": "middle" }
+             * @since 3.0.8
+             * @product highcharts highstock highmaps
+             */
             position: {
+
+                /**
+                 * Horizontal offset of the label, in pixels.
+                 * 
+                 * @type {Number}
+                 * @default 0
+                 * @product highcharts highstock
+                 */
                 x: 0,
+
+                /**
+                 * Vertical offset of the label, in pixels.
+                 * 
+                 * @type {Number}
+                 * @default 0
+                 * @product highcharts highstock
+                 */
                 y: 0,
+
+                /**
+                 * Horizontal alignment of the label.
+                 * 
+                 * @validvalue ["left", "center", "right"]
+                 * @type {String}
+                 * @default center
+                 * @product highcharts highstock highmaps
+                 */
                 align: 'center',
+
+                /**
+                 * Vertical alignment of the label.
+                 * 
+                 * @validvalue ["top", "middle", "bottom"]
+                 * @type {String}
+                 * @default middle
+                 * @product highcharts highstock
+                 */
                 verticalAlign: 'middle'
             }
             // useHTML: false
@@ -49,9 +99,22 @@
 
 
         // Presentational
+        /**
+         * CSS styles for the no-data label.
+         * @optionparent noData.style
+         */
         defaultOptions.noData.style = {
+
+            /**
+             */
             fontWeight: 'bold',
+
+            /**
+             */
             fontSize: '12px',
+
+            /**
+             */
             color: '#666666'
         };
 

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.12 (2017-05-24)
+ * @license Highcharts JS v5.0.13 (2017-07-27)
  *
  * 3D features for Highcharts JS
  *
@@ -439,8 +439,11 @@
                 this.side.attr({
                     fill: color(fill).brighten(-0.1).get()
                 });
-
                 this.color = fill;
+
+                // for animation getter (#6776)
+                result.fill = fill;
+
                 return this;
             };
 
@@ -458,7 +461,7 @@
                 return this;
             };
 
-            result.attr = function(args, val) {
+            result.attr = function(args, val, complete, continueAnimation) {
 
                 // Resolve setting attributes by string name
                 if (typeof args === 'string' && typeof val !== 'undefined') {
@@ -480,7 +483,10 @@
                         d: paths[2]
                     });
                 } else {
-                    return H.SVGElement.prototype.attr.call(this, args); // getter returns value
+                    // getter returns value
+                    return SVGElement.prototype.attr.call(
+                        this, args, undefined, complete, continueAnimation
+                    );
                 }
 
                 return this;
@@ -732,10 +738,22 @@
                 // relates to neighbour elements as well
                 each(['out', 'inn', 'side1', 'side2'], function(face) {
                     wrapper[face]
-                        .addClass(className + ' highcharts-3d-side')
+                        .attr({
+                            'class': className + ' highcharts-3d-side'
+                        })
                         .add(parent);
                 });
             };
+
+            // Cascade to faces
+            each(['addClass', 'removeClass'], function(fn) {
+                wrapper[fn] = function() {
+                    var args = arguments;
+                    each(['top', 'out', 'inn', 'side1', 'side2'], function(face) {
+                        wrapper[face][fn].apply(wrapper[face], args);
+                    });
+                };
+            });
 
             /**
              * Compute the transformed paths and set them to the composite shapes
@@ -1212,29 +1230,168 @@
         });
 
         var defaultOptions = H.getOptions();
-        merge(true, defaultOptions, {
+
+        /**
+         * Options to render charts in 3 dimensions. 
+         * This feature requires highcharts-3d.js, found in the download package, 
+         * or online at code.highcharts.com/highcharts-3d.js.
+         * @optionparent
+         */
+        var extendedOptions = {
+
+            /**
+             * Options regarding the chart area and plot area as well as general
+             * chart options.
+             * 
+             * @product highcharts highstock highmaps
+             */
             chart: {
+
+                /**
+                 * Options to render charts in 3 dimensions. This feature requires
+                 * `highcharts-3d.js`, found in the download package or online at
+                 * [code.highcharts.com/highcharts-3d.js](http://code.highcharts.com/highcharts-
+                 * 3d.js).
+                 * 
+                 * @since 4.0
+                 * @product highcharts
+                 */
                 options3d: {
+
+                    /**
+                     * Wether to render the chart using the 3D functionality.
+                     * 
+                     * @type {Boolean}
+                     * @default false
+                     * @since 4.0
+                     * @product highcharts
+                     */
                     enabled: false,
+
+                    /**
+                     * One of the two rotation angles for the chart.
+                     * 
+                     * @type {Number}
+                     * @default 0
+                     * @since 4.0
+                     * @product highcharts
+                     */
                     alpha: 0,
+
+                    /**
+                     * One of the two rotation angles for the chart.
+                     * 
+                     * @type {Number}
+                     * @default 0
+                     * @since 4.0
+                     * @product highcharts
+                     */
                     beta: 0,
+
+                    /**
+                     * The total depth of the chart.
+                     * 
+                     * @type {Number}
+                     * @default 100
+                     * @since 4.0
+                     * @product highcharts
+                     */
                     depth: 100,
+
+                    /**
+                     * Whether the 3d box should automatically adjust to the chart plot
+                     * area.
+                     * 
+                     * @type {Boolean}
+                     * @default true
+                     * @since 4.2.4
+                     * @product highcharts
+                     */
                     fitToPlot: true,
+
+                    /**
+                     * Defines the distance the viewer is standing in front of the chart,
+                     * this setting is important to calculate the perspective effect
+                     * in column and scatter charts. It is not used for 3D pie charts.
+                     * 
+                     * @type {Number}
+                     * @default 100
+                     * @since 4.0
+                     * @product highcharts
+                     */
                     viewDistance: 25,
+
+                    /**
+                     * Set it to `"auto"` to automatically move the labels to the best
+                     * edge.
+                     * 
+                     * @validvalue [null, "auto"]
+                     * @type {String}
+                     * @default null
+                     * @since 5.0.12
+                     * @product highcharts
+                     */
                     axisLabelPosition: 'default',
+
+                    /**
+                     * Provides the option to draw a frame around the charts by defining
+                     * a bottom, front and back panel.
+                     * 
+                     * @since 4.0
+                     * @product highcharts
+                     */
                     frame: {
+
+                        /**
+                         */
                         visible: 'default',
+
+                        /**
+                         */
                         size: 1,
+
+                        /**
+                         * The bottom of the frame around a 3D chart.
+                         * 
+                         * @since 4.0
+                         * @product highcharts
+                         */
                         bottom: {},
+
+                        /**
+                         * The top of the frame around a 3D chart.
+                         * 
+                         * @type {Object}
+                         * @since 5.0.12
+                         * @product highcharts
+                         */
                         top: {},
+
+                        /**
+                         */
                         left: {},
+
+                        /**
+                         */
                         right: {},
+
+                        /**
+                         * Defines the back panel of the frame around 3D charts.
+                         * 
+                         * @since 4.0
+                         * @product highcharts
+                         */
                         back: {},
+
+                        /**
+                         */
                         front: {}
                     }
                 }
             }
-        });
+        };
+
+        merge(true, defaultOptions, extendedOptions);
 
 
         /**
@@ -2975,17 +3132,15 @@
                 chart = series.chart,
                 seriesOptions = series.options,
                 depth = seriesOptions.depth || 25,
+                stack = seriesOptions.stacking ?
+                (seriesOptions.stack || 0) :
+                series.index, // #4743
+                z = stack * (depth + (seriesOptions.groupZPadding || 1)),
                 borderCrisp = series.borderWidth % 2 ? 0.5 : 0;
 
-            if (
-                (chart.inverted && !series.yAxis.reversed) ||
-                (!chart.inverted && series.yAxis.reversed)
-            ) {
+            if (chart.inverted && !series.yAxis.reversed) {
                 borderCrisp *= -1;
             }
-
-            var stack = seriesOptions.stacking ? (seriesOptions.stack || 0) : series.index; // #4743
-            var z = stack * (depth + (seriesOptions.groupZPadding || 1));
 
             if (seriesOptions.grouping !== false) {
                 z = 0;
@@ -3002,25 +3157,36 @@
                             ['x', 'width'],
                             ['y', 'height']
                         ],
-                        borderlessBase; // crisped rects can have +/- 0.5 pixels offset
+                        borderlessBase; // Crisped rects can have +/- 0.5 pixels offset.
 
-                    // #3131 We need to check if column shape arguments are inside plotArea.
+                    // #3131 We need to check if column is inside plotArea.
                     each(dimensions, function(d) {
                         borderlessBase = shapeArgs[d[0]] - borderCrisp;
+                        if (borderlessBase < 0) {
+                            // If borderLessBase is smaller than 0, it is needed to set
+                            // its value to 0 or 0.5 depending on borderWidth
+                            // borderWidth may be even or odd.
+                            shapeArgs[d[1]] += shapeArgs[d[0]] + borderCrisp;
+                            shapeArgs[d[0]] = -borderCrisp;
+                            borderlessBase = 0;
+                        }
                         if (
-                            borderlessBase + shapeArgs[d[1]] < 0 || // End column position is smaller than axis start.
-                            borderlessBase > series[d[0] + 'Axis'].len // Start column position is bigger than axis end.
+                            borderlessBase + shapeArgs[d[1]] > series[d[0] + 'Axis'].len &&
+                            shapeArgs[d[1]] !== 0 // Do not change height/width of column if 0.
+                            // #6708
+                        ) {
+                            shapeArgs[d[1]] = series[d[0] + 'Axis'].len - shapeArgs[d[0]];
+                        }
+                        if (
+                            (shapeArgs[d[1]] !== 0) && // Do not remove columns with zero height/width.
+                            (
+                                shapeArgs[d[0]] >= series[d[0] + 'Axis'].len ||
+                                shapeArgs[d[0]] + shapeArgs[d[1]] <= borderCrisp
+                            )
                         ) {
                             for (var key in shapeArgs) { // Set args to 0 if column is outside the chart.
                                 shapeArgs[key] = 0;
                             }
-                        }
-                        if (borderlessBase < 0) {
-                            shapeArgs[d[1]] += shapeArgs[d[0]];
-                            shapeArgs[d[0]] = 0;
-                        }
-                        if (borderlessBase + shapeArgs[d[1]] > series[d[0] + 'Axis'].len) {
-                            shapeArgs[d[1]] = series[d[0] + 'Axis'].len - shapeArgs[d[0]];
                         }
                     });
 
@@ -3183,6 +3349,25 @@
             }
 
             proceed.apply(this, [].slice.call(arguments, 1));
+        });
+
+        // Added stackLabels position calculation for 3D charts.
+        wrap(H.StackItem.prototype, 'getStackBox', function(proceed, chart) { // #3946
+            var stackBox = proceed.apply(this, [].slice.call(arguments, 1));
+
+            // Only do this for 3D chart.
+            if (chart.is3d()) {
+                var pos = ({
+                    x: stackBox.x,
+                    y: stackBox.y,
+                    z: 0
+                });
+                pos = H.perspective([pos], chart, true)[0];
+                stackBox.x = pos.x;
+                stackBox.y = pos.y;
+            }
+
+            return stackBox;
         });
 
         /***

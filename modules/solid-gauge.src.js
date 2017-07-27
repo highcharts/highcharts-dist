@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v5.0.12 (2017-05-24)
+ * @license  Highcharts JS v5.0.13 (2017-07-27)
  * Solid angular gauge module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -61,6 +61,7 @@
                 // Insert rounded edge on end, and remove line.
                 path.splice.apply(path, [11, 3].concat(roundEnd));
             }
+
             return path;
         });
 
@@ -162,12 +163,20 @@
                 return color;
             }
         };
-
-        // The solidgauge series type
-        H.seriesType('solidgauge', 'gauge', {
+        /** 
+         * @extends plotOptions.gauge
+         * @optionparent plotOptions.solidgauge
+         */
+        var solidGaugeOptions = {
+            /**
+             */
             colorByPoint: true
 
-        }, {
+        };
+
+
+        // The solidgauge series type
+        H.seriesType('solidgauge', 'gauge', solidGaugeOptions, {
 
             /**
              * Extend the translate function to extend the Y axis with the necessary
