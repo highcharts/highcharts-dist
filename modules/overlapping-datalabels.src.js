@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.13 (2017-07-27)
+ * @license Highcharts JS v5.0.14 (2017-07-28)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -36,7 +36,7 @@
             function collectAndHide() {
                 var labels = [];
 
-                each(chart.yAxis, function(yAxis) {
+                each(chart.yAxis || [], function(yAxis) {
                     if (
                         yAxis.options.stackLabels &&
                         !yAxis.options.stackLabels.allowOverlap

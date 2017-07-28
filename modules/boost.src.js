@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.13 (2017-07-27)
+ * @license Highcharts JS v5.0.14 (2017-07-28)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -1979,10 +1979,7 @@
             var width = chart.chartWidth,
                 height = chart.chartHeight,
                 target = chart,
-                targetGroup = chart.seriesGroup || series.group,
-                swapXY = function(proceed, x, y, a, b, c, d) {
-                    proceed.call(series, y, x, a, b, c, d);
-                };
+                targetGroup = chart.seriesGroup || series.group;
 
             if (isChartSeriesBoosting(chart)) {
                 target = chart;
@@ -2013,12 +2010,6 @@
                 );
 
                 target.image.clip(target.boostClipRect);
-
-                if (target.inverted || (target.chart && target.chart.inverted)) {
-                    each(['moveTo', 'lineTo', 'rect', 'arc'], function(fn) {
-                        wrap(false, fn, swapXY);
-                    });
-                }
 
                 if (target instanceof H.Chart) {
                     target.markerGroup = target.renderer.g().add(targetGroup);

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v5.0.13 (2017-07-27)
+ * @license Highmaps JS v5.0.14 (2017-07-28)
  *
  * (c) 2011-2016 Torstein Honsi
  *
@@ -35,7 +35,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highmaps',
-            version: '5.0.13',
+            version: '5.0.14',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -2671,7 +2671,7 @@
                  * @since 2.3.0
                  * @product highcharts highstock highmaps
                  */
-                VMLRadialGradientURL: 'http://code.highcharts.com/5.0.13/gfx/vml-radial-gradient.png'
+                VMLRadialGradientURL: 'http://code.highcharts.com/5.0.14/gfx/vml-radial-gradient.png'
 
             },
             chart: {
@@ -6758,7 +6758,7 @@
 
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highmaps 5.0.13'));
+                desc.element.appendChild(doc.createTextNode('Created with Highmaps 5.0.14'));
 
                 /**
                  * A pointer to the `defs` node of the root SVG.
@@ -19196,6 +19196,7 @@
                         }
                         if (node.hcOrigDetached) {
                             doc.body.removeChild(node);
+                            node.hcOrigDetached = false;
                         }
                         node = node.parentNode;
                     }
@@ -27475,7 +27476,7 @@
             function collectAndHide() {
                 var labels = [];
 
-                each(chart.yAxis, function(yAxis) {
+                each(chart.yAxis || [], function(yAxis) {
                     if (
                         yAxis.options.stackLabels &&
                         !yAxis.options.stackLabels.allowOverlap

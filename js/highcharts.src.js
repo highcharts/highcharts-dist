@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.13 (2017-07-27)
+ * @license Highcharts JS v5.0.14 (2017-07-28)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -35,7 +35,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highcharts',
-            version: '5.0.13',
+            version: '5.0.14',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -4222,7 +4222,7 @@
 
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 5.0.13'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 5.0.14'));
 
                 /**
                  * A pointer to the `defs` node of the root SVG.
@@ -17156,6 +17156,7 @@
                         }
                         if (node.hcOrigDetached) {
                             doc.body.removeChild(node);
+                            node.hcOrigDetached = false;
                         }
                         node = node.parentNode;
                     }
@@ -26547,7 +26548,7 @@
             function collectAndHide() {
                 var labels = [];
 
-                each(chart.yAxis, function(yAxis) {
+                each(chart.yAxis || [], function(yAxis) {
                     if (
                         yAxis.options.stackLabels &&
                         !yAxis.options.stackLabels.allowOverlap

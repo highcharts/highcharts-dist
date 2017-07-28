@@ -1,5 +1,5 @@
 /*
- Highcharts JS v5.0.13 (2017-07-27)
+ Highcharts JS v5.0.14 (2017-07-28)
  X-range series
 
  (c) 2010-2017 Torstein Honsi, Lars A. V. Cabrera
