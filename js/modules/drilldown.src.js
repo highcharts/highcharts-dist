@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.14 (2017-07-28)
+ * @license Highcharts JS v6.0.0 (2017-10-04)
  * Highcharts Drilldown module
  * 
  * Author: Torstein Honsi
@@ -44,6 +44,17 @@
 
         // Add language
         extend(defaultOptions.lang, {
+            /**
+             * The text for the button that appears when drilling down, linking
+             * back to the parent series. The parent series' name is inserted for
+             * `{series.name}`.
+             * 
+             * @type {String}
+             * @default Back to {series.name}
+             * @since 3.0.8
+             * @product highcharts highmaps
+             * @apioption lang.drillUpText
+             */
             drillUpText: '◁ Back to {series.name}'
         });
 
@@ -59,6 +70,21 @@
          * @optionparent drilldown
          */
         defaultOptions.drilldown = {
+
+            /**
+             * When this option is false, clicking a single point will drill down
+             * all points in the same category, equivalent to clicking the X axis
+             * label.
+             * 
+             * @type {Boolean}
+             * @sample {highcharts} highcharts/drilldown/allowpointdrilldown-false/
+             *         Don't allow point drilldown
+             * @default true
+             * @since 4.1.7
+             * @product highcharts
+             * @apioption drilldown.allowPointDrilldown
+             */
+
 
 
             /**
@@ -94,6 +120,8 @@
             animation: {
 
                 /**
+                 * Duration for the drilldown animation.
+                 * @default 500
                  */
                 duration: 500
             },
@@ -122,20 +150,76 @@
                 position: {
 
                     /**
+                     * Horizontal alignment.
+                     * @type {String}
                      */
                     align: 'right',
 
                     /**
+                     * The X offset of the button.
+                     * @type {Number}
                      */
                     x: -10,
 
                     /**
+                     * The Y offset of the button.
+                     * @type {Number}
                      */
                     y: 10
+
+                    /**
+                     * Vertical alignment of the button.
+                     *
+                     * @type {String}
+                     * @default top
+                     * @validvalue ["top", "middle", "bottom"]
+                     * @product highcharts highmaps
+                     * @apioption drilldown.drillUpButton.position.verticalAlign
+                     */
                 }
-                // relativeTo: 'plotBox'
-                // theme
+                /**
+                 * What box to align the button to. Can be either `plotBox` or
+                 * `spacingBox.
+                 * 
+                 * @type {String}
+                 * @default plotBox
+                 * @validvalue ["plotBox", "spacingBox"]
+                 * @since 3.0.8
+                 * @product highcharts highmaps
+                 * @apioption drilldown.drillUpButton.relativeTo
+                 */
+
+                /**
+                 * A collection of attributes for the button. The object takes SVG attributes
+                 * like `fill`, `stroke`, `stroke-width` or `r`, the border radius.
+                 * The theme also supports `style`, a collection of CSS properties for
+                 * the text. Equivalent attributes for the hover state are given in
+                 * `theme.states.hover`.
+                 * 
+                 * @type {Object}
+                 * @see In styled mode, drill-up button styles can be applied with the
+                 * `.highcharts-drillup-button` class.
+                 * @sample {highcharts} highcharts/drilldown/drillupbutton/
+                 *         Button theming
+                 * @sample {highmaps} highcharts/drilldown/drillupbutton/
+                 *         Button theming
+                 * @since 3.0.8
+                 * @product highcharts highmaps
+                 * @apioption drilldown.drillUpButton.theme
+                 */
             }
+
+            /**
+             * An array of series configurations for the drill down. Each series
+             * configuration uses the same syntax as the [series](#series) option
+             * set. These drilldown series are hidden by default. The drilldown
+             * series is linked to the parent series' point by its `id`.
+             * 
+             * @type {Array<Object>}
+             * @since 3.0.8
+             * @product highcharts highmaps
+             * @apioption drilldown.series
+             */
         };
 
 
@@ -202,6 +286,17 @@
          * @since 4.2.4
          * @product highcharts highmaps
          * @apioption chart.events.drillupall
+         */
+
+        /**
+         * The `id` of a series in the [drilldown.series](#drilldown.series)
+         * array to use for a drilldown for this point.
+         * 
+         * @type {String}
+         * @sample {highcharts} highcharts/drilldown/basic/ Basic drilldown
+         * @since 3.0.8
+         * @product highcharts
+         * @apioption series.line.data.drilldown
          */
 
         /**
@@ -355,7 +450,7 @@
                     }
                 });
             }
-
+            this.pointer.reset();
             this.redraw();
             this.showDrillUpButton();
         };
@@ -622,7 +717,7 @@
                 group = this.group,
                 // For 3d column series all columns are added to one group 
                 // so we should not delete the whole group. #5297
-                removeGroup = group !== this.chart.seriesGroup,
+                removeGroup = group !== this.chart.columnGroup,
                 series = this;
 
             // Cancel mouse events on the series group (#2787)
@@ -838,14 +933,16 @@
                         point.doDrilldown(undefined, undefined, e);
                     }
                 });
-                /*wrap(point, 'importEvents', function (proceed) { // wrapping importEvents makes point.click event work
+                /*
+                wrap(point, 'importEvents', function (proceed) { // wrapping importEvents makes point.click event work
                 	if (!this.hasImportedEvents) {
                 		proceed.call(this);
                 		H.addEvent(this, 'click', function () {
                 			this.doDrilldown();
                 		});
                 	}
-                });*/
+                });
+                */
 
             }
 

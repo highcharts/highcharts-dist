@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.14 (2017-07-28)
+ * @license Highcharts JS v6.0.0 (2017-10-04)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -35,6 +35,11 @@
         Chart.prototype.callbacks.push(function(chart) {
             function collectAndHide() {
                 var labels = [];
+
+                // Consider external label collectors
+                each(chart.labelCollectors || [], function(collector) {
+                    labels = labels.concat(collector());
+                });
 
                 each(chart.yAxis || [], function(yAxis) {
                     if (
@@ -75,11 +80,8 @@
                 chart.hideOverlappingLabels(labels);
             }
 
-            // Do it now ...
-            collectAndHide();
-
-            // ... and after each chart redraw
-            addEvent(chart, 'redraw', collectAndHide);
+            // Do it on render and after each chart redraw
+            addEvent(chart, 'render', collectAndHide);
 
         });
 

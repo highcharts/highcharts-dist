@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.14 (2017-07-28)
+ * @license Highcharts JS v6.0.0 (2017-10-04)
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2017 Highsoft AS
@@ -33,6 +33,16 @@
 
         // Add language option
         extend(defaultOptions.lang, {
+            /**
+             * The text to display when the chart contains no data. Requires the
+             * no-data module, see [noData](#noData).
+             * 
+             * @type {String}
+             * @default No data to display
+             * @since 3.0.8
+             * @product highcharts
+             * @apioption lang.noData
+             */
             noData: 'No data to display'
         });
 
@@ -47,12 +57,20 @@
         defaultOptions.noData = {
 
             /**
+             * An object of additional SVG attributes for the no-data label.
+             * 
+             * @type {Object}
+             * @since 3.0.8
+             * @product highcharts highstock
+             * @apioption noData.attr
+             */
+
+            /**
              * The position of the no-data label, relative to the plot area.
              * 
              * @type {Object}
              * @default { "x": 0, "y": 0, "align": "center", "verticalAlign": "middle" }
              * @since 3.0.8
-             * @product highcharts highstock highmaps
              */
             position: {
 
@@ -80,7 +98,6 @@
                  * @validvalue ["left", "center", "right"]
                  * @type {String}
                  * @default center
-                 * @product highcharts highstock highmaps
                  */
                 align: 'center',
 
@@ -94,7 +111,17 @@
                  */
                 verticalAlign: 'middle'
             }
-            // useHTML: false
+
+            /**
+             * Whether to insert the label as HTML, or as pseudo-HTML rendered with
+             * SVG.
+             * 
+             * @type {Boolean}
+             * @default false
+             * @since 4.1.10
+             * @product highcharts highstock
+             * @apioption noData.useHTML
+             */
         };
 
 

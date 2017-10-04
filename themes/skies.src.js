@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.14 (2017-07-28)
+ * @license Highcharts JS v6.0.0 (2017-10-04)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -24,7 +24,9 @@
          */
 
         Highcharts.theme = {
-            colors: ['#514F78', '#42A07B', '#9B5E4A', '#72727F', '#1F949A', '#82914E', '#86777F', '#42A07B'],
+            colors: ['#514F78', '#42A07B', '#9B5E4A', '#72727F', '#1F949A',
+                '#82914E', '#86777F', '#42A07B'
+            ],
             chart: {
                 className: 'skies',
                 borderWidth: 0,
@@ -42,13 +44,15 @@
             title: {
                 style: {
                     color: '#3E576F',
-                    font: '16px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'
+                    font: '16px Lucida Grande, Lucida Sans Unicode,' +
+                        ' Verdana, Arial, Helvetica, sans-serif'
                 }
             },
             subtitle: {
                 style: {
                     color: '#6D869F',
-                    font: '12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'
+                    font: '12px Lucida Grande, Lucida Sans Unicode,' +
+                        ' Verdana, Arial, Helvetica, sans-serif'
                 }
             },
             xAxis: {
@@ -64,7 +68,8 @@
                 title: {
                     style: {
                         color: '#666',
-                        font: '12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'
+                        font: '12px Lucida Grande, Lucida Sans Unicode,' +
+                            ' Verdana, Arial, Helvetica, sans-serif'
                     }
                 }
             },
@@ -82,7 +87,8 @@
                 title: {
                     style: {
                         color: '#666',
-                        font: '12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'
+                        font: '12px Lucida Grande, Lucida Sans Unicode,' +
+                            ' Verdana, Arial, Helvetica, sans-serif'
                     }
                 }
             },

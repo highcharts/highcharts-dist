@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v5.0.14 (2017-07-28)
+ * @license Highmaps JS v6.0.0 (2017-10-04)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
  * (c) 2011-2017 Torstein Honsi
@@ -159,14 +159,120 @@
         };
         extend(ColorAxis.prototype, Axis.prototype);
         extend(ColorAxis.prototype, {
-            /**	 
+            /**
+             * A color axis for choropleth maps and heat maps. Visually, the color axis
+             * will appear as a gradient or as separate items inside the legend,
+             * depending on whether the axis is scalar or based on data classes.
+             *
+             * For supported color formats, see the 
+             * [docs article about colors](http://www.highcharts.com/docs/chart-design-and-style/colors).
+             *
+             * A scalar color axis is represented by a gradient. The colors either range
+             * between the [minColor](#colorAxis.minColor) and the [maxColor](#colorAxis.maxColor),
+             * or for more fine grained control the colors can be
+             * defined in [stops](#colorAxis.stops). Often times, the color axis needs
+             * to be adjusted to get the right color spread for the data. In addition to
+             * stops, consider using a logarithmic [axis type](#colorAxis.type), or
+             * setting [min](#colorAxis.min) and [max](#colorAxis.max) to avoid the
+             * colors being determined by outliers.
+             *
+             * When [dataClasses](#colorAxis.dataClasses) are used, the ranges are
+             * subdivided into separate classes like categories based on their values.
+             * This can be used for ranges between two values, but also for a true
+             * category. However, when your data is categorized, it may be as convenient
+             * to add each category to a separate series.
+             *
+             * See [the Axis object](#Axis) for programmatic access to the axis.
              * @extends {xAxis}
+             * @excluding allowDecimals,alternateGridColor,breaks,categories,crosshair,
+             *            dateTimeLabelFormats,lineWidth,linkedTo,maxZoom,minRange,
+             *            minTickInterval,offset,opposite,plotBands,plotLines,showEmpty,
+             *            title
+             * @product highcharts highmaps
              * @optionparent colorAxis
              */
             defaultColorAxisOptions: {
 
                 /**
+                 * Whether to allow decimals on the color axis.
+                 * @type {Boolean}
+                 * @default true
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.allowDecimals
                  */
+
+                /**
+                 * Determines how to set each data class' color if no individual color
+                 * is set. The default value, `tween`, computes intermediate colors
+                 * between `minColor` and `maxColor`. The other possible value, `category`,
+                 * pulls colors from the global or chart specific [colors](#colors)
+                 * array.
+                 * 
+                 * @validvalue ["tween", "category"]
+                 * @type {String}
+                 * @sample {highmaps} maps/coloraxis/dataclasscolor/ Category colors
+                 * @default tween
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClassColor
+                 */
+
+                /**
+                 * An array of data classes or ranges for the choropleth map. If none
+                 * given, the color axis is scalar and values are distributed as a gradient
+                 * between the minimum and maximum colors.
+                 * 
+                 * @type {Array<Object>}
+                 * @sample {highmaps} maps/demo/data-class-ranges/ Multiple ranges
+                 * @sample {highmaps} maps/demo/data-class-two-ranges/ Two ranges
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses
+                 */
+
+                /**
+                 * The color of each data class. If not set, the color is pulled from
+                 * the global or chart-specific [colors](#colors) array. In 
+                 * styled mode, this option is ignored. Instead, use colors defined in
+                 * CSS.
+                 * 
+                 * @type {Color}
+                 * @sample {highmaps} maps/demo/data-class-two-ranges/ Explicit colors
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses.color
+                 */
+
+                /**
+                 * The start of the value range that the data class represents, relating
+                 * to the point value.
+                 * 
+                 * @type {Number}
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses.from
+                 */
+
+                /**
+                 * The name of the data class as it appears in the legend. If no name
+                 * is given, it is automatically created based on the `from` and `to`
+                 * values. For full programmatic control, [legend.labelFormatter](#legend.
+                 * labelFormatter) can be used. In the formatter, `this.from` and `this.
+                 * to` can be accessed.
+                 * 
+                 * @type {String}
+                 * @sample {highmaps} maps/coloraxis/dataclasses-name/ Named data classes
+                 * @sample {highmaps} maps/coloraxis/dataclasses-labelformatter/ Formatted data classes
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses.name
+                 */
+
+                /**
+                 * The end of the value range that the data class represents, relating
+                 * to the point value.
+                 * 
+                 * @type {Number}
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses.to
+                 */
+
+                /** @ignore */
                 lineWidth: 0,
 
                 /**
@@ -174,18 +280,52 @@
                  * padding of 0.05 will make a 100px axis 5px longer.
                  * 
                  * @type {Number}
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 minPadding: 0,
+
+                /**
+                 * The maximum value of the axis in terms of map point values. If `null`,
+                 * the max value is automatically calculated. If the `endOnTick` option
+                 * is true, the max value might be rounded up.
+                 * 
+                 * @type {Number}
+                 * @sample {highmaps} maps/coloraxis/gridlines/
+                 *         Explicit min and max to reduce the effect of outliers
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.max
+                 */
+
+                /**
+                 * The minimum value of the axis in terms of map point values. If `null`,
+                 * the min value is automatically calculated. If the `startOnTick`
+                 * option is true, the min value might be rounded down.
+                 * 
+                 * @type {Number}
+                 * @sample {highmaps} maps/coloraxis/gridlines/
+                 *         Explicit min and max to reduce the effect of outliers
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.min
+                 */
 
                 /**
                  * Padding of the max value relative to the length of the axis. A
                  * padding of 0.05 will make a 100px axis 5px longer.
                  * 
                  * @type {Number}
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 maxPadding: 0,
+
+                /**
+                 * Color of the grid lines extending from the axis across the gradient.
+                 * 
+                 * @type {Color}
+                 * @sample {highmaps} maps/coloraxis/gridlines/ Grid lines demonstrated
+                 * @default #e6e6e6
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.gridLineColor
+                 */
 
                 /**
                  * The width of the grid lines extending from the axis across the
@@ -194,9 +334,18 @@
                  * @type {Number}
                  * @sample {highmaps} maps/coloraxis/gridlines/ Grid lines demonstrated
                  * @default 1
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 gridLineWidth: 1,
+
+                /**
+                 * The interval of the tick marks in axis units. When `null`, the tick
+                 * interval is computed to approximately follow the `tickPixelInterval`.
+                 * 
+                 * @type {Number}
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.tickInterval
+                 */
 
                 /**
                  * If [tickInterval](#colorAxis.tickInterval) is `null` this option
@@ -204,7 +353,7 @@
                  * 
                  * @type {Number}
                  * @default 72
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 tickPixelInterval: 72,
 
@@ -214,7 +363,7 @@
                  * 
                  * @type {Boolean}
                  * @default true
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 startOnTick: true,
 
@@ -225,12 +374,11 @@
                  * 
                  * @type {Boolean}
                  * @default true
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 endOnTick: true,
 
-                /**
-                 */
+                /**	@ignore */
                 offset: 0,
 
                 /**
@@ -240,7 +388,7 @@
                  * 
                  * @type {Object}
                  * @sample {highmaps} maps/coloraxis/marker/ Black marker
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 marker: {
 
@@ -249,17 +397,13 @@
                      * to disable animation. Defaults to `{ duration: 50 }`.
                      * 
                      * @type {Object|Boolean}
-                     * @product highmaps
+                     * @product highcharts highmaps
                      */
                     animation: {
-
-                        /**
-                         */
                         duration: 50
                     },
 
-                    /**
-                     */
+                    /** @ignore */
                     width: 0.01
 
                 },
@@ -272,25 +416,23 @@
                  * 
                  * @type {Object}
                  * @extends xAxis.labels
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 labels: {
 
                     /**
-                     * How to handle overflowing labels on horizontal axis. Can be undefined
-                     * or "justify". If "justify", labels will not render outside the
-                     * plot area. If there is room to move it, it will be aligned to
-                     * the edge, else it will be removed.
+                     * How to handle overflowing labels on horizontal color axis. Can be
+                     * undefined or "justify". If "justify", labels will not render
+                     * outside the legend area. If there is room to move it, it will be
+                     * aligned to the edge, else it will be removed.
                      * 
                      * @validvalue [null, "justify"]
                      * @type {String}
                      * @default justify
-                     * @product highmaps
+                     * @product highcharts highmaps
                      */
                     overflow: 'justify',
 
-                    /**
-                     */
                     rotation: 0
                 },
 
@@ -307,7 +449,7 @@
                  * @sample {highmaps} maps/coloraxis/mincolor-maxcolor/ Min and max colors on scalar (gradient) axis
                  * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/ On data classes
                  * @default #e6ebf5
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 minColor: '#e6ebf5',
 
@@ -324,22 +466,57 @@
                  * @sample {highmaps} maps/coloraxis/mincolor-maxcolor/ Min and max colors on scalar (gradient) axis
                  * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/ On data classes
                  * @default #003399
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 maxColor: '#003399',
 
                 /**
+                 * Color stops for the gradient of a scalar color axis. Use this in
+                 * cases where a linear gradient between a `minColor` and `maxColor`
+                 * is not sufficient. The stops is an array of tuples, where the first
+                 * item is a float between 0 and 1 assigning the relative position in
+                 * the gradient, and the second item is the color.
+                 * 
+                 * @type {Array<Array>}
+                 * @sample {highmaps} maps/demo/heatmap/ Heatmap with three color stops
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.stops
+                 */
+
+                /**
+                 * The pixel length of the main tick marks on the color axis.
                  */
                 tickLength: 5,
+
+                /**
+                 * The type of interpolation to use for the color axis. Can be `linear`
+                 * or `logarithmic`.
+                 * 
+                 * @validvalue ["linear", "logarithmic"]
+                 * @type {String}
+                 * @default linear
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.type
+                 */
+
+                /**
+                 * Whether to reverse the axis so that the highest number is closest
+                 * to the origin. Defaults to `false` in a horizontal legend and `true`
+                 * in a vertical legend, where the smallest value starts on top.
+                 * 
+                 * @type {Boolean}
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.reversed
+                 */
 
                 /**
                  * Whether to display the colorAxis in the legend.
                  * 
                  * @type {Boolean}
-                 * @see [heatmap.showInLegend](#series<heatmap>.showInLegend)
+                 * @see [heatmap.showInLegend](#series.heatmap.showInLegend)
                  * @default true
                  * @since 4.2.7
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 showInLegend: true
             },
@@ -1223,11 +1400,6 @@
              *         Fix the zoom to this position if possible.
              */
             mapZoom: function(howMuch, centerXArg, centerYArg, mouseX, mouseY) {
-                /*if (this.isMapZooming) {
-                	this.mapZoomQueue = arguments;
-                	return;
-                }*/
-
                 var chart = this,
                     xAxis = chart.xAxis[0],
                     xRange = xAxis.max - xAxis.min,
@@ -1277,11 +1449,14 @@
                 }
 
                 // Prevent zooming until this one is finished animating
-                /*chart.holdMapZoom = true;
+                /*
+                chart.holdMapZoom = true;
                 setTimeout(function () {
                 	chart.holdMapZoom = false;
-                }, 200);*/
-                /*delay = animation ? animation.duration || 500 : 0;
+                }, 200);
+                */
+                /*
+                delay = animation ? animation.duration || 500 : 0;
                 if (delay) {
                 	chart.isMapZooming = true;
                 	setTimeout(function () {
@@ -1291,7 +1466,8 @@
                 		}
                 		chart.mapZoomQueue = null;
                 	}, delay);
-                }*/
+                }
+                */
 
                 chart.redraw();
             }
@@ -1434,28 +1610,38 @@
         var supportsVectorEffect = doc.documentElement.style.vectorEffect !== undefined;
 
 
-        // Add the map series type
         /**
+         * The map series is used for basic choropleth maps, where each map area has a
+         * color based on its value.
+         *
+         * @sample maps/demo/base/ Choropleth map
          * @extends {plotOptions.scatter}
+         * @excluding marker
+         * @product highmaps
          * @optionparent plotOptions.map
          */
         seriesType('map', 'scatter', {
 
             /**
+             * Whether all areas of the map defined in `mapData` should be rendered.
+             * If `true`, areas which don't correspond to a data point, are rendered
+             * as `null` points. If `false`, those areas are skipped.
+             * 
+             * @type {Boolean}
+             * @sample {highmaps} maps/plotoptions/series-allareas-false/ All areas set to false
+             * @default true
+             * @product highmaps
+             * @apioption plotOptions.series.allAreas
              */
             allAreas: true,
 
-
-            /**
-             */
             animation: false, // makes the complex shapes slow
 
             /**
              * The color to apply to null points.
              * 
-             * In [styled mode](http://www.highcharts.com/docs/chart-design-and-
-             * style/style-by-css), the null point fill is set in the `.highcharts-
-             * null-point` class.
+             * In styled mode, the null point fill is set in the
+             * `.highcharts-null-point` class.
              * 
              * @type {Color}
              * @sample {highmaps} maps/demo/all-areas-as-null/ Null color
@@ -1465,108 +1651,183 @@
             nullColor: '#f7f7f7',
 
             /**
+             * Whether to allow pointer interaction like tooltips and mouse events
+             * on null points.
+             * 
+             * @type {Boolean}
+             * @default false
+             * @since 4.2.7
+             * @product highmaps
+             * @apioption plotOptions.map.nullInteraction
+             */
+
+            /**
+             * The border color of the map areas.
+             * 
+             * In styled mode, the border stroke is given in the `.highcharts-point` class.
+             * 
+             * @type {Color}
+             * @sample {highmaps} maps/plotoptions/series-border/ Borders demo
+             * @default #cccccc
+             * @product highmaps
+             * @apioption plotOptions.series.borderColor
              */
             borderColor: '#cccccc',
 
             /**
+             * The border width of each map area.
+             * 
+             * In styled mode, the border stroke width is given in the `.highcharts-point` class.
+             * 
+             * @type {Number}
+             * @sample {highmaps} maps/plotoptions/series-border/ Borders demo
+             * @default 1
+             * @product highmaps
+             * @apioption plotOptions.series.borderWidth
              */
             borderWidth: 1,
 
             /**
+             * Set this option to `false` to prevent a series from connecting to
+             * the global color axis. This will cause the series to have its own
+             * legend item.
+             * 
+             * @type {Boolean}
+             * @default undefined
+             * @product highmaps
+             * @apioption plotOptions.series.colorAxis
              */
+
+            /** @ignore */
             marker: null,
 
-            /**
-             */
             stickyTracking: false,
 
             /**
+             * What property to join the `mapData` to the value data. For example,
+             * if joinBy is "code", the mapData items with a specific code is merged
+             * into the data with the same code. For maps loaded from GeoJSON, the
+             * keys may be held in each point's `properties` object.
+             * 
+             * The joinBy option can also be an array of two values, where the first
+             * points to a key in the `mapData`, and the second points to another
+             * key in the `data`.
+             * 
+             * When joinBy is `null`, the map items are joined by their position
+             * in the array, which performs much better in maps with many data points.
+             * This is the recommended option if you are printing more than a thousand
+             * data points and have a backend that can preprocess the data into
+             * a parallel array of the mapData.
+             * 
+             * @type {String|Array<String>}
+             * @sample {highmaps} maps/plotoptions/series-border/ Joined by "code"
+             * @sample {highmaps} maps/demo/geojson/ GeoJSON joined by an array
+             * @sample {highmaps} maps/series/joinby-null/ Simple data joined by null
+             * @product highmaps
+             * @apioption plotOptions.series.joinBy
              */
             joinBy: 'hc-key',
 
-            /**
-             */
             dataLabels: {
-
-                /**
-                 */
                 formatter: function() { // #2945
                     return this.point.value;
                 },
-
-                /**
-                 */
                 inside: true, // for the color
-
-                /**
-                 */
                 verticalAlign: 'middle',
-
-                /**
-                 */
                 crop: false,
-
-                /**
-                 */
                 overflow: false,
-
-                /**
-                 */
                 padding: 0
             },
 
-            /**
-             */
+            /** @ignore */
             turboThreshold: 0,
 
-            /**
-             */
             tooltip: {
-
-                /**
-                 */
                 followPointer: true,
-
-                /**
-                 */
                 pointFormat: '{point.name}: {point.value}<br/>'
             },
 
-            /**
-             */
             states: {
 
                 /**
+                 * Overrides for the normal state.
+                 * 
+                 * @type {Object}
+                 * @product highmaps
+                 * @apioption plotOptions.series.states.normal
                  */
                 normal: {
 
                     /**
+                     * Animation options for the fill color when returning from hover state
+                     * to normal state. The animation adds some latency in order to reduce
+                     * the effect of flickering when hovering in and out of for example
+                     * an uneven coastline.
+                     * 
+                     * @type {Object|Boolean}
+                     * @sample {highmaps} maps/plotoptions/series-states-animation-false/
+                     *         No animation of fill color
+                     * @default true
+                     * @product highmaps
+                     * @apioption plotOptions.series.states.normal.animation
                      */
                     animation: true
                 },
 
-                /**
-                 */
                 hover: {
 
-                    /**
-                     */
-                    brightness: 0.2,
+                    halo: null,
 
                     /**
+                     * The border color of the point in this state.
+                     * 
+                     * @type {Color}
+                     * @product highmaps
+                     * @apioption plotOptions.series.states.hover.borderColor
                      */
-                    halo: null
+
+                    /**
+                     * The border width of the point in this state
+                     * 
+                     * @type {Number}
+                     * @product highmaps
+                     * @apioption plotOptions.series.states.hover.borderWidth
+                     */
+
+                    /**
+                     * The relative brightness of the point when hovered, relative to the
+                     * normal point color.
+                     * 
+                     * @type {Number}
+                     * @default 0.2
+                     * @product highmaps
+                     * @apioption plotOptions.series.states.hover.brightness
+                     */
+                    brightness: 0.2
+
+                    /**
+                     * The color of the shape in this state
+                     * 
+                     * @type {Color}
+                     * @sample {highmaps} maps/plotoptions/series-states-hover/ Hover options
+                     * @product highmaps
+                     * @apioption plotOptions.series.states.hover.color
+                     */
+
                 },
 
-                /**
-                 */
                 select: {
-
-                    /**
-                     */
                     color: '#cccccc'
                 }
             }
+
+            /**
+             * Define the z index of the series.
+             * 
+             * @type {Number}
+             * @product highmaps
+             * @apioption plotOptions.series.zIndex
+             */
 
             // Prototype members
         }, merge(colorSeriesMixin, {
@@ -2268,7 +2529,7 @@
                 clearTimeout(this.colorInterval);
                 if (this.value !== null || this.series.options.nullInteraction) {
                     Point.prototype.onMouseOver.call(this, e);
-                } else { //#3401 Tooltip doesn't hide when hovering over null points
+                } else { // #3401 Tooltip doesn't hide when hovering over null points
                     this.series.onMouseOut(e);
                 }
             },
@@ -2299,6 +2560,193 @@
             }
         }, colorPointMixin));
 
+        /**
+         * An array of objects containing a `path` definition and optionally
+         * a code or property to join in the data as per the `joinBy` option.
+         * 
+         * @type {Array<Object>}
+         * @sample {highmaps} maps/demo/category-map/ Map data and joinBy
+         * @product highmaps
+         * @apioption series.mapData
+         */
+
+        /**
+         * A `map` series. If the [type](#series.map.type) option is not specified,
+         * it is inherited from [chart.type](#chart.type).
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to [plotOptions.
+         * map](#plotOptions.map).
+         * 
+         * @type {Object}
+         * @extends series,plotOptions.map
+         * @excluding dataParser,dataURL
+         * @product highmaps
+         * @apioption series.map
+         */
+
+        /**
+         * An array of data points for the series. For the `map` series type,
+         * points can be given in the following ways:
+         * 
+         * 1.  An array of numerical values. In this case, the numerical values
+         * will be interpreted as `value` options. Example:
+         * 
+         *  ```js
+         *  data: [0, 5, 3, 5]
+         *  ```
+         * 
+         * 2.  An array of arrays with 2 values. In this case, the values correspond
+         * to `[hc-key, value]`. Example:
+         * 
+         *  ```js
+         *     data: [
+         *         ['us-ny', 0],
+         *         ['us-mi', 5],
+         *         ['us-tx', 3],
+         *         ['us-ak', 5]
+         *     ]
+         *  ```
+         * 
+         * 3.  An array of objects with named values. The objects are point
+         * configuration objects as seen below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.map.turboThreshold),
+         * this option is not available.
+         * 
+         *  ```js
+         *     data: [{
+         *         value: 6,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         value: 6,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         * 
+         * @type {Array<Object>}
+         * @product highmaps
+         * @apioption series.map.data
+         */
+
+        /**
+         * Individual color for the point. By default the color is either used
+         * to denote the value, or pulled from the global `colors` array.
+         * 
+         * @type {Color}
+         * @default undefined
+         * @product highmaps
+         * @apioption series.map.data.color
+         */
+
+        /**
+         * Individual data label for each point. The options are the same as
+         * the ones for [plotOptions.series.dataLabels](#plotOptions.series.
+         * dataLabels)
+         * 
+         * @type {Object}
+         * @sample {highmaps} maps/series/data-datalabels/ Disable data labels for individual areas
+         * @product highmaps
+         * @apioption series.map.data.dataLabels
+         */
+
+        /**
+         * The `id` of a series in the [drilldown.series](#drilldown.series)
+         * array to use for a drilldown for this point.
+         * 
+         * @type {String}
+         * @sample {highmaps} maps/demo/map-drilldown/ Basic drilldown
+         * @product highmaps
+         * @apioption series.map.data.drilldown
+         */
+
+        /**
+         * An id for the point. This can be used after render time to get a
+         * pointer to the point object through `chart.get()`.
+         * 
+         * @type {String}
+         * @sample {highmaps} maps/series/data-id/ Highlight a point by id
+         * @product highmaps
+         * @apioption series.map.data.id
+         */
+
+        /**
+         * When data labels are laid out on a map, Highmaps runs a simplified
+         * algorithm to detect collision. When two labels collide, the one with
+         * the lowest rank is hidden. By default the rank is computed from the
+         * area.
+         * 
+         * @type {Number}
+         * @product highmaps
+         * @apioption series.map.data.labelrank
+         */
+
+        /**
+         * The relative mid point of an area, used to place the data label.
+         * Ranges from 0 to 1\. When `mapData` is used, middleX can be defined
+         * there.
+         * 
+         * @type {Number}
+         * @default 0.5
+         * @product highmaps
+         * @apioption series.map.data.middleX
+         */
+
+        /**
+         * The relative mid point of an area, used to place the data label.
+         * Ranges from 0 to 1\. When `mapData` is used, middleY can be defined
+         * there.
+         * 
+         * @type {Number}
+         * @default 0.5
+         * @product highmaps
+         * @apioption series.map.data.middleY
+         */
+
+        /**
+         * The name of the point as shown in the legend, tooltip, dataLabel
+         * etc.
+         * 
+         * @type {String}
+         * @sample {highmaps} maps/series/data-datalabels/ Point names
+         * @product highmaps
+         * @apioption series.map.data.name
+         */
+
+        /**
+         * For map and mapline series types, the SVG path for the shape. For
+         * compatibily with old IE, not all SVG path definitions are supported,
+         * but M, L and C operators are safe.
+         * 
+         * To achieve a better separation between the structure and the data,
+         * it is recommended to use `mapData` to define that paths instead
+         * of defining them on the data points themselves.
+         * 
+         * @type {String}
+         * @sample {highmaps} maps/series/data-path/ Paths defined in data
+         * @product highmaps
+         * @apioption series.map.data.path
+         */
+
+        /**
+         * The numeric value of the data point.
+         * 
+         * @type {Number}
+         * @product highmaps
+         * @apioption series.map.data.value
+         */
+
+
+        /**
+         * Individual point events
+         * 
+         * @extends plotOptions.series.point.events
+         * @product highmaps
+         * @apioption series.map.data.events
+         */
+
     }(Highcharts));
     (function(H) {
         /**
@@ -2309,10 +2757,14 @@
         var seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
-        // The mapline series type
-        // 
         /**
+         * A mapline series is a special case of the map series where the value colors
+         * are applied to the strokes rather than the fills. It can also be used for
+         * freeform drawing, like dividers, in the map.
+         *
+         * @sample maps/demo/mapline-mappoint/ Mapline and map-point chart
          * @extends {plotOptions.map}
+         * @product highmaps
          * @optionparent plotOptions.mapline
          */
         seriesType('mapline', 'map', {
@@ -2323,6 +2775,67 @@
 
             drawLegendSymbol: seriesTypes.line.prototype.drawLegendSymbol
         });
+
+        /**
+         * A `mapline` series. If the [type](#series.mapline.type) option is
+         * not specified, it is inherited from [chart.type](#chart.type).
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to [plotOptions.
+         * mapline](#plotOptions.mapline).
+         * 
+         * @type {Object}
+         * @extends series,plotOptions.mapline
+         * @excluding dataParser,dataURL
+         * @product highmaps
+         * @apioption series.mapline
+         */
+
+        /**
+         * An array of data points for the series. For the `mapline` series type,
+         * points can be given in the following ways:
+         * 
+         * 1.  An array of numerical values. In this case, the numerical values
+         * will be interpreted as `value` options. Example:
+         * 
+         *  ```js
+         *  data: [0, 5, 3, 5]
+         *  ```
+         * 
+         * 2.  An array of arrays with 2 values. In this case, the values correspond
+         * to `[hc-key, value]`. Example:
+         * 
+         *  ```js
+         *     data: [
+         *         ['us-ny', 0],
+         *         ['us-mi', 5],
+         *         ['us-tx', 3],
+         *         ['us-ak', 5]
+         *     ]
+         *  ```
+         * 
+         * 3.  An array of objects with named values. The objects are point
+         * configuration objects as seen below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.map.turboThreshold),
+         * this option is not available.
+         * 
+         *  ```js
+         *     data: [{
+         *         value: 6,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         value: 6,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         * 
+         * @type {Array<Object>}
+         * @product highmaps
+         * @apioption series.mapline.data
+         */
 
     }(Highcharts));
     (function(H) {
@@ -2335,47 +2848,32 @@
             Point = H.Point,
             seriesType = H.seriesType;
 
-        // The mappoint series type
         /**
+         * A mappoint series is a special form of scatter series where the points can
+         * be laid out in map coordinates on top of a map.
+         *
+         * @sample maps/demo/mapline-mappoint/ Map-line and map-point series.
          * @extends plotOptions.scatter
+         * @product highmaps
          * @optionparent plotOptions.mappoint
          */
         seriesType('mappoint', 'scatter', {
 
-            /**
-             */
             dataLabels: {
-
-                /**
-                 */
                 enabled: true,
-
-                /**
-                 */
                 formatter: function() { // #2945
                     return this.point.name;
                 },
-
-                /**
-                 */
                 crop: false,
-
-                /**
-                 */
                 defer: false,
-
-                /**
-                 */
                 overflow: false,
-
-                /**
-                 */
                 style: {
-
-                    /**
-                     */
                     color: '#000000'
                 }
+                /**
+                 * @default {point.name}
+                 * @apioption plotOptions.mappoint.dataLabels.format
+                 */
             }
 
             // Prototype members
@@ -2390,6 +2888,115 @@
                 return Point.prototype.applyOptions.call(this, mergedOptions, x);
             }
         });
+
+        /**
+         * A `mappoint` series. If the [type](#series.mappoint.type) option
+         * is not specified, it is inherited from [chart.type](#chart.type).
+         * 
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to [plotOptions.
+         * mappoint](#plotOptions.mappoint).
+         * 
+         * @type {Object}
+         * @extends series,plotOptions.mappoint
+         * @excluding dataParser,dataURL
+         * @product highmaps
+         * @apioption series.mappoint
+         */
+
+        /**
+         * An array of data points for the series. For the `mappoint` series
+         * type, points can be given in the following ways:
+         * 
+         * 1.  An array of numerical values. In this case, the numerical values
+         * will be interpreted as `y` options. The `x` values will be automatically
+         * calculated, either starting at 0 and incremented by 1, or from `pointStart`
+         * and `pointInterval` given in the series options. If the axis has
+         * categories, these will be used. Example:
+         * 
+         *  ```js
+         *  data: [0, 5, 3, 5]
+         *  ```
+         * 
+         * 2.  An array of arrays with 2 values. In this case, the values correspond
+         * to `x,y`. If the first value is a string, it is applied as the name
+         * of the point, and the `x` value is inferred.
+         * 
+         *  ```js
+         *     data: [
+         *         [0, 1],
+         *         [1, 8],
+         *         [2, 7]
+         *     ]
+         *  ```
+         * 
+         * 3.  An array of objects with named values. The objects are point
+         * configuration objects as seen below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.mappoint.turboThreshold),
+         * this option is not available.
+         * 
+         *  ```js
+         *     data: [{
+         *         x: 1,
+         *         y: 7,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         x: 1,
+         *         y: 4,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         * 
+         * @type {Array<Object|Array|Number>}
+         * @extends series.map.data
+         * @excluding labelrank,middleX,middleY,path,value
+         * @product highmaps
+         * @apioption series.mappoint.data
+         */
+
+        /**
+         * The latitude of the point. Must be combined with the `lon` option
+         * to work. Overrides `x` and `y` values.
+         * 
+         * @type {Number}
+         * @sample {highmaps} maps/demo/mappoint-latlon/ Point position by lat/lon
+         * @since 1.1.0
+         * @product highmaps
+         * @apioption series.mappoint.data.lat
+         */
+
+        /**
+         * The longitude of the point. Must be combined with the `lon` option
+         * to work. Overrides `x` and `y` values.
+         * 
+         * @type {Number}
+         * @sample {highmaps} maps/demo/mappoint-latlon/ Point position by lat/lon
+         * @since 1.1.0
+         * @product highmaps
+         * @apioption series.mappoint.data.lon
+         */
+
+        /**
+         * The x coordinate of the point in terms of the map path coordinates.
+         * 
+         * @type {Number}
+         * @sample {highmaps} maps/demo/mapline-mappoint/ Map point demo
+         * @product highmaps
+         * @apioption series.mappoint.data.x
+         */
+
+        /**
+         * The x coordinate of the point in terms of the map path coordinates.
+         * 
+         * @type {Number}
+         * @sample {highmaps} maps/demo/mapline-mappoint/ Map point demo
+         * @product highmaps
+         * @apioption series.mappoint.data.y
+         */
 
     }(Highcharts));
     (function(H) {
@@ -2412,36 +3019,42 @@
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
-        /* ****************************************************************************
-         * Start Bubble series code											          *
-         *****************************************************************************/
-
 
         /**
+         * A bubble series is a three dimensional series type where each point renders
+         * an X, Y and Z value. Each points is drawn as a bubble where the position
+         * along the X and Y axes mark the X and Y values, and the size of the bubble
+         * relates to the Z value. Requires `highcharts-more.js`.
+         *
+         * @sample {highcharts} highcharts/demo/bubble/ Bubble chart
          * @extends plotOptions.scatter
+         * @product highcharts highstock
          * @optionparent plotOptions.bubble
          */
         seriesType('bubble', 'scatter', {
 
-            /**
-             */
             dataLabels: {
-
-                /**
-                 */
                 formatter: function() { // #2945
                     return this.point.z;
                 },
-
-                /**
-                 */
                 inside: true,
-
-                /**
-                 */
                 verticalAlign: 'middle'
             },
-            // displayNegative: true,
+
+            /**
+             * Whether to display negative sized bubbles. The threshold is given
+             * by the [zThreshold](#plotOptions.bubble.zThreshold) option, and negative
+             * bubbles can be visualized by setting [negativeColor](#plotOptions.
+             * bubble.negativeColor).
+             * 
+             * @type {Boolean}
+             * @sample {highcharts} highcharts/plotoptions/bubble-negative/
+             *         Negative bubbles
+             * @default true
+             * @since 3.0
+             * @product highcharts
+             * @apioption plotOptions.bubble.displayNegative
+             */
 
             /**
              * Options for the point markers of line-like series. Properties like
@@ -2449,34 +3062,23 @@
              * of the markers. Other series types, like column series, don't have
              * markers, but have visual options on the series level instead.
              * 
-             * In [styled mode](http://www.highcharts.com/docs/chart-design-and-
-             * style/style-by-css), the markers can be styled with the `.highcharts-
-             * point`, `.highcharts-point-hover` and `.highcharts-point-select`
+             * In styled mode, the markers can be styled with the `.highcharts-point`, `.highcharts-point-hover` and `.highcharts-point-select`
              * class names.
              * 
              * @type {Object}
              * @extends plotOptions.series.marker
-             * @excluding radius
+             * @excluding enabled,height,radius,width
              * @product highcharts
              */
             marker: {
 
-                // Avoid offset in Point.setState
-
                 /**
+                 * In bubble charts, the radius is overridden and determined based on 
+                 * the point's data value.
                  */
                 radius: null,
-
-                /**
-                 */
                 states: {
-
-                    /**
-                     */
                     hover: {
-
-                        /**
-                         */
                         radiusPlus: 0
                     }
                 },
@@ -2485,9 +3087,9 @@
                  * A predefined shape or symbol for the marker. Possible values are
                  * "circle", "square", "diamond", "triangle" and "triangle-down".
                  * 
-                 * Additionally, the URL to a graphic can be given on the form `url(graphic.
-                 * png)`. Note that for the image to be applied to exported charts,
-                 * its URL needs to be accessible by the export server.
+                 * Additionally, the URL to a graphic can be given on the form
+                 * `url(graphic.png)`. Note that for the image to be applied to exported
+                 * charts, its URL needs to be accessible by the export server.
                  * 
                  * Custom callbacks for symbol path generation can also be added to
                  * `Highcharts.SVGRenderer.prototype.symbols`. The callback is then
@@ -2495,8 +3097,10 @@
                  * 
                  * @validvalue ["circle", "square", "diamond", "triangle", "triangle-down"]
                  * @type {String}
-                 * @sample {highcharts} highcharts/plotoptions/bubble-symbol/ Bubble chart with various symbols
-                 * @sample {highcharts} highcharts/plotoptions/series-marker-symbol/ General chart with predefined, graphic and custom markers
+                 * @sample {highcharts} highcharts/plotoptions/bubble-symbol/
+                 *         Bubble chart with various symbols
+                 * @sample {highcharts} highcharts/plotoptions/series-marker-symbol/
+                 *         General chart with predefined, graphic and custom markers
                  * @default circle
                  * @since 5.0.11
                  * @product highcharts
@@ -2531,8 +3135,50 @@
              * @product highcharts
              */
             maxSize: '20%',
-            // negativeColor: null,
-            // sizeBy: 'area'
+
+            /**
+             * When a point's Z value is below the [zThreshold](#plotOptions.bubble.
+             * zThreshold) setting, this color is used.
+             * 
+             * @type {Color}
+             * @sample {highcharts} highcharts/plotoptions/bubble-negative/
+             *         Negative bubbles
+             * @default null
+             * @since 3.0
+             * @product highcharts
+             * @apioption plotOptions.bubble.negativeColor
+             */
+
+            /**
+             * Whether the bubble's value should be represented by the area or the
+             * width of the bubble. The default, `area`, corresponds best to the
+             * human perception of the size of each bubble.
+             * 
+             * @validvalue ["area", "width"]
+             * @type {String}
+             * @sample {highcharts} highcharts/plotoptions/bubble-sizeby/
+             *         Comparison of area and size
+             * @default area
+             * @since 3.0.7
+             * @product highcharts
+             * @apioption plotOptions.bubble.sizeBy
+             */
+
+            /**
+             * When this is true, the absolute value of z determines the size of
+             * the bubble. This means that with the default `zThreshold` of 0, a
+             * bubble of value -1 will have the same size as a bubble of value 1,
+             * while a bubble of value 0 will have a smaller size according to
+             * `minSize`.
+             * 
+             * @type {Boolean}
+             * @sample {highcharts} highcharts/plotoptions/bubble-sizebyabsolutevalue/
+             *         Size by absolute value, various thresholds
+             * @default false
+             * @since 4.1.9
+             * @product highcharts
+             * @apioption plotOptions.bubble.sizeByAbsoluteValue
+             */
 
             /**
              * When this is true, the series will not cause the Y axis to cross
@@ -2550,36 +3196,18 @@
              */
             softThreshold: false,
 
-            /**
-             */
             states: {
-
-                /**
-                 */
                 hover: {
-
-                    /**
-                     */
                     halo: {
-
-                        /**
-                         */
                         size: 5
                     }
                 }
             },
 
-            /**
-             */
             tooltip: {
-
-                /**
-                 */
                 pointFormat: '({point.x}, {point.y}), Size: {point.z}'
             },
 
-            /**
-             */
             turboThreshold: 0,
 
             /**
@@ -2589,16 +3217,43 @@
              * is given, points with lower Z is colored.
              * 
              * @type {Number}
-             * @sample {highcharts} highcharts/plotoptions/bubble-negative/ Negative bubbles
+             * @sample {highcharts} highcharts/plotoptions/bubble-negative/
+             *         Negative bubbles
              * @default 0
              * @since 3.0
              * @product highcharts
              */
             zThreshold: 0,
 
-            /**
-             */
             zoneAxis: 'z'
+
+            /**
+             * The minimum for the Z value range. Defaults to the highest Z value
+             * in the data.
+             * 
+             * @type {Number}
+             * @see [zMax](#plotOptions.bubble.zMin)
+             * @sample {highcharts} highcharts/plotoptions/bubble-zmin-zmax/
+             *         Z has a possible range of 0-100
+             * @default null
+             * @since 4.0.3
+             * @product highcharts
+             * @apioption plotOptions.bubble.zMax
+             */
+
+            /**
+             * The minimum for the Z value range. Defaults to the lowest Z value
+             * in the data.
+             * 
+             * @type {Number}
+             * @see [zMax](#plotOptions.bubble.zMax)
+             * @sample {highcharts} highcharts/plotoptions/bubble-zmin-zmax/
+             *         Z has a possible range of 0-100
+             * @default null
+             * @since 4.0.3
+             * @product highcharts
+             * @apioption plotOptions.bubble.zMin
+             */
 
             // Prototype members
         }, {
@@ -2860,9 +3515,85 @@
             }
         };
 
-        /* ****************************************************************************
-         * End Bubble series code                                                     *
-         *****************************************************************************/
+
+        /**
+         * A `bubble` series. If the [type](#series.bubble.type) option is
+         * not specified, it is inherited from [chart.type](#chart.type).
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to [plotOptions.
+         * bubble](#plotOptions.bubble).
+         * 
+         * @type {Object}
+         * @extends series,plotOptions.bubble
+         * @excluding dataParser,dataURL,stack
+         * @product highcharts
+         * @apioption series.bubble
+         */
+
+        /**
+         * An array of data points for the series. For the `bubble` series type,
+         * points can be given in the following ways:
+         * 
+         * 1.  An array of arrays with 3 or 2 values. In this case, the values
+         * correspond to `x,y,z`. If the first value is a string, it is applied
+         * as the name of the point, and the `x` value is inferred. The `x`
+         * value can also be omitted, in which case the inner arrays should
+         * be of length 2\. Then the `x` value is automatically calculated,
+         * either starting at 0 and incremented by 1, or from `pointStart` and
+         * `pointInterval` given in the series options.
+         * 
+         *  ```js
+         *     data: [
+         *         [0, 1, 2],
+         *         [1, 5, 5],
+         *         [2, 0, 2]
+         *     ]
+         *  ```
+         * 
+         * 2.  An array of objects with named values. The objects are point
+         * configuration objects as seen below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.bubble.turboThreshold),
+         * this option is not available.
+         * 
+         *  ```js
+         *     data: [{
+         *         x: 1,
+         *         y: 1,
+         *         z: 1,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         x: 1,
+         *         y: 5,
+         *         z: 4,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         * 
+         * @type {Array<Object|Array>}
+         * @extends series.line.data
+         * @excluding marker
+         * @sample {highcharts} highcharts/chart/reflow-true/ Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/ Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/ Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/ Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/ Config objects
+         * @product highcharts
+         * @apioption series.bubble.data
+         */
+
+        /**
+         * The size value for each bubble. The bubbles' diameters are computed
+         * based on the `z`, and controlled by series options like `minSize`,
+         *  `maxSize`, `sizeBy`, `zMin` and `zMax`.
+         * 
+         * @type {Number}
+         * @product highcharts
+         * @apioption series.bubble.data.z
+         */
 
     }(Highcharts));
     (function(H) {
@@ -2880,23 +3611,152 @@
         if (seriesTypes.bubble) {
 
             /**
+             * A map bubble series is a bubble series laid out on top of a map series,
+             * where each bubble is tied to a specific map area.
+             *
+             * @sample maps/demo/map-bubble/ Map bubble chart
+             * 
              * @extends {plotOptions.bubble}
+             * @product highmaps
              * @optionparent plotOptions.mapbubble
              */
             seriesType('mapbubble', 'bubble', {
 
-                /**
-                 */
                 animationLimit: 500,
 
-                /**
-                 */
                 tooltip: {
-
-                    /**
-                     */
                     pointFormat: '{point.name}: {point.z}'
                 }
+
+                /**
+                 * The main color of the series. This color affects both the fill and
+                 * the stroke of the bubble. For enhanced control, use `marker` options.
+                 * 
+                 * @type {Color}
+                 * @sample {highmaps} maps/plotoptions/mapbubble-color/ Pink bubbles
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.color
+                 */
+
+                /**
+                 * Whether to display negative sized bubbles. The threshold is given
+                 * by the [zThreshold](#plotOptions.mapbubble.zThreshold) option, and negative
+                 * bubbles can be visualized by setting [negativeColor](#plotOptions.
+                 * bubble.negativeColor).
+                 * 
+                 * @type {Boolean}
+                 * @default true
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.displayNegative
+                 */
+
+                /**
+                 * Maximum bubble size. Bubbles will automatically size between the
+                 * `minSize` and `maxSize` to reflect the `z` value of each bubble.
+                 * Can be either pixels (when no unit is given), or a percentage of
+                 * the smallest one of the plot width and height.
+                 * 
+                 * @type {String}
+                 * @sample {highmaps} maps/demo/map-bubble/ Bubble size
+                 * @default 20%
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.maxSize
+                 */
+
+                /**
+                 * Minimum bubble size. Bubbles will automatically size between the
+                 * `minSize` and `maxSize` to reflect the `z` value of each bubble.
+                 * Can be either pixels (when no unit is given), or a percentage of
+                 * the smallest one of the plot width and height.
+                 * 
+                 * @type {String}
+                 * @sample {highmaps} maps/demo/map-bubble/ Bubble size
+                 * @default 8
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.minSize
+                 */
+
+                /**
+                 * When a point's Z value is below the [zThreshold](#plotOptions.mapbubble.
+                 * zThreshold) setting, this color is used.
+                 * 
+                 * @type {Color}
+                 * @sample {highmaps} maps/plotoptions/mapbubble-negativecolor/
+                 *         Negative color below a threshold
+                 * @default null
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.negativeColor
+                 */
+
+                /**
+                 * Whether the bubble's value should be represented by the area or the
+                 * width of the bubble. The default, `area`, corresponds best to the
+                 * human perception of the size of each bubble.
+                 * 
+                 * @validvalue ["area", "width"]
+                 * @type {String}
+                 * @default area
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.sizeBy
+                 */
+
+                /**
+                 * When this is true, the absolute value of z determines the size of
+                 * the bubble. This means that with the default `zThreshold` of 0, a
+                 * bubble of value -1 will have the same size as a bubble of value 1,
+                 * while a bubble of value 0 will have a smaller size according to
+                 * `minSize`.
+                 * 
+                 * @type {Boolean}
+                 * @sample {highmaps} highcharts/plotoptions/bubble-sizebyabsolutevalue/
+                 *         Size by absolute value, various thresholds
+                 * @default false
+                 * @since 1.1.9
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.sizeByAbsoluteValue
+                 */
+
+                /**
+                 * The minimum for the Z value range. Defaults to the highest Z value
+                 * in the data.
+                 * 
+                 * @type {Number}
+                 * @see [zMax](#plotOptions.mapbubble.zMin)
+                 * @sample {highmaps} highcharts/plotoptions/bubble-zmin-zmax/
+                 *         Z has a possible range of 0-100
+                 * @default null
+                 * @since 1.0.3
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.zMax
+                 */
+
+                /**
+                 * The minimum for the Z value range. Defaults to the lowest Z value
+                 * in the data.
+                 * 
+                 * @type {Number}
+                 * @see [zMax](#plotOptions.mapbubble.zMax)
+                 * @sample {highmaps} highcharts/plotoptions/bubble-zmin-zmax/
+                 *         Z has a possible range of 0-100
+                 * @default null
+                 * @since 1.0.3
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.zMin
+                 */
+
+                /**
+                 * When [displayNegative](#plotOptions.mapbubble.displayNegative) is `false`,
+                 * bubbles with lower Z values are skipped. When `displayNegative`
+                 * is `true` and a [negativeColor](#plotOptions.mapbubble.negativeColor)
+                 * is given, points with lower Z is colored.
+                 * 
+                 * @type {Number}
+                 * @sample {highmaps} maps/plotoptions/mapbubble-negativecolor/
+                 *         Negative color below a threshold
+                 * @default 0
+                 * @product highmaps
+                 * @apioption plotOptions.mapbubble.zThreshold
+                 */
 
                 // Prototype members
             }, {
@@ -2929,6 +3789,70 @@
             });
         }
 
+
+        /**
+         * A `mapbubble` series. If the [type](#series.mapbubble.type) option
+         * is not specified, it is inherited from [chart.type](#chart.type).
+         * 
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to [plotOptions.
+         * mapbubble](#plotOptions.mapbubble).
+         * 
+         * @type {Object}
+         * @extends series,plotOptions.mapbubble
+         * @excluding dataParser,dataURL
+         * @product highmaps
+         * @apioption series.mapbubble
+         */
+
+        /**
+         * An array of data points for the series. For the `mapbubble` series
+         * type, points can be given in the following ways:
+         * 
+         * 1.  An array of numerical values. In this case, the numerical values
+         * will be interpreted as `z` options. Example:
+         * 
+         *  ```js
+         *  data: [0, 5, 3, 5]
+         *  ```
+         * 
+         * 2.  An array of objects with named values. The objects are point
+         * configuration objects as seen below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.mapbubble.turboThreshold),
+         * this option is not available.
+         * 
+         *  ```js
+         *     data: [{
+         *         z: 9,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         z: 10,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         * 
+         * @type {Array<Object|Number>}
+         * @extends series.mappoint.data
+         * @excluding labelrank,middleX,middleY,path,value,x,y,lat,lon
+         * @product highmaps
+         * @apioption series.mapbubble.data
+         */
+
+        /**
+         * While the `x` and `y` values of the bubble are determined by the
+         * underlying map, the `z` indicates the actual value that gives the
+         * size of the bubble.
+         * 
+         * @type {Number}
+         * @sample {highmaps} maps/demo/map-bubble/ Bubble
+         * @product highmaps
+         * @apioption series.mapbubble.data.z
+         */
+
     }(Highcharts));
     (function(H) {
         /**
@@ -2947,97 +3871,114 @@
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
-        // The Heatmap series type
 
         /**
+         * A heatmap is a graphical representation of data where the individual values
+         * contained in a matrix are represented as colors.
+         *
+         * @sample highcharts/demo/heatmap/
+         *         Simple heatmap
+         * @sample highcharts/demo/heatmap-canvas/
+         *         Heavy heatmap
          * @extends {plotOptions.scatter}
+         * @excluding marker,pointRange
+         * @product highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
         seriesType('heatmap', 'scatter', {
 
             /**
+             * Animation is disabled by default on the heatmap series.
              */
             animation: false,
 
             /**
+             * The border width for each heat map item.
              */
             borderWidth: 0,
 
+            /**
+             * Padding between the points in the heatmap.
+             * 
+             * @type {Number}
+             * @default 0
+             * @since 6.0
+             * @apioption plotOptions.heatmap.pointPadding
+             */
 
             /**
+             * The main color of the series. In heat maps this color is rarely used,
+             * as we mostly use the color to denote the value of each point. Unless
+             * options are set in the [colorAxis](#colorAxis), the default value
+             * is pulled from the [options.colors](#colors) array.
+             * 
+             * @type {Color}
+             * @default null
+             * @since 4.0
+             * @product highcharts
+             * @apioption plotOptions.heatmap.color
              */
+
+            /**
+             * The column size - how many X axis units each column in the heatmap
+             * should span.
+             * 
+             * @type {Number}
+             * @sample {highcharts} maps/demo/heatmap/ One day
+             * @sample {highmaps} maps/demo/heatmap/ One day
+             * @default 1
+             * @since 4.0
+             * @product highcharts highmaps
+             * @apioption plotOptions.heatmap.colsize
+             */
+
+
+
             dataLabels: {
 
-                /**
-                 */
                 formatter: function() { // #2945
                     return this.point.value;
                 },
-
-                /**
-                 */
                 inside: true,
-
-                /**
-                 */
                 verticalAlign: 'middle',
-
-                /**
-                 */
                 crop: false,
-
-                /**
-                 */
                 overflow: false,
-
-                /**
-                 */
                 padding: 0 // #3837
             },
 
-            /**
-             */
+            /** @ignore */
             marker: null,
 
-            /**
-             */
+            /**	@ignore */
             pointRange: null, // dynamically set to colsize by default
 
-            /**
-             */
             tooltip: {
-
-                /**
-                 */
                 pointFormat: '{point.x}, {point.y}: {point.value}<br/>'
             },
 
-            /**
-             */
             states: {
 
-                /**
-                 */
                 normal: {
-
-                    /**
-                     */
                     animation: true
                 },
 
-                /**
-                 */
                 hover: {
-
-                    /**
-                     */
-                    halo: false, // #3406, halo is not required on heatmaps
-
-                    /**
-                     */
+                    halo: false, // #3406, halo is disabled on heatmaps by default
                     brightness: 0.2
                 }
             }
+            /**
+             * The row size - how many Y axis units each heatmap row should span.
+             * 
+             * @type {Number}
+             * @sample {highcharts} maps/demo/heatmap/ 1 by default
+             * @sample {highmaps} maps/demo/heatmap/ 1 by default
+             * @default 1
+             * @since 4.0
+             * @product highcharts highmaps
+             * @apioption plotOptions.heatmap.rowsize
+             */
+
         }, merge(colorSeriesMixin, {
             pointArrayMap: ['y', 'value'],
             hasPointSpecificOptions: true,
@@ -3061,6 +4002,7 @@
                     options = series.options,
                     xAxis = series.xAxis,
                     yAxis = series.yAxis,
+                    seriesPointPadding = options.pointPadding || 0,
                     between = function(x, a, b) {
                         return Math.min(Math.max(a, x), b);
                     };
@@ -3087,7 +4029,8 @@
                         ),
                         y2 = between(
                             Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len
-                        );
+                        ),
+                        pointPadding = pick(point.pointPadding, seriesPointPadding);
 
                     // Set plotX and plotY for use in K-D-Tree and more
                     point.plotX = point.clientX = (x1 + x2) / 2;
@@ -3095,10 +4038,10 @@
 
                     point.shapeType = 'rect';
                     point.shapeArgs = {
-                        x: Math.min(x1, x2),
-                        y: Math.min(y1, y2),
-                        width: Math.abs(x2 - x1),
-                        height: Math.abs(y2 - y1)
+                        x: Math.min(x1, x2) + pointPadding,
+                        y: Math.min(y1, y2) + pointPadding,
+                        width: Math.abs(x2 - x1) - pointPadding * 2,
+                        height: Math.abs(y2 - y1) - pointPadding * 2
                     };
                 });
 
@@ -3129,7 +4072,133 @@
                 Series.prototype.getExtremes.call(this);
             }
 
-        }), colorPointMixin);
+        }), H.extend({
+            haloPath: function(size) {
+                if (!size) {
+                    return [];
+                }
+                var rect = this.shapeArgs;
+                return [
+                    'M', rect.x - size, rect.y - size,
+                    'L', rect.x - size, rect.y + rect.height + size,
+                    rect.x + rect.width + size, rect.y + rect.height + size,
+                    rect.x + rect.width + size, rect.y - size,
+                    'Z'
+                ];
+            }
+        }, colorPointMixin));
+        /**
+         * A `heatmap` series. If the [type](#series.heatmap.type) option is
+         * not specified, it is inherited from [chart.type](#chart.type).
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to [plotOptions.
+         * heatmap](#plotOptions.heatmap).
+         * 
+         * @type {Object}
+         * @extends series,plotOptions.heatmap
+         * @excluding dataParser,dataURL,stack
+         * @product highcharts highmaps
+         * @apioption series.heatmap
+         */
+
+        /**
+         * An array of data points for the series. For the `heatmap` series
+         * type, points can be given in the following ways:
+         * 
+         * 1.  An array of arrays with 3 or 2 values. In this case, the values
+         * correspond to `x,y,value`. If the first value is a string, it is
+         * applied as the name of the point, and the `x` value is inferred.
+         * The `x` value can also be omitted, in which case the inner arrays
+         * should be of length 2\. Then the `x` value is automatically calculated,
+         * either starting at 0 and incremented by 1, or from `pointStart`
+         * and `pointInterval` given in the series options.
+         * 
+         *  ```js
+         *     data: [
+         *         [0, 9, 7],
+         *         [1, 10, 4],
+         *         [2, 6, 3]
+         *     ]
+         *  ```
+         * 
+         * 2.  An array of objects with named values. The objects are point
+         * configuration objects as seen below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.heatmap.turboThreshold),
+         * this option is not available.
+         * 
+         *  ```js
+         *     data: [{
+         *         x: 1,
+         *         y: 3,
+         *         value: 10,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         x: 1,
+         *         y: 7,
+         *         value: 10,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         * 
+         * @type {Array<Object|Array>}
+         * @extends series.line.data
+         * @excluding marker
+         * @sample {highcharts} highcharts/chart/reflow-true/ Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/ Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/ Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/ Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/ Config objects
+         * @product highcharts highmaps
+         * @apioption series.heatmap.data
+         */
+
+        /**
+         * The color of the point. In heat maps the point color is rarely set
+         * explicitly, as we use the color to denote the `value`. Options for
+         * this are set in the [colorAxis](#colorAxis) configuration.
+         * 
+         * @type {Color}
+         * @product highcharts highmaps
+         * @apioption series.heatmap.data.color
+         */
+
+        /**
+         * The value of the point, resulting in a color controled by options
+         * as set in the [colorAxis](#colorAxis) configuration.
+         * 
+         * @type {Number}
+         * @product highcharts highmaps
+         * @apioption series.heatmap.data.value
+         */
+
+        /**
+         * The x coordinate of the point.
+         * 
+         * @type {Number}
+         * @product highmaps
+         * @apioption series.heatmap.data.x
+         */
+
+        /**
+         * The y coordinate of the point.
+         * 
+         * @type {Number}
+         * @product highmaps
+         * @apioption series.heatmap.data.y
+         */
+
+        /**
+         * Point padding for a single point.
+         *
+         * @type {Number}
+         * @sample maps/plotoptions/tilemap-pointpadding Point padding on tiles
+         * @apioption series.heatmap.data.pointPadding
+         */
+
 
     }(Highcharts));
     (function(H) {
@@ -3366,7 +4435,7 @@
          * @return {Object}
          *         An object ready for the `mapData` option.
          *
-         * @sample samples/maps/demo/geojson/
+         * @sample maps/demo/geojson/
          *         Simple areas
          * @sample maps/demo/geojson-multiple-types/
          *         Multiple types
@@ -3519,7 +4588,7 @@
         // Set the default map navigation options
 
         /** 
-         * @products highmaps
+         * @product highmaps
          * @optionparent mapNavigation 
          */
         defaultOptions.mapNavigation = {
@@ -3680,7 +4749,7 @@
                      * Click handler for the button. Defaults to:
                      * 
                      * <pre>function () {
-                     * this.mapZoom(2);
+                     *     this.mapZoom(2);
                      * }</pre>
                      * 
                      * @type {Function}

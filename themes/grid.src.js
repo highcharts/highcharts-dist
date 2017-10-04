@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.14 (2017-07-28)
+ * @license Highcharts JS v6.0.0 (2017-10-04)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -24,7 +24,9 @@
          */
 
         Highcharts.theme = {
-            colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4'],
+            colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572',
+                '#FF9655', '#FFF263', '#6AF9C4'
+            ],
             chart: {
                 backgroundColor: {
                     linearGradient: {

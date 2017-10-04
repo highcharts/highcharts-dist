@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.14 (2017-07-28)
+ * @license Highcharts JS v6.0.0 (2017-10-04)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -283,7 +283,7 @@
                         target.image.clip(target.boostClipRect);
 
                     } else if (!(target instanceof H.Chart)) {
-                        //ctx.clearRect(0, 0, width, height);
+                        // ctx.clearRect(0, 0, width, height);
                     }
 
                     if (target.canvas.width !== width) {

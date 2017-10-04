@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.14 (2017-07-28)
+ * @license Highcharts JS v6.0.0 (2017-10-04)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -41,14 +41,120 @@
         };
         extend(ColorAxis.prototype, Axis.prototype);
         extend(ColorAxis.prototype, {
-            /**	 
+            /**
+             * A color axis for choropleth maps and heat maps. Visually, the color axis
+             * will appear as a gradient or as separate items inside the legend,
+             * depending on whether the axis is scalar or based on data classes.
+             *
+             * For supported color formats, see the 
+             * [docs article about colors](http://www.highcharts.com/docs/chart-design-and-style/colors).
+             *
+             * A scalar color axis is represented by a gradient. The colors either range
+             * between the [minColor](#colorAxis.minColor) and the [maxColor](#colorAxis.maxColor),
+             * or for more fine grained control the colors can be
+             * defined in [stops](#colorAxis.stops). Often times, the color axis needs
+             * to be adjusted to get the right color spread for the data. In addition to
+             * stops, consider using a logarithmic [axis type](#colorAxis.type), or
+             * setting [min](#colorAxis.min) and [max](#colorAxis.max) to avoid the
+             * colors being determined by outliers.
+             *
+             * When [dataClasses](#colorAxis.dataClasses) are used, the ranges are
+             * subdivided into separate classes like categories based on their values.
+             * This can be used for ranges between two values, but also for a true
+             * category. However, when your data is categorized, it may be as convenient
+             * to add each category to a separate series.
+             *
+             * See [the Axis object](#Axis) for programmatic access to the axis.
              * @extends {xAxis}
+             * @excluding allowDecimals,alternateGridColor,breaks,categories,crosshair,
+             *            dateTimeLabelFormats,lineWidth,linkedTo,maxZoom,minRange,
+             *            minTickInterval,offset,opposite,plotBands,plotLines,showEmpty,
+             *            title
+             * @product highcharts highmaps
              * @optionparent colorAxis
              */
             defaultColorAxisOptions: {
 
                 /**
+                 * Whether to allow decimals on the color axis.
+                 * @type {Boolean}
+                 * @default true
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.allowDecimals
                  */
+
+                /**
+                 * Determines how to set each data class' color if no individual color
+                 * is set. The default value, `tween`, computes intermediate colors
+                 * between `minColor` and `maxColor`. The other possible value, `category`,
+                 * pulls colors from the global or chart specific [colors](#colors)
+                 * array.
+                 * 
+                 * @validvalue ["tween", "category"]
+                 * @type {String}
+                 * @sample {highmaps} maps/coloraxis/dataclasscolor/ Category colors
+                 * @default tween
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClassColor
+                 */
+
+                /**
+                 * An array of data classes or ranges for the choropleth map. If none
+                 * given, the color axis is scalar and values are distributed as a gradient
+                 * between the minimum and maximum colors.
+                 * 
+                 * @type {Array<Object>}
+                 * @sample {highmaps} maps/demo/data-class-ranges/ Multiple ranges
+                 * @sample {highmaps} maps/demo/data-class-two-ranges/ Two ranges
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses
+                 */
+
+                /**
+                 * The color of each data class. If not set, the color is pulled from
+                 * the global or chart-specific [colors](#colors) array. In 
+                 * styled mode, this option is ignored. Instead, use colors defined in
+                 * CSS.
+                 * 
+                 * @type {Color}
+                 * @sample {highmaps} maps/demo/data-class-two-ranges/ Explicit colors
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses.color
+                 */
+
+                /**
+                 * The start of the value range that the data class represents, relating
+                 * to the point value.
+                 * 
+                 * @type {Number}
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses.from
+                 */
+
+                /**
+                 * The name of the data class as it appears in the legend. If no name
+                 * is given, it is automatically created based on the `from` and `to`
+                 * values. For full programmatic control, [legend.labelFormatter](#legend.
+                 * labelFormatter) can be used. In the formatter, `this.from` and `this.
+                 * to` can be accessed.
+                 * 
+                 * @type {String}
+                 * @sample {highmaps} maps/coloraxis/dataclasses-name/ Named data classes
+                 * @sample {highmaps} maps/coloraxis/dataclasses-labelformatter/ Formatted data classes
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses.name
+                 */
+
+                /**
+                 * The end of the value range that the data class represents, relating
+                 * to the point value.
+                 * 
+                 * @type {Number}
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.dataClasses.to
+                 */
+
+                /** @ignore */
                 lineWidth: 0,
 
                 /**
@@ -56,18 +162,52 @@
                  * padding of 0.05 will make a 100px axis 5px longer.
                  * 
                  * @type {Number}
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 minPadding: 0,
+
+                /**
+                 * The maximum value of the axis in terms of map point values. If `null`,
+                 * the max value is automatically calculated. If the `endOnTick` option
+                 * is true, the max value might be rounded up.
+                 * 
+                 * @type {Number}
+                 * @sample {highmaps} maps/coloraxis/gridlines/
+                 *         Explicit min and max to reduce the effect of outliers
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.max
+                 */
+
+                /**
+                 * The minimum value of the axis in terms of map point values. If `null`,
+                 * the min value is automatically calculated. If the `startOnTick`
+                 * option is true, the min value might be rounded down.
+                 * 
+                 * @type {Number}
+                 * @sample {highmaps} maps/coloraxis/gridlines/
+                 *         Explicit min and max to reduce the effect of outliers
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.min
+                 */
 
                 /**
                  * Padding of the max value relative to the length of the axis. A
                  * padding of 0.05 will make a 100px axis 5px longer.
                  * 
                  * @type {Number}
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 maxPadding: 0,
+
+                /**
+                 * Color of the grid lines extending from the axis across the gradient.
+                 * 
+                 * @type {Color}
+                 * @sample {highmaps} maps/coloraxis/gridlines/ Grid lines demonstrated
+                 * @default #e6e6e6
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.gridLineColor
+                 */
 
                 /**
                  * The width of the grid lines extending from the axis across the
@@ -76,9 +216,18 @@
                  * @type {Number}
                  * @sample {highmaps} maps/coloraxis/gridlines/ Grid lines demonstrated
                  * @default 1
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 gridLineWidth: 1,
+
+                /**
+                 * The interval of the tick marks in axis units. When `null`, the tick
+                 * interval is computed to approximately follow the `tickPixelInterval`.
+                 * 
+                 * @type {Number}
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.tickInterval
+                 */
 
                 /**
                  * If [tickInterval](#colorAxis.tickInterval) is `null` this option
@@ -86,7 +235,7 @@
                  * 
                  * @type {Number}
                  * @default 72
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 tickPixelInterval: 72,
 
@@ -96,7 +245,7 @@
                  * 
                  * @type {Boolean}
                  * @default true
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 startOnTick: true,
 
@@ -107,12 +256,11 @@
                  * 
                  * @type {Boolean}
                  * @default true
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 endOnTick: true,
 
-                /**
-                 */
+                /**	@ignore */
                 offset: 0,
 
                 /**
@@ -122,7 +270,7 @@
                  * 
                  * @type {Object}
                  * @sample {highmaps} maps/coloraxis/marker/ Black marker
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 marker: {
 
@@ -131,17 +279,13 @@
                      * to disable animation. Defaults to `{ duration: 50 }`.
                      * 
                      * @type {Object|Boolean}
-                     * @product highmaps
+                     * @product highcharts highmaps
                      */
                     animation: {
-
-                        /**
-                         */
                         duration: 50
                     },
 
-                    /**
-                     */
+                    /** @ignore */
                     width: 0.01,
 
 
@@ -150,7 +294,7 @@
                      * 
                      * @type {Color}
                      * @default #999999
-                     * @product highmaps
+                     * @product highcharts highmaps
                      */
                     color: '#999999'
 
@@ -164,25 +308,23 @@
                  * 
                  * @type {Object}
                  * @extends xAxis.labels
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 labels: {
 
                     /**
-                     * How to handle overflowing labels on horizontal axis. Can be undefined
-                     * or "justify". If "justify", labels will not render outside the
-                     * plot area. If there is room to move it, it will be aligned to
-                     * the edge, else it will be removed.
+                     * How to handle overflowing labels on horizontal color axis. Can be
+                     * undefined or "justify". If "justify", labels will not render
+                     * outside the legend area. If there is room to move it, it will be
+                     * aligned to the edge, else it will be removed.
                      * 
                      * @validvalue [null, "justify"]
                      * @type {String}
                      * @default justify
-                     * @product highmaps
+                     * @product highcharts highmaps
                      */
                     overflow: 'justify',
 
-                    /**
-                     */
                     rotation: 0
                 },
 
@@ -199,7 +341,7 @@
                  * @sample {highmaps} maps/coloraxis/mincolor-maxcolor/ Min and max colors on scalar (gradient) axis
                  * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/ On data classes
                  * @default #e6ebf5
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 minColor: '#e6ebf5',
 
@@ -216,22 +358,57 @@
                  * @sample {highmaps} maps/coloraxis/mincolor-maxcolor/ Min and max colors on scalar (gradient) axis
                  * @sample {highmaps} maps/coloraxis/mincolor-maxcolor-dataclasses/ On data classes
                  * @default #003399
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 maxColor: '#003399',
 
                 /**
+                 * Color stops for the gradient of a scalar color axis. Use this in
+                 * cases where a linear gradient between a `minColor` and `maxColor`
+                 * is not sufficient. The stops is an array of tuples, where the first
+                 * item is a float between 0 and 1 assigning the relative position in
+                 * the gradient, and the second item is the color.
+                 * 
+                 * @type {Array<Array>}
+                 * @sample {highmaps} maps/demo/heatmap/ Heatmap with three color stops
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.stops
+                 */
+
+                /**
+                 * The pixel length of the main tick marks on the color axis.
                  */
                 tickLength: 5,
+
+                /**
+                 * The type of interpolation to use for the color axis. Can be `linear`
+                 * or `logarithmic`.
+                 * 
+                 * @validvalue ["linear", "logarithmic"]
+                 * @type {String}
+                 * @default linear
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.type
+                 */
+
+                /**
+                 * Whether to reverse the axis so that the highest number is closest
+                 * to the origin. Defaults to `false` in a horizontal legend and `true`
+                 * in a vertical legend, where the smallest value starts on top.
+                 * 
+                 * @type {Boolean}
+                 * @product highcharts highmaps
+                 * @apioption colorAxis.reversed
+                 */
 
                 /**
                  * Whether to display the colorAxis in the legend.
                  * 
                  * @type {Boolean}
-                 * @see [heatmap.showInLegend](#series<heatmap>.showInLegend)
+                 * @see [heatmap.showInLegend](#series.heatmap.showInLegend)
                  * @default true
                  * @since 4.2.7
-                 * @product highmaps
+                 * @product highcharts highmaps
                  */
                 showInLegend: true
             },
@@ -920,102 +1097,123 @@
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
-        // The Heatmap series type
 
         /**
+         * A heatmap is a graphical representation of data where the individual values
+         * contained in a matrix are represented as colors.
+         *
+         * @sample highcharts/demo/heatmap/
+         *         Simple heatmap
+         * @sample highcharts/demo/heatmap-canvas/
+         *         Heavy heatmap
          * @extends {plotOptions.scatter}
+         * @excluding marker,pointRange
+         * @product highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
         seriesType('heatmap', 'scatter', {
 
             /**
+             * Animation is disabled by default on the heatmap series.
              */
             animation: false,
 
             /**
+             * The border width for each heat map item.
              */
             borderWidth: 0,
 
+            /**
+             * Padding between the points in the heatmap.
+             * 
+             * @type {Number}
+             * @default 0
+             * @since 6.0
+             * @apioption plotOptions.heatmap.pointPadding
+             */
 
             /**
+             * The main color of the series. In heat maps this color is rarely used,
+             * as we mostly use the color to denote the value of each point. Unless
+             * options are set in the [colorAxis](#colorAxis), the default value
+             * is pulled from the [options.colors](#colors) array.
+             * 
+             * @type {Color}
+             * @default null
+             * @since 4.0
+             * @product highcharts
+             * @apioption plotOptions.heatmap.color
+             */
+
+            /**
+             * The column size - how many X axis units each column in the heatmap
+             * should span.
+             * 
+             * @type {Number}
+             * @sample {highcharts} maps/demo/heatmap/ One day
+             * @sample {highmaps} maps/demo/heatmap/ One day
+             * @default 1
+             * @since 4.0
+             * @product highcharts highmaps
+             * @apioption plotOptions.heatmap.colsize
+             */
+
+
+
+            /**
+             * The color applied to null points. In styled mode, a general CSS class is
+             * applied instead.
+             *
+             * @type {Color}
              */
             nullColor: '#f7f7f7',
 
 
-            /**
-             */
             dataLabels: {
 
-                /**
-                 */
                 formatter: function() { // #2945
                     return this.point.value;
                 },
-
-                /**
-                 */
                 inside: true,
-
-                /**
-                 */
                 verticalAlign: 'middle',
-
-                /**
-                 */
                 crop: false,
-
-                /**
-                 */
                 overflow: false,
-
-                /**
-                 */
                 padding: 0 // #3837
             },
 
-            /**
-             */
+            /** @ignore */
             marker: null,
 
-            /**
-             */
+            /**	@ignore */
             pointRange: null, // dynamically set to colsize by default
 
-            /**
-             */
             tooltip: {
-
-                /**
-                 */
                 pointFormat: '{point.x}, {point.y}: {point.value}<br/>'
             },
 
-            /**
-             */
             states: {
 
-                /**
-                 */
                 normal: {
-
-                    /**
-                     */
                     animation: true
                 },
 
-                /**
-                 */
                 hover: {
-
-                    /**
-                     */
-                    halo: false, // #3406, halo is not required on heatmaps
-
-                    /**
-                     */
+                    halo: false, // #3406, halo is disabled on heatmaps by default
                     brightness: 0.2
                 }
             }
+            /**
+             * The row size - how many Y axis units each heatmap row should span.
+             * 
+             * @type {Number}
+             * @sample {highcharts} maps/demo/heatmap/ 1 by default
+             * @sample {highmaps} maps/demo/heatmap/ 1 by default
+             * @default 1
+             * @since 4.0
+             * @product highcharts highmaps
+             * @apioption plotOptions.heatmap.rowsize
+             */
+
         }, merge(colorSeriesMixin, {
             pointArrayMap: ['y', 'value'],
             hasPointSpecificOptions: true,
@@ -1039,6 +1237,7 @@
                     options = series.options,
                     xAxis = series.xAxis,
                     yAxis = series.yAxis,
+                    seriesPointPadding = options.pointPadding || 0,
                     between = function(x, a, b) {
                         return Math.min(Math.max(a, x), b);
                     };
@@ -1065,7 +1264,8 @@
                         ),
                         y2 = between(
                             Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len
-                        );
+                        ),
+                        pointPadding = pick(point.pointPadding, seriesPointPadding);
 
                     // Set plotX and plotY for use in K-D-Tree and more
                     point.plotX = point.clientX = (x1 + x2) / 2;
@@ -1073,10 +1273,10 @@
 
                     point.shapeType = 'rect';
                     point.shapeArgs = {
-                        x: Math.min(x1, x2),
-                        y: Math.min(y1, y2),
-                        width: Math.abs(x2 - x1),
-                        height: Math.abs(y2 - y1)
+                        x: Math.min(x1, x2) + pointPadding,
+                        y: Math.min(y1, y2) + pointPadding,
+                        width: Math.abs(x2 - x1) - pointPadding * 2,
+                        height: Math.abs(y2 - y1) - pointPadding * 2
                     };
                 });
 
@@ -1105,7 +1305,133 @@
                 Series.prototype.getExtremes.call(this);
             }
 
-        }), colorPointMixin);
+        }), H.extend({
+            haloPath: function(size) {
+                if (!size) {
+                    return [];
+                }
+                var rect = this.shapeArgs;
+                return [
+                    'M', rect.x - size, rect.y - size,
+                    'L', rect.x - size, rect.y + rect.height + size,
+                    rect.x + rect.width + size, rect.y + rect.height + size,
+                    rect.x + rect.width + size, rect.y - size,
+                    'Z'
+                ];
+            }
+        }, colorPointMixin));
+        /**
+         * A `heatmap` series. If the [type](#series.heatmap.type) option is
+         * not specified, it is inherited from [chart.type](#chart.type).
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to [plotOptions.
+         * heatmap](#plotOptions.heatmap).
+         * 
+         * @type {Object}
+         * @extends series,plotOptions.heatmap
+         * @excluding dataParser,dataURL,stack
+         * @product highcharts highmaps
+         * @apioption series.heatmap
+         */
+
+        /**
+         * An array of data points for the series. For the `heatmap` series
+         * type, points can be given in the following ways:
+         * 
+         * 1.  An array of arrays with 3 or 2 values. In this case, the values
+         * correspond to `x,y,value`. If the first value is a string, it is
+         * applied as the name of the point, and the `x` value is inferred.
+         * The `x` value can also be omitted, in which case the inner arrays
+         * should be of length 2\. Then the `x` value is automatically calculated,
+         * either starting at 0 and incremented by 1, or from `pointStart`
+         * and `pointInterval` given in the series options.
+         * 
+         *  ```js
+         *     data: [
+         *         [0, 9, 7],
+         *         [1, 10, 4],
+         *         [2, 6, 3]
+         *     ]
+         *  ```
+         * 
+         * 2.  An array of objects with named values. The objects are point
+         * configuration objects as seen below. If the total number of data
+         * points exceeds the series' [turboThreshold](#series.heatmap.turboThreshold),
+         * this option is not available.
+         * 
+         *  ```js
+         *     data: [{
+         *         x: 1,
+         *         y: 3,
+         *         value: 10,
+         *         name: "Point2",
+         *         color: "#00FF00"
+         *     }, {
+         *         x: 1,
+         *         y: 7,
+         *         value: 10,
+         *         name: "Point1",
+         *         color: "#FF00FF"
+         *     }]
+         *  ```
+         * 
+         * @type {Array<Object|Array>}
+         * @extends series.line.data
+         * @excluding marker
+         * @sample {highcharts} highcharts/chart/reflow-true/ Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/ Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/ Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/ Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/ Config objects
+         * @product highcharts highmaps
+         * @apioption series.heatmap.data
+         */
+
+        /**
+         * The color of the point. In heat maps the point color is rarely set
+         * explicitly, as we use the color to denote the `value`. Options for
+         * this are set in the [colorAxis](#colorAxis) configuration.
+         * 
+         * @type {Color}
+         * @product highcharts highmaps
+         * @apioption series.heatmap.data.color
+         */
+
+        /**
+         * The value of the point, resulting in a color controled by options
+         * as set in the [colorAxis](#colorAxis) configuration.
+         * 
+         * @type {Number}
+         * @product highcharts highmaps
+         * @apioption series.heatmap.data.value
+         */
+
+        /**
+         * The x coordinate of the point.
+         * 
+         * @type {Number}
+         * @product highmaps
+         * @apioption series.heatmap.data.x
+         */
+
+        /**
+         * The y coordinate of the point.
+         * 
+         * @type {Number}
+         * @product highmaps
+         * @apioption series.heatmap.data.y
+         */
+
+        /**
+         * Point padding for a single point.
+         *
+         * @type {Number}
+         * @sample maps/plotoptions/tilemap-pointpadding Point padding on tiles
+         * @apioption series.heatmap.data.pointPadding
+         */
+
 
     }(Highcharts));
 }));

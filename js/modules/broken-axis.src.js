@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v5.0.14 (2017-07-28)
+ * @license Highcharts JS v6.0.0 (2017-10-04)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -384,7 +384,7 @@
              * @type {String}
              * @see [gapSize](plotOptions.series.gapSize)
              * @default relative
-             * @validvalues ["relative", "value"]
+             * @validvalue ["relative", "value"]
              * @since 5.0.13
              * @product highstock
              * @apioption plotOptions.series.gapUnit
