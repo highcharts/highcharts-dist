@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.0 (2017-10-04)
+ * @license Highcharts JS v6.0.1 (2017-10-05)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -1688,7 +1688,7 @@
          * The column range is a cartesian series type with higher and lower
          * Y values along an X axis. Requires `highcharts-more.js`. To display
          * horizontal bars, set [chart.inverted](#chart.inverted) to `true`.
-         * 
+         *
          * @type {Object}
          * @extends plotOptions.column
          * @excluding negativeColor,stacking,softThreshold,threshold
@@ -1706,6 +1706,9 @@
             marker: null,
             states: {
                 hover: {
+                    /**
+                     * @ignore-option
+                     */
                     halo: false
                 }
             }
@@ -1715,7 +1718,7 @@
              * have no `x` and `y` options. Instead, they have `xLow`, `xHigh`,
              * `yLow` and `yHigh` options to allow the higher and lower data label
              * sets individually.
-             * 
+             *
              * @type {Object}
              * @extends plotOptions.arearange.dataLabels
              * @since 2.3.0
@@ -1843,12 +1846,12 @@
          * A `columnrange` series. If the [type](#series.columnrange.type)
          * option is not specified, it is inherited from [chart.type](#chart.
          * type).
-         * 
+         *
          * For options that apply to multiple series, it is recommended to add
          * them to the [plotOptions.series](#plotOptions.series) options structure.
          * To apply to all series of this specific type, apply it to [plotOptions.
          * columnrange](#plotOptions.columnrange).
-         * 
+         *
          * @type {Object}
          * @extends series,plotOptions.columnrange
          * @excluding dataParser,dataURL,stack
@@ -1859,7 +1862,7 @@
         /**
          * An array of data points for the series. For the `columnrange` series
          * type, points can be given in the following ways:
-         * 
+         *
          * 1.  An array of arrays with 3 or 2 values. In this case, the values
          * correspond to `x,low,high`. If the first value is a string, it is
          * applied as the name of the point, and the `x` value is inferred.
@@ -1867,7 +1870,7 @@
          * should be of length 2\. Then the `x` value is automatically calculated,
          * either starting at 0 and incremented by 1, or from `pointStart`
          * and `pointInterval` given in the series options.
-         * 
+         *
          *  ```js
          *     data: [
          *         [0, 4, 2],
@@ -1875,12 +1878,12 @@
          *         [2, 9, 10]
          *     ]
          *  ```
-         * 
+         *
          * 2.  An array of objects with named values. The objects are point
          * configuration objects as seen below. If the total number of data
          * points exceeds the series' [turboThreshold](#series.columnrange.
          * turboThreshold), this option is not available.
-         * 
+         *
          *  ```js
          *     data: [{
          *         x: 1,
@@ -1896,7 +1899,7 @@
          *         color: "#FF00FF"
          *     }]
          *  ```
-         * 
+         *
          * @type {Array<Object|Array>}
          * @extends series.arearange.data
          * @excluding marker

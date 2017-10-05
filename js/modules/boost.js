@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.0.0 (2017-10-04)
+ Highcharts JS v6.0.1 (2017-10-05)
  Boost module
 
  (c) 2010-2017 Highsoft AS

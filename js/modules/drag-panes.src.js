@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.0 (2017-10-04)
+ * @license Highcharts JS v6.0.1 (2017-10-05)
  * Drag-panes module
  *
  * (c) 2010-2017 Highsoft AS
@@ -38,8 +38,6 @@
 
             /**
              * Default options for AxisResizer.
-             * @product highstock
-             * @optionparent yAxis
              */
             resizerOptions = {
                 /**
@@ -48,8 +46,12 @@
                  *
                  * This feature requires the `drag-panes.js` module.
                  *
+                 * @product highstock
+                 * @default 10%
+                 *
                  * @type {Number|String}
                  * @sample {highstock} stock/yaxis/resize-min-max-length minLength and maxLength
+                 * @apioption yAxis.minLength
                  */
                 minLength: '10%',
 
@@ -59,8 +61,12 @@
                  *
                  * This feature requires the `drag-panes.js` module.
                  *
+                 * @product highstock
+                 * @default 100%
+                 *
                  * @type {String|Number}
                  * @sample {highstock} stock/yaxis/resize-min-max-length minLength and maxLength
+                 * @apioption yAxis.maxLength
                  */
                 maxLength: '100%',
 
@@ -68,6 +74,9 @@
                  * Options for axis resizing for Drag Panes module.
                  *
                  * This feature requires the `drag-panes.js` module.
+                 *
+                 * @product highstock
+                 * @optionparent yAxis.resize
                  */
                 resize: {
 
@@ -269,8 +278,8 @@
              */
             onMouseMove: function(e) {
                 /*
-                 * In iOS, a mousemove event with e.pageX === 0 is fired when holding 
-                 * the finger down in the center of the scrollbar. This should 
+                 * In iOS, a mousemove event with e.pageX === 0 is fired when holding
+                 * the finger down in the center of the scrollbar. This should
                  * be ignored. Borrowed from Navigator.
                  */
                 if (!e.touches || e.touches[0].pageX !== 0) {

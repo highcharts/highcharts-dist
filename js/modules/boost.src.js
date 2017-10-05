@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.0 (2017-10-04)
+ * @license Highcharts JS v6.0.1 (2017-10-05)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -243,8 +243,11 @@
         /**
          * Set the point threshold for when a series should enter boost mode.
          *
-         * Setting it to e.g. 2000 will cause the series to enter boost mode
-         * when there are 2000 or more points in the series.
+         * Setting it to e.g. 2000 will cause the series to enter boost mode when there
+         * are 2000 or more points in the series.
+         *
+         * To disable boosting on the series, set the `boostThreshold` to 0. Setting it
+         * to 1 will force boosting.
          *
          * Requires `modules/boost.js`.
          *

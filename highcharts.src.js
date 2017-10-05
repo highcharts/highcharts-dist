@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.0 (2017-10-04)
+ * @license Highcharts JS v6.0.1 (2017-10-05)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -32,7 +32,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highcharts',
-            version: '6.0.0',
+            version: '6.0.1',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -1619,9 +1619,21 @@
          *        condition.
          * @returns {Mixed} - The value of the element.
          */
-        H.find = function(arr, callback) {
-            return (H.findPolyfill || Array.prototype.find).call(arr, callback);
-        };
+        H.find = Array.prototype.find ?
+            function(arr, callback) {
+                return arr.find(callback);
+            } :
+            // Legacy implementation. PhantomJS, IE <= 11 etc. #7223.
+            function(arr, fn) {
+                var i,
+                    length = arr.length;
+
+                for (i = 0; i < length; i++) {
+                    if (fn(arr[i], i)) {
+                        return arr[i];
+                    }
+                }
+            };
 
         /**
          * Map an array by a callback.
@@ -4344,7 +4356,7 @@
                 // Add description
                 desc = this.createElement('desc').add();
                 desc.element.appendChild(
-                    doc.createTextNode('Created with Highcharts 6.0.0')
+                    doc.createTextNode('Created with Highcharts 6.0.1')
                 );
 
                 /**
@@ -28150,7 +28162,7 @@
          *
          * @sample {highcharts} highcharts/demo/column-basic/ Column chart
          * @sample {highstock} stock/demo/column/ Column chart
-         * 
+         *
          * @extends {plotOptions.line}
          * @product highcharts highstock
          * @excluding connectNulls,dashStyle,gapSize,gapUnit,linecap,lineWidth,marker,
@@ -28161,7 +28173,7 @@
 
             /**
              * The corner radius of the border surrounding each column or bar.
-             * 
+             *
              * @type {Number}
              * @sample {highcharts} highcharts/plotoptions/column-borderradius/
              *         Rounded columns
@@ -28172,10 +28184,10 @@
 
             /**
              * The width of the border surrounding each column or bar.
-             * 
+             *
              * In styled mode, the stroke width can be set with the `.highcharts-point`
              * rule.
-             * 
+             *
              * @type {Number}
              * @sample {highcharts} highcharts/plotoptions/column-borderwidth/
              *         2px black border
@@ -28188,7 +28200,7 @@
              * When using automatic point colors pulled from the `options.colors`
              * collection, this option determines whether the chart should receive
              * one color per series or one color per point.
-             * 
+             *
              * @type {Boolean}
              * @see [series colors](#plotOptions.column.colors)
              * @sample {highcharts} highcharts/plotoptions/column-colorbypoint-false/
@@ -28205,7 +28217,7 @@
              * A series specific or series type specific color set to apply instead
              * of the global [colors](#colors) when [colorByPoint](#plotOptions.
              * column.colorByPoint) is true.
-             * 
+             *
              * @type {Array<Color>}
              * @since 3.0
              * @product highcharts highstock
@@ -28219,7 +28231,7 @@
              * widths or distance between columns. In these cases, setting `crisp`
              * to `false` may look better, even though each column is rendered
              * blurry.
-             * 
+             *
              * @type {Boolean}
              * @sample {highcharts} highcharts/plotoptions/column-crisp-false/
              *         Crisp is false
@@ -28231,7 +28243,7 @@
 
             /**
              * Padding between each value groups, in x axis units.
-             * 
+             *
              * @type {Number}
              * @sample {highcharts} highcharts/plotoptions/column-grouppadding-default/
              *         0.2 by default
@@ -28246,7 +28258,7 @@
              * Whether to group non-stacked columns or to let them render independent
              * of each other. Non-grouped columns will be laid out individually
              * and overlap each other.
-             * 
+             *
              * @type {Boolean}
              * @sample {highcharts} highcharts/plotoptions/column-grouping-false/
              *         Grouping disabled
@@ -28264,7 +28276,7 @@
              * The maximum allowed pixel width for a column, translated to the height
              * of a bar in a bar chart. This prevents the columns from becoming
              * too wide when there is a small number of points in the chart.
-             * 
+             *
              * @type {Number}
              * @see [pointWidth](#plotOptions.column.pointWidth)
              * @sample {highcharts} highcharts/plotoptions/column-maxpointwidth-20/
@@ -28279,7 +28291,7 @@
 
             /**
              * Padding between each column or bar, in x axis units.
-             * 
+             *
              * @type {Number}
              * @sample {highcharts} highcharts/plotoptions/column-pointpadding-default/
              *         0.1 by default
@@ -28296,7 +28308,7 @@
              * A pixel value specifying a fixed width for each column or bar. When
              * `null`, the width is calculated from the `pointPadding` and
              * `groupPadding`.
-             * 
+             *
              * @type {Number}
              * @see [maxPointWidth](#plotOptions.column.maxPointWidth)
              * @sample {highcharts} highcharts/plotoptions/column-pointwidth-20/
@@ -28314,7 +28326,7 @@
              * set the minimal point length to a pixel value like 3\. In stacked
              * column charts, minPointLength might not be respected for tightly
              * packed values.
-             * 
+             *
              * @type {Number}
              * @sample {highcharts} highcharts/plotoptions/column-minpointlength/
              *         Zero base value
@@ -28334,7 +28346,7 @@
              * crop threshold, the series data is cropped to only contain points
              * that fall within the plot area. The advantage of cropping away invisible
              * points is to increase performance on large series. .
-             * 
+             *
              * @type {Number}
              * @default 50
              * @product highcharts highstock
@@ -28350,7 +28362,7 @@
              *
              * The default `null` means it is computed automatically, but this option
              * can be used to override the automatic value.
-             * 
+             *
              * @type {Number}
              * @sample {highcharts} highcharts/plotoptions/column-pointrange/
              *         Set the point range to one day on a data set with one week
@@ -28370,11 +28382,14 @@
                  */
                 hover: {
 
+                    /**
+                     * @ignore-option
+                     */
                     halo: false,
                     /**
                      * A specific border color for the hovered point. Defaults to
                      * inherit the normal state border color.
-                     * 
+                     *
                      * @type {Color}
                      * @product highcharts
                      * @apioption plotOptions.column.states.hover.borderColor
@@ -28382,7 +28397,7 @@
 
                     /**
                      * A specific color for the hovered point.
-                     * 
+                     *
                      * @type {Color}
                      * @default undefined
                      * @product highcharts
@@ -28394,10 +28409,10 @@
                     /**
                      * How much to brighten the point on interaction. Requires the main
                      * color to be defined in hex or rgb(a) format.
-                     * 
+                     *
                      * In styled mode, the hover brightening is by default replaced
                      * with a fill-opacity set in the `.highcharts-point:hover` rule.
-                     * 
+                     *
                      * @type {Number}
                      * @sample {highcharts} highcharts/plotoptions/column-states-hover-brightness/
                      *         Brighten by 0.5
@@ -28429,11 +28444,11 @@
              * When this is true, the series will not cause the Y axis to cross
              * the zero plane (or [threshold](#plotOptions.series.threshold) option)
              * unless the data actually crosses the plane.
-             * 
+             *
              * For example, if `softThreshold` is `false`, a series of 0, 1, 2,
              * 3 will make the Y axis show negative values according to the `minPadding`
              * option. If `softThreshold` is `true`, the Y axis starts at 0.
-             * 
+             *
              * @type {Boolean}
              * @default {highcharts} true
              * @default {highstock} false
@@ -28456,7 +28471,7 @@
              * The Y axis value to serve as the base for the columns, for distinguishing
              * between values above and below a threshold. If `null`, the columns
              * extend from the padding Y axis minimum.
-             * 
+             *
              * @type {Number}
              * @default 0
              * @since 2.0
@@ -28467,10 +28482,10 @@
 
             /**
              * The color of the border surrounding each column or bar.
-             * 
+             *
              * In styled mode, the border stroke can be set with the `.highcharts-point`
              * rule.
-             * 
+             *
              * @type {Color}
              * @sample {highcharts} highcharts/plotoptions/column-bordercolor/
              *         Dark gray border
@@ -28497,7 +28512,7 @@
              *
              * @function #init
              * @memberOf seriesTypes.column
-             * 
+             *
              */
             init: function() {
                 Series.prototype.init.apply(this, arguments);
@@ -28897,6 +28912,8 @@
                     options = series.options,
                     inverted = this.chart.inverted,
                     attr = {},
+                    translateProp = inverted ? 'translateX' : 'translateY',
+                    translateStart,
                     translatedThreshold;
 
                 if (svg) { // VML is too slow anyway
@@ -28914,17 +28931,19 @@
                         series.group.attr(attr);
 
                     } else { // run the animation
-
-                        attr[inverted ? 'translateX' : 'translateY'] = yAxis.pos;
-                        series.group.animate(
-                            attr,
+                        translateStart = series.group.attr(translateProp);
+                        series.group.animate({
+                                scaleY: 1
+                            },
                             extend(animObject(series.options.animation), {
                                 // Do the scale synchronously to ensure smooth updating
-                                // (#5030)
+                                // (#5030, #7228)
                                 step: function(val, fx) {
-                                    series.group.attr({
-                                        scaleY: Math.max(0.001, fx.pos) // #5250
-                                    });
+
+                                    attr[translateProp] =
+                                        translateStart +
+                                        fx.pos * (yAxis.pos - translateStart);
+                                    series.group.attr(attr);
                                 }
                             }));
 
@@ -28959,12 +28978,12 @@
         /**
          * A `column` series. If the [type](#series.column.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
-         * 
+         *
          * For options that apply to multiple series, it is recommended to add
          * them to the [plotOptions.series](#plotOptions.series) options structure.
          * To apply to all series of this specific type, apply it to [plotOptions.
          * column](#plotOptions.column).
-         * 
+         *
          * @type {Object}
          * @extends series,plotOptions.column
          * @excluding dataParser,dataURL
@@ -28975,21 +28994,21 @@
         /**
          * An array of data points for the series. For the `column` series type,
          * points can be given in the following ways:
-         * 
+         *
          * 1.  An array of numerical values. In this case, the numerical values
          * will be interpreted as `y` options. The `x` values will be automatically
          * calculated, either starting at 0 and incremented by 1, or from `pointStart`
          * and `pointInterval` given in the series options. If the axis has
          * categories, these will be used. Example:
-         * 
+         *
          *  ```js
          *  data: [0, 5, 3, 5]
          *  ```
-         * 
+         *
          * 2.  An array of arrays with 2 values. In this case, the values correspond
          * to `x,y`. If the first value is a string, it is applied as the name
          * of the point, and the `x` value is inferred.
-         * 
+         *
          *  ```js
          *     data: [
          *         [0, 6],
@@ -28997,12 +29016,12 @@
          *         [2, 6]
          *     ]
          *  ```
-         * 
+         *
          * 3.  An array of objects with named values. The objects are point
          * configuration objects as seen below. If the total number of data
          * points exceeds the series' [turboThreshold](#series.column.turboThreshold),
          * this option is not available.
-         * 
+         *
          *  ```js
          *     data: [{
          *         x: 1,
@@ -29016,7 +29035,7 @@
          *         color: "#FF00FF"
          *     }]
          *  ```
-         * 
+         *
          * @type {Array<Object|Array|Number>}
          * @extends series.line.data
          * @excluding marker

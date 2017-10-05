@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.0 (2017-10-04)
+ * @license Highcharts JS v6.0.1 (2017-10-05)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -6836,7 +6836,6 @@
                     states = buttonTheme && buttonTheme.states,
                     plotLeft = chart.plotLeft,
                     buttonLeft,
-                    pos = this.getPosition(),
                     buttonGroup = rangeSelector.buttonGroup,
                     group,
                     groupHeight,
@@ -6846,13 +6845,13 @@
                     legendOptions = legend && legend.options,
                     buttonPositionY = buttonPosition.y,
                     inputPositionY = inputPosition.y,
+                    animate = rendered || false,
                     exportingX = 0,
                     alignTranslateY,
                     legendHeight,
                     minPosition,
-                    translateY,
-                    translateX,
-                    groupOffsetY;
+                    translateY = 0,
+                    translateX;
 
                 if (options.enabled === false) {
                     return;
@@ -6934,7 +6933,6 @@
                 }
 
                 plotLeft = chart.plotLeft - chart.spacing[3];
-
                 rangeSelector.updateButtonStates();
 
                 // detect collisiton with exporting
@@ -6945,37 +6943,29 @@
                     buttonPosition.align === 'right' &&
                     (
                         (buttonPosition.y + buttonGroup.getBBox().height - 12) <
-                        ((navButtonOptions.y || 0) + navButtonOptions.height - chart.spacing[0])
+                        ((navButtonOptions.y || 0) + navButtonOptions.height)
                     )
                 ) {
                     exportingX = -40;
                 }
 
-                // align button group
-                buttonGroup.align(extend({
-                    y: pos.buttonTop,
-                    width: buttonGroup.getBBox().width,
-                    x: exportingX
-                }, buttonPosition), true, chart.spacingBox);
-
-                translateX = buttonGroup.alignAttr.translateX + exportingX;
-
-                // detect left offset (axis title) or margin
                 if (buttonPosition.align === 'left') {
-                    translateX += ((plotLeft < 0) || (H.isNumber(chart.margin[3])) ? 0 : plotLeft) - chart.spacing[3];
+                    translateX = buttonPosition.x - chart.spacing[3];
                 } else if (buttonPosition.align === 'right') {
-                    translateX -= chart.spacing[1] + (H.isNumber(chart.margin[3]) ? plotLeft : 0);
+                    translateX = buttonPosition.x + exportingX - chart.spacing[1];
                 }
 
-                // Set / update the group position
-                buttonGroup.attr({
-                    translateY: pos.buttonTop,
-                    translateX: translateX
-                });
+                // align button group
+                buttonGroup.align({
+                    y: buttonPosition.y,
+                    width: buttonGroup.getBBox().width,
+                    align: buttonPosition.align,
+                    x: translateX
+                }, true, chart.spacingBox);
 
                 // skip animation
-                rangeSelector.group.placed = false;
-                rangeSelector.buttonGroup.placed = false;
+                rangeSelector.group.placed = animate;
+                rangeSelector.buttonGroup.placed = animate;
 
                 if (inputEnabled !== false) {
 
@@ -6991,7 +6981,7 @@
                         verticalAlign === 'top' &&
                         inputPosition.align === 'right' &&
                         (
-                            (pos.inputTop - inputGroup.getBBox().height - 12) <
+                            (inputPosition.y - inputGroup.getBBox().height - 12) <
                             ((navButtonOptions.y || 0) + navButtonOptions.height + chart.spacing[0])
                         )
                     ) {
@@ -7000,35 +6990,27 @@
                         exportingX = 0;
                     }
 
-                    // Update the alignment to the updated spacing box
-                    inputGroup.align(extend({
-                        y: pos.inputTop,
-                        width: inputGroup.getBBox().width
-                    }, inputPosition), true, chart.spacingBox);
-
-                    translateX = inputGroup.alignAttr.translateX + exportingX;
-
                     if (inputPosition.align === 'left') {
-                        translateX += plotLeft;
-                    } else if (
-                        inputPosition.align === 'right'
-                    ) {
-                        translateX = translateX - chart.axisOffset[1]; // yAxis offset
+                        translateX = plotLeft;
+                    } else if (inputPosition.align === 'right') {
+                        translateX = -Math.max(chart.axisOffset[1], -exportingX); // yAxis offset
                     }
 
-                    // add y from user options
-                    inputGroup.attr({
-                        translateY: pos.inputTop + 10,
-                        translateX: translateX - (inputPosition.align === 'right' ? 2 : 0) // fix wrong getBBox() value on right align 
-                    });
+                    // Update the alignment to the updated spacing box
+                    inputGroup.align({
+                        y: inputPosition.y,
+                        width: inputGroup.getBBox().width,
+                        align: inputPosition.align,
+                        x: inputPosition.x + translateX - 2 // fix wrong getBBox() value on right align 
+                    }, true, chart.spacingBox);
 
                     // detect collision
-                    inputGroupX = inputGroup.translateX + inputGroup.alignOptions.x -
+                    inputGroupX = inputGroup.alignAttr.translateX + inputGroup.alignOptions.x -
                         exportingX + inputGroup.getBBox().x + 2; // getBBox for detecing left margin, 2px padding to not overlap input and label
 
                     inputGroupWidth = inputGroup.alignOptions.width;
 
-                    buttonGroupX = buttonGroup.translateX + buttonGroup.getBBox().x;
+                    buttonGroupX = buttonGroup.alignAttr.translateX + buttonGroup.getBBox().x;
                     buttonGroupWidth = buttonGroup.getBBox().width + 20; // 20 is minimal spacing between elements
 
                     if (
@@ -7040,11 +7022,11 @@
                         )
                     ) {
 
-                        // move the element to the second line
                         inputGroup.attr({
-                            translateX: inputGroup.translateX,
-                            translateY: inputGroup.translateY + buttonGroup.getBBox().height + 10
+                            translateX: inputGroup.alignAttr.translateX + (chart.axisOffset[1] >= -exportingX ? 0 : -exportingX),
+                            translateY: inputGroup.alignAttr.translateY + buttonGroup.getBBox().height + 10
                         });
+
                     }
 
                     // Set or reset the input values
@@ -7052,7 +7034,7 @@
                     rangeSelector.setInputValue('max', max);
 
                     // skip animation
-                    rangeSelector.inputGroup.placed = false;
+                    rangeSelector.inputGroup.placed = animate;
                 }
 
                 // vertical align
@@ -7062,6 +7044,7 @@
 
                 // set position 
                 groupHeight = rangeSelector.group.getBBox().height + 20; // # 20 padding
+                alignTranslateY = rangeSelector.group.alignAttr.translateY;
 
                 // calculate bottom position 
                 if (verticalAlign === 'bottom') {
@@ -7069,25 +7052,21 @@
                         !legendOptions.floating ? legend.legendHeight + pick(legendOptions.margin, 10) : 0;
 
                     groupHeight = groupHeight + legendHeight - 20;
+                    translateY = alignTranslateY - groupHeight - (floating ? 0 : options.y) - 10; // 10 spacing
+
                 }
-
-                groupOffsetY = Math[verticalAlign === 'middle' ? 'max' : 'min'](inputPositionY, buttonPositionY);
-
-                if (inputGroup && (inputPositionY < buttonPositionY) && verticalAlign === 'bottom') {
-                    groupOffsetY += inputGroup.getBBox().height;
-                }
-
-                // fix the position
-                alignTranslateY = rangeSelector.group.alignAttr.translateY;
-                minPosition = (inputPositionY < 0 && buttonPositionY < 0) ? 0 : groupOffsetY;
-                translateY = Math.floor(alignTranslateY - groupHeight - minPosition);
 
                 if (verticalAlign === 'top') {
                     if (floating) {
                         translateY = 0;
-                    } else if (chart.spacing[0] !== chart.options.chart.spacing[0]) { // detect if spacing is customised
-                        translateY -= (chart.spacing[0] - chart.options.chart.spacing[0]);
                     }
+
+                    if (chart.titleOffset) {
+                        translateY = chart.titleOffset + chart.options.title.margin;
+                    }
+
+                    translateY += ((chart.margin[0] - chart.spacing[0]) || 0);
+
                 } else if (verticalAlign === 'middle') {
                     if (inputPositionY === buttonPositionY) {
                         if (inputPositionY < 0) {
@@ -7104,13 +7083,10 @@
                     }
                 }
 
-                translateY = Math.floor(translateY);
-
-                if (floating) {
-                    translateY += options.y;
-                }
-
-                rangeSelector.group.translate(0 + options.x, translateY - 3); // floor to avoid crisp edges, 3px to keep back compatibility
+                rangeSelector.group.translate(
+                    options.x,
+                    options.y + Math.floor(translateY)
+                );
 
                 // translate HTML inputs
                 if (inputEnabled !== false) {
@@ -7128,16 +7104,17 @@
             getHeight: function() {
                 var rangeSelector = this,
                     options = rangeSelector.options,
+                    rangeSelectorGroup = rangeSelector.group,
                     inputPosition = options.inputPosition,
                     buttonPosition = options.buttonPosition,
                     yPosition = options.y,
-                    rangeSelectorGroup = rangeSelector.group,
                     buttonPositionY = buttonPosition.y,
                     inputPositionY = inputPosition.y,
                     rangeSelectorHeight = 0,
                     minPosition;
 
                 rangeSelectorHeight = rangeSelectorGroup ? (rangeSelectorGroup.getBBox(true).height) + 13 + yPosition : 0; // 13px to keep back compatibility
+
                 minPosition = Math.min(inputPositionY, buttonPositionY);
 
                 if (
@@ -7156,19 +7133,7 @@
              * @return {Boolean} Returns collision status
              */
             titleCollision: function(chart) {
-                var status = false;
-
-                if (
-                    (!H.isObject(chart.title) ||
-                        (chart.title && chart.title.getBBox().y > chart.plotTop)
-                    ) && (!H.isObject(chart.subtitle) ||
-                        (chart.subtitle && chart.subtitle.getBBox().y > chart.plotTop)
-                    )
-                ) {
-                    status = true;
-                }
-
-                return status;
+                return !(chart.options.title.text || chart.options.subtitle.text);
             },
 
             /**
@@ -7330,10 +7295,18 @@
         wrap(Chart.prototype, 'render', function(proceed, options, callback) {
 
             var chart = this,
+                axes = chart.axes,
                 rangeSelector = chart.rangeSelector,
                 verticalAlign;
 
             if (rangeSelector) {
+
+                each(axes, function(axis) {
+                    axis.updateNames();
+                    axis.setScale();
+                });
+
+                chart.getAxisMargins();
 
                 rangeSelector.render();
                 verticalAlign = rangeSelector.options.verticalAlign;
