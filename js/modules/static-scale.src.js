@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * StaticScale
  *
  * (c) 2016 Torstein Honsi, Lars A. V. Cabrera
@@ -58,7 +58,11 @@
             });
             this.initiatedScale = true;
         };
-        H.addEvent(Chart.prototype, 'render', Chart.prototype.adjustHeight);
+        Chart.prototype.callbacks.push(function(chart) {
+            H.addEvent(this, 'render', function() {
+                chart.adjustHeight();
+            });
+        });
 
     }(Highcharts));
 }));

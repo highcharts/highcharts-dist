@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * Gantt series
  *
  * (c) 2016 Lars A. V. Cabrera
@@ -583,7 +583,7 @@
          * @excluding boostThreshold,crisp,cropThreshold,depth,edgeColor,edgeWidth,
          *         findNearestPointBy,getExtremesFromAll,grouping,groupPadding,
          *         negativeColor,pointInterval,pointIntervalUnit,pointPlacement,
-         *         pointRange,pointStart,softThreshold,stacking,threshold
+         *         pointRange,pointStart,softThreshold,stacking,threshold,data
          * @product highcharts
          * @sample {highcharts} highcharts/demo/x-range/
          *         X-range

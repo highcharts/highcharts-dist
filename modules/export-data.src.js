@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -120,7 +120,11 @@
         // Add an event listener to handle the showTable option
         Highcharts.Chart.prototype.callbacks.push(function(chart) {
             Highcharts.addEvent(chart, 'render', function() {
-                if (chart.options.exporting.showTable) {
+                if (
+                    chart.options &&
+                    chart.options.exporting &&
+                    chart.options.exporting.showTable
+                ) {
                     chart.viewData();
                 }
             });

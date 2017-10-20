@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -800,8 +800,8 @@
                 options,
                 chartOptions = chart.options,
                 paneIndex = userOptions.pane || 0,
-                pane = this.pane = chart.pane[paneIndex],
-                paneOptions = pane.options;
+                pane = this.pane = chart.pane && chart.pane[paneIndex],
+                paneOptions = pane && pane.options;
 
             // Before prototype.init
             if (angular) {
@@ -828,14 +828,14 @@
             }
 
             // A pointer back to this axis to borrow geometry
-            if (isCircular) {
+            if (pane && isCircular) {
                 pane.axis = this;
             }
 
             // Run prototype.init
             proceed.call(this, chart, userOptions);
 
-            if (!isHidden && (angular || polar)) {
+            if (!isHidden && pane && (angular || polar)) {
                 options = this.options;
 
                 // Start and end angle options are

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -239,7 +239,7 @@
                     slope,
                     hasBreaks = axis.isXAxis && !!axis.options.breaks,
                     isOrdinal = axis.options.ordinal,
-                    overscrollPointsRange = Number.MAX_SAFE_INTEGER,
+                    overscrollPointsRange = Number.MAX_VALUE,
                     ignoreHiddenSeries = axis.chart.options.chart.ignoreHiddenSeries,
                     isNavigatorAxis = axis.options.className === 'highcharts-navigator-xaxis',
                     i;
@@ -384,6 +384,7 @@
                         axis.ordinalPositions = axis.ordinalSlope = axis.ordinalOffset = undefined;
                     }
                 }
+
                 axis.isOrdinal = isOrdinal && useOrdinal; // #3818, #4196, #4926
                 axis.groupIntervalFactor = null; // reset for next run
             },
@@ -4091,7 +4092,7 @@
                     /**
                      * Width for handles.
                      *
-                     * @type {umber}
+                     * @type {Number}
                      * @default 7
                      * @product highstock
                      * @sample {highstock} stock/navigator/styled-handles/
@@ -5598,14 +5599,14 @@
 
                 each(baseSeries, function(base) {
                     // Link base series show/hide to navigator series visibility
-                    addEvent(base, 'show', function() {
+                    addEvent(base, 'show', function(e) {
                         if (this.navigatorSeries) {
-                            this.navigatorSeries.show();
+                            this.navigatorSeries.setVisible(true, e.redraw);
                         }
                     });
-                    addEvent(base, 'hide', function() {
+                    addEvent(base, 'hide', function(e) {
                         if (this.navigatorSeries) {
-                            this.navigatorSeries.hide();
+                            this.navigatorSeries.setVisible(false, e.redraw);
                         }
                     });
 
@@ -6462,12 +6463,14 @@
 
                 addEvent(chart, 'load', function() {
                     // If a data grouping is applied to the current button, release it when extremes change
-                    addEvent(chart.xAxis[0], 'setExtremes', function(e) {
-                        if (this.max - this.min !== chart.fixedRange && e.trigger !== 'rangeSelectorButton' &&
-                            e.trigger !== 'updatedData' && rangeSelector.forcedDataGrouping) {
-                            this.setDataGrouping(false, false);
-                        }
-                    });
+                    if (chart.xAxis && chart.xAxis[0]) {
+                        addEvent(chart.xAxis[0], 'setExtremes', function(e) {
+                            if (this.max - this.min !== chart.fixedRange && e.trigger !== 'rangeSelectorButton' &&
+                                e.trigger !== 'updatedData' && rangeSelector.forcedDataGrouping) {
+                                this.setDataGrouping(false, false);
+                            }
+                        });
+                    }
                 });
             },
 
@@ -7502,12 +7505,12 @@
          * Defines if comparisson should start from the first point within the visible
          * range or should start from the first point <b>before</b> the range.
          * In other words, this flag determines if first point within the visible range
-         * will have 0% (base) or should have been already calculated according to the
-         * previous point.
+         * will have 0% (`compareStart=true`) or should have been already calculated
+         * according to the previous point (`compareStart=false`).
          *
          * @type {Boolean}
          * @sample {highstock} stock/plotoptions/series-comparestart/ Calculate compare within visible range
-         * @default undefined
+         * @default false
          * @since 6.0.0
          * @product highstock
          * @apioption plotOptions.series.compareStart
@@ -7853,37 +7856,6 @@
                 renderer.crispPolyLine(result, lineWidth || 1) :
                 null; // #3557 getPlotLinePath in regular Highcharts also returns null
         });
-
-        // Override getPlotBandPath to allow for multipane charts
-        Axis.prototype.getPlotBandPath = function(from, to) {
-            var toPath = this.getPlotLinePath(to, null, null, true),
-                path = this.getPlotLinePath(from, null, null, true),
-                result = [],
-                i;
-
-            if (path && toPath) {
-                if (path.toString() === toPath.toString()) {
-                    // #6166
-                    result = path;
-                    result.flat = true;
-                } else {
-                    // Go over each subpath
-                    for (i = 0; i < path.length; i += 6) {
-                        result.push(
-                            'M', path[i + 1], path[i + 2],
-                            'L', path[i + 4], path[i + 5],
-                            toPath[i + 4], toPath[i + 5],
-                            toPath[i + 1], toPath[i + 2],
-                            'z'
-                        );
-                    }
-                }
-            } else { // outside the axis area
-                result = null;
-            }
-
-            return result;
-        };
 
         // Function to crisp a line with multiple segments
         SVGRenderer.prototype.crispPolyLine = function(points, width) {

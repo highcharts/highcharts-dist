@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * Accessibility module
  *
  * (c) 2010-2017 Highsoft AS
@@ -1502,7 +1502,9 @@
             // Handle keyboard events
             addEvent(chart.renderTo, 'keydown', keydownHandler);
             addEvent(chart, 'destroy', function() {
-                removeEvent(chart.renderTo, 'keydown', keydownHandler);
+                if (chart.renderTo) {
+                    removeEvent(chart.renderTo, 'keydown', keydownHandler);
+                }
             });
         };
 

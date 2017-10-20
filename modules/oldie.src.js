@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
  * (c) 2010-2017 Highsoft AS
@@ -69,7 +69,7 @@
          * @since 2.3.0
          */
         H.getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/6.0.1/gfx/vml-radial-gradient.png';
+            'http://code.highcharts.com/6.0.2/gfx/vml-radial-gradient.png';
 
 
         // Utilites
@@ -154,6 +154,20 @@
                 }
 
                 return ret;
+            };
+        }
+
+        if (!Object.prototype.keys) {
+            H.keysPolyfill = function(obj) {
+                var result = [],
+                    hasOwnProperty = Object.prototype.hasOwnProperty,
+                    prop;
+                for (prop in obj) {
+                    if (hasOwnProperty.call(obj, prop)) {
+                        result.push(prop);
+                    }
+                }
+                return result;
             };
         }
 

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * Highcharts Drilldown module
  * 
  * Author: Torstein Honsi
@@ -448,7 +448,8 @@
                     xMax: xAxis && xAxis.userMax,
                     yMin: yAxis && yAxis.userMin,
                     yMax: yAxis && yAxis.userMax
-                }
+                },
+                resetZoomButton: this.resetZoomButton
             }, colorProp);
 
             // Push it to the lookup array
@@ -490,6 +491,14 @@
                     }
                 });
             }
+
+            // We have a reset zoom button. Hide it and detatch it from the chart. It
+            // is preserved to the layer config above.
+            if (this.resetZoomButton) {
+                this.resetZoomButton.hide();
+                delete this.resetZoomButton;
+            }
+
             this.pointer.reset();
             this.redraw();
             this.showDrillUpButton();
@@ -623,6 +632,13 @@
                         newSeries.xAxis.setExtremes(oldExtremes.xMin, oldExtremes.xMax, false);
                         newSeries.yAxis.setExtremes(oldExtremes.yMin, oldExtremes.yMax, false);
                     }
+
+                    // We have a resetZoomButton tucked away for this level. Attatch
+                    // it to the chart and show it.
+                    if (level.resetZoomButton) {
+                        chart.resetZoomButton = level.resetZoomButton;
+                        chart.resetZoomButton.show();
+                    }
                 }
             }
 
@@ -642,6 +658,13 @@
 
             this.ddDupes.length = []; // #3315
         };
+
+        // Don't show the reset button if we already are displaying the drillUp button.
+        wrap(Chart.prototype, 'showResetZoom', function(proceed) {
+            if (!this.drillUpButton) {
+                proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+            }
+        });
 
 
         /**

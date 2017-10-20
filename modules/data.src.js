@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * Data module
  *
  * (c) 2012-2017 Torstein Honsi
@@ -495,7 +495,7 @@
              */
             parseCSV: function(inOptions) {
                 var self = this,
-                    options = this.options || inOptions,
+                    options = inOptions || this.options,
                     csv = options.csv,
                     columns,
                     startRow = options.startRow || 0,
@@ -515,7 +515,7 @@
                         '\t': 0
                     };
 
-                columns = this.columns = this.columns || [];
+                columns = this.columns = [];
 
                 /*
                 	This implementation is quite verbose. It will be shortened once
@@ -562,6 +562,7 @@
                         cl = '',
                         cn = '',
                         token = '',
+                        actualColumn = 0,
                         column = 0;
 
                     function read(j) {
@@ -580,8 +581,10 @@
                     }
 
                     function push() {
-                        if (startColumn > column || column > endColumn) {
-                            // Skip this column
+                        if (startColumn > actualColumn || actualColumn > endColumn) {
+                            // Skip this column, but increment the column count (#7272)
+                            ++actualColumn;
+                            token = '';
                             return;
                         }
 
@@ -595,16 +598,20 @@
                             pushType('string');
                         }
 
+
                         if (columns.length < column + 1) {
                             columns.push([]);
                         }
 
                         if (!noAdd) {
-                            columns[column].push(token);
+                            // Don't push - if there's a varrying amount of columns
+                            // for each row, pushing will skew everything down n slots
+                            columns[column][rowNumber] = token;
                         }
 
                         token = '';
                         ++column;
+                        ++actualColumn;
                     }
 
                     if (!columnStr.trim().length) {
@@ -621,6 +628,7 @@
                         // Quoted string
                         if (c === '#') {
                             // The rest of the row is a comment
+                            push();
                             return;
                         } else if (c === '"') {
                             read(++i);
@@ -655,66 +663,87 @@
 
                     push();
 
-                    if (column < columns.length) {
-                        // There might be an issue.
-                        // This set is either
-
-                        // Fill in
-                        if (!noAdd) {
-                            for (var z = column; z < columns.length; z++) {
-                                columns[z].push(0);
-                            }
-                        }
-                    }
                 }
 
                 // Attempt to guess the delimiter
+                // We do a separate parse pass here because we need
+                // to count potential delimiters softly without making any assumptions.
                 function guessDelimiter(lines) {
                     var points = 0,
                         commas = 0,
-                        guessed = false,
-                        handler = function(c, token) {
-                            if (c === ',') {
-                                commas++;
-                            }
-                            if (c === '.') {
-                                points++;
-                            }
-
-                            if (typeof potDelimiters[c] !== 'undefined') {
-                                // Check what we have in token now
-
-                                if (
-                                    // We can't make a deduction when token is a number,
-                                    // since the decimal delimiter may interfere.
-                                    (isNaN(parseFloat(token)) || !isFinite(token)) &&
-                                    (
-                                        // Highcharts.isString(token) ||
-                                        !isNaN(Date.parse(token))
-                                    )
-                                ) {
-                                    potDelimiters[c]++;
-                                    return true;
-                                }
-                            }
-                        },
-                        callbacks = {
-                            ';': handler,
-                            ',': handler,
-                            '\t': handler
-                        };
+                        guessed = false;
 
                     some(lines, function(columnStr, i) {
+                        var inStr = false,
+                            c,
+                            cn,
+                            cl,
+                            token = '';
+
+
                         // We should be able to detect dateformats within 13 rows
                         if (i > 13) {
                             return true;
                         }
-                        parseRow(columnStr, i, true, callbacks);
+
+                        for (var j = 0; j < columnStr.length; j++) {
+                            c = columnStr[j];
+                            cn = columnStr[j + 1];
+                            cl = columnStr[j - 1];
+
+                            if (c === '#') {
+                                // Skip the rest of the line - it's a comment
+                                return;
+                            } else if (c === '"') {
+                                if (inStr) {
+                                    if (cl !== '"' && cn !== '"') {
+                                        while (cn === ' ' && j < columnStr.length) {
+                                            cn = columnStr[++j];
+                                        }
+
+                                        // After parsing a string, the next non-blank
+                                        // should be a delimiter if the CSV is properly
+                                        // formed.
+
+                                        if (typeof potDelimiters[cn] !== 'undefined') {
+                                            potDelimiters[cn]++;
+                                        }
+
+                                        inStr = false;
+                                    }
+                                } else {
+                                    inStr = true;
+                                }
+                            } else if (typeof potDelimiters[c] !== 'undefined') {
+
+                                token = token.trim();
+
+                                if (!isNaN(Date.parse(token))) {
+                                    potDelimiters[c]++;
+                                } else if (isNaN(token) || !isFinite(token)) {
+                                    potDelimiters[c]++;
+                                }
+
+                                token = '';
+
+                            } else {
+                                token += c;
+                            }
+
+                            if (c === ',') {
+                                commas++;
+                            }
+
+                            if (c === '.') {
+                                points++;
+                            }
+                        }
                     });
 
                     // Count the potential delimiters.
                     // This could be improved by checking if the number of delimiters
                     // equals the number of columns - 1
+
                     if (potDelimiters[';'] > potDelimiters[',']) {
                         guessed = ';';
                     } else if (potDelimiters[','] > potDelimiters[';']) {
@@ -868,8 +897,8 @@
                         startRow = 0;
                     }
 
-                    if (!endRow || endRow > lines.length) {
-                        endRow = lines.length;
+                    if (!endRow || endRow >= lines.length) {
+                        endRow = lines.length - 1;
                     }
 
                     if (options.itemDelimiter) {
@@ -879,8 +908,14 @@
                         itemDelimiter = guessDelimiter(lines);
                     }
 
-                    for (rowIt = startRow; rowIt < endRow; rowIt++) {
-                        parseRow(lines[rowIt], rowIt);
+                    var offset = 0;
+
+                    for (rowIt = startRow; rowIt <= endRow; rowIt++) {
+                        if (lines[rowIt][0] === '#') {
+                            offset++;
+                        } else {
+                            parseRow(lines[rowIt], rowIt - startRow - offset);
+                        }
                     }
 
                     // //Make sure that there's header columns for everything
@@ -1191,13 +1226,7 @@
              */
             dateFormats: {
                 'YYYY-mm-dd': {
-                    regex: /^([0-9]{4})[\-\/\.]([0-9]{2})[\-\/\.]([0-9]{2})$/,
-                    parser: function(match) {
-                        return Date.UTC(+match[1], match[2] - 1, +match[3]);
-                    }
-                },
-                'YYYY/mm/dd': {
-                    regex: /^([0-9]{4})[\-\/\.]([0-9]{2})[\-\/\.]([0-9]{2})$/,
+                    regex: /^([0-9]{4})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{1,2})$/,
                     parser: function(match) {
                         return Date.UTC(+match[1], match[2] - 1, +match[3]);
                     }

@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.1 (2017-10-05)
+ * @license  Highcharts JS v6.0.2 (2017-10-20)
  * Sankey diagram module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -16,7 +16,7 @@
 }(function(Highcharts) {
     (function(H) {
         /**
-         * Solid angular gauge module
+         * Sankey diagram module
          *
          * (c) 2010-2017 Torstein Honsi
          *
@@ -72,17 +72,39 @@
                 /**
                  * The [format string](http://www.highcharts.com/docs/chart-concepts/labels-
                  * and-string-formatting) specifying what to show for _nodes_ in the 
-                 * sankey diagram.
+                 * sankey diagram. By default the `nodeFormatter` returns
+                 * `{point.name}`.
+                 *
+                 * @type {String}
                  */
-                nodeFormat: '{point.name}',
+                nodeFormat: undefined,
+
+                /**
+                 * Callback to format data labels for _nodes_ in the sankey diagram. 
+                 * The `nodeFormat` option takes precedence over the `nodeFormatter`.
+                 *
+                 * @type {Function}
+                 * @since 6.0.2
+                 */
+                nodeFormatter: function() {
+                    return this.point.name;
+                },
                 /**
                  * The [format string](http://www.highcharts.com/docs/chart-concepts/labels-
                  * and-string-formatting) specifying what to show for _links_ in the 
-                 * sankey diagram. Defaults to an empty string, in effect disabling the
-                 * labels.
-                 * @default ""
+                 * sankey diagram. Defaults to an empty string returned from the 
+                 * `formatter`, in effect disabling the labels.
                  */
-                format: '',
+                format: undefined,
+                /**
+                 * Callback to format data labels for _links_ in the sankey diagram. 
+                 * The `format` option takes precedence over the `formatter`.
+                 * 
+                 * @since 6.0.2
+                 */
+                formatter: function() {
+                    return '';
+                },
                 inside: true
             },
 
@@ -116,9 +138,17 @@
                 /**
                  * The [format string](http://www.highcharts.com/docs/chart-concepts/labels-
                  * and-string-formatting) specifying what to show for _nodes_ in tooltip
-                 * of a sankey diagram series.
+                 * of a sankey diagram series, as opposed to links.
                  */
                 nodeFormat: '{point.name}: <b>{point.sum}</b><br/>'
+                /**
+                 * A callback for defining the format for _nodes_ in the sankey chart's
+                 * tooltip, as opposed to links.
+                 *
+                 * @type {Function}
+                 * @since 6.0.2
+                 * @apioption plotOptions.sankey.tooltip.nodeFormatter
+                 */
             }
 
         }, {

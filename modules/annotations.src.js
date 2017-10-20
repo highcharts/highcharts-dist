@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  * Annotations module
  *
  * (c) 2009-2017 Torstein Honsi
@@ -558,7 +558,7 @@
                      **/
                     style: {
                         fontSize: '11px',
-                        fontWeigth: 'bold',
+                        fontWeight: 'normal',
                         color: 'contrast'
                     },
 

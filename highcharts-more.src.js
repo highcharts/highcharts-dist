@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -337,12 +337,28 @@
                  * @product highcharts
                  */
                 backgroundColor: {
+                    /**
+                     * Definition of the gradient, similar to SVG: object literal holds
+                     * start position (x1, y1) and the end position (x2, y2) relative
+                     * to the shape, where 0 means top/left and 1 is bottom/right.
+                     * All positions are floats between 0 and 1.
+                     *
+                     * @type {Object}
+                     */
                     linearGradient: {
                         x1: 0,
                         y1: 0,
                         x2: 0,
                         y2: 1
                     },
+                    /**
+                     * The stops is an array of tuples, where the first
+                     * item is a float between 0 and 1 assigning the relative position in
+                     * the gradient, and the second item is the color.
+                     *
+                     * @default [[0, #ffffff], [1, #e6e6e6]]
+                     * @type {Array<Array>}
+                     */
                     stops: [
                         [0, '#ffffff'],
                         [1, '#e6e6e6']
@@ -845,8 +861,8 @@
                 options,
                 chartOptions = chart.options,
                 paneIndex = userOptions.pane || 0,
-                pane = this.pane = chart.pane[paneIndex],
-                paneOptions = pane.options;
+                pane = this.pane = chart.pane && chart.pane[paneIndex],
+                paneOptions = pane && pane.options;
 
             // Before prototype.init
             if (angular) {
@@ -873,14 +889,14 @@
             }
 
             // A pointer back to this axis to borrow geometry
-            if (isCircular) {
+            if (pane && isCircular) {
                 pane.axis = this;
             }
 
             // Run prototype.init
             proceed.call(this, chart, userOptions);
 
-            if (!isHidden && (angular || polar)) {
+            if (!isHidden && pane && (angular || polar)) {
                 options = this.options;
 
                 // Start and end angle options are

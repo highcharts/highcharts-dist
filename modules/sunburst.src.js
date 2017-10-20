@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  *
  * (c) 2016 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -283,6 +283,9 @@
             each = H.each,
             getColor = mixinTreeSeries.getColor,
             grep = H.grep,
+            isBoolean = function(x) {
+                return typeof x === 'boolean';
+            },
             isNumber = H.isNumber,
             isString = H.isString,
             pick = H.pick,
@@ -469,7 +472,6 @@
              * to be level one. Otherwise the level will be the same as the tree
              * structure.
              * 
-             * @validvalue [true, false]
              * @type {Boolean}
              * @default true
              * @since 4.1.0
@@ -826,6 +828,14 @@
             setTreeValues: function(tree) {
                 var series = this,
                     options = series.options,
+                    idRoot = series.rootNode,
+                    mapIdToNode = series.nodeMap,
+                    nodeRoot = mapIdToNode[idRoot],
+                    levelIsConstant = (
+                        isBoolean(options.levelIsConstant) ?
+                        options.levelIsConstant :
+                        true
+                    ),
                     childrenTotal = 0,
                     children = [],
                     val,
@@ -854,7 +864,7 @@
                     // Ignore this node if point is not visible
                     ignore: !(pick(point && point.visible, true) && (val > 0)),
                     isLeaf: tree.visible && !childrenTotal,
-                    levelDynamic: tree.level - (options.levelIsConstant ? series.nodeMap[series.rootNode].level : 0),
+                    levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
                     name: pick(point && point.name, ''),
                     sortIndex: pick(point && point.sortIndex, -val),
                     val: val
@@ -1818,13 +1828,7 @@
         };
 
         var getAnimation = function getAnimation(shape, params) {
-            var to = {
-                    end: shape.end,
-                    start: shape.start,
-                    innerR: shape.innerR,
-                    r: shape.r
-                },
-                from = {},
+            var center = params.center,
                 point = params.point,
                 radians = params.radians,
                 innerR = params.innerR,
@@ -1833,7 +1837,16 @@
                 shapeExisting = params.shapeExisting,
                 shapeRoot = params.shapeRoot,
                 shapePreviousRoot = params.shapePreviousRoot,
-                visible = params.visible;
+                visible = params.visible,
+                from = {},
+                to = {
+                    end: shape.end,
+                    start: shape.start,
+                    innerR: shape.innerR,
+                    r: shape.r,
+                    x: center.x,
+                    y: center.y
+                };
             if (visible) {
                 // Animate points in
                 if (!point.graphic && shapePreviousRoot) {
@@ -2040,13 +2053,13 @@
             /**
              * Can set a `borderColor` on all points which lies on the same level.
              *
-             * @type {String}
+             * @type {Color}
              * @apioption plotOptions.sunburst.levels.borderColor
              */
             /**
              * Can set a `borderWidth` on all points which lies on the same level.
              *
-             * @type {String}
+             * @type {Number}
              * @apioption plotOptions.sunburst.levels.borderWidth
              */
             /**
@@ -2058,7 +2071,7 @@
             /**
              * Can set a `color` on all points which lies on the same level.
              *
-             * @type {String}
+             * @type {Color}
              * @apioption plotOptions.sunburst.levels.color
              */
             /**
@@ -2077,7 +2090,7 @@
              * The ending value of a color variation. The last sibling will receive this
              * value.
              *
-             * @type {String}
+             * @type {Number}
              * @apioption plotOptions.sunburst.levels.colorVariation.to
              */
             /**
@@ -2136,9 +2149,14 @@
                         true
                     ),
                     positions = series.center,
+                    center = {
+                        x: positions[0],
+                        y: positions[1]
+                    },
                     innerR = positions[3] / 2,
                     renderer = series.chart.renderer,
                     animateLabels,
+                    animateLabelsCalled = false,
                     addedHack = false,
                     hackDataLabelAnimation = !!(
                         animation &&
@@ -2153,6 +2171,7 @@
                     });
                     animateLabels = function() {
                         var s = series;
+                        animateLabelsCalled = true;
                         if (s.dataLabelsGroup) {
                             s.dataLabelsGroup.animate({
                                 opacity: 1,
@@ -2172,6 +2191,7 @@
                         visible = !!(node.visible && node.shapeArgs);
                     if (hasRendered && animation) {
                         animationInfo = getAnimation(shape, {
+                            center: center,
                             point: point,
                             radians: radians,
                             innerR: innerR,
@@ -2226,6 +2246,11 @@
                     series.options.dataLabels.defer = true;
                     Series.prototype.drawDataLabels.call(series);
                     series.hasRendered = true;
+                    // If animateLabels is called before labels were hidden, then call
+                    // it again.
+                    if (animateLabelsCalled) {
+                        animateLabels();
+                    }
                 } else {
                     Series.prototype.drawDataLabels.call(series);
                 }

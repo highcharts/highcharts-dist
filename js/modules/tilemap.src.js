@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.1 (2017-10-05)
+ * @license  Highcharts JS v6.0.2 (2017-10-20)
  * Tilemap module
  *
  * (c) 2010-2017 Highsoft AS
@@ -436,18 +436,19 @@
          */
 
         /**
-         * The x coordinate of the point.
+         * The x value of the point. For datetime axes,
+         * the X value is the timestamp in milliseconds since 1970.
          * 
          * @type {Number}
-         * @product highmaps
+         * @product highcharts highmaps
          * @apioption series.heatmap.data.x
          */
 
         /**
-         * The y coordinate of the point.
+         * The y value of the point.
          * 
          * @type {Number}
-         * @product highmaps
+         * @product highcharts highmaps
          * @apioption series.heatmap.data.y
          */
 
@@ -939,7 +940,7 @@
          * @sample maps/demo/diamondmap
          *		   Diamondmap tilemap
          * @since 6.0.0
-         * @excluding joinBy, shadow, allAreas, mapData
+         * @excluding joinBy, shadow, allAreas, mapData, data
          * @optionparent plotOptions.tilemap
          */
         seriesType('tilemap', 'heatmap', {

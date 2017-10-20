@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  *
  * 3D features for Highcharts JS
  *
@@ -2919,7 +2919,6 @@
             wrap = H.wrap;
 
         /**
-         * Options to render axis in 3 dimensions. 
          * @optionparent xAxis
          */
         var extendedOptions = {
@@ -3013,7 +3012,7 @@
         wrap(Axis.prototype, 'setOptions', function(proceed, userOptions) {
             var options;
             proceed.call(this, userOptions);
-            if (this.chart.is3d() && this.coll !== 'colorAxis') {
+            if (this.chart.is3d && this.chart.is3d() && this.coll !== 'colorAxis') {
                 options = this.options;
                 options.tickWidth = pick(options.tickWidth, 0);
                 options.gridLineWidth = pick(options.gridLineWidth, 1);
@@ -3905,7 +3904,7 @@
         function pointAttribs(proceed) {
             var attr = proceed.apply(this, [].slice.call(arguments, 1));
 
-            if (this.chart.is3d()) {
+            if (this.chart.is3d && this.chart.is3d()) {
                 // Set the fill color to the fill color to provide a smooth edge
                 attr.stroke = this.options.edgeColor || attr.fill;
                 attr['stroke-width'] = pick(this.options.edgeWidth, 1); // #4055

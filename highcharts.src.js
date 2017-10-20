@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -32,7 +32,7 @@
 
         var Highcharts = win.Highcharts ? win.Highcharts.error(16, true) : {
             product: 'Highcharts',
-            version: '6.0.1',
+            version: '6.0.2',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -81,7 +81,7 @@
          * @namespace Highcharts
          */
 
-        var timers = [];
+        H.timers = [];
 
         var charts = H.charts,
             doc = H.doc,
@@ -217,6 +217,7 @@
              */
             run: function(from, to, unit) {
                 var self = this,
+                    options = self.options,
                     timer = function(gotoEnd) {
                         return timer.stopped ? false : self.step(gotoEnd);
                     },
@@ -226,20 +227,20 @@
                         setTimeout(step, 13);
                     },
                     step = function() {
-                        var i;
-                        for (i = 0; i < timers.length; i++) {
-                            if (!timers[i]()) {
-                                timers.splice(i--, 1);
-                            }
-                        }
+                        H.timers = H.grep(H.timers, function(timer) {
+                            return timer();
+                        });
 
-                        if (timers.length) {
+                        if (H.timers.length) {
                             requestAnimationFrame(step);
                         }
                     };
 
                 if (from === to) {
-                    delete this.options.curAnim[this.prop];
+                    delete options.curAnim[this.prop];
+                    if (options.complete && H.keys(options.curAnim).length === 0) {
+                        options.complete();
+                    }
                 } else { // #7166
                     this.startTime = +new Date();
                     this.start = from;
@@ -251,7 +252,7 @@
                     timer.elem = this.elem;
                     timer.prop = this.prop;
 
-                    if (timer() && timers.push(timer) === 1) {
+                    if (timer() && H.timers.push(timer) === 1) {
                         requestAnimationFrame(step);
                     }
                 }
@@ -1658,6 +1659,18 @@
         };
 
         /**
+         * Returns an array of a given object's own properties.
+         *
+         * @function #keys
+         * @memberOf highcharts
+         * @param {Object} obj - The object of which the properties are to be returned.
+         * @returns {Array} - An array of strings that represents all the properties.
+         */
+        H.keys = function(obj) {
+            return (H.keysPolyfill || Object.keys).call(undefined, obj);
+        };
+
+        /**
          * Reduce an array to a single value.
          *
          * @function #reduce
@@ -1688,7 +1701,11 @@
          */
         H.offset = function(el) {
             var docElem = doc.documentElement,
-                box = el.getBoundingClientRect();
+                box = el.parentElement ? // IE11 throws Unspecified error in test suite
+                el.getBoundingClientRect() : {
+                    top: 0,
+                    left: 0
+                };
 
             return {
                 top: box.top + (win.pageYOffset || docElem.scrollTop) -
@@ -1716,12 +1733,12 @@
          */
         H.stop = function(el, prop) {
 
-            var i = timers.length;
+            var i = H.timers.length;
 
             // Remove timers related to this element (#4519)
             while (i--) {
-                if (timers[i].elem === el && (!prop || prop === timers[i].prop)) {
-                    timers[i].stopped = true; // #4667
+                if (H.timers[i].elem === el && (!prop || prop === H.timers[i].prop)) {
+                    H.timers[i].stopped = true; // #4667
                 }
             }
         };
@@ -3830,12 +3847,18 @@
                     // Look for existing references to this clipPath and remove them
                     // before destroying the element (#6196).
                     each(
-                        ownerSVGElement.querySelectorAll('[clip-path]'),
+                        // The upper case version is for Edge
+                        ownerSVGElement.querySelectorAll('[clip-path],[CLIP-PATH]'),
                         function(el) {
                             // Include the closing paranthesis in the test to rule out
                             // id's from 10 and above (#6550)
-                            if (el.getAttribute('clip-path')
-                                .indexOf(wrapper.clipPath.element.id + ')') > -1) {
+                            if (el
+                                .getAttribute('clip-path')
+                                .match(RegExp(
+                                    // Edge puts quotes inside the url, others not
+                                    '[\("]#' + wrapper.clipPath.element.id + '[\)"]'
+                                ))
+                            ) {
                                 el.removeAttribute('clip-path');
                             }
                         }
@@ -4356,7 +4379,7 @@
                 // Add description
                 desc = this.createElement('desc').add();
                 desc.element.appendChild(
-                    doc.createTextNode('Created with Highcharts 6.0.1')
+                    doc.createTextNode('Created with Highcharts 6.0.2')
                 );
 
                 /**
@@ -6795,10 +6818,29 @@
                                     // moving tooltip (#6957).
                                     function translateSetter(value, key) {
                                         parentGroup[key] = value;
-                                        htmlGroupStyle[renderer.getTransformKey()] =
-                                            'translate(' +
-                                            parentGroup.x + 'px,' +
-                                            parentGroup.y + 'px)';
+
+                                        // In IE and Edge, use translate because items
+                                        // would flicker below a HTML tooltip (#6957)
+                                        if (isMS) {
+                                            htmlGroupStyle[renderer.getTransformKey()] =
+                                                'translate(' + (
+                                                    parentGroup.x ||
+                                                    parentGroup.translateX
+                                                ) + 'px,' + (
+                                                    parentGroup.y ||
+                                                    parentGroup.translateY
+                                                ) + 'px)';
+
+                                            // Otherwise, use left and top. Using translate
+                                            // doesn't work well with offline export (#7254,
+                                            // #7280)
+                                        } else {
+                                            if (key === 'translateX') {
+                                                htmlGroupStyle.left = value + 'px';
+                                            } else {
+                                                htmlGroupStyle.top = value + 'px';
+                                            }
+                                        }
 
                                         parentGroup.doTransform = true;
                                     }
@@ -8837,7 +8879,6 @@
                  * @sample {highcharts} highcharts/legend/rtl/ Symbol to the right
                  * @default false
                  * @since 2.2
-                 * @product highcharts highmaps
                  * @apioption legend.rtl
                  */
 
@@ -9258,7 +9299,6 @@
                  * @sample {highmaps} maps/tooltip/format/ Format demo
                  * @default false
                  * @since 2.2
-                 * @product highcharts highmaps
                  */
                 footerFormat: '',
 
@@ -9526,7 +9566,6 @@
                  * @type {Number}
                  * @default 500
                  * @since 3.0
-                 * @product highcharts highmaps
                  * @apioption tooltip.hideDelay
                  */
 
@@ -10553,8 +10592,7 @@
              * though if the chart is inverted this is the vertical axis. In case of
              * multiple axes, the xAxis node is an array of configuration objects.
              * 
-             * See [../class-reference/Highcharts.Axis](the Axis object) for
-             * programmatic access to the axis.
+             * See [the Axis object](#Axis) for programmatic access to the axis.
              *
              * @productdesc {highmaps}
              * In Highmaps, the axis is hidden, but it is used behind the scenes to
@@ -11062,7 +11100,12 @@
             },
 
             /**
-             * This option set extends the defaultOptions for Y axes.
+             * The Y axis or value axis. Normally this is the vertical axis,
+             * though if the chart is inverted this is the horizontal axis.
+             * In case of multiple axes, the yAxis node is an array of
+             * configuration objects.
+             *
+             * See [the Axis object](#Axis) for programmatic access to the axis.
              * @extends xAxis
              * @optionparent yAxis
              */
@@ -11197,8 +11240,9 @@
                      * 
                      * @type {String}
                      * @sample {highcharts} highcharts/xaxis/title-text/ Custom HTML
-                     * @default Values
-                     * @product highcharts
+                     * @default {highcharts} Values
+                     * @default {highstock} null
+                     * @product highcharts highstock
                      */
                     text: 'Values'
                 },
@@ -14982,9 +15026,12 @@
             getPlotBandPath: function(from, to) {
                 var toPath = this.getPlotLinePath(to, null, null, true),
                     path = this.getPlotLinePath(from, null, null, true),
+                    result = [],
+                    i,
                     // #4964 check if chart is inverted or plotband is on yAxis 
                     horiz = this.horiz,
                     plus = 1,
+                    flat,
                     outside =
                     (from < this.min && to < this.min) ||
                     (from > this.max && to > this.max);
@@ -14993,21 +15040,43 @@
 
                     // Flat paths don't need labels (#3836)
                     if (outside) {
-                        path.flat = path.toString() === toPath.toString();
+                        flat = path.toString() === toPath.toString();
                         plus = 0;
                     }
 
-                    // Add 1 pixel, when coordinates are the same
-                    path.push(
-                        horiz && toPath[4] === path[4] ? toPath[4] + plus : toPath[4], !horiz && toPath[5] === path[5] ? toPath[5] + plus : toPath[5],
-                        horiz && toPath[1] === path[1] ? toPath[1] + plus : toPath[1], !horiz && toPath[2] === path[2] ? toPath[2] + plus : toPath[2],
-                        'z'
-                    );
+                    // Go over each subpath - for panes in Highstock
+                    for (i = 0; i < path.length; i += 6) {
+
+                        // Add 1 pixel when coordinates are the same
+                        if (horiz && toPath[i + 1] === path[i + 1]) {
+                            toPath[i + 1] += plus;
+                            toPath[i + 4] += plus;
+                        } else if (!horiz && toPath[i + 2] === path[i + 2]) {
+                            toPath[i + 2] += plus;
+                            toPath[i + 5] += plus;
+                        }
+
+                        result.push(
+                            'M',
+                            path[i + 1],
+                            path[i + 2],
+                            'L',
+                            path[i + 4],
+                            path[i + 5],
+                            toPath[i + 4],
+                            toPath[i + 5],
+                            toPath[i + 1],
+                            toPath[i + 2],
+                            'z'
+                        );
+                        result.flat = flat;
+                    }
+
                 } else { // outside the axis area
                     path = null;
                 }
 
-                return path;
+                return result;
             },
 
             /**
@@ -15416,7 +15485,8 @@
                 var chart = this.chart,
                     distance = this.distance,
                     ret = {},
-                    h = point.h || 0, // #4117
+                    // Don't use h if chart isn't inverted (#7242)
+                    h = (chart.inverted && point.h) || 0, // #4117
                     swapped,
                     first = ['y', chart.chartHeight, boxHeight,
                         point.plotY + chart.plotTop, chart.plotTop,
@@ -15625,7 +15695,7 @@
 
                     // update text
                     if (tooltip.split) {
-                        this.renderSplit(text, pointOrPoints);
+                        this.renderSplit(text, splat(pointOrPoints));
                     } else {
 
                         // Prevent the tooltip from flowing over the chart box (#6659)
@@ -15718,7 +15788,15 @@
 
                         // Store the tooltip referance on the series
                         if (!tt) {
-                            owner.tt = tt = ren.label(null, null, null, 'callout')
+                            owner.tt = tt = ren.label(
+                                    null,
+                                    null,
+                                    null,
+                                    'callout',
+                                    null,
+                                    null,
+                                    options.useHTML
+                                )
                                 .addClass('highcharts-tooltip-box ' + colorClass)
                                 .attr({
                                     'padding': options.padding,
@@ -15974,7 +16052,9 @@
                 return map(items, function(item) {
                     var tooltipOptions = item.series.tooltipOptions;
                     return (
-                        tooltipOptions.pointFormatter ||
+                        tooltipOptions[
+                            (item.point.formatPrefix || 'point') + 'Formatter'
+                        ] ||
                         item.point.tooltipFormatter
                     ).call(
                         item.point,
@@ -18136,7 +18216,7 @@
 
                 if (legendWidth > 0 && legendHeight > 0) {
                     box[box.isNew ? 'attr' : 'animate'](
-                        box.crisp({
+                        box.crisp.call({}, { // #7260
                             x: 0,
                             y: 0,
                             width: legendWidth,
@@ -19209,7 +19289,7 @@
                         chart[name] = title = title.destroy(); // remove old
                     }
 
-                    if (chartTitleOptions && chartTitleOptions.text && !title) {
+                    if (chartTitleOptions && !title) {
                         chart[name] = chart.renderer.text(
                                 chartTitleOptions.text,
                                 0,
@@ -20643,6 +20723,14 @@
                 } else {
                     colorIndex = series.colorIndex;
                 }
+
+                /**
+                 * The point's current color index, used in styled mode instead of 
+                 * `color`. The color index is inserted in class names used for styling.
+                 * @name colorIndex
+                 * @memberof Highcharts.Point
+                 * @type {Number}
+                 */
                 point.colorIndex = pick(point.colorIndex, colorIndex);
 
                 series.chart.pointCount++;
@@ -20970,6 +21058,32 @@
          * @memberOf Highcharts.Point
          * @type {String|Number}
          */
+
+        /**
+         * The name of the point. The name can be given as the first position of the 
+         * point configuration array, or as a `name` property in the configuration:
+         *
+         * @example
+         * // Array config
+         * data: [
+         *     ['John', 1],
+         *     ['Jane', 2]
+         * ]
+         *
+         * // Object config
+         * data: [{
+         * 	   name: 'John',
+         * 	   y: 1
+         * }, {
+         *     name: 'Jane',
+         *     y: 2
+         * }]
+         *
+         * @name name
+         * @memberOf Highcharts.Point
+         * @type {String}
+         */
+
 
         /**
          * The percentage for points in a stacked series or pies.
@@ -22119,6 +22233,7 @@
 
                         /**
                          * Animation when hovering over the marker.
+                         * @type {Boolean|Object}
                          */
                         animation: {
                             duration: 50
@@ -22711,6 +22826,15 @@
                  * @sample {highcharts} highcharts/plotoptions/series-datalabels-rotation/ Vertical labels
                  * @default 0
                  * @apioption plotOptions.series.dataLabels.rotation
+                 */
+
+                /**
+                 * Whether to [use HTML](http://www.highcharts.com/docs/chart-concepts/labels-
+                 * and-string-formatting#html) to render the labels.
+                 *
+                 * @type {Boolean}
+                 * @default false
+                 * @apioption plotOptions.series.dataLabels.useHTML
                  */
 
                 /**
@@ -25645,6 +25769,9 @@
         /**
          * Individual color for the point. By default the color is pulled from
          * the global `colors` array.
+         *
+         * In styled mode, the `color` option doesn't take effect. Instead, use 
+         * `colorIndex`.
          * 
          * @type {Color}
          * @sample {highcharts} highcharts/point/color/ Mark the highest point
@@ -25655,8 +25782,8 @@
 
         /**
          * Styled mode only. A specific color index to use for the point, so its
-         * graphic representations are given the class name `highcharts-color-
-         * {n}`.
+         * graphic representations are given the class name
+         * `highcharts-color-{n}`.
          * 
          * @type {Number}
          * @since 5.0.0
@@ -26784,6 +26911,9 @@
                         }
                         if (options && options.dataLabels && point.dataLabel) { // #2468
                             point.dataLabel = point.dataLabel.destroy();
+                        }
+                        if (point.connector) {
+                            point.connector = point.connector.destroy(); // #7243
                         }
                     }
 
@@ -29574,7 +29704,7 @@
                  * Whether to render the connector as a soft arc or a line with sharp
                  * break.
                  * 
-                 * @type {Boolean}
+                 * @type {Number}
                  * @sample {highcharts} highcharts/plotoptions/pie-datalabels-softconnector-true/ Soft
                  * @sample {highcharts} highcharts/plotoptions/pie-datalabels-softconnector-false/ Non soft
                  * @since 2.1.7
@@ -30555,9 +30685,14 @@
                             options[point.formatPrefix + 'Format'] ||
                             options.format
                         );
+
                         str = defined(formatString) ?
                             format(formatString, labelConfig) :
-                            options.formatter.call(labelConfig, options);
+                            (
+                                options[point.formatPrefix + 'Formatter'] ||
+                                options.formatter
+                            ).call(labelConfig, options);
+
                         style = options.style;
                         rotation = options.rotation;
 
@@ -32580,7 +32715,9 @@
                     chart.redraw();
                 }
 
-                fireEvent(series, showOrHide);
+                fireEvent(series, showOrHide, {
+                    redraw: redraw
+                });
             },
 
             /**

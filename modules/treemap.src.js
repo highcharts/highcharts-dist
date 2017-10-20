@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  *
  * (c) 2014 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -166,6 +166,9 @@
             each = H.each,
             getColor = mixinTreeSeries.getColor,
             grep = H.grep,
+            isBoolean = function(x) {
+                return typeof x === 'boolean';
+            },
             isNumber = H.isNumber,
             isString = H.isString,
             pick = H.pick,
@@ -352,7 +355,6 @@
              * to be level one. Otherwise the level will be the same as the tree
              * structure.
              * 
-             * @validvalue [true, false]
              * @type {Boolean}
              * @default true
              * @since 4.1.0
@@ -709,6 +711,14 @@
             setTreeValues: function(tree) {
                 var series = this,
                     options = series.options,
+                    idRoot = series.rootNode,
+                    mapIdToNode = series.nodeMap,
+                    nodeRoot = mapIdToNode[idRoot],
+                    levelIsConstant = (
+                        isBoolean(options.levelIsConstant) ?
+                        options.levelIsConstant :
+                        true
+                    ),
                     childrenTotal = 0,
                     children = [],
                     val,
@@ -737,7 +747,7 @@
                     // Ignore this node if point is not visible
                     ignore: !(pick(point && point.visible, true) && (val > 0)),
                     isLeaf: tree.visible && !childrenTotal,
-                    levelDynamic: tree.level - (options.levelIsConstant ? series.nodeMap[series.rootNode].level : 0),
+                    levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
                     name: pick(point && point.name, ''),
                     sortIndex: pick(point && point.sortIndex, -val),
                     val: val

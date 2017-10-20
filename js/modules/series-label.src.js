@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.1 (2017-10-05)
+ * @license Highcharts JS v6.0.2 (2017-10-20)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -559,7 +559,7 @@
                         y >= paneTop && y <= paneTop + paneHeight - bBox.height;
                 }
 
-                if (series.visible && points) {
+                if (series.visible && !series.isSeriesBoosting && points) {
                     if (!label) {
                         series.labelBySeries = label = chart.renderer
                             .label(series.name, 0, -9999, 'connector')
@@ -785,7 +785,12 @@
                     label = series.labelBySeries,
                     closest = label && label.closest;
 
-                if (options.enabled && series.visible && (series.graph || series.area)) {
+                if (
+                    options.enabled &&
+                    series.visible &&
+                    (series.graph || series.area) &&
+                    !series.isSeriesBoosting
+                ) {
                     chart.labelSeries.push(series);
 
                     if (options.minFontSize && options.maxFontSize) {
