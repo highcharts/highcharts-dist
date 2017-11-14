@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  *
  * (c) 2014 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -92,6 +92,7 @@
                 point,
                 level,
                 colorByPoint,
+                colorIndexByPoint,
                 color,
                 colorIndex;
 
@@ -119,9 +120,14 @@
                         !!series.options.colorByPoint
                     )
                 );
+
                 if (getColorByPoint) {
-                    colorByPoint = colors[(point.index % colors.length)];
+                    colorIndexByPoint = point.index %
+                        (colors ? colors.length : series.chart.options.chart.colorCount);
+                    colorByPoint = colors && colors[colorIndexByPoint];
                 }
+
+
                 // Select either point color, level color or inherited color.
                 color = pick(
                     point && point.options.color,
@@ -130,9 +136,11 @@
                     parentColor && variation(parentColor),
                     series.color
                 );
+
                 colorIndex = pick(
                     point && point.options.colorIndex,
                     level && level.colorIndex,
+                    colorIndexByPoint,
                     parentColorIndex,
                     options.colorIndex
                 );

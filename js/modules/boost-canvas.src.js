@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -135,12 +135,7 @@
                             }
                         };
 
-                        target.boostClipRect = chart.renderer.clipRect(
-                            chart.plotLeft,
-                            chart.plotTop,
-                            chart.plotWidth,
-                            chart.chartHeight
-                        );
+                        target.boostClipRect = chart.renderer.clipRect();
 
                         target.renderTarget.clip(target.boostClipRect);
 
@@ -165,12 +160,7 @@
                         href: ''
                     });
 
-                    target.boostClipRect.attr({
-                        x: chart.plotLeft,
-                        y: chart.plotTop,
-                        width: chart.plotWidth,
-                        height: chart.chartHeight
-                    });
+                    target.boostClipRect.attr(chart.getBoostClipRect(target));
 
                     return ctx;
                 },

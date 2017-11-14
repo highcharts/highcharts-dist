@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  *
  * (c) 2016 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -50,6 +50,9 @@
                         onComplete();
                     }
                 });
+            }
+            if (graphic) {
+                graphic.addClass(point.getClassName(), true);
             }
         };
         return draw;
@@ -468,7 +471,8 @@
                 fontFamily: 'Impact, sans-serif'
             },
             tooltip: {
-                followPointer: true
+                followPointer: true,
+                pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.weight}</b><br/>'
             }
         };
 
@@ -530,7 +534,7 @@
                 each(data, function(point) {
                     var relativeWeight = 1 / maxWeight * point.weight,
                         css = extend({
-                            fontSize: series.deriveFontSize(relativeWeight),
+                            fontSize: series.deriveFontSize(relativeWeight) + 'px',
                             fill: point.color
                         }, options.style),
                         placement = placementStrategy(point, {

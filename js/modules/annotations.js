@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.0.2 (2017-10-20)
+ Highcharts JS v6.0.3 (2017-11-14)
  Annotations module
 
  (c) 2009-2017 Torstein Honsi

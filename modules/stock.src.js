@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -678,7 +678,7 @@
                     if (!this.options.breaks) {
                         ret = tickInterval / (ordinalSlope / this.closestPointRange);
                     } else {
-                        ret = this.closestPointRange;
+                        ret = this.closestPointRange || tickInterval; // #7275
                     }
                 } else {
                     ret = tickInterval;
@@ -1569,7 +1569,9 @@
                         ret.push(approximations.average(arr));
                     });
 
-                    return ret;
+                    // Return undefined when first elem. is undefined and let
+                    // sum method handle null (#7377)
+                    return ret[0] === undefined ? undefined : ret;
                 },
                 open: function(arr) {
                     return arr.length ? arr[0] : (arr.hasNulls ? null : undefined);
@@ -1752,7 +1754,9 @@
                 pick(dataGroupingOptions.enabled, chart.options.isStock),
                 visible = series.visible || !chart.options.chart.ignoreHiddenSeries,
                 hasGroupedData,
-                skip;
+                skip,
+                lastDataGrouping = this.currentDataGrouping,
+                currentDataGrouping;
 
             // run base method
             series.forceCrop = groupingEnabled; // #334
@@ -1808,7 +1812,7 @@
                     }
 
                     // record what data grouping values were used
-                    series.currentDataGrouping = groupPositions.info;
+                    currentDataGrouping = groupPositions.info;
                     series.closestPointRange = groupPositions.info.totalRange;
                     series.groupMap = groupedData[2];
 
@@ -1825,9 +1829,14 @@
                     series.processedXData = groupedXData;
                     series.processedYData = groupedYData;
                 } else {
-                    series.currentDataGrouping = series.groupMap = null;
+                    series.groupMap = null;
                 }
                 series.hasGroupedData = hasGroupedData;
+                series.currentDataGrouping = currentDataGrouping;
+
+                series.preventGraphAnimation =
+                    (lastDataGrouping && lastDataGrouping.totalRange) !==
+                    (currentDataGrouping && currentDataGrouping.totalRange);
             }
         };
 
@@ -3165,10 +3174,11 @@
                     point,
                     graphic,
                     stackIndex,
-                    anchorX,
                     anchorY,
                     outsideRight,
-                    yAxis = series.yAxis;
+                    yAxis = series.yAxis,
+                    boxesMap = {},
+                    boxes = [];
 
                 i = points.length;
                 while (i--) {
@@ -3182,7 +3192,7 @@
                     if (plotY !== undefined) {
                         plotY = point.plotY + optionsY - (stackIndex !== undefined && stackIndex * options.stackDistance);
                     }
-                    anchorX = stackIndex ? undefined : point.plotX; // skip connectors for higher level stacked points
+                    point.anchorX = stackIndex ? undefined : point.plotX; // skip connectors for higher level stacked points
                     anchorY = stackIndex ? undefined : point.plotY;
 
                     graphic = point.graphic;
@@ -3222,6 +3232,7 @@
 
                             graphic.shadow(options.shadow);
 
+                            graphic.isNew = true;
                         }
 
                         if (plotX > 0) { // #3119
@@ -3230,12 +3241,26 @@
 
                         // Plant the flag
                         graphic.attr({
-                            text: point.options.title || options.title || 'A',
-                            x: plotX,
+                            text: point.options.title || options.title || 'A'
+                        })[graphic.isNew ? 'attr' : 'animate']({
                             y: plotY,
-                            anchorX: anchorX,
                             anchorY: anchorY
                         });
+
+                        // Rig for the distribute function
+                        if (!boxesMap[point.plotX]) {
+                            boxesMap[point.plotX] = {
+                                align: 0,
+                                size: graphic.width,
+                                target: plotX,
+                                anchorX: plotX
+                            };
+                        } else {
+                            boxesMap[point.plotX].size = Math.max(
+                                boxesMap[point.plotX].size,
+                                graphic.width
+                            );
+                        }
 
                         // Set the tooltip anchor position
                         point.tooltipPos = chart.inverted ? [yAxis.len + yAxis.pos - chart.plotLeft - plotY, series.xAxis.len - plotX] : [plotX, plotY + yAxis.pos - chart.plotTop]; // #6327
@@ -3245,6 +3270,24 @@
                     }
 
                 }
+
+                H.objectEach(boxesMap, function(box) {
+                    box.plotX = box.anchorX;
+                    boxes.push(box);
+                });
+
+                H.distribute(boxes, this.xAxis.len);
+
+                each(points, function(point) {
+                    var box = point.graphic && boxesMap[point.plotX];
+                    if (box) {
+                        point.graphic[point.graphic.isNew ? 'attr' : 'animate']({
+                            x: box.pos,
+                            anchorX: point.anchorX
+                        });
+                        point.graphic.isNew = false;
+                    }
+                });
 
                 // Might be a mix of SVG and HTML and we need events for both (#6303)
                 if (options.useHTML) {
@@ -3307,15 +3350,17 @@
             var anchorX = (options && options.anchorX) || x,
                 anchorY = (options && options.anchorY) || y;
 
-            return [
-                'M', anchorX, anchorY,
-                'L', x, y + h,
-                x, y,
-                x + w, y,
-                x + w, y + h,
-                x, y + h,
-                'Z'
-            ];
+            return symbols.circle(anchorX - 1, anchorY - 1, 2, 2).concat(
+                [
+                    'M', anchorX, anchorY,
+                    'L', x, y + h,
+                    x, y,
+                    x + w, y,
+                    x + w, y + h,
+                    x, y + h,
+                    'Z'
+                ]
+            );
         };
 
         // create the circlepin and squarepin icons with anchor
@@ -3339,7 +3384,17 @@
                     // if the label is below the anchor, draw the connecting line from the top edge of the label
                     // otherwise start drawing from the bottom edge
                     labelTopOrBottomY = (y > anchorY) ? y : y + h;
-                    path.push('M', anchorX, labelTopOrBottomY, 'L', anchorX, anchorY);
+                    path.push(
+                        'M',
+                        shape === 'circle' ? path[1] - path[4] : path[1] + path[4] / 2,
+                        labelTopOrBottomY,
+                        'L',
+                        anchorX,
+                        anchorY
+                    );
+                    path = path.concat(
+                        symbols.circle(anchorX - 1, anchorY - 1, 2, 2)
+                    );
                 }
 
                 return path;
@@ -5162,6 +5217,7 @@
              * @param {Number} pxMax Pixel value maximum
              */
             render: function(min, max, pxMin, pxMax) {
+
                 var navigator = this,
                     chart = navigator.chart,
                     navigatorWidth,
@@ -5194,7 +5250,7 @@
                     // it. For example hidden series, but visible navigator (#6022).
                     if (rendered) {
                         pxMin = 0;
-                        pxMax = xAxis.width;
+                        pxMax = pick(xAxis.width, scrollbarXAxis.width);
                     } else {
                         return;
                     }
@@ -6109,14 +6165,14 @@
 
                 each(baseSeries, function(base) {
                     // Link base series show/hide to navigator series visibility
-                    addEvent(base, 'show', function(e) {
+                    addEvent(base, 'show', function() {
                         if (this.navigatorSeries) {
-                            this.navigatorSeries.setVisible(true, e.redraw);
+                            this.navigatorSeries.setVisible(true, false);
                         }
                     });
-                    addEvent(base, 'hide', function(e) {
+                    addEvent(base, 'hide', function() {
                         if (this.navigatorSeries) {
-                            this.navigatorSeries.setVisible(false, e.redraw);
+                            this.navigatorSeries.setVisible(false, false);
                         }
                     });
 
@@ -6352,8 +6408,11 @@
                     ret = false;
 
                     // For xy zooming, record the state of the zoom before zoom selection,
-                    // then when the reset button is pressed, revert to this state
-                } else if (zoomType === 'xy') {
+                    // then when the reset button is pressed, revert to this state. This
+                    // should apply only if the chart is initialized with a range (#6612),
+                    // otherwise zoom all the way out.
+                } else if (zoomType === 'xy' && this.options.range) {
+
                     previousZoom = this.previousZoom;
                     if (defined(newMin)) {
                         this.previousZoom = [this.min, this.max];
@@ -7295,7 +7354,7 @@
                     textAlign: 'center',
                     fontSize: chartStyle.fontSize,
                     fontFamily: chartStyle.fontFamily,
-                    left: '-9em' // #4798
+                    top: '-9999em' // #4798
                 }, options.inputStyle));
 
 
@@ -8171,7 +8230,14 @@
                             y: -2
                         },
                         opposite: opposite,
+
+                        /**
+                         * @default {highcharts} true
+                         * @default {highstock} false
+                         * @apioption yAxis.showLastLabel
+                         */
                         showLastLabel: false,
+
                         title: {
                             text: null
                         }

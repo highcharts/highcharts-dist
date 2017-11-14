@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -1248,7 +1248,7 @@
                 }
 
                 this.graphPath = linePath;
-                this.areaPath = this.areaPath.concat(lowerPath, higherAreaPath);
+                this.areaPath = lowerPath.concat(higherAreaPath);
 
                 // Prepare for sideways animation
                 linePath.isArea = true;

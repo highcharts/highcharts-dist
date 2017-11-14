@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.2 (2017-10-20)
+ * @license  Highcharts JS v6.0.3 (2017-11-14)
  *
  * Pareto series type for Highcharts
  *
@@ -259,6 +259,14 @@
          * @apioption series.pareto
          */
 
+        /**
+         * An integer identifying the index to use for the base series, or a string
+         * representing the id of the series.
+         *
+         * @type {Number|String}
+         * @default undefined
+         * @apioption series.pareto.baseSeries
+         */
 
         /**
          * An array of data points for the series. For the `pareto` series type,

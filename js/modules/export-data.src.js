@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -118,16 +118,14 @@
         });
 
         // Add an event listener to handle the showTable option
-        Highcharts.Chart.prototype.callbacks.push(function(chart) {
-            Highcharts.addEvent(chart, 'render', function() {
-                if (
-                    chart.options &&
-                    chart.options.exporting &&
-                    chart.options.exporting.showTable
-                ) {
-                    chart.viewData();
-                }
-            });
+        Highcharts.addEvent(Highcharts.Chart.prototype, 'render', function() {
+            if (
+                this.options &&
+                this.options.exporting &&
+                this.options.exporting.showTable
+            ) {
+                this.viewData();
+            }
         });
 
         // Set up key-to-axis bindings. This is used when the Y axis is datetime or 
@@ -453,7 +451,7 @@
 
             if (this.options.exporting.filename) {
                 name = this.options.exporting.filename;
-            } else if (this.title) {
+            } else if (this.title && this.title.textStr) {
                 name = this.title.textStr.replace(/ /g, '-').toLowerCase();
             } else {
                 name = 'chart';

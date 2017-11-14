@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  * Data module
  *
  * (c) 2012-2017 Torstein Honsi
@@ -132,13 +132,13 @@
          *
          * Valid options include:
          *
-         * *   `YYYY-mm-dd`
+         * *   `YYYY/mm/dd`
          * *   `dd/mm/YYYY`
          * *   `mm/dd/YYYY`
          * *   `dd/mm/YY`
          * *   `mm/dd/YY`
          *
-         * @validvalue [undefined, "YYYY-mm-dd", "dd/mm/YYYY", "mm/dd/YYYY", "dd/mm/YYYY", "dd/mm/YY", "mm/dd/YY"]
+         * @validvalue [undefined, "YYYY/mm/dd", "dd/mm/YYYY", "mm/dd/YYYY", "dd/mm/YYYY", "dd/mm/YY", "mm/dd/YY"]
          * @type {String}
          * @see [data.parseDate](#data.parseDate)
          * @sample {highcharts} highcharts/data/dateformat-auto/ Best guess date format
@@ -781,7 +781,7 @@
                  * data is the data to deduce a format based on
                  */
                 function deduceDateFormat(data, limit) {
-                    var format = 'YYYY-mm-dd',
+                    var format = 'YYYY/mm/dd',
                         thing,
                         guessedFormat,
                         calculatedFormat,
@@ -1225,7 +1225,7 @@
              * custom date formats.
              */
             dateFormats: {
-                'YYYY-mm-dd': {
+                'YYYY/mm/dd': {
                     regex: /^([0-9]{4})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{1,2})$/,
                     parser: function(match) {
                         return Date.UTC(+match[1], match[2] - 1, +match[3]);
@@ -1302,7 +1302,7 @@
 
                         if (!format) {
                             // The selected format is invalid
-                            format = this.dateFormats['YYYY-mm-dd'];
+                            format = this.dateFormats['YYYY/mm/dd'];
                         }
 
                         match = val.match(format.regex);

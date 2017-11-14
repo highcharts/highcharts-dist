@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v6.0.2 (2017-10-20)
+ * @license Highmaps JS v6.0.3 (2017-11-14)
  * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
  *
  * (c) 2011-2017 Torstein Honsi
@@ -3788,6 +3788,9 @@
                         point = seriesTypes.map.prototype.pointClass.prototype.applyOptions.call(this, options, x);
                     }
                     return point;
+                },
+                isValid: function() {
+                    return typeof this.z === 'number';
                 },
                 ttBelow: false
             });

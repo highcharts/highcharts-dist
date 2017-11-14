@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -546,6 +546,32 @@
 
             return threshold <= this.series.length ||
                 shouldForceChartSeriesBoosting(this);
+        };
+
+        /*
+         * Get the clip rectangle for a target, either a series or the chart. For the
+         * chart, we need to consider the maximum extent of its Y axes, in case of 
+         * Highstock panes and navigator.
+         */
+        Chart.prototype.getBoostClipRect = function(target) {
+            var clipBox = {
+                x: this.plotLeft,
+                y: this.plotTop,
+                width: this.plotWidth,
+                height: this.plotHeight
+            };
+
+            if (target === this) {
+                each(this.yAxis, function(yAxis) {
+                    clipBox.y = Math.min(yAxis.pos, clipBox.y);
+                    clipBox.height = Math.max(
+                        yAxis.pos - this.plotTop + yAxis.len,
+                        clipBox.height
+                    );
+                }, this);
+            }
+
+            return clipBox;
         };
 
         /*
@@ -2395,12 +2421,7 @@
                     }
                 };
 
-                target.boostClipRect = chart.renderer.clipRect(
-                    chart.plotLeft,
-                    chart.plotTop,
-                    chart.plotWidth,
-                    chart.chartHeight
-                );
+                target.boostClipRect = chart.renderer.clipRect();
 
                 (target.renderTargetFo || target.renderTarget).clip(target.boostClipRect);
 
@@ -2414,12 +2435,7 @@
             target.canvas.width = width;
             target.canvas.height = height;
 
-            target.boostClipRect.attr({
-                x: chart.plotLeft,
-                y: chart.plotTop,
-                width: chart.plotWidth,
-                height: chart.chartHeight
-            });
+            target.boostClipRect.attr(chart.getBoostClipRect(target));
 
             target.boostResizeTarget();
             target.boostClear();

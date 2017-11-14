@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.2 (2017-10-20)
+ * @license Highcharts JS v6.0.3 (2017-11-14)
  *
  * (c) 2016 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -128,6 +128,9 @@
                     }
                 });
             }
+            if (graphic) {
+                graphic.addClass(point.getClassName(), true);
+            }
         };
         return draw;
     }());
@@ -209,6 +212,7 @@
                 point,
                 level,
                 colorByPoint,
+                colorIndexByPoint,
                 color,
                 colorIndex;
 
@@ -236,20 +240,18 @@
                         !!series.options.colorByPoint
                     )
                 );
+
                 if (getColorByPoint) {
-                    colorByPoint = colors[(point.index % colors.length)];
+                    colorIndexByPoint = point.index %
+                        (colors ? colors.length : series.chart.options.chart.colorCount);
+                    colorByPoint = colors && colors[colorIndexByPoint];
                 }
-                // Select either point color, level color or inherited color.
-                color = pick(
-                    point && point.options.color,
-                    level && level.color,
-                    colorByPoint,
-                    parentColor && variation(parentColor),
-                    series.color
-                );
+
+
                 colorIndex = pick(
                     point && point.options.colorIndex,
                     level && level.colorIndex,
+                    colorIndexByPoint,
                     parentColorIndex,
                     options.colorIndex
                 );
@@ -1762,51 +1764,6 @@
             };
         };
 
-        var setShapeArgs = function setShapeArgs(parent, parentValues) {
-            var childrenValues = [],
-                // Collect all children which should be included
-                children = grep(parent.children, function(n) {
-                    return n.visible;
-                });
-            childrenValues = layoutAlgorithm(parentValues, children);
-            each(children, function(child, index) {
-                var values = childrenValues[index],
-                    angle = values.start + ((values.end - values.start) / 2),
-                    radius = values.innerR + ((values.r - values.innerR) / 2),
-                    isCircle = (
-                        values.innerR === 0 &&
-                        (values.end - values.start) > 6.28
-                    ),
-                    center = (
-                        isCircle ? {
-                            x: values.x,
-                            y: values.y
-                        } :
-                        getEndPoint(values.x, values.y, angle, radius)
-                    ),
-                    val = (
-                        child.val ?
-                        (
-                            child.childrenTotal > child.val ?
-                            child.childrenTotal :
-                            child.val
-                        ) :
-                        child.childrenTotal
-                    );
-                child.shapeArgs = merge(values, {
-                    plotX: center.x,
-                    plotY: center.y
-                });
-                child.values = merge(values, {
-                    val: val
-                });
-                // If node has children, then call method recursively
-                if (child.children.length) {
-                    setShapeArgs(child, child.values);
-                }
-            });
-        };
-
         var getDrillId = function getDrillId(point, idRoot, mapIdToNode) {
             var drillId,
                 node = point.node,
@@ -2051,7 +2008,6 @@
                         level = levelMap[node.levelDynamic],
                         shapeExisting = point.shapeExisting || {},
                         shape = node.shapeArgs || {},
-                        attrStyle = series.pointAttribs(point, point.selected && 'select'),
                         animationInfo,
                         onComplete,
                         visible = !!(node.visible && node.shapeArgs);
@@ -2097,7 +2053,13 @@
                     }
                     point.draw({
                         animate: animationInfo.to,
-                        attr: extend(animationInfo.from, attrStyle),
+                        attr: extend(
+                            animationInfo.from,
+                            series.pointAttribs && series.pointAttribs(
+                                point,
+                                point.selected && 'select'
+                            )
+                        ),
                         onComplete: onComplete,
                         group: group,
                         renderer: renderer,
@@ -2121,7 +2083,66 @@
                     Series.prototype.drawDataLabels.call(series);
                 }
             },
-            pointAttribs: seriesTypes.column.prototype.pointAttribs,
+
+
+            /*
+             * Set the shape arguments on the nodes. Recursive from root down.
+             */
+            setShapeArgs: function(parent, parentValues) {
+                var childrenValues = [],
+                    // Collect all children which should be included
+                    children = grep(parent.children, function(n) {
+                        return n.visible;
+                    });
+                childrenValues = layoutAlgorithm(parentValues, children);
+                each(children, function(child, index) {
+                    var values = childrenValues[index],
+                        angle = values.start + ((values.end - values.start) / 2),
+                        radius = values.innerR + ((values.r - values.innerR) / 2),
+                        isCircle = (
+                            values.innerR === 0 &&
+                            (values.end - values.start) > 6.28
+                        ),
+                        center = (
+                            isCircle ? {
+                                x: values.x,
+                                y: values.y
+                            } :
+                            getEndPoint(values.x, values.y, angle, radius)
+                        ),
+                        val = (
+                            child.val ?
+                            (
+                                child.childrenTotal > child.val ?
+                                child.childrenTotal :
+                                child.val
+                            ) :
+                            child.childrenTotal
+                        ),
+                        innerArcFraction = (values.end - values.start) / (2 * Math.PI),
+                        perimeter = 2 * Math.PI * values.innerR;
+
+                    // The inner arc length is a convenience for data label filters.
+                    if (this.points[child.i]) {
+                        this.points[child.i].innerArcLength =
+                            innerArcFraction * perimeter;
+                    }
+
+                    child.shapeArgs = merge(values, {
+                        plotX: center.x,
+                        plotY: center.y
+                    });
+                    child.values = merge(values, {
+                        val: val
+                    });
+                    // If node has children, then call method recursively
+                    if (child.children.length) {
+                        this.setShapeArgs(child, child.values);
+                    }
+                }, this);
+            },
+
+
             translate: function translate() {
                 var series = this,
                     options = series.options,
@@ -2175,7 +2196,7 @@
                     x: positions[0],
                     y: positions[1]
                 };
-                setShapeArgs(nodeTop, values);
+                this.setShapeArgs(nodeTop, values);
             },
 
             /**
