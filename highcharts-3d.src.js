@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  *
  * 3D features for Highcharts JS
  *
@@ -844,7 +844,9 @@
 
                 if (anim.duration) {
                     ca = suckOutCustom(params);
-                    params.dummy = 1; // Params need to have a property in order for the step to run (#5765)
+                    // Params need to have a property in order for the step to run
+                    // (#5765, #7437)
+                    params.dummy = wrapper.dummy++;
 
                     if (ca) {
                         to = ca;
@@ -869,6 +871,7 @@
                 }
                 return proceed.call(this, params, animation, complete);
             });
+            wrapper.dummy = 0;
 
             // destroy all children
             wrapper.destroy = function() {
@@ -3603,6 +3606,8 @@
                     rawPoint.isInside = rawPoint.isInside ?
                         (zValue >= zAxis.min && zValue <= zAxis.max) :
                         false;
+                } else {
+                    rawPoint.plotZ = 0;
                 }
 
                 rawPoints.push({

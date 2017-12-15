@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  *
  * (c) 2014 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -256,6 +256,28 @@
              * @since 4.1.10
              * @product highcharts
              * @apioption plotOptions.treemap.sortIndex
+             */
+
+            /**
+             * When using automatic point colors pulled from the `options.colors`
+             * collection, this option determines whether the chart should receive
+             * one color per series or one color per point.
+             *
+             * @type {Boolean}
+             * @see [series colors](#plotOptions.treemap.colors)
+             * @default false
+             * @since 2.0
+             * @apioption plotOptions.treemap.colorByPoint
+             */
+
+            /**
+             * A series specific or series type specific color set to apply instead
+             * of the global [colors](#colors) when [colorByPoint](#plotOptions.
+             * treemap.colorByPoint) is true.
+             *
+             * @type {Array<Color>}
+             * @since 3.0
+             * @apioption plotOptions.treemap.colors
              */
 
             /**
@@ -1162,7 +1184,9 @@
                 // attribute.
                 if (this.colorAttribs) { // Heatmap is loaded
                     each(this.points, function(point) {
-                        point.graphic.css(this.colorAttribs(point));
+                        if (point.graphic) {
+                            point.graphic.css(this.colorAttribs(point));
+                        }
                     }, this);
                 }
 
@@ -1272,6 +1296,7 @@
                             states && states.hover,
                             states && states.select
                         )
+                        .addClass('highcharts-drillup-button')
                         .attr({
                             align: buttonOptions.position.align,
                             zIndex: 7
@@ -1279,6 +1304,7 @@
                         .add()
                         .align(buttonOptions.position, false, buttonOptions.relativeTo || 'plotBox');
                 } else {
+                    this.drillUpButton.placed = false;
                     this.drillUpButton.attr({
                             text: backText
                         })

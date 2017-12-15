@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -88,7 +88,9 @@
          * to be rendered by WebGL instead of the default SVG. This allows hundreds of
          * thousands of data points to be rendered in milliseconds. In addition to the
          * WebGL rendering it saves time by skipping processing and inspection of the
-         * data wherever possible.
+         * data wherever possible. This introduces some limitations to what features are
+         * available in Boost mode. See [the docs](https://www.highcharts.com/docs/advanced-chart-features/boost-module)
+         * for details.
          *
          * In addition to the global `boost` option, each series has a
          * [boostThreshold](#plotOptions.series.boostThreshold) that defines when the
@@ -133,6 +135,7 @@
          * a significant speed improvment in charts with a very high
          * amount of series.
          *
+         * @type {Number}
          * @default  null
          * @apioption boost.seriesThreshold
          */
@@ -491,17 +494,15 @@
             // we should boost the whole chart to avoid running out of webgl contexts.
             var sboostCount = 0,
                 canBoostCount = 0,
-                allowBoostForce = true,
+                allowBoostForce = pick(
+                    chart.options.boost && chart.options.boost.allowForce,
+                    true
+                ),
                 series;
 
             if (typeof chart.boostForceChartBoost !== 'undefined') {
                 return chart.boostForceChartBoost;
             }
-
-            allowBoostForce = chart.options.boost ?
-                (typeof chart.options.boost.allowForce !== 'undefined' ?
-                    chart.options.boost.allowForce : allowBoostForce) :
-                allowBoostForce;
 
             if (chart.series.length > 1) {
                 for (var i = 0; i < chart.series.length; i++) {
@@ -523,7 +524,12 @@
                 }
             }
 
-            chart.boostForceChartBoost = (allowBoostForce && canBoostCount === chart.series.length && sboostCount > 0) ||
+            chart.boostForceChartBoost =
+                (
+                    allowBoostForce &&
+                    canBoostCount === chart.series.length &&
+                    sboostCount > 0
+                ) ||
                 sboostCount > 5;
 
             return chart.boostForceChartBoost;
@@ -535,17 +541,16 @@
          * @returns {Boolean} - true if the chart is in series boost mode
          */
         Chart.prototype.isChartSeriesBoosting = function() {
-            var threshold = 50;
+            var isSeriesBoosting,
+                threshold = pick(
+                    this.options.boost && this.options.boost.seriesThreshold,
+                    50
+                );
 
-            threshold = (
-                    this.options.boost &&
-                    typeof this.options.boost.seriesThreshold !== 'undefined'
-                ) ?
-                this.options.boost.seriesThreshold :
-                threshold;
-
-            return threshold <= this.series.length ||
+            isSeriesBoosting = threshold <= this.series.length ||
                 shouldForceChartSeriesBoosting(this);
+
+            return isSeriesBoosting;
         };
 
         /*
@@ -2362,12 +2367,14 @@
                 // or if we're exporting.
                 if (chart.renderer.forExport || !foSupported) {
                     target.renderTarget = chart.renderer.image(
-                        '',
-                        0,
-                        0,
-                        width,
-                        height
-                    ).add(targetGroup);
+                            '',
+                            0,
+                            0,
+                            width,
+                            height
+                        )
+                        .addClass('highcharts-boost-canvas')
+                        .add(targetGroup);
 
                     target.boostClear = function() {
                         target.renderTarget.attr({
@@ -2408,13 +2415,18 @@
                     width = chart.chartWidth;
                     height = chart.chartHeight;
 
-                    (target.renderTargetFo || target.renderTarget).attr({
-                        x: 0,
-                        y: 0,
-                        width: width,
-                        height: height,
-                        style: 'pointer-events: none; mix-blend-mode: normal; opacity:' + alpha
-                    });
+                    (target.renderTargetFo || target.renderTarget)
+                    .attr({
+                            x: 0,
+                            y: 0,
+                            width: width,
+                            height: height
+                        })
+                        .css({
+                            pointerEvents: 'none',
+                            mixedBlendMode: 'normal',
+                            opacity: alpha
+                        });
 
                     if (target instanceof H.Chart) {
                         target.markerGroup.translate(series.xAxis.pos, series.yAxis.pos);
@@ -2720,6 +2732,7 @@
             if (!getSeriesBoosting(dataToMeasure) || // First pass with options.data
                 this.type === 'heatmap' ||
                 this.type === 'treemap' ||
+                this.options.stacking || // we need processedYData for the stack (#7481)
                 !this.hasExtremes ||
                 !this.hasExtremes(true)
             ) {

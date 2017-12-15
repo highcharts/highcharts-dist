@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.0.3 (2017-11-14)
+  Highcharts JS v6.0.4 (2017-12-15)
 
  Support for parallel coordinates in Highcharts
 

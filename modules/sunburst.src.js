@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  *
  * (c) 2016 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -385,6 +385,28 @@
              * @since 4.1.10
              * @product highcharts
              * @apioption plotOptions.treemap.sortIndex
+             */
+
+            /**
+             * When using automatic point colors pulled from the `options.colors`
+             * collection, this option determines whether the chart should receive
+             * one color per series or one color per point.
+             *
+             * @type {Boolean}
+             * @see [series colors](#plotOptions.treemap.colors)
+             * @default false
+             * @since 2.0
+             * @apioption plotOptions.treemap.colorByPoint
+             */
+
+            /**
+             * A series specific or series type specific color set to apply instead
+             * of the global [colors](#colors) when [colorByPoint](#plotOptions.
+             * treemap.colorByPoint) is true.
+             *
+             * @type {Array<Color>}
+             * @since 3.0
+             * @apioption plotOptions.treemap.colors
              */
 
             /**
@@ -1535,6 +1557,7 @@
                             states && states.hover,
                             states && states.select
                         )
+                        .addClass('highcharts-drillup-button')
                         .attr({
                             align: buttonOptions.position.align,
                             zIndex: 7
@@ -1542,6 +1565,7 @@
                         .add()
                         .align(buttonOptions.position, false, buttonOptions.relativeTo || 'plotBox');
                 } else {
+                    this.drillUpButton.placed = false;
                     this.drillUpButton.attr({
                             text: backText
                         })
@@ -1751,32 +1775,6 @@
             setTreeValues = mixinTreeSeries.setTreeValues,
             reduce = H.reduce;
 
-        var layoutAlgorithm = function layoutAlgorithm(parent, children) {
-            var startAngle = parent.start,
-                range = parent.end - startAngle,
-                total = parent.val,
-                x = parent.x,
-                y = parent.y,
-                innerRadius = parent.r,
-                outerRadius = innerRadius + parent.radius;
-
-            return reduce(children || [], function(arr, child) {
-                var percentage = (1 / total) * child.val,
-                    radians = percentage * range,
-                    values = {
-                        x: x,
-                        y: y,
-                        innerR: innerRadius,
-                        r: outerRadius,
-                        radius: parent.radius,
-                        start: startAngle,
-                        end: startAngle + radians
-                    };
-                arr.push(values);
-                startAngle = values.end;
-                return arr;
-            }, []);
-        };
 
         /**
          * getEndPoint - Find a set of coordinates given a start coordinates, an angle,
@@ -1793,6 +1791,36 @@
                 x: x + (Math.cos(angle) * distance),
                 y: y + (Math.sin(angle) * distance)
             };
+        };
+
+        var layoutAlgorithm = function layoutAlgorithm(parent, children, options) {
+            var startAngle = parent.start,
+                range = parent.end - startAngle,
+                total = parent.val,
+                x = parent.x,
+                y = parent.y,
+                innerRadius = parent.r,
+                outerRadius = innerRadius + parent.radius,
+                slicedOffset = isNumber(options.slicedOffset) ? options.slicedOffset : 0;
+
+            return reduce(children || [], function(arr, child) {
+                var percentage = (1 / total) * child.val,
+                    radians = percentage * range,
+                    radiansCenter = startAngle + (radians / 2),
+                    offsetPosition = getEndPoint(x, y, radiansCenter, slicedOffset),
+                    values = {
+                        x: child.sliced && child.id !== options.idRoot ? offsetPosition.x : x,
+                        y: child.sliced && child.id !== options.idRoot ? offsetPosition.y : y,
+                        innerR: innerRadius,
+                        r: outerRadius,
+                        radius: parent.radius,
+                        start: startAngle,
+                        end: startAngle + radians
+                    };
+                arr.push(values);
+                startAngle = values.end;
+                return arr;
+            }, []);
         };
 
         var getDlOptions = function getDlOptions(params) {
@@ -1839,8 +1867,7 @@
         };
 
         var getAnimation = function getAnimation(shape, params) {
-            var center = params.center,
-                point = params.point,
+            var point = params.point,
                 radians = params.radians,
                 innerR = params.innerR,
                 idRoot = params.idRoot,
@@ -1855,8 +1882,8 @@
                     start: shape.start,
                     innerR: shape.innerR,
                     r: shape.r,
-                    x: center.x,
-                    y: center.y
+                    x: shape.x,
+                    y: shape.y
                 };
             if (visible) {
                 // Animate points in
@@ -1946,6 +1973,7 @@
             if (point) {
                 point.color = node.color;
                 point.colorIndex = node.colorIndex;
+                node.sliced = point.sliced;
             }
             return node;
         };
@@ -1960,7 +1988,7 @@
          * @excluding allAreas, center, clip, colorAxis, compare, compareBase,
          *            dataGrouping, depth, endAngle, gapSize, gapUnit,
          *            ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
-         *            minSize, navigatorOptions, pointRange, slicedOffset
+         *            minSize, navigatorOptions, pointRange
          * @product highcharts
          * @optionparent plotOptions.sunburst
          */
@@ -2007,7 +2035,8 @@
              * to be level one. Otherwise the level will be the same as the tree
              * structure.
              */
-            levelIsConstant: true
+            levelIsConstant: true,
+            slicedOffset: 10
             /**
              * Set options on specific levels. Takes precedence over series options,
              * but not point options.
@@ -2231,15 +2260,19 @@
 
 
             /*
+             * The layout algorithm for the levels
+             */
+            layoutAlgorithm: layoutAlgorithm,
+            /*
              * Set the shape arguments on the nodes. Recursive from root down.
              */
-            setShapeArgs: function(parent, parentValues) {
+            setShapeArgs: function(parent, parentValues, options) {
                 var childrenValues = [],
                     // Collect all children which should be included
                     children = grep(parent.children, function(n) {
                         return n.visible;
                     });
-                childrenValues = layoutAlgorithm(parentValues, children);
+                childrenValues = this.layoutAlgorithm(parentValues, children, options);
                 each(children, function(child, index) {
                     var values = childrenValues[index],
                         angle = values.start + ((values.end - values.start) / 2),
@@ -2282,7 +2315,7 @@
                     });
                     // If node has children, then call method recursively
                     if (child.children.length) {
-                        this.setShapeArgs(child, child.values);
+                        this.setShapeArgs(child, child.values, options);
                     }
                 }, this);
             },
@@ -2341,7 +2374,10 @@
                     x: positions[0],
                     y: positions[1]
                 };
-                this.setShapeArgs(nodeTop, values);
+                this.setShapeArgs(nodeTop, values, {
+                    idRoot: idRoot,
+                    slicedOffset: options.slicedOffset
+                });
             },
 
             /**
@@ -2405,20 +2441,20 @@
         /**
          * A `sunburst` series. If the [type](#series.sunburst.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
-         * 
+         *
          * For options that apply to multiple series, it is recommended to add
          * them to the [plotOptions.series](#plotOptions.series) options structure.
          * To apply to all series of this specific type, apply it to [plotOptions.
          * sunburst](#plotOptions.sunburst).
-         * 
+         *
          * @type {Object}
-         * @extends plotOptions.sunburst
+         * @extends series,plotOptions.sunburst
          * @excluding dataParser,dataURL,stack
          * @product highcharts
          * @apioption series.sunburst
          */
 
-        /** 
+        /**
          * @type {Array<Object|Number>}
          * @extends series.treemap.data
          * @excluding x,y
@@ -2429,7 +2465,7 @@
         /**
          * The value of the point, resulting in a relative area of the point
          * in the sunburst.
-         * 
+         *
          * @type {Number}
          * @default undefined
          * @since 6.0.0
@@ -2441,12 +2477,22 @@
          * Use this option to build a tree structure. The value should be the id of the
          * point which is the parent. If no points has a matching id, or this option is
          * undefined, then the parent will be set to the root.
-         * 
+         *
          * @type {String|undefined}
          * @default undefined
          * @since 6.0.0
          * @product highcharts
          * @apioption series.treemap.data.parent
+         */
+
+        /**
+         * Whether to display a slice offset from the center.
+         *
+         * @type {Boolean}
+         * @default false
+         * @since 6.0.4
+         * @product highcharts
+         * @apioption series.sunburst.data.sliced
          */
         seriesType(
             'sunburst',

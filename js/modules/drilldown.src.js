@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  * Highcharts Drilldown module
  * 
  * Author: Torstein Honsi
@@ -24,7 +24,8 @@
          */
 
 
-        var noop = H.noop,
+        var animObject = H.animObject,
+            noop = H.noop,
             color = H.color,
             defaultOptions = H.defaultOptions,
             each = H.each,
@@ -660,7 +661,7 @@
 
 
                 // Do dummy animation on first point to get to complete
-                setTimeout(function() {
+                H.syncTimeout(function() {
                     if (newSeries.points) { // May be destroyed in the meantime, #3389
                         each(newSeries.points, function(point, i) {
                             // Fade in other points			  
@@ -675,9 +676,9 @@
                             }
 
                             if (dataLabel && !dataLabel.hidden) { // #6127
-                                dataLabel[verb](inherit);
+                                dataLabel.fadeIn(); // #7384
                                 if (point.connector) {
-                                    point.connector[verb](inherit);
+                                    point.connector.fadeIn();
                                 }
                             }
                         });
@@ -694,7 +695,7 @@
             var series = this,
                 drilldownLevels = this.chart.drilldownLevels,
                 animateFrom,
-                animationOptions = this.chart.options.drilldown.animation,
+                animationOptions = animObject(this.chart.options.drilldown.animation),
                 xAxis = this.xAxis;
 
             if (!init) {
@@ -736,7 +737,7 @@
          * and animate them into the origin point in the upper series.
          */
         ColumnSeries.prototype.animateDrillupFrom = function(level) {
-            var animationOptions = this.chart.options.drilldown.animation,
+            var animationOptions = animObject(this.chart.options.drilldown.animation),
                 group = this.group,
                 // For 3d column series all columns are added to one group 
                 // so we should not delete the whole group. #5297
@@ -770,7 +771,7 @@
 
 
 
-                    if (animationOptions) {
+                    if (animationOptions.duration) {
                         graphic.animate(
                             animateTo,
                             H.merge(animationOptions, {

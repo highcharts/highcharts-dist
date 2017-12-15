@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  * Data module
  *
  * (c) 2012-2017 Torstein Honsi
@@ -498,9 +498,9 @@
                     options = inOptions || this.options,
                     csv = options.csv,
                     columns,
-                    startRow = options.startRow || 0,
+                    startRow = typeof options.startRow !== 'undefined' && options.startRow ? options.startRow : 0,
                     endRow = options.endRow || Number.MAX_VALUE,
-                    startColumn = options.startColumn || 0,
+                    startColumn = typeof options.startColumn !== 'undefined' && options.startColumn ? options.startColumn : 0,
                     endColumn = options.endColumn || Number.MAX_VALUE,
                     itemDelimiter,
                     lines,
@@ -859,8 +859,15 @@
                             }
                         }
 
-                        calculatedFormat = guessedFormat.join('/');
+                        // If the middle one is dd, and the last one is dd,
+                        // the last should likely be year.
+                        if (guessedFormat.length === 3 &&
+                            guessedFormat[1] === 'dd' &&
+                            guessedFormat[2] === 'dd') {
+                            guessedFormat[2] = 'YY';
+                        }
 
+                        calculatedFormat = guessedFormat.join('/');
 
                         // If the caculated format is not valid, we need to present an error.
 
@@ -1168,7 +1175,10 @@
 
                         // String, continue to determine if it is a date string or really a string
                     } else {
-                        dateVal = this.parseDate(val);
+                        if (trimVal && trimVal.length) {
+                            dateVal = this.parseDate(val);
+                        }
+
                         // Only allow parsing of dates if this column is an x-column
                         if (isXColumn && isNumber(dateVal) && columnType !== 'float') { // is date
                             backup[row] = val;

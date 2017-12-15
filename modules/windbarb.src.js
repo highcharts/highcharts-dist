@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.3 (2017-11-14)
+ * @license  Highcharts JS v6.0.4 (2017-12-15)
  * Wind barb series module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -53,7 +53,8 @@
                     leftPoint,
                     lastX,
                     rightPoint,
-                    currentDataGrouping;
+                    currentDataGrouping,
+                    distanceRatio;
 
                 // relate to a master series
                 if (onSeries && onSeries.visible && i) {
@@ -71,8 +72,10 @@
 
                     onKey = 'plot' + onKey[0].toUpperCase() + onKey.substr(1);
                     while (i-- && points[cursor]) {
-                        point = points[cursor];
                         leftPoint = onData[i];
+                        point = points[cursor];
+                        point.y = leftPoint.y;
+
                         if (leftPoint.x <= point.x && leftPoint[onKey] !== undefined) {
                             if (point.x <= lastX) { // #803
 
@@ -82,14 +85,16 @@
                                 if (leftPoint.x < point.x && !step) {
                                     rightPoint = onData[i + 1];
                                     if (rightPoint && rightPoint[onKey] !== undefined) {
+                                        // the distance ratio, between 0 and 1
+                                        distanceRatio = (point.x - leftPoint.x) /
+                                            (rightPoint.x - leftPoint.x);
                                         point.plotY +=
-                                            // the distance ratio, between 0 and 1
-                                            (
-                                                (point.x - leftPoint.x) /
-                                                (rightPoint.x - leftPoint.x)
-                                            ) *
-                                            // the y distance
+                                            distanceRatio *
+                                            // the plotY distance
                                             (rightPoint[onKey] - leftPoint[onKey]);
+                                        point.y +=
+                                            distanceRatio *
+                                            (rightPoint.y - leftPoint.y);
                                     }
                                 }
                             }
@@ -360,19 +365,30 @@
                 each(this.points, function(point) {
                     var plotX = point.plotX,
                         plotY = point.plotY;
-                    if (!point.graphic) {
-                        point.graphic = this.chart.renderer
-                            .path()
-                            .add(this.markerGroup);
+
+                    // Check if it's inside the plot area, but only for the X dimension.
+                    if (chart.isInsidePlot(plotX, 0, chart.inverted)) {
+
+                        // Create the graphic the first time
+                        if (!point.graphic) {
+                            point.graphic = this.chart.renderer
+                                .path()
+                                .add(this.markerGroup);
+                        }
+
+                        // Position the graphic
+                        point.graphic
+                            .attr({
+                                d: this.windArrow(point),
+                                translateX: plotX,
+                                translateY: plotY + this.options.yOffset,
+                                rotation: point.direction
+                            })
+                            .attr(this.pointAttribs(point));
+
+                    } else if (point.graphic) {
+                        point.graphic = point.graphic.destroy();
                     }
-                    point.graphic
-                        .attr({
-                            d: this.windArrow(point),
-                            translateX: plotX,
-                            translateY: plotY + this.options.yOffset,
-                            rotation: point.direction
-                        })
-                        .attr(this.pointAttribs(point));
 
                     // Set the tooltip anchor position
                     point.tooltipPos = chart.inverted ? [

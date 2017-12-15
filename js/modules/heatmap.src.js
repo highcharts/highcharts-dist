@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -432,7 +432,8 @@
                     }, userOptions, {
                         opposite: !horiz,
                         showEmpty: false,
-                        title: null
+                        title: null,
+                        visible: chart.options.legend.enabled
                     });
 
                     Axis.prototype.init.call(this, chart, options);
@@ -700,7 +701,11 @@
                 /**
                  * Fool the legend
                  */
-                setState: noop,
+                setState: function(state) {
+                    each(this.series, function(series) {
+                        series.setState(state);
+                    });
+                },
                 visible: true,
                 setVisible: noop,
                 getSeriesExtremes: function() {
@@ -736,10 +741,16 @@
                         point.plotX = plotX;
                         point.plotY = plotY;
 
-                        if (this.cross) {
+                        if (
+                            this.cross &&
+                            !this.cross.addedToColorAxis &&
+                            this.legendGroup
+                        ) {
                             this.cross
                                 .addClass('highcharts-coloraxis-marker')
                                 .add(this.legendGroup);
+
+                            this.cross.addedToColorAxis = true;
 
 
 
@@ -979,7 +990,12 @@
              * a null point
              */
             isValid: function() {
-                return this.value !== null;
+                // undefined is allowed
+                return (
+                    this.value !== null &&
+                    this.value !== Infinity &&
+                    this.value !== -Infinity
+                );
             },
 
             /**

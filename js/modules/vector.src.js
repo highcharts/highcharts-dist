@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.3 (2017-11-14)
+ * @license  Highcharts JS v6.0.4 (2017-12-15)
  * Vector plot series module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -141,22 +141,32 @@
 
 
             drawPoints: function() {
+
+                var chart = this.chart;
+
                 each(this.points, function(point) {
                     var plotX = point.plotX,
                         plotY = point.plotY;
-                    if (!point.graphic) {
-                        point.graphic = this.chart.renderer
-                            .path()
-                            .add(this.markerGroup);
+
+                    if (chart.isInsidePlot(plotX, plotY, chart.inverted)) {
+
+                        if (!point.graphic) {
+                            point.graphic = this.chart.renderer
+                                .path()
+                                .add(this.markerGroup);
+                        }
+                        point.graphic
+                            .attr({
+                                d: this.arrow(point),
+                                translateX: plotX,
+                                translateY: plotY,
+                                rotation: point.direction
+                            })
+                            .attr(this.pointAttribs(point));
+
+                    } else if (point.graphic) {
+                        point.graphic = point.graphic.destroy();
                     }
-                    point.graphic
-                        .attr({
-                            d: this.arrow(point),
-                            translateX: plotX,
-                            translateY: plotY,
-                            rotation: point.direction
-                        })
-                        .attr(this.pointAttribs(point));
 
                 }, this);
             },

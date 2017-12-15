@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2017 Highsoft AS
@@ -134,6 +134,7 @@
             'gauge',
             'heatmap',
             'pie',
+            'sankey',
             'treemap',
             'waterfall'
         ], function(type) {

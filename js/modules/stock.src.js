@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -1436,7 +1436,6 @@
         var seriesProto = Series.prototype,
             baseProcessData = seriesProto.processData,
             baseGeneratePoints = seriesProto.generatePoints,
-            baseDestroy = seriesProto.destroy,
 
             /** 
              * 
@@ -1941,20 +1940,12 @@
         });
 
         /**
-         * Extend the series destroyer
+         * Destroy grouped data on series destroy
          */
-        seriesProto.destroy = function() {
-            var series = this,
-                groupedData = series.groupedData || [],
-                i = groupedData.length;
-
-            while (i--) {
-                if (groupedData[i]) {
-                    groupedData[i].destroy();
-                }
-            }
-            baseDestroy.apply(series);
-        };
+        wrap(seriesProto, 'destroy', function(proceed) {
+            proceed.call(this);
+            this.destroyGroupedData();
+        });
 
 
         // Handle default options for data grouping. This must be set at runtime because some series types are
@@ -2119,7 +2110,7 @@
          *
          * @sample stock/demo/ohlc/ OHLC chart
          * @extends {plotOptions.column}
-         * @excluding borderColor,borderRadius,borderWidth
+         * @excluding borderColor,borderRadius,borderWidth,crisp
          * @product highstock
          * @optionparent plotOptions.ohlc
          */
@@ -2660,7 +2651,8 @@
                     leftPoint,
                     lastX,
                     rightPoint,
-                    currentDataGrouping;
+                    currentDataGrouping,
+                    distanceRatio;
 
                 // relate to a master series
                 if (onSeries && onSeries.visible && i) {
@@ -2678,8 +2670,10 @@
 
                     onKey = 'plot' + onKey[0].toUpperCase() + onKey.substr(1);
                     while (i-- && points[cursor]) {
-                        point = points[cursor];
                         leftPoint = onData[i];
+                        point = points[cursor];
+                        point.y = leftPoint.y;
+
                         if (leftPoint.x <= point.x && leftPoint[onKey] !== undefined) {
                             if (point.x <= lastX) { // #803
 
@@ -2689,14 +2683,16 @@
                                 if (leftPoint.x < point.x && !step) {
                                     rightPoint = onData[i + 1];
                                     if (rightPoint && rightPoint[onKey] !== undefined) {
+                                        // the distance ratio, between 0 and 1
+                                        distanceRatio = (point.x - leftPoint.x) /
+                                            (rightPoint.x - leftPoint.x);
                                         point.plotY +=
-                                            // the distance ratio, between 0 and 1
-                                            (
-                                                (point.x - leftPoint.x) /
-                                                (rightPoint.x - leftPoint.x)
-                                            ) *
-                                            // the y distance
+                                            distanceRatio *
+                                            // the plotY distance
                                             (rightPoint[onKey] - leftPoint[onKey]);
+                                        point.y +=
+                                            distanceRatio *
+                                            (rightPoint.y - leftPoint.y);
                                     }
                                 }
                             }
@@ -2809,6 +2805,18 @@
             pointRange: 0, // #673
 
             /**
+             * Whether the flags are allowed to overlap sideways. If `false`, the flags
+             * are moved sideways using an algorithm that seeks to place every flag as
+             * close as possible to its original position.
+             *
+             * @sample {highstock} stock/plotoptions/flags-allowoverlapx
+             *         Allow sideways overlap
+             *
+             * @since 6.0.4
+             */
+            allowOverlapX: false,
+
+            /**
              * The shape of the marker. Can be one of "flag", "circlepin", "squarepin",
              * or an image on the format `url(/path-to-image.jpg)`. Individual
              * shapes can also be set for each point.
@@ -2865,7 +2873,7 @@
              *  or individually for each point. Defaults to `"A"`.
              * 
              * @type {String}
-             * @default "A"
+             * @default A
              * @product highstock
              * @apioption plotOptions.flags.title
              */
@@ -2930,6 +2938,7 @@
                     graphic,
                     stackIndex,
                     anchorY,
+                    attribs,
                     outsideRight,
                     yAxis = series.yAxis,
                     boxesMap = {},
@@ -2990,26 +2999,33 @@
                         }
 
                         // Plant the flag
-                        graphic.attr({
-                            text: point.options.title || options.title || 'A'
-                        })[graphic.isNew ? 'attr' : 'animate']({
+                        attribs = {
                             y: plotY,
                             anchorY: anchorY
-                        });
+                        };
+                        if (options.allowOverlapX) {
+                            attribs.x = plotX;
+                            attribs.anchorX = point.anchorX;
+                        }
+                        graphic.attr({
+                            text: point.options.title || options.title || 'A'
+                        })[graphic.isNew ? 'attr' : 'animate'](attribs);
 
                         // Rig for the distribute function
-                        if (!boxesMap[point.plotX]) {
-                            boxesMap[point.plotX] = {
-                                align: 0,
-                                size: graphic.width,
-                                target: plotX,
-                                anchorX: plotX
-                            };
-                        } else {
-                            boxesMap[point.plotX].size = Math.max(
-                                boxesMap[point.plotX].size,
-                                graphic.width
-                            );
+                        if (!options.allowOverlapX) {
+                            if (!boxesMap[point.plotX]) {
+                                boxesMap[point.plotX] = {
+                                    align: 0,
+                                    size: graphic.width,
+                                    target: plotX,
+                                    anchorX: plotX
+                                };
+                            } else {
+                                boxesMap[point.plotX].size = Math.max(
+                                    boxesMap[point.plotX].size,
+                                    graphic.width
+                                );
+                            }
                         }
 
                         // Set the tooltip anchor position
@@ -3021,23 +3037,26 @@
 
                 }
 
-                H.objectEach(boxesMap, function(box) {
-                    box.plotX = box.anchorX;
-                    boxes.push(box);
-                });
+                // Handle X-dimension overlapping
+                if (!options.allowOverlapX) {
+                    H.objectEach(boxesMap, function(box) {
+                        box.plotX = box.anchorX;
+                        boxes.push(box);
+                    });
 
-                H.distribute(boxes, this.xAxis.len);
+                    H.distribute(boxes, this.xAxis.len);
 
-                each(points, function(point) {
-                    var box = point.graphic && boxesMap[point.plotX];
-                    if (box) {
-                        point.graphic[point.graphic.isNew ? 'attr' : 'animate']({
-                            x: box.pos,
-                            anchorX: point.anchorX
-                        });
-                        point.graphic.isNew = false;
-                    }
-                });
+                    each(points, function(point) {
+                        var box = point.graphic && boxesMap[point.plotX];
+                        if (box) {
+                            point.graphic[point.graphic.isNew ? 'attr' : 'animate']({
+                                x: box.pos,
+                                anchorX: point.anchorX
+                            });
+                            point.graphic.isNew = false;
+                        }
+                    });
+                }
 
                 // Might be a mix of SVG and HTML and we need events for both (#6303)
                 if (options.useHTML) {
@@ -3113,8 +3132,10 @@
             );
         };
 
-        // create the circlepin and squarepin icons with anchor
-        each(['circle', 'square'], function(shape) {
+        /*
+         * Create the circlepin and squarepin icons with anchor
+         */
+        function createPinSymbol(shape) {
             symbols[shape + 'pin'] = function(x, y, w, h, options) {
 
                 var anchorX = options && options.anchorX,
@@ -3149,7 +3170,9 @@
 
                 return path;
             };
-        });
+        }
+        createPinSymbol('circle');
+        createPinSymbol('square');
 
 
 
@@ -4999,15 +5022,17 @@
                         navigator.fixedWidth = range; // #1370
 
                         ext = xAxis.toFixedRange(left, left + range, null, fixedMax);
-                        chart.xAxis[0].setExtremes(
-                            Math.min(ext.min, ext.max),
-                            Math.max(ext.min, ext.max),
-                            true,
-                            null, // auto animation
-                            {
-                                trigger: 'navigator'
-                            }
-                        );
+                        if (defined(ext.min)) { // #7411
+                            chart.xAxis[0].setExtremes(
+                                Math.min(ext.min, ext.max),
+                                Math.max(ext.min, ext.max),
+                                true,
+                                null, // auto animation
+                                {
+                                    trigger: 'navigator'
+                                }
+                            );
+                        }
                     }
                 }
             },
@@ -6448,8 +6473,8 @@
             },
 
             /**
-             * Set the selected option. This method only sets the internal flag, it doesn't
-             * update the buttons or the actual zoomed range.
+             * Set the selected option. This method only sets the internal flag, it
+             * doesn't update the buttons or the actual zoomed range.
              */
             setSelected: function(selected) {
                 this.selected = this.options.selected = selected;
@@ -6493,11 +6518,13 @@
                     blurInputs = function() {
                         var minInput = rangeSelector.minInput,
                             maxInput = rangeSelector.maxInput;
-                        if (minInput && minInput.blur) { // #3274 in some case blur is not defined
-                            fireEvent(minInput, 'blur'); // #3274
+
+                        // #3274 in some case blur is not defined
+                        if (minInput && minInput.blur) {
+                            fireEvent(minInput, 'blur');
                         }
-                        if (maxInput && maxInput.blur) { // #3274 in some case blur is not defined
-                            fireEvent(maxInput, 'blur'); // #3274
+                        if (maxInput && maxInput.blur) {
+                            fireEvent(maxInput, 'blur');
                         }
                     };
 
@@ -6521,11 +6548,16 @@
 
 
                 addEvent(chart, 'load', function() {
-                    // If a data grouping is applied to the current button, release it when extremes change
+                    // If a data grouping is applied to the current button, release it
+                    // when extremes change
                     if (chart.xAxis && chart.xAxis[0]) {
                         addEvent(chart.xAxis[0], 'setExtremes', function(e) {
-                            if (this.max - this.min !== chart.fixedRange && e.trigger !== 'rangeSelectorButton' &&
-                                e.trigger !== 'updatedData' && rangeSelector.forcedDataGrouping) {
+                            if (
+                                this.max - this.min !== chart.fixedRange &&
+                                e.trigger !== 'rangeSelectorButton' &&
+                                e.trigger !== 'updatedData' &&
+                                rangeSelector.forcedDataGrouping
+                            ) {
                                 this.setDataGrouping(false, false);
                             }
                         });
@@ -6534,7 +6566,8 @@
             },
 
             /**
-             * Dynamically update the range selector buttons after a new range has been set
+             * Dynamically update the range selector buttons after a new range has been
+             * set
              */
             updateButtonStates: function() {
                 var rangeSelector = this,
@@ -6543,10 +6576,17 @@
                     actualRange = Math.round(baseAxis.max - baseAxis.min),
                     hasNoData = !baseAxis.hasVisibleSeries,
                     day = 24 * 36e5, // A single day in milliseconds
-                    unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || baseAxis,
+                    unionExtremes = (
+                        chart.scroller &&
+                        chart.scroller.getUnionExtremes()
+                    ) || baseAxis,
                     dataMin = unionExtremes.dataMin,
                     dataMax = unionExtremes.dataMax,
-                    ytdExtremes = rangeSelector.getYTDExtremes(dataMax, dataMin, useUTC),
+                    ytdExtremes = rangeSelector.getYTDExtremes(
+                        dataMax,
+                        dataMin,
+                        useUTC
+                    ),
                     ytdMin = ytdExtremes.min,
                     ytdMax = ytdExtremes.max,
                     selected = rangeSelector.selected,
@@ -6564,9 +6604,11 @@
                         select,
                         offsetRange = rangeOptions._offsetMax - rangeOptions._offsetMin,
                         isSelected = i === selected,
-                        // Disable buttons where the range exceeds what is allowed in the current view
+                        // Disable buttons where the range exceeds what is allowed in
+                        // the current view
                         isTooGreatRange = range > dataMax - dataMin,
-                        // Disable buttons where the range is smaller than the minimum range
+                        // Disable buttons where the range is smaller than the minimum
+                        // range
                         isTooSmallRange = range < baseAxis.minRange,
                         // Do not select the YTD button if not explicitly told so
                         isYTDButNotSelected = false,
@@ -6576,14 +6618,18 @@
                     // Months and years have a variable range so we check the extremes
                     if (
                         (type === 'month' || type === 'year') &&
-                        (actualRange >= {
-                            month: 28,
-                            year: 365
-                        }[type] * day * count + offsetRange) &&
-                        (actualRange <= {
-                            month: 31,
-                            year: 366
-                        }[type] * day * count + offsetRange)
+                        (
+                            actualRange + 36e5 >= {
+                                month: 28,
+                                year: 365
+                            }[type] * day * count + offsetRange
+                        ) &&
+                        (
+                            actualRange - 36e5 <= {
+                                month: 31,
+                                year: 366
+                            }[type] * day * count + offsetRange
+                        )
                     ) {
                         isSameRange = true;
                     } else if (type === 'ytd') {
@@ -6591,11 +6637,16 @@
                         isYTDButNotSelected = !isSelected;
                     } else if (type === 'all') {
                         isSameRange = baseAxis.max - baseAxis.min >= dataMax - dataMin;
-                        isAllButAlreadyShowingAll = !isSelected && selectedExists && isSameRange;
+                        isAllButAlreadyShowingAll = (!isSelected &&
+                            selectedExists &&
+                            isSameRange
+                        );
                     }
-                    // The new zoom area happens to match the range for a button - mark it selected.
-                    // This happens when scrolling across an ordinal gap. It can be seen in the intraday
-                    // demos when selecting 1h and scroll across the night gap.
+
+                    // The new zoom area happens to match the range for a button - mark
+                    // it selected. This happens when scrolling across an ordinal gap.
+                    // It can be seen in the intraday demos when selecting 1h and scroll
+                    // across the night gap.
                     disable = (!allButtonsEnabled &&
                         (
                             isTooGreatRange ||
@@ -6630,8 +6681,8 @@
                 var type = rangeOptions.type,
                     count = rangeOptions.count || 1,
 
-                    // these time intervals have a fixed number of milliseconds, as opposed
-                    // to month, ytd and year
+                    // these time intervals have a fixed number of milliseconds, as
+                    // opposed to month, ytd and year
                     fixedTimes = {
                         millisecond: 1,
                         second: 1000,
@@ -6653,7 +6704,8 @@
 
                 rangeOptions._offsetMin = pick(rangeOptions.offsetMin, 0);
                 rangeOptions._offsetMax = pick(rangeOptions.offsetMax, 0);
-                rangeOptions._range += rangeOptions._offsetMax - rangeOptions._offsetMin;
+                rangeOptions._range +=
+                    rangeOptions._offsetMax - rangeOptions._offsetMin;
             },
 
             /**
@@ -6675,7 +6727,10 @@
                     input.HCTime
                 );
                 this[name + 'DateBox'].attr({
-                    text: dateFormat(options.inputDateFormat || '%b %e, %Y', input.HCTime)
+                    text: dateFormat(
+                        options.inputDateFormat || '%b %e, %Y',
+                        input.HCTime
+                    )
                 });
             },
 
@@ -7268,7 +7323,7 @@
                     newMax = newMin + fixedRange;
                 }
             }
-            if (!isNumber(newMin)) { // #1195
+            if (!isNumber(newMin) || !isNumber(newMax)) { // #1195, #7411
                 newMin = newMax = undefined;
             }
 
@@ -7725,7 +7780,7 @@
                         text: null
                     },
                     tooltip: {
-                        split: true,
+                        split: pick(defaultOptions.tooltip.split, true),
                         crosshairs: true
                     },
                     legend: {

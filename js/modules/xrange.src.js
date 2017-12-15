@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  * X-range series
  *
  * (c) 2010-2017 Torstein Honsi, Lars A. V. Cabrera
@@ -445,6 +445,10 @@
          * 
          * @type {Object}
          * @extends series,plotOptions.xrange
+         * @excluding boostThreshold,crisp,cropThreshold,depth,edgeColor,edgeWidth,
+         *         findNearestPointBy,getExtremesFromAll,grouping,groupPadding,
+         *         negativeColor,pointInterval,pointIntervalUnit,pointPlacement,
+         *         pointRange,pointStart,softThreshold,stacking,threshold,data
          * @product highcharts highstock
          * @apioption series.xrange
          */

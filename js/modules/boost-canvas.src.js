@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.3 (2017-11-14)
+ * @license Highcharts JS v6.0.4 (2017-12-15)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -110,12 +110,14 @@
                         target.canvas = doc.createElement('canvas');
 
                         target.renderTarget = chart.renderer.image(
-                            '',
-                            0,
-                            0,
-                            width,
-                            height
-                        ).add(targetGroup);
+                                '',
+                                0,
+                                0,
+                                width,
+                                height
+                            )
+                            .addClass('highcharts-boost-canvas')
+                            .add(targetGroup);
 
                         target.ctx = ctx = target.canvas.getContext('2d');
 
