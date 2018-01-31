@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * Indicator series type for Highstock
  *
@@ -16,6 +16,7 @@
     }
 }(function(Highcharts) {
     (function(H) {
+        /* eslint max-len: 0 */
 
         var UNDEFINED,
             seriesType = H.seriesType,
@@ -93,7 +94,6 @@
              * @optionparent plotOptions.ikh
              */
             {
-                name: 'IKH (52, 26, 9)',
                 params: {
                     period: 26,
                     /**
@@ -284,6 +284,7 @@
             }, {
                 pointArrayMap: ['tenkanSen', 'kijunSen', 'chikouSpan', 'senkouSpanA', 'senkouSpanB'],
                 pointValKey: 'tenkanSen',
+                nameComponents: ['periodSenkouSpanB', 'period', 'periodTenkan'],
                 init: function() {
                     SMA.prototype.init.apply(this, arguments);
 

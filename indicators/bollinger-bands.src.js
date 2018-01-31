@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * Indicator series type for Highstock
  *
@@ -16,6 +16,7 @@
     }
 }(function(Highcharts) {
     (function(H) {
+        /* eslint max-len: 0 */
 
 
         var each = H.each,
@@ -24,14 +25,16 @@
             SMA = H.seriesTypes.sma;
 
         // Utils:
-        function getStandardDeviation(arr, mean) {
+        function getStandardDeviation(arr, index, isOHLC, mean) {
             var variance = 0,
                 arrLen = arr.length,
                 std = 0,
-                i = 0;
+                i = 0,
+                value;
 
             for (; i < arrLen; i++) {
-                variance += (arr[i][3] - mean) * (arr[i][3] - mean);
+                value = (isOHLC ? arr[i][index] : arr[i]) - mean;
+                variance += value * value;
             }
             variance = variance / (arrLen - 1);
 
@@ -147,6 +150,7 @@
             }, /** @lends Highcharts.Series.prototype */ {
                 pointArrayMap: ['top', 'middle', 'bottom'],
                 pointValKey: 'middle',
+                nameComponents: ['period', 'standardDeviation'],
                 init: function() {
                     SMA.prototype.init.apply(this, arguments);
 
@@ -244,26 +248,36 @@
                         slicedX,
                         slicedY,
                         stdDev,
+                        isOHLC,
                         point,
                         i;
 
-                    // BB requires close value
-                    if (xVal.length < period || !isArray(yVal[0]) || yVal[0].length !== 4) {
+                    if (xVal.length < period) {
                         return false;
                     }
+
+                    isOHLC = isArray(yVal[0]);
 
                     for (i = period; i <= yValLen; i++) {
                         slicedX = xVal.slice(i - period, i);
                         slicedY = yVal.slice(i - period, i);
 
-                        point = SMA.prototype.getValues.call(this, {
-                            xData: slicedX,
-                            yData: slicedY
-                        }, params);
+                        point = SMA.prototype.getValues.call(
+                            this, {
+                                xData: slicedX,
+                                yData: slicedY
+                            },
+                            params
+                        );
 
                         date = point.xData[0];
                         ML = point.yData[0];
-                        stdDev = getStandardDeviation(slicedY, ML);
+                        stdDev = getStandardDeviation(
+                            slicedY,
+                            params.index,
+                            isOHLC,
+                            ML
+                        );
                         TL = ML + standardDeviation * stdDev;
                         BL = ML - standardDeviation * stdDev;
 

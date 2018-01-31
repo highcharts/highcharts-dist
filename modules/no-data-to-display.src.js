@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.4 (2017-12-15)
+ * @license Highcharts JS v6.0.5 (2018-01-31)
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2017 Highsoft AS
@@ -49,8 +49,8 @@
         // Add default display options for message
         /**
          * Options for displaying a message like "No data to display". 
-         * This feature requires the file no-data-to-display.js to be loaded in the page. 
-         * The actual text to display is set in the lang.noData option.
+         * This feature requires the file no-data-to-display.js to be loaded in the
+         * page. The actual text to display is set in the lang.noData option.
          * @type {Object}
          * @optionparent noData
          */
@@ -161,7 +161,11 @@
          * points on this series within the plot area.
          */
         H.Series.prototype.hasData = function() {
-            return this.visible && this.dataMax !== undefined && this.dataMin !== undefined; // #3703
+            return (
+                this.visible &&
+                this.dataMax !== undefined &&
+                this.dataMin !== undefined // #3703
+            );
         };
 
         /**
@@ -197,7 +201,11 @@
 
                 chart.noDataLabel.add();
 
-                chart.noDataLabel.align(extend(chart.noDataLabel.getBBox(), noDataOptions.position), false, 'plotBox');
+                chart.noDataLabel.align(
+                    extend(chart.noDataLabel.getBBox(), noDataOptions.position),
+                    false,
+                    'plotBox'
+                );
             }
         };
 

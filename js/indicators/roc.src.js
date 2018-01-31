@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * Indicator series type for Highstock
  *
@@ -88,6 +88,7 @@
                     period: 9
                 }
             }, {
+                nameBase: 'Rate of Change',
                 getValues: function(series, params) {
                     var period = params.period,
                         xVal = series.xData,

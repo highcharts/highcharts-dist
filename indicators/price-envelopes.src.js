@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * Indicator series type for Highstock
  *
@@ -16,6 +16,7 @@
     }
 }(function(Highcharts) {
     (function(H) {
+        /* eslint max-len: 0 */
 
 
         var each = H.each,
@@ -36,7 +37,6 @@
              * @optionparent plotOptions.priceenvelopes
              */
             {
-                name: 'Price envelopes (20, 0.1, 0.1)',
                 marker: {
                     enabled: false
                 },
@@ -131,6 +131,8 @@
                     approximation: 'averages'
                 }
             }, /** @lends Highcharts.Series.prototype */ {
+                nameComponents: ['period', 'topBand', 'bottomBand'],
+                nameBase: 'Price envelopes',
                 pointArrayMap: ['top', 'middle', 'bottom'],
                 parallelArrays: ['x', 'y', 'top', 'bottom'],
                 pointValKey: 'middle',

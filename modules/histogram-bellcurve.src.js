@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * (c) 2010-2017 Highsoft AS
  * Author: Sebastian Domas
@@ -31,7 +31,8 @@
          **************************************************************************** */
 
         /**
-         * Provides methods for auto setting/updating series data based on the based series data,
+         * Provides methods for auto setting/updating series data based on the based
+         * series data.
          * 
          * @mixin
          **/
@@ -52,9 +53,10 @@
             },
 
             /**
-             * Method to be implemented - inside the method the series has already access to the base series
-             * via m `this.baseSeries` and the bases data is initialised. It should
-             * return data in the format accepted by Series.setData() method
+             * Method to be implemented - inside the method the series has already access
+             * to the base series via m `this.baseSeries` and the bases data is
+             * initialised. It should return data in the format accepted by
+             * `Series.setData()` method
              *
              * @returns {Array} - an array of data
              **/
@@ -110,14 +112,22 @@
                     updatedDataRemover,
                     destroyRemover;
 
-                updatedDataRemover = addEvent(derivedSeries.baseSeries, 'updatedData', function() {
-                    derivedSeries.setDerivedData();
-                });
+                updatedDataRemover = addEvent(
+                    derivedSeries.baseSeries,
+                    'updatedData',
+                    function() {
+                        derivedSeries.setDerivedData();
+                    }
+                );
 
-                destroyRemover = addEvent(derivedSeries.baseSeries, 'destroy', function() {
-                    derivedSeries.baseSeries = null;
-                    derivedSeries.initialised = false;
-                });
+                destroyRemover = addEvent(
+                    derivedSeries.baseSeries,
+                    'destroy',
+                    function() {
+                        derivedSeries.baseSeries = null;
+                        derivedSeries.initialised = false;
+                    }
+                );
 
                 derivedSeries.eventRemovers.push(
                     updatedDataRemover,
@@ -366,11 +376,11 @@
             reduce = H.reduce;
 
 
-        /* ***************************************************************************
+        /** ****************************************************************************
          *
          * BELL CURVE
          *
-         **************************************************************************** */
+         ******************************************************************************/
 
         function mean(data) {
             var length = data.length,
@@ -417,12 +427,12 @@
          * deviation of the base series data and plots the curve according to the
          * calculated parameters.
          *
-         * @product highcharts
-         * @sample {highcharts} highcharts/demo/bellcurve/ Bell curve
-         * @since 6.0.0
-         * @extends plotOptions.areaspline
-         * @excluding boostThreshold,connectNulls,stacking,pointInterval,
-         *            pointIntervalUnit
+         * @product      highcharts
+         * @sample       {highcharts} highcharts/demo/bellcurve/ Bell curve
+         * @since        6.0.0
+         * @extends      plotOptions.areaspline
+         * @excluding    boostThreshold,connectNulls,stacking,pointInterval,
+         *               pointIntervalUnit
          * @optionparent plotOptions.bellcurve
          **/
         seriesType('bellcurve', 'areaspline', {
@@ -454,14 +464,14 @@
              * 
              * For options that apply to multiple series, it is recommended to add
              * them to the [plotOptions.series](#plotOptions.series) options structure.
-             * To apply to all series of this specific type, apply it to [plotOptions.
-             * bellcurve](#plotOptions.bellcurve).
+             * To apply to all series of this specific type, apply it to
+             * [plotOptions.bellcurve](#plotOptions.bellcurve).
              * 
-             * @type {Object}
-             * @since 6.0.0
-             * @extends series,plotOptions.bellcurve
+             * @type      {Object}
+             * @since     6.0.0
+             * @extends   series,plotOptions.bellcurve
              * @excluding dataParser,dataURL,data
-             * @product highcharts
+             * @product   highcharts
              * @apioption series.bellcurve
              **/
 
@@ -469,8 +479,8 @@
              * An integer identifying the index to use for the base series, or a string
              * representing the id of the series.
              *
-             * @type {Number|String}
-             * @default undefined
+             * @type      {Number|String}
+             * @default   undefined
              * @apioption series.bellcurve.baseSeries
              **/
 
@@ -478,12 +488,13 @@
              * An array of data points for the series. For the `bellcurve` series type,
              * points are calculated dynamically.
              * 
-             * @type {Array<Object|Array>}
-             * @since 6.0.0
-             * @extends series.areaspline.data
-             * @product highcharts
+             * @type      {Array<Object|Array>}
+             * @since     6.0.0
+             * @extends   series.areaspline.data
+             * @product   highcharts
              * @apioption series.bellcurve.data
              **/
+
         }, merge(derivedSeriesMixin, {
             setMean: function() {
                 this.mean = correctFloat(mean(this.baseSeries.yData));

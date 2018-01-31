@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * Parabolic SAR Indicator for Highstock
  *
@@ -17,6 +17,7 @@
 }(function(Highcharts) {
     (function(H) {
 
+        /* eslint max-len: 0 */
 
 
 
@@ -123,7 +124,6 @@
              */
 
             {
-                name: 'PSAR',
                 lineWidth: 0,
                 marker: {
                     enabled: true
@@ -189,6 +189,7 @@
                     decimals: 4
                 }
             }, {
+                nameComponents: false,
                 getValues: function(series, params) {
                     var xVal = series.xData,
                         yVal = series.yData,
@@ -236,53 +237,64 @@
                         high = yVal[ind][1];
                         low = yVal[ind][2];
 
-                        PSAR = getPSAR(
-                            direction,
-                            previousDirection,
-                            PSAR,
-                            accelerationFactorMultiply,
-                            prevPrevLow,
-                            prevLow,
-                            prevHigh,
-                            prevPrevHigh,
-                            extremePoint
-                        );
-                        newExtremePoint = getExtremePoint(
-                            high,
-                            low,
-                            direction,
-                            extremePoint
-                        );
-                        newDirection = calculateDirection(
-                            previousDirection,
-                            low,
-                            high,
-                            PSAR
-                        );
-                        accelerationFactor = getAccelerationFactor(
-                            newDirection,
-                            direction,
-                            newExtremePoint,
-                            extremePoint,
-                            accelerationFactor,
-                            increment,
-                            maxAccelerationFactor,
-                            initialAccelerationFactor
-                        );
+                        // Null points break PSAR
+                        if (
+                            prevPrevLow !== null &&
+                            prevPrevHigh !== null &&
+                            prevLow !== null &&
+                            prevHigh !== null &&
+                            high !== null &&
+                            low !== null
+                        ) {
+                            PSAR = getPSAR(
+                                direction,
+                                previousDirection,
+                                PSAR,
+                                accelerationFactorMultiply,
+                                prevPrevLow,
+                                prevLow,
+                                prevHigh,
+                                prevPrevHigh,
+                                extremePoint
+                            );
 
-                        EPMinusPSAR = getEPMinusPSAR(newExtremePoint, PSAR);
-                        accelerationFactorMultiply = getAccelerationFactorMultiply(
-                            accelerationFactor,
-                            EPMinusPSAR
-                        );
 
-                        PSARArr.push([xVal[ind], toFixed(PSAR, decimals)]);
-                        xData.push(xVal[ind]);
-                        yData.push(toFixed(PSAR, decimals));
+                            newExtremePoint = getExtremePoint(
+                                high,
+                                low,
+                                direction,
+                                extremePoint
+                            );
+                            newDirection = calculateDirection(
+                                previousDirection,
+                                low,
+                                high,
+                                PSAR
+                            );
+                            accelerationFactor = getAccelerationFactor(
+                                newDirection,
+                                direction,
+                                newExtremePoint,
+                                extremePoint,
+                                accelerationFactor,
+                                increment,
+                                maxAccelerationFactor,
+                                initialAccelerationFactor
+                            );
 
-                        previousDirection = direction;
-                        direction = newDirection;
-                        extremePoint = newExtremePoint;
+                            EPMinusPSAR = getEPMinusPSAR(newExtremePoint, PSAR);
+                            accelerationFactorMultiply = getAccelerationFactorMultiply(
+                                accelerationFactor,
+                                EPMinusPSAR
+                            );
+                            PSARArr.push([xVal[ind], toFixed(PSAR, decimals)]);
+                            xData.push(xVal[ind]);
+                            yData.push(toFixed(PSAR, decimals));
+
+                            previousDirection = direction;
+                            direction = newDirection;
+                            extremePoint = newExtremePoint;
+                        }
                     }
                     return {
                         values: PSARArr,

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.4 (2017-12-15)
+ * @license Highcharts JS v6.0.5 (2018-01-31)
  * Accessibility module
  *
  * (c) 2010-2017 Highsoft AS
@@ -24,14 +24,13 @@
          *
          * License: www.highcharts.com/license
          */
-        /* eslint max-len: ["warn", 80, 4] */
+
 
         var win = H.win,
             doc = win.document,
             each = H.each,
             erase = H.erase,
             addEvent = H.addEvent,
-            dateFormat = H.dateFormat,
             merge = H.merge,
             // CSS style to hide element from visual users while still exposing it to
             // screen readers
@@ -112,8 +111,6 @@
 
         /**
          * Accessibility options
-         * @type {Object}
-         * @optionparent
          */
         H.setOptions({
 
@@ -125,6 +122,8 @@
              * com/docs/chart-concepts/accessibility).
              * 
              * @since 5.0.0
+             * @type {Object}
+             * @optionparent accessibility
              */
             accessibility: {
 
@@ -424,11 +423,14 @@
                 dateTimePoint = series.xAxis && series.xAxis.isDatetimeAxis,
                 timeDesc =
                 dateTimePoint &&
-                dateFormat(
+                series.chart.time.dateFormat.call(
                     a11yOptions.pointDateFormatter &&
                     a11yOptions.pointDateFormatter(point) ||
                     a11yOptions.pointDateFormat ||
-                    H.Tooltip.prototype.getXDateFormat(
+                    H.Tooltip.prototype.getXDateFormat.call({
+                            getDateFormat: H.Tooltip.prototype.getDateFormat,
+                            chart: series.chart
+                        },
                         point,
                         series.chart.options.tooltip,
                         series.xAxis
@@ -789,7 +791,7 @@
          *
          * License: www.highcharts.com/license
          */
-        /* eslint max-len: ["warn", 80, 4] */
+
 
         var win = H.win,
             doc = win.document,
@@ -866,17 +868,19 @@
                 /**
                  * Options for keyboard navigation.
                  * 
-                 * @type {Object}
-                 * @since 5.0.0
+                 * @type      {Object}
+                 * @since     5.0.0
+                 * @apioption accessibility.keyboardNavigation
                  */
                 keyboardNavigation: {
 
                     /**
                      * Enable keyboard navigation for the chart.
                      * 
-                     * @type {Boolean}
-                     * @default true
-                     * @since 5.0.0
+                     * @type      {Boolean}
+                     * @default   true
+                     * @since     5.0.0
+                     * @apioption accessibility.keyboardNavigation.enabled
                      */
                     enabled: true,
 
@@ -885,20 +889,30 @@
                      * Options for the focus border drawn around elements while
                      * navigating through them.
                      *
-                     * @sample highcharts/accessibility/custom-focus
-                     *			Custom focus ring
-                     * @since 6.0.3
+                     * @type      {Object}
+                     * @sample    highcharts/accessibility/custom-focus
+                     *            Custom focus ring
+                     * @since     6.0.3
+                     * @apioption accessibility.keyboardNavigation.focusBorder
                      */
                     focusBorder: {
                         /**
                          * Enable/disable focus border for chart.
+                         *
+                         * @type      {Boolean}
+                         * @default   true
+                         * @since     6.0.3
+                         * @apioption accessibility.keyboardNavigation.focusBorder.enabled
                          */
                         enabled: true,
 
                         /**
                          * Hide the browser's default focus indicator.
                          *
-                         * @since 6.0.4
+                         * @type      {Boolean}
+                         * @default   true
+                         * @since     6.0.4
+                         * @apioption accessibility.keyboardNavigation.focusBorder.hideBrowserFocusOutline
                          */
                         hideBrowserFocusOutline: true,
 
@@ -910,15 +924,48 @@
                          * 
                          * In styled mode, the border is given the 
                          * `.highcharts-focus-border` class.
+                         *
+                         * @type      {Object}
+                         * @since     6.0.3
+                         * @apioption accessibility.keyboardNavigation.focusBorder.style
                          */
                         style: {
+                            /**
+                             * Color of the focus border.
+                             *
+                             * @type      {Color}
+                             * @default   #000000
+                             * @since     6.0.3
+                             * @apioption accessibility.keyboardNavigation.focusBorder.style.color
+                             */
                             color: '#335cad',
+                            /**
+                             * Line width of the focus border.
+                             *
+                             * @type      {Number}
+                             * @default   2
+                             * @since     6.0.3
+                             * @apioption accessibility.keyboardNavigation.focusBorder.style.lineWidth
+                             */
                             lineWidth: 2,
+                            /**
+                             * Border radius of the focus border.
+                             *
+                             * @type      {Number}
+                             * @default   3
+                             * @since     6.0.3
+                             * @apioption accessibility.keyboardNavigation.focusBorder.style.borderRadius
+                             */
                             borderRadius: 3
                         },
 
                         /**
                          * Focus border margin around the elements.
+                         *
+                         * @type      {Number}
+                         * @default   2
+                         * @since     6.0.3
+                         * @apioption accessibility.keyboardNavigation.focusBorder.margin
                          */
                         margin: 2
                     },
@@ -935,18 +982,20 @@
                      * will behave like left/right. This is useful for unifying 
                      * navigation behavior with/without screen readers enabled.
                      *
-                     * @type {String}
-                     * @default normal
-                     * @since 6.0.4
-                     * @apioption keyboardNavigation.mode
+                     * @type      {String}
+                     * @default   normal
+                     * @since     6.0.4
+                     * @apioption accessibility.keyboardNavigation.mode
                      */
 
                     /**
                      * Skip null points when navigating through points with the
                      * keyboard.
                      * 
-                     * @type {Boolean}
-                     * @since 5.0.0
+                     * @type      {Boolean}
+                     * @default   true
+                     * @since     5.0.0
+                     * @apioption accessibility.keyboardNavigation.skipNullPoints
                      */
                     skipNullPoints: true
                 }

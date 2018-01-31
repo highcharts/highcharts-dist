@@ -1,6 +1,6 @@
 /**
- * @license Highmaps JS v6.0.4 (2017-12-15)
- * Highmaps as a plugin for Highcharts 4.1.x or Highstock 2.1.x (x being the patch version of this file)
+ * @license Highmaps JS v6.0.5 (2018-01-31)
+ * Highmaps as a plugin for Highcharts or Highstock.
  *
  * (c) 2011-2017 Torstein Honsi
  *
@@ -35,7 +35,8 @@
                 xData = [],
                 useMapGeometry;
 
-            // Remove the xData array and cache it locally so that the proceed method doesn't use it
+            // Remove the xData array and cache it locally so that the proceed method
+            // doesn't use it
             if (isXAxis) {
                 each(this.series, function(series, i) {
                     if (series.useMapGeometry) {
@@ -100,7 +101,8 @@
                 // Use the same translation for both axes
                 this.transA = xAxis.transA = Math.min(this.transA, xAxis.transA);
 
-                mapRatio = plotRatio / ((xAxis.max - xAxis.min) / (this.max - this.min));
+                mapRatio = plotRatio /
+                    ((xAxis.max - xAxis.min) / (this.max - this.min));
 
                 // What axis to pad to put the map in the middle
                 padAxis = mapRatio < 1 ? this : xAxis;
@@ -114,7 +116,13 @@
                 if (fixTo) {
                     fixDiff = fixTo[1] - padAxis.toValue(fixTo[0], true);
                     fixDiff *= padAxis.transA;
-                    if (Math.abs(fixDiff) > padAxis.minPixelPadding || (padAxis.min === padAxis.dataMin && padAxis.max === padAxis.dataMax)) { // zooming out again, keep within restricted area
+                    if (
+                        Math.abs(fixDiff) > padAxis.minPixelPadding ||
+                        (
+                            padAxis.min === padAxis.dataMin &&
+                            padAxis.max === padAxis.dataMax
+                        )
+                    ) { // zooming out again, keep within restricted area
                         fixDiff = 0;
                     }
                     padAxis.minPixelPadding -= fixDiff;
@@ -137,6 +145,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var Axis = H.Axis,
             Chart = H.Chart,
             color = H.color,
@@ -1416,8 +1425,9 @@
                     var pos = dim[0],
                         size = dim[1];
 
-                    if (inner[pos] + inner[size] > outer[pos] + outer[size]) { // right overflow
-                        if (inner[size] > outer[size]) { // the general size is greater, fit fully to outer
+                    if (inner[pos] + inner[size] > outer[pos] + outer[size]) { // right
+                        // the general size is greater, fit fully to outer
+                        if (inner[size] > outer[size]) {
                             inner[size] = outer[size];
                             inner[pos] = outer[pos];
                         } else { // align right
@@ -1534,7 +1544,8 @@
          * Extend the Chart.render method to add zooming and panning
          */
         wrap(Chart.prototype, 'render', function(proceed) {
-            // Render the plus and minus buttons. Doing this before the shapes makes getBBox much quicker, at least in Chrome.
+            // Render the plus and minus buttons. Doing this before the shapes makes
+            // getBBox much quicker, at least in Chrome.
             this.mapNavigation = new MapNavigation(this);
             this.mapNavigation.update();
 
@@ -1548,6 +1559,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var extend = H.extend,
             pick = H.pick,
             Pointer = H.Pointer,
@@ -1644,6 +1656,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
             doc = H.doc,
@@ -1734,11 +1747,11 @@
             /**
              * The border width of each map area.
              * 
-             * In styled mode, the border stroke width is given in the `.highcharts-point` class.
+             * In styled mode, the border stroke width is given in the
+             * `.highcharts-point` class.
              * 
-             * @type {Number}
-             * @sample {highmaps} maps/plotoptions/series-border/ Borders demo
-             * @default 1
+             * @sample    {highmaps} maps/plotoptions/series-border/ Borders demo
+             * @product   highmaps
              * @apioption plotOptions.series.borderWidth
              */
             borderWidth: 1,
@@ -2864,9 +2877,14 @@
              * Get presentational attributes
              */
             pointAttribs: function(point, state) {
-                var attr = seriesTypes.map.prototype.pointAttribs.call(this, point, state);
+                var attr = seriesTypes.map.prototype.pointAttribs.call(
+                    this,
+                    point,
+                    state
+                );
 
-                // The difference from a map series is that the stroke takes the point color
+                // The difference from a map series is that the stroke takes the point
+                // color
                 attr.fill = this.options.fillColor;
 
                 return attr;
@@ -2983,7 +3001,12 @@
             // Point class
         }, {
             applyOptions: function(options, x) {
-                var mergedOptions = options.lat !== undefined && options.lon !== undefined ? merge(options, this.series.chart.fromLatLonToPoint(options)) : options;
+                var mergedOptions = (
+                    options.lat !== undefined &&
+                    options.lon !== undefined ?
+                    merge(options, this.series.chart.fromLatLonToPoint(options)) :
+                    options
+                );
                 return Point.prototype.applyOptions.call(this, mergedOptions, x);
             }
         });
@@ -3104,6 +3127,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var arrayMax = H.arrayMax,
             arrayMin = H.arrayMin,
             Axis = H.Axis,
@@ -3125,9 +3149,9 @@
          * along the X and Y axes mark the X and Y values, and the size of the bubble
          * relates to the Z value. Requires `highcharts-more.js`.
          *
-         * @sample {highcharts} highcharts/demo/bubble/ Bubble chart
-         * @extends plotOptions.scatter
-         * @product highcharts highstock
+         * @sample       {highcharts} highcharts/demo/bubble/ Bubble chart
+         * @extends      plotOptions.scatter
+         * @product      highcharts highstock
          * @optionparent plotOptions.bubble
          */
         seriesType('bubble', 'scatter', {
@@ -3143,15 +3167,15 @@
             /**
              * Whether to display negative sized bubbles. The threshold is given
              * by the [zThreshold](#plotOptions.bubble.zThreshold) option, and negative
-             * bubbles can be visualized by setting [negativeColor](#plotOptions.
-             * bubble.negativeColor).
+             * bubbles can be visualized by setting
+             * [negativeColor](#plotOptions.bubble.negativeColor).
              * 
-             * @type {Boolean}
-             * @sample {highcharts} highcharts/plotoptions/bubble-negative/
-             *         Negative bubbles
-             * @default true
-             * @since 3.0
-             * @product highcharts
+             * @type      {Boolean}
+             * @sample    {highcharts} highcharts/plotoptions/bubble-negative/
+             *            Negative bubbles
+             * @default   true
+             * @since     3.0
+             * @product   highcharts
              * @apioption plotOptions.bubble.displayNegative
              */
 
@@ -3161,30 +3185,32 @@
              * of the markers. Other series types, like column series, don't have
              * markers, but have visual options on the series level instead.
              * 
-             * In styled mode, the markers can be styled with the `.highcharts-point`, `.highcharts-point-hover` and `.highcharts-point-select`
+             * In styled mode, the markers can be styled with the `.highcharts-point`,
+             * `.highcharts-point-hover` and `.highcharts-point-select`
              * class names.
              * 
-             * @type {Object}
-             * @extends plotOptions.series.marker
+             * @type      {Object}
+             * @extends   plotOptions.series.marker
              * @excluding enabled,height,radius,width
-             * @product highcharts
+             * @product   highcharts
              */
             marker: {
 
                 lineColor: null, // inherit from series.color
                 lineWidth: 1,
+
                 /**
                  * The fill opacity of the bubble markers.
-                 * @type {Number}
-                 * @default 0.5
-                 * @product highcharts
                  */
+                fillOpacity: 0.5,
 
                 /**
                  * In bubble charts, the radius is overridden and determined based on 
                  * the point's data value.
                  */
+                /** @ignore */
                 radius: null,
+
                 states: {
                     hover: {
                         radiusPlus: 0
@@ -3203,15 +3229,13 @@
                  * `Highcharts.SVGRenderer.prototype.symbols`. The callback is then
                  * used by its method name, as shown in the demo.
                  * 
-                 * @validvalue ["circle", "square", "diamond", "triangle", "triangle-down"]
-                 * @type {String}
-                 * @sample {highcharts} highcharts/plotoptions/bubble-symbol/
-                 *         Bubble chart with various symbols
-                 * @sample {highcharts} highcharts/plotoptions/series-marker-symbol/
-                 *         General chart with predefined, graphic and custom markers
-                 * @default circle
-                 * @since 5.0.11
-                 * @product highcharts
+                 * @validvalue ["circle", "square", "diamond", "triangle",
+                 *              "triangle-down"]
+                 * @sample     {highcharts} highcharts/plotoptions/bubble-symbol/
+                 *             Bubble chart with various symbols
+                 * @sample     {highcharts} highcharts/plotoptions/series-marker-symbol/
+                 *             General chart with predefined, graphic and custom markers
+                 * @since      5.0.11
                  */
                 symbol: 'circle'
             },
@@ -3222,10 +3246,9 @@
              * Can be either pixels (when no unit is given), or a percentage of
              * the smallest one of the plot width and height.
              * 
-             * @type {String}
-             * @sample {highcharts} highcharts/plotoptions/bubble-size/ Bubble size
-             * @default 8
-             * @since 3.0
+             * @type    {Number|String}
+             * @sample  {highcharts} highcharts/plotoptions/bubble-size/ Bubble size
+             * @since   3.0
              * @product highcharts
              */
             minSize: 8,
@@ -3236,24 +3259,23 @@
              * Can be either pixels (when no unit is given), or a percentage of
              * the smallest one of the plot width and height.
              * 
-             * @type {String}
-             * @sample {highcharts} highcharts/plotoptions/bubble-size/ Bubble size
-             * @default 20%
-             * @since 3.0
+             * @sample  {highcharts} highcharts/plotoptions/bubble-size/
+             *          Bubble size
+             * @since   3.0
              * @product highcharts
              */
             maxSize: '20%',
 
             /**
-             * When a point's Z value is below the [zThreshold](#plotOptions.bubble.
-             * zThreshold) setting, this color is used.
+             * When a point's Z value is below the
+             * [zThreshold](#plotOptions.bubble.zThreshold) setting, this color is used.
              * 
-             * @type {Color}
-             * @sample {highcharts} highcharts/plotoptions/bubble-negative/
-             *         Negative bubbles
-             * @default null
-             * @since 3.0
-             * @product highcharts
+             * @type      {Color}
+             * @sample    {highcharts} highcharts/plotoptions/bubble-negative/
+             *            Negative bubbles
+             * @default   null
+             * @since     3.0
+             * @product   highcharts
              * @apioption plotOptions.bubble.negativeColor
              */
 
@@ -3263,13 +3285,13 @@
              * human perception of the size of each bubble.
              * 
              * @validvalue ["area", "width"]
-             * @type {String}
-             * @sample {highcharts} highcharts/plotoptions/bubble-sizeby/
-             *         Comparison of area and size
-             * @default area
-             * @since 3.0.7
-             * @product highcharts
-             * @apioption plotOptions.bubble.sizeBy
+             * @type       {String}
+             * @sample     {highcharts} highcharts/plotoptions/bubble-sizeby/
+             *             Comparison of area and size
+             * @default    area
+             * @since      3.0.7
+             * @product    highcharts
+             * @apioption  plotOptions.bubble.sizeBy
              */
 
             /**
@@ -3279,12 +3301,13 @@
              * while a bubble of value 0 will have a smaller size according to
              * `minSize`.
              * 
-             * @type {Boolean}
-             * @sample {highcharts} highcharts/plotoptions/bubble-sizebyabsolutevalue/
-             *         Size by absolute value, various thresholds
-             * @default false
-             * @since 4.1.9
-             * @product highcharts
+             * @type      {Boolean}
+             * @sample    {highcharts}
+             *            highcharts/plotoptions/bubble-sizebyabsolutevalue/
+             *            Size by absolute value, various thresholds
+             * @default   false
+             * @since     4.1.9
+             * @product   highcharts
              * @apioption plotOptions.bubble.sizeByAbsoluteValue
              */
 
@@ -3297,9 +3320,7 @@
              * 3 will make the Y axis show negative values according to the `minPadding`
              * option. If `softThreshold` is `true`, the Y axis starts at 0.
              * 
-             * @type {Boolean}
-             * @default false
-             * @since 4.1.9
+             * @since   4.1.9
              * @product highcharts
              */
             softThreshold: false,
@@ -3324,11 +3345,11 @@
              * is `true` and a [negativeColor](#plotOptions.bubble.negativeColor)
              * is given, points with lower Z is colored.
              * 
-             * @type {Number}
-             * @sample {highcharts} highcharts/plotoptions/bubble-negative/
-             *         Negative bubbles
+             * @type    {Number}
+             * @sample  {highcharts} highcharts/plotoptions/bubble-negative/
+             *          Negative bubbles
              * @default 0
-             * @since 3.0
+             * @since   3.0
              * @product highcharts
              */
             zThreshold: 0,
@@ -3339,13 +3360,13 @@
              * The minimum for the Z value range. Defaults to the highest Z value
              * in the data.
              * 
-             * @type {Number}
-             * @see [zMax](#plotOptions.bubble.zMin)
-             * @sample {highcharts} highcharts/plotoptions/bubble-zmin-zmax/
-             *         Z has a possible range of 0-100
-             * @default null
-             * @since 4.0.3
-             * @product highcharts
+             * @type      {Number}
+             * @see       [zMin](#plotOptions.bubble.zMin)
+             * @sample    {highcharts} highcharts/plotoptions/bubble-zmin-zmax/
+             *            Z has a possible range of 0-100
+             * @default   null
+             * @since     4.0.3
+             * @product   highcharts
              * @apioption plotOptions.bubble.zMax
              */
 
@@ -3353,13 +3374,13 @@
              * The minimum for the Z value range. Defaults to the lowest Z value
              * in the data.
              * 
-             * @type {Number}
-             * @see [zMax](#plotOptions.bubble.zMax)
-             * @sample {highcharts} highcharts/plotoptions/bubble-zmin-zmax/
-             *         Z has a possible range of 0-100
-             * @default null
-             * @since 4.0.3
-             * @product highcharts
+             * @type      {Number}
+             * @see       [zMax](#plotOptions.bubble.zMax)
+             * @sample    {highcharts} highcharts/plotoptions/bubble-zmin-zmax/
+             *            Z has a possible range of 0-100
+             * @default   null
+             * @since     4.0.3
+             * @product   highcharts
              * @apioption plotOptions.bubble.zMin
              */
 
@@ -3376,7 +3397,7 @@
 
             pointAttribs: function(point, state) {
                 var markerOptions = this.options.marker,
-                    fillOpacity = pick(markerOptions.fillOpacity, 0.5),
+                    fillOpacity = markerOptions.fillOpacity,
                     attr = Series.prototype.pointAttribs.call(this, point, state);
 
                 if (fillOpacity !== 1) {
@@ -3388,9 +3409,9 @@
 
 
             /**
-             * Get the radius for each point based on the minSize, maxSize and each point's Z value. This
-             * must be done prior to Series.translate because the axis needs to add padding in
-             * accordance with the point sizes.
+             * Get the radius for each point based on the minSize, maxSize and each
+             * point's Z value. This must be done prior to Series.translate because
+             * the axis needs to add padding in accordance with the point sizes.
              */
             getRadii: function(zMin, zMax, minSize, maxSize) {
                 var len,
@@ -3410,8 +3431,8 @@
 
                     value = zData[i];
 
-                    // When sizing by threshold, the absolute value of z determines the size
-                    // of the bubble.
+                    // When sizing by threshold, the absolute value of z determines
+                    // the size of the bubble.
                     if (options.sizeByAbsoluteValue && value !== null) {
                         value = Math.abs(value - zThreshold);
                         zMax = Math.max(zMax - zThreshold, Math.abs(zMin - zThreshold));
@@ -3420,7 +3441,8 @@
 
                     if (value === null) {
                         radius = null;
-                        // Issue #4419 - if value is less than zMin, push a radius that's always smaller than the minimum size
+                        // Issue #4419 - if value is less than zMin, push a radius that's
+                        // always smaller than the minimum size
                     } else if (value < zMin) {
                         radius = minSize / 2 - 1;
                     } else {
@@ -3511,7 +3533,8 @@
                             height: 2 * radius
                         };
                     } else { // below zThreshold
-                        point.shapeArgs = point.plotY = point.dlBox = undefined; // #1691
+                        // #1691
+                        point.shapeArgs = point.plotY = point.dlBox = undefined;
                     }
                 }
             },
@@ -3525,7 +3548,8 @@
             haloPath: function(size) {
                 return Point.prototype.haloPath.call(
                     this,
-                    size === 0 ? 0 : (this.marker ? this.marker.radius || 0 : 0) + size // #6067
+                    // #6067
+                    size === 0 ? 0 : (this.marker ? this.marker.radius || 0 : 0) + size
                 );
             },
             ttBelow: false
@@ -3558,7 +3582,10 @@
                 var seriesOptions = series.options,
                     zData;
 
-                if (series.bubblePadding && (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
+                if (
+                    series.bubblePadding &&
+                    (series.visible || !chart.options.chart.ignoreHiddenSeries)
+                ) {
 
                     // Correction for #1673
                     axis.allowZoomOutside = true;
@@ -3591,10 +3618,15 @@
                                 zMin,
                                 Math.max(
                                     arrayMin(zData),
-                                    seriesOptions.displayNegative === false ? seriesOptions.zThreshold : -Number.MAX_VALUE
+                                    seriesOptions.displayNegative === false ?
+                                    seriesOptions.zThreshold :
+                                    -Number.MAX_VALUE
                                 )
                             ));
-                            zMax = pick(seriesOptions.zMax, Math.max(zMax, arrayMax(zData)));
+                            zMax = pick(
+                                seriesOptions.zMax,
+                                Math.max(zMax, arrayMax(zData))
+                            );
                         }
                     }
                 }
@@ -3612,10 +3644,20 @@
 
                 if (range > 0) {
                     while (i--) {
-                        if (isNumber(data[i]) && axis.dataMin <= data[i] && data[i] <= axis.dataMax) {
+                        if (
+                            isNumber(data[i]) &&
+                            axis.dataMin <= data[i] &&
+                            data[i] <= axis.dataMax
+                        ) {
                             radius = series.radii[i];
-                            pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
-                            pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
+                            pxMin = Math.min(
+                                ((data[i] - min) * transA) - radius,
+                                pxMin
+                            );
+                            pxMax = Math.max(
+                                ((data[i] - min) * transA) + radius,
+                                pxMax
+                            );
                         }
                     }
                 }
@@ -3624,14 +3666,17 @@
             if (activeSeries.length && range > 0 && !this.isLog) {
                 pxMax -= axisLength;
                 transA *= (axisLength + pxMin - pxMax) / axisLength;
-                each([
-                    ['min', 'userMin', pxMin],
-                    ['max', 'userMax', pxMax]
-                ], function(keys) {
-                    if (pick(axis.options[keys[0]], axis[keys[1]]) === undefined) {
-                        axis[keys[0]] += keys[2] / transA;
+                each(
+                    [
+                        ['min', 'userMin', pxMin],
+                        ['max', 'userMax', pxMax]
+                    ],
+                    function(keys) {
+                        if (pick(axis.options[keys[0]], axis[keys[1]]) === undefined) {
+                            axis[keys[0]] += keys[2] / transA;
+                        }
                     }
-                });
+                );
             }
         };
 
@@ -3645,10 +3690,10 @@
          * To apply to all series of this specific type, apply it to [plotOptions.
          * bubble](#plotOptions.bubble).
          * 
-         * @type {Object}
-         * @extends series,plotOptions.bubble
+         * @type      {Object}
+         * @extends   series,plotOptions.bubble
          * @excluding dataParser,dataURL,stack
-         * @product highcharts
+         * @product   highcharts
          * @apioption series.bubble
          */
 
@@ -3693,22 +3738,27 @@
          *     }]
          *  ```
          * 
-         * @type {Array<Object|Array>}
-         * @extends series.line.data
+         * @type      {Array<Object|Array>}
+         * @extends   series.line.data
          * @excluding marker
-         * @sample {highcharts} highcharts/chart/reflow-true/ Numerical values
-         * @sample {highcharts} highcharts/series/data-array-of-arrays/ Arrays of numeric x and y
-         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/ Arrays of datetime x and y
-         * @sample {highcharts} highcharts/series/data-array-of-name-value/ Arrays of point.name and y
-         * @sample {highcharts} highcharts/series/data-array-of-objects/ Config objects
-         * @product highcharts
+         * @sample    {highcharts} highcharts/chart/reflow-true/
+         *            Numerical values
+         * @sample    {highcharts} highcharts/series/data-array-of-arrays/
+         *            Arrays of numeric x and y
+         * @sample    {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *            Arrays of datetime x and y
+         * @sample    {highcharts} highcharts/series/data-array-of-name-value/
+         *            Arrays of point.name and y
+         * @sample    {highcharts} highcharts/series/data-array-of-objects/
+         *            Config objects
+         * @product   highcharts
          * @apioption series.bubble.data
          */
 
         /**
          * The size value for each bubble. The bubbles' diameters are computed
          * based on the `z`, and controlled by series options like `minSize`,
-         *  `maxSize`, `sizeBy`, `zMin` and `zMax`.
+         * `maxSize`, `sizeBy`, `zMin` and `zMax`.
          * 
          * @type {Number}
          * @product highcharts
@@ -3722,6 +3772,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var merge = H.merge,
             Point = H.Point,
             seriesType = H.seriesType,
@@ -4012,6 +4063,8 @@
 
             /**
              * Animation is disabled by default on the heatmap series.
+             *
+             * @type {Boolean|Object}
              */
             animation: false,
 
@@ -4090,12 +4143,20 @@
 
             states: {
 
-                normal: {
-                    animation: true
-                },
-
                 hover: {
+                    /** @ignore */
                     halo: false, // #3406, halo is disabled on heatmaps by default
+
+                    /**
+                     * How much to brighten the point on interaction. Requires the main
+                     * color to be defined in hex or rgb(a) format.
+                     *
+                     * In styled mode, the hover brightening is by default replaced
+                     * with a fill-opacity set in the `.highcharts-point:hover` rule.
+                     * 
+                     * @type {Number}
+                     * @product highcharts highmaps
+                     */
                     brightness: 0.2
                 }
             }
@@ -4277,11 +4338,16 @@
          * @type {Array<Object|Array>}
          * @extends series.line.data
          * @excluding marker
-         * @sample {highcharts} highcharts/chart/reflow-true/ Numerical values
-         * @sample {highcharts} highcharts/series/data-array-of-arrays/ Arrays of numeric x and y
-         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/ Arrays of datetime x and y
-         * @sample {highcharts} highcharts/series/data-array-of-name-value/ Arrays of point.name and y
-         * @sample {highcharts} highcharts/series/data-array-of-objects/ Config objects
+         * @sample {highcharts} highcharts/chart/reflow-true/
+         *         Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/
+         *         Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *         Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/
+         *         Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/
+         *         Config objects
          * @product highcharts highmaps
          * @apioption series.heatmap.data
          */
@@ -4338,6 +4404,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var Chart = H.Chart,
             each = H.each,
             extend = H.extend,
@@ -4730,7 +4797,8 @@
              * option set.
              * 
              * @type {Object}
-             * @sample {highmaps} maps/mapnavigation/button-theme/ Theming the navigation buttons
+             * @sample {highmaps} maps/mapnavigation/button-theme/
+             *         Theming the navigation buttons
              * @product highmaps
              */
             buttonOptions: {
@@ -4843,9 +4911,10 @@
             /**
              * The individual buttons for the map navigation. This usually includes
              * the zoom in and zoom out buttons. Properties for each button is
-             * inherited from [mapNavigation.buttonOptions](#mapNavigation.buttonOptions),
-             * while individual options can be overridden. But default, the `onclick`,
-             *  `text` and `y` options are individual.
+             * inherited from
+             * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
+             * individual options can be overridden. But default, the `onclick`, `text`
+             * and `y` options are individual.
              * 
              * @type {Object}
              * @product highmaps
@@ -4853,10 +4922,11 @@
             buttons: {
 
                 /**
-                 * Options for the zoom in button. Properties for the zoom in and
-                 * zoom out buttons are inherited from [mapNavigation.buttonOptions](#mapNavigation.
-                 * buttonOptions), while individual options can be overridden. By
-                 * default, the `onclick`, `text` and `y` options are individual.
+                 * Options for the zoom in button. Properties for the zoom in and zoom
+                 * out buttons are inherited from
+                 * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
+                 * individual options can be overridden. By default, the `onclick`,
+                 * `text` and `y` options are individual.
                  * 
                  * @type {Object}
                  * @extends mapNavigation.buttonOptions
@@ -4889,7 +4959,8 @@
                     text: '+',
 
                     /**
-                     * The position of the zoomIn button relative to the vertical alignment.
+                     * The position of the zoomIn button relative to the vertical
+                     * alignment.
                      * 
                      * @type {Number}
                      * @default 0
@@ -4900,9 +4971,10 @@
 
                 /**
                  * Options for the zoom out button. Properties for the zoom in and
-                 * zoom out buttons are inherited from [mapNavigation.buttonOptions](#mapNavigation.
-                 * buttonOptions), while individual options can be overridden. By
-                 * default, the `onclick`, `text` and `y` options are individual.
+                 * zoom out buttons are inherited from
+                 * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
+                 * individual options can be overridden. By default, the `onclick`,
+                 * `text` and `y` options are individual.
                  * 
                  * @type {Object}
                  * @extends mapNavigation.buttonOptions
@@ -4935,7 +5007,8 @@
                     text: '-',
 
                     /**
-                     * The position of the zoomOut button relative to the vertical alignment.
+                     * The position of the zoomOut button relative to the vertical
+                     * alignment.
                      * 
                      * @type {Number}
                      * @default 28
@@ -4994,7 +5067,16 @@
 
 
         // Create symbols for the zoom buttons
-        function selectiveRoundedRect(x, y, w, h, rTopLeft, rTopRight, rBottomRight, rBottomLeft) {
+        function selectiveRoundedRect(
+            x,
+            y,
+            w,
+            h,
+            rTopLeft,
+            rTopRight,
+            rBottomRight,
+            rBottomLeft
+        ) {
             return [
                 'M', x + rTopLeft, y,
                 // top side
@@ -5030,12 +5112,13 @@
         SVGRenderer.prototype.symbols.bottombutton = function(x, y, w, h, attr) {
             return selectiveRoundedRect(x - 1, y - 1, w, h, 0, 0, attr.r, attr.r);
         };
-        // The symbol callbacks are generated on the SVGRenderer object in all browsers. Even
-        // VML browsers need this in order to generate shapes in export. Now share
+        // The symbol callbacks are generated on the SVGRenderer object in all browsers.
+        // Even VML browsers need this in order to generate shapes in export. Now share
         // them with the VMLRenderer.
         if (Renderer === VMLRenderer) {
             each(['topbutton', 'bottombutton'], function(shape) {
-                VMLRenderer.prototype.symbols[shape] = SVGRenderer.prototype.symbols[shape];
+                VMLRenderer.prototype.symbols[shape] =
+                    SVGRenderer.prototype.symbols[shape];
             });
         }
 
@@ -5055,12 +5138,13 @@
          * @param  {Function} callback
          *         A function to execute when the chart object is finished loading and
          *         rendering. In most cases the chart is built in one thread, but in
-         *         Internet Explorer version 8 or less the chart is sometimes initialized
-         *         before the document is ready, and in these cases the chart object
-         *         will not be finished synchronously. As a consequence, code that
-         *         relies on the newly built Chart object should always run in the
-         *         callback. Defining a {@link https://api.highcharts.com/highstock/chart.events.load|
-         *         chart.event.load} handler is equivalent.
+         *         Internet Explorer version 8 or less the chart is sometimes
+         *         initialized before the document is ready, and in these cases the
+         *         chart object will not be finished synchronously. As a consequence,
+         *         code that relies on the newly built Chart object should always run in
+         *         the callback. Defining a
+         *         {@link https://api.highcharts.com/highstock/chart.events.load|chart.event.load}
+         *         handler is equivalent.
          *
          * @return {Chart}
          *         The chart object.
@@ -5095,8 +5179,15 @@
                         type: 'map'
                     },
                     credits: {
-                        mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">{geojson.copyrightShort}</a>'),
-                        mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                        mapText: pick(
+                            defaultCreditsOptions.mapText,
+                            ' \u00a9 <a href="{geojson.copyrightUrl}">' +
+                            '{geojson.copyrightShort}</a>'
+                        ),
+                        mapTextFull: pick(
+                            defaultCreditsOptions.mapTextFull,
+                            '{geojson.copyright}'
+                        )
                     },
                     tooltip: {
                         followTouchMove: false

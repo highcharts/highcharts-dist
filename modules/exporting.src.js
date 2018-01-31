@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.4 (2017-12-15)
+ * @license Highcharts JS v6.0.5 (2018-01-31)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -23,7 +23,7 @@
          * License: www.highcharts.com/license
          */
 
-        /* eslint indent:0 */
+        /* eslint indent:0, max-len: 0 */
 
         // create shortcuts
         var defaultOptions = H.defaultOptions,
@@ -677,9 +677,10 @@
                      * 
                      * @validvalue ["circle", "square", "diamond", "triangle", "triangle-down", "menu"]
                      * @type {String}
-                     * @sample {highcharts} highcharts/exporting/buttons-contextbutton-symbol/ Use a circle for symbol
-                     * @sample {highstock} highcharts/exporting/buttons-contextbutton-symbol/ Use a circle for symbol
-                     * @sample {highmaps} highcharts/exporting/buttons-contextbutton-symbol/ Use a circle for symbol
+                     * @sample highcharts/exporting/buttons-contextbutton-symbol/
+                     *         Use a circle for symbol
+                     * @sample highcharts/exporting/buttons-contextbutton-symbol-custom/
+                     *         Custom shape as symbol
                      * @default menu
                      * @since 2.0
                      */
@@ -924,7 +925,7 @@
                     .replace(/url\(("|&quot;)(\S+)("|&quot;)\)/g, 'url($2)')
                     .replace(/url\([^#]+#/g, 'url(#')
                     .replace(/<svg /, '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ')
-                    .replace(/ (NS[0-9]+\:)?href=/g, ' xlink:href=') // #3567
+                    .replace(/ (|NS[0-9]+\:)href=/g, ' xlink:href=') // #3567
                     .replace(/\n/, ' ')
                     // Any HTML added to the container after the SVG (#894)
                     .replace(/<\/svg>.*?$/, '</svg>')
@@ -1455,7 +1456,7 @@
 
                         'stroke-linecap': 'round',
 
-                        title: chart.options.lang[btnOptions._titleKey],
+                        title: pick(chart.options.lang[btnOptions._titleKey], ''),
                         zIndex: 3 // #4955
                     });
                 button.menuClassName = options.menuClassName || 'highcharts-menu-' + chart.btnCount++;

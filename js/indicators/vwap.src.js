@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * Indicator series type for Highstock
  *
@@ -23,7 +23,7 @@
          *
          * License: www.highcharts.com/license
          */
-
+        /* eslint max-len: 0 */
 
         var isArray = H.isArray,
             seriesType = H.seriesType;
@@ -48,7 +48,6 @@
              * @optionparent plotOptions.vwap
              */
             {
-                name: 'VWAP (30)',
                 /**
                  * @excluding index
                  */

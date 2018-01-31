@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * Bullet graph series type for Highcharts
  *
@@ -43,11 +43,11 @@
              * of qualitative ranges of performance that could be set using
              * [plotBands](#yAxis.plotBands) on [yAxis](#yAxis).
              * 
-             * @extends {plotOptions.column}
-             * @product highcharts
-             * @sample {highcharts} highcharts/demo/bullet-graph/ Bullet graph
-             * @since 6.0.0
-             * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase
+             * @extends      {plotOptions.column}
+             * @product      highcharts
+             * @sample       {highcharts} highcharts/demo/bullet-graph/ Bullet graph
+             * @since        6.0.0
+             * @excluding    allAreas,boostThreshold,colorAxis,compare,compareBase
              * @optionparent plotOptions.bullet
              */
             {
@@ -57,17 +57,17 @@
                  * @sample {highcharts} highcharts/plotoptions/bullet-targetoptions/
                  *                      Target options
                  * 
-                 * @type {Object}
-                 * @since 6.0.0
+                 * @type    {Object}
+                 * @since   6.0.0
                  * @product highcharts
                  */
                 targetOptions: {
                     /**
-                     * The width of the rectangle representing the target. Could be set as
-                     * a pixel value or as a percentage of a column width.
+                     * The width of the rectangle representing the target. Could be set
+                     * as a pixel value or as a percentage of a column width.
                      * 
-                     * @type {Number|String}
-                     * @since 6.0.0
+                     * @type    {Number|String}
+                     * @since   6.0.0
                      * @product highcharts
                      */
                     width: '140%',
@@ -75,7 +75,7 @@
                     /**
                      * The height of the rectangle representing the target.
                      * 
-                     * @since 6.0.0
+                     * @since   6.0.0
                      * @product highcharts
                      */
                     height: 3,
@@ -86,7 +86,7 @@
                      *
                      * In styled mode, use class `highcharts-bullet-target` instead.
                      * 
-                     * @since 6.0.0
+                     * @since   6.0.0
                      * @product highcharts
                      */
                     borderWidth: 0
@@ -97,9 +97,9 @@
                      *
                      * In styled mode, use class `highcharts-bullet-target` instead.
                      * 
-                     * @type {Color}
-                     * @since 6.0.0
-                     * @product highcharts
+                     * @type      {Color}
+                     * @since     6.0.0
+                     * @product   highcharts
                      * @apioption plotOptions.bullet.targetOptions.borderColor
                      */
 
@@ -113,9 +113,9 @@
                      *
                      * In styled mode, use class `highcharts-bullet-target` instead.
                      * 
-                     * @type {Color}
-                     * @since 6.0.0
-                     * @product highcharts
+                     * @type      {Color}
+                     * @since     6.0.0
+                     * @product   highcharts
                      * @apioption plotOptions.bullet.targetOptions.color
                      */
 
@@ -123,7 +123,9 @@
 
                 tooltip: {
 
-                    pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: <b>{point.y}</b>. Target: <b>{point.target}</b><br/>'
+                    pointFormat: '<span style="color:{series.color}">\u25CF</span>' +
+                        ' {series.name}: <b>{point.y}</b>. Target: <b>{point.target}' +
+                        '</b><br/>'
 
                 }
             }, {
@@ -287,11 +289,11 @@
          * To apply to all series of this specific type, apply it to [plotOptions.
          * bullet](#plotOptions.bullet).
          * 
-         * @type {Object}
-         * @since 6.0.0
-         * @extends series,plotOptions.bullet
-         * @excluding dataParser,dataURL
-         * @product highcharts
+         * @type      {Object}
+         * @since     6.0.0
+         * @extends   series,plotOptions.bullet
+         * @excluding dataParser,dataURL,marker
+         * @product   highcharts
          * @apioption series.bullet
          */
 
@@ -336,28 +338,40 @@
          *     }]
          *  ```
          * 
-         * @type {Array<Object|Array>}
-         * @since 6.0.0
-         * @extends series.column.data
-         * @product highcharts
+         * @type      {Array<Object|Array>}
+         * @since     6.0.0
+         * @extends   series.column.data
+         * @product   highcharts
          * @apioption series.bullet.data
          */
 
         /**
          * The target value of a point.
          * 
-         * @type {Number}
-         * @since 6.0.0
-         * @product highcharts
+         * @type      {Number}
+         * @since     6.0.0
+         * @product   highcharts
          * @apioption series.bullet.data.target
          */
 
         /**
          * Individual target options for each point.
          * 
-         * @extends series.bullet.targetOptions
-         * @product highcharts
+         * @extends   series.bullet.targetOptions
+         * @product   highcharts
          * @apioption series.bullet.data.targetOptions
+         */
+
+        /**
+         * @excluding halo,lineWidth,lineWidthPlus,marker
+         * @product   highcharts highstock
+         * @apioption series.bullet.states.hover
+         */
+
+        /**
+         * @excluding halo,lineWidth,lineWidthPlus,marker
+         * @product   highcharts highstock
+         * @apioption series.bullet.states.select
          */
 
     }(Highcharts));

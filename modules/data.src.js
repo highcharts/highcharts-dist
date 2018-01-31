@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.4 (2017-12-15)
+ * @license Highcharts JS v6.0.5 (2018-01-31)
  * Data module
  *
  * (c) 2012-2017 Torstein Honsi
@@ -22,8 +22,8 @@
          *
          * License: www.highcharts.com/license
          */
-
-        /* global jQuery */
+        /* eslint max-len: 0 */
+        /* global XMLHttpRequest */
 
         // Utilities
         var win = Highcharts.win,
@@ -55,6 +55,91 @@
                 Array.prototype.some.call(arr, fn, ctx);
             };
         }
+
+        /**
+         * @typedef {Object} AjaxSettings
+         * @property {String} url - The URL to call
+         * @property {('get'|'post'|'update'|'delete')} type - The verb to use
+         * @property {('json'|'xml'|'text'|'octet')} dataType - The data type expected
+         * @property {Function} success - Function to call on success
+         * @property {Function} error - Function to call on error
+         * @property {Object} data - The payload to send
+         * @property {Object} headers - The headers; keyed on header name
+         */
+
+        /**
+         * Perform an Ajax call.
+         *
+         * @memberof Highcharts
+         * @param {AjaxSettings} - The Ajax settings to use
+         *
+         */
+        Highcharts.ajax = function(attr) {
+            var options = Highcharts.merge(true, {
+                    url: false,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: false,
+                    error: false,
+                    data: false,
+                    headers: {}
+                }, attr),
+                headers = {
+                    json: 'application/json',
+                    xml: 'application/xml',
+                    text: 'text/plain',
+                    octet: 'application/octet-stream'
+                },
+                r = new XMLHttpRequest();
+
+            function handleError(xhr, err) {
+                if (options.error) {
+                    options.error(xhr, err);
+                } else {
+                    // Maybe emit a highcharts error event here
+                }
+            }
+
+            if (!options.url) {
+                return false;
+            }
+
+            r.open(options.type.toUpperCase(), options.url, true);
+            r.setRequestHeader(
+                'Content-Type',
+                headers[options.dataType] || headers.text
+            );
+
+            Highcharts.objectEach(options.headers, function(val, key) {
+                r.setRequestHeader(key, val);
+            });
+
+            r.onreadystatechange = function() {
+                var res;
+
+                if (r.readyState === 4) {
+                    if (r.status === 200) {
+                        res = r.responseText;
+                        if (options.dataType === 'json') {
+                            try {
+                                res = JSON.parse(res);
+                            } catch (e) {
+                                return handleError(r, e);
+                            }
+                        }
+                        return options.success && options.success(res);
+                    }
+
+                    handleError(r, r.responseText);
+                }
+            };
+
+            try {
+                options.data = JSON.stringify(options.data);
+            } catch (e) {}
+
+            r.send(options.data || true);
+        };
 
         /**
          * The Data module provides a simplified interface for adding data to
@@ -352,11 +437,21 @@
              * Initialize the Data object with the given options
              */
             init: function(options, chartOptions) {
+
+                var decimalPoint = options.decimalPoint;
+
+                if (decimalPoint !== '.' && decimalPoint !== ',') {
+                    decimalPoint = undefined;
+                }
                 this.options = options;
                 this.chartOptions = chartOptions;
                 this.columns = options.columns || this.rowsToColumns(options.rows) || [];
                 this.firstRowAsNames = pick(options.firstRowAsNames, true);
-                this.decimalRegex = options.decimalPoint && new RegExp('^(-?[0-9]+)' + options.decimalPoint + '([0-9]+)$');
+
+                this.decimalRegex = (
+                    decimalPoint &&
+                    new RegExp('^(-?[0-9]+)' + decimalPoint + '([0-9]+)$') // eslint-disable-line security/detect-non-literal-regexp
+                );
 
                 // This is a two-dimensional array holding the raw, trimmed string values
                 // with the same organisation as the columns array. It makes it possible
@@ -762,8 +857,8 @@
                             options.decimalPoint = ',';
                         }
 
-                        // Apply a new decimal regex based on the pressumed decimal sep.
-                        self.decimalRegex = new RegExp(
+                        // Apply a new decimal regex based on the presumed decimal sep.
+                        self.decimalRegex = new RegExp( // eslint-disable-line security/detect-non-literal-regexp
                             '^(-?[0-9]+)' +
                             options.decimalPoint +
                             '([0-9]+)$'
@@ -1012,6 +1107,10 @@
                 var self = this,
                     options = this.options,
                     googleSpreadsheetKey = options.googleSpreadsheetKey,
+                    // use sheet 1 as the default rather than od6
+                    // as the latter sometimes cause issues (it looks like it can
+                    // be renamed in some cases, ref. a fogbugz case).
+                    worksheet = options.googleSpreadsheetWorksheet || 1,
                     columns = this.columns,
                     startRow = options.startRow || 0,
                     endRow = options.endRow || Number.MAX_VALUE,
@@ -1020,67 +1119,103 @@
                     gr, // google row
                     gc; // google column
 
-                if (googleSpreadsheetKey) {
-                    jQuery.ajax({
+                /*
+                 * Fetch the actual spreadsheet using XMLHttpRequest
+                 */
+                function fetchSheet(fn) {
+                    var url = [
+                        'https://spreadsheets.google.com/feeds/cells',
+                        googleSpreadsheetKey,
+                        worksheet,
+                        'public/values?alt=json'
+                    ].join('/');
+
+                    Highcharts.ajax({
+                        url: url,
                         dataType: 'json',
-                        url: 'https://spreadsheets.google.com/feeds/cells/' +
-                            googleSpreadsheetKey + '/' + (options.googleSpreadsheetWorksheet || 'od6') +
-                            '/public/values?alt=json-in-script&callback=?',
-                        error: options.error,
-                        success: function(json) {
-                            // Prepare the data from the spreadsheat
-                            var cells = json.feed.entry,
-                                cell,
-                                cellCount = cells.length,
-                                colCount = 0,
-                                rowCount = 0,
-                                i;
-
-                            // First, find the total number of columns and rows that
-                            // are actually filled with data
-                            for (i = 0; i < cellCount; i++) {
-                                cell = cells[i];
-                                colCount = Math.max(colCount, cell.gs$cell.col);
-                                rowCount = Math.max(rowCount, cell.gs$cell.row);
-                            }
-
-                            // Set up arrays containing the column data
-                            for (i = 0; i < colCount; i++) {
-                                if (i >= startColumn && i <= endColumn) {
-                                    // Create new columns with the length of either end-start or rowCount
-                                    columns[i - startColumn] = [];
-
-                                    // Setting the length to avoid jslint warning
-                                    columns[i - startColumn].length = Math.min(rowCount, endRow - startRow);
-                                }
-                            }
-
-                            // Loop over the cells and assign the value to the right
-                            // place in the column arrays
-                            for (i = 0; i < cellCount; i++) {
-                                cell = cells[i];
-                                gr = cell.gs$cell.row - 1; // rows start at 1
-                                gc = cell.gs$cell.col - 1; // columns start at 1
-
-                                // If both row and col falls inside start and end
-                                // set the transposed cell value in the newly created columns
-                                if (gc >= startColumn && gc <= endColumn &&
-                                    gr >= startRow && gr <= endRow) {
-                                    columns[gc - startColumn][gr - startRow] = cell.content.$t;
-                                }
-                            }
-
-                            // Insert null for empty spreadsheet cells (#5298)
-                            each(columns, function(column) {
-                                for (i = 0; i < column.length; i++) {
-                                    if (column[i] === undefined) {
-                                        column[i] = null;
-                                    }
-                                }
-                            });
-
-                            self.dataFound();
+                        success: fn,
+                        error: function(xhr, text) {
+                            return options.error && options.error(text, xhr);
                         }
+                    });
+                }
+
+                if (googleSpreadsheetKey) {
+                    fetchSheet(function(json) {
+                        // Prepare the data from the spreadsheat
+                        var cells = json.feed.entry,
+                            cell,
+                            cellCount = cells.length,
+                            colCount = 0,
+                            rowCount = 0,
+                            val,
+                            cellInner,
+                            i;
+
+                        // First, find the total number of columns and rows that
+                        // are actually filled with data
+                        for (i = 0; i < cellCount; i++) {
+                            cell = cells[i];
+                            colCount = Math.max(colCount, cell.gs$cell.col);
+                            rowCount = Math.max(rowCount, cell.gs$cell.row);
+                        }
+
+                        // Set up arrays containing the column data
+                        for (i = 0; i < colCount; i++) {
+                            if (i >= startColumn && i <= endColumn) {
+                                // Create new columns with the length of either end-start or rowCount
+                                columns[i - startColumn] = [];
+
+                                // Setting the length to avoid jslint warning
+                                columns[i - startColumn].length = Math.min(rowCount, endRow - startRow);
+                            }
+                        }
+
+                        // Loop over the cells and assign the value to the right
+                        // place in the column arrays
+                        for (i = 0; i < cellCount; i++) {
+                            cell = cells[i];
+                            gr = cell.gs$cell.row - 1; // rows start at 1
+                            gc = cell.gs$cell.col - 1; // columns start at 1
+
+                            // If both row and col falls inside start and end
+                            // set the transposed cell value in the newly created columns
+                            if (gc >= startColumn && gc <= endColumn &&
+                                gr >= startRow && gr <= endRow) {
+
+                                cellInner = cell.gs$cell || cell.content;
+
+                                val = null;
+
+                                if (cellInner.numericValue) {
+                                    if (cellInner.$t.indexOf('/') >= 0 ||
+                                        cellInner.$t.indexOf('-') >= 0) {
+                                        // This is a date - for future reference.
+                                        val = cellInner.$t;
+                                    } else if (cellInner.$t.indexOf('%') > 0) {
+                                        // Percentage
+                                        val = parseFloat(cellInner.numericValue) * 100;
+                                    } else {
+                                        val = parseFloat(cellInner.numericValue);
+                                    }
+                                } else if (cellInner.$t && cellInner.$t.length) {
+                                    val = cellInner.$t;
+                                }
+
+                                columns[gc - startColumn][gr - startRow] = val;
+                            }
+                        }
+
+                        // Insert null for empty spreadsheet cells (#5298)
+                        each(columns, function(column) {
+                            for (i = 0; i < column.length; i++) {
+                                if (column[i] === undefined) {
+                                    column[i] = null;
+                                }
+                            }
+                        });
+
+                        self.dataFound();
                     });
                 }
             },

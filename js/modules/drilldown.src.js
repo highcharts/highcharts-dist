@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.4 (2017-12-15)
+ * @license Highcharts JS v6.0.5 (2018-01-31)
  * Highcharts Drilldown module
  * 
  * Author: Torstein Honsi
@@ -22,6 +22,7 @@
          * License: www.highcharts.com/license
          *
          */
+        /* eslint max-len: 0 */
 
 
         var animObject = H.animObject,
@@ -522,6 +523,10 @@
          * @memberOf Highcharts.Chart
          */
         Chart.prototype.drillUp = function() {
+            if (!this.drilldownLevels || this.drilldownLevels.length === 0) {
+                return;
+            }
+
             var chart = this,
                 drilldownLevels = chart.drilldownLevels,
                 levelNumber = drilldownLevels[drilldownLevels.length - 1].levelNumber,
@@ -619,6 +624,19 @@
 
             this.ddDupes.length = []; // #3315
         };
+
+        // Add update function to be called internally from Chart.update (#7600)
+        Chart.prototype.callbacks.push(function() {
+            var chart = this;
+            chart.drilldown = {
+                update: function(options, redraw) {
+                    H.merge(true, chart.options.drilldown, options);
+                    if (pick(redraw, true)) {
+                        chart.redraw();
+                    }
+                }
+            };
+        });
 
         // Don't show the reset button if we already are displaying the drillUp button.
         wrap(Chart.prototype, 'showResetZoom', function(proceed) {
@@ -992,9 +1010,7 @@
                     );
 
                 if (point.drilldown && point.dataLabel) {
-                    if (css.color === 'contrast') {
-                        pointCSS.color = renderer.getContrast(point.color || this.color);
-                    }
+
                     if (dataLabelsOptions && dataLabelsOptions.color) {
                         pointCSS.color = dataLabelsOptions.color;
                     }

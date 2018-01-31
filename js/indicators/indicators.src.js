@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.4 (2017-12-15)
+ * @license  Highcharts JS v6.0.5 (2018-01-31)
  *
  * Indicator series type for Highstock
  *
@@ -16,8 +16,10 @@
     }
 }(function(Highcharts) {
     (function(H) {
+        /* eslint max-len: 0 */
 
-        var each = H.each,
+        var pick = H.pick,
+            each = H.each,
             error = H.error,
             Series = H.Series,
             isArray = H.isArray,
@@ -46,13 +48,15 @@
              */
             {
                 /**
-                 * The series name.
+                 * The name of the series as shown in the legend, tooltip etc. If not
+                 * set, it will be based on a technical indicator type and default 
+                 * params.
                  * 
                  * @type {String}
                  * @since 6.0.0
                  * @product highstock
                  */
-                name: 'SMA (14)',
+                name: undefined,
                 tooltip: {
                     /**
                      * Number of decimals in indicator series.
@@ -95,6 +99,8 @@
                     series: true,
                     eventName: 'updatedData'
                 },
+                nameComponents: ['period'],
+                nameSuffixes: [], // e.g. Zig Zag uses extra '%'' in the legend name
                 calculateOn: 'init',
                 init: function(chart, options) {
                     var indicator = this;
@@ -166,6 +172,29 @@
                     }
 
                     return indicator;
+                },
+                getName: function() {
+                    var name = this.name,
+                        params = [];
+
+                    if (!name) {
+
+                        each(
+                            this.nameComponents,
+                            function(component, index) {
+                                params.push(
+                                    this.options.params[component] +
+                                    pick(this.nameSuffixes[index], '')
+                                );
+                            },
+                            this
+                        );
+
+                        name = (this.nameBase || this.type.toUpperCase()) +
+                            (this.nameComponents ? ' (' + params.join(', ') + ')' : '');
+                    }
+
+                    return name;
                 },
                 getValues: function(series, params) {
                     var period = params.period,

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.4 (2017-12-15)
+ * @license Highcharts JS v6.0.5 (2018-01-31)
  *
  * 3D features for Highcharts JS
  *
@@ -19,6 +19,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         /**
          *	Mathematical Functionility
          */
@@ -164,6 +165,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var cos = Math.cos,
             PI = Math.PI,
             sin = Math.sin;
@@ -1113,6 +1115,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var Chart = H.Chart,
             each = H.each,
             merge = H.merge,
@@ -1246,18 +1249,10 @@
         var defaultOptions = H.getOptions();
 
         /**
-         * Options to render charts in 3 dimensions. 
-         * This feature requires highcharts-3d.js, found in the download package, 
-         * or online at code.highcharts.com/highcharts-3d.js.
          * @optionparent
          */
         var extendedOptions = {
 
-            /**
-             * Options regarding the chart area and plot area as well as general
-             * chart options.
-             *
-             */
             chart: {
 
                 /**
@@ -3688,6 +3683,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var each = H.each,
             perspective = H.perspective,
             pick = H.pick,
@@ -4055,6 +4051,7 @@
          * 
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
         var deg2rad = H.deg2rad,
             each = H.each,
             pick = H.pick,
@@ -4331,8 +4328,9 @@
          * 
          * 3.  An array of objects with named values. The objects are point
          * configuration objects as seen below. If the total number of data
-         * points exceeds the series' [turboThreshold](#series.scatter3d.turboThreshold),
-         * this option is not available.
+         * points exceeds the series'
+         * [turboThreshold](#series.scatter3d.turboThreshold), this option is not
+         * available.
          * 
          *  ```js
          *     data: [{
@@ -4352,11 +4350,16 @@
          * 
          * @type {Array<Object|Array>}
          * @extends series.scatter.data
-         * @sample {highcharts} highcharts/chart/reflow-true/ Numerical values
-         * @sample {highcharts} highcharts/series/data-array-of-arrays/ Arrays of numeric x and y
-         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/ Arrays of datetime x and y
-         * @sample {highcharts} highcharts/series/data-array-of-name-value/ Arrays of point.name and y
-         * @sample {highcharts} highcharts/series/data-array-of-objects/ Config objects
+         * @sample {highcharts} highcharts/chart/reflow-true/
+         *         Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/
+         *         Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *         Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/
+         *         Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/
+         *         Config objects    
          * @product highcharts
          * @apioption series.scatter3d.data
          */

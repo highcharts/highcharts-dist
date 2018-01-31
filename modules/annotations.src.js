@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.4 (2017-12-15)
+ * @license Highcharts JS v6.0.5 (2018-01-31)
  * Annotations module
  *
  * (c) 2009-2017 Torstein Honsi
@@ -20,6 +20,7 @@
          *
          * License: www.highcharts.com/license
          */
+        /* eslint max-len: 0 */
 
         var merge = H.merge,
             addEvent = H.addEvent,
@@ -34,7 +35,12 @@
             find = H.find,
             format = H.format,
             pick = H.pick,
+            objectEach = H.objectEach,
+            uniqueKey = H.uniqueKey,
+            doc = H.doc,
+            splat = H.splat,
             destroyObjectProperties = H.destroyObjectProperties,
+            grep = H.grep,
 
             tooltipPrototype = H.Tooltip.prototype,
             seriesPrototype = H.Series.prototype,
@@ -56,6 +62,7 @@
          * {
          *   arrow: {
          *     id: 'arrow',
+         *     tagName: 'marker',
          *     refY: 5,
          *     refX: 5,
          *     markerWidth: 10,
@@ -73,11 +80,14 @@
          * @type {Object}
          * @sample highcharts/annotations/custom-markers/
          *         Define a custom marker for annotations
+         * @sample highcharts/css/annotations-markers/
+         *         Define markers in a styled mode
          * @since 6.0.0
-         * @apioption defs.markers
+         * @apioption defs
          */
         var defaultMarkers = {
             arrow: {
+                tagName: 'marker',
                 render: false,
                 id: 'arrow',
                 refY: 5,
@@ -86,10 +96,10 @@
                 markerHeight: 10,
                 children: [{
                     tagName: 'path',
-                    attrs: {
-                        d: 'M 0 0 L 10 5 L 0 10 Z', // triangle (used as an arrow)
-                        strokeWidth: 0
-                    }
+                    d: 'M 0 0 L 10 5 L 0 10 Z', // triangle (used as an arrow)
+
+                    strokeWidth: 0
+
                 }]
             }
         };
@@ -108,30 +118,76 @@
         });
 
 
+        // In a styled mode definition is implemented
+        H.SVGRenderer.prototype.definition = function(def) {
+            var ren = this;
+
+            function recurse(config, parent) {
+                var ret;
+                each(splat(config), function(item) {
+                    var node = ren.createElement(item.tagName),
+                        attr = {};
+
+                    // Set attributes
+                    objectEach(item, function(val, key) {
+                        if (
+                            key !== 'tagName' &&
+                            key !== 'children' &&
+                            key !== 'textContent'
+                        ) {
+                            attr[key] = val;
+                        }
+                    });
+                    node.attr(attr);
+
+                    // Add to the tree
+                    node.add(parent || ren.defs);
+
+                    // Add text content
+                    if (item.textContent) {
+                        node.element.appendChild(
+                            doc.createTextNode(item.textContent)
+                        );
+                    }
+
+                    // Recurse
+                    recurse(item.children || [], node);
+
+                    ret = node;
+                });
+
+                // Return last node added (on top level it's the only one)
+                return ret;
+            }
+            return recurse(def);
+        };
+
+
         H.SVGRenderer.prototype.addMarker = function(id, markerOptions) {
-            var markerId = pick(id, H.uniqueKey()),
-                marker = this.createElement('marker').attr({
-                    id: markerId,
-                    markerWidth: pick(markerOptions.markerWidth, 20),
-                    markerHeight: pick(markerOptions.markerHeight, 20),
-                    refX: markerOptions.refX || 0,
-                    refY: markerOptions.refY || 0,
-                    orient: markerOptions.orient || 'auto'
-                }).add(this.defs),
+            var options = {
+                id: id
+            };
 
-                attrs = {
-                    stroke: markerOptions.color || 'none',
-                    fill: markerOptions.color || 'rgba(0, 0, 0, 0.75)'
-                },
-                children = markerOptions.children;
 
-            marker.id = markerId;
+            var attrs = {
+                stroke: markerOptions.color || 'none',
+                fill: markerOptions.color || 'rgba(0, 0, 0, 0.75)'
+            };
 
-            each(children, function(child) {
-                this.createElement(child.tagName)
-                    .attr(merge(attrs, child.attrs))
-                    .add(marker);
-            }, this);
+            options.children = H.map(markerOptions.children, function(child) {
+                return merge(attrs, child);
+            });
+
+
+            var marker = this.definition(merge({
+                markerWidth: 20,
+                markerHeight: 20,
+                refX: 0,
+                refY: 0,
+                orient: 'auto'
+            }, markerOptions, options));
+
+            marker.id = id;
 
             return marker;
         };
@@ -364,19 +420,22 @@
              * @type {Object}
              */
             attrsMap: {
+
                 backgroundColor: 'fill',
                 borderColor: 'stroke',
                 borderWidth: 'stroke-width',
+                dashStyle: 'dashstyle',
                 strokeWidth: 'stroke-width',
                 stroke: 'stroke',
                 fill: 'fill',
+
+
                 zIndex: 'zIndex',
                 width: 'width',
                 height: 'height',
                 borderRadius: 'r',
                 r: 'r',
-                padding: 'padding',
-                dashStyle: 'dashstyle'
+                padding: 'padding'
             },
 
             /**
@@ -387,6 +446,10 @@
              * @type {Array<Object>}
              * @sample highcharts/annotations/basic/
              *         Basic annotations
+             * @sample highcharts/demo/annotations/
+             *         Advanced annotations
+             * @sample highcharts/css/annotations
+             *         Styled mode
              * @sample {highstock} stock/annotations/fibonacci-retracements
              *         Custom annotation, Fibonacci retracement
              * @since 6.0.0
@@ -453,7 +516,7 @@
                      * @sample highcharts/annotations/label-presentation/
                      *         Set labels graphic options
                      */
-                    borderRadius: 1,
+                    borderRadius: 3,
 
                     /**
                      * The border width in pixels for the annotation's label
@@ -462,6 +525,15 @@
                      *         Set labels graphic options
                      */
                     borderWidth: 1,
+
+                    /**
+                     * A class name for styling by CSS.
+                     *
+                     * @sample highcharts/css/annotations
+                     *         Styled mode annotations
+                     * @since 6.0.5
+                     */
+                    className: '',
 
                     /**
                      * Whether to hide the annotation's label that is outside the plot area.
@@ -818,15 +890,13 @@
 
                 // Push the callback that reports to the overlapping-labels module which
                 // labels it should account for.
-                this.chart.labelCollectors.push(function() {
-                    var labels = [];
-                    each(anno.labels, function(label) {
-                        if (!label.options.allowOverlap) {
-                            labels.push(label);
-                        }
+                this.labelCollector = function() {
+                    return grep(anno.labels, function(label) {
+                        return !label.options.allowOverlap;
                     });
-                    return labels;
-                });
+                };
+
+                this.chart.labelCollectors.push(this.labelCollector);
             },
 
             /**
@@ -921,6 +991,8 @@
             destroy: function() {
                 var chart = this.chart;
 
+                erase(this.chart.labelCollectors, this.labelCollector);
+
                 each(this.labels, function(label) {
                     label.destroy();
                 });
@@ -971,6 +1043,11 @@
 
                 shape.attr(attr);
 
+
+                if (options.className) {
+                    shape.addClass(options.className);
+                }
+
                 this.shapes.push(shape);
             },
 
@@ -985,7 +1062,6 @@
              **/
             initLabel: function(labelOptions) {
                 var options = merge(this.options.labelOptions, labelOptions),
-                    style = options.style,
                     attr = this.attrsFromOptions(options),
 
                     label = this.chart.renderer.label(
@@ -999,14 +1075,6 @@
                         'annotation-label'
                     );
 
-                if (style.color === 'contrast') {
-                    style.color = this.chart.renderer.getContrast(
-                        inArray(options.shape, this.shapesWithoutBackground) > -1 ?
-                        '#FFFFFF' :
-                        options.backgroundColor
-                    );
-                }
-
                 label.points = [];
                 label.options = options;
                 label.itemType = 'label';
@@ -1015,7 +1083,24 @@
                 label.labelrank = options.labelrank;
                 label.annotation = this;
 
-                label.attr(attr).css(style).shadow(options.shadow);
+                label.attr(attr);
+
+
+                var style = options.style;
+                if (style.color === 'contrast') {
+                    style.color = this.chart.renderer.getContrast(
+                        inArray(options.shape, this.shapesWithoutBackground) > -1 ?
+                        '#FFFFFF' :
+                        options.backgroundColor
+                    );
+                }
+                label.css(style).shadow(options.shadow);
+
+
+                if (options.className) {
+                    label.addClass(options.className);
+                }
+
 
                 this.labels.push(label);
             },
@@ -1032,7 +1117,8 @@
             redrawItem: function(item) {
                 var points = this.linkPoints(item),
                     itemOptions = item.options,
-                    text;
+                    text,
+                    time = this.chart.time;
 
                 if (!points.length) {
                     this.destroyItem(item);
@@ -1046,7 +1132,7 @@
                         text = itemOptions.format || itemOptions.text;
                         item.attr({
                             text: text ?
-                                format(text, points[0].getLabelConfig()) : itemOptions.formatter.call(points[0])
+                                format(text, points[0].getLabelConfig(), time) : itemOptions.formatter.call(points[0])
                         });
                     }
 
@@ -1167,7 +1253,7 @@
 
             redrawPath: function(pathItem, isNew) {
                 var points = pathItem.points,
-                    strokeWidth = pathItem['stroke-width'],
+                    strokeWidth = pathItem['stroke-width'] || 1,
                     d = ['M'],
                     pointIndex = 0,
                     dIndex = 0,
@@ -1231,35 +1317,36 @@
             setItemMarkers: function(item) {
                 var itemOptions = item.options,
                     chart = this.chart,
-                    markers = chart.options.defs.markers,
+                    defs = chart.options.defs,
                     fill = itemOptions.fill,
                     color = defined(fill) && fill !== 'none' ? fill : itemOptions.stroke,
 
 
                     setMarker = function(markerType) {
                         var markerId = itemOptions[markerType],
-                            marker,
+                            def,
                             predefinedMarker,
-                            key;
+                            key,
+                            marker;
 
                         if (markerId) {
-                            for (key in markers) {
-                                marker = markers[key];
-                                if (markerId === marker.id) {
-                                    predefinedMarker = marker;
+                            for (key in defs) {
+                                def = defs[key];
+                                if (markerId === def.id && def.tagName === 'marker') {
+                                    predefinedMarker = def;
                                     break;
                                 }
                             }
 
                             if (predefinedMarker) {
                                 marker = item[markerType] = chart.renderer.addMarker(
-                                    null,
+                                    (itemOptions.id || uniqueKey()) + '-' + predefinedMarker.id,
                                     merge(predefinedMarker, {
                                         color: color
                                     })
                                 );
 
-                                item.attr(markerType, marker.id);
+                                item.attr(markerType, marker.attr('id'));
                             }
                         }
                     };
@@ -1337,7 +1424,10 @@
                     itemPosRelativeX,
                     itemPosRelativeY,
 
-                    showItem = point.series.visible && point.isInside !== false;
+                    showItem =
+                    point.series.visible &&
+                    point.isInside !== false &&
+                    (point.mock || point.graphic);
 
                 if (showItem) {
 
@@ -1612,27 +1702,19 @@
         });
 
 
+
         H.wrap(chartPrototype, 'getContainer', function(p) {
+            this.options.defs = merge(defaultMarkers, this.options.defs || {});
+
             p.call(this);
 
-            var renderer = this.renderer,
-                options = this.options,
-                key,
-                markers,
-                marker;
 
-            options.defs = merge(options.defs || {}, {
-                markers: defaultMarkers
-            });
-            markers = options.defs.markers;
-
-            for (key in markers) {
-                marker = markers[key];
-
-                if (pick(marker.render, true)) {
-                    renderer.addMarker(marker.id, marker);
+            objectEach(this.options.defs, function(def) {
+                if (def.tagName === 'marker' && def.render !== false) {
+                    this.renderer.addMarker(def.id, def);
                 }
-            }
+            }, this);
+
         });
 
 
