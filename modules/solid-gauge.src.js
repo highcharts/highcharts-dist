@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.5 (2018-01-31)
+ * @license  Highcharts JS v6.0.6 (2018-02-05)
  * Solid angular gauge module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -175,10 +175,6 @@
          */
         var solidGaugeOptions = {
             /**
-             * Whether to give each point an individual color.
-             */
-            colorByPoint: true
-            /**
              * Whether the strokes of the solid gauge should be `round` or `square`.
              * 
              * @validvalue ["square", "round"]
@@ -212,6 +208,11 @@
              * @product highcharts
              * @apioption plotOptions.solidgauge.threshold
              */
+
+            /**
+             * Whether to give each point an individual color.
+             */
+            colorByPoint: true
 
         };
 

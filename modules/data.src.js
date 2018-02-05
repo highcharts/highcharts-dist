@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Data module
  *
  * (c) 2012-2017 Torstein Honsi
@@ -343,8 +343,8 @@
         /**
          * A callback function to access the parsed columns, the two-dimentional
          * input data array directly, before they are interpreted into series
-         * data and categories. Return `false` to stop completion, or call `this.
-         * complete()` to continue async.
+         * data and categories. Return `false` to stop completion, or call
+         * `this.complete()` to continue async.
          *
          * @type {Function}
          * @see [data.complete](#data.complete)

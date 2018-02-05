@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -346,7 +346,9 @@
          * module as of #5045.
          */
         H.Series.prototype.gappedPath = function() {
-            var gapSize = this.options.gapSize,
+            var currentDataGrouping = this.currentDataGrouping,
+                groupingSize = currentDataGrouping && currentDataGrouping.totalRange,
+                gapSize = this.options.gapSize,
                 points = this.points.slice(),
                 i = points.length - 1,
                 yAxis = this.yAxis,
@@ -357,6 +359,13 @@
              * Defines when to display a gap in the graph, together with the
              * [gapUnit](plotOptions.series.gapUnit) option.
              * 
+             * In case when `dataGrouping` is enabled, points can be grouped into a 
+             * larger time span. This can make the grouped points to have a greater 
+             * distance than the absolute value of `gapSize` property, which will result 
+             * in disappearing graph completely. To prevent this situation the mentioned 
+             * distance between grouped points is used instead of previously defined 
+             * `gapSize`.
+             *
              * In practice, this option is most often used to visualize gaps in
              * time series. In a stock chart, intraday data is available for daytime
              * hours, while gaps will appear in nights and weekends.
@@ -380,11 +389,7 @@
              * that of the two closest points, the graph will be broken.
              *
              * When the `gapUnit` is `value`, the gap is based on absolute axis values,
-             * which on a datetime axis is milliseconds. Note that this may give 
-             * unexpected results if `dataGrouping` is enabled (as it is by default),
-             * because if a series of points are grouped into a larger time span, the
-             * grouped points may have a greater distance than the absolute `gapSize`.
-             * This will cause the whole graph to disappear. This also applies to the
+             * which on a datetime axis is milliseconds. This also applies to the
              * navigator series that inherits gap options from the base series.
              *
              * @type {String}
@@ -401,6 +406,11 @@
                 // Gap unit is relative
                 if (this.options.gapUnit !== 'value') {
                     gapSize *= this.closestPointRange;
+                }
+
+                // Setting a new gapSize in case dataGrouping is enabled (#7686)
+                if (groupingSize && groupingSize > gapSize) {
+                    gapSize = groupingSize;
                 }
 
                 // extension for ordinal breaks

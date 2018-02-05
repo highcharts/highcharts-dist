@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2017 Highsoft AS
@@ -66,6 +66,17 @@
              */
 
             /**
+             * Whether to insert the label as HTML, or as pseudo-HTML rendered with
+             * SVG.
+             * 
+             * @type {Boolean}
+             * @default false
+             * @since 4.1.10
+             * @product highcharts highstock
+             * @apioption noData.useHTML
+             */
+
+            /**
              * The position of the no-data label, relative to the plot area.
              * 
              * @type {Object}
@@ -111,17 +122,6 @@
                  */
                 verticalAlign: 'middle'
             }
-
-            /**
-             * Whether to insert the label as HTML, or as pseudo-HTML rendered with
-             * SVG.
-             * 
-             * @type {Boolean}
-             * @default false
-             * @since 4.1.10
-             * @product highcharts highstock
-             * @apioption noData.useHTML
-             */
         };
 
 
@@ -140,7 +140,7 @@
         ], function(type) {
             if (seriesTypes[type]) {
                 seriesTypes[type].prototype.hasData = function() {
-                    return !!this.points.length; /* != 0 */
+                    return !!this.points.length; // != 0
                 };
             }
         });

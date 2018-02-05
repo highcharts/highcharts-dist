@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  *
  * (c) 2014 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -461,6 +461,14 @@
                 position: {
 
                     /**
+                     * Vertical alignment of the button.
+                     *
+                     * @default top
+                     * @validvalue ["top", "middle", "bottom"]
+                     * @apioption plotOptions.treemap.drillUpButton.position.verticalAlign
+                     */
+
+                    /**
                      * Horizontal alignment of the button.
                      * @validvalue ["left", "center", "right"]
                      */
@@ -477,14 +485,6 @@
                      * Vertical offset of the button.
                      */
                     y: 10
-
-                    /**
-                     * Vertical alignment of the button.
-                     *
-                     * @default top
-                     * @validvalue ["top", "middle", "bottom"]
-                     * @apioption plotOptions.treemap.drillUpButton.position.verticalAlign
-                     */
                 }
             },
 

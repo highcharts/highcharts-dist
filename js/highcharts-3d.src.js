@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  *
  * 3D features for Highcharts JS
  *
@@ -1366,42 +1366,42 @@
                          * @since 4.0
                          * @product highcharts
                          */
-                        bottom: {
-                            /**
-                             * The color of the panel.
-                             * 
-                             * @type {Color}
-                             * @default transparent
-                             * @since 4.0
-                             * @product highcharts
-                             * @apioption chart.options3d.frame.bottom.color
-                             */
 
-                            /**
-                             * The thickness of the panel.
-                             * 
-                             * @type {Number}
-                             * @default 1
-                             * @since 4.0
-                             * @product highcharts
-                             * @apioption chart.options3d.frame.bottom.size
-                             */
+                        /**
+                         * The color of the panel.
+                         * 
+                         * @type {Color}
+                         * @default transparent
+                         * @since 4.0
+                         * @product highcharts
+                         * @apioption chart.options3d.frame.bottom.color
+                         */
 
-                            /**
-                             * Whether to display the frame. Possible values are `true`, `false`,
-                             * `"auto"` to display only the frames behind the data, and `"default"`
-                             * to display faces behind the data based on the axis layout, ignoring
-                             * the point of view.
-                             * 
-                             * @validvalue ["default", "auto", true, false]
-                             * @type {Boolean|String}
-                             * @sample {highcharts} highcharts/3d/scatter-frame/ Auto frames
-                             * @default default
-                             * @since 5.0.12
-                             * @product highcharts
-                             * @apioption chart.options3d.frame.bottom.visible
-                             */
-                        },
+                        /**
+                         * The thickness of the panel.
+                         * 
+                         * @type {Number}
+                         * @default 1
+                         * @since 4.0
+                         * @product highcharts
+                         * @apioption chart.options3d.frame.bottom.size
+                         */
+
+                        /**
+                         * Whether to display the frame. Possible values are `true`, `false`,
+                         * `"auto"` to display only the frames behind the data, and `"default"`
+                         * to display faces behind the data based on the axis layout, ignoring
+                         * the point of view.
+                         * 
+                         * @validvalue ["default", "auto", true, false]
+                         * @type {Boolean|String}
+                         * @sample {highcharts} highcharts/3d/scatter-frame/ Auto frames
+                         * @default default
+                         * @since 5.0.12
+                         * @product highcharts
+                         * @apioption chart.options3d.frame.bottom.visible
+                         */
+                        bottom: {},
 
                         /**
                          * The top of the frame around a 3D chart.
@@ -3696,8 +3696,7 @@
 
 
         /**
-         * Depth of the columns in a 3D column chart. Requires `highcharts-3d.
-         * js`.
+         * Depth of the columns in a 3D column chart. Requires `highcharts-3d.js`.
          * 
          * @type {Number}
          * @default 25

@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.5 (2018-01-31)
+ * @license  Highcharts JS v6.0.6 (2018-02-05)
  *
  * (c) 2010-2017 Highsoft AS
  * Author: Sebastian Domas
@@ -261,43 +261,6 @@
                     ' {series.name} <b>{point.y}</b><br/>'
             }
 
-            /**
-             * A `histogram` series. If the [type](#series.histogram.type) option is not
-             * specified, it is inherited from [chart.type](#chart.type).
-             * 
-             * For options that apply to multiple series, it is recommended to add
-             * them to the [plotOptions.series](#plotOptions.series) options structure.
-             * To apply to all series of this specific type, apply it to 
-             * [plotOptions.histogram](#plotOptions.histogram).
-             * 
-             * @type {Object}
-             * @since 6.0.0
-             * @extends series,plotOptions.histogram
-             * @excluding dataParser,dataURL,data
-             * @product highcharts
-             * @apioption series.histogram
-             */
-
-            /**
-             * An integer identifying the index to use for the base series, or a string
-             * representing the id of the series.
-             *
-             * @type {Number|String}
-             * @default undefined
-             * @apioption series.histogram.baseSeries
-             */
-
-            /**
-             * An array of data points for the series. For the `histogram` series type,
-             * points are calculated dynamically. See
-             * [histogram.baseSeries](#series.histogram.baseSeries).
-             * 
-             * @type {Array<Object|Array>}
-             * @since 6.0.0
-             * @extends series.column.data
-             * @product highcharts
-             * @apioption series.histogram.data
-             */
         }, merge(derivedSeriesMixin, {
             setDerivedData: function() {
                 var data = this.derivedData(
@@ -363,6 +326,44 @@
                 );
             }
         }));
+
+        /**
+         * A `histogram` series. If the [type](#series.histogram.type) option is not
+         * specified, it is inherited from [chart.type](#chart.type).
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to 
+         * [plotOptions.histogram](#plotOptions.histogram).
+         * 
+         * @type {Object}
+         * @since 6.0.0
+         * @extends series,plotOptions.histogram
+         * @excluding dataParser,dataURL,data
+         * @product highcharts
+         * @apioption series.histogram
+         */
+
+        /**
+         * An integer identifying the index to use for the base series, or a string
+         * representing the id of the series.
+         *
+         * @type {Number|String}
+         * @default undefined
+         * @apioption series.histogram.baseSeries
+         */
+
+        /**
+         * An array of data points for the series. For the `histogram` series type,
+         * points are calculated dynamically. See
+         * [histogram.baseSeries](#series.histogram.baseSeries).
+         * 
+         * @type {Array<Object|Array>}
+         * @since 6.0.0
+         * @extends series.column.data
+         * @product highcharts
+         * @apioption series.histogram.data
+         */
 
     }(Highcharts, derivedSeriesMixin));
     (function(H, derivedSeriesMixin) {

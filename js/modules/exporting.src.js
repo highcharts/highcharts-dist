@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -217,6 +217,19 @@
                  */
 
                 /**
+                 * The vertical offset of the button's position relative to its
+                 * `verticalAlign`.
+                 * 
+                 * @type {Number}
+                 * @sample {highcharts} highcharts/navigation/buttonoptions-verticalalign/ Buttons at lower right
+                 * @sample {highstock} highcharts/navigation/buttonoptions-verticalalign/ Buttons at lower right
+                 * @sample {highmaps} highcharts/navigation/buttonoptions-verticalalign/ Buttons at lower right
+                 * @default 0
+                 * @since 2.0
+                 * @apioption navigation.buttonOptions.y
+                 */
+
+                /**
                  * The vertical alignment of the buttons. Can be one of "top", "middle"
                  * or "bottom".
                  * 
@@ -243,19 +256,6 @@
                  * @apioption navigation.buttonOptions.width
                  */
                 width: 24
-
-                /**
-                 * The vertical offset of the button's position relative to its
-                 * `verticalAlign`.
-                 * 
-                 * @type {Number}
-                 * @sample {highcharts} highcharts/navigation/buttonoptions-verticalalign/ Buttons at lower right
-                 * @sample {highstock} highcharts/navigation/buttonoptions-verticalalign/ Buttons at lower right
-                 * @sample {highmaps} highcharts/navigation/buttonoptions-verticalalign/ Buttons at lower right
-                 * @default 0
-                 * @since 2.0
-                 * @apioption navigation.buttonOptions.y
-                 */
             }
         };
 
@@ -540,7 +540,7 @@
 
                     /**
                      * The key to a [lang](#lang) option setting that is used for the
-                     * button`s title tooltip. When the key is `contextButtonTitle`, it
+                     * button's title tooltip. When the key is `contextButtonTitle`, it
                      * refers to [lang.contextButtonTitle](#lang.contextButtonTitle)
                      * that defaults to "Chart context menu".
                      * @type {String}
@@ -1396,7 +1396,8 @@
             /[lL]ogical(Width|Height)$/,
             /perspective/,
             /TapHighlightColor/,
-            /^transition/
+            /^transition/,
+            /^length$/ // #7700
             // /^text (border|color|cursor|height|webkitBorder)/
         ];
         SVGRenderer.prototype.unstyledElements = [
@@ -1513,7 +1514,8 @@
 
                     // Get default styles from the browser so that we don't have to add these
                     if (!defaultStyles[node.nodeName]) {
-                        /*if (!dummySVG) {
+                        /*
+                        if (!dummySVG) {
                         	dummySVG = doc.createElementNS(H.SVG_NS, 'svg');
                         	dummySVG.setAttribute('version', '1.1');
                         	doc.body.appendChild(dummySVG);
@@ -1661,7 +1663,7 @@
             		chart.renderTo.parentNode.appendChild(pre);
             	};
             }
-            // */
+            //*/
         });
 
     }(Highcharts));

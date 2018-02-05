@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -57,6 +57,19 @@
              * @optionparent exporting
              */
             exporting: {
+
+                /**
+                 * Export-data module required. Caption for the data table. Same as
+                 * chart title by default. Set to `false` to disable.
+                 *
+                 * @type {Boolean|String}
+                 * @since 6.0.4
+                 * @sample highcharts/export-data/multilevel-table
+                 *			Multiple table headers
+                 * @default undefined
+                 * @apioption exporting.tableCaption
+                 */
+
                 /**
                  * Options for exporting data to CSV or ExCel, or displaying the data
                  * in a HTML table or a JavaScript structure. Requires the
@@ -156,18 +169,6 @@
                  * @since 6.0.4
                  */
                 useRowspanHeaders: true
-
-                /**
-                 * Export-data module required. Caption for the data table. Same as
-                 * chart title by default. Set to `false` to disable.
-                 *
-                 * @type {Boolean|String}
-                 * @since 6.0.4
-                 * @sample highcharts/export-data/multilevel-table
-                 *			Multiple table headers
-                 * @default undefined
-                 * @apioption exporting.tableCaption
-                 */
             },
             /**
              * @optionparent lang

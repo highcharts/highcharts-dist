@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
  * (c) 2010-2017 Highsoft AS
@@ -69,7 +69,7 @@
          * @since 2.3.0
          */
         H.getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/6.0.5/gfx/vml-radial-gradient.png';
+            'http://code.highcharts.com/6.0.6/gfx/vml-radial-gradient.png';
 
 
         // Utilites
@@ -688,9 +688,9 @@
                     var strokeElem = element.getElementsByTagName('stroke')[0] ||
                         createElement(this.renderer.prepVML(['<stroke/>']), null, null, element);
                     strokeElem[key] = value || 'solid';
+                    // Because changing stroke-width will change the dash length and
+                    // cause an epileptic effect
                     this[key] = value;
-                    /* because changing stroke-width will change the dash length
-				and cause an epileptic effect */
                 },
                 dSetter: function(value, key, element) {
                     var i,

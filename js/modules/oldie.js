@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.0.5 (2018-01-31)
+ Highcharts JS v6.0.6 (2018-02-05)
  Old IE (v6, v7, v8) module for Highcharts v6+.
 
  (c) 2010-2017 Highsoft AS
@@ -7,7 +7,7 @@
 
  License: www.highcharts.com/license
 */
-(function(l){"object"===typeof module&&module.exports?module.exports=l:l(Highcharts)})(function(l){(function(d){var w,g;g=d.Chart;var A=d.createElement,l=d.css,E=d.defined,n=d.deg2rad,F=d.discardElement,h=d.doc,I=d.each,G=d.erase,B=d.extend;w=d.extendClass;var M=d.isArray,K=d.isNumber,C=d.isObject,N=d.merge,L=d.noop,x=d.pick,t=d.pInt,D=d.svg,y=d.SVGElement,u=d.SVGRenderer,v=d.win,O=d.wrap;d.getOptions().global.VMLRadialGradientURL="http://code.highcharts.com/6.0.5/gfx/vml-radial-gradient.png";h&&
+(function(l){"object"===typeof module&&module.exports?module.exports=l:l(Highcharts)})(function(l){(function(d){var w,g;g=d.Chart;var A=d.createElement,l=d.css,E=d.defined,n=d.deg2rad,F=d.discardElement,h=d.doc,I=d.each,G=d.erase,B=d.extend;w=d.extendClass;var M=d.isArray,K=d.isNumber,C=d.isObject,N=d.merge,L=d.noop,x=d.pick,t=d.pInt,D=d.svg,y=d.SVGElement,u=d.SVGRenderer,v=d.win,O=d.wrap;d.getOptions().global.VMLRadialGradientURL="http://code.highcharts.com/6.0.6/gfx/vml-radial-gradient.png";h&&
 !h.defaultView&&(d.getStyle=function(a,b){var c={width:"clientWidth",height:"clientHeight"}[b];if(a.style[b])return d.pInt(a.style[b]);"opacity"===b&&(b="filter");if(c)return a.style.zoom=1,Math.max(a[c]-2*d.getStyle(a,"padding"),0);a=a.currentStyle[b.replace(/\-(\w)/g,function(a,b){return b.toUpperCase()})];"filter"===b&&(a=a.replace(/alpha\(opacity=([0-9]+)\)/,function(a,b){return b/100}));return""===a?1:d.pInt(a)});Array.prototype.forEach||(d.forEachPolyfill=function(a,b){for(var c=0,e=this.length;c<
 e;c++)if(!1===a.call(b,this[c],c,this))return c});Array.prototype.indexOf||(d.indexOfPolyfill=function(a){var b,c=0;if(a)for(b=a.length;c<b;c++)if(a[c]===this)return c;return-1});Array.prototype.filter||(d.filterPolyfill=function(a){for(var b=[],c=0,e=this.length;c<e;c++)a(this[c],c)&&b.push(this[c]);return b});Object.prototype.keys||(d.keysPolyfill=function(a){var b=[],c=Object.prototype.hasOwnProperty,e;for(e in a)c.call(a,e)&&b.push(e);return b});Array.prototype.reduce||(d.reducePolyfill=function(a,
 b){b=b||{};for(var c=this.length,e=0;e<c;++e)b=a.call(this,b,this[e],e,this);return b});D||(O(d.SVGRenderer.prototype,"text",function(a){return a.apply(this,Array.prototype.slice.call(arguments,1)).css({position:"absolute"})}),d.Pointer.prototype.normalize=function(a,b){a=a||v.event;a.target||(a.target=a.srcElement);b||(this.chartPosition=b=d.offset(this.chart.container));return d.extend(a,{chartX:Math.round(Math.max(a.x,a.clientX-b.left)),chartY:Math.round(a.y)})},g.prototype.ieSanitizeSVG=function(a){return a=

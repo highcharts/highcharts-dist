@@ -2,7 +2,7 @@
   "name": "highcharts",
   "description": "JavaScript charting framework",
   "homepage": "http://www.highcharts.com",
-  "version": "6.0.5",
+  "version": "6.0.6",
   "author": "Highsoft AS <support@highcharts.com> (http://www.highcharts.com/about)",
   "main": "highcharts.js",
   "repository": {

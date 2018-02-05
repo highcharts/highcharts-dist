@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.5 (2018-01-31)
+ * @license  Highcharts JS v6.0.6 (2018-02-05)
  * Tilemap module
  *
  * (c) 2010-2017 Highsoft AS
@@ -201,6 +201,18 @@
              * @apioption plotOptions.heatmap.colsize
              */
 
+            /**
+             * The row size - how many Y axis units each heatmap row should span.
+             * 
+             * @type {Number}
+             * @sample {highcharts} maps/demo/heatmap/ 1 by default
+             * @sample {highmaps} maps/demo/heatmap/ 1 by default
+             * @default 1
+             * @since 4.0
+             * @product highcharts highmaps
+             * @apioption plotOptions.heatmap.rowsize
+             */
+
 
 
             /**
@@ -253,17 +265,6 @@
                     brightness: 0.2
                 }
             }
-            /**
-             * The row size - how many Y axis units each heatmap row should span.
-             * 
-             * @type {Number}
-             * @sample {highcharts} maps/demo/heatmap/ 1 by default
-             * @sample {highmaps} maps/demo/heatmap/ 1 by default
-             * @default 1
-             * @since 4.0
-             * @product highcharts highmaps
-             * @apioption plotOptions.heatmap.rowsize
-             */
 
         }, merge(colorSeriesMixin, {
             pointArrayMap: ['y', 'value'],

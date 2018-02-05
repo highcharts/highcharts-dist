@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.5 (2018-01-31)
+ * @license  Highcharts JS v6.0.6 (2018-02-05)
  * Wind barb series module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -26,6 +26,20 @@
             stableSort = H.stableSort;
 
         var onSeriesMixin = {
+
+            /**
+             * Override getPlotBox. If the onSeries option is valid, return the plot box
+             * of the onSeries, otherwise proceed as usual.
+             */
+            getPlotBox: function() {
+                return H.Series.prototype.getPlotBox.call(
+                    (
+                        this.options.onSeries &&
+                        this.chart.get(this.options.onSeries)
+                    ) || this
+                );
+            },
+
             /**
              * Extend the translate method by placing the point on the related series
              */
@@ -247,6 +261,7 @@
             markerAttribs: function() {
                 return undefined;
             },
+            getPlotBox: onSeriesMixin.getPlotBox,
             /**
              * Create a single wind arrow. It is later rotated around the zero
              * centerpoint.

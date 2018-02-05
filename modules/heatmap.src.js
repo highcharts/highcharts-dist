@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -140,8 +140,8 @@
                      * The name of the data class as it appears in the legend. If no name
                      * is given, it is automatically created based on the `from` and `to`
                      * values. For full programmatic control, [legend.labelFormatter](#legend.
-                     * labelFormatter) can be used. In the formatter, `this.from` and `this.
-                     * to` can be accessed.
+                     * labelFormatter) can be used. In the formatter, `this.from` and
+                     * `this.to` can be accessed.
                      * 
                      * @type {String}
                      * @sample {highmaps} maps/coloraxis/dataclasses-name/ Named data classes
@@ -270,8 +270,8 @@
 
                     /**
                      * The triangular marker on a scalar color axis that points to the
-                     * value of the hovered area. To disable the marker, set `marker:
-                     * null`.
+                     * value of the hovered area. To disable the marker, set
+                     * `marker: null`.
                      * 
                      * @type {Object}
                      * @sample {highmaps} maps/coloraxis/marker/ Black marker
@@ -1182,6 +1182,18 @@
              * @apioption plotOptions.heatmap.colsize
              */
 
+            /**
+             * The row size - how many Y axis units each heatmap row should span.
+             * 
+             * @type {Number}
+             * @sample {highcharts} maps/demo/heatmap/ 1 by default
+             * @sample {highmaps} maps/demo/heatmap/ 1 by default
+             * @default 1
+             * @since 4.0
+             * @product highcharts highmaps
+             * @apioption plotOptions.heatmap.rowsize
+             */
+
 
 
             /**
@@ -1234,17 +1246,6 @@
                     brightness: 0.2
                 }
             }
-            /**
-             * The row size - how many Y axis units each heatmap row should span.
-             * 
-             * @type {Number}
-             * @sample {highcharts} maps/demo/heatmap/ 1 by default
-             * @sample {highmaps} maps/demo/heatmap/ 1 by default
-             * @default 1
-             * @since 4.0
-             * @product highcharts highmaps
-             * @apioption plotOptions.heatmap.rowsize
-             */
 
         }, merge(colorSeriesMixin, {
             pointArrayMap: ['y', 'value'],

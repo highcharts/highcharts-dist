@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Accessibility module
  *
  * (c) 2010-2017 Highsoft AS
@@ -128,26 +128,6 @@
             accessibility: {
 
                 /**
-                 * Enable accessibility features for the chart.
-                 * 
-                 * @type {Boolean}
-                 * @default true
-                 * @since 5.0.0
-                 */
-                enabled: true,
-
-                /**
-                 * When a series contains more points than this, we no longer expose
-                 * information about individual points to screen readers.
-                 * 
-                 * Set to `false` to disable.
-                 * 
-                 * @type {Number|Boolean}
-                 * @since 5.0.0
-                 */
-                pointDescriptionThreshold: false // set to false to disable
-
-                /**
                  * Whether or not to add series descriptions to charts with a single
                  * series.
                  * 
@@ -236,6 +216,26 @@
                  * @since 5.0.0
                  * @apioption accessibility.seriesDescriptionFormatter
                  */
+
+                /**
+                 * Enable accessibility features for the chart.
+                 * 
+                 * @type {Boolean}
+                 * @default true
+                 * @since 5.0.0
+                 */
+                enabled: true,
+
+                /**
+                 * When a series contains more points than this, we no longer expose
+                 * information about individual points to screen readers.
+                 * 
+                 * Set to `false` to disable.
+                 * 
+                 * @type {Number|Boolean}
+                 * @since 5.0.0
+                 */
+                pointDescriptionThreshold: false // set to false to disable
             }
         });
 
@@ -2024,9 +2024,12 @@
         // Clear the chart and reset the navigation state
         H.Chart.prototype.resetKeyboardNavigation = function() {
             var chart = this,
-                curMod = chart.keyboardNavigationModules[
-                    chart.keyboardNavigationModuleIndex || 0
-                ];
+                curMod = (
+                    chart.keyboardNavigationModules &&
+                    chart.keyboardNavigationModules[
+                        chart.keyboardNavigationModuleIndex || 0
+                    ]
+                );
             if (curMod && curMod.terminate) {
                 curMod.terminate();
             }
@@ -2102,7 +2105,9 @@
                 // Reset chart navigation state if we click outside the chart and it's
                 // not already reset
                 chart.unbindBlurHandler = addEvent(doc, 'mouseup', function() {
-                    if (!chart.keyboardReset && !chart.pointer.chartPosition) {
+                    if (!chart.keyboardReset &&
+                        !(chart.pointer && chart.pointer.chartPosition)
+                    ) {
                         chart.resetKeyboardNavigation();
                     }
                 });

@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.0.5 (2018-01-31)
+  Highcharts JS v6.0.6 (2018-02-05)
  Tilemap module
 
  (c) 2010-2017 Highsoft AS

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v6.0.5 (2018-01-31)
+ * @license Highmaps JS v6.0.6 (2018-02-05)
  * Highmaps as a plugin for Highcharts or Highstock.
  *
  * (c) 2011-2017 Torstein Honsi
@@ -266,8 +266,8 @@
                      * The name of the data class as it appears in the legend. If no name
                      * is given, it is automatically created based on the `from` and `to`
                      * values. For full programmatic control, [legend.labelFormatter](#legend.
-                     * labelFormatter) can be used. In the formatter, `this.from` and `this.
-                     * to` can be accessed.
+                     * labelFormatter) can be used. In the formatter, `this.from` and
+                     * `this.to` can be accessed.
                      * 
                      * @type {String}
                      * @sample {highmaps} maps/coloraxis/dataclasses-name/ Named data classes
@@ -396,8 +396,8 @@
 
                     /**
                      * The triangular marker on a scalar color axis that points to the
-                     * value of the hovered area. To disable the marker, set `marker:
-                     * null`.
+                     * value of the hovered area. To disable the marker, set
+                     * `marker: null`.
                      * 
                      * @type {Object}
                      * @sample {highmaps} maps/coloraxis/marker/ Black marker
@@ -1812,6 +1812,15 @@
                     halo: null,
 
                     /**
+                     * The color of the shape in this state
+                     * 
+                     * @type {Color}
+                     * @sample {highmaps} maps/plotoptions/series-states-hover/ Hover options
+                     * @product highmaps
+                     * @apioption plotOptions.series.states.hover.color
+                     */
+
+                    /**
                      * The border color of the point in this state.
                      * 
                      * @type {Color}
@@ -1837,15 +1846,6 @@
                      * @apioption plotOptions.series.states.hover.brightness
                      */
                     brightness: 0.2
-
-                    /**
-                     * The color of the shape in this state
-                     * 
-                     * @type {Color}
-                     * @sample {highmaps} maps/plotoptions/series-states-hover/ Hover options
-                     * @product highmaps
-                     * @apioption plotOptions.series.states.hover.color
-                     */
 
                 },
 
@@ -2893,6 +2893,10 @@
         seriesType('mappoint', 'scatter', {
 
             dataLabels: {
+                /**
+                 * @default {point.name}
+                 * @apioption plotOptions.mappoint.dataLabels.format
+                 */
                 enabled: true,
                 formatter: function() { // #2945
                     return this.point.name;
@@ -2903,10 +2907,6 @@
                 style: {
                     color: '#000000'
                 }
-                /**
-                 * @default {point.name}
-                 * @apioption plotOptions.mappoint.dataLabels.format
-                 */
             }
 
             // Prototype members
@@ -4004,6 +4004,18 @@
              * @apioption plotOptions.heatmap.colsize
              */
 
+            /**
+             * The row size - how many Y axis units each heatmap row should span.
+             * 
+             * @type {Number}
+             * @sample {highcharts} maps/demo/heatmap/ 1 by default
+             * @sample {highmaps} maps/demo/heatmap/ 1 by default
+             * @default 1
+             * @since 4.0
+             * @product highcharts highmaps
+             * @apioption plotOptions.heatmap.rowsize
+             */
+
 
 
             dataLabels: {
@@ -4047,17 +4059,6 @@
                     brightness: 0.2
                 }
             }
-            /**
-             * The row size - how many Y axis units each heatmap row should span.
-             * 
-             * @type {Number}
-             * @sample {highcharts} maps/demo/heatmap/ 1 by default
-             * @sample {highmaps} maps/demo/heatmap/ 1 by default
-             * @default 1
-             * @since 4.0
-             * @product highcharts highmaps
-             * @apioption plotOptions.heatmap.rowsize
-             */
 
         }, merge(colorSeriesMixin, {
             pointArrayMap: ['y', 'value'],

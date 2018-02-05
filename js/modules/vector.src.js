@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.5 (2018-01-31)
+ * @license  Highcharts JS v6.0.6 (2018-02-05)
  * Vector plot series module
  *
  * (c) 2010-2017 Torstein Honsi

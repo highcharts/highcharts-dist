@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Highcharts Drilldown module
  * 
  * Author: Torstein Honsi
@@ -85,6 +85,18 @@
              * @since 4.1.7
              * @product highcharts
              * @apioption drilldown.allowPointDrilldown
+             */
+
+            /**
+             * An array of series configurations for the drill down. Each series
+             * configuration uses the same syntax as the [series](#series) option
+             * set. These drilldown series are hidden by default. The drilldown
+             * series is linked to the parent series' point by its `id`.
+             * 
+             * @type {Array<Object>}
+             * @since 3.0.8
+             * @product highcharts highmaps
+             * @apioption drilldown.series
              */
 
 
@@ -180,48 +192,9 @@
              * @product highcharts highmaps
              */
             drillUpButton: {
-
-                /**
-                 * Positioning options for the button within the `relativeTo` box.
-                 * Available properties are `x`, `y`, `align` and `verticalAlign`.
-                 * 
-                 * @type {Object}
-                 * @since 3.0.8
-                 * @product highcharts highmaps
-                 */
-                position: {
-
-                    /**
-                     * Horizontal alignment.
-                     * @type {String}
-                     */
-                    align: 'right',
-
-                    /**
-                     * The X offset of the button.
-                     * @type {Number}
-                     */
-                    x: -10,
-
-                    /**
-                     * The Y offset of the button.
-                     * @type {Number}
-                     */
-                    y: 10
-
-                    /**
-                     * Vertical alignment of the button.
-                     *
-                     * @type {String}
-                     * @default top
-                     * @validvalue ["top", "middle", "bottom"]
-                     * @product highcharts highmaps
-                     * @apioption drilldown.drillUpButton.position.verticalAlign
-                     */
-                }
                 /**
                  * What box to align the button to. Can be either `plotBox` or
-                 * `spacingBox.
+                 * `spacingBox`.
                  * 
                  * @type {String}
                  * @default plotBox
@@ -249,19 +222,46 @@
                  * @product highcharts highmaps
                  * @apioption drilldown.drillUpButton.theme
                  */
-            }
 
-            /**
-             * An array of series configurations for the drill down. Each series
-             * configuration uses the same syntax as the [series](#series) option
-             * set. These drilldown series are hidden by default. The drilldown
-             * series is linked to the parent series' point by its `id`.
-             * 
-             * @type {Array<Object>}
-             * @since 3.0.8
-             * @product highcharts highmaps
-             * @apioption drilldown.series
-             */
+                /**
+                 * Positioning options for the button within the `relativeTo` box.
+                 * Available properties are `x`, `y`, `align` and `verticalAlign`.
+                 * 
+                 * @type {Object}
+                 * @since 3.0.8
+                 * @product highcharts highmaps
+                 */
+                position: {
+
+                    /**
+                     * Vertical alignment of the button.
+                     *
+                     * @type {String}
+                     * @default top
+                     * @validvalue ["top", "middle", "bottom"]
+                     * @product highcharts highmaps
+                     * @apioption drilldown.drillUpButton.position.verticalAlign
+                     */
+
+                    /**
+                     * Horizontal alignment.
+                     * @type {String}
+                     */
+                    align: 'right',
+
+                    /**
+                     * The X offset of the button.
+                     * @type {Number}
+                     */
+                    x: -10,
+
+                    /**
+                     * The Y offset of the button.
+                     * @type {Number}
+                     */
+                    y: 10
+                }
+            }
         };
 
 
@@ -1035,16 +1035,6 @@
                         point.doDrilldown(undefined, undefined, e);
                     }
                 });
-                /*
-                wrap(point, 'importEvents', function (proceed) { // wrapping importEvents makes point.click event work
-                	if (!this.hasImportedEvents) {
-                		proceed.call(this);
-                		H.addEvent(this, 'click', function () {
-                			this.doDrilldown();
-                		});
-                	}
-                });
-                */
 
             }
 

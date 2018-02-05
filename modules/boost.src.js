@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -1413,7 +1413,7 @@
                     scolor,
                     sdata = isStacked ? series.data : (xData || rawData),
                     closestLeft = {
-                        x: Number.MIN_VALUE,
+                        x: -Number.MAX_VALUE,
                         y: 0
                     },
                     closestRight = {
@@ -1425,6 +1425,7 @@
 
                     cullXThreshold = 1,
                     cullYThreshold = 1,
+                    mx,
 
                     // The following are used in the builder while loop
                     x,
@@ -1814,10 +1815,16 @@
                         // 	)), 1e5)
                         // );
 
+                        if (settings.useGPUTranslations) {
+                            mx = xAxis.toPixels(x, true);
+                        } else {
+                            mx = x;
+                        }
+
                         if (lastX !== false) {
                             series.closestPointRangePx = Math.min(
                                 series.closestPointRangePx,
-                                Math.abs(x - lastX)
+                                Math.abs(mx - lastX)
                             );
                         }
                     }
@@ -1895,7 +1902,10 @@
                     );
                 }
 
-                if (!lastX) {
+                if (!lastX &&
+                    connectNulls !== false &&
+                    closestLeft > -Number.MAX_VALUE &&
+                    closestRight < Number.MAX_VALUE) {
                     // There are no points within the selected range
                     pushSupplementPoint(closestLeft);
                     pushSupplementPoint(closestRight);

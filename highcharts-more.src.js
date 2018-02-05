@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -232,6 +232,19 @@
              * @optionparent pane
              */
             defaultOptions: {
+
+                /**
+                 * The end angle of the polar X axis or gauge value axis, given in degrees
+                 * where 0 is north. Defaults to [startAngle](#pane.startAngle) + 360.
+                 * 
+                 * @type {Number}
+                 * @sample {highcharts} highcharts/demo/gauge-vu-meter/
+                 *         VU-meter with custom start and end angle
+                 * @since 2.3.0
+                 * @product highcharts
+                 * @apioption pane.endAngle
+                 */
+
                 /**
                  * The center of a polar chart or angular gauge, given as an array
                  * of [x, y] positions. Positions can be given as integers that transform
@@ -268,18 +281,6 @@
                  * @product highcharts
                  */
                 startAngle: 0
-
-                /**
-                 * The end angle of the polar X axis or gauge value axis, given in degrees
-                 * where 0 is north. Defaults to [startAngle](#pane.startAngle) + 360.
-                 * 
-                 * @type {Number}
-                 * @sample {highcharts} highcharts/demo/gauge-vu-meter/
-                 *         VU-meter with custom start and end angle
-                 * @since 2.3.0
-                 * @product highcharts
-                 * @apioption pane.endAngle
-                 */
             },
 
             /**
@@ -1839,18 +1840,6 @@
          */
         var columnRangeOptions = {
 
-            pointRange: null,
-
-            /** @ignore-option */
-            marker: null,
-
-            states: {
-                hover: {
-                    /** @ignore-option */
-                    halo: false
-                }
-            }
-
             /**
              * Extended data labels for range series types. Range series data labels
              * have no `x` and `y` options. Instead, they have `xLow`, `xHigh`,
@@ -1864,6 +1853,18 @@
              * @product   highcharts highstock
              * @apioption plotOptions.columnrange.dataLabels
              */
+
+            pointRange: null,
+
+            /** @ignore-option */
+            marker: null,
+
+            states: {
+                hover: {
+                    /** @ignore-option */
+                    halo: false
+                }
+            }
         };
         /**
          * The ColumnRangeSeries class
@@ -3570,8 +3571,8 @@
              * *   LongDashDot
              * *   LongDashDotDot
              * 
-             * In styled mode, the stroke dash-array can be set with the `.
-             * highcharts-graph` class.
+             * In styled mode, the stroke dash-array can be set with the
+             * `.highcharts-graph` class.
              * 
              * @type    {String}
              * @default Dot

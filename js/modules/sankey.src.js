@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.5 (2018-01-31)
+ * @license  Highcharts JS v6.0.6 (2018-02-05)
  * Sankey diagram module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -128,6 +128,19 @@
                 }
             },
             tooltip: {
+                /**
+                 * A callback for defining the format for _nodes_ in the sankey chart's
+                 * tooltip, as opposed to links.
+                 *
+                 * @type {Function}
+                 * @since 6.0.2
+                 * @apioption plotOptions.sankey.tooltip.nodeFormatter
+                 */
+
+                /**
+                 * Whether the tooltip should follow the pointer or stay fixed on the
+                 * item.
+                 */
                 followPointer: true,
 
 
@@ -141,14 +154,6 @@
                  * of a sankey diagram series, as opposed to links.
                  */
                 nodeFormat: '{point.name}: <b>{point.sum}</b><br/>'
-                /**
-                 * A callback for defining the format for _nodes_ in the sankey chart's
-                 * tooltip, as opposed to links.
-                 *
-                 * @type {Function}
-                 * @since 6.0.2
-                 * @apioption plotOptions.sankey.tooltip.nodeFormatter
-                 */
             }
 
         }, {
@@ -656,6 +661,16 @@
          * @apioption series.sankey.data
          */
 
+        /**
+         * The color for the individual _link_. By default, the link color is the same
+         * as the node it extends from. The `series.fillOpacity` option also applies to
+         * the points, so when setting a specific link color, consider setting the
+         * `fillOpacity` to 1.
+         * 
+         * @type {String}
+         * @product highcharts
+         * @apioption series.sankey.data.color
+         */
 
         /**
          * The node that the link runs from.

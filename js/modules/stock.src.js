@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.5 (2018-01-31)
+ * @license Highcharts JS v6.0.6 (2018-02-05)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -127,87 +127,86 @@
              * @since 6.0.5
              * @apioption time
              */
-            defaultOptions: {
-                /**
-                 * Whether to use UTC time for axis scaling, tickmark placement and
-                 * time display in `Highcharts.dateFormat`. Advantages of using UTC
-                 * is that the time displays equally regardless of the user agent's
-                 * time zone settings. Local time can be used when the data is loaded
-                 * in real time or when correct Daylight Saving Time transitions are
-                 * required.
-                 * 
-                 * @type {Boolean}
-                 * @sample {highcharts} highcharts/time/useutc-true/ True by default
-                 * @sample {highcharts} highcharts/time/useutc-false/ False
-                 * @apioption time.useUTC
-                 * @default true
-                 */
 
-                /**
-                 * A custom `Date` class for advanced date handling. For example,
-                 * [JDate](https://githubcom/tahajahangir/jdate) can be hooked in to
-                 * handle Jalali dates.
-                 * 
-                 * @type {Object}
-                 * @since 4.0.4
-                 * @product highcharts highstock
-                 * @apioption time.Date
-                 */
+            /**
+             * Whether to use UTC time for axis scaling, tickmark placement and
+             * time display in `Highcharts.dateFormat`. Advantages of using UTC
+             * is that the time displays equally regardless of the user agent's
+             * time zone settings. Local time can be used when the data is loaded
+             * in real time or when correct Daylight Saving Time transitions are
+             * required.
+             * 
+             * @type {Boolean}
+             * @sample {highcharts} highcharts/time/useutc-true/ True by default
+             * @sample {highcharts} highcharts/time/useutc-false/ False
+             * @apioption time.useUTC
+             * @default true
+             */
 
-                /**
-                 * A callback to return the time zone offset for a given datetime. It
-                 * takes the timestamp in terms of milliseconds since January 1 1970,
-                 * and returns the timezone offset in minutes. This provides a hook
-                 * for drawing time based charts in specific time zones using their
-                 * local DST crossover dates, with the help of external libraries.
-                 * 
-                 * @type {Function}
-                 * @see [global.timezoneOffset](#global.timezoneOffset)
-                 * @sample {highcharts|highstock}
-                 *         highcharts/time/gettimezoneoffset/
-                 *         Use moment.js to draw Oslo time regardless of browser locale
-                 * @since 4.1.0
-                 * @product highcharts highstock
-                 * @apioption time.getTimezoneOffset
-                 */
+            /**
+             * A custom `Date` class for advanced date handling. For example,
+             * [JDate](https://githubcom/tahajahangir/jdate) can be hooked in to
+             * handle Jalali dates.
+             * 
+             * @type {Object}
+             * @since 4.0.4
+             * @product highcharts highstock
+             * @apioption time.Date
+             */
 
-                /**
-                 * Requires [moment.js](http://momentjs.com/). If the timezone option
-                 * is specified, it creates a default
-                 * [getTimezoneOffset](#time.getTimezoneOffset) function that looks
-                 * up the specified timezone in moment.js. If moment.js is not included,
-                 * this throws a Highcharts error in the console, but does not crash the
-                 * chart.
-                 * 
-                 * @type {String}
-                 * @see [getTimezoneOffset](#time.getTimezoneOffset)
-                 * @sample {highcharts|highstock}
-                 *         highcharts/time/timezone/
-                 *         Europe/Oslo
-                 * @default undefined
-                 * @since 5.0.7
-                 * @product highcharts highstock
-                 * @apioption time.timezone
-                 */
+            /**
+             * A callback to return the time zone offset for a given datetime. It
+             * takes the timestamp in terms of milliseconds since January 1 1970,
+             * and returns the timezone offset in minutes. This provides a hook
+             * for drawing time based charts in specific time zones using their
+             * local DST crossover dates, with the help of external libraries.
+             * 
+             * @type {Function}
+             * @see [global.timezoneOffset](#global.timezoneOffset)
+             * @sample {highcharts|highstock}
+             *         highcharts/time/gettimezoneoffset/
+             *         Use moment.js to draw Oslo time regardless of browser locale
+             * @since 4.1.0
+             * @product highcharts highstock
+             * @apioption time.getTimezoneOffset
+             */
 
-                /**
-                 * The timezone offset in minutes. Positive values are west, negative
-                 * values are east of UTC, as in the ECMAScript
-                 * [getTimezoneOffset](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset)
-                 * method. Use this to display UTC based data in a predefined time zone.
-                 * 
-                 * @type {Number}
-                 * @see [time.getTimezoneOffset](#time.getTimezoneOffset)
-                 * @sample {highcharts|highstock}
-                 *         highcharts/time/timezoneoffset/
-                 *         Timezone offset
-                 * @default 0
-                 * @since 3.0.8
-                 * @product highcharts highstock
-                 * @apioption time.timezoneOffset
-                 */
+            /**
+             * Requires [moment.js](http://momentjs.com/). If the timezone option
+             * is specified, it creates a default
+             * [getTimezoneOffset](#time.getTimezoneOffset) function that looks
+             * up the specified timezone in moment.js. If moment.js is not included,
+             * this throws a Highcharts error in the console, but does not crash the
+             * chart.
+             * 
+             * @type {String}
+             * @see [getTimezoneOffset](#time.getTimezoneOffset)
+             * @sample {highcharts|highstock}
+             *         highcharts/time/timezone/
+             *         Europe/Oslo
+             * @default undefined
+             * @since 5.0.7
+             * @product highcharts highstock
+             * @apioption time.timezone
+             */
 
-            },
+            /**
+             * The timezone offset in minutes. Positive values are west, negative
+             * values are east of UTC, as in the ECMAScript
+             * [getTimezoneOffset](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getTimezoneOffset)
+             * method. Use this to display UTC based data in a predefined time zone.
+             * 
+             * @type {Number}
+             * @see [time.getTimezoneOffset](#time.getTimezoneOffset)
+             * @sample {highcharts|highstock}
+             *         highcharts/time/timezoneoffset/
+             *         Timezone offset
+             * @default 0
+             * @since 3.0.8
+             * @product highcharts highstock
+             * @apioption time.timezoneOffset
+             */
+            defaultOptions: {},
 
             /**
              * Update the Time object with current options. It is called internally on
@@ -351,7 +350,7 @@
                         // 2 am. We need to make the same time as local Date does.
                     } else if (
                         offset - 36e5 === this.getTimezoneOffset(d - 36e5) &&
-                        (H.isChrome || H.isMS)
+                        !H.isSafari
                     ) {
                         d -= 36e5;
                     }
@@ -1885,7 +1884,9 @@
          * module as of #5045.
          */
         H.Series.prototype.gappedPath = function() {
-            var gapSize = this.options.gapSize,
+            var currentDataGrouping = this.currentDataGrouping,
+                groupingSize = currentDataGrouping && currentDataGrouping.totalRange,
+                gapSize = this.options.gapSize,
                 points = this.points.slice(),
                 i = points.length - 1,
                 yAxis = this.yAxis,
@@ -1896,6 +1897,13 @@
              * Defines when to display a gap in the graph, together with the
              * [gapUnit](plotOptions.series.gapUnit) option.
              * 
+             * In case when `dataGrouping` is enabled, points can be grouped into a 
+             * larger time span. This can make the grouped points to have a greater 
+             * distance than the absolute value of `gapSize` property, which will result 
+             * in disappearing graph completely. To prevent this situation the mentioned 
+             * distance between grouped points is used instead of previously defined 
+             * `gapSize`.
+             *
              * In practice, this option is most often used to visualize gaps in
              * time series. In a stock chart, intraday data is available for daytime
              * hours, while gaps will appear in nights and weekends.
@@ -1919,11 +1927,7 @@
              * that of the two closest points, the graph will be broken.
              *
              * When the `gapUnit` is `value`, the gap is based on absolute axis values,
-             * which on a datetime axis is milliseconds. Note that this may give 
-             * unexpected results if `dataGrouping` is enabled (as it is by default),
-             * because if a series of points are grouped into a larger time span, the
-             * grouped points may have a greater distance than the absolute `gapSize`.
-             * This will cause the whole graph to disappear. This also applies to the
+             * which on a datetime axis is milliseconds. This also applies to the
              * navigator series that inherits gap options from the base series.
              *
              * @type {String}
@@ -1940,6 +1944,11 @@
                 // Gap unit is relative
                 if (this.options.gapUnit !== 'value') {
                     gapSize *= this.closestPointRange;
+                }
+
+                // Setting a new gapSize in case dataGrouping is enabled (#7686)
+                if (groupingSize && groupingSize > gapSize) {
+                    gapSize = groupingSize;
                 }
 
                 // extension for ordinal breaks
@@ -3154,10 +3163,6 @@
 
             animate: null // Disable animation
 
-            /**
-             * @constructor seriesTypes.ohlc.prototype.pointClass
-             * @extends {Point}
-             */
         }, /** @lends seriesTypes.ohlc.prototype.pointClass.prototype */ {
             /**
              * Extend the parent method by adding up or down to the class name.
@@ -3283,6 +3288,23 @@
          */
         var candlestickOptions = {
 
+            /**
+             * The specific line color for up candle sticks. The default is to inherit
+             * the general `lineColor` setting.
+             * 
+             * @type {Color}
+             * @sample {highstock} stock/plotoptions/candlestick-linecolor/ Candlestick line colors
+             * @default null
+             * @since 1.3.6
+             * @product highstock
+             * @apioption plotOptions.candlestick.upLineColor
+             */
+
+            /**
+             * @default ohlc
+             * @apioption plotOptions.candlestick.dataGrouping.approximation
+             */
+
             states: {
 
                 /**
@@ -3310,10 +3332,7 @@
             threshold: null,
 
 
-            /**
-             * @default ohlc
-             * @apioption plotOptions.candlestick.dataGrouping.approximation
-             */
+            stickyTracking: true
 
         };
 
@@ -3494,6 +3513,20 @@
             stableSort = H.stableSort;
 
         var onSeriesMixin = {
+
+            /**
+             * Override getPlotBox. If the onSeries option is valid, return the plot box
+             * of the onSeries, otherwise proceed as usual.
+             */
+            getPlotBox: function() {
+                return H.Series.prototype.getPlotBox.call(
+                    (
+                        this.options.onSeries &&
+                        this.chart.get(this.options.onSeries)
+                    ) || this
+                );
+            },
+
             /**
              * Extend the translate method by placing the point on the related series
              */
@@ -3787,6 +3820,7 @@
 
 
             translate: onSeriesMixin.translate,
+            getPlotBox: onSeriesMixin.getPlotBox,
 
             /**
              * Draw the markers
@@ -5144,8 +5178,8 @@
                  * }</pre>
                  *
                  * @type {Object}
-                 * @see In styled mode, the navigator series is styled with the `.
-                 * highcharts-navigator-series` class.
+                 * @see In styled mode, the navigator series is styled with the
+                 *      `.highcharts-navigator-series` class.
                  * @sample {highstock} stock/navigator/series-data/
                  *         Using a separate data set for the navigator
                  * @sample {highstock} stock/navigator/series/
@@ -7075,9 +7109,9 @@
                  * 
                  * CSS styles for the text label.
                  * 
-                 * In styled mode, the buttons are styled by the `.highcharts-
-                 * range-selector-buttons .highcharts-button` rule with its different
-                 * states.
+                 * In styled mode, the buttons are styled by the
+                 * `.highcharts-range-selector-buttons .highcharts-button` rule with its
+                 * different states.
                  * 
                  * @type {Object}
                  * @sample {highstock} stock/rangeselector/styling/ Styling the buttons and inputs
@@ -8638,7 +8672,7 @@
                 };
 
             // apply X axis options to both single and multi y axes
-            options.xAxis = map(splat(options.xAxis || {}), function(xAxisOptions) {
+            options.xAxis = map(splat(options.xAxis || {}), function(xAxisOptions, i) {
                 return merge({ // defaults
                         minPadding: 0,
                         maxPadding: 0,
@@ -8653,6 +8687,7 @@
                         showLastLabel: true
                     },
                     defaultOptions.xAxis, // #3802
+                    defaultOptions.xAxis && defaultOptions.xAxis[i], // #7690
                     xAxisOptions, // user options
                     { // forced options
                         type: 'datetime',
@@ -8663,7 +8698,7 @@
             });
 
             // apply Y axis options to both single and multi y axes
-            options.yAxis = map(splat(options.yAxis || {}), function(yAxisOptions) {
+            options.yAxis = map(splat(options.yAxis || {}), function(yAxisOptions, i) {
                 opposite = pick(yAxisOptions.opposite, true);
                 return merge({ // defaults
                         labels: {
@@ -8687,6 +8722,7 @@
                         }
                     },
                     defaultOptions.yAxis, // #3802
+                    defaultOptions.yAxis && defaultOptions.yAxis[i], // #7690
                     yAxisOptions // user options
                 );
             });
