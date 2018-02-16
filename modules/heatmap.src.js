@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.6 (2018-02-05)
+ * @license Highcharts JS v6.0.7 (2018-02-16)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -128,38 +128,48 @@
                      */
 
                     /**
-                     * The start of the value range that the data class represents, relating
-                     * to the point value.
+                     * The start of the value range that the data class represents,
+                     * relating to the point value.
+                     *
+                     * The range of each `dataClass` is closed in both ends, but can be
+                     * overridden by the next `dataClass`.
                      * 
-                     * @type {Number}
-                     * @product highcharts highmaps
+                     * @type      {Number}
+                     * @product   highcharts highmaps
                      * @apioption colorAxis.dataClasses.from
                      */
 
                     /**
-                     * The name of the data class as it appears in the legend. If no name
-                     * is given, it is automatically created based on the `from` and `to`
-                     * values. For full programmatic control, [legend.labelFormatter](#legend.
-                     * labelFormatter) can be used. In the formatter, `this.from` and
-                     * `this.to` can be accessed.
+                     * The name of the data class as it appears in the legend.
+                     * If no name is given, it is automatically created based on the
+                     * `from` and `to` values. For full programmatic control,
+                     * [legend.labelFormatter](#legend.labelFormatter) can be used.
+                     * In the formatter, `this.from` and `this.to` can be accessed.
                      * 
-                     * @type {String}
-                     * @sample {highmaps} maps/coloraxis/dataclasses-name/ Named data classes
-                     * @sample {highmaps} maps/coloraxis/dataclasses-labelformatter/ Formatted data classes
-                     * @product highcharts highmaps
+                     * @type      {String}
+                     * @sample    {highmaps} maps/coloraxis/dataclasses-name/
+                     *            Named data classes
+                     * @sample    {highmaps} maps/coloraxis/dataclasses-labelformatter/
+                     *            Formatted data classes
+                     * @product   highcharts highmaps
                      * @apioption colorAxis.dataClasses.name
                      */
 
                     /**
-                     * The end of the value range that the data class represents, relating
-                     * to the point value.
+                     * The end of the value range that the data class represents,
+                     * relating to the point value.
+                     *
+                     * The range of each `dataClass` is closed in both ends, but can be
+                     * overridden by the next `dataClass`.
                      * 
-                     * @type {Number}
-                     * @product highcharts highmaps
+                     * @type      {Number}
+                     * @product   highcharts highmaps
                      * @apioption colorAxis.dataClasses.to
                      */
 
-                    /** @ignore */
+                    /** 
+                     * @ignore
+                     */
                     lineWidth: 0,
 
                     /**
@@ -290,7 +300,9 @@
                             duration: 50
                         },
 
-                        /** @ignore */
+                        /** 
+                         * @ignore
+                         */
                         width: 0.01,
 
 
@@ -404,6 +416,15 @@
                      * @type {Boolean}
                      * @product highcharts highmaps
                      * @apioption colorAxis.reversed
+                     */
+
+                    /**
+                     * Fires when the legend item belonging to the colorAxis is clicked.
+                     * One parameter, `event`, is passed to the function.
+                     * 
+                     * @type      {Function}
+                     * @product   highcharts highmaps
+                     * @apioption colorAxis.events.legendItemClick
                      */
 
                     /**
@@ -1129,7 +1150,7 @@
          * @sample highcharts/demo/heatmap-canvas/
          *         Heavy heatmap
          * @extends {plotOptions.scatter}
-         * @excluding marker,pointRange
+         * @excluding marker,pointRange,pointPlacement
          * @product highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
@@ -1217,7 +1238,9 @@
                 padding: 0 // #3837
             },
 
-            /** @ignore */
+            /** 
+             * @ignore
+             */
             marker: null,
 
             /**	@ignore */
@@ -1230,7 +1253,9 @@
             states: {
 
                 hover: {
-                    /** @ignore */
+                    /** 
+                     * @ignore
+                     */
                     halo: false, // #3406, halo is disabled on heatmaps by default
 
                     /**
@@ -1364,7 +1389,7 @@
          * 
          * @type {Object}
          * @extends series,plotOptions.heatmap
-         * @excluding dataParser,dataURL,stack
+         * @excluding dataParser,dataURL,marker,pointRange,stack
          * @product highcharts highmaps
          * @apioption series.heatmap
          */

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.6 (2018-02-05)
+ * @license Highcharts JS v6.0.7 (2018-02-16)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -1557,7 +1557,6 @@
          *
          * License: www.highcharts.com/license
          */
-        /* eslint max-len: 0 */
 
         var pick = H.pick,
             wrap = H.wrap,
@@ -1578,7 +1577,11 @@
                     repeat = brk.repeat || Infinity,
                     from = brk.from,
                     length = brk.to - brk.from,
-                    test = (val >= from ? (val - from) % repeat : repeat - ((from - val) % repeat));
+                    test = (
+                        val >= from ?
+                        (val - from) % repeat :
+                        repeat - ((from - val) % repeat)
+                    );
 
                 if (!brk.inclusive) {
                     ret = test < length && test !== 0;
@@ -1603,7 +1606,10 @@
                         if (this.isInBreak(breaks[i], val)) {
                             inbrk = true;
                             if (!keep) {
-                                keep = pick(breaks[i].showPoints, this.isXAxis ? false : true);
+                                keep = pick(
+                                    breaks[i].showPoints,
+                                    this.isXAxis ? false : true
+                                );
                             }
                         }
                     }
@@ -1688,15 +1694,29 @@
                     return nval;
                 };
 
-                axis.setExtremes = function(newMin, newMax, redraw, animation, eventArguments) {
-                    // If trying to set extremes inside a break, extend it to before and after the break ( #3857 )
+                axis.setExtremes = function(
+                    newMin,
+                    newMax,
+                    redraw,
+                    animation,
+                    eventArguments
+                ) {
+                    // If trying to set extremes inside a break, extend it to before and
+                    // after the break ( #3857 )
                     while (this.isInAnyBreak(newMin)) {
                         newMin -= this.closestPointRange;
                     }
                     while (this.isInAnyBreak(newMax)) {
                         newMax -= this.closestPointRange;
                     }
-                    Axis.prototype.setExtremes.call(this, newMin, newMax, redraw, animation, eventArguments);
+                    Axis.prototype.setExtremes.call(
+                        this,
+                        newMin,
+                        newMax,
+                        redraw,
+                        animation,
+                        eventArguments
+                    );
                 };
 
                 axis.setAxisTranslation = function(saveOld) {
@@ -1823,11 +1843,18 @@
                 while (i--) {
                     point = points[i];
 
-                    nullGap = point.y === null && connectNulls === false; // respect nulls inside the break (#4275)
-                    if (!nullGap && (xAxis.isInAnyBreak(point.x, true) || yAxis.isInAnyBreak(point.y, true))) {
+                    // Respect nulls inside the break (#4275)
+                    nullGap = point.y === null && connectNulls === false;
+                    if (!nullGap &&
+                        (
+                            xAxis.isInAnyBreak(point.x, true) ||
+                            yAxis.isInAnyBreak(point.y, true)
+                        )
+                    ) {
                         points.splice(i, 1);
                         if (this.data[i]) {
-                            this.data[i].destroyElements(); // removes the graphics for this point if they exist
+                            // Removes the graphics for this point if they exist
+                            this.data[i].destroyElements();
                         }
                     }
                 }
@@ -1855,15 +1882,24 @@
 
             each(keys, function(key) {
                 breaks = axis.breakArray || [];
-                threshold = axis.isXAxis ? axis.min : pick(series.options.threshold, axis.min);
+                threshold = axis.isXAxis ?
+                    axis.min :
+                    pick(series.options.threshold, axis.min);
                 each(points, function(point) {
                     y = pick(point['stack' + key.toUpperCase()], point[key]);
                     each(breaks, function(brk) {
                         eventName = false;
 
-                        if ((threshold < brk.from && y > brk.to) || (threshold > brk.from && y < brk.from)) {
+                        if (
+                            (threshold < brk.from && y > brk.to) ||
+                            (threshold > brk.from && y < brk.from)
+                        ) {
                             eventName = 'pointBreak';
-                        } else if ((threshold < brk.from && y > brk.from && y < brk.to) || (threshold > brk.from && y > brk.to && y < brk.from)) { // point falls inside the break
+
+                        } else if (
+                            (threshold < brk.from && y > brk.from && y < brk.to) ||
+                            (threshold > brk.from && y > brk.to && y < brk.from)
+                        ) {
                             eventName = 'pointInBreak';
                         }
                         if (eventName) {
@@ -1899,8 +1935,8 @@
              * 
              * In case when `dataGrouping` is enabled, points can be grouped into a 
              * larger time span. This can make the grouped points to have a greater 
-             * distance than the absolute value of `gapSize` property, which will result 
-             * in disappearing graph completely. To prevent this situation the mentioned 
+             * distance than the absolute value of `gapSize` property, which will result
+             * in disappearing graph completely. To prevent this situation the mentioned
              * distance between grouped points is used instead of previously defined 
              * `gapSize`.
              *
@@ -1908,11 +1944,12 @@
              * time series. In a stock chart, intraday data is available for daytime
              * hours, while gaps will appear in nights and weekends.
              * 
-             * @type {Number}
-             * @see [gapUnit](plotOptions.series.gapUnit) and [xAxis.breaks](#xAxis.breaks)
-             * @sample {highstock} stock/plotoptions/series-gapsize/
-             *         Setting the gap size to 2 introduces gaps for weekends in daily
-             *         datasets.
+             * @type    {Number}
+             * @see     [gapUnit](plotOptions.series.gapUnit) and
+             *          [xAxis.breaks](#xAxis.breaks)
+             * @sample  {highstock} stock/plotoptions/series-gapsize/
+             *          Setting the gap size to 2 introduces gaps for weekends in daily
+             *          datasets.
              * @default 0
              * @product highstock
              * @apioption plotOptions.series.gapSize
@@ -1966,13 +2003,14 @@
 
                         // For stacked chart generate empty stack items, #6546
                         if (this.options.stacking) {
-                            stack = yAxis.stacks[this.stackKey][xRange] = new H.StackItem(
-                                yAxis,
-                                yAxis.options.stackLabels,
-                                false,
-                                xRange,
-                                this.stack
-                            );
+                            stack = yAxis.stacks[this.stackKey][xRange] =
+                                new H.StackItem(
+                                    yAxis,
+                                    yAxis.options.stackLabels,
+                                    false,
+                                    xRange,
+                                    this.stack
+                                );
                             stack.total = 0;
                         }
                     }
@@ -2717,11 +2755,10 @@
          * Override point prototype to throw a warning when trying to update grouped
          * points
          */
-        wrap(Point.prototype, 'update', function(proceed) {
+        H.addEvent(Point.prototype, 'update', function() {
             if (this.dataGroup) {
                 H.error(24);
-            } else {
-                proceed.apply(this, [].slice.call(arguments, 1));
+                return false;
             }
         });
 
@@ -2810,10 +2847,7 @@
         /**
          * Destroy grouped data on series destroy
          */
-        wrap(seriesProto, 'destroy', function(proceed) {
-            this.destroyGroupedData();
-            proceed.call(this);
-        });
+        H.addEvent(seriesProto, 'destroy', seriesProto.destroyGroupedData);
 
 
         // Handle default options for data grouping. This must be set at runtime because
@@ -2851,8 +2885,7 @@
          * previous data grouping of neighbour series into accound when determining
          * group pixel width (#2692).
          */
-        wrap(Axis.prototype, 'setScale', function(proceed) {
-            proceed.call(this);
+        H.addEvent(Axis.prototype, 'afterSetScale', function() {
             each(this.series, function(series) {
                 series.hasProcessed = false;
             });

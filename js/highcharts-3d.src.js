@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.6 (2018-02-05)
+ * @license Highcharts JS v6.0.7 (2018-02-16)
  *
  * 3D features for Highcharts JS
  *
@@ -1400,6 +1400,10 @@
                          * @since 5.0.12
                          * @product highcharts
                          * @apioption chart.options3d.frame.bottom.visible
+                         */
+
+                        /**
+                         * The bottom of the frame around a 3D chart.
                          */
                         bottom: {},
 

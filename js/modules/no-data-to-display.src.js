@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.6 (2018-02-05)
+ * @license Highcharts JS v6.0.7 (2018-02-16)
  * Plugin for displaying a message when there is no data visible in chart.
  *
  * (c) 2010-2017 Highsoft AS
@@ -40,7 +40,9 @@
              * @type {String}
              * @default No data to display
              * @since 3.0.8
-             * @product highcharts
+             * @product highcharts highstock
+             * @sample highcharts/no-data-to-display/no-data-line
+             *         No-data text
              * @apioption lang.noData
              */
             noData: 'No data to display'
@@ -52,6 +54,11 @@
          * This feature requires the file no-data-to-display.js to be loaded in the
          * page. The actual text to display is set in the lang.noData option.
          * @type {Object}
+         *
+         * @sample highcharts/no-data-to-display/no-data-line
+         *         Line chart with no-data module
+         * @sample highcharts/no-data-to-display/no-data-pie
+         *         Pie chart with no-data module
          * @optionparent noData
          */
         defaultOptions.noData = {

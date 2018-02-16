@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.6 (2018-02-05)
+ * @license  Highcharts JS v6.0.7 (2018-02-16)
  *
  * Indicator series type for Highstock
  *

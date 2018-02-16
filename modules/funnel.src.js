@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.6 (2018-02-05)
+ * @license Highcharts JS v6.0.7 (2018-02-16)
  * Highcharts funnel module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -115,7 +115,9 @@
                  */
                 reversed: false,
 
-                /** @ignore */
+                /** 
+                 * @ignore
+                 */
                 size: true, // to avoid adapting to data label size in Pie.drawDataLabels
 
 

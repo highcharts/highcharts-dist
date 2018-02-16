@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.6 (2018-02-05)
+ * @license Highcharts JS v6.0.7 (2018-02-16)
  * X-range series
  *
  * (c) 2010-2017 Torstein Honsi, Lars A. V. Cabrera
@@ -363,7 +363,7 @@
             	//retVal['stroke-width'] = 0;
             	return retVal;
             }
-            */
+            //*/
 
             // Point class properties
         }, {

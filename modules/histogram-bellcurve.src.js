@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.6 (2018-02-05)
+ * @license  Highcharts JS v6.0.7 (2018-02-16)
  *
  * (c) 2010-2017 Highsoft AS
  * Author: Sebastian Domas
@@ -209,6 +209,17 @@
         }
 
         /**
+         * Identity function - takes a param and returns that param
+         * It is used to grouping data with the same values
+         *
+         * @param {number} y - value
+         * @returns {number}
+         **/
+        function identity(y) {
+            return y;
+        }
+
+        /**
          * Histogram class
          * 
          * @constructor seriesTypes.histogram
@@ -284,9 +295,11 @@
                     binWidth :
                     (max - min) / binsNumber;
 
-                fitToBin = fitToBinLeftClosed(binWidth);
+                fitToBin = binWidth ? fitToBinLeftClosed(binWidth) : identity;
 
-                for (x = fitToBin(min); x <= max; x += binWidth) {
+                // If binWidth is 0 then max and min are equaled,
+                // increment the x with some positive value to quit the loop
+                for (x = fitToBin(min); x <= max; x += (binWidth || 1)) {
                     frequencies[correctFloat(fitToBin(x))] = 0;
                 }
 
@@ -459,43 +472,6 @@
                 enabled: false
             }
 
-            /**
-             * A `bellcurve` series. If the [type](#series.bellcurve.type) option is not
-             * specified, it is inherited from [chart.type](#chart.type).
-             * 
-             * For options that apply to multiple series, it is recommended to add
-             * them to the [plotOptions.series](#plotOptions.series) options structure.
-             * To apply to all series of this specific type, apply it to
-             * [plotOptions.bellcurve](#plotOptions.bellcurve).
-             * 
-             * @type      {Object}
-             * @since     6.0.0
-             * @extends   series,plotOptions.bellcurve
-             * @excluding dataParser,dataURL,data
-             * @product   highcharts
-             * @apioption series.bellcurve
-             **/
-
-            /**
-             * An integer identifying the index to use for the base series, or a string
-             * representing the id of the series.
-             *
-             * @type      {Number|String}
-             * @default   undefined
-             * @apioption series.bellcurve.baseSeries
-             **/
-
-            /**
-             * An array of data points for the series. For the `bellcurve` series type,
-             * points are calculated dynamically.
-             * 
-             * @type      {Array<Object|Array>}
-             * @since     6.0.0
-             * @extends   series.areaspline.data
-             * @product   highcharts
-             * @apioption series.bellcurve.data
-             **/
-
         }, merge(derivedSeriesMixin, {
             setMean: function() {
                 this.mean = correctFloat(mean(this.baseSeries.yData));
@@ -534,6 +510,44 @@
                 return data;
             }
         }));
+
+
+        /**
+         * A `bellcurve` series. If the [type](#series.bellcurve.type) option is not
+         * specified, it is inherited from [chart.type](#chart.type).
+         * 
+         * For options that apply to multiple series, it is recommended to add
+         * them to the [plotOptions.series](#plotOptions.series) options structure.
+         * To apply to all series of this specific type, apply it to
+         * [plotOptions.bellcurve](#plotOptions.bellcurve).
+         * 
+         * @type      {Object}
+         * @since     6.0.0
+         * @extends   series,plotOptions.bellcurve
+         * @excluding dataParser,dataURL,data
+         * @product   highcharts
+         * @apioption series.bellcurve
+         */
+
+        /**
+         * An integer identifying the index to use for the base series, or a string
+         * representing the id of the series.
+         *
+         * @type      {Number|String}
+         * @default   undefined
+         * @apioption series.bellcurve.baseSeries
+         */
+
+        /**
+         * An array of data points for the series. For the `bellcurve` series type,
+         * points are calculated dynamically.
+         * 
+         * @type      {Array<Object|Array>}
+         * @since     6.0.0
+         * @extends   series.areaspline.data
+         * @product   highcharts
+         * @apioption series.bellcurve.data
+         */
 
     }(Highcharts, derivedSeriesMixin));
 }));

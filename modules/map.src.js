@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v6.0.6 (2018-02-05)
+ * @license Highmaps JS v6.0.7 (2018-02-16)
  * Highmaps as a plugin for Highcharts or Highstock.
  *
  * (c) 2011-2017 Torstein Honsi
@@ -254,38 +254,48 @@
                      */
 
                     /**
-                     * The start of the value range that the data class represents, relating
-                     * to the point value.
+                     * The start of the value range that the data class represents,
+                     * relating to the point value.
+                     *
+                     * The range of each `dataClass` is closed in both ends, but can be
+                     * overridden by the next `dataClass`.
                      * 
-                     * @type {Number}
-                     * @product highcharts highmaps
+                     * @type      {Number}
+                     * @product   highcharts highmaps
                      * @apioption colorAxis.dataClasses.from
                      */
 
                     /**
-                     * The name of the data class as it appears in the legend. If no name
-                     * is given, it is automatically created based on the `from` and `to`
-                     * values. For full programmatic control, [legend.labelFormatter](#legend.
-                     * labelFormatter) can be used. In the formatter, `this.from` and
-                     * `this.to` can be accessed.
+                     * The name of the data class as it appears in the legend.
+                     * If no name is given, it is automatically created based on the
+                     * `from` and `to` values. For full programmatic control,
+                     * [legend.labelFormatter](#legend.labelFormatter) can be used.
+                     * In the formatter, `this.from` and `this.to` can be accessed.
                      * 
-                     * @type {String}
-                     * @sample {highmaps} maps/coloraxis/dataclasses-name/ Named data classes
-                     * @sample {highmaps} maps/coloraxis/dataclasses-labelformatter/ Formatted data classes
-                     * @product highcharts highmaps
+                     * @type      {String}
+                     * @sample    {highmaps} maps/coloraxis/dataclasses-name/
+                     *            Named data classes
+                     * @sample    {highmaps} maps/coloraxis/dataclasses-labelformatter/
+                     *            Formatted data classes
+                     * @product   highcharts highmaps
                      * @apioption colorAxis.dataClasses.name
                      */
 
                     /**
-                     * The end of the value range that the data class represents, relating
-                     * to the point value.
+                     * The end of the value range that the data class represents,
+                     * relating to the point value.
+                     *
+                     * The range of each `dataClass` is closed in both ends, but can be
+                     * overridden by the next `dataClass`.
                      * 
-                     * @type {Number}
-                     * @product highcharts highmaps
+                     * @type      {Number}
+                     * @product   highcharts highmaps
                      * @apioption colorAxis.dataClasses.to
                      */
 
-                    /** @ignore */
+                    /** 
+                     * @ignore
+                     */
                     lineWidth: 0,
 
                     /**
@@ -416,7 +426,9 @@
                             duration: 50
                         },
 
-                        /** @ignore */
+                        /** 
+                         * @ignore
+                         */
                         width: 0.01,
 
 
@@ -530,6 +542,15 @@
                      * @type {Boolean}
                      * @product highcharts highmaps
                      * @apioption colorAxis.reversed
+                     */
+
+                    /**
+                     * Fires when the legend item belonging to the colorAxis is clicked.
+                     * One parameter, `event`, is passed to the function.
+                     * 
+                     * @type      {Function}
+                     * @product   highcharts highmaps
+                     * @apioption colorAxis.events.legendItemClick
                      */
 
                     /**
@@ -1693,6 +1714,14 @@
         seriesType('map', 'scatter', {
 
             /**
+             * Define the z index of the series.
+             * 
+             * @type {Number}
+             * @product highmaps
+             * @apioption plotOptions.series.zIndex
+             */
+
+            /**
              * Whether all areas of the map defined in `mapData` should be rendered.
              * If `true`, areas which don't correspond to a data point, are rendered
              * as `null` points. If `false`, those areas are skipped.
@@ -1767,7 +1796,9 @@
              * @apioption plotOptions.series.colorAxis
              */
 
-            /** @ignore */
+            /** 
+             * @ignore
+             */
             marker: null,
 
             stickyTracking: false,
@@ -1808,7 +1839,9 @@
                 padding: 0
             },
 
-            /** @ignore */
+            /** 
+             * @ignore
+             */
             turboThreshold: 0,
 
             tooltip: {
@@ -1889,14 +1922,6 @@
                     color: '#cccccc'
                 }
             }
-
-            /**
-             * Define the z index of the series.
-             * 
-             * @type {Number}
-             * @product highmaps
-             * @apioption plotOptions.series.zIndex
-             */
 
             // Prototype members
         }, merge(colorSeriesMixin, {
@@ -2658,7 +2683,7 @@
          * 
          * @type {Object}
          * @extends series,plotOptions.map
-         * @excluding dataParser,dataURL
+         * @excluding dataParser,dataURL,marker
          * @product highmaps
          * @apioption series.map
          */
@@ -2904,7 +2929,7 @@
          * 
          * @type {Object}
          * @extends series,plotOptions.mapline
-         * @excluding dataParser,dataURL
+         * @excluding dataParser,dataURL,marker
          * @product highmaps
          * @apioption series.mapline
          */
@@ -3175,24 +3200,12 @@
              *            Negative bubbles
              * @default   true
              * @since     3.0
-             * @product   highcharts
              * @apioption plotOptions.bubble.displayNegative
              */
 
             /**
-             * Options for the point markers of line-like series. Properties like
-             * `fillColor`, `lineColor` and `lineWidth` define the visual appearance
-             * of the markers. Other series types, like column series, don't have
-             * markers, but have visual options on the series level instead.
-             * 
-             * In styled mode, the markers can be styled with the `.highcharts-point`,
-             * `.highcharts-point-hover` and `.highcharts-point-select`
-             * class names.
-             * 
-             * @type      {Object}
              * @extends   plotOptions.series.marker
-             * @excluding enabled,height,radius,width
-             * @product   highcharts
+             * @excluding enabled,enabledThreshold,height,radius,width
              */
             marker: {
 
@@ -3208,7 +3221,9 @@
                  * In bubble charts, the radius is overridden and determined based on 
                  * the point's data value.
                  */
-                /** @ignore */
+                /** 
+                 * @ignore
+                 */
                 radius: null,
 
                 states: {
@@ -3249,7 +3264,7 @@
              * @type    {Number|String}
              * @sample  {highcharts} highcharts/plotoptions/bubble-size/ Bubble size
              * @since   3.0
-             * @product highcharts
+             * @product highcharts highstock
              */
             minSize: 8,
 
@@ -3259,10 +3274,11 @@
              * Can be either pixels (when no unit is given), or a percentage of
              * the smallest one of the plot width and height.
              * 
+             * @type    {Number|String}
              * @sample  {highcharts} highcharts/plotoptions/bubble-size/
              *          Bubble size
              * @since   3.0
-             * @product highcharts
+             * @product highcharts highstock
              */
             maxSize: '20%',
 
@@ -3290,7 +3306,6 @@
              *             Comparison of area and size
              * @default    area
              * @since      3.0.7
-             * @product    highcharts
              * @apioption  plotOptions.bubble.sizeBy
              */
 
@@ -3340,23 +3355,6 @@
             turboThreshold: 0,
 
             /**
-             * When [displayNegative](#plotOptions.bubble.displayNegative) is `false`,
-             * bubbles with lower Z values are skipped. When `displayNegative`
-             * is `true` and a [negativeColor](#plotOptions.bubble.negativeColor)
-             * is given, points with lower Z is colored.
-             * 
-             * @type    {Number}
-             * @sample  {highcharts} highcharts/plotoptions/bubble-negative/
-             *          Negative bubbles
-             * @default 0
-             * @since   3.0
-             * @product highcharts
-             */
-            zThreshold: 0,
-
-            zoneAxis: 'z'
-
-            /**
              * The minimum for the Z value range. Defaults to the highest Z value
              * in the data.
              * 
@@ -3383,6 +3381,23 @@
              * @product   highcharts
              * @apioption plotOptions.bubble.zMin
              */
+
+            /**
+             * When [displayNegative](#plotOptions.bubble.displayNegative) is `false`,
+             * bubbles with lower Z values are skipped. When `displayNegative`
+             * is `true` and a [negativeColor](#plotOptions.bubble.negativeColor)
+             * is given, points with lower Z is colored.
+             * 
+             * @type    {Number}
+             * @sample  {highcharts} highcharts/plotoptions/bubble-negative/
+             *          Negative bubbles
+             * @default 0
+             * @since   3.0
+             * @product highcharts
+             */
+            zThreshold: 0,
+
+            zoneAxis: 'z'
 
             // Prototype members
         }, {
@@ -3693,7 +3708,7 @@
          * @type      {Object}
          * @extends   series,plotOptions.bubble
          * @excluding dataParser,dataURL,stack
-         * @product   highcharts
+         * @product   highcharts highstock
          * @apioption series.bubble
          */
 
@@ -3765,6 +3780,11 @@
          * @apioption series.bubble.data.z
          */
 
+        /**
+         * @excluding enabled,enabledThreshold,height,radius,width
+         * @apioption series.bubble.marker
+         */
+
     }(Highcharts));
     (function(H) {
         /**
@@ -3793,11 +3813,7 @@
              */
             seriesType('mapbubble', 'bubble', {
 
-                animationLimit: 500,
 
-                tooltip: {
-                    pointFormat: '{point.name}: {point.z}'
-                }
 
                 /**
                  * The main color of the series. This color affects both the fill and
@@ -3822,28 +3838,14 @@
                  */
 
                 /**
-                 * Maximum bubble size. Bubbles will automatically size between the
-                 * `minSize` and `maxSize` to reflect the `z` value of each bubble.
-                 * Can be either pixels (when no unit is given), or a percentage of
-                 * the smallest one of the plot width and height.
-                 * 
-                 * @type {String}
-                 * @sample {highmaps} maps/demo/map-bubble/ Bubble size
-                 * @default 20%
-                 * @product highmaps
+                 * @sample    {highmaps} maps/demo/map-bubble/ Bubble size
+                 * @product   highmaps
                  * @apioption plotOptions.mapbubble.maxSize
                  */
 
                 /**
-                 * Minimum bubble size. Bubbles will automatically size between the
-                 * `minSize` and `maxSize` to reflect the `z` value of each bubble.
-                 * Can be either pixels (when no unit is given), or a percentage of
-                 * the smallest one of the plot width and height.
-                 * 
-                 * @type {String}
-                 * @sample {highmaps} maps/demo/map-bubble/ Bubble size
-                 * @default 8
-                 * @product highmaps
+                 * @sample    {highmaps} maps/demo/map-bubble/ Bubble size
+                 * @product   highmaps
                  * @apioption plotOptions.mapbubble.minSize
                  */
 
@@ -3928,6 +3930,12 @@
                  * @product highmaps
                  * @apioption plotOptions.mapbubble.zThreshold
                  */
+
+                animationLimit: 500,
+
+                tooltip: {
+                    pointFormat: '{point.name}: {point.z}'
+                }
 
                 // Prototype members
             }, {
@@ -4027,6 +4035,11 @@
          * @apioption series.mapbubble.data.z
          */
 
+        /**
+         * @excluding enabled,enabledThreshold,height,radius,width
+         * @apioption series.mapbubble.marker
+         */
+
     }(Highcharts));
     (function(H) {
         /**
@@ -4055,7 +4068,7 @@
          * @sample highcharts/demo/heatmap-canvas/
          *         Heavy heatmap
          * @extends {plotOptions.scatter}
-         * @excluding marker,pointRange
+         * @excluding marker,pointRange,pointPlacement
          * @product highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
@@ -4143,7 +4156,9 @@
                 padding: 0 // #3837
             },
 
-            /** @ignore */
+            /** 
+             * @ignore
+             */
             marker: null,
 
             /**	@ignore */
@@ -4156,7 +4171,9 @@
             states: {
 
                 hover: {
-                    /** @ignore */
+                    /** 
+                     * @ignore
+                     */
                     halo: false, // #3406, halo is disabled on heatmaps by default
 
                     /**
@@ -4290,7 +4307,7 @@
          * 
          * @type {Object}
          * @extends series,plotOptions.heatmap
-         * @excluding dataParser,dataURL,stack
+         * @excluding dataParser,dataURL,marker,pointRange,stack
          * @product highcharts highmaps
          * @apioption series.heatmap
          */

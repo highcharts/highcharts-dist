@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.6 (2018-02-05)
+ * @license  Highcharts JS v6.0.7 (2018-02-16)
  * Tilemap module
  *
  * (c) 2010-2017 Highsoft AS
@@ -146,7 +146,7 @@
          * @sample highcharts/demo/heatmap-canvas/
          *         Heavy heatmap
          * @extends {plotOptions.scatter}
-         * @excluding marker,pointRange
+         * @excluding marker,pointRange,pointPlacement
          * @product highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
@@ -225,7 +225,9 @@
                 padding: 0 // #3837
             },
 
-            /** @ignore */
+            /** 
+             * @ignore
+             */
             marker: null,
 
             /**	@ignore */
@@ -238,7 +240,9 @@
             states: {
 
                 hover: {
-                    /** @ignore */
+                    /** 
+                     * @ignore
+                     */
                     halo: false, // #3406, halo is disabled on heatmaps by default
 
                     /**
@@ -374,7 +378,7 @@
          * 
          * @type {Object}
          * @extends series,plotOptions.heatmap
-         * @excluding dataParser,dataURL,stack
+         * @excluding dataParser,dataURL,marker,pointRange,stack
          * @product highcharts highmaps
          * @apioption series.heatmap
          */
@@ -987,15 +991,6 @@
             pointPadding: 2,
 
             /**
-             * The shape of the tiles in the tilemap. Possible values are `hexagon`,
-             * `circle`, `diamond`, and `square`.
-             *
-             * @sample maps/demo/circlemap-africa Circular tile shapes
-             * @sample maps/demo/diamondmap Diamond tile shapes
-             */
-            tileShape: 'hexagon'
-
-            /**
              * The column size - how many X axis units each column in the tilemap
              * should span. Works as in [Heatmaps](#plotOptions.heatmap.colsize).
              *
@@ -1018,6 +1013,15 @@
              * @product highcharts highmaps
              * @apioption plotOptions.tilemap.rowsize
              */
+
+            /**
+             * The shape of the tiles in the tilemap. Possible values are `hexagon`,
+             * `circle`, `diamond`, and `square`.
+             *
+             * @sample maps/demo/circlemap-africa Circular tile shapes
+             * @sample maps/demo/diamondmap Diamond tile shapes
+             */
+            tileShape: 'hexagon'
 
             // Prototype functions
         }, {
@@ -1109,10 +1113,11 @@
          * To apply to all series of this specific type, apply it to [plotOptions.
          * tilemap](#plotOptions.tilemap).
          *
-         * @type {Object}
-         * @extends series,plotOptions.tilemap
-         * @excluding joinBy, shadow, allAreas, mapData
-         * @product highcharts highmaps
+         * @type      {Object}
+         * @extends   series,plotOptions.tilemap
+         * @excluding allAreas,dataParser,dataURL,joinBy,mapData,marker,pointRange,
+         *            shadow,stack
+         * @product   highcharts highmaps
          * @apioption series.tilemap
          */
 

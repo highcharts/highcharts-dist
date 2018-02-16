@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.6 (2018-02-05)
+ * @license  Highcharts JS v6.0.7 (2018-02-16)
  *
  * Indicator series type for Highstock
  *
@@ -16,7 +16,6 @@
     }
 }(function(Highcharts) {
     (function(H) {
-        /* eslint max-len: 0 */
 
         var pick = H.pick,
             each = H.each,
@@ -34,7 +33,8 @@
          */
         seriesType('sma', 'line',
             /**
-             * Simple moving average indicator (SMA). This series requires `linkedTo` option to be set.
+             * Simple moving average indicator (SMA). This series requires `linkedTo`
+             * option to be set.
              * 
              * @extends {plotOptions.line}
              * @product highstock
@@ -42,8 +42,8 @@
              * @since 6.0.0
              * @excluding
              * 			allAreas,colorAxis,compare,compareBase,joinBy,keys,stacking,
-             * 			showInNavigator,navigatorOptions,pointInterval,pointIntervalUnit,
-             *			pointPlacement,pointRange,pointStart,joinBy
+             * 			showInNavigator,navigatorOptions,pointInterval,
+             * 			pointIntervalUnit,pointPlacement,pointRange,pointStart,joinBy
              * @optionparent plotOptions.sma
              */
             {
@@ -68,7 +68,8 @@
                     valueDecimals: 4
                 },
                 /**
-                 * The main series ID that indicator will be based on. Required for this indicator.
+                 * The main series ID that indicator will be based on. Required for this
+                 * indicator.
                  * 
                  * @type {String}
                  * @since 6.0.0
@@ -77,8 +78,9 @@
                 linkedTo: undefined,
                 params: {
                     /**
-                     * The point index which indicator calculations will base.
-                     * For example using OHLC data, index=2 means the indicator will be calculated using Low values.
+                     * The point index which indicator calculations will base. For
+                     * example using OHLC data, index=2 means the indicator will be
+                     * calculated using Low values.
                      * 
                      * @type {Number}
                      * @since 6.0.0
@@ -130,7 +132,8 @@
                         indicator.yData = processedData.yData;
                         indicator.options.data = processedData.values;
 
-                        //	Removal of processedXData property is required because on first translate processedXData array is empty
+                        //	Removal of processedXData property is required because on
+                        //	first translate processedXData array is empty
                         if (indicator.bindTo.series === false) {
                             delete indicator.processedXData;
 

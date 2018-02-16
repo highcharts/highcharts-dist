@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.6 (2018-02-05)
+ * @license Highcharts JS v6.0.7 (2018-02-16)
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
  * (c) 2010-2017 Highsoft AS
@@ -69,7 +69,7 @@
          * @since 2.3.0
          */
         H.getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/6.0.6/gfx/vml-radial-gradient.png';
+            'http://code.highcharts.com/6.0.7/gfx/vml-radial-gradient.png';
 
 
         // Utilites
@@ -679,6 +679,12 @@
                         this.element.setAttribute(key, value);
                     }
                 },
+                getAttr: function(key) {
+                    if (this.docMode8) { // IE8 setAttribute bug
+                        return this.element[key];
+                    }
+                    return this.element.getAttribute(key);
+                },
                 classSetter: function(value) {
                     // IE8 Standards mode has problems retrieving the className unless set like this.
                     // IE8 Standards can't set the class name before the element is appended.
@@ -801,6 +807,12 @@
                 },
                 zIndexSetter: function(value, key, element) {
                     element.style[key] = value;
+                },
+                fillGetter: function() {
+                    return this.getAttr('fillcolor') || '';
+                },
+                strokeGetter: function() {
+                    return this.getAttr('strokecolor') || '';
                 }
             };
             VMLElement['stroke-opacitySetter'] = VMLElement['fill-opacitySetter'];

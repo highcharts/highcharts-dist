@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.0.6 (2018-02-05)
+ * @license Highcharts JS v6.0.7 (2018-02-16)
  *
  * (c) 2014 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -489,7 +489,6 @@
             },
 
 
-
             /**
              * Set options on specific levels. Takes precedence over series options,
              * but not point options.
@@ -621,6 +620,11 @@
              * @product highcharts
              * @apioption plotOptions.treemap.levels.level
              */
+
+
+
+
+
 
             // Prototype members
         }, {
@@ -1091,7 +1095,7 @@
                 tree = series.tree = series.getTree(); // @todo Only if series.isDirtyData is true
                 rootNode = series.nodeMap[rootId];
                 series.mapOptionsToLevel = getLevelOptions({
-                    from: rootNode.level > 0 ? rootNode.level : 1,
+                    from: rootNode.level + 1,
                     levels: options.levels,
                     to: tree.height,
                     defaults: {

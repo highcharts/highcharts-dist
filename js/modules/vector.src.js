@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.6 (2018-02-05)
+ * @license  Highcharts JS v6.0.7 (2018-02-16)
  * Vector plot series module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -48,7 +48,9 @@
              */
             lineWidth: 2,
 
-            /** @ignore */
+            /** 
+             * @ignore
+             */
             marker: null,
             /**
              * What part of the vector it should be rotated around. Can be one of

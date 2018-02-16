@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.6 (2018-02-05)
+ * @license  Highcharts JS v6.0.7 (2018-02-16)
  *
  * Bullet graph series type for Highcharts
  *
@@ -301,7 +301,7 @@
         /**
          * Individual target options for each point.
          * 
-         * @extends   series.bullet.targetOptions
+         * @extends   plotOptions.bullet.targetOptions
          * @product   highcharts
          * @apioption series.bullet.data.targetOptions
          */

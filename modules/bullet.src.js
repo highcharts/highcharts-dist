@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.0.6 (2018-02-05)
+ * @license  Highcharts JS v6.0.7 (2018-02-16)
  *
  * Bullet graph series type for Highcharts
  *
@@ -81,15 +81,6 @@
                     height: 3,
 
 
-                    /**
-                     * The border width of the rectangle representing the target.
-                     *
-                     * In styled mode, use class `highcharts-bullet-target` instead.
-                     * 
-                     * @since   6.0.0
-                     * @product highcharts
-                     */
-                    borderWidth: 0
 
                     /**
                      * The border color of the rectangle representing the target. When
@@ -118,6 +109,17 @@
                      * @product   highcharts
                      * @apioption plotOptions.bullet.targetOptions.color
                      */
+
+                    /**
+                     * The border width of the rectangle representing the target.
+                     *
+                     * In styled mode, use class `highcharts-bullet-target` instead.
+                     * 
+                     * @since   6.0.0
+                     * @product highcharts
+                     */
+                    borderWidth: 0
+
 
                 },
 
@@ -357,7 +359,7 @@
         /**
          * Individual target options for each point.
          * 
-         * @extends   series.bullet.targetOptions
+         * @extends   plotOptions.bullet.targetOptions
          * @product   highcharts
          * @apioption series.bullet.data.targetOptions
          */
