@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.0.7 (2018-02-16)
+  Highcharts JS v6.1.0 (2018-04-13)
 
  Variable Pie module for Highcharts
 
