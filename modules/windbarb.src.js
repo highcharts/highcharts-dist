@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.0 (2018-04-13)
+ * @license  Highcharts JS v6.1.1 (2018-06-27)
  * Wind barb series module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -545,4 +545,8 @@
 		 */
 
 	}(Highcharts, onSeriesMixin));
+	return (function () {
+
+
+	}());
 }));

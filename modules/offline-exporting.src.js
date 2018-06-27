@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  * Client side exporting module
  *
  * (c) 2015 Torstein Honsi / Oystein Moseng
@@ -25,7 +25,8 @@
 
 		/* global MSBlobBuilder */
 
-		var merge = Highcharts.merge,
+		var addEvent = Highcharts.addEvent,
+		    merge = Highcharts.merge,
 		    win = Highcharts.win,
 		    nav = win.navigator,
 		    doc = win.document,
@@ -347,7 +348,7 @@
 		                successCallback();
 		            }
 		        } catch (e) {
-		            failCallback();
+		            failCallback(e);
 		        }
 		    }
 
@@ -368,7 +369,7 @@
 		                successCallback();
 		            }
 		        } catch (e) {
-		            failCallback();
+		            failCallback(e);
 		        }
 		    } else if (imageType === 'application/pdf') {
 		        if (win.jsPDF && win.svg2pdf) {
@@ -409,7 +410,7 @@
 		                        successCallback();
 		                    }
 		                } catch (e) {
-		                    failCallback();
+		                    failCallback(e);
 		                }
 		            }, function () {
 		                // Failed due to tainted canvas
@@ -435,7 +436,7 @@
 		                                successCallback();
 		                            }
 		                        } catch (e) {
-		                            failCallback();
+		                            failCallback(e);
 		                        } finally {
 		                            finallyHandler();
 		                        }
@@ -512,20 +513,11 @@
 		            }
 		        };
 
-		    // Hook into getSVG to get a copy of the chart copy's container
-		    Highcharts.wrap(
-		        Highcharts.Chart.prototype,
-		        'getChartHTML',
-		        function (proceed) {
-		            var ret = proceed.apply(
-		                this,
-		                Array.prototype.slice.call(arguments, 1)
-		            );
-		            chartCopyOptions = this.options;
-		            chartCopyContainer = this.container.cloneNode(true);
-		            return ret;
-		        }
-		    );
+		    // Hook into getSVG to get a copy of the chart copy's container (#8273)
+		    chart.unbindGetSVG = addEvent(chart, 'getSVG', function (e) {
+		        chartCopyOptions = e.chartCopy.options;
+		        chartCopyContainer = e.chartCopy.container.cloneNode(true);
+		    });
 
 		    // Trigger hook to get chart copy
 		    chart.getSVGForExport(options, chartOptions);
@@ -556,8 +548,11 @@
 		            );
 		        }
 		    } catch (e) {
-		        failCallback();
+		        failCallback(e);
 		    }
+
+		    // Clean up
+		    chart.unbindGetSVG();
 		};
 
 		/**
@@ -578,12 +573,12 @@
 		) {
 		    var chart = this,
 		        options = Highcharts.merge(chart.options.exporting, exportingOptions),
-		        fallbackToExportServer = function () {
+		        fallbackToExportServer = function (err) {
 		            if (options.fallbackToExportServer === false) {
 		                if (options.error) {
-		                    options.error(options);
+		                    options.error(options, err);
 		                } else {
-		                    throw 'Fallback to export server disabled';
+		                    Highcharts.error(28, true); // Fallback disabled
 		                }
 		            } else {
 		                chart.exportChart(options);
@@ -596,7 +591,9 @@
 		                svg.indexOf('<foreignObject') > -1 &&
 		                options.type !== 'image/svg+xml'
 		            ) {
-		                fallbackToExportServer();
+		                fallbackToExportServer(
+		                    'Image type not supported for charts with embedded HTML'
+		                );
 		            } else {
 		                Highcharts.downloadSVGLocal(
 		                    svg,
@@ -627,7 +624,9 @@
 		            chart.container.getElementsByTagName('image').length
 		        )
 		    ) {
-		        fallbackToExportServer();
+		        fallbackToExportServer(
+		            'Image type not supported for this chart/browser.'
+		        );
 		        return;
 		    }
 
@@ -641,7 +640,7 @@
 
 		// Extend the default options to use the local exporter logic
 		merge(true, Highcharts.getOptions().exporting, {
-		    libURL: 'https://code.highcharts.com/6.1.0/lib/',
+		    libURL: 'https://code.highcharts.com/6.1.1/lib/',
 
 		    // When offline-exporting is loaded, redefine the menu item definitions
 		    // related to download.
@@ -681,4 +680,8 @@
 		});
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

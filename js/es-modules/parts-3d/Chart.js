@@ -44,6 +44,14 @@ addEvent(Chart, 'afterInit', function () {
         });
     }
 });
+// And do it on dynamic add (#8407)
+addEvent(Chart, 'addSeries', function (e) {
+    if (this.is3d()) {
+        if (e.options.type === 'scatter') {
+            e.options.type = 'scatter3d';
+        }
+    }
+});
 
 /**
  * Calculate scale of the 3D view. That is required to
@@ -169,7 +177,7 @@ var defaultOptions = H.getOptions();
 /**
  * @optionparent
  */
-var extendedOptions =     {
+var extendedOptions = {
 
     chart: {
 
@@ -1318,31 +1326,31 @@ Chart.prototype.get3dFrame = function () {
             { x: xp, y: yp, z: zm },
             { x: xm, y: yp, z: zm }
         ]),
-        topOrientation    = faceOrientation([
+        topOrientation = faceOrientation([
             { x: xm, y: ym, z: zm },
             { x: xp, y: ym, z: zm },
             { x: xp, y: ym, z: zp },
             { x: xm, y: ym, z: zp }
         ]),
-        leftOrientation   = faceOrientation([
+        leftOrientation = faceOrientation([
             { x: xm, y: ym, z: zm },
             { x: xm, y: ym, z: zp },
             { x: xm, y: yp, z: zp },
             { x: xm, y: yp, z: zm }
         ]),
-        rightOrientation  = faceOrientation([
+        rightOrientation = faceOrientation([
             { x: xp, y: ym, z: zp },
             { x: xp, y: ym, z: zm },
             { x: xp, y: yp, z: zm },
             { x: xp, y: yp, z: zp }
         ]),
-        frontOrientation  = faceOrientation([
+        frontOrientation = faceOrientation([
             { x: xm, y: yp, z: zm },
             { x: xp, y: yp, z: zm },
             { x: xp, y: ym, z: zm },
             { x: xm, y: ym, z: zm }
         ]),
-        backOrientation   = faceOrientation([
+        backOrientation = faceOrientation([
             { x: xm, y: ym, z: zp },
             { x: xp, y: ym, z: zp },
             { x: xp, y: yp, z: zp },
@@ -1660,7 +1668,7 @@ H.Fx.prototype.matrixSetter = function () {
     if (this.pos < 1 &&
             (H.isArray(this.start) || H.isArray(this.end))) {
         var start = this.start || [ 1, 0, 0, 1, 0, 0];
-        var end   = this.end   || [ 1, 0, 0, 1, 0, 0];
+        var end = this.end || [ 1, 0, 0, 1, 0, 0];
         interpolated = [];
         for (var i = 0; i < 6; i++) {
             interpolated.push(this.pos * end[i] + (1 - this.pos) * start[i]);

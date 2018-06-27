@@ -63,7 +63,7 @@ var addEvent = H.addEvent,
  * options.yAxis.
  *
  * @class Highcharts.Axis
- * @memberOf Highcharts
+ * @memberof Highcharts
  * @param {Highcharts.Chart} chart - The Chart instance to apply the axis on.
  * @param {Object} options - Axis options
  */
@@ -78,7 +78,8 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
      * though if the chart is inverted this is the vertical axis. In case of
      * multiple axes, the xAxis node is an array of configuration objects.
      *
-     * See [the Axis object](#Axis) for programmatic access to the axis.
+     * See [the Axis object](/class-reference/Highcharts.Axis) for
+     * programmatic access to the axis.
      *
      * @productdesc {highmaps}
      * In Highmaps, the axis is hidden, but it is used behind the scenes to
@@ -346,7 +347,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * different units may be used, for example the `day` unit can be used
          * on midnight and `hour` unit be used for intermediate values on the
          * same axis. For an overview of the replacement codes, see
-         * [dateFormat](#Highcharts.dateFormat). Defaults to:
+         * [dateFormat](/class-reference/Highcharts#dateFormat). Defaults to:
          *
          * <pre>{
          *     millisecond: '%H:%M:%S.%L',
@@ -1510,7 +1511,8 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
      * In case of multiple axes, the yAxis node is an array of
      * configuration objects.
      *
-     * See [the Axis object](#Axis) for programmatic access to the axis.
+     * See [the Axis object](/class-reference/Highcharts.Axis) for programmatic
+     * access to the axis.
      *
      * @extends      xAxis
      * @excluding    ordinal,overscroll
@@ -1841,7 +1843,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * The Chart that the axis belongs to.
          *
          * @name     chart
-         * @memberOf Axis
+         * @memberof Axis
          * @type     {Chart}
          */
         axis.chart = chart;
@@ -1850,7 +1852,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * Whether the axis is horizontal.
          *
          * @name     horiz
-         * @memberOf Axis
+         * @memberof Axis
          * @type     {Boolean}
          */
         axis.horiz = chart.inverted && !axis.isZAxis ? !isXAxis : isXAxis;
@@ -1864,7 +1866,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * {@link Chart.xAxis}.
          *
          * @name     coll
-         * @memberOf Axis
+         * @memberof Axis
          * @type     {String}
          */
         axis.coll = axis.coll || (isXAxis ? 'xAxis' : 'yAxis');
@@ -1878,7 +1880,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * bottom and 3 is left.
          *
          * @name     side
-         * @memberOf Axis
+         * @memberof Axis
          * @type     {Number}
          */
         axis.side = userOptions.side || (axis.horiz ?
@@ -1907,7 +1909,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * option, but inverted charts have reversed xAxis by default.
          *
          * @name     reversed
-         * @memberOf Axis
+         * @memberof Axis
          * @type     {Boolean}
          */
         axis.reversed = options.reversed;
@@ -1965,7 +1967,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * {@link Axis#getExtremes}.
          *
          * @name     max
-         * @memberOf Axis
+         * @memberof Axis
          * @type     {Number}
          */
         axis.max = null;
@@ -1975,7 +1977,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * {@link Axis#getExtremes}.
          *
          * @name     min
-         * @memberOf Axis
+         * @memberof Axis
          * @type     {Number}
          */
         axis.min = null;
@@ -1985,7 +1987,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * The processed crosshair options.
          *
          * @name     crosshair
-         * @memberOf Axis
+         * @memberof Axis
          * @type     {AxisCrosshairOptions}
          */
         axis.crosshair = pick(
@@ -2011,8 +2013,8 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * All series associated to the axis.
          *
          * @name     series
-         * @memberOf Axis
-         * @type     {Array.<Series>}
+         * @memberof Axis
+         * @type     {Array<Series>}
          */
         axis.series = axis.series || []; // populated by Series
 
@@ -2379,7 +2381,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
      *         If given, return the plot line path of a pixel position on the
      *         axis.
      *
-     * @return {Array.<String|Number>}
+     * @return {Array<String|Number>}
      *         The SVG path definition for the plot line.
      */
     getPlotLinePath: function (value, lineWidth, old, force, translatedValue) {
@@ -2452,7 +2454,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
      * @param  {Number} max
      *         Axis maximum.
      *
-     * @return {Array.<Number>}
+     * @return {Array<Number>}
      *         An array of axis values where ticks should be placed.
      */
     getLinearTickPositions: function (tickInterval, min, max) {
@@ -2523,7 +2525,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
      * Internal function to return the minor tick positions. For logarithmic
      * axes, the same logic as for major ticks is reused.
      *
-     * @return {Array.<Number>}
+     * @return {Array<Number>}
      *         An array of axis values where ticks should be placed.
      */
     getMinorTickPositions: function () {
@@ -3039,7 +3041,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
                 if (!defined(hardMin) && minPadding) {
                     axis.min -= length * minPadding;
                 }
-                if (!defined(hardMax)  && maxPadding) {
+                if (!defined(hardMax) && maxPadding) {
                     axis.max += length * maxPadding;
                 }
             }
@@ -3841,7 +3843,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
      *
      * @param  {String} prefix
      *         'tick' or 'minorTick'
-     * @return {Array.<Number>}
+     * @return {Array<Number>}
      *         An array of tickLength and tickWidth
      */
     tickSize: function (prefix) {
@@ -3959,6 +3961,11 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
      * rendering and placement.
      *
      * @private
+     *
+     * @param  {Object} tick Optionally, calculate the slot width basing on
+     * tick label. It is used in highcharts-3d module, where the slots has
+     * different widths depending on perspective angles.
+     *
      * @return {Number}
      *         The pixel width allocated to each axis label.
      */
@@ -4007,6 +4014,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
             tickPositions = this.tickPositions,
             ticks = this.ticks,
             labelOptions = this.options.labels,
+            labelStyleOptions = (labelOptions && labelOptions.style || {}),
             horiz = this.horiz,
             slotWidth = this.getSlotWidth(),
             innerWidth = Math.max(
@@ -4123,6 +4131,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
         each(tickPositions, function (pos) {
             var tick = ticks[pos],
                 label = tick && tick.label,
+                widthOption = labelStyleOptions.width,
                 css = {};
             if (label) {
                 // This needs to go before the CSS in old IE (#4502)
@@ -4130,7 +4139,10 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
 
                 if (
                     commonWidth &&
-                    !(labelOptions.style && labelOptions.style.width) &&
+                    !widthOption &&
+                    // Setting width in this case messes with the bounding box
+                    // (#7975)
+                    labelStyleOptions.whiteSpace !== 'nowrap' &&
                     (
                         // Speed optimizing, #7656
                         commonWidth < label.textPxLength ||
@@ -4147,7 +4159,16 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
                     }
                     label.css(css);
 
+                // Reset previously shortened label (#8210)
+                } else if (
+                    label.styles &&
+                    label.styles.width &&
+                    !css.width &&
+                    !widthOption
+                ) {
+                    label.css({ width: null });
                 }
+
                 delete label.specificTextOverflow;
                 tick.rotation = attr.rotation;
             }
@@ -4275,7 +4296,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
             ticks = axis.ticks,
             horiz = axis.horiz,
             side = axis.side,
-            invertedSide = chart.inverted  &&
+            invertedSide = chart.inverted &&
                 !axis.isZAxis ? [1, 0, 3, 2][side] : side,
             hasData,
             showAxis,

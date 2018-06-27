@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.0 (2018-04-13)
+ * @license  Highcharts JS v6.1.1 (2018-06-27)
  *
  * Variable Pie module for Highcharts
  *
@@ -290,7 +290,7 @@
 		                pointRadiusX,
 		                pointRadiusY;
 
-		            series.startAngleRad =  startAngleRad;
+		            series.startAngleRad = startAngleRad;
 		            series.endAngleRad = endAngleRad;
 		            // Use calculateExtremes to get series.radii array.
 		            series.calculateExtremes();
@@ -485,4 +485,8 @@
 
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

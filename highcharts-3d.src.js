@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  *
  * 3D features for Highcharts JS
  *
@@ -61,15 +61,17 @@
 		    };
 		}
 
-		function perspective3D(coordinate, origin, distance) {
+		// Perspective3D function is available in global Highcharts scope because is
+		// needed also outside of perspective() function (#8042).
+		H.perspective3D = function (coordinate, origin, distance) {
 		    var projection = ((distance > 0) && (distance < Number.POSITIVE_INFINITY)) ?
-		        distance / (coordinate.z + origin.z + distance) :
-		        1;
+		    distance / (coordinate.z + origin.z + distance) :
+		    1;
 		    return {
 		        x: coordinate.x * projection,
 		        y: coordinate.y * projection
 		    };
-		}
+		};
 
 		/**
 		 * Transforms a given array of points according to the angles in chart.options.
@@ -113,7 +115,7 @@
 		                angles
 		            ),
 		            // Apply perspective
-		            coordinate = perspective3D(rotated, origin, origin.vd);
+		            coordinate = H.perspective3D(rotated, origin, origin.vd);
 
 		        // Apply translation
 		        coordinate.x = coordinate.x * scale + origin.x;
@@ -1163,6 +1165,14 @@
 		        });
 		    }
 		});
+		// And do it on dynamic add (#8407)
+		addEvent(Chart, 'addSeries', function (e) {
+		    if (this.is3d()) {
+		        if (e.options.type === 'scatter') {
+		            e.options.type = 'scatter3d';
+		        }
+		    }
+		});
 
 		/**
 		 * Calculate scale of the 3D view. That is required to
@@ -1288,7 +1298,7 @@
 		/**
 		 * @optionparent
 		 */
-		var extendedOptions =     {
+		var extendedOptions = {
 
 		    chart: {
 
@@ -2421,31 +2431,31 @@
 		            { x: xp, y: yp, z: zm },
 		            { x: xm, y: yp, z: zm }
 		        ]),
-		        topOrientation    = faceOrientation([
+		        topOrientation = faceOrientation([
 		            { x: xm, y: ym, z: zm },
 		            { x: xp, y: ym, z: zm },
 		            { x: xp, y: ym, z: zp },
 		            { x: xm, y: ym, z: zp }
 		        ]),
-		        leftOrientation   = faceOrientation([
+		        leftOrientation = faceOrientation([
 		            { x: xm, y: ym, z: zm },
 		            { x: xm, y: ym, z: zp },
 		            { x: xm, y: yp, z: zp },
 		            { x: xm, y: yp, z: zm }
 		        ]),
-		        rightOrientation  = faceOrientation([
+		        rightOrientation = faceOrientation([
 		            { x: xp, y: ym, z: zp },
 		            { x: xp, y: ym, z: zm },
 		            { x: xp, y: yp, z: zm },
 		            { x: xp, y: yp, z: zp }
 		        ]),
-		        frontOrientation  = faceOrientation([
+		        frontOrientation = faceOrientation([
 		            { x: xm, y: yp, z: zm },
 		            { x: xp, y: yp, z: zm },
 		            { x: xp, y: ym, z: zm },
 		            { x: xm, y: ym, z: zm }
 		        ]),
-		        backOrientation   = faceOrientation([
+		        backOrientation = faceOrientation([
 		            { x: xm, y: ym, z: zp },
 		            { x: xp, y: ym, z: zp },
 		            { x: xp, y: yp, z: zp },
@@ -2763,7 +2773,7 @@
 		    if (this.pos < 1 &&
 		            (H.isArray(this.start) || H.isArray(this.end))) {
 		        var start = this.start || [ 1, 0, 0, 1, 0, 0];
-		        var end   = this.end   || [ 1, 0, 0, 1, 0, 0];
+		        var end = this.end || [ 1, 0, 0, 1, 0, 0];
 		        interpolated = [];
 		        for (var i = 0; i < 6; i++) {
 		            interpolated.push(this.pos * end[i] + (1 - this.pos) * start[i]);
@@ -2831,6 +2841,7 @@
 		    extend = H.extend,
 		    merge = H.merge,
 		    perspective = H.perspective,
+		    perspective3D = H.perspective3D,
 		    pick = H.pick,
 		    shapeArea = H.shapeArea,
 		    splat = H.splat,
@@ -3037,8 +3048,8 @@
 		            path.push(
 		                'M', fromPath[i + 1], fromPath[i + 2],
 		                'L', fromPath[i + 4], fromPath[i + 5],
-		                'L',   toPath[i + 4],   toPath[i + 5],
-		                'L',   toPath[i + 1],   toPath[i + 2],
+		                'L', toPath[i + 4], toPath[i + 5],
+		                'L', toPath[i + 1], toPath[i + 2],
 		                'Z');
 		        }
 		    }
@@ -3231,8 +3242,6 @@
 		            projected.y * projected.matrix[2];
 		        projected.matrix[5] -= projected.x * projected.matrix[1] +
 		            projected.y * projected.matrix[3];
-		    } else {
-		        projected.matrix = null;
 		    }
 
 		    return projected;
@@ -3265,8 +3274,8 @@
 		    if (this.chart.is3d() && this.coll !== 'colorAxis') {
 		        if (e.point) {
 		            e.point.crosshairPos = this.isXAxis ?
-		                e.point.plotXold || e.point.plotX :
-		                this.len - (e.point.plotYold || e.point.plotY);
+		                e.point.axisXpos :
+		                this.len - (e.point.axisYpos);
 		        }
 		    }
 		});
@@ -3383,6 +3392,74 @@
 		        zAxis.setScale();
 		    });
 		});
+		/**
+		 * Wrap getSlotWidth function to calculate individual width value
+		 * for each slot (#8042).
+		 */
+		wrap(Axis.prototype, 'getSlotWidth', function (proceed, tick) {
+		    if (this.chart.is3d() &&
+		        tick &&
+		        tick.label &&
+		        this.categories
+		    ) {
+		        var chart = this.chart,
+		            ticks = this.ticks,
+		            gridGroup = this.gridGroup.element.childNodes,
+		            firstGridLine = gridGroup[0].getBBox(),
+		            frame3DLeft = chart.frameShapes.left.getBBox(),
+		            options3d = chart.options.chart.options3d,
+		            origin = {
+		                x: chart.plotWidth / 2,
+		                y: chart.plotHeight / 2,
+		                z: options3d.depth / 2,
+		                vd: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0)
+		            },
+		            labelPos,
+		            prevLabelPos,
+		            nextLabelPos,
+		            slotWidth,
+		            tickId = tick.pos,
+		            prevTick = ticks[tickId - 1],
+		            nextTick = ticks[tickId + 1];
+
+		        // Check whether the tick is not the first one and previous tick exists,
+		        // then calculate position of previous label.
+		        if (tickId !== 0 && prevTick) {
+		            prevLabelPos = perspective3D({
+		                x: prevTick.label.xy.x,
+		                y: prevTick.label.xy.y,
+		                z: null
+		            }, origin, origin.vd);
+		        }
+		        // If next label position is defined, then recalculate its position
+		        // basing on the perspective.
+		        if (nextTick && nextTick.label.xy) {
+		            nextLabelPos = perspective3D({
+		                x: nextTick.label.xy.x,
+		                y: nextTick.label.xy.y,
+		                z: null
+		            }, origin, origin.vd);
+		        }
+		        labelPos = {
+		            x: tick.label.xy.x,
+		            y: tick.label.xy.y,
+		            z: null
+		        };
+
+		        labelPos = perspective3D(labelPos, origin, origin.vd);
+
+		        // If tick is first one, check whether next label position is already
+		        // calculated, then return difference between the first and the second
+		        // label. If there is no next label position calculated, return the
+		        // difference between the first grid line and left 3d frame.
+		        slotWidth = Math.abs(prevLabelPos ?
+		            labelPos.x - prevLabelPos.x : nextLabelPos ?
+		                nextLabelPos.x - labelPos.x : firstGridLine.x - frame3DLeft.x
+		        );
+		        return slotWidth;
+		    }
+		    return proceed.apply(this, [].slice.call(arguments, 1));
+		});
 
 	}(Highcharts));
 	(function (H) {
@@ -3433,10 +3510,14 @@
 		            rawPoint.plotZ = 0;
 		        }
 
+		        rawPoint.axisXpos = rawPoint.plotX;
+		        rawPoint.axisYpos = rawPoint.plotY;
+		        rawPoint.axisZpos = rawPoint.plotZ;
+
 		        rawPoints.push({
-		            x: pick(rawPoint.plotXold, rawPoint.plotX),
-		            y: pick(rawPoint.plotYold, rawPoint.plotY),
-		            z: pick(rawPoint.plotZold, rawPoint.plotZ)
+		            x: rawPoint.plotX,
+		            y: rawPoint.plotY,
+		            z: rawPoint.plotZ
 		        });
 		    }
 
@@ -3445,10 +3526,6 @@
 		    for (i = 0; i < series.data.length; i++) {
 		        rawPoint = series.data[i];
 		        projectedPoint = projectedPoints[i];
-
-		        rawPoint.plotXold = rawPoint.plotX;
-		        rawPoint.plotYold = rawPoint.plotY;
-		        rawPoint.plotZold = rawPoint.plotZ;
 
 		        rawPoint.plotX = projectedPoint.x;
 		        rawPoint.plotY = projectedPoint.y;
@@ -4309,4 +4386,8 @@
 
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

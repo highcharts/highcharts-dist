@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.0 (2018-04-13)
+ * @license  Highcharts JS v6.1.1 (2018-06-27)
  *
  * (c) 2010-2017 Highsoft AS
  * Author: Sebastian Domas
@@ -124,7 +124,7 @@
 		         * @returns {Values} object containing computed money flow data
 		        **/
 		        getMoneyFlow: function (xData, seriesYData, volumeSeriesYData, period) {
-		            var    len = seriesYData.length,
+		            var len = seriesYData.length,
 		                moneyFlowVolume = [],
 		                sumVolume = 0,
 		                sumMoneyFlowVolume = 0,
@@ -248,4 +248,8 @@
 		 */
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

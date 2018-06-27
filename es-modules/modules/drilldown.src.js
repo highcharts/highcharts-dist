@@ -55,8 +55,8 @@ extend(defaultOptions.lang, {
  *
  * The drilldown feature requires the drilldown.js file to be loaded,
  * found in the modules directory of the download package, or online at
- * (code.highcharts.com/modules/drilldown.js)[code.highcharts.com/modules/
- * drilldown.js].
+ * [code.highcharts.com/modules/drilldown.js
+ * ](code.highcharts.com/modules/drilldown.js).
  *
  * @type {Object}
  * @optionparent drilldown
@@ -356,7 +356,7 @@ H.SVGRenderer.prototype.Element.prototype.fadeIn = function (animation) {
  * https://api.highcharts.com/highcharts/drilldown.series|drilldown.series}
  * options structure.
  *
- * @memberOf Highcharts.Chart
+ * @memberof Highcharts.Chart
  * @function #addSeriesAsDrilldown
  *
  * @param  {Highcharts.Point} point
@@ -561,7 +561,7 @@ Chart.prototype.showDrillUpButton = function () {
  * will drill up to the parent series. Requires the drilldown module.
  *
  * @function drillUp
- * @memberOf Highcharts.Chart
+ * @memberof Highcharts.Chart
  */
 Chart.prototype.drillUp = function () {
     if (!this.drilldownLevels || this.drilldownLevels.length === 0) {

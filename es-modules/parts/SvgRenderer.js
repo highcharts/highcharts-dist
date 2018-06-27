@@ -80,7 +80,7 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
      * For labels, these CSS properties are applied to the `text` node directly.
      *
      * @private
-     * @type {Array.<string>}
+     * @type {Array<String>}
      */
     textProps: ['direction', 'fontSize', 'fontWeight', 'fontFamily',
         'fontStyle', 'color', 'lineHeight', 'width', 'textAlign',
@@ -103,7 +103,7 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
          * node, but may also represent more nodes.
          *
          * @name  element
-         * @memberOf SVGElement
+         * @memberof SVGElement
          * @type {SVGDOMNode|HTMLDOMNode}
          */
         this.element = nodeName === 'span' ?
@@ -114,7 +114,7 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
          * The renderer that the SVGElement belongs to.
          *
          * @name renderer
-         * @memberOf SVGElement
+         * @memberof SVGElement
          * @type {SVGRenderer}
          */
         this.renderer = renderer;
@@ -172,11 +172,11 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
      *    to the shape. Ranges 0-1.
      * @property {Number} radialGradient.r Radius relative to the shape. Ranges
      *    0-1.
-     * @property {Array.<Array>} stops The first item in each tuple is the
-     *    position in the gradient, where 0 is the start of the gradient and 1
-     *    is the end of the gradient. Multiple stops can be applied. The second
-     *    item is the color for each stop. This color can also be given in the
-     *    rgba format.
+     * @property {Array<Array<Number|String>>} stops The first item in each
+     *    tuple is the position in the gradient, where 0 is the start of the
+     *    gradient and 1 is the end of the gradient. Multiple stops can be
+     *    applied. The second item is the color for each stop. This color can
+     *    also be given in the rgba format.
      *
      * @example
      * // Linear gradient used as a color option
@@ -809,13 +809,19 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
             }
 
             // Get the text width from style
-            textWidth = this.textWidth = (
-                styles &&
-                styles.width &&
-                styles.width !== 'auto' &&
-                elem.nodeName.toLowerCase() === 'text' &&
-                pInt(styles.width)
-            );
+            if (styles) {
+                // Previously set, unset it (#8234)
+                if (styles.width === null || styles.width === 'auto') {
+                    delete this.textWidth;
+
+                // Apply new
+                } else if (
+                    elem.nodeName.toLowerCase() === 'text' &&
+                    styles.width
+                ) {
+                    textWidth = this.textWidth = pInt(styles.width);
+                }
+            }
 
             // store object
             this.styles = styles;
@@ -1773,14 +1779,17 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
 
         if (defined(value)) {
             // So we can read it for other elements in the group
-            element.zIndex = value;
+            element.setAttribute('data-z-index', value);
 
             value = +value;
             if (this[key] === value) { // Only update when needed (#3865)
                 run = false;
             }
-            this[key] = value;
+        } else if (defined(this[key])) {
+            element.removeAttribute('data-z-index');
         }
+
+        this[key] = value;
 
         // Insert according to this and other elements' zIndex. Before .add() is
         // called, nothing is done. Then on add, or by later calls to
@@ -1795,7 +1804,7 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
             childNodes = parentNode.childNodes;
             for (i = childNodes.length - 1; i >= 0 && !inserted; i--) {
                 otherElement = childNodes[i];
-                otherZIndex = otherElement.zIndex;
+                otherZIndex = otherElement.getAttribute('data-z-index');
                 undefinedOtherZIndex = !defined(otherZIndex);
 
                 if (otherElement !== element) {
@@ -1960,7 +1969,7 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
         /**
          * The root `svg` node of the renderer.
          * @name box
-         * @memberOf SVGRenderer
+         * @memberof SVGRenderer
          * @type {SVGDOMElement}
          */
         this.box = element;
@@ -1968,7 +1977,7 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
          * The wrapper for the root `svg` node of the renderer.
          *
          * @name boxWrapper
-         * @memberOf SVGRenderer
+         * @memberof SVGRenderer
          * @type {SVGElement}
          */
         this.boxWrapper = boxWrapper;
@@ -2002,7 +2011,7 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
          * A pointer to the `defs` node of the root SVG.
          * @type {SVGElement}
          * @name defs
-         * @memberOf SVGRenderer
+         * @memberof SVGRenderer
          */
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
@@ -2558,7 +2567,8 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
 
                                         // a single word is pressing it out
                                         if (actualWidth > width) {
-                                            width = actualWidth;
+                                            // one more pixel for Chrome, #3158
+                                            width = actualWidth + 1;
                                         }
                                     } else { // append to existing line tspan
                                         tspan.removeChild(tspan.firstChild);
@@ -2588,7 +2598,7 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
                 );
             });
 
-            if (wasTooLong) {
+            if (ellipsis && wasTooLong) {
                 wrapper.attr(
                     'title',
                     unescapeEntities(wrapper.textStr, ['&lt;', '&gt;']) // #7179
@@ -3114,6 +3124,10 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
                     // requries regex shim to fix later
                     el.setAttribute('hc-svg-href', src);
                 }
+            },
+            onDummyLoad = function (e) {
+                setSVGImageSource(elemWrapper.element, src);
+                onload.call(elemWrapper, e);
             };
 
         // optional properties
@@ -3138,11 +3152,11 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
                 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /* eslint-disable-line */
             );
             dummy = new win.Image();
-            addEvent(dummy, 'load', function (e) {
-                setSVGImageSource(elemWrapper.element, src);
-                onload.call(elemWrapper, e);
-            });
+            addEvent(dummy, 'load', onDummyLoad);
             dummy.src = src;
+            if (dummy.complete) {
+                onDummyLoad({});
+            }
         } else {
             setSVGImageSource(elemWrapper.element, src);
         }
@@ -3845,6 +3859,7 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
                 defined(text.textStr) &&
                 text.getBBox()
             ); // #3295 && 3514 box failure when string equals 0
+
             wrapper.width = (
                 (width || bBox.width || 0) +
                 2 * padding +
@@ -3855,7 +3870,6 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
             // Update the label-scoped y offset
             baselineOffset = padding +
                 renderer.fontMetrics(style && style.fontSize, text).b;
-
 
             if (needsBox) {
 
@@ -3911,6 +3925,12 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
             // update if anything changed
             if (textX !== text.x || textY !== text.y) {
                 text.attr('x', textX);
+                // #8159 - prevent misplaced data labels in treemap
+                // (useHTML: true)
+                if (text.hasBoxWidthChanged) {
+                    bBox = text.getBBox(true);
+                    updateBoxSize();
+                }
                 if (textY !== undefined) {
                     text.attr('y', textY);
                 }
@@ -3970,13 +3990,13 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
         wrapper['text-alignSetter'] = function (value) {
             textAlign = value;
         };
-        wrapper.paddingSetter =  function (value) {
+        wrapper.paddingSetter = function (value) {
             if (defined(value) && value !== padding) {
                 padding = wrapper.padding = value;
                 updateTextPadding();
             }
         };
-        wrapper.paddingLeftSetter =  function (value) {
+        wrapper.paddingLeftSetter = function (value) {
             if (defined(value) && value !== paddingLeft) {
                 paddingLeft = value;
                 updateTextPadding();

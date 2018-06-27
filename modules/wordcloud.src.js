@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  *
  * (c) 2016 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -59,7 +59,226 @@
 
 		return draw;
 	}());
-	(function (H, drawPoint) {
+	var collision = (function (H) {
+		var deg2rad = H.deg2rad,
+		    find = H.find,
+		    isArray = H.isArray,
+		    isNumber = H.isNumber,
+		    map = H.map,
+		    reduce = H.reduce;
+
+		/**
+		 * Alternative solution to correctFloat.
+		 * E.g H.correctFloat(123, 2) returns 120, when it should be 123.
+		 */
+		var correctFloat = function (number, precision) {
+		    var p = isNumber(precision) ? precision : 14,
+		        magnitude = Math.pow(10, p);
+		    return Math.round(number * magnitude) / magnitude;
+		};
+
+		/**
+		 * Calculates the normals to a line between two points.
+		 * @param {Array} p1 Start point for the line. Array of x and y value.
+		 * @param {Array} p2 End point for the line. Array of x and y value.
+		 * @returns {Array} Returns the two normals in an array.
+		 */
+		var getNormals = function getNormal(p1, p2) {
+		    var dx = p2[0] - p1[0], // x2 - x1
+		        dy = p2[1] - p1[1]; // y2 - y1
+		    return [
+		        [-dy, dx],
+		        [dy, -dx]
+		    ];
+		};
+
+		/**
+		 * Calculates the dot product of two coordinates. The result is a scalar value.
+		 * @param {Array} a The x and y coordinates of the first point.
+		 * @param {Array} b The x and y coordinates of the second point.
+		 * @returns {Number} Returns the dot product of a and b.
+		 */
+		var dotProduct = function dotProduct(a, b) {
+		    var ax = a[0],
+		        ay = a[1],
+		        bx = b[0],
+		        by = b[1];
+		    return ax * bx + ay * by;
+		};
+
+		/**
+		 * Projects a polygon onto a coordinate.
+		 * @param {Array} polygon Array of points in a polygon.
+		 * @param {Array} target The coordinate of pr
+		 */
+		var project = function project(polygon, target) {
+		    var products = map(polygon, function (point) {
+		        return dotProduct(point, target);
+		    });
+		    return {
+		        min: Math.min.apply(this, products),
+		        max: Math.max.apply(this, products)
+		    };
+		};
+
+		/**
+		 * Rotates a point clockwise around the origin.
+		 * @param {Array} point The x and y coordinates for the point.
+		 * @param {Number} angle The angle of rotation.
+		 * @returns {Array} The x and y coordinate for the rotated point.
+		 */
+		var rotate2DToOrigin = function (point, angle) {
+		    var x = point[0],
+		        y = point[1],
+		        rad = deg2rad * -angle,
+		        cosAngle = Math.cos(rad),
+		        sinAngle = Math.sin(rad);
+		    return [
+		        correctFloat(x * cosAngle - y * sinAngle),
+		        correctFloat(x * sinAngle + y * cosAngle)
+		    ];
+		};
+
+		/**
+		 * Rotate a point clockwise around another point.
+		 * @param {Array} point The x and y coordinates for the point.
+		 * @param {Array} origin The point to rotate around.
+		 * @param {Number} angle The angle of rotation.
+		 * @returns {Array} The x and y coordinate for the rotated point.
+		 */
+		var rotate2DToPoint = function (point, origin, angle) {
+		    var x = point[0] - origin[0],
+		        y = point[1] - origin[1],
+		        rotated = rotate2DToOrigin([x, y], angle);
+		    return [
+		        rotated[0] + origin[0],
+		        rotated[1] + origin[1]
+		    ];
+		};
+
+		var isAxesEqual = function (axis1, axis2) {
+		    return (
+		        axis1[0] === axis2[0] &&
+		        axis1[1] === axis2[1]
+		    );
+		};
+
+		var getAxesFromPolygon = function (polygon) {
+		    var points,
+		        axes = polygon.axes;
+		    if (!isArray(axes)) {
+		        axes = [];
+		        points = points = polygon.concat([polygon[0]]);
+		        reduce(
+		            points,
+		            function findAxis(p1, p2) {
+		                var normals = getNormals(p1, p2),
+		                    axis = normals[0]; // Use the left normal as axis.
+
+		                // Check that the axis is unique.
+		                if (!find(axes, function (existing) {
+		                    return isAxesEqual(existing, axis);
+		                })) {
+		                    axes.push(axis);
+		                }
+
+		                // Return p2 to be used as p1 in next iteration.
+		                return p2;
+		            }
+		        );
+		        polygon.axes = axes;
+		    }
+		    return axes;
+		};
+
+		var getAxes = function (polygon1, polygon2) {
+		    // Get the axis from both polygons.
+		    var axes1 = getAxesFromPolygon(polygon1),
+		        axes2 = getAxesFromPolygon(polygon2);
+		    return axes1.concat(axes2);
+		};
+
+		var getPolygon = function (x, y, width, height, rotation) {
+		    var origin = [x, y],
+		        left = x - (width / 2),
+		        right = x + (width / 2),
+		        top = y - (height / 2),
+		        bottom = y + (height / 2),
+		        polygon = [
+		            [left, top],
+		            [right, top],
+		            [right, bottom],
+		            [left, bottom]
+		        ];
+		    return map(polygon, function (point) {
+		        return rotate2DToPoint(point, origin, -rotation);
+		    });
+		};
+
+		var getBoundingBoxFromPolygon = function (points) {
+		    return reduce(points, function (obj, point) {
+		        var x = point[0],
+		            y = point[1];
+		        obj.left = Math.min(x, obj.left);
+		        obj.right = Math.max(x, obj.right);
+		        obj.bottom = Math.max(y, obj.bottom);
+		        obj.top = Math.min(y, obj.top);
+		        return obj;
+		    }, {
+		        left: Number.MAX_SAFE_INTEGER,
+		        right: Number.MIN_SAFE_INTEGER,
+		        bottom: Number.MIN_SAFE_INTEGER,
+		        top: Number.MAX_SAFE_INTEGER
+		    });
+		};
+
+		var isPolygonsOverlappingOnAxis = function (axis, polygon1, polygon2) {
+		    var projection1 = project(polygon1, axis),
+		        projection2 = project(polygon2, axis),
+		        isOverlapping = !(
+		            projection2.min > projection1.max ||
+		            projection2.max < projection1.min
+		        );
+		    return !isOverlapping;
+		};
+
+		/**
+		 * Checks wether two convex polygons are colliding by using the Separating Axis
+		 * Theorem.
+		 * @param {Array} polygon1 First polygon.
+		 * @param {Array} polygon2 Second polygon.
+		 * @returns {boolean} Returns true if they are colliding, otherwise false.
+		 */
+		var isPolygonsColliding = function isPolygonsColliding(polygon1, polygon2) {
+		    var axes = getAxes(polygon1, polygon2),
+		        overlappingOnAllAxes = !find(axes, function (axis) {
+		            return isPolygonsOverlappingOnAxis(axis, polygon1, polygon2);
+		        });
+		    return overlappingOnAllAxes;
+		};
+
+		var movePolygon = function (deltaX, deltaY, polygon) {
+		    return map(polygon, function (point) {
+		        return [
+		            point[0] + deltaX,
+		            point[1] + deltaY
+		        ];
+		    });
+		};
+
+		var collision = {
+		    getBoundingBoxFromPolygon: getBoundingBoxFromPolygon,
+		    getPolygon: getPolygon,
+		    isPolygonsColliding: isPolygonsColliding,
+		    movePolygon: movePolygon,
+		    rotate2DToOrigin: rotate2DToOrigin,
+		    rotate2DToPoint: rotate2DToPoint
+		};
+
+
+		return collision;
+	}(Highcharts));
+	(function (H, drawPoint, polygon) {
 		/**
 		 * (c) 2016 Highsoft AS
 		 * Authors: Jon Arild Nygard
@@ -74,7 +293,12 @@
 		    isArray = H.isArray,
 		    isNumber = H.isNumber,
 		    isObject = H.isObject,
+		    find = H.find,
 		    reduce = H.reduce,
+		    getBoundingBoxFromPolygon = polygon.getBoundingBoxFromPolygon,
+		    getPolygon = polygon.getPolygon,
+		    isPolygonsColliding = polygon.isPolygonsColliding,
+		    movePolygon = polygon.movePolygon,
 		    Series = H.Series;
 
 		/**
@@ -104,21 +328,35 @@
 		 */
 		var intersectsAnyWord = function intersectsAnyWord(point, points) {
 		    var intersects = false,
-		        rect1 = point.rect,
-		        rect2;
-		    if (point.lastCollidedWith) {
-		        rect2 = point.lastCollidedWith.rect;
-		        intersects = isRectanglesIntersecting(rect1, rect2);
+		        rect = point.rect,
+		        polygon = point.polygon,
+		        lastCollidedWith = point.lastCollidedWith,
+		        isIntersecting = function (p) {
+		            var result = isRectanglesIntersecting(rect, p.rect);
+		            if (result && (point.rotation % 90 || p.roation % 90)) {
+		                result = isPolygonsColliding(
+		                    polygon,
+		                    p.polygon
+		                );
+		            }
+		            return result;
+		        };
+
+		    // If the point has already intersected a different point, chances are they
+		    // are still intersecting. So as an enhancement we check this first.
+		    if (lastCollidedWith) {
+		        intersects = isIntersecting(lastCollidedWith);
 		        // If they no longer intersects, remove the cache from the point.
 		        if (!intersects) {
 		            delete point.lastCollidedWith;
 		        }
 		    }
+
+		    // If not already found, then check if we can find a point that is
+		    // intersecting.
 		    if (!intersects) {
-		        intersects = !!H.find(points, function (p) {
-		            var result;
-		            rect2 = p.rect;
-		            result = isRectanglesIntersecting(rect1, rect2);
+		        intersects = !!find(points, function (p) {
+		            var result = isIntersecting(p);
 		            if (result) {
 		                point.lastCollidedWith = p;
 		            }
@@ -195,7 +433,7 @@
 		                    y: k
 		                };
 		            } else {
-		                result =  {
+		                result = {
 		                    x: k,
 		                    y: k - (m - attempt - t)
 		                };
@@ -287,7 +525,7 @@
 		        /**
 		         * Use largest width, largest height, or root of total area to give size
 		         * to the playing field.
-		         * Add extra 10 percentage to ensure enough space.
+		         * Add extra 100 percentage to ensure enough space.
 		         */
 		        x = 1.1 * Math.max(info.maxHeight, info.maxWidth, Math.sqrt(info.area));
 		    return {
@@ -340,19 +578,18 @@
 		 * @param  {object} field The width and height of the playing field.
 		 * @return {boolean} Returns true if the word is placed outside the field.
 		 */
-		var outsidePlayingField = function outsidePlayingField(wrapper, field) {
-		    var rect = wrapper.getBBox(),
-		        playingField = {
-		            left: -(field.width / 2),
-		            right: field.width / 2,
-		            top: -(field.height / 2),
-		            bottom: field.height / 2
-		        };
+		var outsidePlayingField = function outsidePlayingField(rect, field) {
+		    var playingField = {
+		        left: -(field.width / 2),
+		        right: field.width / 2,
+		        top: -(field.height / 2),
+		        bottom: field.height / 2
+		    };
 		    return !(
-		        playingField.left < (rect.x - rect.width / 2) &&
-		        playingField.right > (rect.x + rect.width / 2) &&
-		        playingField.top < (rect.y - rect.height / 2) &&
-		        playingField.bottom > (rect.y + rect.height / 2)
+		        playingField.left < rect.left &&
+		        playingField.right > rect.right &&
+		        playingField.top < rect.top &&
+		        playingField.bottom > rect.bottom
 		    );
 		};
 
@@ -368,16 +605,21 @@
 		 */
 		var intersectionTesting = function intersectionTesting(point, options) {
 		    var placed = options.placed,
-		        element = options.element,
 		        field = options.field,
-		        clientRect = options.clientRect,
+		        rectangle = options.rectangle,
+		        polygon = options.polygon,
 		        spiral = options.spiral,
 		        attempt = 1,
+		        interval = 4,
 		        delta = {
 		            x: 0,
 		            y: 0
 		        },
-		        rect = point.rect = extend({}, clientRect);
+		        // Make a copy to update values during intersection testing.
+		        rect = point.rect = extend({}, rectangle);
+		    point.polygon = polygon;
+		    point.rotation = options.rotation;
+
 		    /**
 		     * while w intersects any previously placed words:
 		     *    do {
@@ -388,18 +630,19 @@
 		    while (
 		        (
 		            intersectsAnyWord(point, placed) ||
-		            outsidePlayingField(element, field)
+		            outsidePlayingField(rect, field)
 		        ) && delta !== false
 		    ) {
-		        delta = spiral(attempt, {
+		        delta = spiral(interval * attempt, {
 		            field: field
 		        });
 		        if (isObject(delta)) {
 		            // Update the DOMRect with new positions.
-		            rect.left = clientRect.left + delta.x;
-		            rect.right = rect.left + rect.width;
-		            rect.top = clientRect.top + delta.y;
-		            rect.bottom = rect.top + rect.height;
+		            rect.left = rectangle.left + delta.x;
+		            rect.right = rectangle.right + delta.x;
+		            rect.top = rectangle.top + delta.y;
+		            rect.bottom = rectangle.bottom + delta.y;
+		            point.polygon = movePolygon(delta.x, delta.y, polygon);
 		        }
 		        attempt++;
 		    }
@@ -622,8 +865,6 @@
 		                y: 0,
 		                text: point.name
 		            });
-
-		            // TODO Replace all use of clientRect with bBox.
 		            bBox = testElement.getBBox(true);
 		            point.dimensions = {
 		                height: bBox.height,
@@ -654,27 +895,30 @@
 		                }),
 		                attr = {
 		                    align: 'center',
+		                    'alignment-baseline': 'middle',
 		                    x: placement.x,
 		                    y: placement.y,
 		                    text: point.name,
 		                    rotation: placement.rotation
 		                },
-		                animate,
-		                delta,
-		                clientRect;
-		            testElement.css(css).attr(attr);
-		            // Cache the original DOMRect values for later calculations.
-		            point.clientRect = clientRect = extend(
-		                {},
-		                testElement.element.getBoundingClientRect()
-		            );
-		            delta = intersectionTesting(point, {
-		                clientRect: clientRect,
-		                element: testElement,
-		                field: field,
-		                placed: placed,
-		                spiral: spiral
-		            });
+		                polygon = getPolygon(
+		                    placement.x,
+		                    placement.y,
+		                    point.dimensions.width,
+		                    point.dimensions.height,
+		                    placement.rotation
+		                ),
+		                rectangle = getBoundingBoxFromPolygon(polygon),
+		                delta = intersectionTesting(point, {
+		                    rectangle: rectangle,
+		                    polygon: polygon,
+		                    field: field,
+		                    placed: placed,
+		                    spiral: spiral,
+		                    rotation: placement.rotation
+		                }),
+		                animate;
+
 		            /**
 		             * Check if point was placed, if so delete it,
 		             * otherwise place it on the correct positions.
@@ -682,13 +926,11 @@
 		            if (isObject(delta)) {
 		                attr.x += delta.x;
 		                attr.y += delta.y;
-		                extend(placement, {
-		                    left: attr.x  - (clientRect.width / 2),
-		                    right: attr.x + (clientRect.width / 2),
-		                    top: attr.y - (clientRect.height / 2),
-		                    bottom: attr.y + (clientRect.height / 2)
-		                });
-		                field = updateFieldBoundaries(field, placement);
+		                rectangle.left += delta.x;
+		                rectangle.right += delta.x;
+		                rectangle.top += delta.y;
+		                rectangle.bottom += delta.y;
+		                field = updateFieldBoundaries(field, rectangle);
 		                placed.push(point);
 		                point.isNull = false;
 		            } else {
@@ -781,7 +1023,10 @@
 		        'square': squareSpiral
 		    },
 		    utils: {
-		        getRotation: getRotation
+		        getRotation: getRotation,
+		        isPolygonsColliding: isPolygonsColliding,
+		        rotate2DToOrigin: polygon.rotate2DToOrigin,
+		        rotate2DToPoint: polygon.rotate2DToPoint
 		    },
 		    getPlotBox: function () {
 		        var series = this,
@@ -811,7 +1056,8 @@
 		    shouldDraw: function shouldDraw() {
 		        var point = this;
 		        return !point.isNull;
-		    }
+		    },
+		    weight: 1
 		};
 
 		/**
@@ -889,5 +1135,9 @@
 		    wordCloudPoint
 		);
 
-	}(Highcharts, draw));
+	}(Highcharts, draw, collision));
+	return (function () {
+
+
+	}());
 }));

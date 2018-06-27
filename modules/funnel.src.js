@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  * Highcharts funnel module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -297,8 +297,11 @@
 		            if (reversed) {
 		                y1 = 2 * centerY - y1;
 		                y3 = 2 * centerY - y3;
-		                y5 = (y5 ? 2 * centerY - y5 : null);
+		                if (y5 !== null) {
+		                    y5 = 2 * centerY - y5;
+		                }
 		            }
+
 		            // save the path
 		            path = [
 		                'M',
@@ -307,7 +310,7 @@
 		                x2, y1,
 		                x4, y3
 		            ];
-		            if (y5) {
+		            if (y5 !== null) {
 		                path.push(x4, y5, x3, y5);
 		            }
 		            path.push(x3, y3, 'Z');
@@ -571,4 +574,8 @@
 		 */
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

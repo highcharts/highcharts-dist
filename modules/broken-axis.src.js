@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -488,4 +488,8 @@
 		wrap(H.Series.prototype, 'drawPoints', drawPointsWrapped);
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.0 (2018-04-13)
+ * @license  Highcharts JS v6.1.1 (2018-06-27)
  *
  * Item series type for Highcharts
  *
@@ -123,4 +123,8 @@
 
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

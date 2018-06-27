@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  *
  * (c) 2009-2017 Torstein Honsi
  *
@@ -126,7 +126,7 @@
 		                 * An array of boxes to avoid when laying out the labels. Each
 		                 * item has a `left`, `right`, `top` and `bottom` property.
 		                 *
-		                 * @type {Array.<Object>}
+		                 * @type {Array<Object>}
 		                 */
 		                boxesToAvoid: []
 		            }
@@ -155,10 +155,10 @@
 		 */
 		function boxIntersectLine(x, y, w, h, x1, y1, x2, y2) {
 		    return (
-		        intersectLine(x, y, x + w, y,         x1, y1, x2, y2) || // top of label
+		        intersectLine(x, y, x + w, y, x1, y1, x2, y2) || // top of label
 		        intersectLine(x + w, y, x + w, y + h, x1, y1, x2, y2) || // right
 		        intersectLine(x, y + h, x + w, y + h, x1, y1, x2, y2) || // bottom
-		        intersectLine(x, y, x, y + h,         x1, y1, x2, y2)   // left of label
+		        intersectLine(x, y, x, y + h, x1, y1, x2, y2)   // left of label
 		    );
 		}
 
@@ -282,7 +282,7 @@
 		                point.chartCenterY = paneTop + (
 		                    point.plotY +
 		                    pick(point.yBottom, translatedThreshold)
-		                ) /    2;
+		                ) / 2;
 		            }
 
 		            // Add interpolated points
@@ -560,6 +560,12 @@
 		                y >= paneTop && y <= paneTop + paneHeight - bBox.height;
 		        }
 
+		        function destroyLabel() {
+		            if (label) {
+		                series.labelBySeries = label.destroy();
+		            }
+		        }
+
 		        if (series.visible && !series.isSeriesBoosting && points) {
 		            if (!label) {
 		                series.labelBySeries = label = chart.renderer
@@ -758,9 +764,11 @@
 
 		                }
 
-		            } else if (label) {
-		                series.labelBySeries = label.destroy();
+		            } else {
+		                destroyLabel();
 		            }
+		        } else {
+		            destroyLabel();
 		        }
 		    });
 		    // console.timeEnd('drawSeriesLabels');
@@ -839,4 +847,8 @@
 		addEvent(Chart, 'render', drawLabels);
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

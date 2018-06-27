@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  * Drag-panes module
  *
  * (c) 2010-2017 Highsoft AS
@@ -98,7 +98,7 @@
 		                 *
 		                 * This feature requires the `drag-panes.js` module.
 		                 *
-		                 * @type    {Array.<String|Number>}
+		                 * @type    {Array<String|Number>}
 		                 * @default []
 		                 * @sample  {highstock} stock/yaxis/multiple-resizers
 		                 *          Three panes with resizers
@@ -113,7 +113,7 @@
 		                 *
 		                 * This feature requires the `drag-panes.js` module.
 		                 *
-		                 * @type    {Array.<String|Number>}
+		                 * @type    {Array<String|Number>}
 		                 * @sample  {highstock} stock/yaxis/multiple-resizers
 		                 *          Three panes with resizers
 		                 * @sample  {highstock} stock/yaxis/resize-multiple-axes
@@ -610,4 +610,8 @@
 		});
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));

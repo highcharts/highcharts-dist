@@ -10,7 +10,7 @@ import '../parts/Chart.js';
 import '../parts/Series.js';
 import '../parts/Tooltip.js';
 
-var    merge = H.merge,
+var merge = H.merge,
     addEvent = H.addEvent,
     extend = H.extend,
     each = H.each,
@@ -147,7 +147,7 @@ H.SVGRenderer.prototype.addMarker = function (id, markerOptions) {
  * using axis values or pixel values
  *
  * @class MockPoint
- * @memberOf Highcharts
+ * @memberof Highcharts
  * @private
  *
  * @param {Highcharts.Chart} - the chart object
@@ -175,7 +175,7 @@ var MockPoint = H.MockPoint = function (chart, options) {
  * A factory function for creating a mock point object
  *
  * @function #mockPoint
- * @memberOf Highcharts
+ * @memberof Highcharts
  *
  * @param {MockPointOptions} mockPointOptions
  * @return {MockPoint} a mock point
@@ -189,7 +189,7 @@ MockPoint.prototype = {
      * Initialisation of the mock point
      *
      * @function init
-     * @memberOf Highcharts.MockPoint#
+     * @memberof Highcharts.MockPoint#
      *
      * @param {Highcharts.Chart} chart - a chart object to which the mock point
      * is attached
@@ -226,7 +226,7 @@ MockPoint.prototype = {
      * Update of the point's coordinates (plotX/plotY)
      *
      * @function translate
-     * @memberOf Highcharts.MockPoint#
+     * @memberof Highcharts.MockPoint#
      *
      * @return {undefined}
      */
@@ -250,11 +250,11 @@ MockPoint.prototype = {
      * Returns a box to which an item can be aligned to
      *
      * @function #alignToBox
-     * @memberOf Highcharts.MockPoint#
+     * @memberof Highcharts.MockPoint#
      *
      * @param {Boolean} [forceTranslate=false] - whether to update the point's
      * coordinates
-     * @return {Array.<Number>} A quadruple of numbers which denotes x, y,
+     * @return {Array<Number>} A quadruple of numbers which denotes x, y,
      * width and height of the box
     **/
     alignToBox: function (forceTranslate) {
@@ -281,7 +281,7 @@ MockPoint.prototype = {
      * the same as Highcharts.Point.prototype.getLabelConfig
      *
      * @function getLabelConfig
-     * @memberOf Highcharts.MockPoint#
+     * @memberof Highcharts.MockPoint#
      *
      * @return {Object} labelConfig - label config object
      * @return {Number|undefined} labelConfig.x
@@ -300,7 +300,7 @@ MockPoint.prototype = {
     },
 
     isInsidePane: function () {
-        var    plotX = this.plotX,
+        var plotX = this.plotX,
             plotY = this.plotY,
             xAxis = this.series.xAxis,
             yAxis = this.series.yAxis,
@@ -336,7 +336,7 @@ H.defaultOptions.annotations = [];
  * existing points or created mock points
  *
  * @class Annotation
- * @memberOf Highcharts
+ * @memberof Highcharts
  *
  * @param {Chart} - the chart object
  * @param {AnnotationOptions} - the options object
@@ -347,7 +347,7 @@ var Annotation = H.Annotation = function (chart, userOptions) {
      * The chart that the annotation belongs to.
      *
      * @name chart
-     * @memberOf Highcharts.Annotation#
+     * @memberof Highcharts.Annotation#
      * @type {Chart}
      */
     this.chart = chart;
@@ -356,7 +356,7 @@ var Annotation = H.Annotation = function (chart, userOptions) {
      * The array of labels which belong to the annotation.
      *
      * @name labels
-     * @memberOf Highcharts.Annotation#
+     * @memberof Highcharts.Annotation#
      * @type {Array<Highcharts.SVGElement>}
      */
     this.labels = [];
@@ -365,17 +365,26 @@ var Annotation = H.Annotation = function (chart, userOptions) {
      * The array of shapes which belong to the annotation.
      *
      * @name shapes
-     * @memberOf Highcharts.Annotation#
+     * @memberof Highcharts.Annotation#
      * @type {Array<Highcharts.SVGElement>}
      */
     this.shapes = [];
 
     /**
-     * The options for the annotations. It containers user defined options
+     * The user options for the annotations.
+     *
+     * @name options
+     * @memberof Highcharts.Annotation#
+     * @type {AnnotationOptions}
+     */
+    this.userOptions = userOptions;
+
+    /**
+     * The options for the annotations. It contains user defined options
      * merged with the default options.
      *
      * @name options
-     * @memberOf Highcharts.Annotation#
+     * @memberof Highcharts.Annotation#
      * @type {AnnotationOptions}
      */
     this.options = merge(this.defaultOptions, userOptions);
@@ -385,7 +394,7 @@ var Annotation = H.Annotation = function (chart, userOptions) {
      * labels it should account for.
      *
      * @name labelCollector
-     * @memberOf Highcharts.Annotation#
+     * @memberof Highcharts.Annotation#
      * @type {Function}
      * @private
      */
@@ -394,7 +403,7 @@ var Annotation = H.Annotation = function (chart, userOptions) {
      * The group element of the annotation.
      *
      * @name group
-     * @memberOf Highcharts.Annotation#
+     * @memberof Highcharts.Annotation#
      * @type {Highcharts.SVGElement}
      * @private
      */
@@ -403,7 +412,7 @@ var Annotation = H.Annotation = function (chart, userOptions) {
      * The group element of the annotation's shapes.
      *
      * @name shapesGroup
-     * @memberOf Highcharts.Annotation#
+     * @memberof Highcharts.Annotation#
      * @type {Highcharts.SVGElement}
      * @private
      */
@@ -412,7 +421,7 @@ var Annotation = H.Annotation = function (chart, userOptions) {
      * The group element of the annotation's labels.
      *
      * @name labelsGroup
-     * @memberOf Highcharts.Annotation#
+     * @memberof Highcharts.Annotation#
      * @type {Highcharts.SVGElement}
      * @private
      */
@@ -425,7 +434,7 @@ Annotation.prototype = /** @lends Highcharts.Annotation# */ {
      * Shapes which do not have background - the object is used for proper
      * setting of the contrast color
      *
-     * @type {Array.<String>}
+     * @type {Array<String>}
      * @private
      */
     shapesWithoutBackground: ['connector'],
@@ -988,17 +997,15 @@ Annotation.prototype = /** @lends Highcharts.Annotation# */ {
      * {@link Highcharts.Chart#removeAnnotation} instead.
     **/
     destroy: function () {
-        var chart = this.chart;
+        var chart = this.chart,
+            destroyItem = function (item) {
+                item.destroy();
+            };
 
         erase(this.chart.labelCollectors, this.labelCollector);
 
-        each(this.labels, function (label) {
-            label.destroy();
-        });
-
-        each(this.shapes, function (shape) {
-            shape.destroy();
-        });
+        each(this.labels, destroyItem);
+        each(this.shapes, destroyItem);
 
         destroyObjectProperties(this, chart);
     },
@@ -1648,6 +1655,7 @@ H.extend(chartPrototype, /** @lends Chart# */ {
         var annotation = new Annotation(this, userOptions);
 
         this.annotations.push(annotation);
+        this.options.annotations.push(userOptions);
 
         if (pick(redraw, true)) {
             annotation.redraw();
@@ -1668,6 +1676,7 @@ H.extend(chartPrototype, /** @lends Chart# */ {
             });
 
         if (annotation) {
+            erase(this.options.annotations, annotation.userOptions);
             erase(annotations, annotation);
             annotation.destroy();
         }
@@ -1675,7 +1684,7 @@ H.extend(chartPrototype, /** @lends Chart# */ {
 
     /**
      * @private
-     * @memberOf Highcharts.Chart#
+     * @memberof Highcharts.Chart#
      * @function drawAnnotations
      */
     drawAnnotations: function () {
@@ -1699,7 +1708,9 @@ chartPrototype.callbacks.push(function (chart) {
     chart.annotations = [];
 
     each(chart.options.annotations, function (annotationOptions) {
-        chart.addAnnotation(annotationOptions, false);
+        chart.annotations.push(
+            new Annotation(chart, annotationOptions)
+        );
     });
 
     chart.drawAnnotations();

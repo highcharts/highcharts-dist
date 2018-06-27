@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  *
  * (c) 2016 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -359,7 +359,8 @@
 		     * zoom in on its children.
 		     *
 		     * @type {Boolean}
-		     * @sample {highcharts} highcharts/plotoptions/treemap-allowdrilltonode/ Enabled
+		     * @sample {highcharts} highcharts/plotoptions/treemap-allowdrilltonode/
+		     *         Enabled
 		     * @default false
 		     * @since 4.1.0
 		     * @product highcharts
@@ -390,8 +391,12 @@
 		     * be false by default.
 		     *
 		     * @type {Boolean}
-		     * @sample {highcharts} highcharts/plotoptions/treemap-interactbyleaf-false/ False
-		     * @sample {highcharts} highcharts/plotoptions/treemap-interactbyleaf-true-and-allowdrilltonode/ InteractByLeaf and allowDrillToNode is true
+		     * @sample {highcharts}
+		     *         highcharts/plotoptions/treemap-interactbyleaf-false/
+		     *         False
+		     * @sample {highcharts}
+		     *         highcharts/plotoptions/treemap-interactbyleaf-true-and-allowdrilltonode/
+		     *         InteractByLeaf and allowDrillToNode is true
 		     * @since 4.1.2
 		     * @product highcharts
 		     * @apioption plotOptions.treemap.interactByLeaf
@@ -401,7 +406,8 @@
 		     * The sort index of the point inside the treemap level.
 		     *
 		     * @type {Number}
-		     * @sample {highcharts} highcharts/plotoptions/treemap-sortindex/ Sort by years
+		     * @sample {highcharts} highcharts/plotoptions/treemap-sortindex/
+		     *         Sort by years
 		     * @since 4.1.10
 		     * @product highcharts
 		     * @apioption plotOptions.treemap.sortIndex
@@ -482,12 +488,21 @@
 		     *
 		     * @validvalue ["sliceAndDice", "stripes", "squarified", "strip"]
 		     * @type {String}
-		     * @see [How to write your own algorithm](http://www.highcharts.com/docs/chart-
-		     * and-series-types/treemap)
-		     * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-sliceanddice/ SliceAndDice by default
-		     * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-stripes/ Stripes
-		     * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-squarified/ Squarified
-		     * @sample {highcharts} highcharts/plotoptions/treemap-layoutalgorithm-strip/ Strip
+		     * @see [How to write your own algorithm](
+		     * http://www.highcharts.com/docs/chart-and-series-types/treemap).
+		     *
+		     * @sample  {highcharts}
+		     *          highcharts/plotoptions/treemap-layoutalgorithm-sliceanddice/
+		     *          SliceAndDice by default
+		     * @sample  {highcharts}
+		     *          highcharts/plotoptions/treemap-layoutalgorithm-stripes/
+		     *          Stripes
+		     * @sample  {highcharts}
+		     *          highcharts/plotoptions/treemap-layoutalgorithm-squarified/
+		     *          Squarified
+		     * @sample  {highcharts}
+		     *          highcharts/plotoptions/treemap-layoutalgorithm-strip/
+		     *          Strip
 		     * @default sliceAndDice
 		     * @since 4.1.0
 		     * @product highcharts
@@ -512,7 +527,9 @@
 		     * direction will always be the opposite of the previous.
 		     *
 		     * @type {Boolean}
-		     * @sample {highcharts} highcharts/plotoptions/treemap-alternatestartingdirection-true/ Enabled
+		     * @sample  {highcharts}
+		     *          highcharts/plotoptions/treemap-alternatestartingdirection-true/
+		     *          Enabled
 		     * @default false
 		     * @since 4.1.0
 		     * @product highcharts
@@ -1989,13 +2006,17 @@
 		        x = parent.x,
 		        y = parent.y,
 		        radius = (
-		            isObject(options.levelSize) && isNumber(options.levelSize.value) ?
+		            (
+		                options &&
+		                isObject(options.levelSize) &&
+		                isNumber(options.levelSize.value)
+		            ) ?
 		            options.levelSize.value :
 		            0
 		        ),
 		        innerRadius = parent.r,
 		        outerRadius = innerRadius + radius,
-		        slicedOffset = isNumber(options.slicedOffset) ?
+		        slicedOffset = options && isNumber(options.slicedOffset) ?
 		            options.slicedOffset :
 		            0;
 
@@ -2021,7 +2042,8 @@
 
 		var getDlOptions = function getDlOptions(params) {
 		    // Set options to new object to avoid problems with scope
-		    var shape = isObject(params.shapeArgs) ? params.shapeArgs : {},
+		    var point = params.point,
+		        shape = isObject(params.shapeArgs) ? params.shapeArgs : {},
 		        optionsPoint = (
 		            isObject(params.optionsPoint) ?
 		            params.optionsPoint.dataLabels :
@@ -2033,29 +2055,74 @@
 		            {}
 		        ),
 		        options = merge({
-		            rotationMode: 'perpendicular',
-		            style: {
-		                width: shape.radius
-		            }
+		            style: {}
 		        }, optionsLevel, optionsPoint),
 		        rotationRad,
-		        rotation;
+		        rotation,
+		        rotationMode = options.rotationMode;
+
 		    if (!isNumber(options.rotation)) {
-		        rotationRad = (shape.end - (shape.end - shape.start) / 2);
+		        if (rotationMode === 'auto') {
+		            if (
+		                point.innerArcLength < 1 &&
+		                point.outerArcLength > shape.radius
+		            ) {
+		                rotationRad = 0;
+		            } else if (
+		                point.innerArcLength > 1 &&
+		                point.outerArcLength > 1.5 * shape.radius
+		            ) {
+		                rotationMode = 'parallel';
+		            } else {
+		                rotationMode = 'perpendicular';
+		            }
+		        }
+
+		        if (rotationMode !== 'auto') {
+		            rotationRad = (shape.end - (shape.end - shape.start) / 2);
+		        }
+
+		        if (rotationMode === 'parallel') {
+		            options.style.width = Math.min(
+		                shape.radius * 1.5,
+		                (point.outerArcLength + point.innerArcLength) / 2
+		            );
+		        } else {
+		            options.style.width = shape.radius;
+		        }
+
+		        if (
+		            rotationMode === 'perpendicular' &&
+		            point.series.chart.renderer.fontMetrics(options.style.fontSize).h >
+		            point.outerArcLength
+		        ) {
+		            options.style.width = 1;
+		        }
+
+		        // Apply padding (#8515)
+		        options.style.width = Math.max(
+		            options.style.width - 2 * (options.padding || 0),
+		            1
+		        );
+
 		        rotation = (rotationRad * rad2deg) % 180;
-		        if (options.rotationMode === 'parallel') {
+		        if (rotationMode === 'parallel') {
 		            rotation -= 90;
 		        }
-		        // Data labels should not rotate beyond 90 degrees, for readability.
+
+		        // Prevent text from rotating upside down
 		        if (rotation > 90) {
 		            rotation -= 180;
+		        } else if (rotation < -90) {
+		            rotation += 180;
 		        }
+
 		        options.rotation = rotation;
 		    }
 		    // NOTE: alignDataLabel positions the data label differntly when rotation is
 		    // 0. Avoiding this by setting rotation to a small number.
 		    if (options.rotation === 0) {
-		        options.rotation =  0.001;
+		        options.rotation = 0.001;
 		    }
 		    return options;
 		};
@@ -2303,19 +2370,23 @@
 		     * @excluding align,allowOverlap,staggerLines,step
 		     */
 		    dataLabels: {
+		        allowOverlap: true,
 		        defer: true,
 		        style: {
 		            textOverflow: 'ellipsis'
 		        },
 		        /**
-		         * Decides how the data label will be rotated according to the perimeter
-		         * of the sunburst. It can either be parallel or perpendicular to the
-		         * perimeter.
-		         * `series.rotation` takes precedence over `rotationMode`.
+		         * Decides how the data label will be rotated relative to the perimeter
+		         * of the sunburst. Valid values are `auto`, `parallel` and
+		         * `perpendicular`. When `auto`, the best fit will be computed for the
+		         * point.
+		         *
+		         * The `series.rotation` option takes precedence over `rotationMode`.
+		         *
 		         * @since 6.0.0
-		         * @validvalue ["perpendicular", "parallel"]
+		         * @validvalue ["auto", "perpendicular", "parallel"]
 		         */
-		        rotationMode: 'perpendicular'
+		        rotationMode: 'auto'
 		    },
 		    /**
 		     * Which point to use as a root in the visualization.
@@ -2381,7 +2452,7 @@
 		            shapeRoot = series.shapeRoot,
 		            group = series.group,
 		            hasRendered = series.hasRendered,
-		            idRoot = series.rootId,
+		            idRoot = series.rootNode,
 		            idPreviousRoot = series.idPreviousRoot,
 		            nodeMap = series.nodeMap,
 		            nodePreviousRoot = nodeMap[idPreviousRoot],
@@ -2464,6 +2535,7 @@
 		                isNull: !visible // used for dataLabels & point.draw
 		            });
 		            point.dlOptions = getDlOptions({
+		                point: point,
 		                level: level,
 		                optionsPoint: point.options,
 		                shapeArgs: shape
@@ -2762,4 +2834,8 @@
 		);
 
 	}(Highcharts, draw, result));
+	return (function () {
+
+
+	}());
 }));

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.0 (2018-04-13)
+ * @license Highcharts JS v6.1.1 (2018-06-27)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -905,7 +905,7 @@
 		     * @param val {float} - the value to set
 		     */
 		    function setUniform(name, val) {
-		        var u = uLocations[name] =    uLocations[name] ||
+		        var u = uLocations[name] = uLocations[name] ||
 		                                    gl.getUniformLocation(shaderProgram, name);
 		        gl.uniform1f(u, val);
 		    }
@@ -2965,7 +2965,7 @@
 		        xAxis = this.xAxis && this.xAxis.options,
 		        yAxis = this.yAxis && this.yAxis.options;
 
-		    return     data.length > (options.boostThreshold || Number.MAX_VALUE) &&
+		    return data.length > (options.boostThreshold || Number.MAX_VALUE) &&
 		            isNumber(yAxis.min) && isNumber(yAxis.max) &&
 		            (!checkX || (isNumber(xAxis.min) && isNumber(xAxis.max)));
 		};
@@ -3415,4 +3415,8 @@
 		} // if hasCanvasSupport
 
 	}(Highcharts));
+	return (function () {
+
+
+	}());
 }));
