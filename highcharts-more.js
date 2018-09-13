@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2009-2016 Torstein Honsi
 
@@ -68,3 +68,4 @@ translateY:l,scaleX:1,scaleY:1},e.animate(b,g),f&&f.animate(b,g),this.animate=nu
 d,e.shapeType="path",e.shapeArgs={d:this.polarArc(e.yBottom,e.plotY,b,b+e.pointWidth)},this.toXY(e),e.tooltipPos=[e.plotX,e.plotY],e.ttBelow=e.plotY>a.center[1]}),r(q,"alignDataLabel",function(a,c,d,g,e,f){this.chart.polar?(a=c.rectPlotX/Math.PI*180,null===g.align&&(g.align=20<a&&160>a?"left":200<a&&340>a?"right":"center"),null===g.verticalAlign&&(g.verticalAlign=45>a||315<a?"bottom":135<a&&225>a?"top":"middle"),h.alignDataLabel.call(this,c,d,g,e,f)):a.call(this,c,d,g,e,f)})),r(m,"getCoordinates",
 function(a,c){var b=this.chart,g={xAxis:[],yAxis:[]};b.polar?p(b.axes,function(a){var d=a.isXAxis,e=a.center,h=c.chartX-e[0]-b.plotLeft,e=c.chartY-e[1]-b.plotTop;g[d?"xAxis":"yAxis"].push({axis:a,value:a.translate(d?Math.PI-Math.atan2(h,e):Math.sqrt(Math.pow(h,2)+Math.pow(e,2)),!0)})}):g=a.call(this,c);return g}),a.SVGRenderer.prototype.clipCircle=function(b,c,d){var g=a.uniqueKey(),e=this.createElement("clipPath").attr({id:g}).add(this.defs);b=this.circle(b,c,d).add(e);b.id=g;b.clipPath=e;return b},
 a.addEvent(a.Chart,"getAxes",function(){this.pane||(this.pane=[]);p(a.splat(this.options.pane),function(b){new a.Pane(b,this)},this)}),a.addEvent(a.Chart,"afterDrawChartBox",function(){p(this.pane,function(a){a.render()})}),r(a.Chart.prototype,"get",function(b,c){return a.find(this.pane,function(a){return a.options.id===c})||b.call(this,c)}))})(w)});
+//# sourceMappingURL=highcharts-more.js.map

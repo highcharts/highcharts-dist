@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Boost module
 
  (c) 2010-2017 Highsoft AS
@@ -20,3 +20,4 @@ function(b,c){var e,g,h,k=!1,l=!1,m=!1,u=!1,X="undefined"===typeof f.index,q=!0;
 b.parentNode.removeChild(b);f.loadingDiv=f.loadingSpan=null},250));delete a.buildKDTree;a.buildKDTree()},f.renderer.forExport?Number.MAX_VALUE:void 0))}});e.scatter.prototype.cvsMarkerCircle=function(a,b,c,e){a.moveTo(b,c);a.arc(b,c,e,0,2*Math.PI,!1)};e.scatter.prototype.cvsMarkerSquare=function(a,b,c,e){a.rect(b-e,c-e,2*e,2*e)};e.scatter.prototype.fill=!0;e.bubble&&(e.bubble.prototype.cvsMarkerCircle=function(a,b,c,e,d){a.moveTo(b,c);a.arc(b,c,this.radii&&this.radii[d],0,2*Math.PI,!1)},e.bubble.prototype.cvsStrokeBatch=
 1);q(e.area.prototype,{cvsDrawPoint:function(a,b,c,e,d){d&&b!==d.clientX&&(a.moveTo(d.clientX,d.yBottom),a.lineTo(d.clientX,d.plotY),a.lineTo(b,c),a.lineTo(b,e))},fill:!0,fillOpacity:!0,sampling:!0});q(e.column.prototype,{cvsDrawPoint:function(a,b,c,e){a.rect(b-1,c,1,e-c)},fill:!0,sampling:!0});c.Chart.prototype.callbacks.push(function(a){x(a,"predraw",function(){a.renderTarget&&a.renderTarget.attr({href:""});a.canvas&&a.canvas.getContext("2d").clearRect(0,0,a.canvas.width,a.canvas.height)});x(a,
 "render",function(){a.boostCopy&&a.boostCopy()})})}})(k)});
+//# sourceMappingURL=boost-canvas.js.map

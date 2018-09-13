@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
  Tilemap module
 
  (c) 2010-2017 Highsoft AS
@@ -23,3 +23,4 @@ a.colsize||1,k,g,w,u,l=!1;this.generatePoints();r(this.points,function(a){var e=
 a.getSeriesPixelPadding(b)}),function(a,b){return(a&&a.padding)>(b&&b.padding)?a:b},void 0)||{padding:0,axisLengthFactor:1},e=Math.round(c.padding*c.axisLengthFactor);c.padding&&(b.len-=e,a.apply(b,Array.prototype.slice.call(arguments,1)),b.minPixelPadding+=c.padding,b.len+=e)});h("tilemap","heatmap",{states:{hover:{halo:{enabled:!0,size:2,opacity:.5,attributes:{zIndex:3}}}},pointPadding:2,tileShape:"hexagon"},{setOptions:function(){var a=d.seriesTypes.heatmap.prototype.setOptions.apply(this,Array.prototype.slice.call(arguments));
 this.tileShape=d.tileShapeTypes[a.tileShape];return a},alignDataLabel:function(){return this.tileShape.alignDataLabel.apply(this,Array.prototype.slice.call(arguments))},getSeriesPixelPadding:function(a){var b=a.isXAxis,c=this.tileShape.getSeriesPadding(this),d;if(!c)return{padding:0,axisLengthFactor:1};d=Math.round(a.translate(b?2*c.xPad:c.yPad,0,1,0,1));a=Math.round(a.translate(b?c.xPad:0,0,1,0,1));return{padding:Math.abs(d-a)||0,axisLengthFactor:b?2:1.1}},translate:function(){return this.tileShape.translate.apply(this,
 Array.prototype.slice.call(arguments))}},d.extend({haloPath:function(){return this.series.tileShape.haloPath.apply(this,Array.prototype.slice.call(arguments))}},d.colorPointMixin))})(h)});
+//# sourceMappingURL=tilemap.js.map

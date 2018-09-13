@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2009-2016 Torstein Honsi
 
@@ -65,3 +65,4 @@ function(a,b,f,g){var c=this.xAxis.center,e=this.yAxis.len;return this.chart.ren
 r(l,"alignDataLabel",function(a,b,f,g,d,e){this.chart.polar?(a=b.rectPlotX/Math.PI*180,null===g.align&&(g.align=20<a&&160>a?"left":200<a&&340>a?"right":"center"),null===g.verticalAlign&&(g.verticalAlign=45>a||315<a?"bottom":135<a&&225>a?"top":"middle"),t.alignDataLabel.call(this,b,f,g,d,e)):a.call(this,b,f,g,d,e)})),r(p,"getCoordinates",function(a,b){var c=this.chart,g={xAxis:[],yAxis:[]};c.polar?h(c.axes,function(a){var d=a.isXAxis,f=a.center,h=b.chartX-f[0]-c.plotLeft,f=b.chartY-f[1]-c.plotTop;
 g[d?"xAxis":"yAxis"].push({axis:a,value:a.translate(d?Math.PI-Math.atan2(h,f):Math.sqrt(Math.pow(h,2)+Math.pow(f,2)),!0)})}):g=a.call(this,b);return g}),b.SVGRenderer.prototype.clipCircle=function(a,c,f){var g=b.uniqueKey(),d=this.createElement("clipPath").attr({id:g}).add(this.defs);a=this.circle(a,c,f).add(d);a.id=g;a.clipPath=d;return a},b.addEvent(b.Chart,"getAxes",function(){this.pane||(this.pane=[]);h(b.splat(this.options.pane),function(a){new b.Pane(a,this)},this)}),b.addEvent(b.Chart,"afterDrawChartBox",
 function(){h(this.pane,function(a){a.render()})}),r(b.Chart.prototype,"get",function(a,c){return b.find(this.pane,function(a){return a.options.id===c})||a.call(this,c)}))})(x)});
+//# sourceMappingURL=highcharts-more.js.map

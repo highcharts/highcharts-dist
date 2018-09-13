@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Data module
 
  (c) 2012-2017 Torstein Honsi
@@ -34,3 +34,4 @@ h.Data=A;h.data=function(a,b){return new A(a,b)};q(m,"init",function(a){var b=th
 [];this.pointIsArray=!0};x.prototype.populateColumns=function(a){var b=!0;u(this.readers,function(b){void 0===b.columnIndex&&(b.columnIndex=a.shift())});u(this.readers,function(a){void 0===a.columnIndex&&(b=!1)});return b};x.prototype.read=function(a,b){var c=this.pointIsArray,f=c?[]:{},e;u(this.readers,function(d){var e=a[d.columnIndex][b];c?f.push(e):0<d.configName.indexOf(".")?h.Point.prototype.setNestedProperty(f,e,d.configName):f[d.configName]=e});void 0===this.name&&2<=this.readers.length&&
 (e=this.getReferencedColumnIndexes(),2<=e.length&&(e.shift(),e.sort(function(a,b){return a-b}),this.name=a[e.shift()].name));return f};x.prototype.addColumnReader=function(a,b){this.readers.push({columnIndex:a,configName:b});"x"!==b&&"y"!==b&&void 0!==b&&(this.pointIsArray=!1)};x.prototype.getReferencedColumnIndexes=function(){var a,b=[],c;for(a=0;a<this.readers.length;a+=1)c=this.readers[a],void 0!==c.columnIndex&&b.push(c.columnIndex);return b};x.prototype.hasReader=function(a){var b,c;for(b=0;b<
 this.readers.length;b+=1)if(c=this.readers[b],c.configName===a)return!0}})(q)});
+//# sourceMappingURL=data.js.map

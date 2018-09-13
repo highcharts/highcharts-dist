@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Exporting module
 
  (c) 2010-2017 Torstein Honsi
@@ -23,3 +23,4 @@ this.getTable(!0)+"\x3c/body\x3e\x3c/html\x3e";this.fileDownload("data:applicati
 typeof d[e]&&delete d[e];a.isObject(d[e])&&c(d[e])})}var e,h;e=a.merge(this.userOptions);c(e);e={name:e.title&&e.title.text||"Chart title",options:e,settings:{constructor:"Chart",dataProvider:{csv:this.getCSV()}}};h=JSON.stringify(e);(function(){var a=g.createElement("form");g.body.appendChild(a);a.method="post";a.action="https://cloud-api.highcharts.com/openincloud";a.target="_blank";var c=g.createElement("input");c.type="hidden";c.name="chart";c.value=h;a.appendChild(c);a.submit();g.body.removeChild(a)})()};
 var B=a.getOptions().exporting;B&&(a.extend(B.menuItemDefinitions,{downloadCSV:{textKey:"downloadCSV",onclick:function(){this.downloadCSV()}},downloadXLS:{textKey:"downloadXLS",onclick:function(){this.downloadXLS()}},viewData:{textKey:"viewData",onclick:function(){this.viewData()}},openInCloud:{textKey:"openInCloud",onclick:function(){this.openInCloud()}}}),B.buttons.contextButton.menuItems.push("separator","downloadCSV","downloadXLS","viewData","openInCloud"));p.map&&(p.map.prototype.exportKey="name");
 p.mapbubble&&(p.mapbubble.prototype.exportKey="name");p.treemap&&(p.treemap.prototype.exportKey="name")})(e)});
+//# sourceMappingURL=export-data.js.map

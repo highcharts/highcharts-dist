@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  3D features for Highcharts JS
 
@@ -78,3 +78,4 @@ b.visible?"show":"hide"]()})});b(r.pie.prototype,"drawDataLabels",function(b){if
 this.update(this.userOptions,!0)});b(r.pie.prototype,"animate",function(b){if(this.chart.is3d()){var m=arguments[1],g=this.options.animation,r=this.center,u=this.group,q=this.markerGroup;v&&(!0===g&&(g={}),m?(u.oldtranslateX=u.translateX,u.oldtranslateY=u.translateY,m={translateX:r[0],translateY:r[1],scaleX:.001,scaleY:.001},u.attr(m),q&&(q.attrSetters=u.attrSetters,q.attr(m))):(m={translateX:u.oldtranslateX,translateY:u.oldtranslateY,scaleX:1,scaleY:1},u.animate(m,g),q&&q.animate(m,g),this.animate=
 null))}else b.apply(this,[].slice.call(arguments,1))})})(A);(function(b){var z=b.Point,y=b.seriesType,r=b.seriesTypes;y("scatter3d","scatter",{tooltip:{pointFormat:"x: \x3cb\x3e{point.x}\x3c/b\x3e\x3cbr/\x3ey: \x3cb\x3e{point.y}\x3c/b\x3e\x3cbr/\x3ez: \x3cb\x3e{point.z}\x3c/b\x3e\x3cbr/\x3e"}},{pointAttribs:function(v){var m=r.scatter.prototype.pointAttribs.apply(this,arguments);this.chart.is3d()&&v&&(m.zIndex=b.pointCameraDistance(v,this.chart));return m},axisTypes:["xAxis","yAxis","zAxis"],pointArrayMap:["x",
 "y","z"],parallelArrays:["x","y","z"],directTouch:!0},{applyOptions:function(){z.prototype.applyOptions.apply(this,arguments);void 0===this.z&&(this.z=0);return this}})})(A)});
+//# sourceMappingURL=highcharts-3d.js.map

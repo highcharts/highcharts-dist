@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2016 Highsoft AS
  Authors: Jon Arild Nygard
@@ -44,3 +44,4 @@ e=a.end-d,h=a.val,t=a.x,f=a.y,g=c&&y(c.levelSize)&&C(c.levelSize.value)?c.levelS
 H.call(this),f=this.startAndEndRadians=u(a.startAngle,a.endAngle),g=b[3]/2,k=b[2]/2-g,r=N(this),t=this.nodeMap,n,p=t&&t[r],v,w;this.shapeRoot=p&&p.shapeArgs;q.prototype.translate.call(this);w=this.tree=this.getTree();t=this.nodeMap;p=t[r];n=z(p.parent)?p.parent:"";v=t[n];n=E({from:0<p.level?p.level:1,levels:this.options.levels,to:w.height,defaults:{colorByPoint:a.colorByPoint,dataLabels:a.dataLabels,levelIsConstant:a.levelIsConstant,levelSize:a.levelSize,slicedOffset:a.slicedOffset}});n=e(n,{diffRadius:k,
 from:0<p.level?p.level:1,to:w.height});L(w,{before:c,idRoot:r,levelIsConstant:a.levelIsConstant,mapOptionsToLevel:n,mapIdToNode:t,points:this.points,series:this});a=t[""].shapeArgs={end:f.end,r:g,start:f.start,val:p.val,x:b[0],y:b[1]};this.setShapeArgs(v,a,n);this.mapOptionsToLevel=n},animate:function(a){var b=this.chart,c=[b.plotWidth/2,b.plotHeight/2],d=b.plotLeft,e=b.plotTop,b=this.group;a?(a={translateX:c[0]+d,translateY:c[1]+e,scaleX:.001,scaleY:.001,rotation:10,opacity:.01},b.attr(a)):(a={translateX:d,
 translateY:e,scaleX:1,scaleY:1,rotation:0,opacity:1},b.animate(a,this.options.animation),this.animate=null)},utils:{calculateLevelSizes:e,range:b}},{draw:p,shouldDraw:function(){return!this.isNull}})})(E,Q,O)});
+//# sourceMappingURL=sunburst.js.map

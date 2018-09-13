@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
  Vector plot series module
 
  (c) 2010-2017 Torstein Honsi
@@ -10,3 +10,4 @@
 vectorLength:20},{pointArrayMap:["y","length","direction"],parallelArrays:["x","y","length","direction"],pointAttribs:function(a,b){var c=this.options;a=a.color||this.color;var d=this.options.lineWidth;b&&(a=c.states[b].color||a,d=(c.states[b].lineWidth||d)+(c.states[b].lineWidthPlus||0));return{stroke:a,"stroke-width":d}},markerAttribs:c.noop,getSymbol:c.noop,arrow:function(a){a=a.length/this.lengthMax*this.options.vectorLength/20;var b={start:10*a,center:0,end:-10*a}[this.options.rotationOrigin]||
 0;return["M",0,7*a+b,"L",-1.5*a,7*a+b,0,10*a+b,1.5*a,7*a+b,0,7*a+b,0,-10*a+b]},translate:function(){c.Series.prototype.translate.call(this);this.lengthMax=c.arrayMax(this.lengthData)},drawPoints:function(){var a=this.chart;d(this.points,function(b){var c=b.plotX,d=b.plotY;a.isInsidePlot(c,d,a.inverted)?(b.graphic||(b.graphic=this.chart.renderer.path().add(this.markerGroup)),b.graphic.attr({d:this.arrow(b),translateX:c,translateY:d,rotation:b.direction}).attr(this.pointAttribs(b))):b.graphic&&(b.graphic=
 b.graphic.destroy())},this)},drawGraph:c.noop,animate:function(a){a?this.markerGroup.attr({opacity:.01}):(this.markerGroup.animate({opacity:1},c.animObject(this.options.animation)),this.animate=null)}})})(d)});
+//# sourceMappingURL=vector.js.map

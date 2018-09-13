@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Exporting module
 
  (c) 2010-2017 Torstein Honsi
@@ -25,3 +25,4 @@ m=c.menuItems,h,d,n=c.symbolSize||12;b.btnCount||(b.btnCount=0);b.exportDivEleme
 (d.width+c.buttonSpacing)*("right"===c.align?-1:1);b.exportSVGElements.push(d,h)}},destroyExport:function(a){var b=a?a.target:this;a=b.exportSVGElements;var e=b.exportDivElements,c=b.exportEvents,g;a&&(k(a,function(a,c){a&&(a.onclick=a.ontouchstart=null,g="cache-"+a.menuClassName,b[g]&&delete b[g],b.exportSVGElements[c]=a.destroy())}),a.length=0);b.exportingGroup&&(b.exportingGroup.destroy(),delete b.exportingGroup);e&&(k(e,function(a,c){f.clearTimeout(a.hideTimer);I(a,"mouseleave");b.exportDivElements[c]=
 a.onmouseout=a.onmouseover=a.ontouchstart=a.onclick=null;D(a)}),e.length=0);c&&(k(c,function(a){a()}),c.length=0)}});K.menu=function(a,b,e,c){return["M",a,b+2.5,"L",a+e,b+2.5,"M",a,b+c/2+.5,"L",a+e,b+c/2+.5,"M",a,b+c-1.5,"L",a+e,b+c-1.5]};A.prototype.renderExporting=function(){var a=this,b=a.options.exporting,e=b.buttons,c=a.isDirtyExporting||!a.exportSVGElements;a.buttonOffset=0;a.isDirtyExporting&&a.destroyExport();c&&!1!==b.enabled&&(a.exportEvents=[],a.exportingGroup=a.exportingGroup||a.renderer.g("exporting-group").attr({zIndex:3}).add(),
 F(e,function(b){a.addButton(b)}),a.isDirtyExporting=!1);q(a,"destroy",a.destroyExport)};q(A,"init",function(){var a=this;k(["exporting","navigation"],function(b){a[b]={update:function(e,c){a.isDirtyExporting=!0;p(!0,a.options[b],e);B(c,!0)&&a.redraw()}}})});A.prototype.callbacks.push(function(a){a.renderExporting();q(a,"redraw",a.renderExporting)})})(g)});
+//# sourceMappingURL=exporting.js.map

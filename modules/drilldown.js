@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Highcharts Drilldown module
 
  Author: Torstein Honsi
@@ -25,3 +25,4 @@ function(c){c&&c.series&&c.series.visible&&c.doDrilldown&&c.doDrilldown(!0,a,b)}
 function(b){c.drilldownCategory(a,b)})):b&&b.drillable&&(b.styles={},b.css(b.basicStyles),b.on("click",null),b.removeClass("highcharts-drilldown-axis-label")))};d.addEvent(d.Point,"afterInit",function(){var a=this,b=a.series;a.drilldown&&d.addEvent(a,"click",function(c){b.xAxis&&!1===b.chart.options.drilldown.allowPointDrilldown?b.xAxis.drilldownCategory(a.x,c):a.doDrilldown(void 0,void 0,c)});return a});d.addEvent(d.Series,"afterDrawDataLabels",function(){var a=this.chart.options.drilldown.activeDataLabelStyle,
 b=this.chart.renderer;k(this.points,function(c){var d=c.options.dataLabels,f=t(c.dlOptions,d&&d.style,{});c.drilldown&&c.dataLabel&&("contrast"===a.color&&(f.color=b.getContrast(c.color||this.color)),d&&d.color&&(f.color=d.color),c.dataLabel.addClass("highcharts-drilldown-data-label"),c.dataLabel.css(a).css(f))},this)});var w=function(a,b,c){a[c?"addClass":"removeClass"]("highcharts-drilldown-point");a.css({cursor:b})};d.addEvent(d.Series,"afterDrawTracker",function(){k(this.points,function(a){a.drilldown&&
 a.graphic&&w(a.graphic,"pointer",!0)})});d.addEvent(d.Point,"afterSetState",function(){this.drilldown&&this.series.halo&&"hover"===this.state?w(this.series.halo,"pointer",!0):this.series.halo&&w(this.series.halo,"auto",!1)})})(n)});
+//# sourceMappingURL=drilldown.js.map

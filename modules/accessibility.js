@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Accessibility module
 
  (c) 2010-2017 Highsoft AS
@@ -67,3 +67,4 @@ left:"-9999px",top:"auto",width:"1px",height:"1px",overflow:"hidden"});a.renderT
 this.keyboardNavigationModules[this.keyboardNavigationModuleIndex||0];a&&a.terminate&&a.terminate();this.focusElement&&this.focusElement.removeFocusBorder();this.keyboardNavigationModuleIndex=0;this.keyboardReset=!0};c.addEvent(c.Series,"destroy",function(){var a=this.chart;a.highlightedPoint&&a.highlightedPoint.series===this&&(delete a.highlightedPoint,a.focusElement&&a.focusElement.removeFocusBorder())});c.Chart.prototype.callbacks.push(function(a){var b=a.options.accessibility;b.enabled&&b.keyboardNavigation.enabled&&
 (f=!!a.renderTo.getElementsByTagName("g")[0].focus,a.addKeyboardNavigationModules(),a.keyboardNavigationModuleIndex=0,a.container.hasAttribute&&!a.container.hasAttribute("tabIndex")&&a.container.setAttribute("tabindex","0"),a.tabExitAnchor||(a.unbindExitAnchorFocus=a.addExitAnchor()),a.unbindKeydownHandler=g(a.renderTo,"keydown",function(b){b=b||e.event;var c=a.keyboardNavigationModules[a.keyboardNavigationModuleIndex];a.keyboardReset=!1;c&&c.run(b)&&b.preventDefault()}),a.unbindBlurHandler=g(k,"mouseup",
 function(){a.keyboardReset||a.pointer&&a.pointer.chartPosition||a.resetKeyboardNavigation()}),g(a,"destroy",function(){a.resetKeyboardNavigation();a.unbindExitAnchorFocus&&a.tabExitAnchor&&a.unbindExitAnchorFocus();a.unbindKeydownHandler&&a.renderTo&&a.unbindKeydownHandler();a.unbindBlurHandler&&a.unbindBlurHandler()}))})})(r)});
+//# sourceMappingURL=accessibility.js.map

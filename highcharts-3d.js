@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  3D features for Highcharts JS
 
@@ -80,3 +80,4 @@ scaleX:1,scaleY:1},p.animate(g,n),m&&m.animate(g,n),this.animate=null))}else b.a
 this.chart));return u},axisTypes:["xAxis","yAxis","zAxis"],pointArrayMap:["x","y","z"],parallelArrays:["x","y","z"],directTouch:!0},{applyOptions:function(){u.prototype.applyOptions.apply(this,arguments);void 0===this.z&&(this.z=0);return this}})})(B);(function(b){var u=b.addEvent,y=b.Axis,v=b.SVGRenderer,q=b.VMLRenderer;q&&(b.setOptions({animate:!1}),q.prototype.face3d=v.prototype.face3d,q.prototype.polyhedron=v.prototype.polyhedron,q.prototype.cuboid=v.prototype.cuboid,q.prototype.cuboidPath=v.prototype.cuboidPath,
 q.prototype.toLinePath=v.prototype.toLinePath,q.prototype.toLineSegments=v.prototype.toLineSegments,q.prototype.createElement3D=v.prototype.createElement3D,q.prototype.arc3d=function(b){b=v.prototype.arc3d.call(this,b);b.css({zIndex:b.zIndex});return b},b.VMLRenderer.prototype.arc3dPath=b.SVGRenderer.prototype.arc3dPath,u(y,"render",function(){this.sideFrame&&(this.sideFrame.css({zIndex:0}),this.sideFrame.front.attr({fill:this.sideFrame.color}));this.bottomFrame&&(this.bottomFrame.css({zIndex:1}),
 this.bottomFrame.front.attr({fill:this.bottomFrame.color}));this.backFrame&&(this.backFrame.css({zIndex:0}),this.backFrame.front.attr({fill:this.backFrame.color}))}))})(B)});
+//# sourceMappingURL=highcharts-3d.js.map

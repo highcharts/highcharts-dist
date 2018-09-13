@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
 
  Indicator series type for Highstock
 
@@ -18,3 +18,4 @@ k);a.pointWidth=q;a.shapeArgs=b.crispCol.apply(b,[w,x,q,l]);a.volumeNeg=d[c].neg
 [],f=[],u=0,m=1,l;if(!h||!k)return this.points.length&&(this.setData([]),this.zoneStarts=[],this.zoneLinesSVG.destroy()),[];l=this.rangeStep=z(k-h)/e;for(d.push(h);u<e-1;u++)d.push(z(d[u]+l));d.push(k);for(e=d.length;m<e;m++)f.push({index:m-1,x:a[0],start:d[m-1],end:d[m]});return this.volumePerZone(b,f,n,a,c)},volumePerZone:function(b,a,c,e,n){var h=this,d=c.processedXData,f=c.processedYData,m=a.length-1,k=n.length;c=f.length;var g,l,v,q,p;t(k-c)&&(e[0]!==d[0]&&f.unshift(0),e[k-1]!==d[c-1]&&f.push(0));
 h.volumeDataArray=[];r(a,function(a){a.wholeVolumeData=0;a.positiveVolumeData=0;for(p=a.negativeVolumeData=0;p<k;p++)v=l=!1,q=b?n[p][3]:n[p],g=p?b?n[p-1][3]:n[p-1]:q,q<=a.start&&0===a.index&&(l=!0),q>=a.end&&a.index===m&&(v=!0),(q>a.start||l)&&(q<a.end||v)&&(a.wholeVolumeData+=f[p],g>q?a.negativeVolumeData+=f[p]:a.positiveVolumeData+=f[p]);h.volumeDataArray.push(a.wholeVolumeData)});return a},drawZones:function(b,a,c,e){var g=b.renderer,h=this.zoneLinesSVG,d=[],f=b.plotWidth,m=b.plotTop,k;r(c,function(c){k=
 a.toPixels(c)-m;d=d.concat(b.renderer.crispLine(["M",0,k,"L",f,k],e.lineWidth))});h?h.animate({d:d}):h=this.zoneLinesSVG=g.path(d).attr({"stroke-width":e.lineWidth,stroke:e.color,dashstyle:e.dashStyle,zIndex:this.group.zIndex+.1}).add(this.group)}},{destroy:function(){this.negativeGraphic&&(this.negativeGraphic=this.negativeGraphic.destroy());return g.Point.prototype.destroy.apply(this,arguments)}})})(r)});
+//# sourceMappingURL=volume-by-price.js.map

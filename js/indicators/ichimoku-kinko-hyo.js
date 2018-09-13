@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
 
  Indicator series type for Highstock
 
@@ -16,3 +16,4 @@ z(r[q])&&n[m].push({plotX:r.plotX,plotY:r["plot"+q],isNull:!1});v("tenkanLine ki
 a.options=f;a.graph=g},getGraphPath:function(a){var c,b,f=[];a=a||this.points;if(this.fillGraph&&this.nextPoints){b=p.prototype.getGraphPath.call(this,this.nextPoints);b[0]="L";c=p.prototype.getGraphPath.call(this,a);b=b.slice(0,c.length);for(var g=b.length-1;0<g;g-=3)f.push(b[g-2],b[g-1],b[g]);c=c.concat(f)}else c=p.prototype.getGraphPath.apply(this,arguments);return c},getValues:function(a,c){var b=c.period,f=c.periodTenkan;c=c.periodSenkouSpanB;var g=a.xData,h=a.yData,l=h&&h.length||0;a=B(a.xAxis);
 var e=[],n=[],q,r,m,t,k,d,p;if(g.length<=b||!D(h[0])||4!==h[0].length)return!1;q=g[0]-b*a;for(d=0;d<b;d++)n.push(q+d*a);for(d=0;d<l;d++)d>=f&&(m=h.slice(d-f,d),m=w(m),m=(m.high+m.low)/2),d>=b&&(t=h.slice(d-b,d),t=w(t),t=(t.high+t.low)/2,p=(m+t)/2),d>=c&&(k=h.slice(d-c,d),k=w(k),k=(k.high+k.low)/2),q=h[d][0],r=g[d],e[d]===u&&(e[d]=[]),e[d+b]===u&&(e[d+b]=[]),e[d+b][0]=m,e[d+b][1]=t,e[d+b][2]=u,d>=b?e[d-b][2]=q:(e[d+b][3]=u,e[d+b][4]=u),e[d+2*b]===u&&(e[d+2*b]=[]),e[d+2*b][3]=p,e[d+2*b][4]=k,n.push(r);
 for(d=1;d<=b;d++)n.push(r+d*a);return{values:e,xData:n,yData:e}}})})(k)});
+//# sourceMappingURL=ichimoku-kinko-hyo.js.map

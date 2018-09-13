@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
 
  Indicator series type for Highstock
 
@@ -16,3 +16,4 @@ drawGraph:function(){for(var a=this,c=a.points,d=c.length,b=a.options,k=a.zones,
 c]=a.graph});a.points=c;a.options=b;a.zones=k;a.currentLineZone=null},getZonesGraphs:function(a){var c=g.prototype.getZonesGraphs.call(this,a),d=c;this.currentLineZone&&(d=c.splice(this[this.currentLineZone].startIndex+1),d.length?d.splice(0,0,a[0]):d=[a[0]]);return d},applyZones:function(){var a=this.zones;this.zones=this.signalZones.zones;g.prototype.applyZones.call(this);this.options.macdLine.zones.length&&this.graphmacd.hide();this.zones=a},getValues:function(a,c){var d=0,b=[],g=[],e=[],h,f;if(a.xData.length<
 c.longPeriod)return!1;h=k.prototype.getValues(a,{period:c.shortPeriod});f=k.prototype.getValues(a,{period:c.longPeriod});h=h.values;f=f.values;for(a=1;a<=h.length;a++)n(f[a-1])&&n(f[a-1][1])&&n(h[a+c.shortPeriod+1])&&n(h[a+c.shortPeriod+1][0])&&b.push([h[a+c.shortPeriod+1][0],0,null,h[a+c.shortPeriod+1][1]-f[a-1][1]]);for(a=0;a<b.length;a++)g.push(b[a][0]),e.push([0,null,b[a][3]]);c=k.prototype.getValues({xData:g,yData:e},{period:c.signalPeriod,index:2});c=c.values;for(a=0;a<b.length;a++)b[a][0]>=
 c[0][0]&&(b[a][2]=c[d][1],e[a]=[0,c[d][1],b[a][3]],null===b[a][3]?(b[a][1]=0,e[a][0]=0):(b[a][1]=b[a][3]-c[d][1],e[a][0]=b[a][3]-c[d][1]),d++);return{values:b,xData:g,yData:e}}})})(m)});
+//# sourceMappingURL=macd.js.map

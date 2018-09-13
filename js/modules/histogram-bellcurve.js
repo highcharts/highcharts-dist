@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2010-2017 Highsoft AS
  Author: Sebastian Domas
@@ -13,3 +13,4 @@ binWidth:void 0,pointPadding:0,groupPadding:0,grouping:!1,pointPlacement:"betwee
 h=p(a),m={},q=[],l;c=this.binWidth=d(n(c)?c||1:(g-h)/b);for(b=h;b<g;b=d(b+c))m[b]=0;0!==m[h]&&(m[d(h)]=0);l=f(v(u(m).sort(),function(a){return parseFloat(a)}));e(a,function(a){a=d(l(a));m[a]++});k(m,function(a,b){q.push({x:Number(b),y:a,x2:d(Number(b)+c)})});q.sort(function(a,b){return a.x-b.x});return q},binsNumber:function(){var a=this.options.binsNumber,b=h[a]||"function"===typeof a&&a;return Math.ceil(b&&b(this.baseSeries)||(n(a)?a:h["square-root"](this.baseSeries)))}}))})(c,t);(function(a,c){function f(a){var b=
 a.length;a=p(a,function(a,b){return a+b},0);return 0<b&&a/b}function e(a,c){var b=a.length;c=n(c)?c:f(a);a=p(a,function(a,b){b-=c;return a+b*b},0);return 1<b&&Math.sqrt(a/(b-1))}function k(a,c,d){a-=c;return Math.exp(-(a*a)/(2*d*d))/(d*Math.sqrt(2*Math.PI))}var l=a.seriesType,d=a.correctFloat,n=a.isNumber,r=a.merge,p=a.reduce;l("bellcurve","areaspline",{intervals:3,pointsInInterval:3,marker:{enabled:!1}},r(c,{setMean:function(){this.mean=d(f(this.baseSeries.yData))},setStandardDeviation:function(){this.standardDeviation=
 d(e(this.baseSeries.yData,this.mean))},setDerivedData:function(){1<this.baseSeries.yData.length&&(this.setMean(),this.setStandardDeviation(),this.setData(this.derivedData(this.mean,this.standardDeviation),!1))},derivedData:function(a,c){var b=this.options.intervals,d=this.options.pointsInInterval,g=a-b*c,b=b*d*2+1,d=c/d,f=[],e;for(e=0;e<b;e++)f.push([g,k(g,a,c)]),g+=d;return f}}))})(c,t)});
+//# sourceMappingURL=histogram-bellcurve.js.map

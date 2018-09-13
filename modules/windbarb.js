@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
  Wind barb series module
 
  (c) 2010-2017 Torstein Honsi
@@ -14,3 +14,4 @@ states:{hover:{lineWidthPlus:0}},tooltip:{pointFormat:'\x3cspan style\x3d"color:
 b,-10*b,20*b,20*b);d=["M",0,7*b,"L",-1.5*b,7*b,0,10*b,1.5*b,7*b,0,7*b,0,-10*b];e=(c-c%50)/50;if(0<e)for(;e--;)d.push(-10===a?"L":"M",0,a*b,"L",5*b,a*b+2,"L",0,a*b+4),c-=50,a+=7;e=(c-c%10)/10;if(0<e)for(;e--;)d.push(-10===a?"L":"M",0,a*b,"L",7*b,a*b),c-=10,a+=3;e=(c-c%5)/5;if(0<e)for(;e--;)d.push(-10===a?"L":"M",0,a*b,"L",4*b,a*b),c-=5,a+=3;return d},translate:function(){var d=this.beaufortFloor,c=this.beaufortName;k.translate.call(this);r(this.points,function(e){for(var b=0;b<d.length&&!(d[b]>e.value);b++);
 e.beaufortLevel=b-1;e.beaufort=c[b-1]})},drawPoints:function(){var d=this.chart,c=this.yAxis,e=d.inverted,b=this.options.vectorLength/2;r(this.points,function(a){var g=a.plotX,f=a.plotY;d.isInsidePlot(g,0,!1)?(a.graphic||(a.graphic=this.chart.renderer.path().add(this.markerGroup)),a.graphic.attr({d:this.windArrow(a),translateX:g+this.options.xOffset,translateY:f+this.options.yOffset,rotation:a.direction}).attr(this.pointAttribs(a))):a.graphic&&(a.graphic=a.graphic.destroy());a.tooltipPos=[g+this.options.xOffset+
 (e&&!this.onSeries?b:0),f+this.options.yOffset-(e?0:b+c.pos-d.plotTop)]},this)},animate:function(d){d?this.markerGroup.attr({opacity:.01}):(this.markerGroup.animate({opacity:1},f.animObject(this.options.animation)),this.animate=null)},invertGroups:f.noop},{isValid:function(){return f.isNumber(this.value)&&0<=this.value}})})(k,A)});
+//# sourceMappingURL=windbarb.js.map

@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Boost module
 
  (c) 2010-2017 Highsoft AS
@@ -61,3 +61,4 @@ d.cropStart||0,G=d.requireSorting,N=!n,M,Q,W,O,R,X="x"===f.findNearestPointBy,ca
 this.renderTarget.destroy())):this.markerGroup=d.plotGroup("markerGroup","markers",!0,1,g.seriesGroup);J=this.points=[];d.buildKDTree=ua;b&&(ka(b,this),b.pushSeries(d),ja(b,this,g));g.renderer.forExport||(R.debug.timeKDTree&&console.time("kd tree building"),k.eachAsync(L?d.data:n||h,a,c))}}}),l(["heatmap","treemap"],function(a){n[a]&&y(n[a].prototype,"drawPoints",ta)}),n.bubble&&(delete n.bubble.prototype.buildKDTree,y(n.bubble.prototype,"markerAttribs",function(a){return this.isSeriesBoosting?!1:
 a.apply(this,[].slice.call(arguments,1))})),n.scatter.prototype.fill=!0,la(n.area.prototype,{fill:!0,fillOpacity:!0,sampling:!0}),la(n.column.prototype,{fill:!0,sampling:!0}),k.Chart.prototype.callbacks.push(function(a){N(a,"predraw",function(){a.boostForceChartBoost=void 0;a.boostForceChartBoost=R(a);a.isBoosting=!1;!a.isChartSeriesBoosting()&&a.didBoost&&(a.didBoost=!1);a.boostClear&&a.boostClear();a.canvas&&a.ogl&&a.isChartSeriesBoosting()&&(a.didBoost=!0,a.ogl.allocateBuffer(a));a.markerGroup&&
 a.xAxis&&0<a.xAxis.length&&a.yAxis&&0<a.yAxis.length&&a.markerGroup.translate(a.xAxis[0].pos,a.yAxis[0].pos)});N(a,"render",function(){a.ogl&&a.isChartSeriesBoosting()&&a.ogl.render(a)})})):"undefined"!==typeof k.initCanvasBoost?k.initCanvasBoost():k.error(26)})(u)});
+//# sourceMappingURL=boost.js.map

@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Highstock as a plugin for Highcharts
 
  (c) 2017 Torstein Honsi
@@ -144,3 +144,4 @@ this.options.compareBase?0:100),c&&(c.change=b),b}:null;this.userOptions.compare
 0!==h){this.compareValue=h;break}};n(z,"getExtremes",function(a){var b;a.apply(this,[].slice.call(arguments,1));this.modifyValue&&(b=[this.modifyValue(this.dataMin),this.modifyValue(this.dataMax)],this.dataMin=G(b),this.dataMax=r(b))});y.prototype.setCompare=function(a,c){this.isXAxis||(v(this.series,function(b){b.setCompare(a)}),b(c,!0)&&this.chart.redraw())};d.prototype.tooltipFormatter=function(c){c=c.replace("{point.change}",(0<this.change?"+":"")+a.numberFormat(this.change,b(this.series.tooltipOptions.changeDecimals,
 2)));return H.apply(this,[c])};n(g.prototype,"render",function(a){var b;this.chart.is3d&&this.chart.is3d()||this.chart.polar||!this.xAxis||this.xAxis.isRadial||(b=this.yAxis.len-(this.xAxis.axisLine?Math.floor(this.xAxis.axisLine.strokeWidth()/2):0),!this.clipBox&&this.animate?(this.clipBox=f(this.chart.clipBox),this.clipBox.width=this.xAxis.len,this.clipBox.height=b):this.chart[this.sharedClipKey]?this.chart[this.sharedClipKey].attr({width:this.xAxis.len,height:b}):this.clipBox&&(this.clipBox.width=
 this.xAxis.len,this.clipBox.height=b));a.call(this)});n(D.prototype,"getSelectedPoints",function(a){var b=a.call(this);v(this.series,function(a){a.hasGroupedData&&(b=b.concat(A(a.points||[],function(a){return a.selected})))});return b});C(D,"update",function(a){a=a.options;"scrollbar"in a&&this.navigator&&(f(!0,this.options.scrollbar,a.scrollbar),this.navigator.update({},!1),delete a.scrollbar)})})(J)});
+//# sourceMappingURL=stock.js.map

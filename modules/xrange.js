@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  X-range series
 
  (c) 2010-2017 Torstein Honsi, Lars A. V. Cabrera
@@ -15,3 +15,4 @@ f+=e/2);m=Math.max(m,-10);f=Math.min(Math.max(f,-10),b.len+10);a.shapeArgs={x:Ma
 a.graphicOriginal.attr(this.pointAttribs(a,l)).shadow(d.shadow,null,n);h&&(r(q)||(q={}),r(d.partialFill)&&(q=p(q,d.partialFill)),b=q.fill||v(a.color||this.color).brighten(-.3).get(),a.graphicOverlay.attr(this.pointAttribs(a,l)).attr({fill:b}).shadow(d.shadow,null,n))}},drawPoints:function(){var a=this,b=a.getAnimationVerb();h(a.points,function(c){a.drawPoint(c,b)})},getAnimationVerb:function(){return this.chart.pointCount<(this.options.animationLimit||250)?"animate":"attr"}},{init:function(){n.prototype.init.apply(this,
 arguments);var a;a=this.series;var b=a.chart.options.chart.colorCount;this.y||(this.y=0);a.options.colorByPoint&&(a=a.options.colors||a.chart.options.colors,b=a.length,!this.options.color&&a[this.y%b]&&(this.color=a[this.y%b]));this.colorIndex=l(this.options.colorIndex,this.y%b);return this},setState:function(){n.prototype.setState.apply(this,arguments);this.series.drawPoint(this,this.series.getAnimationVerb())},getLabelConfig:function(){var a=n.prototype.getLabelConfig.call(this),b=this.series.yAxis.categories;
 a.x2=this.x2;a.yCategory=this.yCategory=b&&b[this.y];return a},tooltipDateKeys:["x","x2"],isValid:function(){return"number"===typeof this.x&&"number"===typeof this.x2}});g(y,"afterGetSeriesExtremes",function(){var a=this.series,b,c;this.isXAxis&&(b=l(this.dataMax,-Number.MAX_VALUE),h(a,function(a){a.x2Data&&h(a.x2Data,function(a){a>b&&(b=a,c=!0)})}),c&&(this.dataMax=b))})})(g)});
+//# sourceMappingURL=xrange.js.map

@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
  Sankey diagram module
 
  (c) 2010-2017 Torstein Honsi
@@ -16,3 +16,4 @@ D=(a?-C:C)*c.curveFactor,p=Infinity;f(this.nodeColumns,function(a){p=Math.min(p,
 m[k.column].top(p)+k.offset(c,"linksTo")*p+m[k.column].offset(k,p),r=h,k=k.column*C,w=c.outgoing;a&&(l=b.plotSizeY-l,f=b.plotSizeY-f,k=b.plotSizeX-k,r=-r,g=-g);c.shapeType="path";if(k>e)c.shapeArgs={d:["M",q+r,l,"C",q+r+D,l,k-D,f,k,f,"L",k+(w?r:0),f+g/2,"L",k,f+g,"C",k-D,f+g,q+r+D,l+g,q+r,l+g,"z"]};else{var w=k-20-g,x=k-20,n=k,y=q+r,u=y+20,E=u+g,v=l,z=l+g,H=z+20,A=H+(b.plotHeight-l-g),t=A+20,F=t+g,I=f,B=I+g,J=B+20,K=t+.7*g,L=n-.7*g,M=y+.7*g;c.shapeArgs={d:["M",y,v,"C",M,v,E,z-.7*g,E,H,"L",E,A,"C",
 E,K,M,F,y,F,"L",n,F,"C",L,F,w,K,w,A,"L",w,J,"C",w,B-.7*g,L,I,n,I,"L",n,B,"C",x,B,x,B,x,J,"L",x,A,"C",x,t,x,t,n,t,"L",y,t,"C",u,t,u,t,u,A,"L",u,H,"C",u,z,u,z,y,z,"z"]}}c.dlBox={x:q+(k-q+r)/2,y:l+(f-l)/2,height:g,width:0};c.y=c.plotY=1;c.color||(c.color=d.color)})});e+=C},this)},render:function(){var b=this.points;this.points=this.points.concat(this.nodes);e.seriesTypes.column.prototype.render.call(this);this.points=b},animate:e.Series.prototype.animate,destroy:function(){this.data=this.points.concat(this.nodes);
 e.Series.prototype.destroy.call(this)}},{getClassName:function(){return"highcharts-link "+n.prototype.getClassName.call(this)},isValid:function(){return this.isNode||"number"===typeof this.weight}})})(m)});
+//# sourceMappingURL=sankey.js.map

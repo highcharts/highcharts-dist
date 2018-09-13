@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Module for adding patterns and images as point fills.
 
  (c) 2010-2018 Highsoft AS
@@ -18,3 +18,4 @@ this.options.color=b):a.apply(this,Array.prototype.slice.call(arguments,1))});m(
 a.indexOf&&0===a.indexOf("highcharts-pattern-")}).length&&(k(this.series,function(a){k(a.points,function(a){(a=a.options&&a.options.color)&&a.pattern&&(a.pattern._width="defer",a.pattern._height="defer")})}),this.redraw(!1))});e.addEvent(e.Chart,"redraw",function(){var a=[],b=this.renderer,d=e.grep(b.defIds||[],function(a){return a.indexOf&&0===a.indexOf("highcharts-pattern-")});d.length&&(k(this.renderTo.querySelectorAll('[color^\x3d"url(#"], [fill^\x3d"url(#"], [stroke^\x3d"url(#"]'),function(b){(b=
 b.getAttribute("fill")||b.getAttribute("color")||b.getAttribute("stroke"))&&a.push(b.substring(b.indexOf("url(#")+5).replace(")",""))}),k(d,function(c){-1===e.inArray(c,a)&&(e.erase(b.defIds,c),b.patternElements[c]&&(b.patternElements[c].destroy(),delete b.patternElements[c]))}))});e.Chart.prototype.callbacks.push(function(a){var b=e.getOptions().colors;k("M 0 0 L 10 10 M 9 -1 L 11 1 M -1 9 L 1 11;M 0 10 L 10 0 M -1 1 L 1 -1 M 9 11 L 11 9;M 3 0 L 3 10 M 8 0 L 8 10;M 0 3 L 10 3 M 0 8 L 10 8;M 0 3 L 5 3 L 5 0 M 5 10 L 5 7 L 10 7;M 3 3 L 8 3 L 8 8 L 3 8 Z;M 5 5 m -4 0 a 4 4 0 1 1 8 0 a 4 4 0 1 1 -8 0;M 10 3 L 5 3 L 5 0 M 5 10 L 5 7 L 0 7;M 2 5 L 5 2 L 8 5 L 5 8 Z;M 0 0 L 5 10 L 10 0".split(";"),
 function(d,c){a.renderer.addPattern({id:"highcharts-default-pattern-"+c,path:d,color:b[c],width:10,height:10})})})})(f)});
+//# sourceMappingURL=pattern-fill.js.map

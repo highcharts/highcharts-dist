@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2014 Highsoft AS
  Authors: Jon Arild Nygard / Oystein Moseng
@@ -31,3 +31,4 @@ b){var c=this.nodeMap[a];this.idPreviousRoot=this.rootNode;this.rootNode=a;""===
 f,e&&e.hover,e&&e.select).addClass("highcharts-drillup-button").attr({align:c.position.align,zIndex:7}).add().align(c.position,!1,c.relativeTo||"plotBox"))},buildKDTree:z,drawLegendSymbol:b.LegendSymbolMixin.drawRectangle,getExtremes:function(){h.prototype.getExtremes.call(this,this.colorValueData);this.valueMin=this.dataMin;this.valueMax=this.dataMax;h.prototype.getExtremes.call(this)},getExtremesFromAll:!0,bindAxes:function(){var a={endOnTick:!1,gridLineWidth:0,lineWidth:0,min:0,dataMin:0,minPadding:0,
 max:100,dataMax:100,maxPadding:0,startOnTick:!1,title:null,tickPositions:[]};h.prototype.bindAxes.call(this);b.extend(this.yAxis.options,a);b.extend(this.xAxis.options,a)},utils:{recursive:D,reduce:F}},{getClassName:function(){var a=b.Point.prototype.getClassName.call(this),d=this.series,c=d.options;this.node.level<=d.nodeMap[d.rootNode].level?a+=" highcharts-above-level":this.node.isLeaf||m(c.interactByLeaf,!c.allowDrillToNode)?this.node.isLeaf||(a+=" highcharts-internal-node"):a+=" highcharts-internal-node-interactive";
 return a},isValid:function(){return this.id||C(this.value)},setState:function(a){b.Point.prototype.setState.call(this,a);this.graphic&&this.graphic.attr({zIndex:"hover"===a?1:0})},setVisible:w.pie.prototype.pointClass.prototype.setVisible})})(v,E)});
+//# sourceMappingURL=treemap.js.map

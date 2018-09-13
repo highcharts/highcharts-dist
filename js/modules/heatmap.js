@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2009-2017 Torstein Honsi
 
@@ -24,3 +24,4 @@ overflow:!1,padding:0},marker:null,pointRange:null,tooltip:{pointFormat:"{point.
 k=b.pointPadding||0,n=function(a,b,e){return Math.min(Math.max(b,a),e)};this.generatePoints();l(this.points,function(a){var c=(b.colsize||1)/2,e=(b.rowsize||1)/2,f=n(Math.round(d.len-d.translate(a.x-c,0,1,0,1)),-d.len,2*d.len),c=n(Math.round(d.len-d.translate(a.x+c,0,1,0,1)),-d.len,2*d.len),g=n(Math.round(h.translate(a.y-e,0,1,0,1)),-h.len,2*h.len),e=n(Math.round(h.translate(a.y+e,0,1,0,1)),-h.len,2*h.len),p=m(a.pointPadding,k);a.plotX=a.clientX=(f+c)/2;a.plotY=(g+e)/2;a.shapeType="rect";a.shapeArgs=
 {x:Math.min(f,c)+p,y:Math.min(g,e)+p,width:Math.abs(c-f)-2*p,height:Math.abs(e-g)-2*p}});this.translateColors()},drawPoints:function(){n.column.prototype.drawPoints.call(this);l(this.points,function(b){b.graphic.css(this.colorAttribs(b))},this)},animate:d,getBox:d,drawLegendSymbol:b.LegendSymbolMixin.drawRectangle,alignDataLabel:n.column.prototype.alignDataLabel,getExtremes:function(){k.prototype.getExtremes.call(this,this.valueData);this.valueMin=this.dataMin;this.valueMax=this.dataMax;k.prototype.getExtremes.call(this)}}),
 b.extend({haloPath:function(b){if(!b)return[];var d=this.shapeArgs;return["M",d.x-b,d.y-b,"L",d.x-b,d.y+d.height+b,d.x+d.width+b,d.y+d.height+b,d.x+d.width+b,d.y-b,"Z"]}},h))})(h)});
+//# sourceMappingURL=heatmap.js.map

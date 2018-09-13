@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Highstock as a plugin for Highcharts
 
  (c) 2017 Torstein Honsi
@@ -138,3 +138,4 @@ b=-1,c,d,e=!0===this.options.compareStart?0:1,g,f;n.apply(this,arguments);if(thi
 this.modifyValue(this.dataMax)],this.dataMin=E(b),this.dataMax=l(b))});y.prototype.setCompare=function(a,b){this.isXAxis||(B(this.series,function(b){b.setCompare(a)}),p(b,!0)&&this.chart.redraw())};b.prototype.tooltipFormatter=function(b){b=b.replace("{point.change}",(0<this.change?"+":"")+a.numberFormat(this.change,p(this.series.tooltipOptions.changeDecimals,2)));return A.apply(this,[b])};d(f.prototype,"render",function(a){var b;this.chart.is3d&&this.chart.is3d()||this.chart.polar||!this.xAxis||
 this.xAxis.isRadial||(b=this.yAxis.len-(this.xAxis.axisLine?Math.floor(this.xAxis.axisLine.strokeWidth()/2):0),!this.clipBox&&this.animate?(this.clipBox=e(this.chart.clipBox),this.clipBox.width=this.xAxis.len,this.clipBox.height=b):this.chart[this.sharedClipKey]?this.chart[this.sharedClipKey].attr({width:this.xAxis.len,height:b}):this.clipBox&&(this.clipBox.width=this.xAxis.len,this.clipBox.height=b));a.call(this)});d(H.prototype,"getSelectedPoints",function(a){var b=a.call(this);B(this.series,function(a){a.hasGroupedData&&
 (b=b.concat(u(a.points||[],function(a){return a.selected})))});return b});C(H,"update",function(a){a=a.options;"scrollbar"in a&&this.navigator&&(e(!0,this.options.scrollbar,a.scrollbar),this.navigator.update({},!1),delete a.scrollbar)})})(J)});
+//# sourceMappingURL=stock.js.map

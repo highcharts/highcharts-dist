@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.2 (2018-08-31)
+ * @license Highcharts JS v6.1.3 (2018-09-12)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -47,7 +47,7 @@
 
 		var Highcharts = glob.Highcharts ? glob.Highcharts.error(16, true) : {
 		    product: 'Highcharts',
-		    version: '6.1.2',
+		    version: '6.1.3',
 		    deg2rad: Math.PI * 2 / 360,
 		    doc: doc,
 		    hasBidiBug: hasBidiBug,
@@ -4712,7 +4712,7 @@
 		        // Add description
 		        desc = this.createElement('desc').add();
 		        desc.element.appendChild(
-		            doc.createTextNode('Created with Highcharts 6.1.2')
+		            doc.createTextNode('Created with Highcharts 6.1.3')
 		        );
 
 		        /**

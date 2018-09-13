@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Highcharts funnel module
 
  (c) 2010-2017 Torstein Honsi
@@ -11,3 +11,4 @@ a){return/%$/.test(b)?a*parseInt(b,10)/100:parseInt(b,10)},a=0,f=this.chart,e=th
 this.center=[g,r,l];this.centerX=g;I(d,function(b){v&&!1===b.visible||(a+=b.y)});I(d,function(b){n=null;B=a?b.y/a:0;m=r-l/2+q*l;h=m+B*l;k=w(m);C=g-k/2;G=C+k;k=w(h);u=g-k/2;z=u+k;m>y?(C=u=g-x/2,G=z=g+x/2):h>y&&(n=h,k=w(y),u=g-k/2,z=u+k,h=y);c&&(m=2*r-m,h=2*r-h,null!==n&&(n=2*r-n));A=["M",C,m,"L",G,m,z,h];null!==n&&A.push(z,n,u,n);A.push(u,h,"Z");b.shapeType="path";b.shapeArgs={d:A};b.percentage=100*B;b.plotX=g;b.plotY=(m+(n||h))/2;b.tooltipPos=[g,b.plotY];b.slice=H;b.half=E;v&&!1===b.visible||(q+=
 B)})},sortByAngle:function(a){a.sort(function(a,d){return a.plotY-d.plotY})},drawDataLabels:function(){var a=this.data,p=this.options.dataLabels.distance,f,e,c,v=a.length,t,q;for(this.center[2]-=2*p;v--;)c=a[v],e=(f=c.half)?1:-1,q=c.plotY,c.labelDistance=E(c.options.dataLabels&&c.options.dataLabels.distance,p),this.maxLabelDistance=Math.max(c.labelDistance,this.maxLabelDistance||0),t=this.getX(q,f,c),c.labelPos=[0,q,t+(c.labelDistance-5)*e,q,t+c.labelDistance*e,q,f?"right":"left",0];D.pie.prototype.drawDataLabels.call(this)}});
 p("pyramid","funnel",{neckWidth:"0%",neckHeight:"0%",reversed:!0})})(a)});
+//# sourceMappingURL=funnel.js.map

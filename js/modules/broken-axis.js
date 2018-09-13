@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2009-2017 Torstein Honsi
 
@@ -13,3 +13,4 @@ n)&&(n-=n%g-b.from%g)});p(d,function(a){m=a.from;for(g=a.repeat||Infinity;m-g>e;
 n-e-k+v;x(a,"afterBreaks");a.options.staticScale?a.transA=a.options.staticScale:a.unitLength&&(a.transA*=(n-a.min+v)/a.unitLength);v&&(a.minPixelPadding=a.transA*a.minPointOffset);a.min=e;a.max=n})});u(A.prototype,"generatePoints",function(a){a.apply(this,l(arguments));var c=this.xAxis,d=this.yAxis,b=this.points,f,e=b.length,h=this.options.connectNulls,g;if(c&&d&&(c.options.breaks||d.options.breaks))for(;e--;)f=b[e],g=null===f.y&&!1===h,g||!c.isInAnyBreak(f.x,!0)&&!d.isInAnyBreak(f.y,!0)||(b.splice(e,
 1),this.data[e]&&this.data[e].destroyElements())});e.Series.prototype.drawBreaks=function(a,c){var d=this,b=d.points,e,k,h,g;a&&p(c,function(c){e=a.breakArray||[];k=a.isXAxis?a.min:r(d.options.threshold,a.min);p(b,function(b){g=r(b["stack"+c.toUpperCase()],b[c]);p(e,function(c){h=!1;if(k<c.from&&g>c.to||k>c.from&&g<c.from)h="pointBreak";else if(k<c.from&&g>c.from&&g<c.to||k>c.from&&g>c.to&&g<c.from)h="pointInBreak";h&&x(a,h,{point:b,brk:c})})})})};e.Series.prototype.gappedPath=function(){var a=this.currentDataGrouping,
 c=a&&a.totalRange,a=this.options.gapSize,d=this.points.slice(),b=d.length-1,f=this.yAxis;if(a&&0<b)for("value"!==this.options.gapUnit&&(a*=this.closestPointRange),c&&c>a&&(a=c);b--;)d[b+1].x-d[b].x>a&&(c=(d[b].x+d[b+1].x)/2,d.splice(b+1,0,{isNull:!0,x:c}),this.options.stacking&&(c=f.stacks[this.stackKey][c]=new e.StackItem(f,f.options.stackLabels,!1,c,this.stack),c.total=0));return this.getGraphPath(d)};u(e.seriesTypes.column.prototype,"drawPoints",w);u(e.Series.prototype,"drawPoints",w)})(l)});
+//# sourceMappingURL=broken-axis.js.map

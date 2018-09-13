@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2009-2017 Torstein Honsi
 
@@ -24,3 +24,4 @@ b.each,v=b.merge,m=b.noop,q=b.pick,h=b.Series,r=b.seriesType,p=b.seriesTypes;r("
 directTouch:!0,init:function(){var b;p.scatter.prototype.init.apply(this,arguments);b=this.options;b.pointRange=q(b.pointRange,b.colsize||1);this.yAxis.axisPointRange=b.rowsize||1},translate:function(){var b=this.options,c=this.xAxis,h=this.yAxis,k=b.pointPadding||0,m=function(a,b,c){return Math.min(Math.max(b,a),c)};this.generatePoints();g(this.points,function(a){var d=(b.colsize||1)/2,e=(b.rowsize||1)/2,g=m(Math.round(c.len-c.translate(a.x-d,0,1,0,1)),-c.len,2*c.len),d=m(Math.round(c.len-c.translate(a.x+
 d,0,1,0,1)),-c.len,2*c.len),l=m(Math.round(h.translate(a.y-e,0,1,0,1)),-h.len,2*h.len),e=m(Math.round(h.translate(a.y+e,0,1,0,1)),-h.len,2*h.len),p=q(a.pointPadding,k);a.plotX=a.clientX=(g+d)/2;a.plotY=(l+e)/2;a.shapeType="rect";a.shapeArgs={x:Math.min(g,d)+p,y:Math.min(l,e)+p,width:Math.abs(d-g)-2*p,height:Math.abs(e-l)-2*p}});this.translateColors()},drawPoints:function(){p.column.prototype.drawPoints.call(this);g(this.points,function(b){b.graphic.attr(this.colorAttribs(b))},this)},animate:m,getBox:m,
 drawLegendSymbol:b.LegendSymbolMixin.drawRectangle,alignDataLabel:p.column.prototype.alignDataLabel,getExtremes:function(){h.prototype.getExtremes.call(this,this.valueData);this.valueMin=this.dataMin;this.valueMax=this.dataMax;h.prototype.getExtremes.call(this)}}),b.extend({haloPath:function(b){if(!b)return[];var c=this.shapeArgs;return["M",c.x-b,c.y-b,"L",c.x-b,c.y+c.height+b,c.x+c.width+b,c.y+c.height+b,c.x+c.width+b,c.y-b,"Z"]}},k))})(k)});
+//# sourceMappingURL=heatmap.js.map

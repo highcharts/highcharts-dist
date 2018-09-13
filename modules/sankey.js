@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
  Sankey diagram module
 
  (c) 2010-2017 Torstein Honsi
@@ -16,3 +16,4 @@ this.processData();this.generatePoints();this.nodeColumns=this.createNodeColumns
 G-v,width:d,height:v}:{x:q,y:G,width:d,height:v};e.shapeArgs.display=e.hasShape()?"":"none";e.plotY=1;g(e.linksFrom,function(c){var h=c.weight*p,l=e.offset(c,"linksFrom")*p,l=G+l,k=c.toNode,g=m[k.column].top(p)+k.offset(c,"linksTo")*p+m[k.column].offset(k,p),r=d,k=k.column*C,w=c.outgoing;a&&(l=b.plotSizeY-l,g=b.plotSizeY-g,k=b.plotSizeX-k,r=-r,h=-h);c.shapeType="path";if(k>f)c.shapeArgs={d:["M",q+r,l,"C",q+r+D,l,k-D,g,k,g,"L",k+(w?r:0),g+h/2,"L",k,g+h,"C",k-D,g+h,q+r+D,l+h,q+r,l+h,"z"]};else{var w=
 k-20-h,x=k-20,n=k,y=q+r,u=y+20,E=u+h,v=l,z=l+h,H=z+20,A=H+(b.plotHeight-l-h),t=A+20,F=t+h,I=g,B=I+h,J=B+20,K=t+.7*h,L=n-.7*h,M=y+.7*h;c.shapeArgs={d:["M",y,v,"C",M,v,E,z-.7*h,E,H,"L",E,A,"C",E,K,M,F,y,F,"L",n,F,"C",L,F,w,K,w,A,"L",w,J,"C",w,B-.7*h,L,I,n,I,"L",n,B,"C",x,B,x,B,x,J,"L",x,A,"C",x,t,x,t,n,t,"L",y,t,"C",u,t,u,t,u,A,"L",u,H,"C",u,z,u,z,y,z,"z"]}}c.dlBox={x:q+(k-q+r)/2,y:l+(g-l)/2,height:h,width:0};c.y=c.plotY=1;c.color||(c.color=e.color)})});f+=C},this)},render:function(){var b=this.points;
 this.points=this.points.concat(this.nodes);d.seriesTypes.column.prototype.render.call(this);this.points=b},animate:d.Series.prototype.animate,destroy:function(){this.data=this.points.concat(this.nodes);d.Series.prototype.destroy.call(this)}},{getClassName:function(){return"highcharts-link "+n.prototype.getClassName.call(this)},isValid:function(){return this.isNode||"number"===typeof this.weight}})})(m)});
+//# sourceMappingURL=sankey.js.map

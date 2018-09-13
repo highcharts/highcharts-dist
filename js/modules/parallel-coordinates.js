@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
 
  Support for parallel coordinates in Highcharts
 
@@ -15,3 +15,4 @@ this.chart,b=["left","width","height","top"];c.hasParallelCoordinates&&(c.invert
 b.push(a.yData[c])});this.dataMin=B(b);this.dataMax=C(b);a.preventDefault()}});p(u,{setParallelPosition:function(a,c){var b=(this.parallelPosition+.5)/(this.chart.parallelInfo.counter+1);this.chart.polar?c.angle=360*b:(c[a[0]]=100*b+"%",this[a[1]]=c[a[1]]=0,this[a[2]]=c[a[2]]=null,this[a[3]]=c[a[3]]=null)}});v(y,"bindAxes",function(a){if(this.chart.hasParallelCoordinates){var b=this;g(this.chart.axes,function(a){b.insert(a.series);a.isDirty=!0});b.xAxis=this.chart.xAxis[0];b.yAxis=this.chart.yAxis[0]}else a.apply(this,
 Array.prototype.slice.call(arguments,1))});l(b.Series,"afterTranslate",function(){var a=this.chart,b=this.points,e=b&&b.length,f=Number.MAX_VALUE,g,d,h;if(this.chart.hasParallelCoordinates){for(h=0;h<e;h++)d=b[h],n(d.y)?(d.plotX=a.polar?a.yAxis[h].angleRad||0:a.inverted?a.plotHeight-a.yAxis[h].top+a.plotTop:a.yAxis[h].left-a.plotLeft,d.clientX=d.plotX,d.plotY=a.yAxis[h].translate(d.y,!1,!0,null,!0),void 0!==g&&(f=Math.min(f,Math.abs(d.plotX-g))),g=d.plotX,d.isInside=a.isInsidePlot(d.plotX,d.plotY,
 a.inverted)):d.isNull=!0;this.closestPointRangePx=f}},{order:1});b.addEvent(b.Series,"destroy",function(){this.chart.hasParallelCoordinates&&g(this.chart.axes||[],function(a){a&&a.series&&(A(a.series,this),a.isDirty=a.forceRedraw=!0)},this)});g(["line","spline"],function(a){v(b.seriesTypes[a].prototype.pointClass.prototype,"getLabelConfig",e)})})(e)});
+//# sourceMappingURL=parallel-coordinates.js.map

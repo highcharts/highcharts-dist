@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  GridAxis
 
  (c) 2016 Lars A. V. Cabrera
@@ -18,3 +18,4 @@ b,c[0]=b);return c});m(n.prototype,"getOffset",function(a){var c=this.chart.axis
 this.width+1,a.y,"L",a.x+this.width+1,a.y+a.height]).attr({stroke:c.tickColor||"#ccd6eb","stroke-width":c.tickWidth||1,zIndex:7,class:"grid-wall"}).add(this.axisGroup)),this.isOuterAxis()&&this.axisLine&&(this.horiz&&(b=a.height-1),e)){a=this.getLinePath(e);g=a.indexOf("M")+1;k=a.indexOf("L")+1;f=a.indexOf("M")+2;d=a.indexOf("L")+2;if(0===this.side||3===this.side)b=-b;this.horiz?(a[f]+=b,a[d]+=b):(a[g]+=b,a[k]+=b);this.axisLineExtra?this.axisLineExtra.animate({d:a}):this.axisLineExtra=h.path(a).attr({stroke:c.lineColor,
 "stroke-width":e,zIndex:7}).add(this.axisGroup);this.axisLine[this.showAxis?"show":"hide"](!0)}}else a.apply(this)});m(t.prototype,"render",function(a){var c=25/11,b,e;h(this.axes,function(a){var d=a.options;d.grid&&(e=d.labels.style.fontSize,b=a.chart.renderer.fontMetrics(e),"datetime"===d.type&&(d.units=[["millisecond",[1]],["second",[1]],["minute",[1]],["hour",[1]],["day",[1]],["week",[1]],["month",[1]],["year",null]]),a.horiz?d.tickLength=d.cellHeight||b.h*c:(d.tickWidth=1,d.lineWidth||(d.lineWidth=
 1)))});a.apply(this)})})(h)});
+//# sourceMappingURL=grid-axis.js.map

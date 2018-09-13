@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Drag-panes module
 
  (c) 2010-2017 Highsoft AS
@@ -14,3 +14,4 @@ addMouseEvents:function(){var a=this,c=a.controlLine.element,d=a.axis.chart.cont
 [c.axis].concat(f.prev),l=[],k=!1,n=d.plotTop,q=d.plotHeight,r=n+q,p;a=Math.max(Math.min(a,r),n);p=a-c.lastPos;1>p*p||(m([f,e],function(b,f){m(b,function(b,h){var g=(b=y(b)?d.yAxis[b]:f||h?d.get(b):b)&&b.options,e,m;g&&"navigator-y-axis"!==g.id&&(h=b.top,m=Math.round(v(g.minLength,q)),e=Math.round(v(g.maxLength,q)),f?(p=a-c.lastPos,g=Math.round(Math.min(Math.max(b.len-p,m),e)),h=b.top+p,h+g>r&&(e=r-g-h,a+=e,h+=e),h<n&&(h=n,h+g>r&&(g=q)),g===m&&(k=!0),l.push({axis:b,options:{top:Math.round(h),height:g}})):
 (g=Math.round(Math.min(Math.max(a-h,m),e)),g===e&&(k=!0),a=h+g,l.push({axis:b,options:{height:g}})))})}),k||(m(l,function(a){a.axis.update(a.options,!1)}),d.redraw(!1)))},destroy:function(){var a=this;delete a.axis.resizer;this.eventsToUnbind&&m(this.eventsToUnbind,function(a){a()});a.controlLine.destroy();z(a,function(b,d){a[d]=null})}};n.prototype.keepProps.push("resizer");f(n,"afterRender",function(){var a=this.resizer,c=this.options.resize;c&&(c=!1!==c.enabled,a?c?a.init(this,!0):a.destroy():
 c&&(this.resizer=new b.AxisResizer(this)))});f(n,"destroy",function(a){!a.keepEvents&&this.resizer&&this.resizer.destroy()});u(w.prototype,"runPointActions",function(a){this.chart.activeResizer||a.apply(this,Array.prototype.slice.call(arguments,1))});u(w.prototype,"drag",function(a){this.chart.activeResizer||a.apply(this,Array.prototype.slice.call(arguments,1))})})(k)});
+//# sourceMappingURL=drag-panes.js.map

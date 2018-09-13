@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2016 Highsoft AS
  Authors: Jon Arild Nygard
@@ -22,3 +22,4 @@ n.right+=w.x;n.top+=w.y;n.bottom+=w.y;e=t;if(!m(e.left)||e.left>n.left)e.left=n.
 !0===this.visible&&q(this.points)&&0<this.points.length},placementStrategy:{random:function(a,d){var b=d.field;d=d.rotation;return{x:Math.round(b.width*(Math.random()+.5)/2)-b.width/2,y:Math.round(b.height*(Math.random()+.5)/2)-b.height/2,rotation:x(d.orientations,a.index,d.from,d.to)}},center:function(a,b){b=b.rotation;return{x:0,y:0,rotation:x(b.orientations,a.index,b.from,b.to)}}},pointArrayMap:["weight"],spirals:{archimedean:function(a,b){var d=b.field;b=!1;var d=d.width*d.width+d.height*d.height,
 e=.8*a;1E4>=a&&(b={x:e*Math.cos(e),y:e*Math.sin(e)},Math.min(Math.abs(b.x),Math.abs(b.y))<d||(b=!1));return b},rectangular:function(a,b){a=G(a,b);b=b.field;a&&(a.x*=b.ratioX,a.y*=b.ratioY);return a},square:G},utils:{extendPlayingField:J,getRotation:x,isPolygonsColliding:b,rotate2DToOrigin:g.rotate2DToOrigin,rotate2DToPoint:g.rotate2DToPoint},getPlotBox:function(){var a=this.chart,b=a.inverted,c=this[b?"yAxis":"xAxis"],b=this[b?"xAxis":"yAxis"];return{translateX:(c?c.left:a.plotLeft)+(c?c.len:a.plotWidth)/
 2,translateY:(b?b.top:a.plotTop)+(b?b.len:a.plotHeight)/2,scaleX:1,scaleY:1}}},{draw:l,shouldDraw:function(){return!this.isNull},weight:1})})(l,B,F)});
+//# sourceMappingURL=wordcloud.js.map

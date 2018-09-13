@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
 
  (c) 2009-2017 Torstein Honsi
 
@@ -19,3 +19,4 @@ h&&m.push(h);if(n.connectorAllowed&&!m.length&&!u)for(e=l+w-d.width;e>=l;e-=16)f
 h.connectorPoint.plotX+l,anchorY:h.connectorPoint&&h.connectorPoint.plotY+r})).animate(g),a.options.kdNow=!0,a.buildKDTree(),a=a.searchPoint({chartX:h.x,chartY:h.y},!0),p.closest=[a,h.x-a.plotX,h.y-a.plotY]}else p&&(a.labelBySeries=p.destroy())}else p&&(a.labelBySeries=p.destroy())}})};D(C,"render",function(){var c=this,b=Math.max(n.animObject(c.renderer.globalAnimation).duration,250),a=!c.hasRendered;c.labelSeries=[];c.labelSeriesMaxSum=0;n.clearTimeout(c.seriesLabelTimer);u(c.series,function(k){var d=
 k.options.label,e=k.labelBySeries,f=e&&e.closest;d.enabled&&k.visible&&(k.graph||k.area)&&!k.isSeriesBoosting&&(c.labelSeries.push(k),d.minFontSize&&d.maxFontSize&&(k.sum=n.reduce(k.yData,function(a,b){return(a||0)+(b||0)},0),c.labelSeriesMaxSum=Math.max(c.labelSeriesMaxSum,k.sum)),a&&(b=Math.max(b,n.animObject(k.options.animation).duration)),f&&(void 0!==f[0].plotX?e.animate({x:f[0].plotX+f[1],y:f[0].plotY+f[2]}):e.attr({opacity:0})))});c.seriesLabelTimer=n.syncTimeout(function(){c.series&&c.labelSeries&&
 c.drawSeriesLabels()},c.renderer.forExport?0:b)})})(r)});
+//# sourceMappingURL=series-label.js.map

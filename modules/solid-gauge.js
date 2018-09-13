@@ -1,5 +1,5 @@
 /*
-  Highcharts JS v6.1.2 (2018-08-31)
+  Highcharts JS v6.1.3 (2018-09-12)
  Solid angular gauge module
 
  (c) 2010-2017 Torstein Honsi
@@ -12,3 +12,4 @@ f;if(b)for(f=b.length;f--;){if(h=b[f],c=h.from,d=h.to,(void 0===c||a>=c)&&(void 
 a.initStops(a.options);e.seriesTypes.gauge.prototype.translate.call(this)},drawPoints:function(){var a=this,g=a.yAxis,d=g.center,c=a.options,r=a.chart.renderer,b=c.overshoot,h=v(b)?b/180*Math.PI:0,f;v(c.threshold)&&(f=g.startAngleRad+g.translate(c.threshold,null,null,null,!0));this.thresholdAngleRad=u(f,g.startAngleRad);m(a.points,function(b){var f=b.graphic,k=g.startAngleRad+g.translate(b.y,null,null,null,!0),t=l(u(b.options.radius,c.radius,100))*d[2]/200,n=l(u(b.options.innerRadius,c.innerRadius,
 60))*d[2]/200,p=g.toColor(b.y,b),q=Math.min(g.startAngleRad,g.endAngleRad),m=Math.max(g.startAngleRad,g.endAngleRad);"none"===p&&(p=b.color||a.color||"none");"none"!==p&&(b.color=p);k=Math.max(q-h,Math.min(m+h,k));!1===c.wrap&&(k=Math.max(q,Math.min(m,k)));q=Math.min(k,a.thresholdAngleRad);k=Math.max(k,a.thresholdAngleRad);k-q>2*Math.PI&&(k=q+2*Math.PI);b.shapeArgs=n={x:d[0],y:d[1],r:t,innerR:n,start:q,end:k,rounded:c.rounded};b.startR=t;f?(t=n.d,f.animate(e.extend({fill:p},n)),t&&(n.d=t)):(b.graphic=
 f=r.arc(n).attr({fill:p,"sweep-flag":0}).add(a.group),"square"!==c.linecap&&f.attr({"stroke-linecap":"round","stroke-linejoin":"round"}),f.attr({stroke:c.borderColor||"none","stroke-width":c.borderWidth||0}));f&&f.addClass(b.getClassName(),!0)})},animate:function(a){a||(this.startAngleRad=this.thresholdAngleRad,e.seriesTypes.pie.prototype.animate.call(this,a))}})})(l)});
+//# sourceMappingURL=solid-gauge.js.map

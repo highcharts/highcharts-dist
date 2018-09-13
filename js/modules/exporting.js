@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Exporting module
 
  (c) 2010-2017 Torstein Honsi
@@ -27,3 +27,4 @@ b):t+=a(g)+":"+b+";")}var n,k,t="",w,q,u,r;if(1===c.nodeType&&-1===g.indexOf(c.n
 ";":"")+t));"svg"===c.nodeName&&c.setAttribute("stroke-width","1px");"text"!==c.nodeName&&v(c.children||c.childNodes,b)}}var c=this.renderer,d=c.inlineToAttributes,f=c.inlineBlacklist,h=c.inlineWhitelist,g=c.unstyledElements,e={},l,p,c=r.createElement("iframe");F(c,{width:"1px",height:"1px",visibility:"hidden"});r.body.appendChild(c);p=c.contentWindow.document;p.open();p.write('\x3csvg xmlns\x3d"http://www.w3.org/2000/svg"\x3e\x3c/svg\x3e');p.close();b(this.container.querySelector("svg"));l.parentNode.removeChild(l)};
 K.menu=function(a,b,c,d){return["M",a,b+2.5,"L",a+c,b+2.5,"M",a,b+d/2+.5,"L",a+c,b+d/2+.5,"M",a,b+d-1.5,"L",a+c,b+d-1.5]};x.prototype.renderExporting=function(){var a=this,b=a.options.exporting,c=b.buttons,d=a.isDirtyExporting||!a.exportSVGElements;a.buttonOffset=0;a.isDirtyExporting&&a.destroyExport();d&&!1!==b.enabled&&(a.exportEvents=[],a.exportingGroup=a.exportingGroup||a.renderer.g("exporting-group").attr({zIndex:3}).add(),G(c,function(b){a.addButton(b)}),a.isDirtyExporting=!1);q(a,"destroy",
 a.destroyExport)};q(x,"init",function(){var a=this;v(["exporting","navigation"],function(b){a[b]={update:function(c,d){a.isDirtyExporting=!0;y(!0,a.options[b],c);B(d,!0)&&a.redraw()}}})});x.prototype.callbacks.push(function(a){a.renderExporting();q(a,"redraw",a.renderExporting)})})(h)});
+//# sourceMappingURL=exporting.js.map

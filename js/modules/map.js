@@ -1,5 +1,5 @@
 /*
- Highmaps JS v6.1.2 (2018-08-31)
+ Highmaps JS v6.1.3 (2018-09-12)
  Highmaps as a plugin for Highcharts or Highstock.
 
  (c) 2011-2017 Torstein Honsi
@@ -66,3 +66,4 @@ a+c,b,"L",a+d-h,b,"C",a+d-h/2,b,a+d,b+h/2,a+d,b+h,"L",a+d,b+f-g,"C",a+d,b+f-g/2,
 text:"+",y:0},zoomOut:{onclick:function(){this.mapZoom(2)},text:"-",y:28}},mouseWheelSensitivity:1.1};a.splitPath=function(a){var b;a=a.replace(/([A-Za-z])/g," $1 ");a=a.replace(/^\s*/,"").replace(/\s*$/,"");a=a.split(/[ ,]+/);for(b=0;b<a.length;b++)/[a-zA-Z]/.test(a[b])||(a[b]=parseFloat(a[b]));return a};a.maps={};l.prototype.symbols.topbutton=function(a,b,d,f,c){return k(a-1,b-1,d,f,c.r,c.r,0,0)};l.prototype.symbols.bottombutton=function(a,b,d,f,c){return k(a-1,b-1,d,f,0,0,c.r,c.r)};r===b&&d(["topbutton",
 "bottombutton"],function(a){b.prototype.symbols[a]=l.prototype.symbols[a]});a.Map=a.mapChart=function(b,d,g){var e="string"===typeof b||b.nodeName,c=arguments[e?1:0],h={endOnTick:!1,visible:!1,minPadding:0,maxPadding:0,startOnTick:!1},k,l=a.getOptions().credits;k=c.series;c.series=null;c=p({chart:{panning:"xy",type:"map"},credits:{mapText:u(l.mapText,' \u00a9 \x3ca href\x3d"{geojson.copyrightUrl}"\x3e{geojson.copyrightShort}\x3c/a\x3e'),mapTextFull:u(l.mapTextFull,"{geojson.copyright}")},tooltip:{followTouchMove:!1},
 xAxis:h,yAxis:p(h,{reversed:!0})},c,{chart:{inverted:!1,alignTicks:!1}});c.series=k;return e?new f(b,c,g):new f(c,d)}})(w)});
+//# sourceMappingURL=map.js.map

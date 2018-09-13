@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Annotations module
 
  (c) 2009-2017 Torstein Honsi
@@ -27,3 +27,4 @@ d?a.align="left":a.x=-c);c=b+g.width-h;c>e.plotWidth&&("left"===d?a.align="right
 removeAnnotation:function(a){var b=this.annotations,c=G(b,function(b){return b.options.id===a});c&&(u(this.options.annotations,c.userOptions),u(b,c),c.destroy())},drawAnnotations:function(){var a=this.plotBoxClip,b=this.plotBox;a?a.attr(b):this.plotBoxClip=this.renderer.clipRect(b);n(this.annotations,function(a){a.redraw()})}});C.callbacks.push(function(a){a.annotations=[];n(a.options.annotations,function(b){a.annotations.push(new y(a,b))});a.drawAnnotations();l(a,"redraw",a.drawAnnotations);l(a,
 "destroy",function(){var b=a.plotBoxClip;b&&b.destroy&&b.destroy()})});l(f.Chart,"afterGetContainer",function(){this.options.defs=m(O,this.options.defs||{});A(this.options.defs,function(a){"marker"===a.tagName&&!1!==a.render&&this.renderer.addMarker(a.id,a)},this)});f.SVGRenderer.prototype.symbols.connector=function(a,b,c,e,d){var f=d&&d.anchorX;d=d&&d.anchorY;var h,g,k=c/2;z(f)&&z(d)&&(h=["M",f,d],g=b-d,0>g&&(g=-e-g),g<c&&(k=f<a+c/2?g:c-g),d>b+e?h.push("L",a+k,b+e):d<b?h.push("L",a+k,b):f<a?h.push("L",
 a,b+e/2):f>a+c&&h.push("L",a+c,b+e/2));return h||[]}})(l)});
+//# sourceMappingURL=annotations.js.map

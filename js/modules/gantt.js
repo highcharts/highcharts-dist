@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.2 (2018-08-31)
+ Highcharts JS v6.1.3 (2018-09-12)
  Gantt series
 
  (c) 2016 Lars A. V. Cabrera
@@ -25,3 +25,4 @@ function(a){this.translatePoint(a)},this)},drawPoint:function(a,b){var c=this.ch
 (a.clipRect=c.clipRect(h.x,h.y,h.width,h.height),a.graphicOverlay=c[g](f).addClass("highcharts-partfill-overlay").add(d).clip(a.clipRect)))}},drawPoints:function(){var a=this,b=a.getAnimationVerb();l(a.points,function(c){a.drawPoint(c,b)})},getAnimationVerb:function(){return this.chart.pointCount<(this.options.animationLimit||250)?"animate":"attr"}},{init:function(){f.prototype.init.apply(this,arguments);var a=this.series.chart.options.chart.colorCount;this.y||(this.y=0);this.colorIndex=b(this.options.colorIndex,
 this.y%a);return this},setState:function(){f.prototype.setState.apply(this,arguments);this.series.drawPoint(this,this.series.getAnimationVerb())},getLabelConfig:function(){var a=f.prototype.getLabelConfig.call(this),b=this.series.yAxis.categories;a.x2=this.x2;a.yCategory=this.yCategory=b&&b[this.y];return a},tooltipDateKeys:["x","x2"],isValid:function(){return"number"===typeof this.x&&"number"===typeof this.x2}});m(c,"afterGetSeriesExtremes",function(){var a=this.series,c,d;this.isXAxis&&(c=b(this.dataMax,
 -Number.MAX_VALUE),l(a,function(a){a.x2Data&&l(a.x2Data,function(a){a>c&&(c=a,d=!0)})}),d&&(this.dataMax=c))})})(m)});
+//# sourceMappingURL=gantt.js.map
