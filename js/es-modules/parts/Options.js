@@ -18,6 +18,11 @@ var color = H.color,
  * Handle the options                                                         *
  *****************************************************************************/
 /**
+ * Global default settings.
+ *
+ * @name Highcharts.defaultOptions
+ * @type {Highcharts.Options}
+ *//**
  * @optionparent
  */
 H.defaultOptions = {
@@ -30,9 +35,9 @@ H.defaultOptions = {
      * patterns](https://www.highcharts.com/docs/chart-design-and-style/gradients-shadows-and-patterns)
      * for more information and code examples.
      *
-     * @type       {*}
-     * @since      5.0.0
-     * @apioption  defs
+     * @type      {*}
+     * @since     5.0.0
+     * @apioption defs
      */
 
     /**
@@ -58,19 +63,12 @@ H.defaultOptions = {
      *         ]
      *     }
      * });</pre>
-     *
-     * @type       {*}
-     * @apioption  lang
      */
     lang: {
 
         /**
          * The loading text that appears when the chart is set into the loading
          * state following a call to `chart.showLoading`.
-         *
-         * @type       {string}
-         * @default    Loading...
-         * @apioption  lang.loading
          */
         loading: 'Loading...',
 
@@ -78,11 +76,10 @@ H.defaultOptions = {
          * An array containing the months names. Corresponds to the `%B` format
          * in `Highcharts.dateFormat()`.
          *
-         * @type       {Array<string>}
-         * @default    ["January", "February", "March", "April", "May", "June",
-         *             "July", "August", "September", "October", "November",
-         *             "December"]
-         * @apioption  lang.months
+         * @type    {Array<string>}
+         * @default ["January", "February", "March", "April", "May", "June",
+         *          "July", "August", "September", "October", "November",
+         *          "December"]
          */
         months: [
             'January', 'February', 'March', 'April', 'May', 'June', 'July',
@@ -93,10 +90,9 @@ H.defaultOptions = {
          * An array containing the months names in abbreviated form. Corresponds
          * to the `%b` format in `Highcharts.dateFormat()`.
          *
-         * @type       {Array<string>}
-         * @default    ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-         *             "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-         * @apioption  lang.shortMonths
+         * @type    {Array<string>}
+         * @default ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+         *          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
          */
         shortMonths: [
             'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
@@ -106,10 +102,9 @@ H.defaultOptions = {
         /**
          * An array containing the weekday names.
          *
-         * @type       {Array<string>}
-         * @default    ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
-         *             "Friday", "Saturday"]
-         * @apioption  lang.weekdays
+         * @type    {Array<string>}
+         * @default ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday",
+         *          "Friday", "Saturday"]
          */
         weekdays: [
             'Sunday', 'Monday', 'Tuesday', 'Wednesday',
@@ -123,49 +118,46 @@ H.defaultOptions = {
          * @sample highcharts/lang/shortweekdays/
          *         Finnish two-letter abbreviations
          *
-         * @type       {Array<string>}
-         * @since      4.2.4
-         * @apioption  lang.shortWeekdays
+         * @type      {Array<string>}
+         * @since     4.2.4
+         * @apioption lang.shortWeekdays
          */
 
         /**
          * What to show in a date field for invalid dates. Defaults to an empty
          * string.
          *
-         * @type       {string}
-         * @since      4.1.8
-         * @product    highcharts highstock
-         * @apioption  lang.invalidDate
+         * @type      {string}
+         * @since     4.1.8
+         * @product   highcharts highstock
+         * @apioption lang.invalidDate
          */
 
         /**
          * The title appearing on hovering the zoom in button. The text itself
          * defaults to "+" and can be changed in the button options.
          *
-         * @type       {string}
-         * @default    Zoom in
-         * @product    highmaps
-         * @apioption  lang.zoomIn
+         * @type      {string}
+         * @default   Zoom in
+         * @product   highmaps
+         * @apioption lang.zoomIn
          */
 
         /**
          * The title appearing on hovering the zoom out button. The text itself
          * defaults to "-" and can be changed in the button options.
          *
-         * @type       {string}
-         * @default    Zoom out
-         * @product    highmaps
-         * @apioption  lang.zoomOut
+         * @type      {string}
+         * @default   Zoom out
+         * @product   highmaps
+         * @apioption lang.zoomOut
          */
 
         /**
          * The default decimal point used in the `Highcharts.numberFormat`
          * method unless otherwise specified in the function arguments.
          *
-         * @type       {string}
-         * @default    .
-         * @since      1.2.2
-         * @apioption  lang.decimalPoint
+         * @since 1.2.2
          */
         decimalPoint: '.',
 
@@ -180,10 +172,9 @@ H.defaultOptions = {
          * @sample {highstock} highcharts/lang/numericsymbols/
          *         Replacing the symbols with text
          *
-         * @type       {Array<string>}
-         * @default    ["k", "M", "G", "T", "P", "E"]
-         * @since      2.3.0
-         * @apioption  lang.numericSymbols
+         * @type    {Array<string>}
+         * @default ["k", "M", "G", "T", "P", "E"]
+         * @since   2.3.0
          */
         numericSymbols: ['k', 'M', 'G', 'T', 'P', 'E'],
 
@@ -195,29 +186,23 @@ H.defaultOptions = {
          * @sample highcharts/lang/numericsymbolmagnitude/
          *         10000 magnitude for Japanese
          *
-         * @type       {number}
-         * @default    1000
-         * @since      5.0.3
-         * @apioption  lang.numericSymbolMagnitude
+         * @type      {number}
+         * @default   1000
+         * @since     5.0.3
+         * @apioption lang.numericSymbolMagnitude
          */
 
         /**
          * The text for the label appearing when a chart is zoomed.
          *
-         * @type       {string}
-         * @default    Reset zoom
-         * @since      1.2.4
-         * @apioption  lang.resetZoom
+         * @since 1.2.4
          */
         resetZoom: 'Reset zoom',
 
         /**
          * The tooltip title for the label appearing when a chart is zoomed.
          *
-         * @type       {string}
-         * @default    Reset zoom level 1:1
-         * @since      1.2.4
-         * @apioption  lang.resetZoomTitle
+         * @since 1.2.4
          */
         resetZoomTitle: 'Reset zoom level 1:1',
 
@@ -230,10 +215,8 @@ H.defaultOptions = {
          *
          * The default is a single space.
          *
-         * @type       {string}
-         * @default    \u0020
-         * @since      1.2.2
-         * @apioption  lang.thousandsSep
+         * @default \u0020
+         * @since   1.2.2
          */
         thousandsSep: ' '
     },
@@ -263,10 +246,11 @@ H.defaultOptions = {
      * change this option accordingly.
      *
      * @deprecated
-     * @type        {string}
-     * @default     http://code.highcharts.com/{version}/modules/canvas-tools.js
-     * @product     highcharts highmaps
-     * @apioption   global.canvasToolsURL
+     *
+     * @type      {string}
+     * @default   http://code.highcharts.com/{version}/modules/canvas-tools.js
+     * @product   highcharts highmaps
+     * @apioption global.canvasToolsURL
      */
 
     /**
@@ -275,8 +259,9 @@ H.defaultOptions = {
      * per chart.
      *
      * @deprecated
-     * @type       {boolean}
-     * @apioption  global.useUTC
+     *
+     * @type      {boolean}
+     * @apioption global.useUTC
      */
 
     /**
@@ -285,9 +270,10 @@ H.defaultOptions = {
      * per chart.
      *
      * @deprecated
-     * @type       {Function}
-     * @product    highcharts highstock
-     * @apioption  global.Date
+     *
+     * @type      {Function}
+     * @product   highcharts highstock
+     * @apioption global.Date
      */
 
     /**
@@ -296,9 +282,10 @@ H.defaultOptions = {
      * individual time settings per chart.
      *
      * @deprecated
-     * @type       {Function}
-     * @product    highcharts highstock
-     * @apioption  global.getTimezoneOffset
+     *
+     * @type      {Function}
+     * @product   highcharts highstock
+     * @apioption global.getTimezoneOffset
      */
 
     /**
@@ -307,9 +294,10 @@ H.defaultOptions = {
      * settings per chart.
      *
      * @deprecated
-     * @type       {string}
-     * @product    highcharts highstock
-     * @apioption  global.timezone
+     *
+     * @type      {string}
+     * @product   highcharts highstock
+     * @apioption global.timezone
      */
 
     /**
@@ -318,20 +306,18 @@ H.defaultOptions = {
      * time settings per chart.
      *
      * @deprecated
-     * @type       {number}
-     * @product    highcharts highstock
-     * @apioption  global.timezoneOffset
+     *
+     * @type      {number}
+     * @product   highcharts highstock
+     * @apioption global.timezoneOffset
      */
-    global: {},
 
+    global: {},
 
     time: H.Time.prototype.defaultOptions,
 
     /**
      * General options for the chart.
-     *
-     * @type       {*}
-     * @apioption  chart
      */
     chart: {
 
@@ -342,20 +328,20 @@ H.defaultOptions = {
          *
          * @see [mapData](#series.map.mapData)
          *
-         * @type       {string|Array<*>}
-         * @since      5.0.0
-         * @product    highmaps
-         * @apioption  chart.map
+         * @type      {string|Array<*>}
+         * @since     5.0.0
+         * @product   highmaps
+         * @apioption chart.map
          */
 
         /**
          * Set lat/lon transformation definitions for the chart. If not defined,
          * these are extracted from the map data.
          *
-         * @type       {*}
-         * @since      5.0.0
-         * @product    highmaps
-         * @apioption  chart.mapTransforms
+         * @type      {*}
+         * @since     5.0.0
+         * @product   highmaps
+         * @apioption chart.mapTransforms
          */
 
         /**
@@ -372,19 +358,19 @@ H.defaultOptions = {
          *
          * Disabled for logarithmic axes.
          *
-         * @sample    {highcharts} highcharts/chart/alignticks-true/
-         *            True by default
-         * @sample    {highcharts} highcharts/chart/alignticks-false/
-         *            False
-         * @sample    {highstock} stock/chart/alignticks-true/
-         *            True by default
-         * @sample    {highstock} stock/chart/alignticks-false/
-         *            False
+         * @sample {highcharts} highcharts/chart/alignticks-true/
+         *         True by default
+         * @sample {highcharts} highcharts/chart/alignticks-false/
+         *         False
+         * @sample {highstock} stock/chart/alignticks-true/
+         *         True by default
+         * @sample {highstock} stock/chart/alignticks-false/
+         *         False
          *
-         * @type       {boolean}
-         * @default    true
-         * @product    highcharts highstock
-         * @apioption  chart.alignTicks
+         * @type      {boolean}
+         * @default   true
+         * @product   highcharts highstock
+         * @apioption chart.alignTicks
          */
 
         /**
@@ -426,24 +412,23 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/animation-duration/
          *         With a longer duration
          *
-         * @type       {boolean|Highcharts.AnimationOptionsObject}
-         * @default    true
-         * @apioption  chart.animation
+         * @type      {boolean|Highcharts.AnimationOptionsObject}
+         * @default   true
+         * @apioption chart.animation
          */
 
         /**
          * A CSS class name to apply to the charts container `div`, allowing
          * unique CSS styling for each chart.
          *
-         * @type       {string}
-         * @apioption  chart.className
+         * @type      {string}
+         * @apioption chart.className
          */
 
         /**
          * Event listeners for the chart.
          *
-         * @type       {*}
-         * @apioption  chart.events
+         * @apioption chart.events
          */
 
         /**
@@ -459,10 +444,10 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/events-addseries/
          *         Alert on add series
          *
-         * @type       {Function}
-         * @since      1.2.0
-         * @context    Highcharts.Chart
-         * @apioption  chart.events.addSeries
+         * @type      {Function}
+         * @since     1.2.0
+         * @context   Highcharts.Chart
+         * @apioption chart.events.addSeries
          */
 
         /**
@@ -495,10 +480,10 @@ H.defaultOptions = {
          * @sample {highmaps} highcharts/chart/events-container/
          *         Alternatively, attach event to container
          *
-         * @type       {Function}
-         * @since      1.2.0
-         * @context    Highcharts.Chart
-         * @apioption  chart.events.click
+         * @type      {Function}
+         * @since     1.2.0
+         * @context   Highcharts.Chart
+         * @apioption chart.events.click
          */
 
 
@@ -518,9 +503,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/events-load/
          *         Add series on chart load
          *
-         * @type       {Function}
-         * @context    Highcharts.Chart
-         * @apioption  chart.events.load
+         * @type      {Function}
+         * @context   Highcharts.Chart
+         * @apioption chart.events.load
          */
 
         /**
@@ -537,20 +522,20 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/events-redraw/
          *         Set subtitle on chart redraw
          *
-         * @type       {Function}
-         * @since      1.2.0
-         * @context    Highcharts.Chart
-         * @apioption  chart.events.redraw
+         * @type      {Function}
+         * @since     1.2.0
+         * @context   Highcharts.Chart
+         * @apioption chart.events.redraw
          */
 
         /**
          * Fires after initial load of the chart (directly after the `load`
          * event), and after each redraw (directly after the `redraw` event).
          *
-         * @type       {Function}
-         * @since      5.0.7
-         * @context    Highcharts.Chart
-         * @apioption  chart.events.render
+         * @type      {Function}
+         * @since     5.0.7
+         * @context   Highcharts.Chart
+         * @apioption chart.events.render
          */
 
         /**
@@ -593,8 +578,8 @@ H.defaultOptions = {
          *         Select a range of points through a drag selection
          *         (Highcharts)
          *
-         * @type       {Function}
-         * @apioption  chart.events.selection
+         * @type      {Function}
+         * @apioption chart.events.selection
          */
 
         /**
@@ -613,8 +598,8 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/margin-zero/
          *         Zero margins
          *
-         * @type       {number|Array<number>}
-         * @apioption  chart.margin
+         * @type      {number|Array<number>}
+         * @apioption chart.margin
          */
 
         /**
@@ -629,9 +614,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/margin/
          *         100px margins
          *
-         * @type       {number}
-         * @since      2.0
-         * @apioption  chart.marginBottom
+         * @type      {number}
+         * @since     2.0
+         * @apioption chart.marginBottom
          */
 
         /**
@@ -646,9 +631,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/margin/
          *         100px margins
          *
-         * @type       {number}
-         * @since      2.0
-         * @apioption  chart.marginLeft
+         * @type      {number}
+         * @since     2.0
+         * @apioption chart.marginLeft
          */
 
         /**
@@ -663,9 +648,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/margin/
          *         100px margins
          *
-         * @type       {number}
-         * @since      2.0
-         * @apioption  chart.marginRight
+         * @type      {number}
+         * @since     2.0
+         * @apioption chart.marginRight
          */
 
         /**
@@ -679,9 +664,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/margin/
          *         100px margins
          *
-         * @type       {number}
-         * @since      2.0
-         * @apioption  chart.marginTop
+         * @type      {number}
+         * @since     2.0
+         * @apioption chart.marginTop
          */
 
         /**
@@ -709,12 +694,12 @@ H.defaultOptions = {
          *
          * @sample {highcharts} highcharts/chart/pankey/ Zooming and panning
          *
-         * @type       {boolean}
-         * @default    {highcharts} false
-         * @default    {highstock} true
-         * @since      4.0.3
-         * @product    highcharts highstock
-         * @apioption  chart.panning
+         * @type      {boolean}
+         * @default   {highcharts} false
+         * @default   {highstock} true
+         * @since     4.0.3
+         * @product   highcharts highstock
+         * @apioption chart.panning
          */
 
 
@@ -746,11 +731,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/border/
          *         Border options
          *
-         * @type       {number}
-         * @default    0
-         * @apioption  chart.borderRadius
          */
         borderRadius: 0,
+
         
 
         /**
@@ -760,12 +743,10 @@ H.defaultOptions = {
          * [...] `highcharts-color-9`. The equivalent in non-styled mode
          * is to set colors using the [colors](#colors) setting.
          *
-         * @type       {number}
-         * @default    10
          * @since      5.0.0
-         * @apioption  chart.colorCount
          */
         colorCount: 10,
+
         
 
         /**
@@ -775,10 +756,8 @@ H.defaultOptions = {
          *         Bar
          *
          * @deprecated
-         * @type       {string}
-         * @default    line
-         * @product    highcharts
-         * @apioption  chart.defaultSeriesType
+         *
+         * @product highcharts
          */
         defaultSeriesType: 'line',
 
@@ -800,11 +779,8 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/ignorehiddenseries-false/
          *         False
          *
-         * @type       {boolean}
-         * @default    true
-         * @since      1.2.0
-         * @product    highcharts highstock
-         * @apioption  chart.ignoreHiddenSeries
+         * @since   1.2.0
+         * @product highcharts highstock
          */
         ignoreHiddenSeries: true,
 
@@ -825,10 +801,10 @@ H.defaultOptions = {
          * @sample {highstock} stock/navigator/inverted/
          *         Inverted stock chart
          *
-         * @type       {boolean}
-         * @default    false
-         * @product    highcharts highstock
-         * @apioption  chart.inverted
+         * @type      {boolean}
+         * @default   false
+         * @product   highcharts highstock
+         * @apioption chart.inverted
          */
 
         /**
@@ -838,20 +814,16 @@ H.defaultOptions = {
          * respectively. Use the options spacingTop, spacingRight, spacingBottom
          * and spacingLeft options for shorthand setting of one option.
          *
-         * @type       {Array<number>}
-         * @see        [chart.margin](#chart.margin)
-         * @default    [10, 10, 15, 10]
-         * @since      3.0.6
-         * @apioption  chart.spacing
+         * @type    {Array<number>}
+         * @see     [chart.margin](#chart.margin)
+         * @default [10, 10, 15, 10]
+         * @since   3.0.6
          */
         spacing: [10, 10, 15, 10],
 
         /**
          * The button that appears after a selection zoom, allowing the user
          * to reset zoom.
-         *
-         * @type       {*}
-         * @apioption  chart.resetZoomButton
          */
         resetZoomButton: {
 
@@ -883,18 +855,13 @@ H.defaultOptions = {
              * @sample {highstock} highcharts/chart/resetzoombutton-theme/
              *         Theming the button
              *
-             * @type       {*}
-             * @since      2.2
-             * @apioption  chart.resetZoomButton.theme
+             * @since 2.2
              */
             theme: {
 
                 /**
                  * The Z index for the reset zoom button. The default value
                  * places it below the tooltip that has Z index 7.
-                 *
-                 * @type       {number}
-                 * @apioption  chart.resetZoomButton.theme.zIndex
                  */
                 zIndex: 6
             },
@@ -909,25 +876,17 @@ H.defaultOptions = {
              * @sample {highmaps} highcharts/chart/resetzoombutton-position/
              *         Above the plot area
              *
-             * @type       {*}
-             * @since      2.2
-             * @apioption  chart.resetZoomButton.position
+             * @since 2.2
              */
             position: {
 
                 /**
                  * The horizontal alignment of the button.
-                 *
-                 * @type       {string}
-                 * @apioption  chart.resetZoomButton.position.align
                  */
                 align: 'right',
 
                 /**
                  * The horizontal offset of the button.
-                 *
-                 * @type       {number}
-                 * @apioption  chart.resetZoomButton.position.x
                  */
                 x: -10,
 
@@ -942,9 +901,6 @@ H.defaultOptions = {
 
                 /**
                  * The vertical offset of the button.
-                 *
-                 * @type       {number}
-                 * @apioption  chart.resetZoomButton.position.y
                  */
                 y: 10
             }
@@ -960,9 +916,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/plotborder/
          *         Plot border options
          *
-         * @type       {number}
-         * @default    0
-         * @apioption  chart.plotBorderWidth
+         * @type      {number}
+         * @default   0
+         * @apioption chart.plotBorderWidth
          */
 
         /**
@@ -977,9 +933,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/plotborder/
          *         Plot border options
          *
-         * @type       {boolean|Highcharts.CSSObject}
-         * @default    false
-         * @apioption  chart.plotShadow
+         * @type      {boolean|Highcharts.CSSObject}
+         * @default   false
+         * @apioption chart.plotShadow
          */
 
         /**
@@ -996,11 +952,11 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/parallel-coordinates/polar/
          *         Star plot, multivariate data in a polar chart
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      2.3.0
-         * @product    highcharts
-         * @apioption  chart.polar
+         * @type      {boolean}
+         * @default   false
+         * @since     2.3.0
+         * @product   highcharts
+         * @apioption chart.polar
          */
 
         /**
@@ -1020,10 +976,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/reflow-false/
          *         False
          *
-         * @type       {boolean}
-         * @default    true
-         * @since      2.1
-         * @apioption  chart.reflow
+         * @type      {boolean}
+         * @default   true
+         * @since     2.1
+         * @apioption chart.reflow
          */
 
         /**
@@ -1045,8 +1001,8 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/renderto-jquery/
          *         Object reference through jQuery
          *
-         * @type       {string|Highcharts.SVGDOMElement}
-         * @apioption  chart.renderTo
+         * @type      {string|Highcharts.SVGDOMElement}
+         * @apioption chart.renderTo
          */
 
         /**
@@ -1056,10 +1012,10 @@ H.defaultOptions = {
          * @see In styled mode, the selection marker fill is set with the
          *      `.highcharts-selection-marker` class.
          *
-         * @type       {Highcharts.ColorString}
-         * @default    rgba(51,92,173,0.25)
-         * @since      2.1.7
-         * @apioption  chart.selectionMarkerFill
+         * @type      {Highcharts.ColorString}
+         * @default   rgba(51,92,173,0.25)
+         * @since     2.1.7
+         * @apioption chart.selectionMarkerFill
          */
 
         /**
@@ -1075,9 +1031,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/border/
          *         Chart border and shadow
          *
-         * @type       {boolean|Highcharts.CSSObject}
-         * @default    false
-         * @apioption  chart.shadow
+         * @type      {boolean|Highcharts.CSSObject}
+         * @default   false
+         * @apioption chart.shadow
          */
 
         /**
@@ -1090,10 +1046,10 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/chart/showaxes-true/
          *         True
          *
-         * @type       {boolean}
-         * @since      1.2.5
-         * @product    highcharts
-         * @apioption  chart.showAxes
+         * @type      {boolean}
+         * @since     1.2.5
+         * @product   highcharts
+         * @apioption chart.showAxes
          */
 
         /**
@@ -1108,10 +1064,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/spacing/
          *         Spacing 100 all around
          *
-         * @type       {number}
-         * @default    15
-         * @since      2.1
-         * @apioption  chart.spacingBottom
+         * @type      {number}
+         * @default   15
+         * @since     2.1
+         * @apioption chart.spacingBottom
          */
 
         /**
@@ -1146,10 +1102,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/spacing/
          *         Spacing 100 all around
          *
-         * @type       {number}
-         * @default    10
-         * @since      2.1
-         * @apioption  chart.spacingRight
+         * @type      {number}
+         * @default   10
+         * @since     2.1
+         * @apioption chart.spacingRight
          */
 
         /**
@@ -1167,10 +1123,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/spacing/
          *         Spacing 100 all around
          *
-         * @type       {number}
-         * @default    10
-         * @since      2.1
-         * @apioption  chart.spacingTop
+         * @type      {number}
+         * @default   10
+         * @since     2.1
+         * @apioption chart.spacingTop
          */
 
         /**
@@ -1189,9 +1145,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/style-serif-font/
          *         Using a serif type font
          *
-         * @type       {Highcharts.CSSObject}
-         * @default    {"fontFamily": "\"Lucida Grande\", \"Lucida Sans Unicode\", Verdana, Arial, Helvetica, sans-serif","fontSize":"12px"}
-         * @apioption  chart.style
+         * @type      {Highcharts.CSSObject}
+         * @default   {"fontFamily": "\"Lucida Grande\", \"Lucida Sans Unicode\", Verdana, Arial, Helvetica, sans-serif","fontSize":"12px"}
+         * @apioption chart.style
          */
 
         /**
@@ -1258,9 +1214,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/size/
          *         Chart with explicit size
          *
-         * @type       {number|null}
-         * @default    null
-         * @apioption  chart.width
+         * @type {number|null}
          */
         width: null,
 
@@ -1284,9 +1238,7 @@ H.defaultOptions = {
          * @sample highcharts/chart/height-percent/
          *         Highcharts with percentage height
          *
-         * @type       {number|string|null}
-         * @default    null
-         * @apioption  chart.height
+         * @type {number|string|null}
          */
         height: null
 
@@ -1299,9 +1251,6 @@ H.defaultOptions = {
      *
      * @sample {highmaps} maps/title/title/
      *         Title options demonstrated
-     *
-     * @type       {*}
-     * @apioption  title
      */
     title: {
 
@@ -1316,10 +1265,10 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/title-floating/
          *         True - title on top of the plot area
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      2.1
-         * @apioption  title.floating
+         * @type      {boolean}
+         * @default   false
+         * @since     2.1
+         * @apioption title.floating
          */
 
         /**
@@ -1336,10 +1285,10 @@ H.defaultOptions = {
          * @sample highcharts/css/titles/
          *         Styled mode
          *
-         * @type       {Highcharts.CSSObject}
-         * @default    {highcharts|highmaps} { "color": "#333333", "fontSize": "18px" }
-         * @default    {highstock} { "color": "#333333", "fontSize": "16px" }
-         * @apioption  title.style
+         * @type      {Highcharts.CSSObject}
+         * @default   {highcharts|highmaps} { "color": "#333333", "fontSize": "18px" }
+         * @default   {highstock} { "color": "#333333", "fontSize": "16px" }
+         * @apioption title.style
          */
 
         /**
@@ -1347,9 +1296,9 @@ H.defaultOptions = {
          * [use HTML](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting#html)
          * to render the text.
          *
-         * @type       {boolean}
-         * @default    false
-         * @apioption  title.useHTML
+         * @type      {boolean}
+         * @default   false
+         * @apioption title.useHTML
          */
 
         /**
@@ -1362,10 +1311,10 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/title-verticalalign/
          *         Chart title in bottom right corner
          *
-         * @type        {string}
-         * @since       2.1
-         * @validvalue  ["top", "middle", "bottom"]
-         * @apioption   title.verticalAlign
+         * @type       {string}
+         * @since      2.1
+         * @validvalue ["top", "middle", "bottom"]
+         * @apioption  title.verticalAlign
          */
 
         /**
@@ -1379,10 +1328,10 @@ H.defaultOptions = {
          *         Aligned to the plot area (x = 50px = margin left - spacing
          *         left)
          *
-         * @type       {number}
-         * @default    0
-         * @since      2.0
-         * @apioption  title.x
+         * @type      {number}
+         * @default   0
+         * @since     2.0
+         * @apioption title.x
          */
 
         /**
@@ -1395,9 +1344,9 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/title-verticalalign/
          *         Chart title in bottom right corner
          *
-         * @type       {number}
-         * @since      2.0
-         * @apioption  title.y
+         * @type      {number}
+         * @since     2.0
+         * @apioption title.y
          */
 
         /**
@@ -1409,10 +1358,8 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/title-text/
          *         Custom title
          *
-         * @type       {string}
-         * @default    {highcharts|highmaps} Chart title
-         * @default    {highstock} undefined
-         * @apioption  title.text
+         * @default {highcharts|highmaps} Chart title
+         * @default {highstock} undefined
          */
         text: 'Chart title',
 
@@ -1427,11 +1374,8 @@ H.defaultOptions = {
          *         Aligned to the plot area (x = 50px = margin left - spacing
          *         left)
          *
-         * @type       {string}
-         * @default    center
          * @since      2.0
          * @validvalue ["left", "center", "right"]
-         * @apioption  title.align
          */
         align: 'center',
 
@@ -1446,10 +1390,7 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/title-margin/
          *         A chart title margin of 50
          *
-         * @type       {number}
-         * @default    15
-         * @since      2.1
-         * @apioption  title.margin
+         * @since 2.1
          */
         margin: 15,
 
@@ -1460,10 +1401,7 @@ H.defaultOptions = {
          * @sample highcharts/title/widthadjust/
          *         Wider menu, greater padding
          *
-         * @type       {number}
-         * @default    -44
-         * @since      4.2.5
-         * @apioption  title.margin
+         * @since 4.2.5
          */
         widthAdjust: -44
 
@@ -1477,9 +1415,6 @@ H.defaultOptions = {
      *
      * @sample {highmaps} maps/title/subtitle/
      *         Subtitle options demonstrated
-     *
-     * @type       {*}
-     * @apioption  subtitle
      */
     subtitle: {
 
@@ -1492,10 +1427,10 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/subtitle-footnote
          *         Footnote floating at bottom right of plot area
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      2.1
-         * @apioption  subtitle.floating
+         * @type      {boolean}
+         * @default   false
+         * @since     2.1
+         * @apioption subtitle.floating
          */
 
         /**
@@ -1515,9 +1450,9 @@ H.defaultOptions = {
          * @sample {highmaps} highcharts/css/titles/
          *         Styled mode
          *
-         * @type       {Highcharts.CSSObject}
-         * @default    {"color": "#666666"}
-         * @apioption  subtitle.style
+         * @type      {Highcharts.CSSObject}
+         * @default   {"color": "#666666"}
+         * @apioption subtitle.style
          */
 
         /**
@@ -1525,9 +1460,9 @@ H.defaultOptions = {
          * [use HTML](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting#html)
          * to render the text.
          *
-         * @type       {boolean}
-         * @default    false
-         * @apioption  subtitle.useHTML
+         * @type      {boolean}
+         * @default   false
+         * @apioption subtitle.useHTML
          */
 
         /**
@@ -1554,10 +1489,10 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/subtitle-footnote
          *         Footnote at the bottom right of plot area
          *
-         * @type       {number}
-         * @default    0
-         * @since      2.0
-         * @apioption  subtitle.x
+         * @type      {number}
+         * @default   0
+         * @since     2.0
+         * @apioption subtitle.x
          */
 
         /**
@@ -1570,9 +1505,9 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/subtitle-footnote
          *         Footnote at the bottom right of plot area
          *
-         * @type       {number}
-         * @since      2.0
-         * @apioption  subtitle.y
+         * @type      {number}
+         * @since     2.0
+         * @apioption subtitle.y
          */
 
         /**
@@ -1582,9 +1517,6 @@ H.defaultOptions = {
          *         Custom subtitle
          * @sample {highcharts|highstock} highcharts/subtitle/text-formatted/
          *         Formatted and linked text.
-         *
-         * @type       {string}
-         * @apioption  subtitle.text
          */
         text: '',
 
@@ -1597,11 +1529,8 @@ H.defaultOptions = {
          * @sample {highstock} stock/chart/subtitle-footnote
          *         Footnote at bottom right of plot area
          *
-         * @type       {string}
-         * @default    center
          * @since      2.0
          * @validvalue ["left", "center", "right"]
-         * @apioption  subtitle.align
          */
         align: 'center',
 
@@ -1614,10 +1543,7 @@ H.defaultOptions = {
          * @sample highcharts/title/widthadjust/
          *         Wider menu, greater padding
          *
-         * @type       {number}
-         * @default    -44
-         * @since      4.2.5
-         * @apioption  subtitle.widthAdjust
+         * @since 4.2.5
          */
         widthAdjust: -44
     },
@@ -1633,32 +1559,26 @@ H.defaultOptions = {
      * type are given in the plotOptions of that type, for example
      * `plotOptions.line`. Next, options for one single series are given in
      * [the series array](#series).
-     *
-     * @type       {*}
-     * @apioption  plotOptions
      */
     plotOptions: {},
 
     /**
      * HTML labels that can be positioned anywhere in the chart area.
-     *
-     * @type       {*}
-     * @apioption  labels
      */
     labels: {
 
         /**
          * An HTML label that can be positioned anywhere in the chart area.
          *
-         * @type       {Array<*>}
-         * @apioption  labels.items
+         * @type      {Array<*>}
+         * @apioption labels.items
          */
 
         /**
          * Inner HTML or text for the label.
          *
-         * @type       {string}
-         * @apioption  labels.items.html
+         * @type      {string}
+         * @apioption labels.items.html
          */
 
         /**
@@ -1670,19 +1590,24 @@ H.defaultOptions = {
          *     top: '100px'
          * }</pre>
          *
-         * @type       {Highcharts.CSSObject}
-         * @apioption  labels.items.style
+         * @type      {Highcharts.CSSObject}
+         * @apioption labels.items.style
          */
 
         /**
          * Shared CSS styles for all labels.
          *
-         * @type       {Highcharts.CSSObject}
-         * @default    {"color": "#333333"}
-         * @apioption  labels.style
+         * @type    {Highcharts.CSSObject}
+         * @default {"color": "#333333", "position": "absolute"}
          */
         style: {
+            /**
+             * @ignore
+             */
             position: 'absolute',
+            /**
+             * @ignore
+             */
             color: '#333333'
         }
     },
@@ -1699,9 +1624,6 @@ H.defaultOptions = {
      * A Highmaps legend by default contains one legend item per series, but if
      * a `colorAxis` is defined, the axis will be displayed in the legend.
      * Either as a gradient, or as multiple legend items for `dataClasses`.
-     *
-     * @type       {*}
-     * @apioption  legend
      */
     legend: {
 
@@ -1718,8 +1640,8 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/border-background/
          *         Border and background options
          *
-         * @type       {Highcharts.ColorString}
-         * @apioption  legend.backgroundColor
+         * @type      {Highcharts.ColorString}
+         * @apioption legend.backgroundColor
          */
 
         /**
@@ -1735,22 +1657,24 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/border-background/
          *         Border and background options
          *
-         * @type       {number}
-         * @default    0
-         * @apioption  legend.borderWidth
+         * @type      {number}
+         * @default   0
+         * @apioption legend.borderWidth
          */
 
         /**
-         * Enable or disable the legend.
+         * Enable or disable the legend. There is also a series-specific option,
+         * [showInLegend](#plotOptions.series.showInLegend), that can hide the
+         * series from the legend. In some series types this is `false` by
+         * default, so it must set to `true` in order to show the legend for the
+         * series.
          *
          * @sample {highcharts} highcharts/legend/enabled-false/ Legend disabled
          * @sample {highstock} stock/legend/align/ Various legend options
          * @sample {highmaps} maps/legend/enabled-false/ Legend disabled
          *
-         * @type       {boolean}
-         * @default    {highstock} false
-         * @default    {highmaps} true
-         * @apioption  legend.enabled
+         * @default {highstock} false
+         * @default {highmaps} true
          */
         enabled: true,
 
@@ -1769,10 +1693,8 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/alignment/
          *         Legend alignment
          *
-         * @type       {string}
          * @since      2.0
          * @validvalue ["left", "center", "right"]
-         * @apioption  legend.align
          */
         align: 'center',
 
@@ -1782,8 +1704,7 @@ H.defaultOptions = {
          * columns. Setting this to `false` makes room for more items, but will
          * look more messy.
          *
-         * @since      6.1.0
-         * @apioption  legend.alignColumns
+         * @since 6.1.0
          */
         alignColumns: true,
 
@@ -1798,10 +1719,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/alignment/
          *         Floating legend
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      2.1
-         * @apioption  legend.floating
+         * @type      {boolean}
+         * @default   false
+         * @since     2.1
+         * @apioption legend.floating
          */
 
         /**
@@ -1824,10 +1745,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/layout-vertical/
          *         Vertical with color axis gradient
          *
-         * @type       {string}
-         * @default    horizontal
          * @validvalue ["horizontal", "vertical", "proximate"]
-         * @apioption  legend.floating
          */
         layout: 'horizontal',
 
@@ -1856,10 +1774,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/padding-itemmargin/
          *         Padding and item margins demonstrated
          *
-         * @type       {number}
-         * @default    0
-         * @since      2.2.0
-         * @apioption  legend.itemMarginBottom
+         * @type      {number}
+         * @default   0
+         * @since     2.2.0
+         * @apioption legend.itemMarginBottom
          */
 
         /**
@@ -1870,10 +1788,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/padding-itemmargin/
          *         Padding and item margins demonstrated
          *
-         * @type       {number}
-         * @default    0
-         * @since      2.2.0
-         * @apioption  legend.itemMarginTop
+         * @type      {number}
+         * @default   0
+         * @since     2.2.0
+         * @apioption legend.itemMarginTop
          */
 
         /**
@@ -1887,9 +1805,9 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/legend/itemwidth-80/
          *         80 for aligned legend items
          *
-         * @type       {number}
-         * @since      2.0
-         * @apioption  legend.itemWidth
+         * @type      {number}
+         * @since     2.0
+         * @apioption legend.itemWidth
          */
 
         /**
@@ -1898,10 +1816,10 @@ H.defaultOptions = {
          * variables relates to properties on the series, or the point in case
          * of pies.
          *
-         * @type       {string}
-         * @default    {name}
-         * @since      1.3
-         * @apioption  legend.labelFormat
+         * @type      {string}
+         * @default   {name}
+         * @since     1.3
+         * @apioption legend.labelFormat
          */
 
         /**
@@ -1910,17 +1828,15 @@ H.defaultOptions = {
          * of pie charts. By default the series or point name is printed.
          *
          * @productdesc {highmaps}
-         *              In Highmaps the context can also be a data class in case
-         *              of a `colorAxis`.
+         * In Highmaps the context can also be a data class in case of a
+         * `colorAxis`.
          *
          * @sample {highcharts} highcharts/legend/labelformatter/
          *         Add text
          * @sample {highmaps} maps/legend/labelformatter/
          *         Data classes with label formatter
          *
-         * @type       {Function}
-         * @context    {Highcharts.Series|Highcharts.Point}
-         * @apioption  legend.labelFormatter
+         * @context {Highcharts.Series|Highcharts.Point}
          */
         labelFormatter: function () {
             return this.name;
@@ -1935,11 +1851,13 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/legend/lineheight/
          *         Setting padding
          *
-         * @type       {number}
-         * @default    16
-         * @since      2.0
-         * @product    highcharts
-         * @apioption  legend.lineHeight
+         * @deprecated
+         *
+         * @type      {number}
+         * @default   16
+         * @since     2.0
+         * @product   highcharts
+         * @apioption legend.lineHeight
          */
 
         /**
@@ -1952,19 +1870,19 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/legend/margin-30/
          *         30 pixels
          *
-         * @type       {number}
-         * @default    12
-         * @since      2.1
-         * @apioption  legend.margin
+         * @type      {number}
+         * @default   12
+         * @since     2.1
+         * @apioption legend.margin
          */
 
         /**
          * Maximum pixel height for the legend. When the maximum height is
          * extended, navigation will show.
          *
-         * @type       {number}
-         * @since      2.3.0
-         * @apioption  legend.maxHeight
+         * @type      {number}
+         * @since     2.3.0
+         * @apioption legend.maxHeight
          */
 
         /**
@@ -1980,9 +1898,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/border-background/
          *         Border and background options
          *
-         * @type       {Highcharts.ColorString}
-         * @default    #999999
-         * @apioption  legend.borderColor
+         * @type {Highcharts.ColorString}
          */
         borderColor: '#999999',
 
@@ -1995,9 +1911,6 @@ H.defaultOptions = {
          *         5px rounded
          * @sample {highmaps} maps/legend/border-background/
          *         Border and background options
-         *
-         * @type       {number}
-         * @apioption  legend.borderRadius
          */
         borderRadius: 0,
 
@@ -2007,9 +1920,6 @@ H.defaultOptions = {
          * exported images. One way of working around that is to
          * [increase the chart height in
          * export](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/legend/navigation-enabled-false/).
-         *
-         * @type       {*}
-         * @apioption  legend.navigation
          */
         navigation: {
 
@@ -2024,10 +1934,10 @@ H.defaultOptions = {
              * @sample {highstock} highcharts/legend/navigation/
              *         Legend page navigation demonstrated
              *
-             * @type       {boolean|Highcharts.AnimationObject}
-             * @default    true
-             * @since      2.2.4
-             * @apioption  legend.navigation.animation
+             * @type      {boolean|Highcharts.AnimationObject}
+             * @default   true
+             * @since     2.2.4
+             * @apioption legend.navigation.animation
              */
 
             /**
@@ -2039,10 +1949,10 @@ H.defaultOptions = {
              * @sample {highstock} highcharts/legend/navigation/
              *         Legend page navigation demonstrated
              *
-             * @type       {number}
-             * @default    12
-             * @since      2.2.4
-             * @apioption  legend.navigation.arrowSize
+             * @type      {number}
+             * @default   12
+             * @since     2.2.4
+             * @apioption legend.navigation.arrowSize
              */
 
             /**
@@ -2054,10 +1964,10 @@ H.defaultOptions = {
              * plugin for a solution to extend the chart height to make room for
              * the legend, optionally in exported charts only.
              *
-             * @type       {boolean}
-             * @default    true
-             * @since      4.2.4
-             * @apioption  legend.navigation.enabled
+             * @type      {boolean}
+             * @default   true
+             * @since     4.2.4
+             * @apioption legend.navigation.enabled
              */
 
             /**
@@ -2071,9 +1981,9 @@ H.defaultOptions = {
              * @sample {highstock} highcharts/legend/navigation/
              *         Legend page navigation demonstrated
              *
-             * @type       {Highcharts.CSSObject}
-             * @since      2.2.4
-             * @apioption  legend.navigation.style
+             * @type      {Highcharts.CSSObject}
+             * @since     2.2.4
+             * @apioption legend.navigation.style
              */
 
             
@@ -2087,10 +1997,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/padding-itemmargin/
          *         Padding and item margins demonstrated
          *
-         * @type       {number}
-         * @default    8
-         * @since      2.2.0
-         * @apioption  legend.padding
+         * @type      {number}
+         * @default   8
+         * @since     2.2.0
+         * @apioption legend.padding
          */
 
         /**
@@ -2103,10 +2013,10 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/legend/reversed/
          *         Stacked bar with reversed legend
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      1.2.5
-         * @apioption  legend.reversed
+         * @type      {boolean}
+         * @default   false
+         * @since     1.2.5
+         * @apioption legend.reversed
          */
 
         /**
@@ -2116,10 +2026,10 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/legend/rtl/
          *         Symbol to the right
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      2.2
-         * @apioption  legend.rtl
+         * @type      {boolean}
+         * @default   false
+         * @since     2.2
+         * @apioption legend.rtl
          */
 
         /**
@@ -2129,9 +2039,10 @@ H.defaultOptions = {
          * but the styles are still parsed for backwards compatibility.
          *
          * @deprecated
-         * @type       {Highcharts.CSSObject}
-         * @product    highcharts highstock
-         * @apioption  legend.style
+         *
+         * @type      {Highcharts.CSSObject}
+         * @product   highcharts highstock
+         * @apioption legend.style
          */
 
         
@@ -2140,12 +2051,21 @@ H.defaultOptions = {
          * Default styling for the checkbox next to a legend item when
          * `showCheckbox` is true.
          *
-         * @type       {Highcharts.CSSObject}
-         * @apioption  legend.itemCheckboxStyle
+         * @type {Highcharts.CSSObject}
+         * @default {"width": "13px", "height": "13px", "position":"absolute"}
          */
         itemCheckboxStyle: {
+            /**
+             * @ignore
+             */
             position: 'absolute',
+            /**
+             * @ignore
+             */
             width: '13px', // for IE precision
+            /**
+             * @ignore
+             */
             height: '13px'
         },
         // itemWidth: undefined,
@@ -2155,10 +2075,7 @@ H.defaultOptions = {
          * the symbol height, which in turn defaults to the font size of the
          * legend items.
          *
-         * @type       {boolean}
-         * @default    true
-         * @since      5.0.0
-         * @apioption  legend.squareSymbol
+         * @since 5.0.0
          */
         squareSymbol: true,
 
@@ -2175,9 +2092,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/padding-itemmargin/
          *         No distance between data classes
          *
-         * @type       {number}
-         * @since      3.0.8
-         * @apioption  legend.symbolHeight
+         * @type      {number}
+         * @since     3.0.8
+         * @apioption legend.symbolHeight
          */
 
         /**
@@ -2191,9 +2108,9 @@ H.defaultOptions = {
          * @sample {highmaps} highcharts/legend/symbolradius/
          *         Round symbols
          *
-         * @type       {number}
-         * @since      3.0.8
-         * @apioption  legend.symbolRadius
+         * @type      {number}
+         * @since     3.0.8
+         * @apioption legend.symbolRadius
          */
 
         /**
@@ -2211,8 +2128,8 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/layout-vertical-sized/
          *         Sized vertical gradient
          *
-         * @type       {number}
-         * @apioption  legend.symbolWidth
+         * @type      {number}
+         * @apioption legend.symbolWidth
          */
 
         /**
@@ -2222,9 +2139,9 @@ H.defaultOptions = {
          * Prior to 4.1.7, when using HTML, [legend.navigation](
          * #legend.navigation) was disabled.
          *
-         * @type       {boolean}
-         * @default    false
-         * @apioption  legend.useHTML
+         * @type      {boolean}
+         * @default   false
+         * @apioption legend.useHTML
          */
 
         /**
@@ -2233,9 +2150,9 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/legend/width/
          *         Aligned to the plot area
          *
-         * @type       {number}
-         * @since      2.0
-         * @apioption  legend.width
+         * @type      {number}
+         * @since     2.0
+         * @apioption legend.width
          */
 
         /**
@@ -2244,10 +2161,6 @@ H.defaultOptions = {
          *
          * @sample {highcharts} highcharts/legend/symbolpadding/
          *         Greater symbol width and padding
-         *
-         * @type       {number}
-         * @default    5
-         * @apioption  legend.symbolPadding
          */
         symbolPadding: 5,
 
@@ -2270,13 +2183,11 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/alignment/
          *         Legend alignment
          *
-         * @type       {string}
-         * @default    bottom
          * @since      2.0
          * @validvalue ["top", "middle", "bottom"]
-         * @apioption  legend.verticalAlign
          */
         verticalAlign: 'bottom',
+
         // width: undefined,
 
         /**
@@ -2287,10 +2198,7 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/legend/width/
          *         Aligned to the plot area
          *
-         * @type       {number}
-         * @default    0
-         * @since      2.0
-         * @apioption  legend.x
+         * @since 2.0
          */
         x: 0,
 
@@ -2306,33 +2214,31 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/alignment/
          *         Legend alignment
          *
-         * @type       {number}
-         * @default    0
-         * @since      2.0
-         * @apioption  legend.y
+         * @since 2.0
          */
         y: 0,
 
         /**
          * A title to be added on top of the legend.
          *
-         * @sample {highcharts} highcharts/legend/title/ Legend title
-         * @sample {highmaps} maps/legend/alignment/ Legend with title
-         * @since 3.0
+         * @sample {highcharts} highcharts/legend/title/
+         *         Legend title
+         * @sample {highmaps} maps/legend/alignment/
+         *         Legend with title
          *
-         * @type       {*}
-         * @apioption  legend.title
+         * @since 3.0
          */
         title: {
             /**
              * A text or HTML string for the title.
              *
-             * @type       {string}
-             * @since      3.0
-             * @apioption  legend.title.text
+             * @type      {string}
+             * @since     3.0
+             * @apioption legend.title.text
              */
 
             
+
         }
     },
 
@@ -2345,9 +2251,6 @@ H.defaultOptions = {
      * is going on, for example while retrieving new data via an XHR connection.
      * The "Loading..." text itself is not part of this configuration
      * object, but part of the `lang` object.
-     *
-     * @type       {*}
-     * @apioption  loading
      */
     loading: {
 
@@ -2357,10 +2260,10 @@ H.defaultOptions = {
          * @sample highcharts/loading/hideduration/
          *         Fade in and out over a second
          *
-         * @type       {number}
-         * @default    100
-         * @since      1.2.0
-         * @apioption  loading.hideDuration
+         * @type      {number}
+         * @default   100
+         * @since     1.2.0
+         * @apioption loading.hideDuration
          */
 
         /**
@@ -2369,11 +2272,12 @@ H.defaultOptions = {
          * @sample highcharts/loading/hideduration/
          *         Fade in and out over a second
          *
-         * @type       {number}
-         * @default    100
-         * @since      1.2.0
-         * @apioption  loading.showDuration
+         * @type      {number}
+         * @default   100
+         * @since     1.2.0
+         * @apioption loading.showDuration
          */
+
         
     },
 
@@ -2381,9 +2285,6 @@ H.defaultOptions = {
     /**
      * Options for the tooltip that appears when the user hovers over a
      * series or point.
-     *
-     * @type       {*}
-     * @apioption  legend
      */
     tooltip: {
 
@@ -2401,8 +2302,8 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/background-border/
          *         Background and border demo
          *
-         * @type       {Highcharts.ColorString}
-         * @apioption  tooltip.borderColor
+         * @type      {Highcharts.ColorString}
+         * @apioption tooltip.borderColor
          */
 
         /**
@@ -2414,9 +2315,10 @@ H.defaultOptions = {
          *         Enable a crosshair for the x value
          *
          * @deprecated
-         * @type       {*}
-         * @default    true
-         * @apioption  tooltip.crosshairs
+         *
+         * @type      {*}
+         * @default   true
+         * @apioption tooltip.crosshairs
          */
 
         /**
@@ -2428,26 +2330,32 @@ H.defaultOptions = {
          * For touch moves to behave the same way, [followTouchMove](
          * #tooltip.followTouchMove) must be `true` also.
          *
-         * @type       {boolean}
-         * @default    {highcharts} false
-         * @default    {highstock} false
-         * @default    {highmaps} true
-         * @since      3.0
-         * @apioption  tooltip.followPointer
+         * @type      {boolean}
+         * @default   {highcharts} false
+         * @default   {highstock} false
+         * @default   {highmaps} true
+         * @since     3.0
+         * @apioption tooltip.followPointer
          */
 
         /**
-         * Whether the tooltip should follow the finger as it moves on a touch
+         * Whether the tooltip should update as the finger moves on a touch
          * device. If this is `true` and [chart.panning](#chart.panning) is
          * set,`followTouchMove` will take over one-finger touches, so the user
          * needs to use two fingers for zooming and panning.
          *
-         * @type       {boolean}
-         * @default    {highcharts} true
-         * @default    {highstock} true
-         * @default    {highmaps} false
-         * @since      3.0.1
-         * @apioption  tooltip.followTouchMove
+         * Note the difference to [followPointer](#tooltip.followPointer) that
+         * only defines the _position_ of the tooltip. If `followPointer` is
+         * false in for example a column series, the tooltip will show above or
+         * below the column, but as `followTouchMove` is true, the tooltip will
+         * jump from column to column as the user swipes across the plot area.
+         *
+         * @type      {boolean}
+         * @default   {highcharts} true
+         * @default   {highstock} true
+         * @default   {highmaps} false
+         * @since     3.0.1
+         * @apioption tooltip.followTouchMove
          */
 
         /**
@@ -2518,18 +2426,18 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/formatter/
          *         String formatting
          *
-         * @type       {Function}
-         * @apioption  tooltip.formatter
+         * @type      {Function}
+         * @apioption tooltip.formatter
          */
 
         /**
          * The number of milliseconds to wait until the tooltip is hidden when
          * mouse out from a point or chart.
          *
-         * @type       {number}
-         * @default    500
-         * @since      3.0
-         * @apioption  tooltip.hideDelay
+         * @type      {number}
+         * @default   500
+         * @since     3.0
+         * @apioption tooltip.hideDelay
          */
 
         /**
@@ -2544,10 +2452,10 @@ H.defaultOptions = {
          * @sample highcharts/tooltip/outside
          *         Small charts with tooltips outside
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      6.1.1
-         * @apioption  tooltip.outside
+         * @type      {boolean}
+         * @default   false
+         * @since     6.1.1
+         * @apioption tooltip.outside
          */
 
         /**
@@ -2555,10 +2463,10 @@ H.defaultOptions = {
          * in the tooltip. Like the `pointFormat` string, but with more
          * flexibility.
          *
-         * @type       {Function}
-         * @since      4.1.0
-         * @context    Highcharts.Point
-         * @apioption  tooltip.pointFormatter
+         * @type      {Function}
+         * @since     4.1.0
+         * @context   Highcharts.Point
+         * @apioption tooltip.pointFormatter
          */
 
         /**
@@ -2578,9 +2486,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/positioner/
          *         A fixed tooltip position
          *
-         * @type       {Function}
-         * @since      2.2.4
-         * @apioption  tooltip.positioner
+         * @type      {Function}
+         * @since     2.2.4
+         * @apioption tooltip.positioner
          */
 
         /**
@@ -2618,11 +2526,11 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/tooltip/shared-true-mixed-types/
          *         True with mixed series types
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      2.1
-         * @product    highcharts highstock
-         * @apioption  tooltip.shared
+         * @type      {boolean}
+         * @default   false
+         * @since     2.1
+         * @product   highcharts highstock
+         * @apioption tooltip.shared
          */
 
         /**
@@ -2639,12 +2547,12 @@ H.defaultOptions = {
          * @sample highcharts/tooltip/split/
          *         Split tooltip
          *
-         * @type       {boolean}
-         * @default    {highcharts} false
-         * @default    {highstock} true
-         * @since      5.0.0
-         * @product    highcharts highstock
-         * @apioption  tooltip.split
+         * @type      {boolean}
+         * @default   {highcharts} false
+         * @default   {highstock} true
+         * @since     5.0.0
+         * @product   highcharts highstock
+         * @apioption tooltip.split
          */
 
         /**
@@ -2660,10 +2568,10 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/usehtml/
          *         Pure HTML tooltip
          *
-         * @type       {boolean}
-         * @default    false
-         * @since      2.2
-         * @apioption  tooltip.useHTML
+         * @type      {boolean}
+         * @default   false
+         * @since     2.2
+         * @apioption tooltip.useHTML
          */
 
         /**
@@ -2676,9 +2584,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/valuedecimals/
          *         Set decimals, prefix and suffix for the value
          *
-         * @type       {number}
-         * @since      2.2
-         * @apioption  tooltip.valueDecimals
+         * @type      {number}
+         * @since     2.2
+         * @apioption tooltip.valueDecimals
          */
 
         /**
@@ -2690,9 +2598,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/valuedecimals/
          *         Set decimals, prefix and suffix for the value
          *
-         * @type       {string}
-         * @since      2.2
-         * @apioption  tooltip.valuePrefix
+         * @type      {string}
+         * @since     2.2
+         * @apioption tooltip.valuePrefix
          */
 
         /**
@@ -2704,9 +2612,9 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/valuedecimals/
          *         Set decimals, prefix and suffix for the value
          *
-         * @type       {string}
-         * @since      2.2
-         * @apioption  tooltip.valueSuffix
+         * @type      {string}
+         * @since     2.2
+         * @apioption tooltip.valueSuffix
          */
 
         /**
@@ -2717,9 +2625,9 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/tooltip/xdateformat/
          *         A different format
          *
-         * @type       {string}
-         * @product    highcharts highstock
-         * @apioption  tooltip.xDateFormat
+         * @type      {string}
+         * @product   highcharts highstock
+         * @apioption tooltip.xDateFormat
          */
 
         /**
@@ -2727,10 +2635,10 @@ H.defaultOptions = {
          * `series.compare` option is set. This is overridable in each series'
          * tooltip options object. The default is to preserve all decimals.
          *
-         * @type       {number}
-         * @since      1.0.1
-         * @product    highstock
-         * @apioption  tooltip.changeDecimals
+         * @type      {number}
+         * @since     1.0.1
+         * @product   highstock
+         * @apioption tooltip.changeDecimals
          */
 
         /**
@@ -2740,10 +2648,6 @@ H.defaultOptions = {
          *         Disabled
          * @sample {highcharts} highcharts/plotoptions/series-point-events-mouseover/
          *         Disable tooltip and show values on chart instead
-         *
-         * @type       {boolean}
-         * @default    true
-         * @apioption  tooltip.enabled
          */
         enabled: true,
 
@@ -2753,7 +2657,6 @@ H.defaultOptions = {
          * @type       {boolean}
          * @default    true
          * @since      2.3.0
-         * @apioption  tooltip.animation
          */
         animation: svg,
 
@@ -2766,10 +2669,6 @@ H.defaultOptions = {
          *         Square borders
          * @sample {highmaps} maps/tooltip/background-border/
          *         Background and border demo
-         *
-         * @type       {number}
-         * @default    3
-         * @apioption  tooltip.borderRadius
          */
         borderRadius: 3,
 
@@ -2780,24 +2679,10 @@ H.defaultOptions = {
          * each unit. For an overview of the replacement codes, see
          * [dateFormat](/class-reference/Highcharts#dateFormat).
          *
-         * Defaults to:
-         *
-         * <pre>{
-         *     millisecond:"%A, %b %e, %H:%M:%S.%L",
-         *     second:"%A, %b %e, %H:%M:%S",
-         *     minute:"%A, %b %e, %H:%M",
-         *     hour:"%A, %b %e, %H:%M",
-         *     day:"%A, %b %e, %Y",
-         *     week:"Week from %A, %b %e, %Y",
-         *     month:"%B %Y",
-         *     year:"%Y"
-         * }</pre>
-         *
          * @see [xAxis.dateTimeLabelFormats](#xAxis.dateTimeLabelFormats)
          *
-         * @type       {Highcharts.Dictionary<string>}
-         * @product    highcharts highstock
-         * @apioption  tooltip.dateTimeLabelFormats
+         * @type    {Highcharts.Dictionary<string>}
+         * @product highcharts highstock
          */
         dateTimeLabelFormats: {
             millisecond: '%A, %b %e, %H:%M:%S.%L',
@@ -2818,20 +2703,14 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/format/
          *         Format demo
          *
-         * @type       {string}
-         * @default
-         * @since      2.2
-         * @apioption  tooltip.footerFormat
+         * @since 2.2
          */
         footerFormat: '',
 
         /**
          * Padding inside the tooltip, in pixels.
          *
-         * @type       {number}
-         * @default    8
          * @since      5.0.0
-         * @apioption  tooltip.padding
          */
         padding: 8,
 
@@ -2850,18 +2729,21 @@ H.defaultOptions = {
          * @sample {highcharts} highcharts/tooltip/snap-50/
          *         50 px on graph
          *
-         * @type       {number}
-         * @default    10/25
-         * @since      1.2.0
-         * @product    highcharts highstock
-         * @apioption  tooltip.snap
+         * @type    {number}
+         * @default 10/25
+         * @since   1.2.0
+         * @product highcharts highstock
          */
         snap: isTouchDevice ? 25 : 10,
+
         
+
         headerFormat: '<span class="highcharts-header">{point.key}</span><br/>',
+
         pointFormat: '<span class="highcharts-color-{point.colorIndex}">' +
             '\u25CF</span> {series.name}: <span class="highcharts-strong">' +
             '{point.y}</span><br/>'
+
         
     },
 
@@ -2869,9 +2751,6 @@ H.defaultOptions = {
     /**
      * Highchart by default puts a credits label in the lower right corner
      * of the chart. This can be changed using these options.
-     *
-     * @type       {*}
-     * @apioption  credits
      */
     credits: {
 
@@ -2880,13 +2759,14 @@ H.defaultOptions = {
          * text. By default this is a format string that collects copyright
          * information from the map if available.
          *
-         * @see [mapTextFull](#credits.mapTextFull), [text](#credits.text)
+         * @see [mapTextFull](#credits.mapTextFull)
+         * @see [text](#credits.text)
          *
-         * @type       {string}
-         * @default    \u00a9 <a href="{geojson.copyrightUrl}">{geojson.copyrightShort}</a>
-         * @since      4.2.2
-         * @product    highmaps
-         * @apioption  credits.mapText
+         * @type      {string}
+         * @default   \u00a9 <a href="{geojson.copyrightUrl}">{geojson.copyrightShort}</a>
+         * @since     4.2.2
+         * @product   highmaps
+         * @apioption credits.mapText
          */
 
         /**
@@ -2894,13 +2774,14 @@ H.defaultOptions = {
          * text. By default this is a format string that collects copyright
          * information from the map if available.
          *
-         * @see        [mapText](#credits.mapText), [text](#credits.text)
+         * @see [mapText](#credits.mapText)
+         * @see [text](#credits.text)
          *
-         * @type       {string}
-         * @default    {geojson.copyright}
-         * @since      4.2.2
-         * @product    highmaps
-         * @apioption  credits.mapTextFull
+         * @type      {string}
+         * @default   {geojson.copyright}
+         * @since     4.2.2
+         * @product   highmaps
+         * @apioption credits.mapTextFull
          */
 
         /**
@@ -2912,9 +2793,6 @@ H.defaultOptions = {
          *         Credits disabled
          * @sample {highmaps} maps/credits/enabled-false/
          *         Credits disabled
-         *
-         * @type       {boolean}
-         * @apioption  credits.enabled
          */
         enabled: true,
 
@@ -2925,9 +2803,6 @@ H.defaultOptions = {
          *         Custom URL and text
          * @sample {highmaps} maps/credits/customized/
          *         Custom URL and text
-         *
-         * @type       {string}
-         * @apioption  credits.href
          */
         href: 'https://www.highcharts.com',
 
@@ -2943,50 +2818,36 @@ H.defaultOptions = {
          * @sample {highmaps} maps/credits/customized/
          *         Left aligned
          *
-         * @type       {*}
-         * @since      2.1
-         * @apioption  credits.position
+         * @since 2.1
          */
         position: {
 
             /**
              * Horizontal alignment of the credits.
              *
-             * @type       {string}
-             * @default    right
              * @validvalue ["left", "center", "right"]
-             * @apioption  credits.position.align
              */
             align: 'right',
 
             /**
              * Horizontal pixel offset of the credits.
-             *
-             * @type      {number}
-             * @default   -10
-             * @apioption credits.position.x
              */
             x: -10,
 
             /**
              * Vertical alignment of the credits.
              *
-             * @type       {string}
-             * @default    bottom
              * @validvalue ["top", "middle", "bottom"]
-             * @apioption  credits.position.verticalAlign
              */
             verticalAlign: 'bottom',
 
             /**
              * Vertical pixel offset of the credits.
-             *
-             * @type       {number}
-             * @default    -5
-             * @apioption  credits.position.y
              */
             y: -5
+
         },
+
         
 
         /**
@@ -3001,10 +2862,6 @@ H.defaultOptions = {
          *         Custom URL and text
          * @sample {highmaps} maps/credits/customized/
          *         Custom URL and text
-         *
-         * @type       {string}
-         * @default    {highcharts|highstock} Highcharts.com
-         * @apioption  credits.text
          */
         text: 'Highcharts.com'
 
@@ -3020,11 +2877,11 @@ H.defaultOptions = {
  *
  * @function Highcharts.setOptions
  *
- * @param   {Highcharts.Options} options
- *          The new custom chart options.
+ * @param {Highcharts.Options} options
+ *        The new custom chart options.
  *
- * @returns {Highcharts.Options}
- *          Updated options.
+ * @return {Highcharts.Options}
+ *         Updated options.
  */
 H.setOptions = function (options) {
 
@@ -3058,7 +2915,14 @@ H.getOptions = function () {
 H.defaultPlotOptions = H.defaultOptions.plotOptions;
 
 
-// Time utilities
+/**
+ * Global `Time` object with default options. Since v6.0.5, time settings can be
+ * applied individually for each chart. If no individual settings apply, this
+ * `Time` object is shared by all instances.
+ *
+ * @name Highcharts.time
+ * @type {Highcharts.Time}
+ */
 H.time = new H.Time(merge(H.defaultOptions.global, H.defaultOptions.time));
 
 /**
@@ -3075,15 +2939,15 @@ H.time = new H.Time(merge(H.defaultOptions.global, H.defaultOptions.time));
  *
  * @function Highcharts.dateFormat
  *
- * @param  {string} format
- *         The desired format where various time representations are prefixed
- *         with %.
+ * @param {string} format
+ *        The desired format where various time representations are prefixed
+ *        with `%`.
  *
- * @param  {number} timestamp
- *         The JavaScript timestamp.
+ * @param {number} timestamp
+ *        The JavaScript timestamp.
  *
- * @param  {boolean} [capitalize=false]
- *         Upper case first letter in the return.
+ * @param {boolean} [capitalize=false]
+ *        Upper case first letter in the return.
  *
  * @return {string}
  *         The formatted date.

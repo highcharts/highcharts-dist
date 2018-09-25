@@ -25,7 +25,7 @@ var each = H.each,
  *
  * @sample stock/demo/ohlc/ OHLC chart
  * @extends plotOptions.column
- * @excluding borderColor,borderRadius,borderWidth,crisp
+ * @excluding borderColor,borderRadius,borderWidth,crisp,stacking,stack
  * @product highstock
  * @optionparent plotOptions.ohlc
  */
@@ -243,8 +243,8 @@ seriesType('ohlc', 'column', {
  *     ]
  *  ```
  *
- * 2.  An array of objects with named values. The objects are point
- * configuration objects as seen below. If the total number of data
+ * 2.  An array of objects with named values. The following snippet shows only a
+ * few settings, see the complete options set below. If the total number of data
  * points exceeds the series' [turboThreshold](#series.ohlc.turboThreshold),
  * this option is not available.
  *

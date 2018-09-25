@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.3 (2018-09-12)
+ Highcharts JS v6.1.4 (2018-09-25)
  Drag-panes module
 
  (c) 2010-2017 Highsoft AS

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.3 (2018-09-12)
+ * @license Highcharts JS v6.1.4 (2018-09-25)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -546,9 +546,19 @@
 		             * button's title tooltip. When the key is `contextButtonTitle`, it
 		             * refers to [lang.contextButtonTitle](#lang.contextButtonTitle)
 		             * that defaults to "Chart context menu".
-		             * @type {String}
+		             *
+		             * @since 6.1.4
 		             */
-		            _titleKey: 'contextButtonTitle',
+		            titleKey: 'contextButtonTitle',
+
+		            /**
+		             * This option is deprecated, use
+		             * [titleKey](#exporting.buttons.contextButton.titleKey) instead.
+		             *
+		             * @deprecated
+		             * @type      {string}
+		             * @apioption exporting.buttons.contextButton._titleKey
+		             */
 
 		            /**
 		             * A collection of strings pointing to config options for the menu
@@ -767,7 +777,6 @@
 
 		        svg = svg
 		            .replace(/zIndex="[^"]+"/g, '')
-		            .replace(/isShadow="[^"]+"/g, '')
 		            .replace(/symbolName="[^"]+"/g, '')
 		            .replace(/jQuery[0-9]+="[^"]+"/g, '')
 		            .replace(/url\(("|&quot;)(\S+)("|&quot;)\)/g, 'url($2)')
@@ -1118,14 +1127,14 @@
 		            menu = chart[cacheName],
 		            menuPadding = Math.max(width, height), // for mouse leave detection
 		            innerMenu,
-		            hide,
 		            menuStyle;
 
 		        // create the menu only the first time
 		        if (!menu) {
 
 		            // create a HTML element above the SVG
-		            chart[cacheName] = menu = createElement('div', {
+		            chart.exportContextMenu = chart[cacheName] = menu =
+		            createElement('div', {
 		                className: className
 		            }, {
 		                position: 'absolute',
@@ -1144,18 +1153,19 @@
             
 
 		            // hide on mouse out
-		            hide = function () {
+		            menu.hideMenu = function () {
 		                css(menu, { display: 'none' });
 		                if (button) {
 		                    button.setState(0);
 		                }
 		                chart.openMenu = false;
+		                H.clearTimeout(menu.hideTimer);
 		            };
 
 		            // Hide the menu some time after mouse leave (#1357)
 		            chart.exportEvents.push(
 		                addEvent(menu, 'mouseleave', function () {
-		                    menu.hideTimer = setTimeout(hide, 500);
+		                    menu.hideTimer = setTimeout(menu.hideMenu, 500);
 		                }),
 		                addEvent(menu, 'mouseenter', function () {
 		                    H.clearTimeout(menu.hideTimer);
@@ -1165,13 +1175,13 @@
 		                // #2335, #2407)
 		                addEvent(doc, 'mouseup', function (e) {
 		                    if (!chart.pointer.inClass(e.target, className)) {
-		                        hide();
+		                        menu.hideMenu();
 		                    }
 		                }),
 
 		                addEvent(menu, 'click', function () {
 		                    if (chart.openMenu) {
-		                        hide();
+		                        menu.hideMenu();
 		                    }
 		                })
 		            );
@@ -1196,7 +1206,7 @@
 		                                if (e) { // IE7
 		                                    e.stopPropagation();
 		                                }
-		                                hide();
+		                                menu.hideMenu();
 		                                if (item.onclick) {
 		                                    item.onclick.apply(chart, arguments);
 		                                }
@@ -1284,12 +1294,19 @@
 
 		        if (onclick) {
 		            callback = function (e) {
-		                e.stopPropagation();
+		                if (e) {
+		                    e.stopPropagation();
+		                }
 		                onclick.call(chart, e);
 		            };
 
 		        } else if (menuItems) {
-		            callback = function () {
+		            callback = function (e) {
+		                // consistent with onclick call (#3495)
+		                if (e) {
+		                    e.stopPropagation();
+		                }
+
 		                chart.contextMenu(
 		                    button.menuClassName,
 		                    menuItems,
@@ -1320,7 +1337,12 @@
 		            .addClass(options.className)
 		            .attr({
                 
-		                title: pick(chart.options.lang[btnOptions._titleKey], '')
+		                title: pick(
+		                    chart.options.lang[
+		                        btnOptions._titleKey || btnOptions.titleKey
+		                    ],
+		                    ''
+		                )
 		            });
 		        button.menuClassName = (
 		            options.menuClassName ||

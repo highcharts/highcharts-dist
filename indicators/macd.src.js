@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.3 (2018-09-12)
+ * @license  Highcharts JS v6.1.4 (2018-09-25)
  *
  * Indicator series type for Highstock
  *
@@ -378,8 +378,8 @@
 		        destroy: function () {
 		            // this.graph is null due to removing two times the same SVG element
 		            this.graph = null;
-		            this.graphmacd = this.graphmacd.destroy();
-		            this.graphsignal = this.graphsignal.destroy();
+		            this.graphmacd = this.graphmacd && this.graphmacd.destroy();
+		            this.graphsignal = this.graphsignal && this.graphsignal.destroy();
 
 		            SMA.prototype.destroy.apply(this, arguments);
 		        },
@@ -487,7 +487,7 @@
 		                longEMA,
 		                i;
 
-		            if (series.xData.length < params.longPeriod) {
+		            if (series.xData.length < params.longPeriod + params.signalPeriod) {
 		                return false;
 		            }
 

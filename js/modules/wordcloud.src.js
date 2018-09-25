@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.3 (2018-09-12)
+ * @license Highcharts JS v6.1.4 (2018-09-25)
  *
  * (c) 2016 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -229,10 +229,10 @@
 		        obj.top = Math.min(y, obj.top);
 		        return obj;
 		    }, {
-		        left: Number.MAX_SAFE_INTEGER,
-		        right: Number.MIN_SAFE_INTEGER,
-		        bottom: Number.MIN_SAFE_INTEGER,
-		        top: Number.MAX_SAFE_INTEGER
+		        left: Number.MAX_VALUE,
+		        right: -Number.MAX_VALUE,
+		        bottom: -Number.MAX_VALUE,
+		        top: Number.MAX_VALUE
 		    });
 		};
 
@@ -777,13 +777,6 @@
 		    },
 		    borderWidth: 0,
 		    clip: false, // Something goes wrong with clip. // TODO fix this
-		    /**
-		     * When using automatic point colors pulled from the `options.colors`
-		     * collection, this option determines whether the chart should receive
-		     * one color per series or one color per point.
-		     *
-		     * @see [series colors](#plotOptions.column.colors)
-		     */
 		    colorByPoint: true,
 		    /**
 		     * A threshold determining the minimum font size that can be applied to a
@@ -1180,8 +1173,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 2.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 2.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series'
 		 * [turboThreshold](#series.arearange.turboThreshold), this option is not
 		 * available.

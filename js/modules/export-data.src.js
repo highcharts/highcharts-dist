@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.3 (2018-09-12)
+ * @license Highcharts JS v6.1.4 (2018-09-25)
  * Exporting module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -247,6 +247,9 @@
 		         * the chart's current data.
 		         *
 		         * @sample highcharts/export-data/showtable/ Show the table
+		         * @sample highcharts/studies/exporting-table-html
+		         *         Experiment with putting the table inside the subtitle to
+		         *         allow exporting it.
 		         * @since 6.0.0
 		         */
 		        showTable: false,

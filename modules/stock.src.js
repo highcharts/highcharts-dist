@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.3 (2018-09-12)
+ * @license Highcharts JS v6.1.4 (2018-09-25)
  * Highstock as a plugin for Highcharts
  *
  * (c) 2017 Torstein Honsi
@@ -1348,7 +1348,11 @@
 		 *
 		 * If data grouping is applied, the grouping information of grouped
 		 * points can be read from the [Point.dataGroup](
-		 * /class-reference/Highcharts.Point#.dataGroup).
+		 * /class-reference/Highcharts.Point#.dataGroup). If point options other than
+		 * the data itself are set, for example `name` or `color` or custom properties,
+		 * the grouping logic doesn't know how to group it. In this case the options of
+		 * the first point instance are copied over to the group point. This can be
+		 * altered through a custom `approximation` callback function.
 		 *
 		 * @product highstock
 		 * @apioption plotOptions.series.dataGrouping
@@ -1796,6 +1800,7 @@
 		                ) || approximations[commonOptions.approximation],
 		        pointArrayMap = series.pointArrayMap,
 		        pointArrayMapLength = pointArrayMap && pointArrayMap.length,
+		        extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']),
 		        pos = 0,
 		        start = 0,
 		        valuesLen,
@@ -1831,6 +1836,25 @@
 		            pointX = groupPositions[pos];
 		            series.dataGroupInfo = { start: start, length: values[0].length };
 		            groupedY = approximationFn.apply(series, values);
+
+		            // By default, let options of the first grouped point be passed over
+		            // to the grouped point. This allows preserving properties like
+		            // `name` and `color` or custom properties. Implementers can
+		            // override this from the approximation function, where they can
+		            // write custom options to `this.dataGroupInfo.options`.
+		            if (!defined(series.dataGroupInfo.options)) {
+		                // Convert numbers and arrays into objects
+		                series.dataGroupInfo.options = series.pointClass.prototype
+		                    .optionsToObject.call(
+		                        { series: series },
+		                        series.options.data[start]
+		                    );
+		                // Make sure the raw data (x, y, open, high etc) is not copied
+		                // over and overwriting approximated data.
+		                each(extendedPointArrayMap, function (key) {
+		                    delete series.dataGroupInfo.options[key];
+		                });
+		            }
 
 		            // push the grouped data
 		            if (groupedY !== undefined) {
@@ -2002,7 +2026,13 @@
 		                groupedXData[0] < xAxis.dataMin &&
 		                visible
 		            ) {
-		                if (xAxis.min <= xAxis.dataMin) {
+		                if (
+		                    (
+		                        !defined(xAxis.options.min) &&
+		                        xAxis.min <= xAxis.dataMin
+		                    ) ||
+		                    xAxis.min === xAxis.dataMin
+		                ) {
 		                    xAxis.min = groupedXData[0];
 		                }
 		                xAxis.dataMin = groupedXData[0];
@@ -2338,7 +2368,7 @@
 		 *
 		 * @sample stock/demo/ohlc/ OHLC chart
 		 * @extends plotOptions.column
-		 * @excluding borderColor,borderRadius,borderWidth,crisp
+		 * @excluding borderColor,borderRadius,borderWidth,crisp,stacking,stack
 		 * @product highstock
 		 * @optionparent plotOptions.ohlc
 		 */
@@ -2439,6 +2469,12 @@
 		    pointAttrToOptions: {
 		        'stroke': 'color',
 		        'stroke-width': 'lineWidth'
+		    },
+
+		    init: function () {
+		        seriesTypes.column.prototype.init.apply(this, arguments);
+
+		        this.options.stacking = false; // #8817
 		    },
 
 		    /**
@@ -2632,8 +2668,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 2.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 2.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.ohlc.turboThreshold),
 		 * this option is not available.
 		 *
@@ -2979,8 +3015,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 2.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 2.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](
 		 * #series.candlestick.turboThreshold), this option is not available.
 		 *
@@ -3681,9 +3717,21 @@
 		        });
 		    },
 
-		    animate: noop, // Disable animation
+		    // Disable animation, but keep clipping (#8546):
+		    animate: function (init) {
+		        if (init) {
+		            this.setClip();
+		        } else {
+		            this.animate = null;
+		        }
+		    },
+		    setClip: function () {
+		        Series.prototype.setClip.apply(this, arguments);
+		        if (this.options.clip !== false && this.sharedClipKey) {
+		            this.markerGroup.clip(this.chart[this.sharedClipKey]);
+		        }
+		    },
 		    buildKDTree: noop,
-		    setClip: noop,
 		    /**
 		     * Don't invert the flag marker group (#4960)
 		     */
@@ -3783,8 +3831,8 @@
 		 * An array of data points for the series. For the `flags` series type,
 		 * points can be given in the following ways:
 		 *
-		 * 1.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 1.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.flags.turboThreshold),
 		 * this option is not available.
 		 *
@@ -6283,7 +6331,7 @@
 		                left = Math.max(0, left);
 		            } else if (index === 2 && left + range >= navigatorSize) {
 		                left = navigatorSize - range;
-		                if (xAxis.reversed) {
+		                if (navigator.reversedExtremes) {
 		                    // #7713
 		                    left -= range;
 		                    fixedMin = navigator.getUnionExtremes().dataMin;
@@ -6334,10 +6382,9 @@
 		        var navigator = this,
 		            chart = navigator.chart,
 		            baseXAxis = chart.xAxis[0],
-		            // For reversed axes, min and max are chagned,
+		            // For reversed axes, min and max are changed,
 		            // so the other extreme should be stored
-		            reverse = (chart.inverted && !baseXAxis.reversed) ||
-		                (!chart.inverted && baseXAxis.reversed);
+		            reverse = navigator.reversedExtremes;
 
 		        if (index === 0) {
 		            // Grab the left handle
@@ -6456,7 +6503,6 @@
 		        var navigator = this,
 		            chart = navigator.chart,
 		            xAxis = navigator.xAxis,
-		            reversed = xAxis && xAxis.reversed,
 		            scrollbar = navigator.scrollbar,
 		            unionExtremes,
 		            fixedMin,
@@ -6481,13 +6527,13 @@
 		            }
 		            // Snap to right edge (#4076)
 		            if (navigator.zoomedMax === navigator.size) {
-		                fixedMax = reversed ?
+		                fixedMax = navigator.reversedExtremes ?
 		                    unionExtremes.dataMin : unionExtremes.dataMax;
 		            }
 
 		            // Snap to left edge (#7576)
 		            if (navigator.zoomedMin === 0) {
-		                fixedMin = reversed ?
+		                fixedMin = navigator.reversedExtremes ?
 		                    unionExtremes.dataMax : unionExtremes.dataMin;
 		            }
 
@@ -6673,6 +6719,12 @@
 		                    }
 		                );
 		            }
+
+		            navigator.reversedExtremes = (
+		                chart.inverted && !navigator.xAxis.reversed
+		            ) || (
+		                !chart.inverted && navigator.xAxis.reversed
+		            );
 
 		            // Render items, so we can bind events to them:
 		            navigator.renderElements();
@@ -7177,7 +7229,7 @@
 
 		        // If the scrollbar is scrolled all the way to the right, keep right as
 		        // new data  comes in.
-		        navigator.stickToMax = navigator.xAxis.reversed ?
+		        navigator.stickToMax = navigator.reversedExtremes ?
 		            Math.round(navigator.zoomedMin) === 0 :
 		            Math.round(navigator.zoomedMax) >= Math.round(navigator.size);
 
@@ -7662,7 +7714,7 @@
 		         */
 
 		        /**
-		         * When buttons apply dataGrouping on a series, by deafault zooming
+		         * When buttons apply dataGrouping on a series, by default zooming
 		         * in/out will deselect buttons and unset dataGrouping. Enable this
 		         * option to keep buttons selected when extremes change.
 		         *
@@ -7769,7 +7821,9 @@
 		         * @apioption  rangeSelector.buttonTheme
 		         */
 		        buttonTheme: {
+            
 		            'stroke-width': 0,
+            
 		            width: 28,
 		            height: 18,
 		            padding: 2,
@@ -8728,10 +8782,12 @@
 		                padding: 2,
 		                width: options.inputBoxWidth || 90,
 		                height: options.inputBoxHeight || 17,
+		                'text-align': 'center',
+                
 		                stroke:
 		                    options.inputBoxBorderColor || '#cccccc',
-		                'stroke-width': 1,
-		                'text-align': 'center'
+		                'stroke-width': 1
+                
 		            })
 		            .on('click', function () {
 		                // If it is already focused, the onfocus event doesn't fire
@@ -8875,6 +8931,12 @@
 		            lang = defaultOptions.lang,
 		            div = rangeSelector.div,
 		            options = chartOptions.rangeSelector,
+		            // Place inputs above the container
+		            inputsZIndex = pick(
+		                chartOptions.chart.style &&
+		                chartOptions.chart.style.zIndex,
+		                0
+		            ) + 1,
 		            floating = options.floating,
 		            buttons = rangeSelector.buttons,
 		            inputGroup = rangeSelector.inputGroup,
@@ -8970,7 +9032,7 @@
 		                rangeSelector.div = div = createElement('div', null, {
 		                    position: 'relative',
 		                    height: 0,
-		                    zIndex: 1 // above container
+		                    zIndex: inputsZIndex
 		                });
 
 		                container.parentNode.insertBefore(div, container);

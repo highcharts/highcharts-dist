@@ -3,6 +3,43 @@
  *
  * License: www.highcharts.com/license
  */
+
+/**
+ * A label box.
+ *
+ * @typedef {object} Highcharts.DataLabelBoxObject
+ *
+ * @property {number} align
+ *
+ * @property {number} pos
+ *
+ * @property {number} rank
+ *
+ * @property {number} size
+ *
+ * @property {number} target
+ */
+
+/**
+ * Alignment offset for a label.
+ *
+ * @typedef {object} Highcharts.DataLabelAlignObject
+ *
+ * @property {number} x
+ *
+ * @property {number} y
+ */
+
+/**
+ * Label position for a pie slice.
+ *
+ * @typedef {Array<number|string>} Highcharts.DataLabelPiePosObject
+ *
+ * @property {number} x
+ *
+ * @property {number} y
+ */
+
 'use strict';
 import H from './Globals.js';
 import './Utilities.js';
@@ -30,6 +67,16 @@ var addEvent = H.addEvent,
  * objects containing a size, a target and a rank. It will place the labels as
  * close as possible to their targets, skipping the lowest ranked labels if
  * necessary.
+ *
+ * @function Highcharts.distribute
+ *
+ * @param  {Array<Highcharts.DataLabelBoxObject>} boxes
+ *
+ * @param  {number} len
+ *
+ * @param  {number} maxDistance
+ *
+ * @return {void}
  */
 H.distribute = function (boxes, len, maxDistance) {
 
@@ -174,6 +221,13 @@ H.distribute = function (boxes, len, maxDistance) {
 
 /**
  * Draw the data labels
+ *
+ * @function Highcharts.Series#drawDataLabels
+ *
+ * @return {void}
+ *
+ * @todo
+ * Make events official: Fires the event `afterDrawDataLabels`.
  */
 Series.prototype.drawDataLabels = function () {
     var series = this,
@@ -367,7 +421,21 @@ Series.prototype.drawDataLabels = function () {
 };
 
 /**
- * Align each individual data label
+ * Align each individual data label.
+ *
+ * @function Highcharts.Series#alignDataLabel
+ *
+ * @param  {Highcharts.Point} point
+ *
+ * @param  {Highcharts.SVGElement} dataLabel
+ *
+ * @param  {Highcharts.PlotSeriesDataLabelsOptions} options
+ *
+ * @param  {Highcharts.BBoxObject} alignTo
+ *
+ * @param  {boolean} isNew
+ *
+ * @return {void}
  */
 Series.prototype.alignDataLabel = function (
     point,
@@ -513,6 +581,20 @@ Series.prototype.alignDataLabel = function (
 /**
  * If data labels fall partly outside the plot area, align them back in, in a
  * way that doesn't hide the point.
+ *
+ * @function Highcharts.Series#justifyDataLabel
+ *
+ * @param  {Highcharts.SVGElement} dataLabel
+ *
+ * @param  {Highcharts.PlotSeriesDataLabelsOptions} options
+ *
+ * @param  {Highcharts.DataLabelAlignObject} alignAttr
+ *
+ * @param  {Highcharts.BBoxObject} bBox
+ *
+ * @param  {boolean} isNew
+ *
+ * @return {boolean}
  */
 Series.prototype.justifyDataLabel = function (
     dataLabel,
@@ -581,10 +663,14 @@ Series.prototype.justifyDataLabel = function (
     return justified;
 };
 
-/**
- * Override the base drawDataLabels method by pie specific functionality
- */
 if (seriesTypes.pie) {
+    /**
+     * Override the base drawDataLabels method by pie specific functionality
+     *
+     * @function Highcharts.seriesTypes.pie#drawDataLabels
+     *
+     * @return {void}
+     */
     seriesTypes.pie.prototype.drawDataLabels = function () {
         var series = this,
             data = series.data,
@@ -897,6 +983,12 @@ if (seriesTypes.pie) {
     /**
      * Extendable method for getting the path of the connector between the data
      * label and the pie slice.
+     *
+     * @function Highcharts.seriesTypes.pie#connectorPath
+     *
+     * @param  {Highcharts.DataLabelPiePosObject} labelPos
+     *
+     * @return {Highcharts.PathObject}
      */
     seriesTypes.pie.prototype.connectorPath = function (labelPos) {
         var x = labelPos.x,
@@ -925,6 +1017,10 @@ if (seriesTypes.pie) {
     /**
      * Perform the final placement of the data labels after we have verified
      * that they fall within the plot area.
+     *
+     * @function Highcharts.seriesTypes.pie#placeDataLabels
+     *
+     * @return {void}
      */
     seriesTypes.pie.prototype.placeDataLabels = function () {
         each(this.points, function (point) {
@@ -967,6 +1063,12 @@ if (seriesTypes.pie) {
      * Verify whether the data labels are allowed to draw, or we should run more
      * translation and data label positioning to keep them inside the plot area.
      * Returns true when data labels are ready to draw.
+     *
+     * @function Highcharts.seriesTypes.pie#verifyDataLabelOverflow
+     *
+     * @param  {boolean} overflow
+     *
+     * @return {boolean}
      */
     seriesTypes.pie.prototype.verifyDataLabelOverflow = function (overflow) {
 
@@ -1040,7 +1142,21 @@ if (seriesTypes.column) {
 
     /**
      * Override the basic data label alignment by adjusting for the position of
-     * the column
+     * the column.
+     *
+     * @function Highcharts.seriesTypes.column#alignDataLabel
+     *
+     * @param  {Highcharts.Point} point
+     *
+     * @param  {Highcharts.SVGElement} dataLabel
+     *
+     * @param  {Highcharts.PlotSeriesDataLabelsOptions} options
+     *
+     * @param  {Highcharts.BBoxObject} alignTo
+     *
+     * @param  {boolean} isNew
+     *
+     * @return {void}
      */
     seriesTypes.column.prototype.alignDataLabel = function (
         point,

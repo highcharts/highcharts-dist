@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.3 (2018-09-12)
+ * @license Highcharts JS v6.1.4 (2018-09-25)
  * Annotations module
  *
  * (c) 2009-2017 Torstein Honsi
@@ -632,7 +632,7 @@
 		             * How to handle the annotation's label that flow outside the plot
 		             * area. The justify option aligns the label inside the plot area.
 		             *
-		             * @validvalue ["none", "justify"]
+		             * @validvalue ["allow", "justify"]
 		             * @sample highcharts/annotations/label-crop-overflow/
 		             *         Crop or justify labels
 		             **/

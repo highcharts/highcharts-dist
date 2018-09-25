@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.3 (2018-09-12)
+ * @license  Highcharts JS v6.1.4 (2018-09-25)
  * Sankey diagram module
  *
  * (c) 2010-2017 Torstein Honsi
@@ -322,6 +322,14 @@
 		            columns[node.column].push(node);
 
 		        }, this);
+
+		        // Fill in empty columns (#8865)
+		        for (var i = 0; i < columns.length; i++) {
+		            if (columns[i] === undefined) {
+		                columns[i] = this.createNodeColumn();
+		            }
+		        }
+
 		        return columns;
 		    },
 
@@ -701,8 +709,8 @@
 		 * An array of data points for the series. For the `sankey` series type,
 		 * points can be given in the following way:
 		 *
-		 * An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.area.turboThreshold),
 		 * this option is not available.
 		 *

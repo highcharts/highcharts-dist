@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.3 (2018-09-12)
+ * @license  Highcharts JS v6.1.4 (2018-09-25)
  *
  * Bullet graph series type for Highcharts
  *
@@ -260,8 +260,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 2.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 2.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.bullet.turboThreshold),
 		 * this option is not available.
 		 *

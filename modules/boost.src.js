@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.3 (2018-09-12)
+ * @license Highcharts JS v6.1.4 (2018-09-25)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -517,6 +517,12 @@
 
 		            series = chart.series[i];
 
+		            // Don't count series with boostThreshold set to 0
+		            // See #8950
+		            if (series.options.boostThreshold === 0) {
+		                continue;
+		            }
+
 		            if (boostableMap[series.type]) {
 		                ++canBoostCount;
 		            }
@@ -532,13 +538,13 @@
 		        }
 		    }
 
-		    chart.boostForceChartBoost =
+		    chart.boostForceChartBoost = allowBoostForce && (
 		        (
-		            allowBoostForce &&
 		            canBoostCount === chart.series.length &&
 		            sboostCount > 0
 		        ) ||
-		        sboostCount > 5;
+		        sboostCount > 5
+		    );
 
 		    return chart.boostForceChartBoost;
 		}
@@ -816,8 +822,19 @@
 		        // Uniform for invertion
 		        isInverted,
 		        plotHeightUniform,
+		        // Error stack
+		        errors = [],
 		        // Texture uniform
 		        uSamplerUniform;
+
+		    /*
+		     * Handle errors accumulated in errors stack
+		     */
+		    function handleErrors() {
+		        if (errors.length) {
+		            H.error('[highcharts boost] shader error - ' + errors.join('\n'));
+		        }
+		    }
 
 		    /* String to shader program
 		     * @param {string} str - the program source
@@ -833,7 +850,13 @@
 		        gl.compileShader(shader);
 
 		        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		            // console.error('shader error:', gl.getShaderInfoLog(shader));
+		            errors.push(
+		                'when compiling ' +
+		                type +
+		                ' shader:\n' +
+		                gl.getShaderInfoLog(shader)
+		            );
+
 		            return false;
 		        }
 		        return shader;
@@ -850,7 +873,7 @@
 
 		        if (!v || !f) {
 		            shaderProgram = false;
-		            // console.error('error creating shader program');
+		            handleErrors();
 		            return false;
 		        }
 
@@ -862,7 +885,15 @@
 
 		        gl.attachShader(shaderProgram, v);
 		        gl.attachShader(shaderProgram, f);
+
 		        gl.linkProgram(shaderProgram);
+
+		        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+		            errors.push(gl.getProgramInfoLog(shaderProgram));
+		            handleErrors();
+		            shaderProgram = false;
+		            return false;
+		        }
 
 		        gl.useProgram(shaderProgram);
 
@@ -879,6 +910,7 @@
 		        isCircleUniform = uloc('isCircle');
 		        isInverted = uloc('isInverted');
 		        plotHeightUniform = uloc('plotHeight');
+
 		        return true;
 		    }
 
@@ -886,11 +918,9 @@
 		     * Destroy the shader
 		     */
 		    function destroy() {
-		        if (gl) {
-		            if (shaderProgram) {
-		                gl.deleteProgram(shaderProgram);
-		                shaderProgram = false;
-		            }
+		        if (gl && shaderProgram) {
+		            gl.deleteProgram(shaderProgram);
+		            shaderProgram = false;
 		        }
 		    }
 
@@ -900,7 +930,9 @@
 		     * or until 0 is bound.
 		     */
 		    function bind() {
-		        gl.useProgram(shaderProgram);
+		        if (gl && shaderProgram) {
+		            gl.useProgram(shaderProgram);
+		        }
 		    }
 
 		    /*
@@ -910,9 +942,14 @@
 		     * @param val {float} - the value to set
 		     */
 		    function setUniform(name, val) {
-		        var u = uLocations[name] = uLocations[name] ||
-		                                    gl.getUniformLocation(shaderProgram, name);
-		        gl.uniform1f(u, val);
+		        if (gl && shaderProgram) {
+		            var u = uLocations[name] = uLocations[name] ||
+		                                       gl.getUniformLocation(
+		                                          shaderProgram,
+		                                          name
+		                                       );
+		            gl.uniform1f(u, val);
+		        }
 		    }
 
 		    /*
@@ -920,7 +957,9 @@
 		     * @param texture - the texture
 		     */
 		    function setTexture(texture) {
-		        gl.uniform1i(uSamplerUniform, texture);
+		        if (gl && shaderProgram) {
+		            gl.uniform1i(uSamplerUniform, texture);
+		        }
 		    }
 
 		    /*
@@ -928,26 +967,34 @@
 		     * @flag is the state
 		     */
 		    function setInverted(flag) {
-		        gl.uniform1i(isInverted, flag);
+		        if (gl && shaderProgram) {
+		            gl.uniform1i(isInverted, flag);
+		        }
 		    }
 
 		    /*
 		     * Enable/disable circle drawing
 		     */
 		    function setDrawAsCircle(flag) {
-		        gl.uniform1i(isCircleUniform, flag ? 1 : 0);
+		        if (gl && shaderProgram) {
+		            gl.uniform1i(isCircleUniform, flag ? 1 : 0);
+		        }
 		    }
 
 		    function setPlotHeight(n) {
-		        gl.uniform1f(plotHeightUniform, n);
+		        if (gl && shaderProgram) {
+		            gl.uniform1f(plotHeightUniform, n);
+		        }
 		    }
 
 		    /*
 		     * Flush
 		     */
 		    function reset() {
-		        gl.uniform1i(isBubbleUniform, 0);
-		        gl.uniform1i(isCircleUniform, 0);
+		        if (gl && shaderProgram) {
+		            gl.uniform1i(isBubbleUniform, 0);
+		            gl.uniform1i(isCircleUniform, 0);
+		        }
 		    }
 
 		    /*
@@ -959,7 +1006,7 @@
 		            zMin = Number.MAX_VALUE,
 		            zMax = -Number.MAX_VALUE;
 
-		        if (series.type === 'bubble') {
+		        if (gl && shaderProgram && series.type === 'bubble') {
 		            zMin = pick(seriesOptions.zMin, Math.min(
 		                zMin,
 		                Math.max(
@@ -995,20 +1042,24 @@
 		     * @param color {Array<float>} - an array with RGBA values
 		     */
 		    function setColor(color) {
-		        gl.uniform4f(
-		            fillColorUniform,
-		            color[0] / 255.0,
-		            color[1] / 255.0,
-		            color[2] / 255.0,
-		            color[3]
-		        );
+		        if (gl && shaderProgram) {
+		            gl.uniform4f(
+		                fillColorUniform,
+		                color[0] / 255.0,
+		                color[1] / 255.0,
+		                color[2] / 255.0,
+		                color[3]
+		            );
+		        }
 		    }
 
 		    /*
 		     * Set skip translation
 		     */
 		    function setSkipTranslation(flag) {
-		        gl.uniform1i(skipTranslationUniform, flag === true ? 1 : 0);
+		        if (gl && shaderProgram) {
+		            gl.uniform1i(skipTranslationUniform, flag === true ? 1 : 0);
+		        }
 		    }
 
 		    /*
@@ -1016,7 +1067,9 @@
 		     * @param m {Matrix4x4} - the matrix
 		     */
 		    function setPMatrix(m) {
-		        gl.uniformMatrix4fv(pUniform, false, m);
+		        if (gl && shaderProgram) {
+		            gl.uniformMatrix4fv(pUniform, false, m);
+		        }
 		    }
 
 		    /*
@@ -1024,7 +1077,9 @@
 		     * @param p {float} - point size
 		     */
 		    function setPointSize(p) {
-		        gl.uniform1f(psUniform, p);
+		        if (gl && shaderProgram) {
+		            gl.uniform1f(psUniform, p);
+		        }
 		    }
 
 		    /*
@@ -1036,7 +1091,9 @@
 		    }
 
 		    if (gl) {
-		        createShader();
+		        if (!createShader()) {
+		            return false;
+		        }
 		    }
 
 		    return {
@@ -1801,6 +1858,13 @@
 		                }
 
 		                if (x > plotWidth) {
+		                    // If this is  rendered as a point, just skip drawing it
+		                    // entirely, as we're not dependandt on lineTo'ing to it.
+		                    // See #8197
+		                    if (inst.drawMode === 'points') {
+		                        continue;
+		                    }
+
 		                    x = plotWidth;
 		                }
 
@@ -1859,7 +1923,7 @@
 
 		            if (!settings.useGPUTranslations &&
 		                !settings.usePreallocated &&
-		                (lastX && x - lastX < cullXThreshold) &&
+		                (lastX && Math.abs(x - lastX) < cullXThreshold) &&
 		                (lastY && Math.abs(y - lastY) < cullYThreshold)
 		            ) {
 		                if (settings.debug.showSkipSummary) {
@@ -2085,7 +2149,7 @@
 		            return false;
 		        }
 
-		        if (!gl || !width || !height) {
+		        if (!gl || !width || !height || !shader) {
 		            return false;
 		        }
 
@@ -2308,8 +2372,8 @@
 		     * @param h {Integer} - the height of the viewport
 		     */
 		    function setSize(w, h) {
-		        // Skip if there's no change
-		        if (width === w && h === h) {
+		        // Skip if there's no change, or if we have no valid shader
+		        if ((width === w && h === h) || !shader) {
 		            return;
 		        }
 
@@ -2368,6 +2432,12 @@
 		        gl.depthFunc(gl.LESS);
 
 		        shader = GLShader(gl); // eslint-disable-line new-cap
+
+		        if (!shader) {
+		            // We need to abort, there's no shader context
+		            return false;
+		        }
+
 		        vbuffer = GLVertexBuffer(gl, shader); // eslint-disable-line new-cap
 
 		        function createTexture(name, fn) {
@@ -2692,7 +2762,13 @@
 
 		        }); // eslint-disable-line new-cap
 
-		        target.ogl.init(target.canvas);
+		        if (!target.ogl.init(target.canvas)) {
+		            // The OGL renderer couldn't be inited.
+		            // This likely means a shader error as we wouldn't get to this point
+		            // if there was no WebGL support.
+		            H.error('[highcharts boost] - unable to init WebGL renderer');
+		        }
+
 		        // target.ogl.clear();
 		        target.ogl.setOptions(chart.options.boost || {});
 
@@ -2899,7 +2975,8 @@
 		            !enabled ||
 		            this.type === 'heatmap' ||
 		            this.type === 'treemap' ||
-		            !boostableMap[this.type]
+		            !boostableMap[this.type] ||
+		            this.options.boostThreshold === 0
 		        ) {
 
 		            proceed.call(this);

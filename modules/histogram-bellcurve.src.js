@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.3 (2018-09-12)
+ * @license  Highcharts JS v6.1.4 (2018-09-25)
  *
  * (c) 2010-2017 Highsoft AS
  * Author: Sebastian Domas
@@ -170,7 +170,6 @@
 		    arrayMax = H.arrayMax,
 		    arrayMin = H.arrayMin,
 		    merge = H.merge,
-		    keys = H.keys,
 		    map = H.map;
 
 		/* ***************************************************************************
@@ -280,7 +279,8 @@
 		    derivedData: function (baseData, binsNumber, binWidth) {
 		        var max = arrayMax(baseData),
 		            min = arrayMin(baseData),
-		            frequencies = {},
+		            frequencies = [],
+		            bins = {},
 		            data = [],
 		            x,
 		            fitToBin;
@@ -294,27 +294,26 @@
 		        // If binWidth is 0 then max and min are equaled,
 		        // increment the x with some positive value to quit the loop
 		        for (x = min; x < max; x = correctFloat(x + binWidth)) {
-		            frequencies[x] = 0;
+		            frequencies.push(x);
+		            bins[x] = 0;
 		        }
 
-		        if (frequencies[min] !== 0) {
-		            frequencies[correctFloat(min)] = 0;
+		        if (bins[min] !== 0) {
+		            frequencies.push(correctFloat(min));
+		            bins[correctFloat(min)] = 0;
 		        }
 
 		        fitToBin = fitToBinLeftClosed(
-		            // Sorting the array of keys from frequencies is needed,
-		            // because of the discrepancy in ordering the numerable keys inside
-		            // the objects, when there are integers and floats simultanously.
-		            map(keys(frequencies).sort(), function (elem) {
+		            map(frequencies, function (elem) {
 		                return parseFloat(elem);
 		            }));
 
 		        each(baseData, function (y) {
 		            var x = correctFloat(fitToBin(y));
-		            frequencies[x]++;
+		            bins[x]++;
 		        });
 
-		        objectEach(frequencies, function (frequency, x) {
+		        objectEach(bins, function (frequency, x) {
 		            data.push({
 		                x: Number(x),
 		                y: frequency,

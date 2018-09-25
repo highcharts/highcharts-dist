@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.3 (2018-09-12)
+ * @license Highcharts JS v6.1.4 (2018-09-25)
  * X-range series
  *
  * (c) 2010-2017 Torstein Honsi, Lars A. V. Cabrera
@@ -172,7 +172,7 @@
 		            plotX = point.plotX,
 		            posX = pick(point.x2, point.x + (point.len || 0)),
 		            plotX2 = xAxis.translate(posX, 0, 0, 0, 1),
-		            length = plotX2 - plotX,
+		            length = Math.abs(plotX2 - plotX),
 		            widthDifference,
 		            shapeArgs,
 		            partialFill,

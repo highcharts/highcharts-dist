@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.3 (2018-09-12)
+ * @license  Highcharts JS v6.1.4 (2018-09-25)
  *
  * Indicator series type for Highstock
  *
@@ -142,6 +142,7 @@
 		                if (
 		                    oldDataLength &&
 		                    oldDataLength === processedData.xData.length &&
+		                    !indicator.cropped && // #8968
 		                    !indicator.hasGroupedData &&
 		                    indicator.visible &&
 		                    indicator.points

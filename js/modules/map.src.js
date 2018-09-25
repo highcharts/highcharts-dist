@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v6.1.3 (2018-09-12)
+ * @license Highmaps JS v6.1.4 (2018-09-25)
  * Highmaps as a plugin for Highcharts or Highstock.
  *
  * (c) 2011-2017 Torstein Honsi
@@ -1051,7 +1051,6 @@
 		                                    }
 		                                });
 		                            });
-
 		                            chart.legend.colorizeItem(this, vis);
 		                        }
 		                    }, dataClass));
@@ -1178,6 +1177,8 @@
 		    setVisible: function (vis) {
 		        var point = this,
 		            method = vis ? 'show' : 'hide';
+
+		        point.visible = Boolean(vis);
 
 		        // Show and hide associated elements
 		        each(['graphic', 'dataLabel'], function (key) {
@@ -2793,8 +2794,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 3.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 3.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.map.turboThreshold),
 		 * this option is not available.
 		 *
@@ -2995,8 +2996,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 3.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 3.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.map.turboThreshold),
 		 * this option is not available.
 		 *
@@ -3112,8 +3113,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 3.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 3.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.mappoint.turboThreshold),
 		 * this option is not available.
 		 *
@@ -3702,9 +3703,14 @@
 		        }
 		    });
 
+		    // Apply the padding to the min and max properties
 		    if (activeSeries.length && range > 0 && !this.isLog) {
 		        pxMax -= axisLength;
-		        transA *= (axisLength + pxMin - pxMax) / axisLength;
+		        transA *= (
+		            axisLength +
+		            Math.max(0, pxMin) - // #8901
+		            Math.min(pxMax, axisLength)
+		        ) / axisLength;
 		        each(
 		            [['min', 'userMin', pxMin], ['max', 'userMax', pxMax]],
 		            function (keys) {
@@ -3748,8 +3754,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 2.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 2.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.bubble.turboThreshold),
 		 * this option is not available.
 		 *
@@ -4018,9 +4024,10 @@
 		 *  data: [0, 5, 3, 5]
 		 *  ```
 		 *
-		 * 2.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data points
-		 * exceeds the series' [turboThreshold](#series.mapbubble.turboThreshold),
+		 * 2.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
+		 * points exceeds the series' [turboThreshold](
+		 * #series.mapbubble.turboThreshold),
 		 * this option is not available.
 		 *
 		 *  ```js
@@ -4345,8 +4352,8 @@
 		 *     ]
 		 *  ```
 		 *
-		 * 2.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below. If the total number of data
+		 * 2.  An array of objects with named values. The following snippet shows only a
+		 * few settings, see the complete options set below. If the total number of data
 		 * points exceeds the series' [turboThreshold](#series.heatmap.turboThreshold),
 		 * this option is not available.
 		 *
