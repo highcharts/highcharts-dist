@@ -5,6 +5,7 @@
   "version": "6.1.4",
   "author": "Highsoft AS <support@highcharts.com> (http://www.highcharts.com/about)",
   "main": "highcharts.js",
+  "types": "highcharts.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/highcharts/highcharts-dist"
