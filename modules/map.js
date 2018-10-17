@@ -1,8 +1,8 @@
 /*
- Highmaps JS v6.1.4 (2018-09-25)
+ Highmaps JS v6.2.0 (2018-10-17)
  Highmaps as a plugin for Highcharts or Highstock.
 
- (c) 2011-2017 Torstein Honsi
+ (c) 2011-2018 Torstein Honsi
 
  License: www.highcharts.com/license
 */

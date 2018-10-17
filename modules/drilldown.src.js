@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.4 (2018-09-25)
+ * @license Highcharts JS v6.2.0 (2018-10-17)
  * Highcharts Drilldown module
  *
  * Author: Torstein Honsi
@@ -72,6 +72,7 @@
 		 * ](code.highcharts.com/modules/drilldown.js).
 		 *
 		 * @type {Object}
+		 * @product highcharts highstock highmaps
 		 * @optionparent drilldown
 		 */
 		defaultOptions.drilldown = {

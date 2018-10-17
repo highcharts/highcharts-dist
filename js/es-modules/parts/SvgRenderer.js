@@ -1,5 +1,5 @@
 /**
- * (c) 2010-2017 Torstein Honsi
+ * (c) 2010-2018 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -1473,6 +1473,7 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
             toggleTextShadowShim,
             cache = renderer.cache,
             cacheKeys = renderer.cacheKeys,
+            isSVG = element.namespaceURI === wrapper.SVG_NS,
             cacheKey;
 
         rotation = pick(rot, wrapper.rotation);
@@ -1516,7 +1517,7 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
         if (!bBox) {
 
             // SVG elements
-            if (element.namespaceURI === wrapper.SVG_NS || renderer.forExport) {
+            if (isSVG || renderer.forExport) {
                 try { // Fails in Firefox if the container has display: none.
 
                     // When the text shadow shim is used, we need to hide the
@@ -1583,12 +1584,16 @@ extend(SVGElement.prototype, /** @lends Highcharts.SVGElement.prototype */ {
                 // Also vertical positioning is affected.
                 // https://jsfiddle.net/highcharts/em37nvuj/
                 // (#1101, #1505, #1669, #2568, #6213).
-                if (
-                    styles &&
-                    styles.fontSize === '11px' &&
-                    Math.round(height) === 17
-                ) {
-                    bBox.height = height = 14;
+                if (isSVG) {
+                    bBox.height = height = (
+                        {
+                            '11px,17': 14,
+                            '13px,20': 16
+                        }[
+                            styles && styles.fontSize + ',' + Math.round(height)
+                        ] ||
+                        height
+                    );
                 }
 
                 // Adjust for rotated text
@@ -2562,7 +2567,7 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
                         } catch (e) {}
 
                     // Legacy
-                    } else {
+                    } else if (renderer.getSpanWidth) { // #9058 jsdom
                         updateTSpan(getString(text || words, charEnd));
                         lengths[end] = startAt +
                             renderer.getSpanWidth(wrapper, tspan);
@@ -4049,7 +4054,7 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
         if (y) {
             attribs.y = Math.round(y);
         }
-        if (str || str === 0) {
+        if (defined(str)) {
             attribs.text = str;
         }
 

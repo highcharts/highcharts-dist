@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.4 (2018-09-25)
+ * @license Highcharts JS v6.2.0 (2018-10-17)
  * Boost module
  *
  * (c) 2010-2017 Highsoft AS
@@ -549,9 +549,26 @@
 		    return chart.boostForceChartBoost;
 		}
 
+		/**
+		 * Return true if ths boost.enabled option is true
+		 * @param  {Highcharts.Chart} chart The chart
+		 * @return {boolean}
+		 */
+		function boostEnabled(chart) {
+		    return pick(
+		        (
+		            chart &&
+		            chart.options &&
+		            chart.options.boost &&
+		            chart.options.boost.enabled
+		        ),
+		        true
+		    );
+		}
+
 		/*
 		 * Returns true if the chart is in series boost mode
-		 * @param chart {Highchart.Chart} - the chart to check
+		 * @param chart {Highcharts.Chart} - the chart to check
 		 * @returns {Boolean} - true if the chart is in series boost mode
 		 */
 		Chart.prototype.isChartSeriesBoosting = function () {
@@ -1832,7 +1849,7 @@
 		            }
 
 		            // Cull points outside the extremes
-		            if (y === null || !isYInside) {
+		            if (y === null || (!isYInside && !nextInside && !prevInside)) {
 		                beginSegment();
 		                continue;
 		            }
@@ -2958,21 +2975,12 @@
 		], function (method) {
 		    function branch(proceed) {
 		        var letItPass = this.options.stacking &&
-		                        (method === 'translate' || method === 'generatePoints'),
-		            enabled = pick(
-		                (
-		                    this.chart &&
-		                    this.chart.options &&
-		                    this.chart.options.boost &&
-		                    this.chart.options.boost.enabled
-		                ),
-		                true
-		            );
+		            (method === 'translate' || method === 'generatePoints');
 
 		        if (
 		            !this.isSeriesBoosting ||
 		            letItPass ||
-		            !enabled ||
+		            !boostEnabled(this.chart) ||
 		            this.type === 'heatmap' ||
 		            this.type === 'treemap' ||
 		            !boostableMap[this.type] ||
@@ -3021,7 +3029,7 @@
 		        );
 		    }
 
-		    if (boostableMap[this.type]) {
+		    if (boostEnabled(this.chart) && boostableMap[this.type]) {
 
 		        // If there are no extremes given in the options, we also need to
 		        // process the data to read the data extremes. If this is a heatmap, do

@@ -1,5 +1,5 @@
 /*
- Highcharts JS v6.1.4 (2018-09-25)
+ Highcharts JS v6.2.0 (2018-10-17)
  StaticScale
 
  (c) 2016 Torstein Honsi, Lars A. V. Cabrera
@@ -8,6 +8,6 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?module.exports=a:"function"===typeof define&&define.amd?define(function(){return a}):a(Highcharts)})(function(a){(function(c){var a=c.Chart,e=c.each,f=c.pick;a.prototype.adjustHeight=function(){e(this.axes||[],function(b){var a=b.chart,e=!!a.initiatedScale&&a.options.animation,d=b.options.staticScale;c.isNumber(d)&&!b.horiz&&c.defined(b.min)&&(b=f(b.unitLength,b.max+b.tickInterval-b.min)*d,b=Math.max(b,d),d=b-a.plotHeight,1<=Math.abs(d)&&(a.plotHeight=
-b,a.setSize(null,a.chartHeight+d,e)))});this.initiatedScale=!0};c.addEvent(a,"render",a.prototype.adjustHeight)})(a)});
+(function(a){"object"===typeof module&&module.exports?module.exports=a:"function"===typeof define&&define.amd?define(function(){return a}):a(Highcharts)})(function(a){(function(c){var a=c.Chart,f=c.each,g=c.pick;c.addEvent(c.Axis,"afterSetOptions",function(){this.horiz||!c.isNumber(this.options.staticScale)||this.chart.options.chart.height||(this.staticScale=this.options.staticScale)});a.prototype.adjustHeight=function(){"adjustHeight"!==this.redrawTrigger&&(f(this.axes||[],function(a){var b=a.chart,
+h=!!b.initiatedScale&&b.options.animation,d=a.options.staticScale,e;a.staticScale&&c.defined(a.min)&&(e=g(a.unitLength,a.max+a.tickInterval-a.min)*d,e=Math.max(e,d),d=e-b.plotHeight,1<=Math.abs(d)&&(b.plotHeight=e,b.redrawTrigger="adjustHeight",b.setSize(void 0,b.chartHeight+d,h)),f(a.series,function(a){(a=a.sharedClipKey&&b[a.sharedClipKey])&&a.attr({height:b.plotHeight})}))}),this.initiatedScale=!0);this.redrawTrigger=null};c.addEvent(a,"render",a.prototype.adjustHeight)})(a)});
 //# sourceMappingURL=static-scale.js.map

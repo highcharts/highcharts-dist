@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.4 (2018-09-25)
+ * @license  Highcharts JS v6.2.0 (2018-10-17)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -471,6 +471,7 @@
 		            yAxisOptions.tooltipValueFormat,
 		            yAxisOptions.labels.format
 		        );
+
 		        if (labelFormat) {
 		            formattedValue = H.format(
 		                labelFormat,
@@ -482,9 +483,9 @@
 		            );
 		        } else if (yAxis.isDatetimeAxis) {
 		            formattedValue = chart.time.dateFormat(
-		                yAxisOptions.dateTimeLabelFormats[
+		                chart.time.resolveDTLFormat(yAxisOptions.dateTimeLabelFormats[
 		                    yAxis.tickPositions.info.unitName
-		                ],
+		                ]).main,
 		                this.y
 		            );
 		        } else if (yAxisOptions.categories) {

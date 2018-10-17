@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.1.4 (2018-09-25)
+ * @license  Highcharts JS v6.2.0 (2018-10-17)
  *
  * Indicator series type for Highstock
  *
@@ -161,6 +161,7 @@
 
 		            return path;
 		        },
+		        // TODO: Rewrite this logic to use multiple datalabels
 		        drawDataLabels: function () {
 		            var indicator = this,
 		                pointMapping = indicator.pointArrayMap,
@@ -196,7 +197,11 @@
 		                                    point.dataLabel;
 		                            }
 
-		                            point.dataLabel = currentLabel =
+		                            if (!point.dataLabels) {
+		                                point.dataLabels = [];
+		                            }
+		                            point.dataLabels[0] = point.dataLabel =
+		                                currentLabel =
 		                                currentLabel && currentLabel.element ?
 		                                    currentLabel :
 		                                    null;

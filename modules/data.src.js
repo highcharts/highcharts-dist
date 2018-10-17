@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v6.1.4 (2018-09-25)
+ * @license Highcharts JS v6.2.0 (2018-10-17)
  * Data module
  *
- * (c) 2012-2017 Torstein Honsi
+ * (c) 2012-2018 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -114,7 +114,7 @@
 		/**
 		 * Data module
 		 *
-		 * (c) 2012-2017 Torstein Honsi
+		 * (c) 2012-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -274,7 +274,7 @@
 		 * @sample {highstock} highcharts/data/start-end/ Don't get series names from the CSV
 		 * @default true
 		 * @since 4.1.0
-		 * @product highcharts highstock
+		 * @product highcharts highstock gantt
 		 * @apioption data.firstRowAsNames
 		 */
 

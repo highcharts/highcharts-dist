@@ -1,5 +1,5 @@
 /**
- * (c) 2010-2017 Torstein Honsi
+ * (c) 2010-2018 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -439,7 +439,7 @@ H.Series = H.seriesType('line', null
      * @type      {boolean}
      * @default   false
      * @since     4.1.6
-     * @product   highcharts highstock
+     * @product   highcharts highstock gantt
      * @apioption plotOptions.series.getExtremesFromAll
      */
 
@@ -464,6 +464,7 @@ H.Series = H.seriesType('line', null
      * The line cap used for line ends and line joins on the graph.
      *
      * @type       {string}
+     * @default    round
      * @product    highcharts highstock
      * @validvalue ["round", "square"]
      * @apioption  plotOptions.series.linecap
@@ -480,7 +481,7 @@ H.Series = H.seriesType('line', null
      *
      * @type      {string}
      * @since     3.0
-     * @product   highcharts highstock
+     * @product   highcharts highstock gantt
      * @apioption plotOptions.series.linkedTo
      */
 
@@ -559,7 +560,7 @@ H.Series = H.seriesType('line', null
      *
      * @type      {number}
      * @default   1
-     * @product   highcharts highstock
+     * @product   highcharts highstock gantt
      * @apioption plotOptions.series.pointInterval
      */
 
@@ -581,7 +582,7 @@ H.Series = H.seriesType('line', null
      *
      * @type       {string}
      * @since      4.1.0
-     * @product    highcharts highstock
+     * @product    highcharts highstock gantt
      * @validvalue ["day", "month", "year"]
      * @apioption  plotOptions.series.pointIntervalUnit
      */
@@ -606,6 +607,10 @@ H.Series = H.seriesType('line', null
      * #plotOptions.series.pointRange) to work. For column series this is
      * computed, but for line-type series it needs to be set.
      *
+     * For the `xrange` series type and gantt charts, if the Y axis is a
+     * category axis, the `pointPlacement` applies to the Y axis rather than
+     * the (typically datetime) X axis.
+     *
      * Defaults to `undefined` in cartesian charts, `"between"` in polar charts.
      *
      * @see [xAxis.tickmarkPlacement](#xAxis.tickmarkPlacement)
@@ -617,7 +622,7 @@ H.Series = H.seriesType('line', null
      *
      * @type      {string|number}
      * @since     2.3.0
-     * @product   highcharts highstock
+     * @product   highcharts highstock gantt
      * @apioption plotOptions.series.pointPlacement
      */
 
@@ -635,7 +640,7 @@ H.Series = H.seriesType('line', null
      *
      * @type      {number}
      * @default   0
-     * @product   highcharts highstock
+     * @product   highcharts highstock gantt
      * @apioption plotOptions.series.pointStart
      */
 
@@ -1368,9 +1373,17 @@ H.Series = H.seriesType('line', null
     /**
      * Options for the series data labels, appearing next to each data point.
      *
+     * Since v6.2.0, multiple data labels can be applied to each single point by
+     * defining them as an array of configs.
+     *
      * In styled mode, the data labels can be styled with the
      * `.highcharts-data-label-box` and `.highcharts-data-label` class names
      * ([see example](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/series-datalabels)).
+     *
+     * @sample highcharts/plotoptions/series-datalabels-enabled
+     *         Data labels enabled
+     * @sample highcharts/plotoptions/series-datalabels-multiple
+     *         Multiple data labels on a bar series
      */
     dataLabels: {
 
@@ -1492,7 +1505,7 @@ H.Series = H.seriesType('line', null
          * @type      {boolean}
          * @default   true
          * @since     4.0
-         * @product   highcharts highstock
+         * @product   highcharts highstock gantt
          * @apioption plotOptions.series.dataLabels.defer
          */
 
@@ -2129,7 +2142,7 @@ H.Series = H.seriesType('line', null
      * data checking and indexing in long series. Set it to `0` disable.
      *
      * @since   2.2
-     * @product highcharts highstock
+     * @product highcharts highstock gantt
      */
     turboThreshold: 1000,
 

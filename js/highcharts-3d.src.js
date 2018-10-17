@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.4 (2018-09-25)
+ * @license Highcharts JS v6.2.0 (2018-10-17)
  *
  * 3D features for Highcharts JS
  *
@@ -19,7 +19,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -185,7 +185,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -1160,7 +1160,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * Extension for 3D charts
 		 *
@@ -2876,7 +2876,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * Extenstion for 3d axes
 		 *
@@ -3516,7 +3516,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * Extension to the Series object in 3D charts.
 		 *
@@ -3589,7 +3589,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -4003,7 +4003,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * 3D pie series
 		 *
@@ -4205,7 +4205,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * Scatter 3D series.
 		 *
@@ -4344,7 +4344,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */

@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v6.1.4 (2018-09-25)
+ * @license Highcharts JS v6.2.0 (2018-10-17)
  * Highstock as a plugin for Highcharts
  *
- * (c) 2017 Torstein Honsi
+ * (c) 2018 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -20,7 +20,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -834,7 +834,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2009-2017 Torstein Honsi
+		 * (c) 2009-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -906,8 +906,14 @@
 		    }
 		});
 
+		addEvent(Axis, 'afterInit', function () {
+		    if (typeof this.setBreaks === 'function') {
+		        this.setBreaks(this.options.breaks, false);
+		    }
+		});
+
 		addEvent(Axis, 'afterSetTickPositions', function () {
-		    if (this.options.breaks) {
+		    if (this.isBroken) {
 		        var axis = this,
 		            tickPositions = this.tickPositions,
 		            info = this.tickPositions.info,
@@ -927,55 +933,77 @@
 
 		// Force Axis to be not-ordinal when breaks are defined
 		addEvent(Axis, 'afterSetOptions', function () {
-		    if (this.options.breaks && this.options.breaks.length) {
+		    if (this.isBroken) {
 		        this.options.ordinal = false;
 		    }
 		});
 
-		addEvent(Axis, 'afterInit', function () {
+		/**
+		 * Dynamically set or unset breaks in an axis. This function in lighter than
+		 * usin Axis.update, and it also preserves animation.
+		 * @param  {Array} [breaks]
+		 *         The breaks to add. When `undefined` it removes existing breaks.
+		 * @param  {Boolean} [redraw=true]
+		 *         Whether to redraw the chart immediately.
+		 */
+		Axis.prototype.setBreaks = function (breaks, redraw) {
 		    var axis = this,
-		        breaks;
+		        isBroken = (isArray(breaks) && !!breaks.length);
 
-		    breaks = this.options.breaks;
-		    axis.isBroken = (isArray(breaks) && !!breaks.length);
-		    if (axis.isBroken) {
-		        axis.val2lin = function (val) {
-		            var nval = val,
-		                brk,
-		                i;
+		    function breakVal2Lin(val) {
+		        var nval = val,
+		            brk,
+		            i;
 
-		            for (i = 0; i < axis.breakArray.length; i++) {
-		                brk = axis.breakArray[i];
-		                if (brk.to <= val) {
-		                    nval -= brk.len;
-		                } else if (brk.from >= val) {
-		                    break;
-		                } else if (axis.isInBreak(brk, val)) {
-		                    nval -= (val - brk.from);
-		                    break;
-		                }
+		        for (i = 0; i < axis.breakArray.length; i++) {
+		            brk = axis.breakArray[i];
+		            if (brk.to <= val) {
+		                nval -= brk.len;
+		            } else if (brk.from >= val) {
+		                break;
+		            } else if (axis.isInBreak(brk, val)) {
+		                nval -= (val - brk.from);
+		                break;
 		            }
+		        }
 
-		            return nval;
-		        };
+		        return nval;
+		    }
 
-		        axis.lin2val = function (val) {
-		            var nval = val,
-		                brk,
-		                i;
+		    function breakLin2Val(val) {
+		        var nval = val,
+		            brk,
+		            i;
 
-		            for (i = 0; i < axis.breakArray.length; i++) {
-		                brk = axis.breakArray[i];
-		                if (brk.from >= nval) {
-		                    break;
-		                } else if (brk.to < nval) {
-		                    nval += brk.len;
-		                } else if (axis.isInBreak(brk, nval)) {
-		                    nval += brk.len;
-		                }
+		        for (i = 0; i < axis.breakArray.length; i++) {
+		            brk = axis.breakArray[i];
+		            if (brk.from >= nval) {
+		                break;
+		            } else if (brk.to < nval) {
+		                nval += brk.len;
+		            } else if (axis.isInBreak(brk, nval)) {
+		                nval += brk.len;
 		            }
-		            return nval;
-		        };
+		        }
+		        return nval;
+		    }
+
+
+		    axis.isDirty = axis.isBroken !== isBroken;
+		    axis.isBroken = isBroken;
+		    axis.options.breaks = axis.userOptions.breaks = breaks;
+		    axis.forceRedraw = true; // Force recalculation in setScale
+
+		    if (!isBroken && axis.val2lin === breakVal2Lin) {
+		        // Revert to prototype functions
+		        delete axis.val2lin;
+		        delete axis.lin2val;
+		    }
+
+		    if (isBroken) {
+		        axis.userOptions.ordinal = false;
+		        axis.val2lin = breakVal2Lin;
+		        axis.lin2val = breakLin2Val;
 
 		        axis.setExtremes = function (
 		            newMin,
@@ -986,11 +1014,13 @@
 		        ) {
 		            // If trying to set extremes inside a break, extend it to before and
 		            // after the break ( #3857 )
-		            while (this.isInAnyBreak(newMin)) {
-		                newMin -= this.closestPointRange;
-		            }
-		            while (this.isInAnyBreak(newMax)) {
-		                newMax -= this.closestPointRange;
+		            if (this.isBroken) {
+		                while (this.isInAnyBreak(newMin)) {
+		                    newMin -= this.closestPointRange;
+		                }
+		                while (this.isInAnyBreak(newMax)) {
+		                    newMax -= this.closestPointRange;
+		                }
 		            }
 		            Axis.prototype.setExtremes.call(
 		                this,
@@ -1005,108 +1035,113 @@
 		        axis.setAxisTranslation = function (saveOld) {
 		            Axis.prototype.setAxisTranslation.call(this, saveOld);
 
-		            var breaks = axis.options.breaks,
-		                breakArrayT = [],    // Temporary one
-		                breakArray = [],
-		                length = 0,
-		                inBrk,
-		                repeat,
-		                min = axis.userMin || axis.min,
-		                max = axis.userMax || axis.max,
-		                pointRangePadding = pick(axis.pointRangePadding, 0),
-		                start,
-		                i;
+		            this.unitLength = null;
+		            if (this.isBroken) {
+		                var breaks = axis.options.breaks,
+		                    breakArrayT = [],    // Temporary one
+		                    breakArray = [],
+		                    length = 0,
+		                    inBrk,
+		                    repeat,
+		                    min = axis.userMin || axis.min,
+		                    max = axis.userMax || axis.max,
+		                    pointRangePadding = pick(axis.pointRangePadding, 0),
+		                    start,
+		                    i;
 
-		            // Min & max check (#4247)
-		            each(breaks, function (brk) {
-		                repeat = brk.repeat || Infinity;
-		                if (axis.isInBreak(brk, min)) {
-		                    min += (brk.to % repeat) - (min % repeat);
+		                // Min & max check (#4247)
+		                each(breaks, function (brk) {
+		                    repeat = brk.repeat || Infinity;
+		                    if (axis.isInBreak(brk, min)) {
+		                        min += (brk.to % repeat) - (min % repeat);
+		                    }
+		                    if (axis.isInBreak(brk, max)) {
+		                        max -= (max % repeat) - (brk.from % repeat);
+		                    }
+		                });
+
+		                // Construct an array holding all breaks in the axis
+		                each(breaks, function (brk) {
+		                    start = brk.from;
+		                    repeat = brk.repeat || Infinity;
+
+		                    while (start - repeat > min) {
+		                        start -= repeat;
+		                    }
+		                    while (start < min) {
+		                        start += repeat;
+		                    }
+
+		                    for (i = start; i < max; i += repeat) {
+		                        breakArrayT.push({
+		                            value: i,
+		                            move: 'in'
+		                        });
+		                        breakArrayT.push({
+		                            value: i + (brk.to - brk.from),
+		                            move: 'out',
+		                            size: brk.breakSize
+		                        });
+		                    }
+		                });
+
+		                breakArrayT.sort(function (a, b) {
+		                    return (
+		                        (a.value === b.value) ?
+		                        (a.move === 'in' ? 0 : 1) - (b.move === 'in' ? 0 : 1) :
+		                        a.value - b.value
+		                    );
+		                });
+
+		                // Simplify the breaks
+		                inBrk = 0;
+		                start = min;
+
+		                each(breakArrayT, function (brk) {
+		                    inBrk += (brk.move === 'in' ? 1 : -1);
+
+		                    if (inBrk === 1 && brk.move === 'in') {
+		                        start = brk.value;
+		                    }
+		                    if (inBrk === 0) {
+		                        breakArray.push({
+		                            from: start,
+		                            to: brk.value,
+		                            len: brk.value - start - (brk.size || 0)
+		                        });
+		                        length += brk.value - start - (brk.size || 0);
+		                    }
+		                });
+
+		                axis.breakArray = breakArray;
+
+		                // Used with staticScale, and below, the actual axis length when
+		                // breaks are substracted.
+		                axis.unitLength = max - min - length + pointRangePadding;
+
+		                fireEvent(axis, 'afterBreaks');
+
+		                if (axis.staticScale) {
+		                    axis.transA = axis.staticScale;
+		                } else if (axis.unitLength) {
+		                    axis.transA *= (max - axis.min + pointRangePadding) /
+		                        axis.unitLength;
 		                }
-		                if (axis.isInBreak(brk, max)) {
-		                    max -= (max % repeat) - (brk.from % repeat);
-		                }
-		            });
 
-		            // Construct an array holding all breaks in the axis
-		            each(breaks, function (brk) {
-		                start = brk.from;
-		                repeat = brk.repeat || Infinity;
-
-		                while (start - repeat > min) {
-		                    start -= repeat;
-		                }
-		                while (start < min) {
-		                    start += repeat;
+		                if (pointRangePadding) {
+		                    axis.minPixelPadding = axis.transA * axis.minPointOffset;
 		                }
 
-		                for (i = start; i < max; i += repeat) {
-		                    breakArrayT.push({
-		                        value: i,
-		                        move: 'in'
-		                    });
-		                    breakArrayT.push({
-		                        value: i + (brk.to - brk.from),
-		                        move: 'out',
-		                        size: brk.breakSize
-		                    });
-		                }
-		            });
-
-		            breakArrayT.sort(function (a, b) {
-		                var ret;
-		                if (a.value === b.value) {
-		                    ret = (a.move === 'in' ? 0 : 1) - (b.move === 'in' ? 0 : 1);
-		                } else {
-		                    ret = a.value - b.value;
-		                }
-		                return ret;
-		            });
-
-		            // Simplify the breaks
-		            inBrk = 0;
-		            start = min;
-
-		            each(breakArrayT, function (brk) {
-		                inBrk += (brk.move === 'in' ? 1 : -1);
-
-		                if (inBrk === 1 && brk.move === 'in') {
-		                    start = brk.value;
-		                }
-		                if (inBrk === 0) {
-		                    breakArray.push({
-		                        from: start,
-		                        to: brk.value,
-		                        len: brk.value - start - (brk.size || 0)
-		                    });
-		                    length += brk.value - start - (brk.size || 0);
-		                }
-		            });
-
-		            axis.breakArray = breakArray;
-
-		            // Used with staticScale, and below, the actual axis length when
-		            // breaks are substracted.
-		            axis.unitLength = max - min - length + pointRangePadding;
-
-		            fireEvent(axis, 'afterBreaks');
-
-		            if (axis.options.staticScale) {
-		                axis.transA = axis.options.staticScale;
-		            } else if (axis.unitLength) {
-		                axis.transA *= (max - axis.min + pointRangePadding) /
-		                    axis.unitLength;
+		                axis.min = min;
+		                axis.max = max;
 		            }
-
-		            if (pointRangePadding) {
-		                axis.minPixelPadding = axis.transA * axis.minPointOffset;
-		            }
-
-		            axis.min = min;
-		            axis.max = max;
 		        };
 		    }
-		});
+
+		    if (pick(redraw, true)) {
+		        this.chart.redraw();
+		    }
+		};
 
 		wrap(Series.prototype, 'generatePoints', function (proceed) {
 
@@ -1313,7 +1348,7 @@
 	}());
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -1844,11 +1879,14 @@
 		            // write custom options to `this.dataGroupInfo.options`.
 		            if (!defined(series.dataGroupInfo.options)) {
 		                // Convert numbers and arrays into objects
-		                series.dataGroupInfo.options = series.pointClass.prototype
-		                    .optionsToObject.call(
-		                        { series: series },
-		                        series.options.data[start]
-		                    );
+		                series.dataGroupInfo.options = merge(
+		                    series.pointClass.prototype
+		                        .optionsToObject.call(
+		                            { series: series },
+		                            series.options.data[start]
+		                        )
+		                );
+
 		                // Make sure the raw data (x, y, open, high etc) is not copied
 		                // over and overwriting approximated data.
 		                each(extendedPointArrayMap, function (key) {
@@ -2346,7 +2384,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -2719,7 +2757,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3050,7 +3088,7 @@
 	}(Highcharts));
 	var onSeriesMixin = (function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3205,7 +3243,7 @@
 	}(Highcharts));
 	(function (H, onSeriesMixin) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3882,7 +3920,7 @@
 	}(Highcharts, onSeriesMixin));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3983,6 +4021,9 @@
 		     * @type       {boolean}
 		     * @since      1.3
 		     * @product    highstock
+		     *
+		     * @sample     stock/scrollbar/liveredraw Setting live redraw to false
+		     *
 		     * @apioption  scrollbar.liveRedraw
 		     */
 		    liveRedraw: undefined,
@@ -4919,7 +4960,11 @@
 		addEvent(Axis, 'afterInit', function () {
 		    var axis = this;
 
-		    if (axis.options.scrollbar && axis.options.scrollbar.enabled) {
+		    if (
+		        axis.options &&
+		        axis.options.scrollbar &&
+		        axis.options.scrollbar.enabled
+		    ) {
 		        // Predefined options:
 		        axis.options.scrollbar.vertical = !axis.horiz;
 		        axis.options.startOnTick = axis.options.endOnTick = false;
@@ -5062,7 +5107,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -7119,6 +7164,24 @@
 		    },
 
 		    /**
+		     * Get minimum from all base series connected to the navigator
+		     *
+		     * @param  {number} currentSeriesMin
+		     *         Minium from the current series
+		     *
+		     * @return {number} Minimum from all series
+		     */
+		    getBaseSeriesMin: function (currentSeriesMin) {
+		        return H.reduce(
+		            this.baseSeries,
+		            function (min, series) {
+		                return Math.min(min, series.xData[0]);
+		            },
+		            currentSeriesMin
+		        );
+		    },
+
+		    /**
 		     * Set the navigator x axis extremes to reflect the total. The navigator
 		     * extremes should always be the extremes of the union of all series in the
 		     * chart as well as the navigator series.
@@ -7194,8 +7257,11 @@
 		                if (!stickToMin) {
 		                    newMin = Math.max(
 		                        newMax - range,
-		                        navigatorSeries && navigatorSeries.xData ?
-		                            navigatorSeries.xData[0] : -Number.MAX_VALUE
+		                        navigator.getBaseSeriesMin(
+		                            navigatorSeries && navigatorSeries.xData ?
+		                                navigatorSeries.xData[0] :
+		                                -Number.MAX_VALUE
+		                        )
 		                    );
 		                }
 		            }
@@ -7225,7 +7291,8 @@
 		    updatedDataHandler: function () {
 		        var navigator = this.chart.navigator,
 		            baseSeries = this,
-		            navigatorSeries = this.navigatorSeries;
+		            navigatorSeries = this.navigatorSeries,
+		            xDataMin = navigator.getBaseSeriesMin(baseSeries.xData[0]);
 
 		        // If the scrollbar is scrolled all the way to the right, keep right as
 		        // new data  comes in.
@@ -7237,7 +7304,7 @@
 		        // maximum. If the current axis minimum falls outside the new updated
 		        // dataset, we must adjust.
 		        navigator.stickToMin = isNumber(baseSeries.xAxis.min) &&
-		            (baseSeries.xAxis.min <= baseSeries.xData[0]) &&
+		            (baseSeries.xAxis.min <= xDataMin) &&
 		            (!this.chart.fixedRange || !navigator.stickToMax);
 
 		        // Set the navigator series data to the new data of the base series
@@ -7562,7 +7629,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -9656,7 +9723,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -10068,7 +10135,10 @@
 		                x1 = x2 = Math.round(transVal + axis.transB);
 
 		                // outside plot area
-		                if (x1 < axisLeft || x1 > axisLeft + axis.width) {
+		                if (
+		                    force !== 'pass' &&
+		                    (x1 < axisLeft || x1 > axisLeft + axis.width)
+		                ) {
 		                    if (force) {
 		                        x1 = x2 = Math.min(
 		                            Math.max(axisLeft, x1),
@@ -10091,7 +10161,10 @@
 		                y1 = y2 = Math.round(axisTop + axis.height - transVal);
 
 		                // outside plot area
-		                if (y1 < axisTop || y1 > axisTop + axis.height) {
+		                if (
+		                    force !== 'pass' &&
+		                    (y1 < axisTop || y1 > axisTop + axis.height)
+		                ) {
 		                    if (force) {
 		                        y1 = y2 = Math.min(
 		                            Math.max(axisTop, y1),

@@ -1,8 +1,8 @@
 /*
- Highcharts JS v6.1.4 (2018-09-25)
+ Highcharts JS v6.2.0 (2018-10-17)
  Annotations module
 
- (c) 2009-2017 Torstein Honsi
+ (c) 2009-2018 Torstein Honsi
 
  License: www.highcharts.com/license
 */

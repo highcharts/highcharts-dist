@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.1.4 (2018-09-25)
+ * @license Highcharts JS v6.2.0 (2018-10-17)
  *
  * (c) 2009-2016 Torstein Honsi
  *
@@ -19,7 +19,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -143,6 +143,7 @@
 		     * The pane serves as a container for axes and backgrounds for circular
 		     * gauges and polar charts.
 		     * @since 2.3.0
+		     * @product highcharts
 		     * @optionparent pane
 		     */
 		    defaultOptions: {
@@ -306,7 +307,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -719,9 +720,10 @@
 		            // Concentric circles
 		            } else if (axis.options.gridLineInterpolation === 'circle') {
 		                value = axis.translate(value);
-		                if (value) { // a value of 0 is in the center
-		                    ret = axis.getLinePath(0, value);
-		                }
+
+		                // a value of 0 is in the center, so it won't be visible,
+		                // but draw it anyway for update and animation (#2366)
+		                ret = axis.getLinePath(0, value);
 		            // Concentric polygons
 		            } else {
 		                // Find the X axis in the same pane
@@ -990,13 +992,15 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
 		var each = H.each,
 		    noop = H.noop,
 		    pick = H.pick,
+		    extend = H.extend,
+		    isArray = H.isArray,
 		    defined = H.defined,
 		    Series = H.Series,
 		    seriesType = H.seriesType,
@@ -1106,7 +1110,6 @@
 		// Prototype members
 		}, {
 		    pointArrayMap: ['low', 'high'],
-		    dataLabelCollections: ['dataLabel', 'dataLabelUpper'],
 		    toYData: function (point) {
 		        return [point.low, point.high];
 		    },
@@ -1294,31 +1297,55 @@
 		     */
 		    drawDataLabels: function () {
 
-		        var data = this.data,
+		        var data = this.points,
 		            length = data.length,
 		            i,
 		            originalDataLabels = [],
 		            dataLabelOptions = this.options.dataLabels,
-		            align = dataLabelOptions.align,
-		            verticalAlign = dataLabelOptions.verticalAlign,
-		            inside = dataLabelOptions.inside,
 		            point,
 		            up,
-		            inverted = this.chart.inverted;
+		            inverted = this.chart.inverted,
+		            upperDataLabelOptions,
+		            lowerDataLabelOptions;
 
-		        if (dataLabelOptions.enabled || this._hasPointLabels) {
+		        // Split into upper and lower options. If data labels is an array, the
+		        // first element is the upper label, the second is the lower.
+		        //
+		        // TODO: We want to change this and allow multiple labels for both upper
+		        // and lower values in the future - introducing some options for which
+		        // point value to use as Y for the dataLabel, so that this could be
+		        // handled in Series.drawDataLabels. This would also improve performance
+		        // since we now have to loop over all the points multiple times to work
+		        // around the data label logic.
+		        if (isArray(dataLabelOptions)) {
+		            if (dataLabelOptions.length > 1) {
+		                upperDataLabelOptions = dataLabelOptions[0];
+		                lowerDataLabelOptions = dataLabelOptions[1];
+		            } else {
+		                upperDataLabelOptions = dataLabelOptions[0];
+		                lowerDataLabelOptions = { enabled: false };
+		            }
+		        } else {
+		            upperDataLabelOptions = extend({}, dataLabelOptions); // Make copy;
+		            upperDataLabelOptions.x = dataLabelOptions.xHigh;
+		            upperDataLabelOptions.y = dataLabelOptions.yHigh;
+		            lowerDataLabelOptions = extend({}, dataLabelOptions); // Make copy
+		            lowerDataLabelOptions.x = dataLabelOptions.xLow;
+		            lowerDataLabelOptions.y = dataLabelOptions.yLow;
+		        }
 
-		            // Step 1: set preliminary values for plotY and dataLabel
+		        // Draw upper labels
+		        if (upperDataLabelOptions.enabled || this._hasPointLabels) {
+		            // Set preliminary values for plotY and dataLabel
 		            // and draw the upper labels
 		            i = length;
 		            while (i--) {
 		                point = data[i];
 		                if (point) {
-		                    up = inside ?
+		                    up = upperDataLabelOptions.inside ?
 		                        point.plotHigh < point.plotLow :
 		                        point.plotHigh > point.plotLow;
 
-		                    // Set preliminary values
 		                    point.y = point.high;
 		                    point._plotY = point.plotY;
 		                    point.plotY = point.plotHigh;
@@ -1331,70 +1358,87 @@
 		                    // Set the default offset
 		                    point.below = up;
 		                    if (inverted) {
-		                        if (!align) {
-		                            dataLabelOptions.align = up ? 'right' : 'left';
+		                        if (!upperDataLabelOptions.align) {
+		                            upperDataLabelOptions.align = up ? 'right' : 'left';
 		                        }
 		                    } else {
-		                        if (!verticalAlign) {
-		                            dataLabelOptions.verticalAlign = up ?
+		                        if (!upperDataLabelOptions.verticalAlign) {
+		                            upperDataLabelOptions.verticalAlign = up ?
 		                                'top' :
 		                                'bottom';
 		                        }
 		                    }
-
-		                    dataLabelOptions.x = dataLabelOptions.xHigh;
-		                    dataLabelOptions.y = dataLabelOptions.yHigh;
 		                }
 		            }
+
+		            this.options.dataLabels = upperDataLabelOptions;
 
 		            if (seriesProto.drawDataLabels) {
 		                seriesProto.drawDataLabels.apply(this, arguments); // #1209
 		            }
 
-		            // Step 2: reorganize and handle data labels for the lower values
+		            // Reset state after the upper labels were created. Move
+		            // it to point.dataLabelUpper and reassign the originals.
+		            // We do this here to support not drawing a lower label.
 		            i = length;
 		            while (i--) {
 		                point = data[i];
 		                if (point) {
-		                    up = inside ?
-		                        point.plotHigh < point.plotLow :
-		                        point.plotHigh > point.plotLow;
-
-		                    // Move the generated labels from step 1, and reassign
-		                    // the original data labels
 		                    point.dataLabelUpper = point.dataLabel;
 		                    point.dataLabel = originalDataLabels[i];
-
-		                    // Reset values
+		                    delete point.dataLabels;
 		                    point.y = point.low;
 		                    point.plotY = point._plotY;
+		                }
+		            }
+		        }
+
+		        // Draw lower labels
+		        if (lowerDataLabelOptions.enabled || this._hasPointLabels) {
+		            i = length;
+		            while (i--) {
+		                point = data[i];
+		                if (point) {
+		                    up = lowerDataLabelOptions.inside ?
+		                        point.plotHigh < point.plotLow :
+		                        point.plotHigh > point.plotLow;
 
 		                    // Set the default offset
 		                    point.below = !up;
 		                    if (inverted) {
-		                        if (!align) {
-		                            dataLabelOptions.align = up ? 'left' : 'right';
+		                        if (!lowerDataLabelOptions.align) {
+		                            lowerDataLabelOptions.align = up ? 'left' : 'right';
 		                        }
 		                    } else {
-		                        if (!verticalAlign) {
-		                            dataLabelOptions.verticalAlign = up ?
+		                        if (!lowerDataLabelOptions.verticalAlign) {
+		                            lowerDataLabelOptions.verticalAlign = up ?
 		                                'bottom' :
 		                                'top';
 		                        }
-
 		                    }
-
-		                    dataLabelOptions.x = dataLabelOptions.xLow;
-		                    dataLabelOptions.y = dataLabelOptions.yLow;
 		                }
 		            }
+
+		            this.options.dataLabels = lowerDataLabelOptions;
+
 		            if (seriesProto.drawDataLabels) {
 		                seriesProto.drawDataLabels.apply(this, arguments);
 		            }
 		        }
 
-		        dataLabelOptions.align = align;
-		        dataLabelOptions.verticalAlign = verticalAlign;
+		        // Merge upper and lower into point.dataLabels for later destroying
+		        if (upperDataLabelOptions.enabled) {
+		            i = length;
+		            while (i--) {
+		                point = data[i];
+		                if (point && point.dataLabelUpper) {
+		                    point.dataLabels = [point.dataLabelUpper, point.dataLabel];
+		                }
+		            }
+		        }
+
+		        // Reset options
+		        this.options.dataLabels = dataLabelOptions;
 		    },
 
 		    alignDataLabel: function () {
@@ -1658,7 +1702,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -1755,7 +1799,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -2018,7 +2062,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -2526,7 +2570,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -2909,7 +2953,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3065,7 +3109,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3559,7 +3603,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3703,7 +3747,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -4331,7 +4375,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2010-2017 Torstein Honsi
+		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */

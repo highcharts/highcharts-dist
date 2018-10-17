@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v6.1.4 (2018-09-25)
+ * @license Highcharts JS v6.2.0 (2018-10-17)
  *
- * (c) 2009-2017 Torstein Honsi
+ * (c) 2009-2018 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -19,7 +19,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/**
-		 * (c) 2009-2017 Torstein Honsi
+		 * (c) 2009-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -72,7 +72,7 @@
 		             * @sample highcharts/series-label/stock-chart
 		             *         Stock chart
 		             * @since 6.0.0
-		             * @product highcharts highstock
+		             * @product highcharts highstock gantt
 		             */
 		            label: {
 		                /**

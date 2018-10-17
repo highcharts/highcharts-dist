@@ -1,5 +1,5 @@
 /**
- * (c) 2010-2017 Torstein Honsi
+ * (c) 2010-2018 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -316,8 +316,12 @@ Highcharts.Legend.prototype = {
                         left: (alignAttr.translateX + item.checkboxOffset +
                             checkbox.x - 20) + 'px',
                         top: top + 'px',
-                        display: top > translateY - 6 && top < translateY +
-                            clipHeight - 6 ? '' : 'none'
+                        display: this.proximate || (
+                            top > translateY - 6 &&
+                            top < translateY + clipHeight - 6
+                        ) ?
+                            '' :
+                            'none'
                     });
                 }
             }, this);
