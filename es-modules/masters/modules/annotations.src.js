@@ -7,4 +7,6 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../modules/annotations.src.js';
+import '../../annotations/annotations.src.js';
+import '../../annotations/navigationBindings.js';
+import '../../annotations/popup.js';

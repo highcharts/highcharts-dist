@@ -10,11 +10,9 @@ import H from './Globals.js';
 import './Utilities.js';
 
 var doc = H.doc,
-    each = H.each,
     extend = H.extend,
     format = H.format,
     isNumber = H.isNumber,
-    map = H.map,
     merge = H.merge,
     pick = H.pick,
     splat = H.splat,
@@ -147,7 +145,7 @@ H.Tooltip.prototype = {
      *        Force destroy all tooltips.
      */
     cleanSplit: function (force) {
-        each(this.chart.series, function (series) {
+        this.chart.series.forEach(function (series) {
             var tt = series && series.tt;
             if (tt) {
                 if (!tt.isActive || force) {
@@ -159,7 +157,54 @@ H.Tooltip.prototype = {
         });
     },
 
-    
+    /**
+     * In styled mode, apply the default filter for the tooltip drop-shadow. It
+     * needs to have an id specific to the chart, otherwise there will be issues
+     * when one tooltip adopts the filter of a different chart, specifically one
+     * where the container is hidden.
+     *
+     * @private
+     * @function Highcharts.Tooltip#applyFilter
+     */
+    applyFilter: function () {
+
+        var chart = this.chart;
+        chart.renderer.definition({
+            tagName: 'filter',
+            id: 'drop-shadow-' + chart.index,
+            opacity: 0.5,
+            children: [{
+                tagName: 'feGaussianBlur',
+                in: 'SourceAlpha',
+                stdDeviation: 1
+            }, {
+                tagName: 'feOffset',
+                dx: 1,
+                dy: 1
+            }, {
+                tagName: 'feComponentTransfer',
+                children: [{
+                    tagName: 'feFuncA',
+                    type: 'linear',
+                    slope: 0.3
+                }]
+            }, {
+                tagName: 'feMerge',
+                children: [{
+                    tagName: 'feMergeNode'
+                }, {
+                    tagName: 'feMergeNode',
+                    in: 'SourceGraphic'
+                }]
+            }]
+        });
+        chart.renderer.definition({
+            tagName: 'style',
+            textContent: '.highcharts-tooltip-' + chart.index + '{' +
+                'filter:url(#drop-shadow-' + chart.index + ')' +
+            '}'
+        });
+    },
 
 
     /**
@@ -172,6 +217,7 @@ H.Tooltip.prototype = {
     getLabel: function () {
 
         var renderer = this.chart.renderer,
+            styledMode = this.chart.styledMode,
             options = this.options,
             container;
 
@@ -211,19 +257,23 @@ H.Tooltip.prototype = {
                         r: options.borderRadius
                     });
 
-                
-                this.label
-                    .attr({
-                        'fill': options.backgroundColor,
-                        'stroke-width': options.borderWidth
-                    })
-                    // #2301, #2657
-                    .css(options.style)
-                    .shadow(options.shadow);
-                
+                if (!styledMode) {
+                    this.label
+                        .attr({
+                            'fill': options.backgroundColor,
+                            'stroke-width': options.borderWidth
+                        })
+                        // #2301, #2657
+                        .css(options.style)
+                        .shadow(options.shadow);
+                }
             }
 
-            
+            if (styledMode) {
+                // Apply the drop-shadow filter
+                this.applyFilter();
+                this.label.addClass('highcharts-tooltip-' + this.chart.index);
+            }
 
             if (this.outside) {
                 this.label.attr({
@@ -402,7 +452,7 @@ H.Tooltip.prototype = {
             ret = points[0].tooltipPos;
         // When shared, use the average position
         } else {
-            each(points, function (point) {
+            points.forEach(function (point) {
                 yAxis = point.series.yAxis;
                 xAxis = point.series.xAxis;
                 plotX += point.plotX +
@@ -428,7 +478,7 @@ H.Tooltip.prototype = {
             ];
         }
 
-        return map(ret, Math.round);
+        return ret.map(Math.round);
     },
 
     /**
@@ -649,7 +699,8 @@ H.Tooltip.prototype = {
             pointConfig = [],
             formatter = options.formatter || tooltip.defaultFormatter,
             shared = tooltip.shared,
-            currentSeries;
+            currentSeries,
+            styledMode = this.chart.styledMode;
 
         if (!options.enabled) {
             return;
@@ -666,7 +717,7 @@ H.Tooltip.prototype = {
 
         // shared tooltip, array is sent over
         if (shared && !(point.series && point.series.noSharedTooltip)) {
-            each(point, function (item) {
+            point.forEach(function (item) {
                 item.setState('hover');
 
                 pointConfig.push(item.getLabelConfig());
@@ -710,15 +761,11 @@ H.Tooltip.prototype = {
             } else {
 
                 // Prevent the tooltip from flowing over the chart box (#6659)
-                
-                if (!options.style.width) {
-                
+                if (!options.style.width || styledMode) {
                     label.css({
                         width: this.chart.spacingBox.width
                     });
-                
                 }
-                
 
                 label.attr({
                     text: text && text.join ? text.join('') : text
@@ -731,16 +778,16 @@ H.Tooltip.prototype = {
                         pick(point.colorIndex, currentSeries.colorIndex)
                     );
 
-                
-                label.attr({
-                    stroke: (
-                        options.borderColor ||
-                        point.color ||
-                        currentSeries.color ||
-                        '#666666'
-                    )
-                });
-                
+                if (!styledMode) {
+                    label.attr({
+                        stroke: (
+                            options.borderColor ||
+                            point.color ||
+                            currentSeries.color ||
+                            '#666666'
+                        )
+                    });
+                }
 
                 tooltip.updatePosition({
                     plotX: x,
@@ -784,12 +831,16 @@ H.Tooltip.prototype = {
             labels = [false, labels];
         }
         // Create the individual labels for header and points, ignore footer
-        each(labels.slice(0, points.length + 1), function (str, i) {
-            if (str !== false) {
+        labels.slice(0, points.length + 1).forEach(function (str, i) {
+            if (str !== false && str !== '') {
                 var point = points[i - 1] ||
+                    {
                         // Item 0 is the header. Instead of this, we could also
                         // use the crosshair label
-                        { isHeader: true, plotX: points[0].plotX },
+                        isHeader: true,
+                        plotX: points[0].plotX,
+                        plotY: chart.plotHeight
+                    },
                     owner = point.series || tooltip,
                     tt = owner.tt,
                     series = point.series || {},
@@ -801,37 +852,42 @@ H.Tooltip.prototype = {
                     target,
                     x,
                     bBox,
-                    boxWidth;
+                    boxWidth,
+                    attribs;
 
                 // Store the tooltip referance on the series
                 if (!tt) {
+
+                    attribs = {
+                        padding: options.padding,
+                        r: options.borderRadius
+                    };
+
+                    if (!chart.styledMode) {
+                        attribs.fill = options.backgroundColor;
+                        attribs.stroke = (
+                            options.borderColor ||
+                            point.color ||
+                            series.color ||
+                            '#333333'
+                        );
+                        attribs['stroke-width'] = options.borderWidth;
+                    }
+
                     owner.tt = tt = ren.label(
                             null,
                             null,
                             null,
-                            'callout',
+                            (
+                                point.isHeader ? options.headerShape :
+                                    options.shape
+                            ) || 'callout',
                             null,
                             null,
                             options.useHTML
                         )
-                        .addClass(
-                            'highcharts-tooltip-box ' + colorClass +
-                            (point.isHeader ? ' highcharts-tooltip-header' : '')
-                        )
-                        .attr({
-                            'padding': options.padding,
-                            'r': options.borderRadius,
-                            
-                            'fill': options.backgroundColor,
-                            'stroke': (
-                                options.borderColor ||
-                                point.color ||
-                                series.color ||
-                                '#333333'
-                            ),
-                            'stroke-width': options.borderWidth
-                            
-                        })
+                        .addClass('highcharts-tooltip-box ' + colorClass)
+                        .attr(attribs)
                         .add(tooltipLabel);
                 }
 
@@ -839,10 +895,10 @@ H.Tooltip.prototype = {
                 tt.attr({
                     text: str
                 });
-                
-                tt.css(options.style)
-                    .shadow(options.shadow);
-                
+                if (!chart.styledMode) {
+                    tt.css(options.style)
+                        .shadow(options.shadow);
+                }
 
                 // Get X position now, so we can move all to the other side in
                 // case of overflow
@@ -904,16 +960,31 @@ H.Tooltip.prototype = {
         // Clean previous run (for missing points)
         this.cleanSplit();
 
+        if (options.positioner) {
+            boxes.forEach(function (box) {
+                var boxPosition = options.positioner.call(
+                    tooltip,
+                    box.tt.getBBox().width,
+                    box.size,
+                    box.point
+                );
+                box.x = boxPosition.x;
+                box.align = 0; // 0-align to the top, 1-align to the bottom
+                box.target = boxPosition.y;
+                box.rank = pick(boxPosition.rank, box.rank);
+            });
+        }
+
         // Distribute and put in place
         H.distribute(boxes, chart.plotHeight + headerHeight);
-        each(boxes, function (box) {
+        boxes.forEach(function (box) {
             var point = box.point,
                 series = point.series;
 
             // Put the label in place
             box.tt.attr({
                 visibility: box.pos === undefined ? 'hidden' : 'inherit',
-                x: (rightAligned || point.isHeader ?
+                x: (rightAligned || point.isHeader || options.positioner ?
                     box.x :
                     point.plotX + chart.plotLeft + pick(options.distance, 16)),
                 y: box.pos + distributionBoxTop,
@@ -1118,9 +1189,8 @@ H.Tooltip.prototype = {
 
         // Insert the footer date format if any
         if (isDateTime && xDateFormat) {
-            each(
-                (labelConfig.point && labelConfig.point.tooltipDateKeys) ||
-                    ['key'],
+            ((labelConfig.point && labelConfig.point.tooltipDateKeys) ||
+                    ['key']).forEach(
                 function (key) {
                     formatString = formatString.replace(
                         '{point.' + key + '}',
@@ -1128,6 +1198,11 @@ H.Tooltip.prototype = {
                     );
                 }
             );
+        }
+
+        // Replace default header style with class name
+        if (series.chart.styledMode) {
+            formatString = this.styledModeFormat(formatString);
         }
 
         return format(formatString, {
@@ -1149,7 +1224,7 @@ H.Tooltip.prototype = {
      * @return {string}
      */
     bodyFormatter: function (items) {
-        return map(items, function (item) {
+        return items.map(function (item) {
             var tooltipOptions = item.series.tooltipOptions;
             return (
                 tooltipOptions[
@@ -1158,9 +1233,23 @@ H.Tooltip.prototype = {
                 item.point.tooltipFormatter
             ).call(
                 item.point,
-                tooltipOptions[(item.point.formatPrefix || 'point') + 'Format']
+                tooltipOptions[
+                    (item.point.formatPrefix || 'point') + 'Format'
+                ] || ''
             );
         });
+    },
+
+    styledModeFormat: function (formatString) {
+        return formatString
+            .replace(
+                'style="font-size: 10px"',
+                'class="highcharts-header"'
+            )
+            .replace(
+                /style="color:{(point|series)\.color}"/g,
+                'class="highcharts-color-{$1.colorIndex}"'
+            );
     }
 
 };

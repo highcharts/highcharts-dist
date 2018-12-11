@@ -1,8 +1,10 @@
-/**
- * (c) 2010-2018 Torstein Honsi
+/* *
  *
- * License: www.highcharts.com/license
- */
+ *  (c) 2010-2018 Torstein Honsi
+ *
+ *  License: www.highcharts.com/license
+ *
+ * */
 
 'use strict';
 
@@ -14,9 +16,7 @@ import './Series.js';
 import './Options.js';
 
 var color = H.color,
-    each = H.each,
     LegendSymbolMixin = H.LegendSymbolMixin,
-    map = H.map,
     pick = H.pick,
     Series = H.Series,
     seriesType = H.seriesType;
@@ -41,6 +41,7 @@ seriesType('area', 'line'
  *         Area chart
  *
  * @extends      plotOptions.line
+ * @excluding    useOhlcData
  * @product      highcharts highstock
  * @optionparent plotOptions.area
  */
@@ -170,18 +171,9 @@ seriesType('area', 'line'
 
     singleStacks: false,
 
-    /**
-     * Return an array of stacked points, where null and missing points are
-     * replaced by dummy points in order for gaps to be drawn correctly
-     * in stacks.
-     *
-     * @private
-     * @function Highcharts.seriesTypes.area#getStackPoints
-     *
-     * @param {Array<Highcharts.Point>} points
-     *
-     * @return {Array<*>}
-     */
+    // Return an array of stacked points, where null and missing points are
+    // replaced by dummy points in order for gaps to be drawn correctly in
+    // stacks.
     getStackPoints: function (points) {
         var series = this,
             segment = [],
@@ -223,11 +215,11 @@ seriesType('area', 'line'
                 return a - b;
             });
 
-            visibleSeries = map(yAxisSeries, function () {
-                return this.visible;
+            visibleSeries = yAxisSeries.map(function (s) {
+                return s.visible;
             });
 
-            each(keys, function (x, idx) {
+            keys.forEach(function (x, idx) {
                 var y = 0,
                     stackPoint,
                     stackedValues;
@@ -236,7 +228,7 @@ seriesType('area', 'line'
                     segment.push(pointMap[x]);
 
                     // Find left and right cliff. -1 goes left, 1 goes right.
-                    each([-1, 1], function (direction) {
+                    [-1, 1].forEach(function (direction) {
                         var nullName = direction === 1 ?
                                 'rightNull' :
                                 'leftNull',
@@ -317,14 +309,6 @@ seriesType('area', 'line'
         return segment;
     },
 
-    /**
-     * @private
-     * @function Highcharts.seriesTypes.area#getGraphPath
-     *
-     * @param {Array<Highcharts.Point>} points
-     *
-     * @return {Highcharts.SVGPathArray}
-     */
     getGraphPath: function (points) {
         var getGraphPath = Series.prototype.getGraphPath,
             graphPath,
@@ -345,11 +329,10 @@ seriesType('area', 'line'
             isNull,
             yBottom,
             connectNulls = options.connectNulls || stacking === 'percent',
-            /**
-             * To display null points in underlying stacked series, this
-             * series graph must be broken, and the area also fall down
-             * to fill the gap left by the null point. #2069
-             */
+
+            // To display null points in underlying stacked series, this series
+            // graph must be broken, and the area also fall down to fill the gap
+            // left by the null point. #2069
             addDummyPoints = function (i, otherI, side) {
                 var point = points[i],
                     stackedValues = stacking &&
@@ -446,14 +429,9 @@ seriesType('area', 'line'
         return graphPath;
     },
 
-    /**
-     * Draw the graph and the underlying area. This method calls the Series base
-     * function and adds the area. The areaPath is calculated in the
-     * getSegmentPath method called from Series.prototype.drawGraph.
-     *
-     * @private
-     * @function Highcharts.seriesTypes.area#drawGraph
-     */
+    // Draw the graph and the underlying area. This method calls the Series base
+    // function and adds the area. The areaPath is calculated in the
+    // getSegmentPath method called from Series.prototype.drawGraph.
     drawGraph: function () {
 
         // Define or reset areaPath
@@ -470,27 +448,24 @@ seriesType('area', 'line'
             props = [[
                 'area',
                 'highcharts-area',
-                
                 this.color,
                 options.fillColor
-                
             ]]; // area name, main color, fill color
 
-        each(zones, function (zone, i) {
+        zones.forEach(function (zone, i) {
             props.push([
                 'zone-area-' + i,
                 'highcharts-area highcharts-zone-area-' + i + ' ' +
                     zone.className,
-                
                 zone.color || series.color,
                 zone.fillColor || options.fillColor
-                
             ]);
         });
 
-        each(props, function (prop) {
+        props.forEach(function (prop) {
             var areaKey = prop[0],
-                area = series[areaKey];
+                area = series[areaKey],
+                attribs;
 
             // Create or update the area
             if (area) { // update
@@ -498,19 +473,24 @@ seriesType('area', 'line'
                 area.animate({ d: areaPath });
 
             } else { // create
+
+                attribs = {
+                    zIndex: 0 // #1069
+                };
+
+                if (!series.chart.styledMode) {
+                    attribs.fill = pick(
+                        prop[3],
+                        color(prop[2])
+                            .setOpacity(pick(options.fillOpacity, 0.75))
+                            .get()
+                    );
+                }
+
                 area = series[areaKey] = series.chart.renderer.path(areaPath)
                     .addClass(prop[1])
-                    .attr({
-                        
-                        fill: pick(
-                            prop[3],
-                            color(prop[2])
-                                .setOpacity(pick(options.fillOpacity, 0.75))
-                                .get()
-                        ),
-                        
-                        zIndex: 0 // #1069
-                    }).add(series.group);
+                    .attr(attribs)
+                    .add(series.group);
                 area.isArea = true;
             }
             area.startX = areaPath.xMap;
@@ -526,7 +506,7 @@ seriesType('area', 'line'
  * specified, it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.area
- * @excluding dataParser, dataURL
+ * @excluding dataParser, dataURL, useOhlcData
  * @product   highcharts highstock
  * @apioption series.area
  */
@@ -535,46 +515,44 @@ seriesType('area', 'line'
  * An array of data points for the series. For the `area` series type,
  * points can be given in the following ways:
  *
- * 1.  An array of numerical values. In this case, the numerical values
- * will be interpreted as `y` options. The `x` values will be automatically
- * calculated, either starting at 0 and incremented by 1, or from `pointStart`
- * and `pointInterval` given in the series options. If the axis has
- * categories, these will be used. Example:
+ * 1. An array of numerical values. In this case, the numerical values will be
+ *    interpreted as `y` options. The `x` values will be automatically
+ *    calculated, either starting at 0 and incremented by 1, or from
+ *    `pointStart` * and `pointInterval` given in the series options. If the
+ *    axis has categories, these will be used. Example:
+ *    ```js
+ *    data: [0, 5, 3, 5]
+ *    ```
  *
- *  ```js
- *  data: [0, 5, 3, 5]
- *  ```
+ * 2. An array of arrays with 2 values. In this case, the values correspond to
+ *    `x,y`. If the first value is a string, it is applied as the name of the
+ *    point, and the `x` value is inferred.
+ *    ```js
+ *    data: [
+ *        [0, 9],
+ *        [1, 7],
+ *        [2, 6]
+ *    ]
+ *    ```
  *
- * 2.  An array of arrays with 2 values. In this case, the values correspond
- * to `x,y`. If the first value is a string, it is applied as the name
- * of the point, and the `x` value is inferred.
- *
- *  ```js
- *     data: [
- *         [0, 9],
- *         [1, 7],
- *         [2, 6]
- *     ]
- *  ```
- *
- * 3.  An array of objects with named values. The following snippet shows only a
- * few settings, see the complete options set below. If the total number of data
- * points exceeds the series' [turboThreshold](#series.area.turboThreshold),
- * this option is not available.
- *
- *  ```js
- *     data: [{
- *         x: 1,
- *         y: 9,
- *         name: "Point2",
- *         color: "#00FF00"
- *     }, {
- *         x: 1,
- *         y: 6,
- *         name: "Point1",
- *         color: "#FF00FF"
- *     }]
- *  ```
+ * 3. An array of objects with named values. The following snippet shows only a
+ *    few settings, see the complete options set below. If the total number of
+ *    data points exceeds the series'
+ *    [turboThreshold](#series.area.turboThreshold), this option is not
+ *    available.
+ *    ```js
+ *    data: [{
+ *        x: 1,
+ *        y: 9,
+ *        name: "Point2",
+ *        color: "#00FF00"
+ *    }, {
+ *        x: 1,
+ *        y: 6,
+ *        name: "Point1",
+ *        color: "#FF00FF"
+ *    }]
+ *    ```
  *
  * @sample {highcharts} highcharts/chart/reflow-true/
  *         Numerical values
@@ -587,7 +565,7 @@ seriesType('area', 'line'
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @type      {Array<number|Array<number>|*>}
+ * @type      {Array<number|Array<number|string>|*>}
  * @extends   series.line.data
  * @product   highcharts highstock
  * @apioption series.area.data

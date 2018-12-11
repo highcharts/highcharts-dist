@@ -14,7 +14,6 @@ var attr = H.attr,
     createElement = H.createElement,
     css = H.css,
     defined = H.defined,
-    each = H.each,
     extend = H.extend,
     isFirefox = H.isFirefox,
     isMS = H.isMS,
@@ -53,19 +52,26 @@ extend(SVGElement.prototype, /** @lends SVGElement.prototype */ {
             textWidth = pick(
                 isSettingWidth && styles.width,
                 undefined
-            );
+            ),
+            doTransform;
 
         if (isSettingWidth) {
             delete styles.width;
             wrapper.textWidth = textWidth;
-            wrapper.htmlUpdateTransform();
+            doTransform = true;
         }
+
         if (styles && styles.textOverflow === 'ellipsis') {
             styles.whiteSpace = 'nowrap';
             styles.overflow = 'hidden';
         }
         wrapper.styles = extend(wrapper.styles, styles);
         css(wrapper.element, styles);
+
+        // Now that all styles are applied, to the transform
+        if (doTransform) {
+            wrapper.htmlUpdateTransform();
+        }
 
         return wrapper;
     },
@@ -137,20 +143,18 @@ extend(SVGElement.prototype, /** @lends SVGElement.prototype */ {
             marginTop: translateY
         });
 
-        
-        if (wrapper.shadows) { // used in labels/tooltip
-            each(wrapper.shadows, function (shadow) {
+        if (!renderer.styledMode && wrapper.shadows) { // used in labels/tooltip
+            wrapper.shadows.forEach(function (shadow) {
                 css(shadow, {
                     marginLeft: translateX + 1,
                     marginTop: translateY + 1
                 });
             });
         }
-        
 
         // apply inversion
         if (wrapper.inverted) { // wrapper is a group
-            each(elem.childNodes, function (child) {
+            elem.childNodes.forEach(function (child) {
                 renderer.invertChild(child, elem);
             });
         }
@@ -177,8 +181,12 @@ extend(SVGElement.prototype, /** @lends SVGElement.prototype */ {
                 (
                     (textWidth > wrapper.oldTextWidth) ||
                     (wrapper.textPxLength || getTextPxLength()) > textWidth
-                ) &&
-                /[ \-]/.test(elem.textContent || elem.innerText)
+                ) && (
+                    // Only set the width if the text is able to word-wrap, or
+                    // text-overflow is ellipsis (#9537)
+                    /[ \-]/.test(elem.textContent || elem.innerText) ||
+                    elem.style.textOverflow === 'ellipsis'
+                )
             ) { // #983, #1254
                 css(elem, {
                     width: textWidth + 'px',
@@ -193,7 +201,7 @@ extend(SVGElement.prototype, /** @lends SVGElement.prototype */ {
 
             // Do the calculations and DOM access only if properties changed
             if (currentTextTransform !== wrapper.cTT) {
-                baseline = renderer.fontMetrics(elem.style.fontSize).b;
+                baseline = renderer.fontMetrics(elem.style.fontSize, elem).b;
 
                 // Renderer specific handling of span rotation, but only if we
                 // have something to update.
@@ -327,7 +335,7 @@ extend(SVGRenderer.prototype, /** @lends SVGRenderer.prototype */ {
             addSetters = function (element, style) {
                 // These properties are set as attributes on the SVG group, and
                 // as identical CSS properties on the div. (#3542)
-                each(['opacity', 'visibility'], function (prop) {
+                ['opacity', 'visibility'].forEach(function (prop) {
                     wrap(element, prop + 'Setter', function (
                         proceed,
                         value,
@@ -339,7 +347,9 @@ extend(SVGRenderer.prototype, /** @lends SVGRenderer.prototype */ {
                     });
                 });
                 element.addedSetters = true;
-            };
+            },
+            chart = H.charts[renderer.chartIndex],
+            styledMode = chart && chart.styledMode;
 
         // Text setter
         wrapper.textSetter = function (value) {
@@ -388,12 +398,15 @@ extend(SVGRenderer.prototype, /** @lends SVGRenderer.prototype */ {
                 y: Math.round(y)
             })
             .css({
-                
-                fontFamily: this.style.fontFamily,
-                fontSize: this.style.fontSize,
-                
                 position: 'absolute'
             });
+
+        if (!styledMode) {
+            wrapper.css({
+                fontFamily: this.style.fontFamily,
+                fontSize: this.style.fontSize
+            });
+        }
 
         // Keep the whiteSpace style outside the wrapper.styles collection
         element.style.whiteSpace = 'nowrap';
@@ -430,7 +443,7 @@ extend(SVGRenderer.prototype, /** @lends SVGRenderer.prototype */ {
 
                         // Ensure dynamically updating position when any parent
                         // is translated
-                        each(parents.reverse(), function (parentGroup) {
+                        parents.reverse().forEach(function (parentGroup) {
                             var htmlGroupStyle,
                                 cls = attr(parentGroup.element, 'class');
 

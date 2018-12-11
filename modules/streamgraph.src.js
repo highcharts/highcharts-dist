@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.2.0 (2018-10-17)
+ * @license  Highcharts JS v7.0.0 (2018-12-11)
  * Streamgraph module
  *
  * (c) 2010-2018 Torstein Honsi
@@ -15,11 +15,11 @@
 			return factory;
 		});
 	} else {
-		factory(Highcharts);
+		factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
 	}
 }(function (Highcharts) {
 	(function (H) {
-		/**
+		/* *
 		 * Streamgraph module
 		 *
 		 * (c) 2010-2018 Torstein Honsi
@@ -27,20 +27,32 @@
 		 * License: www.highcharts.com/license
 		 */
 
+
+
 		var seriesType = H.seriesType;
+
+		/**
+		 * @private
+		 * @class
+		 * @name Highcharts.seriesTypes.streamgraph
+		 *
+		 * @augments Highcharts.Series
+		 */
+		seriesType('streamgraph', 'areaspline'
 
 		/**
 		 * A streamgraph is a type of stacked area graph which is displaced around a
 		 * central axis, resulting in a flowing, organic shape.
 		 *
-		 * @extends plotOptions.areaspline
-		 * @product highcharts highstock
 		 * @sample {highcharts|highstock} highcharts/demo/streamgraph/
 		 *         Streamgraph
-		 * @since 6.0.0
+		 *
+		 * @extends      plotOptions.areaspline
+		 * @since        6.0.0
+		 * @product      highcharts highstock
 		 * @optionparent plotOptions.streamgraph
 		 */
-		seriesType('streamgraph', 'areaspline', {
+		, {
 		    fillOpacity: 1,
 		    lineWidth: 0,
 		    marker: {
@@ -51,10 +63,8 @@
 		}, {
 		    negStacks: false,
 
-		    /**
-		     * Modifier function for stream stacks. It simply moves the point up or down
-		     * in order to center the full stack vertically.
-		     */
+		    // Modifier function for stream stacks. It simply moves the point up or down
+		    // in order to center the full stack vertically.
 		    streamStacker: function (pointExtremes, stack, i) {
 		        // Y bottom value
 		        pointExtremes[0] -= stack.total / 2;
@@ -71,10 +81,9 @@
 		 * A `streamgraph` series. If the [type](#series.streamgraph.type) option is not
 		 * specified, it is inherited from [chart.type](#chart.type).
 		 *
-		 * @type {Object}
-		 * @extends series,plotOptions.streamgraph
-		 * @excluding dataParser,dataURL
-		 * @product highcharts highstock
+		 * @extends   series,plotOptions.streamgraph
+		 * @excluding dataParser, dataURL
+		 * @product   highcharts highstock
 		 * @apioption series.streamgraph
 		 */
 
@@ -123,8 +132,6 @@
 		 *     }]
 		 *  ```
 		 *
-		 * @type {Array<Object|Array|Number>}
-		 * @extends series.line.data
 		 * @sample {highcharts} highcharts/chart/reflow-true/
 		 *         Numerical values
 		 * @sample {highcharts} highcharts/series/data-array-of-arrays/
@@ -135,7 +142,10 @@
 		 *         Arrays of point.name and y
 		 * @sample {highcharts} highcharts/series/data-array-of-objects/
 		 *         Config objects
-		 * @product highcharts highstock
+		 *
+		 * @type      {Array<number|Array<number|string>|*>}
+		 * @extends   series.line.data
+		 * @product   highcharts highstock
 		 * @apioption series.streamgraph.data
 		 */
 

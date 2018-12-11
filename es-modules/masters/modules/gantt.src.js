@@ -2,9 +2,7 @@
  * @license @product.name@ JS v@product.version@ (@product.date@)
  * Gantt series
  *
- * (c) 2016 Lars A. V. Cabrera
- *
- * --- WORK IN PROGRESS ---
+ * (c) 2016-2018 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */

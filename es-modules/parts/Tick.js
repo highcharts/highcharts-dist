@@ -161,16 +161,16 @@ H.Tick.prototype = {
                             0,
                             labelOptions.useHTML
                         )
-                        
-                        // without position absolute, IE export sometimes is
-                        // wrong.
-                        .css(merge(labelOptions.style))
-                        
                         .add(axis.labelGroup) :
                     null;
 
             // Un-rotated length
             if (label) {
+                // Without position absolute, IE export sometimes is wrong
+                if (!chart.styledMode) {
+                    label.css(merge(labelOptions.style));
+                }
+
                 label.textPxLength = label.getBBox().width;
             }
 
@@ -302,11 +302,12 @@ H.Tick.prototype = {
             if (tick.shortenLabel) {
                 tick.shortenLabel();
             } else {
-                css.width = textWidth;
+                css.width = Math.floor(textWidth);
                 if (!(labelOptions.style || {}).textOverflow) {
                     css.textOverflow = 'ellipsis';
                 }
                 label.css(css);
+
             }
         }
     },
@@ -490,23 +491,20 @@ H.Tick.prototype = {
             pos = tick.pos,
             type = tick.type,
             tickmarkOffset = pick(tick.tickmarkOffset, axis.tickmarkOffset),
-            renderer = axis.chart.renderer;
-
-        
-        var gridPrefix = type ? type + 'Grid' : 'grid',
+            renderer = axis.chart.renderer,
+            gridPrefix = type ? type + 'Grid' : 'grid',
             gridLineWidth = options[gridPrefix + 'LineWidth'],
             gridLineColor = options[gridPrefix + 'LineColor'],
             dashStyle = options[gridPrefix + 'LineDashStyle'];
-        
 
         if (!gridLine) {
-            
-            attribs.stroke = gridLineColor;
-            attribs['stroke-width'] = gridLineWidth;
-            if (dashStyle) {
-                attribs.dashstyle = dashStyle;
+            if (!axis.chart.styledMode) {
+                attribs.stroke = gridLineColor;
+                attribs['stroke-width'] = gridLineWidth;
+                if (dashStyle) {
+                    attribs.dashstyle = dashStyle;
+                }
             }
-            
             if (!type) {
                 attribs.zIndex = 1;
             }
@@ -564,15 +562,12 @@ H.Tick.prototype = {
             mark = tick.mark,
             isNewMark = !mark,
             x = xy.x,
-            y = xy.y;
-
-        
-        var tickWidth = pick(
+            y = xy.y,
+            tickWidth = pick(
                 options[tickPrefix + 'Width'],
                 !type && axis.isXAxis ? 1 : 0
             ), // X axis defaults to 1
             tickColor = options[tickPrefix + 'Color'];
-        
 
         if (tickSize) {
 
@@ -587,12 +582,12 @@ H.Tick.prototype = {
                     .addClass('highcharts-' + (type ? type + '-' : '') + 'tick')
                     .add(axis.axisGroup);
 
-                
-                mark.attr({
-                    stroke: tickColor,
-                    'stroke-width': tickWidth
-                });
-                
+                if (!axis.chart.styledMode) {
+                    mark.attr({
+                        stroke: tickColor,
+                        'stroke-width': tickWidth
+                    });
+                }
             }
             mark[isNewMark ? 'attr' : 'animate']({
                 d: tick.getMarkPath(

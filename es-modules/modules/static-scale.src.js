@@ -1,14 +1,15 @@
-/**
+/* *
  * (c) 2018 Torstein Honsi, Lars Cabrera
  *
  * License: www.highcharts.com/license
  */
+
 'use strict';
+
 import H from '../parts/Globals.js';
 import '../parts/Utilities.js';
 
 var Chart = H.Chart,
-    each = H.each,
     pick = H.pick;
 
 /**
@@ -18,11 +19,13 @@ var Chart = H.Chart,
  * height of the chart adjusts. Adding or removing items will make the chart
  * resize.
  *
- * @type {number}
- * @sample gantt/xrange-series/demo/ X-range series with static scale
- * @since 6.2.0
- * @product gantt
- * @default 50
+ * @sample gantt/xrange-series/demo/
+ *         X-range series with static scale
+ *
+ * @type      {number}
+ * @default   50
+ * @since     6.2.0
+ * @product   gantt
  * @apioption yAxis.staticScale
  */
 
@@ -38,7 +41,7 @@ H.addEvent(H.Axis, 'afterSetOptions', function () {
 
 Chart.prototype.adjustHeight = function () {
     if (this.redrawTrigger !== 'adjustHeight') {
-        each(this.axes || [], function (axis) {
+        (this.axes || []).forEach(function (axis) {
             var chart = axis.chart,
                 animate = !!chart.initiatedScale && chart.options.animation,
                 staticScale = axis.options.staticScale,
@@ -65,7 +68,7 @@ Chart.prototype.adjustHeight = function () {
 
                 // Make sure clip rects have the right height before initial
                 // animation.
-                each(axis.series, function (series) {
+                axis.series.forEach(function (series) {
                     var clipRect =
                         series.sharedClipKey && chart[series.sharedClipKey];
                     if (clipRect) {

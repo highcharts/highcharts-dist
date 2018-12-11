@@ -1,10 +1,8 @@
 /**
- * @license Highcharts JS v6.2.0 (2018-10-17)
+ * @license Highcharts JS v7.0.0 (2018-12-11)
  * CurrentDateIndicator
  *
- * (c) 2010-2016 Lars A. V. Cabrera
- *
- * --- WORK IN PROGRESS ---
+ * (c) 2010-2018 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -17,49 +15,57 @@
 			return factory;
 		});
 	} else {
-		factory(Highcharts);
+		factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
 	}
 }(function (Highcharts) {
 	(function (H) {
-		/**
-		* (c) 2016 Highsoft AS
-		* Author: Lars A. V. Cabrera
-		*
-		* License: www.highcharts.com/license
-		*/
-
-		/**
-		 * Show an indicator on the axis for the current date and time. Can be a boolean
-		 * or a configuration object similar to [xAxis.plotLines](#xAxis.plotLines).
+		/* *
 		 *
-		 * @type {Object}
-		 * @extends {xAxis.plotLines}
-		 * @excluding value
-		 * @sample  gantt/current-date-indicator/demo
-		 *          Current date indicator enabled
-		 * @sample  gantt/current-date-indicator/object-config
-		 *          Current date indicator with custom options
-		 * @product gantt
-		 * @apioption xAxis.currentDateIndicator
-		 */
+		 *  (c) 2016-2018 Highsoft AS
+		 *
+		 *  Author: Lars A. V. Cabrera
+		 *
+		 *  License: www.highcharts.com/license
+		 *
+		 * */
+
+
 
 		var addEvent = H.addEvent,
 		    Axis = H.Axis,
 		    PlotLineOrBand = H.PlotLineOrBand,
-		    merge = H.merge,
-		    defaultConfig = {
-		        currentDateIndicator: true,
-		        color: '#ccd6eb',
-		        width: 2,
-		        label: {
-		            format: '%a, %b %d %Y, %H:%M',
-		            formatter: undefined,
-		            rotation: 0,
-		            style: {
-		                fontSize: '10px'
-		            }
+		    merge = H.merge;
+
+		var defaultConfig = {
+		    /**
+		     * Show an indicator on the axis for the current date and time. Can be a
+		     * boolean or a configuration object similar to
+		     * [xAxis.plotLines](#xAxis.plotLines).
+		     *
+		     * @sample gantt/current-date-indicator/demo
+		     *         Current date indicator enabled
+		     * @sample gantt/current-date-indicator/object-config
+		     *         Current date indicator with custom options
+		     *
+		     * @type      {boolean|*}
+		     * @default   true
+		     * @extends   xAxis.plotLines
+		     * @excluding value
+		     * @product   gantt
+		     * @apioption xAxis.currentDateIndicator
+		     */
+		    currentDateIndicator: true,
+		    color: '#ccd6eb',
+		    width: 2,
+		    label: {
+		        format: '%a, %b %d %Y, %H:%M',
+		        formatter: undefined,
+		        rotation: 0,
+		        style: {
+		            fontSize: '10px'
 		        }
-		    };
+		    }
+		};
 
 		addEvent(Axis, 'afterSetOptions', function () {
 		    var options = this.options,

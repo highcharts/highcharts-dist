@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.2.0 (2018-10-17)
+ * @license Highcharts JS v7.0.0 (2018-12-11)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -14,7 +14,7 @@
 			return factory;
 		});
 	} else {
-		factory(Highcharts);
+		factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
 	}
 }(function (Highcharts) {
 	(function (H) {
@@ -24,10 +24,11 @@
 		 * License: www.highcharts.com/license
 		 */
 
+
+
 		var addEvent = H.addEvent,
 		    pick = H.pick,
 		    wrap = H.wrap,
-		    each = H.each,
 		    extend = H.extend,
 		    isArray = H.isArray,
 		    fireEvent = H.fireEvent,
@@ -126,10 +127,15 @@
 		/**
 		 * Dynamically set or unset breaks in an axis. This function in lighter than
 		 * usin Axis.update, and it also preserves animation.
-		 * @param  {Array} [breaks]
-		 *         The breaks to add. When `undefined` it removes existing breaks.
-		 * @param  {Boolean} [redraw=true]
-		 *         Whether to redraw the chart immediately.
+		 *
+		 * @private
+		 * @function Highcharts.Axis#setBreaks
+		 *
+		 * @param {Array<*>} [breaks]
+		 *        The breaks to add. When `undefined` it removes existing breaks.
+		 *
+		 * @param {boolean} [redraw=true]
+		 *        Whether to redraw the chart immediately.
 		 */
 		Axis.prototype.setBreaks = function (breaks, redraw) {
 		    var axis = this,
@@ -235,7 +241,7 @@
 		                    i;
 
 		                // Min & max check (#4247)
-		                each(breaks, function (brk) {
+		                breaks.forEach(function (brk) {
 		                    repeat = brk.repeat || Infinity;
 		                    if (axis.isInBreak(brk, min)) {
 		                        min += (brk.to % repeat) - (min % repeat);
@@ -246,7 +252,7 @@
 		                });
 
 		                // Construct an array holding all breaks in the axis
-		                each(breaks, function (brk) {
+		                breaks.forEach(function (brk) {
 		                    start = brk.from;
 		                    repeat = brk.repeat || Infinity;
 
@@ -282,7 +288,7 @@
 		                inBrk = 0;
 		                start = min;
 
-		                each(breakArrayT, function (brk) {
+		                breakArrayT.forEach(function (brk) {
 		                    inBrk += (brk.move === 'in' ? 1 : -1);
 
 		                    if (inBrk === 1 && brk.move === 'in') {
@@ -384,14 +390,14 @@
 		        return; // #5950
 		    }
 
-		    each(keys, function (key) {
+		    keys.forEach(function (key) {
 		        breaks = axis.breakArray || [];
 		        threshold = axis.isXAxis ?
 		            axis.min :
 		            pick(series.options.threshold, axis.min);
-		        each(points, function (point) {
+		        points.forEach(function (point) {
 		            y = pick(point['stack' + key.toUpperCase()], point[key]);
-		            each(breaks, function (brk) {
+		            breaks.forEach(function (brk) {
 		                eventName = false;
 
 		                if (
@@ -419,6 +425,9 @@
 		 * Extend getGraphPath by identifying gaps in the data so that we can draw a gap
 		 * in the line or area. This was moved from ordinal axis module to broken axis
 		 * module as of #5045.
+		 *
+		 * @private
+		 * @function Highcharts.Series#gappedPath
 		 */
 		H.Series.prototype.gappedPath = function () {
 		    var currentDataGrouping = this.currentDataGrouping,
@@ -445,14 +454,16 @@
 		     * time series. In a stock chart, intraday data is available for daytime
 		     * hours, while gaps will appear in nights and weekends.
 		     *
-		     * @type    {Number}
-		     * @see     [gapUnit](plotOptions.series.gapUnit) and
-		     *          [xAxis.breaks](#xAxis.breaks)
-		     * @sample  {highstock} stock/plotoptions/series-gapsize/
-		     *          Setting the gap size to 2 introduces gaps for weekends in daily
-		     *          datasets.
-		     * @default 0
-		     * @product highstock
+		     * @see [gapUnit](plotOptions.series.gapUnit)
+		     * @see [xAxis.breaks](#xAxis.breaks)
+		     *
+		     * @sample {highstock} stock/plotoptions/series-gapsize/
+		     *         Setting the gap size to 2 introduces gaps for weekends in daily
+		     *         datasets.
+		     *
+		     * @type      {number}
+		     * @default   0
+		     * @product   highstock
 		     * @apioption plotOptions.series.gapSize
 		     */
 
@@ -468,13 +479,14 @@
 		     * which on a datetime axis is milliseconds. This also applies to the
 		     * navigator series that inherits gap options from the base series.
 		     *
-		     * @type {String}
 		     * @see [gapSize](plotOptions.series.gapSize)
-		     * @default relative
+		     *
+		     * @type       {string}
+		     * @default    relative
+		     * @since      5.0.13
+		     * @product    highstock
 		     * @validvalue ["relative", "value"]
-		     * @since 5.0.13
-		     * @product highstock
-		     * @apioption plotOptions.series.gapUnit
+		     * @apioption  plotOptions.series.gapUnit
 		     */
 
 		    if (gapSize && i > 0) { // #5008

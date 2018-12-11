@@ -5,17 +5,127 @@
  */
 
 /**
+ * Function callback when a series has been animated.
+ *
+ * @callback Highcharts.SeriesAfterAnimateCallbackFunction
+ *
+ * @param {Highcharts.SeriesAfterAnimateEventObject} e
+ *        Event arguments.
+ */
+
+/**
+ * Event information regarding completed animation of a series.
+ *
+ * @interface Highcharts.SeriesAfterAnimateEventObject
+ *//**
+ * Animated series.
+ * @name Highcharts.SeriesAfterAnimateEventObject#target
+ * @type {Highcharts.Series}
+ *//**
+ * Event type.
+ * @name Highcharts.SeriesAfterAnimateEventObject#type
+ * @type {"afterAnimate"}
+ */
+
+/**
+ * Function callback when the checkbox next to the series' name in the legend is
+ * clicked.
+ *
+ * @callback Highcharts.SeriesCheckboxClickCallbackFunction
+ *
+ * @param {Highcharts.SeriesCheckboxClickEventObject} e
+ *        Event arguments.
+ */
+
+/**
+ * Event information regarding check of a series box.
+ *
+ * @interface Highcharts.SeriesCheckboxClickEventObject
+ *//**
+ * Whether the box has been checked.
+ * @name Highcharts.SeriesCheckboxClickEventObject#checked
+ * @type {boolean}
+ *//**
+ * Related series.
+ * @name Highcharts.SeriesCheckboxClickEventObject#item
+ * @type {Highcharts.Series}
+ *//**
+ * Related series.
+ * @name Highcharts.SeriesCheckboxClickEventObject#target
+ * @type {Highcharts.Series}
+ *//**
+ * Event type.
+ * @name Highcharts.SeriesCheckboxClickEventObject#type
+ * @type {"checkboxClick"}
+ */
+
+/**
+ * Common information for a click event on a series.
+ *
+ * @interface Highcharts.SeriesClickEventObject
+ *
+ * @implements {global.Event}
+ *//**
+ * Nearest point on the graph.
+ * @name Highcharts.SeriesClickEventObject#point
+ * @type {Highcharts.Point}
+ */
+
+/**
+ * Function callback when a series is clicked. Return false to cancel toogle
+ * actions.
+ *
+ * @callback Highcharts.SeriesClickCallbackFunction
+ *
+ * @param {Highcharts.SeriesClickEventObject} e
+ *        Event arguments.
+ */
+
+/**
+ * @interface Highcharts.SeriesDataLabelsFormatterContextObject
+ *//**
+ * @name Highcharts.SeriesDataLabelsFormatterContextObject#point
+ * @type {Highcharts.Point}
+ */
+
+/**
  * Translation and scale for the plot area of a series.
  *
- * @typedef Highcharts.SeriesPlotBoxObject
+ * @interface Highcharts.SeriesPlotBoxObject
+ *//**
+ * @name Highcharts.SeriesPlotBoxObject#translateX
+ * @type {number}
+ *//**
+ * @name Highcharts.SeriesPlotBoxObject#translateY
+ * @type {number}
+ *//**
+ * @name Highcharts.SeriesPlotBoxObject#scaleX
+ * @type {number}
+ *//**
+ * @name Highcharts.SeriesPlotBoxObject#scaleY
+ * @type {number}
+ */
+
+/**
+ * Function callback when a series point is clicked. Return false to cancel the
+ * action.
  *
- * @property {number} translateX
+ * @callback Highcharts.SeriesPointClickCallbackFunction
  *
- * @property {number} translateY
+ * @param {Highcharts.SeriesPointClickEventObject} e
+ *        Event arguments.
+ */
+
+/**
+ * Common information for a click event on a series point.
  *
- * @property {number} scaleX
+ * @interface Highcharts.SeriesPointClickEventObject
  *
- * @property {number} scaleY
+ * @implements {global.Event}
+ *//**
+ * Clicked point.
+ * @name Highcharts.SeriesPointClickEventObject#point
+ * @type {Highcharts.Point}
  */
 
 'use strict';
@@ -35,11 +145,9 @@ var addEvent = H.addEvent,
     defaultOptions = H.defaultOptions,
     defaultPlotOptions = H.defaultPlotOptions,
     defined = H.defined,
-    each = H.each,
     erase = H.erase,
     extend = H.extend,
     fireEvent = H.fireEvent,
-    grep = H.grep,
     isArray = H.isArray,
     isNumber = H.isNumber,
     isString = H.isString,
@@ -57,13 +165,13 @@ var addEvent = H.addEvent,
 /**
  * This is the base series prototype that all other series types inherit from.
  * A new series is initialized either through the
- * {@link https://api.highcharts.com/highcharts/series|series}
+ * [series](https://api.highcharts.com/highcharts/series)
  * option structure, or after the chart is initialized, through
  * {@link Highcharts.Chart#addSeries}.
  *
  * The object can be accessed in a number of ways. All series and point event
  * handlers give a reference to the `series` object. The chart object has a
- * {@link Highcharts.Chart.series|series} property that is a collection of all
+ * {@link Highcharts.Chart#series|series} property that is a collection of all
  * the chart's series. The point objects and axis objects also have the same
  * reference.
  *
@@ -73,11 +181,11 @@ var addEvent = H.addEvent,
  *
  * Configuration options for the series are given in three levels. Options for
  * all series in a chart are given in the
- * {@link https://api.highcharts.com/highcharts/plotOptions.series|
- * plotOptions.series} object. Then options for all series of a specific type
+ * [plotOptions.series](https://api.highcharts.com/highcharts/plotOptions.series)
+ * object. Then options for all series of a specific type
  * are given in the plotOptions of that type, for example `plotOptions.line`.
  * Next, options for one single series are given in the series array, or as
- * arguements to `chart.addSeries`.
+ * arguments to `chart.addSeries`.
  *
  * The data in the series is stored in various arrays.
  *
@@ -107,7 +215,7 @@ var addEvent = H.addEvent,
  * @param {Highcharts.Chart} chart
  *        The chart instance.
  *
- * @param {Highcharts.PlotSeriesOptions} options
+ * @param {Highcharts.SeriesOptions|object} options
  *        The series options.
  *//**
  * The line series is the base type and is therefor the series base prototype.
@@ -118,7 +226,146 @@ var addEvent = H.addEvent,
  *
  * @augments Highcharts.Series
  */
-H.Series = H.seriesType('line', null
+H.Series = H.seriesType('line',
+
+/**
+ * Series options for specific data and the data itself. In TypeScript you
+ * have to cast the series options to specific series types, to get all
+ * possible options for a series.
+ *
+ * @example
+ * // TypeScript example
+ * Highcharts.chart('container', {
+ *     series: [{
+ *         color: '#06C',
+ *         data: [[0, 1], [2, 3]]
+ *     } as Highcharts.SeriesLineOptions ]
+ * });
+ *
+ * @type      {Array<*>}
+ * @apioption series
+ */
+
+/**
+ * An id for the series. This can be used after render time to get a pointer
+ * to the series object through `chart.get()`.
+ *
+ * @sample {highcharts} highcharts/plotoptions/series-id/
+ *         Get series by id
+ *
+ * @type      {string}
+ * @since     1.2.0
+ * @apioption series.id
+ */
+
+/**
+ * The index of the series in the chart, affecting the internal index in the
+ * `chart.series` array, the visible Z index as well as the order in the
+ * legend.
+ *
+ * @type      {number}
+ * @since     2.3.0
+ * @apioption series.index
+ */
+
+/**
+ * The sequential index of the series in the legend.
+ *
+ * @see [legend.reversed](#legend.reversed),
+ *      [yAxis.reversedStacks](#yAxis.reversedStacks)
+ *
+ * @sample {highcharts|highstock} highcharts/series/legendindex/
+ *         Legend in opposite order
+ *
+ * @type      {number}
+ * @apioption series.legendIndex
+ */
+/**
+ * The name of the series as shown in the legend, tooltip etc.
+ *
+ * @sample {highcharts} highcharts/series/name/
+ *         Series name
+ * @sample {highmaps} maps/demo/category-map/
+ *         Series name
+ *
+ * @type      {string}
+ * @apioption series.name
+ */
+
+/**
+ * This option allows grouping series in a stacked chart. The stack option
+ * can be a string or anything else, as long as the grouped series' stack
+ * options match each other after conversion into a string.
+ *
+ * @sample {highcharts} highcharts/series/stack/
+ *         Stacked and grouped columns
+ *
+ * @type      {string|object}
+ * @since     2.1
+ * @product   highcharts highstock
+ * @apioption series.stack
+ */
+
+/**
+ * The type of series, for example `line` or `column`. By default, the
+ * series type is inherited from [chart.type](#chart.type), so unless the
+ * chart is a combination of series types, there is no need to set it on the
+ * series level.
+ *
+ * @sample {highcharts} highcharts/series/type/
+ *         Line and column in the same chart
+ * @sample {highmaps} maps/demo/mapline-mappoint/
+ *         Multiple types in the same map
+ *
+ * @type      {string}
+ * @apioption series.type
+ */
+
+/**
+ * When using dual or multiple x axes, this number defines which xAxis the
+ * particular series is connected to. It refers to either the
+ * {@link #xAxis.id|axis id}
+ * or the index of the axis in the xAxis array, with 0 being the first.
+ *
+ * @type      {number|string}
+ * @default   0
+ * @product   highcharts highstock
+ * @apioption series.xAxis
+ */
+
+/**
+ * When using dual or multiple y axes, this number defines which yAxis the
+ * particular series is connected to. It refers to either the
+ * {@link #yAxis.id|axis id}
+ * or the index of the axis in the yAxis array, with 0 being the first.
+ *
+ * @sample {highcharts} highcharts/series/yaxis/
+ *         Apply the column series to the secondary Y axis
+ *
+ * @type      {number|string}
+ * @default   0
+ * @product   highcharts highstock
+ * @apioption series.yAxis
+ */
+
+/**
+ * Define the visual z index of the series.
+ *
+ * @sample {highcharts} highcharts/plotoptions/series-zindex-default/
+ *         With no z index, the series defined last are on top
+ * @sample {highcharts} highcharts/plotoptions/series-zindex/
+ *         With a z index, the series with the highest z index is on top
+ * @sample {highstock} highcharts/plotoptions/series-zindex-default/
+ *         With no z index, the series defined last are on top
+ * @sample {highstock} highcharts/plotoptions/series-zindex/
+ *         With a z index, the series with the highest z index is on top
+ *
+ * @type      {number}
+ * @product   highcharts highstock
+ * @apioption series.zIndex
+ */
+
+null
 
 /**
  * General options for all series types.
@@ -126,8 +373,17 @@ H.Series = H.seriesType('line', null
  * @optionparent plotOptions.series
  */
 , { // base series options
-
-    
+    /**
+     * The SVG value used for the `stroke-linecap` and `stroke-linejoin`
+     * of a line graph. Round means that lines are rounded in the ends and
+     * bends.
+     *
+     * @type       {string}
+     * @validvalue ["round", "butt", "square"]
+     * @default    round
+     * @since      3.0.7
+     * @apioption  plotOptions.line.linecap
+     */
 
     /**
      * Pixel width of the graph line.
@@ -143,8 +399,6 @@ H.Series = H.seriesType('line', null
      * @product highcharts highstock
      */
     lineWidth: 2,
-
-    
 
     /**
      * For some series, there is a limit that shuts down initial animation
@@ -301,7 +555,7 @@ H.Series = H.seriesType('line', null
      * @sample {highmaps} maps/demo/category-map/
      *         Category map by multiple series
      *
-     * @type      {Highcharts.ColorString}
+     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @apioption plotOptions.series.color
      */
 
@@ -352,9 +606,8 @@ H.Series = H.seriesType('line', null
      * @sample {highmaps} maps/plotoptions/mapbubble-allowpointselect/
      *         Map bubble
      *
-     * @type       {string}
-     * @validvalue ["crosshair","default","help","none","pointer"]
-     * @apioption  plotOptions.series.cursor
+     * @type      {string|Highcharts.CursorType}
+     * @apioption plotOptions.series.cursor
      */
 
 
@@ -497,7 +750,7 @@ H.Series = H.seriesType('line', null
      *
      * @see [navigator.series](#navigator.series)
      *
-     * @type      {*}
+     * @type      {Highcharts.PlotSeriesOptions}
      * @since     5.0.0
      * @product   highstock
      * @apioption plotOptions.series.navigatorOptions
@@ -525,7 +778,7 @@ H.Series = H.seriesType('line', null
      * @sample {highmaps} highcharts/plotoptions/arearange-negativecolor/
      *         Arearange
      *
-     * @type      {Highcharts.ColorString}
+     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @since     3.0
      * @apioption plotOptions.series.negativeColor
      */
@@ -807,34 +1060,34 @@ H.Series = H.seriesType('line', null
     events: {},
 
     /**
-     * Fires after the series has finished its initial animation, or in
-     * case animation is disabled, immediately as the series is displayed.
+     * Fires after the series has finished its initial animation, or in case
+     * animation is disabled, immediately as the series is displayed.
      *
      * @sample {highcharts} highcharts/plotoptions/series-events-afteranimate/
      *         Show label after animate
      * @sample {highstock} highcharts/plotoptions/series-events-afteranimate/
      *         Show label after animate
      *
-     * @type      {Function}
+     * @type      {Highcharts.SeriesAfterAnimateCallbackFunction}
      * @since     4.0
-     * @product   highcharts highstock
-     * @context   Series
+     * @product   highcharts highstock gantt
+     * @context   Highcharts.Series
      * @apioption plotOptions.series.events.afterAnimate
      */
 
     /**
      * Fires when the checkbox next to the series' name in the legend is
-     * clicked. One parameter, `event`, is passed to the function. The state
-     * of the checkbox is found by `event.checked`. The checked item is
-     * found by `event.item`. Return `false` to prevent the default action
-     * which is to toggle the select state of the series.
+     * clicked. One parameter, `event`, is passed to the function. The state of
+     * the checkbox is found by `event.checked`. The checked item is found by
+     * `event.item`. Return `false` to prevent the default action which is to
+     * toggle the select state of the series.
      *
      * @sample {highcharts} highcharts/plotoptions/series-events-checkboxclick/
      *         Alert checkbox status
      *
-     * @type      {Function}
+     * @type      {Highcharts.SeriesCheckboxClickCallbackFunction}
      * @since     1.2.0
-     * @context   Series
+     * @context   Highcharts.Series
      * @apioption plotOptions.series.events.checkboxClick
      */
 
@@ -850,8 +1103,8 @@ H.Series = H.seriesType('line', null
      * @sample {highmaps} maps/plotoptions/series-events-click/
      *         Display click info in subtitle
      *
-     * @type      {Function}
-     * @context   Series
+     * @type      {Highcharts.SeriesClickCallbackFunction}
+     * @context   Highcharts.Series
      * @apioption plotOptions.series.events.click
      */
 
@@ -864,7 +1117,7 @@ H.Series = H.seriesType('line', null
      *
      * @type      {Function}
      * @since     1.2.0
-     * @context   Series
+     * @context   Highcharts.Series
      * @apioption plotOptions.series.events.hide
      */
 
@@ -878,7 +1131,7 @@ H.Series = H.seriesType('line', null
      *         Confirm hiding and showing
      *
      * @type      {Function}
-     * @context   Series
+     * @context   Highcharts.Series
      * @apioption plotOptions.series.events.legendItemClick
      */
 
@@ -895,7 +1148,7 @@ H.Series = H.seriesType('line', null
      *         Without sticky tracking
      *
      * @type      {Function}
-     * @context   Series
+     * @context   Highcharts.Series
      * @apioption plotOptions.series.events.mouseOut
      */
 
@@ -909,7 +1162,7 @@ H.Series = H.seriesType('line', null
      *         Without sticky tracking
      *
      * @type      {Function}
-     * @context   Series
+     * @context   Highcharts.Series
      * @apioption plotOptions.series.events.mouseOver
      */
 
@@ -922,7 +1175,7 @@ H.Series = H.seriesType('line', null
      *
      * @type      {Function}
      * @since     1.2.0
-     * @context   Series
+     * @context   Highcharts.Series
      * @apioption plotOptions.series.events.show
      */
 
@@ -937,8 +1190,6 @@ H.Series = H.seriesType('line', null
      * class names.
      */
     marker: {
-
-        
 
         /**
          * The width of the point marker's outline.
@@ -966,11 +1217,9 @@ H.Series = H.seriesType('line', null
          * @sample {highcharts} highcharts/plotoptions/series-marker-fillcolor/
          *         White fill
          *
-         * @type      {Highcharts.ColorString}
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @apioption plotOptions.series.marker.fillColor
          */
-
-        
 
         /**
          * Enable or disable the point marker. If `undefined`, the markers are
@@ -1045,6 +1294,8 @@ H.Series = H.seriesType('line', null
          *
          * @sample {highcharts} highcharts/plotoptions/series-marker-radius/
          *         Bigger markers
+         *
+         * @default  {highstock} 2
          */
         radius: 4,
 
@@ -1109,7 +1360,7 @@ H.Series = H.seriesType('line', null
                  * `undefined`, the series' or point's fillColor for normal
                  * state is used.
                  *
-                 * @type      {Highcharts.ColorString}
+                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @apioption plotOptions.series.marker.states.hover.fillColor
                  */
 
@@ -1161,8 +1412,6 @@ H.Series = H.seriesType('line', null
                  */
                 radiusPlus: 2,
 
-                
-
                 /**
                  * The additional line width for a hovered point.
                  *
@@ -1174,12 +1423,7 @@ H.Series = H.seriesType('line', null
                  * @since 4.0.3
                  */
                 lineWidthPlus: 1
-
-                
-
             },
-
-            
 
             /**
              * The appearance of the point marker when selected. In order to
@@ -1216,7 +1460,7 @@ H.Series = H.seriesType('line', null
                  * @sample {highcharts} highcharts/plotoptions/series-marker-states-select-fillcolor/
                  *         Solid red discs for selected points
                  *
-                 * @type {Highcharts.ColorString}
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
                 fillColor: '#cccccc',
 
@@ -1239,9 +1483,6 @@ H.Series = H.seriesType('line', null
                  */
                 lineWidth: 2
             }
-
-            
-
         }
     },
 
@@ -1269,8 +1510,8 @@ H.Series = H.seriesType('line', null
          * @sample {highmaps} maps/plotoptions/series-point-events-click-url/
          *         Go to URL
          *
-         * @type      {Function}
-         * @context   Point
+         * @type      {Highcharts.SeriesPointClickCallbackFunction}
+         * @context   Highcharts.Point
          * @apioption plotOptions.series.point.events.click
          */
 
@@ -1283,7 +1524,7 @@ H.Series = H.seriesType('line', null
          *         Show values in the chart's corner on mouse over
          *
          * @type      {Function}
-         * @context   Point
+         * @context   Highcharts.Point
          * @apioption plotOptions.series.point.events.mouseOut
          */
 
@@ -1296,7 +1537,7 @@ H.Series = H.seriesType('line', null
          *         Show values in the chart's corner on mouse over
          *
          * @type      {Function}
-         * @context   Point
+         * @context   Highcharts.Point
          * @apioption plotOptions.series.point.events.mouseOver
          */
 
@@ -1310,7 +1551,7 @@ H.Series = H.seriesType('line', null
          *
          * @type      {Function}
          * @since     1.2.0
-         * @context   Point
+         * @context   Highcharts.Point
          * @apioption plotOptions.series.point.events.remove
          */
 
@@ -1326,7 +1567,7 @@ H.Series = H.seriesType('line', null
          *
          * @type      {Function}
          * @since     1.2.0
-         * @context   Point
+         * @context   Highcharts.Point
          * @apioption plotOptions.series.point.events.select
          */
 
@@ -1343,7 +1584,7 @@ H.Series = H.seriesType('line', null
          *
          * @type      {Function}
          * @since     1.2.0
-         * @context   Point
+         * @context   Highcharts.Point
          * @apioption plotOptions.series.point.events.unselect
          */
 
@@ -1358,7 +1599,7 @@ H.Series = H.seriesType('line', null
          *
          * @type      {Function}
          * @since     1.2.0
-         * @context   Point
+         * @context   Highcharts.Point
          * @apioption plotOptions.series.point.events.update
          */
 
@@ -1608,14 +1849,12 @@ H.Series = H.seriesType('line', null
          * @sample {highmaps} maps/plotoptions/series-datalabels-format/
          *         Formatted value
          *
-         * @type    {Highcharts.FormatterCallbackFunction}
+         * @type    {Highcharts.FormatterCallbackFunction<Highcharts.SeriesDataLabelsFormatterContextObject>}
          * @default function () { return this.y; }
          */
         formatter: function () {
             return this.y === null ? '' : H.numberFormat(this.y, -1);
         },
-
-        
 
         /**
          * Styles for the label. The default `color` setting is `"contrast"`,
@@ -1650,21 +1889,13 @@ H.Series = H.seriesType('line', null
          * @since   4.1.0
          */
         style: {
-            /**
-             * @ignore
-             */
+            /** @ignore */
             fontSize: '11px',
-            /**
-             * @ignore
-             */
+            /** @ignore */
             fontWeight: 'bold',
-            /**
-             * @ignore
-             */
+            /** @ignore */
             color: 'contrast',
-            /**
-             * @ignore
-             */
+            /** @ignore */
             textOutline: '1px contrast'
         },
 
@@ -1747,7 +1978,7 @@ H.Series = H.seriesType('line', null
          * @sample {highmaps} maps/plotoptions/series-datalabels-box/
          *         Data labels box options
          *
-         * @type      {Highcharts.ColorString}
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @since     2.2.1
          * @apioption plotOptions.series.dataLabels.backgroundColor
          */
@@ -1772,13 +2003,11 @@ H.Series = H.seriesType('line', null
          * @sample {highcharts|highstock} highcharts/plotoptions/series-datalabels-box/
          *         Data labels box options
          *
-         * @type      {boolean|*}
+         * @type      {boolean|Highcharts.ShadowOptionsObject}
          * @default   false
          * @since     2.2.1
          * @apioption plotOptions.series.dataLabels.shadow
          */
-
-        
 
         /**
          * For points with an extent, like columns or map areas, whether to
@@ -2062,8 +2291,6 @@ H.Series = H.seriesType('line', null
                  */
                 size: 10,
 
-                
-
                 /**
                  * Opacity for the halo unless a specific fill is overridden
                  * using the `attributes` setting. Note that Highcharts is only
@@ -2073,9 +2300,6 @@ H.Series = H.seriesType('line', null
                  * @product highcharts highstock
                  */
                 opacity: 0.25
-
-                
-
             }
         },
 
@@ -2211,7 +2435,7 @@ H.Series = H.seriesType('line', null
      *
      * @see [fillColor](#plotOptions.area.fillColor)
      *
-     * @type      {Highcharts.ColorString}
+     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      * @since     4.1.0
      * @product   highcharts highstock
      * @apioption plotOptions.series.zones.fillColor
@@ -2251,144 +2475,6 @@ H.Series = H.seriesType('line', null
 
 }, /** @lends Highcharts.Series.prototype */ {
 
-    /**
-     * Series options for specific data and the data itself. In TypeScript you
-     * have to cast the series options to specific series types, to get all
-     * possible options for a series.
-     *
-     * @example
-     * // TypeScript example
-     * Highcharts.chart('container', {
-     *     series: [{
-     *         color: '#06C',
-     *         data: [[0, 1], [2, 3]]
-     *     } as Highcharts.SeriesLineOptions ]
-     * });
-     *
-     *
-     * @type      {Array<*>}
-     * @apioption series
-     */
-
-    /**
-     * An id for the series. This can be used after render time to get a pointer
-     * to the series object through `chart.get()`.
-     *
-     * @sample {highcharts} highcharts/plotoptions/series-id/
-     *         Get series by id
-     *
-     * @type      {string}
-     * @since     1.2.0
-     * @apioption series.id
-     */
-
-    /**
-     * The index of the series in the chart, affecting the internal index in the
-     * `chart.series` array, the visible Z index as well as the order in the
-     * legend.
-     *
-     * @type      {number}
-     * @since     2.3.0
-     * @apioption series.index
-     */
-
-    /**
-     * The sequential index of the series in the legend.
-     *
-     * @see [legend.reversed](#legend.reversed),
-     *      [yAxis.reversedStacks](#yAxis.reversedStacks)
-     *
-     * @sample {highcharts|highstock} highcharts/series/legendindex/
-     *         Legend in opposite order
-     *
-     * @type      {number}
-     * @apioption series.legendIndex
-     */
-    /**
-     * The name of the series as shown in the legend, tooltip etc.
-     *
-     * @sample {highcharts} highcharts/series/name/
-     *         Series name
-     * @sample {highmaps} maps/demo/category-map/
-     *         Series name
-     *
-     * @type      {string}
-     * @apioption series.name
-     */
-
-    /**
-     * This option allows grouping series in a stacked chart. The stack option
-     * can be a string or anything else, as long as the grouped series' stack
-     * options match each other after conversion into a string.
-     *
-     * @sample {highcharts} highcharts/series/stack/
-     *         Stacked and grouped columns
-     *
-     * @type      {string|*}
-     * @since     2.1
-     * @product   highcharts highstock
-     * @apioption series.stack
-     */
-
-    /**
-     * The type of series, for example `line` or `column`. By default, the
-     * series type is inherited from [chart.type](#chart.type), so unless the
-     * chart is a combination of series types, there is no need to set it on the
-     * series level.
-     *
-     * @sample {highcharts} highcharts/series/type/
-     *         Line and column in the same chart
-     * @sample {highmaps} maps/demo/mapline-mappoint/
-     *         Multiple types in the same map
-     *
-     * @type      {string}
-     * @apioption series.type
-     */
-
-    /**
-     * When using dual or multiple x axes, this number defines which xAxis the
-     * particular series is connected to. It refers to either the
-     * {@link #xAxis.id|axis id}
-     * or the index of the axis in the xAxis array, with 0 being the first.
-     *
-     * @type      {number|string}
-     * @default   0
-     * @product   highcharts highstock
-     * @apioption series.xAxis
-     */
-
-    /**
-     * When using dual or multiple y axes, this number defines which yAxis the
-     * particular series is connected to. It refers to either the
-     * {@link #yAxis.id|axis id}
-     * or the index of the axis in the yAxis array, with 0 being the first.
-     *
-     * @sample {highcharts} highcharts/series/yaxis/
-     *         Apply the column series to the secondary Y axis
-     *
-     * @type      {number|string}
-     * @default   0
-     * @product   highcharts highstock
-     * @apioption series.yAxis
-     */
-
-    /**
-     * Define the visual z index of the series.
-     *
-     * @sample {highcharts} highcharts/plotoptions/series-zindex-default/
-     *         With no z index, the series defined last are on top
-     * @sample {highcharts} highcharts/plotoptions/series-zindex/
-     *         With a z index, the series with the highest z index is on top
-     * @sample {highstock} highcharts/plotoptions/series-zindex-default/
-     *         With no z index, the series defined last are on top
-     * @sample {highstock} highcharts/plotoptions/series-zindex/
-     *         With a z index, the series with the highest z index is on top
-     *
-     * @type      {number}
-     * @product   highcharts highstock
-     * @apioption series.zIndex
-     */
-
     isCartesian: true,
     pointClass: Point,
     sorted: true, // requires the data to be sorted
@@ -2400,6 +2486,9 @@ H.Series = H.seriesType('line', null
     parallelArrays: ['x', 'y'],
     coll: 'series',
     init: function (chart, options) {
+
+        fireEvent(this, 'init', { options: options });
+
         var series = this,
             events,
             chartSeries = chart.series,
@@ -2415,23 +2504,22 @@ H.Series = H.seriesType('line', null
 
         /**
          * Read only. The series' type, like "line", "area", "column" etc. The
-         * type in the series options anc can be altered using {@link
-         * Series#update}.
+         * type in the series options anc can be altered using
+         * {@link Series#update}.
          *
          * @name Highcharts.Series#type
          * @type {string}
          */
 
         /**
-         * Read only. The series' current options. To update, use {@link
-         * Series#update}.
+         * Read only. The series' current options. To update, use
+         * {@link Series#update}.
          *
          * @name Highcharts.Series#options
          * @type {Highcharts.PlotSeriesOptions}
          */
         series.options = options = series.setOptions(options);
         series.linkedSeries = [];
-
         // bind the axes
         series.bindAxes();
 
@@ -2487,7 +2575,7 @@ H.Series = H.seriesType('line', null
         series.getSymbol();
 
         // Set the data
-        each(series.parallelArrays, function (key) {
+        series.parallelArrays.forEach(function (key) {
             series[key + 'Data'] = [];
         });
         series.setData(options.data, false);
@@ -2567,10 +2655,10 @@ H.Series = H.seriesType('line', null
             axisOptions;
 
         // repeat for xAxis and yAxis
-        each(series.axisTypes || [], function (AXIS) {
+        (series.axisTypes || []).forEach(function (AXIS) {
 
             // loop through the chart's axis objects
-            each(chart[AXIS], function (axis) {
+            chart[AXIS].forEach(function (axis) {
                 axisOptions = axis.options;
 
                 // apply if the series xAxis or yAxis option mathches the number
@@ -2614,7 +2702,7 @@ H.Series = H.seriesType('line', null
 
             // The series needs an X and an Y axis
             if (!series[AXIS] && series.optionalAxis !== AXIS) {
-                H.error(18, true);
+                H.error(18, true, chart);
             }
 
         });
@@ -2654,7 +2742,7 @@ H.Series = H.seriesType('line', null
                     );
                 };
 
-        each(series.parallelArrays, fn);
+        series.parallelArrays.forEach(fn);
     },
 
     /**
@@ -2738,7 +2826,9 @@ H.Series = H.seriesType('line', null
             userPlotOptions = userOptions.plotOptions || {},
             typeOptions = plotOptions[this.type],
             options,
-            zones;
+            zones,
+            zone,
+            styledMode = chart.styledMode;
 
         this.userOptions = itemOptions;
 
@@ -2795,25 +2885,24 @@ H.Series = H.seriesType('line', null
             (options.negativeColor || options.negativeFillColor) &&
             !options.zones
         ) {
-            zones.push({
+            zone = {
                 value:
                     options[this.zoneAxis + 'Threshold'] ||
                     options.threshold ||
                     0,
-                className: 'highcharts-negative',
-                
-                color: options.negativeColor,
-                fillColor: options.negativeFillColor
-                
-            });
+                className: 'highcharts-negative'
+            };
+            if (!styledMode) {
+                zone.color = options.negativeColor;
+                zone.fillColor = options.negativeFillColor;
+            }
+            zones.push(zone);
         }
         if (zones.length) { // Push one extra zone for the rest
             if (defined(zones[zones.length - 1].value)) {
-                zones.push({
-                    
+                zones.push(styledMode ? {} : {
                     color: this.color,
                     fillColor: this.fillColor
-                    
                 });
             }
         }
@@ -2893,9 +2982,11 @@ H.Series = H.seriesType('line', null
      *
      * @function Highcharts.Series#getColor
      */
-    
     getColor: function () {
-        if (this.options.colorByPoint) {
+        if (this.chart.styledMode) {
+            this.getCyclic('color');
+
+        } else if (this.options.colorByPoint) {
             // #4359, selected slice got series.color even when colorByPoint was
             // set.
             this.options.color = null;
@@ -2907,7 +2998,7 @@ H.Series = H.seriesType('line', null
             );
         }
     },
-    
+
     /**
      * Get the series' symbol based on either the options or pulled from global
      * options.
@@ -2952,28 +3043,45 @@ H.Series = H.seriesType('line', null
             lastIndex,
             requireSorting = this.requireSorting;
 
+        this.xIncrement = null;
+
         // Iterate the new data
-        each(data, function (pointOptions) {
-            var x,
-                pointIndex;
+        data.forEach(function (pointOptions) {
+            var id,
+                matchingPoint,
+                x,
+                pointIndex,
+                optionsObject = (
+                    H.defined(pointOptions) &&
+                    this.pointClass.prototype.optionsToObject.call(
+                        { series: this },
+                        pointOptions
+                    )
+                ) || {};
 
             // Get the x of the new data point
-            x = (
-                H.defined(pointOptions) &&
-                this.pointClass.prototype.optionsToObject.call(
-                    { series: this },
-                    pointOptions
-                ).x
-            );
+            x = optionsObject.x;
+            id = optionsObject.id;
 
-            if (isNumber(x)) {
+            if (id || isNumber(x)) {
+                if (id) {
+                    matchingPoint = this.chart.get(id);
+                    pointIndex = matchingPoint && matchingPoint.x;
+                }
+
                 // Search for the same X in the existing data set
-                pointIndex = H.inArray(x, this.xData, lastIndex);
+                if (pointIndex === undefined && isNumber(x)) {
+                    pointIndex = this.xData.indexOf(x, lastIndex);
+                }
 
                 // Matching X not found
                 // or used already due to ununique x values (#8995),
                 // add point (but later)
-                if (pointIndex === -1 || oldData[pointIndex].touched) {
+                if (
+                    pointIndex === -1 ||
+                    pointIndex === undefined ||
+                    oldData[pointIndex].touched
+                ) {
                     pointsToAdd.push(pointOptions);
 
                 // Matching X found, update
@@ -3016,7 +3124,7 @@ H.Series = H.seriesType('line', null
         // If we did not find keys (x-values), and the length is the same,
         // update one-to-one
         } else if (data.length === oldData.length) {
-            each(data, function (point, i) {
+            data.forEach(function (point, i) {
                 // .update doesn't exist on a linked, hidden series (#3709)
                 if (oldData[i].update && point !== options.data[i]) {
                     oldData[i].update(point, false, null, false);
@@ -3029,7 +3137,7 @@ H.Series = H.seriesType('line', null
         }
 
         // Add new points
-        each(pointsToAdd, function (point) {
+        pointsToAdd.forEach(function (point) {
             this.addPoint(point, false);
         }, this);
 
@@ -3074,11 +3182,13 @@ H.Series = H.seriesType('line', null
      *        configuration object to set duration or easing.
      *
      * @param {boolean} [updatePoints=true]
-     *        When the updated data is the same length as the existing data, or
-     *        points can be matched by X values, points will be updated instead
-     *        of replaced. This allows updating with animation and performs
-     *        better. In this case, the original array is not passed by
-     *        reference. Set `false` to prevent.
+     *        When this is true, points will be updated instead of replaced
+     *        whenever possible. This occurs a) when the updated data is the
+     *        same length as the existing data, b) when points are matched by
+     *        their id's, or c) when points can be matched by X values. This
+     *        allows updating with animation and performs better. In this case,
+     *        the original array is not passed by reference. Set `false` to
+     *        prevent.
      */
     setData: function (data, redraw, animation, updatePoints) {
         var series = this,
@@ -3126,7 +3236,7 @@ H.Series = H.seriesType('line', null
             series.colorCounter = 0; // for series with colorByPoint (#1547)
 
             // Update parallel arrays
-            each(this.parallelArrays, function (key) {
+            this.parallelArrays.forEach(function (key) {
                 series[key + 'Data'].length = 0;
             });
 
@@ -3169,7 +3279,7 @@ H.Series = H.seriesType('line', null
                 } else {
                     // Highcharts expects configs to be numbers or arrays in
                     // turbo mode
-                    H.error(12);
+                    H.error(12, false, chart);
                 }
             } else {
                 for (i = 0; i < dataLength; i++) {
@@ -3187,7 +3297,7 @@ H.Series = H.seriesType('line', null
             // Forgetting to cast strings to numbers is a common caveat when
             // handling CSV or JSON
             if (yData && isString(yData[0])) {
-                H.error(14, true);
+                H.error(14, true, chart);
             }
 
             series.data = [];
@@ -3339,7 +3449,7 @@ H.Series = H.seriesType('line', null
             // data grouping and navigation in Stock charts (#725) and width
             // calculation of columns (#1900)
             } else if (distance < 0 && throwOnUnsorted) {
-                H.error(15);
+                H.error(15, false, series.chart);
                 throwOnUnsorted = false; // Only once
             }
         }
@@ -3473,10 +3583,10 @@ H.Series = H.seriesType('line', null
                  * in the group.
                  * - `dataGroup.length` is the amount of points in the group.
                  *
+                 * @product highstock
+                 *
                  * @name Highcharts.Point#dataGroup
                  * @type {Highcharts.SVGElement|undefined}
-                 *
-                 * @product highstock
                  */
                 point.dataGroup = series.groupMap[i];
                 if (point.dataGroup.options) {
@@ -3528,7 +3638,7 @@ H.Series = H.seriesType('line', null
          * @see Series.points
          *
          * @name Highcharts.Series#data
-         * @type {Array<Point>}
+         * @type {Array<Highcharts.Point>}
          */
         series.data = data;
 
@@ -3629,8 +3739,7 @@ H.Series = H.seriesType('line', null
      *
      * @function Highcharts.Series#translate
      *
-     * @todo
-     * Make events official: Fires the event `afterTranslate`.
+     * @fires Highcharts.Series#events:translate
      */
     translate: function () {
         if (!this.processedXData) { // hidden series
@@ -3659,11 +3768,9 @@ H.Series = H.seriesType('line', null
             stackIndicator,
             closestPointRangePx = Number.MAX_VALUE;
 
-        /*
-         * Plotted coordinates need to be within a limited range. Drawing too
-         * far outside the viewport causes various rendering issues (#3201,
-         * #3923, #7555).
-         */
+        // Plotted coordinates need to be within a limited range. Drawing too
+        // far outside the viewport causes various rendering issues (#3201,
+        // #3923, #7555).
         function limitedRange(val) {
             return Math.min(Math.max(-1e5, val), 1e5);
         }
@@ -3821,16 +3928,18 @@ H.Series = H.seriesType('line', null
     getValidPoints: function (points, insideOnly) {
         var chart = this.chart;
         // #3916, #5029, #5085
-        return grep(points || this.points || [], function isValidPoint(point) {
-            if (insideOnly && !chart.isInsidePlot(
-                point.plotX,
-                point.plotY,
-                chart.inverted
-            )) {
-                return false;
+        return (points || this.points || []).filter(
+            function isValidPoint(point) {
+                if (insideOnly && !chart.isInsidePlot(
+                    point.plotX,
+                    point.plotY,
+                    chart.inverted
+                )) {
+                    return false;
+                }
+                return !point.isNull;
             }
-            return !point.isNull;
-        });
+        );
     },
 
     /**
@@ -3978,8 +4087,7 @@ H.Series = H.seriesType('line', null
      * @private
      * @function Highcharts.Series#afterAnimate
      *
-     * @todo
-     * Make events official: Fires the event `afterAnimate`.
+     * @fires Highcharts.Series#event:afterAnimate
      */
     afterAnimate: function () {
         this.setClip();
@@ -3990,9 +4098,9 @@ H.Series = H.seriesType('line', null
     /**
      * Draw the markers for line-like series types, and columns or other
      * graphical representation for {@link Point} objects for other series
-     * types. The resulting element is typically stored as {@link
-     * Point.graphic}, and is created on the first call and updated and moved on
-     * subsequent calls.
+     * types. The resulting element is typically stored as
+     * {@link Point.graphic}, and is created on the first call and updated and
+     * moved on subsequent calls.
      *
      * @function Highcharts.Series#drawPoints
      */
@@ -4015,7 +4123,7 @@ H.Series = H.seriesType('line', null
             markerAttribs,
             globallyEnabled = pick(
                 seriesMarkerOptions.enabled,
-                xAxis.isRadial ? true : null,
+                !xAxis || xAxis.isRadial ? true : null,
                 // Use larger or equal as radius is null in bubbles (#6321)
                 series.closestPointRangePx >= (
                     seriesMarkerOptions.enabledThreshold *
@@ -4034,7 +4142,7 @@ H.Series = H.seriesType('line', null
                     globallyEnabled &&
                     pointMarkerOptions.enabled === undefined
                 ) || pointMarkerOptions.enabled;
-                isInside = point.isInside;
+                isInside = point.isInside !== false;
 
                 // only draw the point if y is defined
                 if (enabled && !point.isNull) {
@@ -4052,6 +4160,7 @@ H.Series = H.seriesType('line', null
                         // marker must be toggled
                         graphic[isInside ? 'show' : 'hide'](true)
                             .animate(markerAttribs);
+
                     } else if (
                         isInside &&
                         (markerAttribs.width > 0 || point.hasImage)
@@ -4084,9 +4193,8 @@ H.Series = H.seriesType('line', null
                         .add(markerGroup);
                     }
 
-                    
                     // Presentational attributes
-                    if (graphic) {
+                    if (graphic && !chart.styledMode) {
                         graphic.attr(
                             series.pointAttribs(
                                 point,
@@ -4094,7 +4202,6 @@ H.Series = H.seriesType('line', null
                             )
                         );
                     }
-                    
 
                     if (graphic) {
                         graphic.addClass(point.getClassName(), true);
@@ -4113,6 +4220,8 @@ H.Series = H.seriesType('line', null
      * styled mode and classic. Can be overridden for different series types.
      *
      * @see Series#pointAttribs
+     *
+     * @function Highcharts.Series#markerAttribs
      *
      * @param {Highcharts.Point} point
      *        The Point to inspect.
@@ -4171,13 +4280,14 @@ H.Series = H.seriesType('line', null
 
     },
 
-    
-
     /**
      * Internal function to get presentational attributes for each point. Unlike
      * {@link Series#markerAttribs}, this function should return those
      * attributes that can also be set in CSS. In styled mode, `pointAttribs`
      * won't be called.
+     *
+     * @private
+     * @function Highcharts.Series#pointAttribs
      *
      * @param {Highcharts.Point} point
      *        The point instance to inspect.
@@ -4257,16 +4367,13 @@ H.Series = H.seriesType('line', null
         };
     },
 
-    
-
     /**
      * Clear DOM objects and free up memory.
      *
      * @private
      * @function Highcharts.Series#destroy
      *
-     * @todo
-     * Make events official: Fires the event `destroy`.
+     * @fires Highcharts.Series#event:destroy
      */
     destroy: function () {
         var series = this,
@@ -4285,7 +4392,7 @@ H.Series = H.seriesType('line', null
         removeEvent(series);
 
         // erase from axes
-        each(series.axisTypes || [], function (AXIS) {
+        (series.axisTypes || []).forEach(function (AXIS) {
             axis = series[AXIS];
             if (axis && axis.series) {
                 erase(axis.series, series);
@@ -4381,7 +4488,7 @@ H.Series = H.seriesType('line', null
         }
 
         // Build the line
-        each(points, function (point, i) {
+        points.forEach(function (point, i) {
 
             var plotX = point.plotX,
                 plotY = point.plotY,
@@ -4484,19 +4591,24 @@ H.Series = H.seriesType('line', null
         var series = this,
             options = this.options,
             graphPath = (this.gappedPath || this.getGraphPath).call(this),
+            styledMode = this.chart.styledMode,
             props = [[
                 'graph',
-                'highcharts-graph',
-                
+                'highcharts-graph'
+            ]];
+
+        // Presentational properties
+        if (!styledMode) {
+            props[0].push(
                 options.lineColor || this.color,
                 options.dashStyle
-                
-            ]];
+            );
+        }
 
         props = series.getZonesGraphs(props);
 
         // Draw the graph
-        each(props, function (prop, i) {
+        props.forEach(function (prop, i) {
             var graphKey = prop[0],
                 graph = series[graphKey],
                 attribs;
@@ -4514,27 +4626,28 @@ H.Series = H.seriesType('line', null
                     .attr({ zIndex: 1 }) // #1069
                     .add(series.group);
 
-                
-                attribs = {
-                    'stroke': prop[2],
-                    'stroke-width': options.lineWidth,
-                    // Polygon series use filled graph
-                    'fill': (series.fillGraph && series.color) || 'none'
-                };
 
-                if (prop[3]) {
-                    attribs.dashstyle = prop[3];
-                } else if (options.linecap !== 'square') {
-                    attribs['stroke-linecap'] = attribs['stroke-linejoin'] =
-                        'round';
+                if (!styledMode) {
+                    attribs = {
+                        'stroke': prop[2],
+                        'stroke-width': options.lineWidth,
+                        // Polygon series use filled graph
+                        'fill': (series.fillGraph && series.color) || 'none'
+                    };
+
+                    if (prop[3]) {
+                        attribs.dashstyle = prop[3];
+                    } else if (options.linecap !== 'square') {
+                        attribs['stroke-linecap'] = attribs['stroke-linejoin'] =
+                            'round';
+                    }
+
+                    graph = series[graphKey]
+                        .attr(attribs)
+                        // Add shadow to normal series (0) or to first zone (1)
+                        // #3932
+                        .shadow((i < 2) && options.shadow);
                 }
-
-                graph = series[graphKey]
-                    .attr(attribs)
-                    // Add shadow to normal series (0) or to first zone (1)
-                    // #3932
-                    .shadow((i < 2) && options.shadow);
-                
             }
 
             // Helpers for animation
@@ -4546,8 +4659,8 @@ H.Series = H.seriesType('line', null
     },
 
     /**
-     * Get zones properties for building graphs.
-     * Extendable by series with multiple lines within one series.
+     * Get zones properties for building graphs. Extendable by series with
+     * multiple lines within one series.
      *
      * @private
      * @function Highcharts.Series#getZonesGraphs
@@ -4558,16 +4671,19 @@ H.Series = H.seriesType('line', null
      */
     getZonesGraphs: function (props) {
         // Add the zone properties if any
-        each(this.zones, function (zone, i) {
-            props.push([
+        this.zones.forEach(function (zone, i) {
+            var propset = [
                 'zone-graph-' + i,
                 'highcharts-graph highcharts-zone-graph-' + i + ' ' +
-                    (zone.className || ''),
-                
-                zone.color || this.color,
-                zone.dashStyle || this.options.dashStyle
-                
-            ]);
+                    (zone.className || '')
+            ];
+            if (!this.chart.styledMode) {
+                propset.push(
+                    zone.color || this.color,
+                    zone.dashStyle || this.options.dashStyle
+                );
+            }
+            props.push(propset);
         }, this);
 
         return props;
@@ -4617,11 +4733,12 @@ H.Series = H.seriesType('line', null
 
             // Create the clips
             extremes = axis.getExtremes();
-            each(zones, function (threshold, i) {
+            zones.forEach(function (threshold, i) {
 
                 translatedFrom = reversed ?
                     (horiz ? chart.plotWidth : 0) :
-                    (horiz ? 0 : axis.toPixels(extremes.min));
+                    (horiz ? 0 : (axis.toPixels(extremes.min) || 0));
+
                 translatedFrom = Math.min(
                     Math.max(
                         pick(translatedTo, translatedFrom), 0
@@ -4634,7 +4751,7 @@ H.Series = H.seriesType('line', null
                             axis.toPixels(
                                 pick(threshold.value, extremes.max),
                                 true
-                            )
+                            ) || 0
                         ),
                         0
                     ),
@@ -4670,7 +4787,6 @@ H.Series = H.seriesType('line', null
                     }
                 }
 
-                
                 // VML SUPPPORT
                 if (inverted && renderer.isVML) {
                     if (axis.isXAxis) {
@@ -4690,7 +4806,6 @@ H.Series = H.seriesType('line', null
                     }
                 }
                 // END OF VML SUPPORT
-                
 
                 if (clips[i]) {
                     clips[i].animate(clipAttr);
@@ -4732,7 +4847,7 @@ H.Series = H.seriesType('line', null
             remover;
 
         function setInvert() {
-            each(['group', 'markerGroup'], function (groupName) {
+            ['group', 'markerGroup'].forEach(function (groupName) {
                 if (series[groupName]) {
 
                     // VML/HTML needs explicit attributes for flipping
@@ -4862,8 +4977,7 @@ H.Series = H.seriesType('line', null
      *
      * @function Highcharts.Series#render
      *
-     * @todo
-     * Make events official: Fires the event `afterRender`.
+     * @fires Highcharts.Series#event:afterRender
      */
     render: function () {
         var series = this,
@@ -4914,11 +5028,11 @@ H.Series = H.seriesType('line', null
             series.applyZones();
         }
 
-/*        each(series.points, function (point) {
+        /* series.points.forEach(function (point) {
             if (point.redraw) {
                 point.redraw();
             }
-        });*/
+        }); */
 
         // draw the data labels (inn pies they go before the points)
         if (series.drawDataLabels) {
@@ -5014,9 +5128,9 @@ H.Series = H.seriesType('line', null
      * @private
      * @function Highcharts.Series#searchPoint
      *
-     * @param {*} e
+     * @param {object} e
      *
-     * @param {*} compareX
+     * @param {boolean} [compareX]
      *
      * @return {Highcharts.Point}
      */
@@ -5111,9 +5225,9 @@ H.Series = H.seriesType('line', null
      * @private
      * @function Highcharts.Series#searchKDTree
      *
-     * @param {*} point
+     * @param {object} point
      *
-     * @param {*} compareX
+     * @param {boolean} [compareX]
      *
      * @return {Highcharts.Point}
      */
@@ -5205,8 +5319,6 @@ H.Series = H.seriesType('line', null
  * @apioption plotOptions.line
  */
 
-
-
 /**
  * The SVG value used for the `stroke-linecap` and `stroke-linejoin`
  * of a line graph. Round means that lines are rounded in the ends and
@@ -5218,8 +5330,6 @@ H.Series = H.seriesType('line', null
  * @since      3.0.7
  * @apioption  plotOptions.line.linecap
  */
-
-
 
 /**
  * A `line` series. If the [type](#series.line.type) option is not
@@ -5287,7 +5397,7 @@ H.Series = H.seriesType('line', null
  * @sample {highcharts} highcharts/series/data-array-of-objects/
  *         Config objects
  *
- * @type      {Array<number|Array<number|string|Date>|*>}
+ * @type      {Array<number|Array<number|string>|*>}
  * @apioption series.line.data
  */
 
@@ -5297,7 +5407,7 @@ H.Series = H.seriesType('line', null
  *
  * @type      {string}
  * @since     5.0.0
- * @product   highcharts
+ * @product   highcharts gantt
  * @apioption series.line.data.className
  */
 
@@ -5311,8 +5421,8 @@ H.Series = H.seriesType('line', null
  * @sample {highcharts} highcharts/point/color/
  *         Mark the highest point
  *
- * @type      {Highcharts.ColorString}
- * @product   highcharts highstock
+ * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.color
  */
 
@@ -5325,7 +5435,7 @@ H.Series = H.seriesType('line', null
  *
  * @type      {number}
  * @since     5.0.0
- * @product   highcharts
+ * @product   highcharts gantt
  * @apioption series.line.data.colorIndex
  */
 
@@ -5338,7 +5448,7 @@ H.Series = H.seriesType('line', null
  *         Show a label for the last value
  *
  * @type      {Highcharts.PlotSeriesDataLabelsOptions}
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.dataLabels
  */
 
@@ -5360,7 +5470,7 @@ H.Series = H.seriesType('line', null
  *
  * @type      {string}
  * @since     1.2.0
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.id
  */
 
@@ -5391,7 +5501,7 @@ H.Series = H.seriesType('line', null
  *
  * @type      {boolean}
  * @default   false
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.selected
  */
 
@@ -5416,7 +5526,7 @@ H.Series = H.seriesType('line', null
  * Individual point events
  *
  * @extends   plotOptions.series.point.events
- * @product   highcharts highstock
+ * @product   highcharts highstock gantt
  * @apioption series.line.data.events
  */
 

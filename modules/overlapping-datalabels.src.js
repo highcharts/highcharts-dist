@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v6.2.0 (2018-10-17)
+ * @license Highcharts JS v7.0.0 (2018-12-11)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -14,7 +14,7 @@
 			return factory;
 		});
 	} else {
-		factory(Highcharts);
+		factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
 	}
 }(function (Highcharts) {
 

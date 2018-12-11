@@ -1,4 +1,4 @@
-/**
+/* *
  * Tilemaps module
  *
  * (c) 2010-2017 Highsoft AS
@@ -13,8 +13,6 @@ import H from '../parts/Globals.js';
 import '../parts-map/HeatmapSeries.js';
 
 var seriesType = H.seriesType,
-    each = H.each,
-    reduce = H.reduce,
     pick = H.pick,
     // Utility func to get the middle number of 3
     between = function (x, a, b) {
@@ -29,22 +27,10 @@ var seriesType = H.seriesType,
         };
     };
 
-/**
- * Map of shape types.
- *
- * @private
- * @name Highcharts.tileShapeTypes
- * @type {*}
- */
+// Map of shape types.
 H.tileShapeTypes = {
 
-    /**
-     * Hexagon shape type.
-     *
-     * @private
-     * @name Highcharts.tileShapeTypes.hexagon
-     * @type {*}
-     */
+    // Hexagon shape type.
     hexagon: {
         alignDataLabel: H.seriesTypes.scatter.prototype.alignDataLabel,
         getSeriesPadding: function (series) {
@@ -77,7 +63,7 @@ H.tileShapeTypes = {
 
             series.generatePoints();
 
-            each(series.points, function (point) {
+            series.points.forEach(function (point) {
                 var x1 = between(
                         Math.floor(
                             xAxis.len -
@@ -176,13 +162,7 @@ H.tileShapeTypes = {
     },
 
 
-    /**
-     * Diamond shape type.
-     *
-     * @private
-     * @name Highcharts.tileShapeTypes.diamond
-     * @type {*}
-     */
+    // Diamond shape type.
     diamond: {
         alignDataLabel: H.seriesTypes.scatter.prototype.alignDataLabel,
         getSeriesPadding: function (series) {
@@ -213,7 +193,7 @@ H.tileShapeTypes = {
 
             series.generatePoints();
 
-            each(series.points, function (point) {
+            series.points.forEach(function (point) {
                 var x1 = between(
                         Math.round(
                             xAxis.len -
@@ -299,13 +279,7 @@ H.tileShapeTypes = {
     },
 
 
-    /**
-     * Circle shape type.
-     *
-     * @private
-     * @name Highcharts.tileShapeTypes.circle
-     * @type {*}
-     */
+    // Circle shape type.
     circle: {
         alignDataLabel: H.seriesTypes.scatter.prototype.alignDataLabel,
         getSeriesPadding: function (series) {
@@ -333,7 +307,7 @@ H.tileShapeTypes = {
 
             series.generatePoints();
 
-            each(series.points, function (point) {
+            series.points.forEach(function (point) {
                 var x = between(
                         Math.round(
                             xAxis.len -
@@ -435,13 +409,7 @@ H.tileShapeTypes = {
     },
 
 
-    /**
-     * Square shape type.
-     *
-     * @private
-     * @name Highcharts.tileShapeTypes.square
-     * @type {*}
-     */
+    // Square shape type.
     square: {
         alignDataLabel: H.seriesTypes.heatmap.prototype.alignDataLabel,
         translate: H.seriesTypes.heatmap.prototype.translate,
@@ -464,15 +432,18 @@ H.wrap(H.Axis.prototype, 'setAxisTranslation', function (proceed) {
 
     var axis = this,
         // Find which series' padding to use
-        seriesPadding = reduce(H.map(axis.series, function (series) {
-            return series.getSeriesPixelPadding &&
-                series.getSeriesPixelPadding(axis);
-        }), function (a, b) {
-            return (a && a.padding) > (b && b.padding) ? a : b;
-        }, undefined) || {
-            padding: 0,
-            axisLengthFactor: 1
-        },
+        seriesPadding = axis.series
+            .map(function (series) {
+                return series.getSeriesPixelPadding &&
+                    series.getSeriesPixelPadding(axis);
+            })
+            .reduce(function (a, b) {
+                return (a && a.padding) > (b && b.padding) ? a : b;
+            }, undefined) ||
+            {
+                padding: 0,
+                axisLengthFactor: 1
+            },
         lengthPadding = Math.round(
             seriesPadding.padding * seriesPadding.axisLengthFactor
         );
@@ -593,14 +564,7 @@ seriesType('tilemap', 'heatmap'
 
 }, { // Prototype functions
 
-    /**
-     * Set tile shape object on series
-     *
-     * @private
-     * @function Highcharts.seriesTypes.tilemap#setOptions
-     *
-     * @return {*}
-     */
+    // Set tile shape object on series
     setOptions: function () {
         // Call original function
         var ret = H.seriesTypes.heatmap.prototype.setOptions.apply(this,
@@ -611,30 +575,14 @@ seriesType('tilemap', 'heatmap'
         return ret;
     },
 
-    /**
-     * Use the shape's defined data label alignment function
-     *
-     * @private
-     * @function Highcharts.seriesTypes.tilemap#alignDataLabel
-     *
-     * @return {*}
-     */
+    // Use the shape's defined data label alignment function
     alignDataLabel: function () {
         return this.tileShape.alignDataLabel.apply(this,
             Array.prototype.slice.call(arguments)
         );
     },
 
-    /**
-     * Get metrics for padding of axis for this series
-     *
-     * @private
-     * @function Highcharts.seriesTypes.tilemap#getSeriesPixelPadding
-     *
-     * @param {Highcharts.Axis} axis
-     *
-     * @return {*}
-     */
+    // Get metrics for padding of axis for this series
     getSeriesPixelPadding: function (axis) {
         var isX = axis.isXAxis,
             padding = this.tileShape.getSeriesPadding(this),
@@ -679,12 +627,7 @@ seriesType('tilemap', 'heatmap'
         };
     },
 
-    /**
-     * Use translate from tileShape
-     *
-     * @private
-     * @function Highcharts.seriesTypes.tilemap#translate
-     */
+    // Use translate from tileShape
     translate: function () {
         return this.tileShape.translate.apply(this,
             Array.prototype.slice.call(arguments)

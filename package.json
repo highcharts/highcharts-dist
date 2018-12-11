@@ -2,7 +2,7 @@
   "name": "highcharts",
   "description": "JavaScript charting framework",
   "homepage": "http://www.highcharts.com",
-  "version": "6.2.0",
+  "version": "7.0.0",
   "author": "Highsoft AS <support@highcharts.com> (http://www.highcharts.com/about)",
   "main": "highcharts.js",
   "repository": {
@@ -19,5 +19,6 @@
     "webpack"
   ],
   "bugs": "https://github.com/highcharts/highcharts/issues",
-  "license": "https://www.highcharts.com/license"
+  "license": "https://www.highcharts.com/license",
+  "types": "highcharts.d.ts"
 }

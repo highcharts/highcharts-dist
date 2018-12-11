@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v6.2.0 (2018-10-17)
+ * @license  Highcharts JS v7.0.0 (2018-12-11)
  * Highcharts variwide module
  *
  * (c) 2010-2018 Torstein Honsi
@@ -15,11 +15,11 @@
 			return factory;
 		});
 	} else {
-		factory(Highcharts);
+		factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
 	}
 }(function (Highcharts) {
 	(function (H) {
-		/**
+		/* *
 		 * Highcharts variwide module
 		 *
 		 * (c) 2010-2018 Torstein Honsi
@@ -28,29 +28,40 @@
 		 */
 
 
+
 		var addEvent = H.addEvent,
 		    seriesType = H.seriesType,
 		    seriesTypes = H.seriesTypes,
-		    each = H.each,
 		    pick = H.pick;
+
+		/**
+		 * @private
+		 * @class
+		 * @name Highcharts.seriesTypes.variwide
+		 *
+		 * @augments Highcharts.Series
+		 */
+		seriesType('variwide', 'column'
 
 		/**
 		 * A variwide chart (related to marimekko chart) is a column chart with a
 		 * variable width expressing a third dimension.
 		 *
-		 * @extends plotOptions.column
-		 * @excluding boostThreshold,crisp,depth,edgeColor,edgeWidth,groupZPadding
-		 * @product highcharts
 		 * @sample {highcharts} highcharts/demo/variwide/
 		 *         Variwide chart
 		 * @sample {highcharts} highcharts/series-variwide/inverted/
 		 *         Inverted variwide chart
 		 * @sample {highcharts} highcharts/series-variwide/datetime/
 		 *         Variwide columns on a datetime axis
-		 * @since 6.0.0
+		 *
+		 * @extends      plotOptions.column
+		 * @since        6.0.0
+		 * @product      highcharts
+		 * @excluding    boostThreshold, crisp, depth, edgeColor, edgeWidth,
+		 *               groupZPadding
 		 * @optionparent plotOptions.variwide
 		 */
-		seriesType('variwide', 'column', {
+		, {
 		    /**
 		     * In a variwide chart, the point padding is 0 in order to express the
 		     * horizontal stacking of items.
@@ -64,15 +75,14 @@
 		}, {
 		    pointArrayMap: ['y', 'z'],
 		    parallelArrays: ['x', 'y', 'z'],
-		    processData: function () {
+		    processData: function (force) {
 		        this.totalZ = 0;
 		        this.relZ = [];
-		        seriesTypes.column.prototype.processData.call(this);
+		        seriesTypes.column.prototype.processData.call(this, force);
 
-		        each(
-		            this.xAxis.reversed ?
+		        (this.xAxis.reversed ?
 		                this.zData.slice().reverse() :
-		                this.zData,
+		                this.zData).forEach(
 		            function (z, i) {
 		                this.relZ[i] = this.totalZ;
 		                this.totalZ += z;
@@ -89,9 +99,18 @@
 		    /**
 		     * Translate an x value inside a given category index into the distorted
 		     * axis translation.
-		     * @param  {Number} index The category index
-		     * @param  {Number} x The X pixel position in undistorted axis pixels
-		     * @return {Number}   Distorted X position
+		     *
+		     * @private
+		     * @function Highcharts.Series#postTranslate
+		     *
+		     * @param {number} index
+		     *        The category index
+		     *
+		     * @param {number} x
+		     *        The X pixel position in undistorted axis pixels
+		     *
+		     * @return {number}
+		     *         Distorted X position
 		     */
 		    postTranslate: function (index, x, point) {
 
@@ -120,9 +139,7 @@
 		        return ret;
 		    },
 
-		    /**
-		     * Extend translation by distoring X position based on Z.
-		     */
+		    // Extend translation by distoring X position based on Z.
 		    translate: function () {
 
 		        // Temporarily disable crisping when computing original shapeArgs
@@ -139,7 +156,7 @@
 		            crisp = this.borderWidth % 2 / 2;
 
 		        // Distort the points to reflect z dimension
-		        each(this.points, function (point, i) {
+		        this.points.forEach(function (point, i) {
 		            var left, right;
 
 		            if (xAxis.variwide) {
@@ -223,7 +240,7 @@
 		    var axis = this;
 		    if (!this.horiz && this.variwide) {
 		        this.chart.labelCollectors.push(function () {
-		            return H.map(axis.tickPositions, function (pos, i) {
+		            return axis.tickPositions.map(function (pos, i) {
 		                var label = axis.ticks[pos].label;
 		                label.labelrank = axis.zData[i];
 		                return label;
@@ -273,12 +290,11 @@
 
 
 		/**
-		 * A `variwide` series. If the [type](#series.variwide.type) option is
-		 * not specified, it is inherited from [chart.type](#chart.type).
+		 * A `variwide` series. If the [type](#series.variwide.type) option is not
+		 * specified, it is inherited from [chart.type](#chart.type).
 		 *
-		 * @type {Object}
-		 * @extends series,plotOptions.variwide
-		 * @product highcharts
+		 * @extends   series,plotOptions.variwide
+		 * @product   highcharts
 		 * @apioption series.variwide
 		 */
 
@@ -286,46 +302,44 @@
 		 * An array of data points for the series. For the `variwide` series type,
 		 * points can be given in the following ways:
 		 *
-		 * 1.  An array of arrays with 3 or 2 values. In this case, the values
-		 * correspond to `x,y,z`. If the first value is a string, it is applied
-		 * as the name of the point, and the `x` value is inferred. The `x`
-		 * value can also be omitted, in which case the inner arrays should
-		 * be of length 2\. Then the `x` value is automatically calculated,
-		 * either starting at 0 and incremented by 1, or from `pointStart` and
-		 * `pointInterval` given in the series options.
+		 * 1. An array of arrays with 3 or 2 values. In this case, the values
+		 *    correspond to `x,y,z`. If the first value is a string, it is applied as
+		 *    the name of the point, and the `x` value is inferred. The `x` value can
+		 *    also be omitted, in which case the inner arrays should be of length 2.
+		 *    Then the `x` value is automatically calculated, either starting at 0 and
+		 *    incremented by 1, or from `pointStart` and `pointInterval` given in the
+		 *    series options.
 		 *
-		 *  ```js
-		 *     data: [
-		 *         [0, 1, 2],
-		 *         [1, 5, 5],
-		 *         [2, 0, 2]
-		 *     ]
-		 *  ```
+		 *    ```js
+		 *       data: [
+		 *           [0, 1, 2],
+		 *           [1, 5, 5],
+		 *           [2, 0, 2]
+		 *       ]
+		 *    ```
 		 *
-		 * 2.  An array of objects with named values. The following snippet shows only a
-		 * few settings, see the complete options set below. If the total number of data
-		 * points exceeds the series' [turboThreshold](#series.variwide.turboThreshold),
-		 * this option is not available.
+		 * 2. An array of objects with named values. The following snippet shows only a
+		 *    few settings, see the complete options set below. If the total number of
+		 *    data points exceeds the series'
+		 *    [turboThreshold](#series.variwide.turboThreshold), this option is not
+		 *    available.
 		 *
-		 *  ```js
-		 *     data: [{
-		 *         x: 1,
-		 *         y: 1,
-		 *         z: 1,
-		 *         name: "Point2",
-		 *         color: "#00FF00"
-		 *     }, {
-		 *         x: 1,
-		 *         y: 5,
-		 *         z: 4,
-		 *         name: "Point1",
-		 *         color: "#FF00FF"
-		 *     }]
-		 *  ```
+		 *    ```js
+		 *       data: [{
+		 *           x: 1,
+		 *           y: 1,
+		 *           z: 1,
+		 *           name: "Point2",
+		 *           color: "#00FF00"
+		 *       }, {
+		 *           x: 1,
+		 *           y: 5,
+		 *           z: 4,
+		 *           name: "Point1",
+		 *           color: "#FF00FF"
+		 *       }]
+		 *    ```
 		 *
-		 * @type {Array<Object|Array>}
-		 * @extends series.line.data
-		 * @excluding marker
 		 * @sample {highcharts} highcharts/chart/reflow-true/
 		 *         Numerical values
 		 * @sample {highcharts} highcharts/series/data-array-of-arrays/
@@ -336,7 +350,11 @@
 		 *         Arrays of point.name and y
 		 * @sample {highcharts} highcharts/series/data-array-of-objects/
 		 *         Config objects
-		 * @product highcharts
+		 *
+		 * @type      {Array<Array<number>|*>}
+		 * @extends   series.line.data
+		 * @excluding marker
+		 * @product   highcharts
 		 * @apioption series.variwide.data
 		 */
 
@@ -345,8 +363,8 @@
 		 * distributed so they sum up to the X axis length. On linear and datetime axes,
 		 * the columns will be laid out from the X value and Z units along the axis.
 		 *
-		 * @type {Number}
-		 * @product highcharts
+		 * @type      {number}
+		 * @product   highcharts
 		 * @apioption series.variwide.data.z
 		 */
 

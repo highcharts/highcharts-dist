@@ -1,10 +1,8 @@
 /**
- * @license Highcharts JS v6.2.0 (2018-10-17)
+ * @license Highcharts JS v7.0.0 (2018-12-11)
  * Gantt series
  *
- * (c) 2016 Lars A. V. Cabrera
- *
- * --- WORK IN PROGRESS ---
+ * (c) 2016-2018 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -17,49 +15,57 @@
 			return factory;
 		});
 	} else {
-		factory(Highcharts);
+		factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
 	}
 }(function (Highcharts) {
 	(function (H) {
-		/**
-		* (c) 2016 Highsoft AS
-		* Author: Lars A. V. Cabrera
-		*
-		* License: www.highcharts.com/license
-		*/
-
-		/**
-		 * Show an indicator on the axis for the current date and time. Can be a boolean
-		 * or a configuration object similar to [xAxis.plotLines](#xAxis.plotLines).
+		/* *
 		 *
-		 * @type {Object}
-		 * @extends {xAxis.plotLines}
-		 * @excluding value
-		 * @sample  gantt/current-date-indicator/demo
-		 *          Current date indicator enabled
-		 * @sample  gantt/current-date-indicator/object-config
-		 *          Current date indicator with custom options
-		 * @product gantt
-		 * @apioption xAxis.currentDateIndicator
-		 */
+		 *  (c) 2016-2018 Highsoft AS
+		 *
+		 *  Author: Lars A. V. Cabrera
+		 *
+		 *  License: www.highcharts.com/license
+		 *
+		 * */
+
+
 
 		var addEvent = H.addEvent,
 		    Axis = H.Axis,
 		    PlotLineOrBand = H.PlotLineOrBand,
-		    merge = H.merge,
-		    defaultConfig = {
-		        currentDateIndicator: true,
-		        color: '#ccd6eb',
-		        width: 2,
-		        label: {
-		            format: '%a, %b %d %Y, %H:%M',
-		            formatter: undefined,
-		            rotation: 0,
-		            style: {
-		                fontSize: '10px'
-		            }
+		    merge = H.merge;
+
+		var defaultConfig = {
+		    /**
+		     * Show an indicator on the axis for the current date and time. Can be a
+		     * boolean or a configuration object similar to
+		     * [xAxis.plotLines](#xAxis.plotLines).
+		     *
+		     * @sample gantt/current-date-indicator/demo
+		     *         Current date indicator enabled
+		     * @sample gantt/current-date-indicator/object-config
+		     *         Current date indicator with custom options
+		     *
+		     * @type      {boolean|*}
+		     * @default   true
+		     * @extends   xAxis.plotLines
+		     * @excluding value
+		     * @product   gantt
+		     * @apioption xAxis.currentDateIndicator
+		     */
+		    currentDateIndicator: true,
+		    color: '#ccd6eb',
+		    width: 2,
+		    label: {
+		        format: '%a, %b %d %Y, %H:%M',
+		        formatter: undefined,
+		        rotation: 0,
+		        style: {
+		            fontSize: '10px'
 		        }
-		    };
+		    }
+		};
 
 		addEvent(Axis, 'afterSetOptions', function () {
 		    var options = this.options,
@@ -114,19 +120,20 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
-		* (c) 2016 Highsoft AS
-		* Authors: Lars A. V. Cabrera
-		*
-		* License: www.highcharts.com/license
-		*/
+		/* *
+		 * (c) 2016 Highsoft AS
+		 * Authors: Lars A. V. Cabrera
+		 *
+		 * License: www.highcharts.com/license
+		 */
+
+
 
 		var argsToArray = function (args) {
 		        return Array.prototype.slice.call(args, 1);
 		    },
 		    dateFormat = H.dateFormat,
 		    defined = H.defined,
-		    each = H.each,
 		    isArray = H.isArray,
 		    isNumber = H.isNumber,
 		    isObject = function (x) {
@@ -142,7 +149,6 @@
 		/**
 		 * Set grid options for the axis labels. Requires Highcharts Gantt.
 		 *
-		 * @type      {object}
 		 * @since     6.2.0
 		 * @product   gantt
 		 * @apioption xAxis.grid
@@ -152,8 +158,8 @@
 		 * Enable grid on the axis labels. Defaults to true for Gantt charts.
 		 *
 		 * @type      {boolean}
-		 * @since     6.2.0
 		 * @default   true
+		 * @since     6.2.0
 		 * @product   gantt
 		 * @apioption xAxis.grid.enabled
 		 */
@@ -163,9 +169,10 @@
 		 * grid. Each extra column/row is its own axis, and the axis options can be set
 		 * here.
 		 *
-		 * @type      {Array<object>}
-		 * @sample    gantt/demo/left-axis-table
-		 *            Left axis as a table
+		 * @sample gantt/demo/left-axis-table
+		 *         Left axis as a table
+		 *
+		 * @type      {Array<Highcharts.XAxisOptions>}
 		 * @apioption xAxis.grid.columns
 		 */
 
@@ -180,7 +187,7 @@
 		 * Set border width of the label grid lines.
 		 *
 		 * @type      {number}
-		 * @default 1
+		 * @default   1
 		 * @apioption xAxis.grid.borderWidth
 		 */
 
@@ -189,7 +196,6 @@
 		 * size.
 		 *
 		 * @type      {number}
-		 * @default null
 		 * @apioption xAxis.grid.cellHeight
 		 */
 
@@ -209,7 +215,12 @@
 
 		/**
 		 * Checks if an axis is a navigator axis.
-		 * @return {Boolean} true if axis is found in axis.chart.navigator
+		 *
+		 * @private
+		 * @function Highcharts.Axis#isNavigatorAxis
+		 *
+		 * @return {boolean}
+		 *         true if axis is found in axis.chart.navigator
 		 */
 		Axis.prototype.isNavigatorAxis = function () {
 		    return /highcharts-navigator-[xy]axis/.test(this.options.className);
@@ -224,8 +235,11 @@
 		 * this function returns true if the axis supplied is the last
 		 * of the x-axes.
 		 *
-		 * @return true if the axis is the outermost axis in its dimension;
-		 *         false if not
+		 * @private
+		 * @function Highcharts.Axis#isOuterAxis
+		 *
+		 * @return {boolean}
+		 *         true if the axis is the outermost axis in its dimension; false if not
 		 */
 		Axis.prototype.isOuterAxis = function () {
 		    var axis = this,
@@ -233,7 +247,7 @@
 		        thisIndex = -1,
 		        isOuter = true;
 
-		    each(chart.axes, function (otherAxis, index) {
+		    chart.axes.forEach(function (otherAxis, index) {
 		        if (otherAxis.side === axis.side && !otherAxis.isNavigatorAxis()) {
 		            if (otherAxis === axis) {
 		                // Get the index of the axis in question
@@ -255,9 +269,18 @@
 
 		/**
 		 * Get the largest label width and height.
-		 * @param {object} ticks All the ticks on one axis.
-		 * @param {array} tickPositions All the tick positions on one axis.
-		 * @return {object} object containing the properties height and width.
+		 *
+		 * @private
+		 * @function Highcharts.Axis#getMaxLabelDimensions
+		 *
+		 * @param {Highcharts.Dictionary<Highcharts.Tick>} ticks
+		 *        All the ticks on one axis.
+		 *
+		 * @param {Array<number|string>} tickPositions
+		 *        All the tick positions on one axis.
+		 *
+		 * @return {object}
+		 *         object containing the properties height and width.
 		 */
 		Axis.prototype.getMaxLabelDimensions = function (ticks, tickPositions) {
 		    var dimensions = {
@@ -265,7 +288,7 @@
 		        height: 0
 		    };
 
-		    each(tickPositions, function (pos) {
+		    tickPositions.forEach(function (pos) {
 		        var tick = ticks[pos],
 		            tickHeight = 0,
 		            tickWidth = 0,
@@ -287,9 +310,7 @@
 		    return dimensions;
 		};
 
-		/**
-		 * Add custom date formats
-		 */
+		// Add custom date formats
 		H.dateFormats = {
 		    // Week number
 		    W: function (timestamp) {
@@ -308,161 +329,185 @@
 		    }
 		};
 
-		/**
-		 * If chart is stockChart, always return 'left' to avoid labels being placed
-		 * inside chart. Stock charts place yAxis labels inside by default.
-		 * @param {function} proceed - the original function
-		 * @return {string} 'left' if stockChart, or auto calculated alignment
-		 */
-		wrap(Axis.prototype, 'autoLabelAlign', function (proceed) {
-		    var axis = this,
-		        retVal;
-		    if (axis.chart.isStock) {
-		        retVal = 'left';
-		    } else {
-		        retVal = proceed.apply(axis, argsToArray(arguments));
+		wrap(Axis.prototype, 'autoLabelAlign',
+		    /**
+		     * If chart is stockChart, always return 'left' to avoid labels being placed
+		     * inside chart. Stock charts place yAxis labels inside by default.
+		     *
+		     * @private
+		     * @function
+		     *
+		     * @param {Function} proceed
+		     *        the original function
+		     *
+		     * @return {string}
+		     *         'left' if stockChart, or auto calculated alignment
+		     */
+		    function (proceed) {
+		        var axis = this,
+		            retVal;
+		        if (axis.chart.isStock) {
+		            retVal = 'left';
+		        } else {
+		            retVal = proceed.apply(axis, argsToArray(arguments));
+		        }
+		        return retVal;
 		    }
-		    return retVal;
-		});
+		);
 
-		/**
-		 * Center tick labels in cells.
-		 *
-		 * @param {function} proceed - the original function
-		 *
-		 * @return {object} object - an object containing x and y positions
-		 *                           for the tick
-		 */
-		wrap(Tick.prototype, 'getLabelPosition', function (proceed, x, y, label, horiz,
-		            labelOpts, tickmarkOffset, index) {
-		    var tick = this,
-		        axis = tick.axis,
-		        reversed = axis.reversed,
-		        chart = axis.chart,
-		        options = axis.options,
-		        gridOptions = (options && isObject(options.grid)) ? options.grid : {},
-		        align = labelOpts.align,
-		        // verticalAlign is currently not supported for axis.labels.
-		        verticalAlign = 'middle', // labelOpts.verticalAlign,
-		        side = axisSide[axis.side],
-		        tickPositions = axis.tickPositions,
-		        tickPos = tick.pos - tickmarkOffset,
-		        nextTickPos = (
-		            isNumber(tickPositions[index + 1]) ?
-		            tickPositions[index + 1] - tickmarkOffset :
-		            axis.max + tickmarkOffset
-		        ),
-		        tickSize = axis.tickSize('tick', true),
-		        tickWidth = isArray(tickSize) ? tickSize[0] : 0,
-		        crispCorr = tickSize && tickSize[1] / 2,
-		        labelHeight,
-		        lblMetrics,
-		        lines,
-		        result,
-		        bottom,
-		        top,
-		        left,
-		        right;
-
-		    // Only center tick labels in grid axes
-		    if (gridOptions.enabled === true) {
-		        /**
-		         * Calculate top and bottom positions of the cell.
-		         */
-		        if (side === 'top') {
-		            bottom = axis.top + axis.offset;
-		            top = bottom - tickWidth;
-		        } else if (side === 'bottom') {
-		            top = chart.chartHeight - axis.bottom + axis.offset;
-		            bottom = top + tickWidth;
-		        } else {
-		            bottom = axis.top + axis.len - axis.translate(
-		                reversed ? nextTickPos : tickPos
-		            );
-		            top = axis.top + axis.len - axis.translate(
-		                reversed ? tickPos : nextTickPos
-		            );
-		        }
-
-		        /**
-		         * Calculate left and right positions of the cell.
-		         */
-		        if (side === 'right') {
-		            left = chart.chartWidth - axis.right + axis.offset;
-		            right = left + tickWidth;
-		        } else if (side === 'left') {
-		            right = axis.left + axis.offset;
-		            left = right - tickWidth;
-		        } else {
-		            left = Math.round(axis.left + axis.translate(
-		                reversed ? nextTickPos : tickPos
-		            )) - crispCorr;
-		            right = Math.round(axis.left + axis.translate(
-		                reversed ? tickPos : nextTickPos
-		            )) - crispCorr;
-		        }
-
-		        tick.slotWidth = right - left;
-
-		        /**
-		         * Calculate the positioning of the label based on alignment.
-		         */
-		        result = {
-		            x: (
-		                align === 'left' ?
-		                left :
-		                align === 'right' ?
-		                right :
-		                left + ((right - left) / 2) // default to center
+		wrap(Tick.prototype, 'getLabelPosition',
+		    /**
+		     * Center tick labels in cells.
+		     *
+		     * @private
+		     * @function
+		     *
+		     * @param {Function} proceed
+		     *        the original function
+		     *
+		     * @return {object}
+		     *         an object containing x and y positions for the tick
+		     */
+		    function (
+		        proceed,
+		        x,
+		        y,
+		        label,
+		        horiz,
+		        labelOpts,
+		        tickmarkOffset,
+		        index
+		    ) {
+		        var tick = this,
+		            axis = tick.axis,
+		            reversed = axis.reversed,
+		            chart = axis.chart,
+		            options = axis.options,
+		            gridOptions = (
+		                (options && isObject(options.grid)) ? options.grid : {}
 		            ),
-		            y: (
-		                verticalAlign === 'top' ?
-		                top :
-		                verticalAlign === 'bottom' ?
-		                bottom :
-		                top + ((bottom - top) / 2) // default to middle
-		            )
-		        };
+		            align = labelOpts.align,
+		            // verticalAlign is currently not supported for axis.labels.
+		            verticalAlign = 'middle', // labelOpts.verticalAlign,
+		            side = axisSide[axis.side],
+		            tickPositions = axis.tickPositions,
+		            tickPos = tick.pos - tickmarkOffset,
+		            nextTickPos = (
+		                isNumber(tickPositions[index + 1]) ?
+		                tickPositions[index + 1] - tickmarkOffset :
+		                axis.max + tickmarkOffset
+		            ),
+		            tickSize = axis.tickSize('tick', true),
+		            tickWidth = isArray(tickSize) ? tickSize[0] : 0,
+		            crispCorr = tickSize && tickSize[1] / 2,
+		            labelHeight,
+		            lblMetrics,
+		            lines,
+		            result,
+		            bottom,
+		            top,
+		            left,
+		            right;
 
-		        lblMetrics = chart.renderer.fontMetrics(
-		            labelOpts.style.fontSize,
-		            label.element
-		        );
-		        labelHeight = label.getBBox().height;
+		        // Only center tick labels in grid axes
+		        if (gridOptions.enabled === true) {
+		            // Calculate top and bottom positions of the cell.
+		            if (side === 'top') {
+		                bottom = axis.top + axis.offset;
+		                top = bottom - tickWidth;
+		            } else if (side === 'bottom') {
+		                top = chart.chartHeight - axis.bottom + axis.offset;
+		                bottom = top + tickWidth;
+		            } else {
+		                bottom = axis.top + axis.len - axis.translate(
+		                    reversed ? nextTickPos : tickPos
+		                );
+		                top = axis.top + axis.len - axis.translate(
+		                    reversed ? tickPos : nextTickPos
+		                );
+		            }
 
-		        // Adjustment to y position to align the label correctly.
-		        // Would be better to have a setter or similar for this.
-		        if (!labelOpts.useHTML) {
-		            lines = Math.round(labelHeight / lblMetrics.h);
-		            result.y += (
-		                // Center the label
-		                // TODO: why does this actually center the label?
-		                ((lblMetrics.b - (lblMetrics.h - lblMetrics.f)) / 2) +
-		                // Adjust for height of additional lines.
-		                -(((lines - 1) * lblMetrics.h) / 2)
+		            // Calculate left and right positions of the cell.
+		            if (side === 'right') {
+		                left = chart.chartWidth - axis.right + axis.offset;
+		                right = left + tickWidth;
+		            } else if (side === 'left') {
+		                right = axis.left + axis.offset;
+		                left = right - tickWidth;
+		            } else {
+		                left = Math.round(axis.left + axis.translate(
+		                    reversed ? nextTickPos : tickPos
+		                )) - crispCorr;
+		                right = Math.round(axis.left + axis.translate(
+		                    reversed ? tickPos : nextTickPos
+		                )) - crispCorr;
+		            }
+
+		            tick.slotWidth = right - left;
+
+		            // Calculate the positioning of the label based on alignment.
+		            result = {
+		                x: (
+		                    align === 'left' ?
+		                    left :
+		                    align === 'right' ?
+		                    right :
+		                    left + ((right - left) / 2) // default to center
+		                ),
+		                y: (
+		                    verticalAlign === 'top' ?
+		                    top :
+		                    verticalAlign === 'bottom' ?
+		                    bottom :
+		                    top + ((bottom - top) / 2) // default to middle
+		                )
+		            };
+
+		            lblMetrics = chart.renderer.fontMetrics(
+		                labelOpts.style.fontSize,
+		                label.element
 		            );
+		            labelHeight = label.getBBox().height;
+
+		            // Adjustment to y position to align the label correctly.
+		            // Would be better to have a setter or similar for this.
+		            if (!labelOpts.useHTML) {
+		                lines = Math.round(labelHeight / lblMetrics.h);
+		                result.y += (
+		                    // Center the label
+		                    // TODO: why does this actually center the label?
+		                    ((lblMetrics.b - (lblMetrics.h - lblMetrics.f)) / 2) +
+		                    // Adjust for height of additional lines.
+		                    -(((lines - 1) * lblMetrics.h) / 2)
+		                );
+		            } else {
+		                result.y += (
+		                    // Readjust yCorr in htmlUpdateTransform
+		                    lblMetrics.b +
+		                    // Adjust for height of html label
+		                    -(labelHeight / 2)
+		                );
+		            }
+
+		            result.x += (axis.horiz && labelOpts.x || 0);
 		        } else {
-		            result.y += (
-		                // Readjust yCorr in htmlUpdateTransform
-		                lblMetrics.b +
-		                // Adjust for height of html label
-		                -(labelHeight / 2)
-		            );
+		            result = proceed.apply(tick, argsToArray(arguments));
 		        }
-
-		        result.x += (axis.horiz && labelOpts.x || 0);
-		    } else {
-		        result = proceed.apply(tick, argsToArray(arguments));
+		        return result;
 		    }
-		    return result;
-		});
+		);
 
 		/**
 		 * Draw vertical axis ticks extra long to create cell floors and roofs.
 		 * Overrides the tickLength for vertical axes.
 		 *
-		 * @param {function} proceed - the original function
-		 * @returns {array} retVal -
+		 * @private
+		 * @function
+		 *
+		 * @param {Function} proceed
+		 *        the original function
+		 *
+		 * @returns {Array<number>}
 		 */
 		wrap(Axis.prototype, 'tickSize', function (proceed) {
 		    var axis = this,
@@ -539,9 +584,7 @@
 		    return proceed.apply(this, argsToArray(arguments));
 		});
 
-		/**
-		 * Avoid altering tickInterval when reserving space.
-		 */
+		// Avoid altering tickInterval when reserving space.
 		wrap(Axis.prototype, 'unsquish', function (proceed) {
 		    var axis = this,
 		        options = axis.options,
@@ -554,415 +597,457 @@
 		    return proceed.apply(this, argsToArray(arguments));
 		});
 
-		/**
-		 * Creates a left and right wall on horizontal axes:
-		 * - Places leftmost tick at the start of the axis, to create a left wall
-		 * - Ensures that the rightmost tick is at the end of the axis, to create a
-		 *    right wall.
-		 *
-		 * @param {function} proceed - the original function
-		 * @param {object} options - the pure axis options as input by the user
-		 */
-		H.addEvent(Axis, 'afterSetOptions', function (e) {
-		    var options = this.options,
-		        userOptions = e.userOptions,
-		        gridAxisOptions,
-		        gridOptions = (options && isObject(options.grid)) ? options.grid : {};
+		H.addEvent(Axis, 'afterSetOptions',
+		    /**
+		     * Creates a left and right wall on horizontal axes:
+		     *
+		     * - Places leftmost tick at the start of the axis, to create a left wall
+		     *
+		     * - Ensures that the rightmost tick is at the end of the axis, to create a
+		     *   right wall.
+		     *
+		     * @private
+		     * @function
+		     */
+		    function (e) {
+		        var options = this.options,
+		            userOptions = e.userOptions,
+		            gridAxisOptions,
+		            gridOptions = (
+		                (options && isObject(options.grid)) ? options.grid : {}
+		            );
 
-		    if (gridOptions.enabled === true) {
+		        if (gridOptions.enabled === true) {
 
-		        // Merge the user options into default grid axis options so that when a
-		        // user option is set, it takes presedence.
-		        gridAxisOptions = merge(true, {
+		            // Merge the user options into default grid axis options so that
+		            // when a user option is set, it takes presedence.
+		            gridAxisOptions = merge(true, {
 
-		            className: 'highcharts-grid-axis ' + (userOptions.className || ''),
+		                className: (
+		                    'highcharts-grid-axis ' + (userOptions.className || '')
+		                ),
 
-		            dateTimeLabelFormats: {
-		                hour: {
-		                    list: ['%H:%M', '%H']
+		                dateTimeLabelFormats: {
+		                    hour: {
+		                        list: ['%H:%M', '%H']
+		                    },
+		                    day: {
+		                        list: ['%A, %e. %B', '%a, %e. %b', '%E']
+		                    },
+		                    week: {
+		                        list: ['Week %W', 'W%W']
+		                    },
+		                    month: {
+		                        list: ['%B', '%b', '%o']
+		                    }
 		                },
-		                day: {
-		                    list: ['%A, %e. %B', '%a, %e. %b', '%E']
+
+		                grid: {
+		                    borderWidth: 1
 		                },
-		                week: {
-		                    list: ['Week %W', 'W%W']
+
+		                labels: {
+		                    padding: 2,
+		                    style: {
+		                        fontSize: '13px'
+		                    }
 		                },
-		                month: {
-		                    list: ['%B', '%b', '%o']
+
+		                title: {
+		                    text: null,
+		                    reserveSpace: false,
+		                    rotation: 0
+		                },
+
+		                // In a grid axis, only allow one unit of certain types, for
+		                // example we shouln't have one grid cell spanning two days.
+		                units: [[
+		                    'millisecond', // unit name
+		                    [1, 10, 100]
+		                ], [
+		                    'second',
+		                    [1, 10]
+		                ], [
+		                    'minute',
+		                    [1, 5, 15]
+		                ], [
+		                    'hour',
+		                    [1, 6]
+		                ], [
+		                    'day',
+		                    [1]
+		                ], [
+		                    'week',
+		                    [1]
+		                ], [
+		                    'month',
+		                    [1]
+		                ], [
+		                    'year',
+		                    null
+		                ]]
+		            }, userOptions);
+
+		            // X-axis specific options
+		            if (this.coll === 'xAxis') {
+
+		                // For linked axes, tickPixelInterval is used only if the
+		                // tickPositioner below doesn't run or returns undefined (like
+		                // multiple years)
+		                if (
+		                    defined(userOptions.linkedTo) &&
+		                    !defined(userOptions.tickPixelInterval)
+		                ) {
+		                    gridAxisOptions.tickPixelInterval = 350;
 		                }
-		            },
 
-		            grid: {
-		                borderWidth: 1
-		            },
+		                // For the secondary grid axis, use the primary axis' tick
+		                // intervals and return ticks one level higher.
+		                if (
+		                    // Check for tick pixel interval in options
+		                    !defined(userOptions.tickPixelInterval) &&
 
-		            labels: {
-		                padding: 2,
-		                style: {
-		                    fontSize: '13px'
+		                    // Only for linked axes
+		                    defined(userOptions.linkedTo) &&
+
+		                    !defined(userOptions.tickPositioner) &&
+		                    !defined(userOptions.tickInterval)
+		                ) {
+		                    gridAxisOptions.tickPositioner = function (min, max) {
+
+		                        var parentInfo = (
+		                            this.linkedParent &&
+		                            this.linkedParent.tickPositions &&
+		                            this.linkedParent.tickPositions.info
+		                        );
+
+		                        if (parentInfo) {
+
+		                            var unitIdx,
+		                                count,
+		                                unitName,
+		                                i,
+		                                units = gridAxisOptions.units,
+		                                unitRange;
+
+		                            for (i = 0; i < units.length; i++) {
+		                                if (units[i][0] === parentInfo.unitName) {
+		                                    unitIdx = i;
+		                                    break;
+		                                }
+		                            }
+
+		                            // Spanning multiple years, go default
+		                            if (!units[unitIdx][1]) {
+		                                return;
+		                            }
+
+		                            // Get the first allowed count on the next unit.
+		                            if (units[unitIdx + 1]) {
+		                                unitName = units[unitIdx + 1][0];
+		                                count = (units[unitIdx + 1][1] || [1])[0];
+		                            }
+
+		                            unitRange = H.timeUnits[unitName];
+		                            this.tickInterval = unitRange * count;
+		                            return this.getTimeTicks(
+		                                {
+		                                    unitRange: unitRange,
+		                                    count: count,
+		                                    unitName: unitName
+		                                },
+		                                min,
+		                                max,
+		                                this.options.startOfWeek
+		                            );
+		                        }
+		                    };
 		                }
-		            },
 
-		            title: {
-		                text: null,
-		                reserveSpace: false,
-		                rotation: 0
-		            },
-
-		            // In a grid axis, only allow one unit of certain types, for example
-		            // we shouln't have one grid cell spanning two days.
-		            units: [[
-		                'millisecond', // unit name
-		                [1, 10, 100]
-		            ], [
-		                'second',
-		                [1, 10]
-		            ], [
-		                'minute',
-		                [1, 5, 15]
-		            ], [
-		                'hour',
-		                [1, 6]
-		            ], [
-		                'day',
-		                [1]
-		            ], [
-		                'week',
-		                [1]
-		            ], [
-		                'month',
-		                [1]
-		            ], [
-		                'year',
-		                null
-		            ]]
-		        }, userOptions);
-
-		        // X-axis specific options
-		        if (this.coll === 'xAxis') {
-
-		            // For linked axes, tickPixelInterval is used only if the
-		            // tickPositioner below doesn't run or returns undefined (like
-		            // multiple years)
-		            if (
-		                defined(userOptions.linkedTo) &&
-		                !defined(userOptions.tickPixelInterval)
-		            ) {
-		                gridAxisOptions.tickPixelInterval = 350;
 		            }
 
-		            // For the secondary grid axis, use the primary axis' tick intervals
-		            // and return ticks one level higher.
-		            if (
-		                // Check for tick pixel interval in options
-		                !defined(userOptions.tickPixelInterval) &&
+		            // Now merge the combined options into the axis options
+		            merge(true, this.options, gridAxisOptions);
 
-		                // Only for linked axes
-		                defined(userOptions.linkedTo) &&
+		            if (this.horiz) {
+		                /*               _________________________
+		                   Make this:    ___|_____|_____|_____|__|
+		                                 ^                     ^
+		                                 _________________________
+		                   Into this:    |_____|_____|_____|_____|
+		                                    ^                 ^    */
+		                options.minPadding = pick(userOptions.minPadding, 0);
+		                options.maxPadding = pick(userOptions.maxPadding, 0);
+		            }
 
-		                !defined(userOptions.tickPositioner) &&
-		                !defined(userOptions.tickInterval)
-		            ) {
-		                gridAxisOptions.tickPositioner = function (min, max) {
-
-		                    var parentInfo = (
-		                        this.linkedParent &&
-		                        this.linkedParent.tickPositions &&
-		                        this.linkedParent.tickPositions.info
-		                    );
-
-		                    if (parentInfo) {
-
-		                        var unitIdx,
-		                            count,
-		                            unitName,
-		                            i,
-		                            units = gridAxisOptions.units,
-		                            unitRange;
-
-		                        for (i = 0; i < units.length; i++) {
-		                            if (units[i][0] === parentInfo.unitName) {
-		                                unitIdx = i;
-		                                break;
-		                            }
-		                        }
-
-		                        // Spanning multiple years, go default
-		                        if (!units[unitIdx][1]) {
-		                            return;
-		                        }
-
-		                        // Get the first allowed count on the next unit.
-		                        if (units[unitIdx + 1]) {
-		                            unitName = units[unitIdx + 1][0];
-		                            count = (units[unitIdx + 1][1] || [1])[0];
-		                        }
-
-		                        unitRange = H.timeUnits[unitName];
-		                        this.tickInterval = unitRange * count;
-		                        return this.getTimeTicks(
-		                            {
-		                                unitRange: unitRange,
-		                                count: count,
-		                                unitName: unitName
-		                            },
-		                            min,
-		                            max,
-		                            this.options.startOfWeek
-		                        );
-		                    }
-		                };
+		            // If borderWidth is set, then use its value for tick and line
+		            // width.
+		            if (isNumber(options.grid.borderWidth)) {
+		                options.tickWidth = options.lineWidth = gridOptions.borderWidth;
 		            }
 
 		        }
+		    }
+		);
 
-		        // Now merge the combined options into the axis options
-		        merge(true, this.options, gridAxisOptions);
+		wrap(Axis.prototype, 'setAxisTranslation',
+		    /**
+		     * Ensures a left wall on horizontal axes with series inheriting from
+		     * column. ColumnSeries normally sets pointRange to null, resulting in Axis
+		     * to select other values for point ranges. This enforces the above
+		     * Axis.setOptions() override.
+		     * ```
+		     *                  _________________________
+		     * Enforce this:    ___|_____|_____|_____|__|
+		     *                  ^
+		     *                  _________________________
+		     * To be this:      |_____|_____|_____|_____|
+		     *                  ^
+		     * ```
+		     *
+		     * @private
+		     * @function
+		     *
+		     * @param {Function} proceed
+		     *        the original function
+		     */
+		    function (proceed) {
+		        var axis = this,
+		            options = axis.options,
+		            gridOptions = (
+		                (options && isObject(options.grid)) ? options.grid : {}
+		            ),
+		            tickInfo = this.tickPositions && this.tickPositions.info,
+		            userLabels = this.userOptions.labels || {};
 
 		        if (this.horiz) {
-		            /**              _________________________
-		             * Make this:    ___|_____|_____|_____|__|
-		             *               ^                     ^
-		             *               _________________________
-		             * Into this:    |_____|_____|_____|_____|
-		             *                  ^                 ^
-		             */
-		            options.minPadding = pick(userOptions.minPadding, 0);
-		            options.maxPadding = pick(userOptions.maxPadding, 0);
-		        }
+		            if (gridOptions.enabled === true) {
+		                axis.series.forEach(function (series) {
+		                    series.options.pointRange = 0;
+		                });
+		            }
 
-		        // If borderWidth is set, then use its value for tick and line width.
-		        if (isNumber(options.grid.borderWidth)) {
-		            options.tickWidth = options.lineWidth = gridOptions.borderWidth;
-		        }
+		            // Lower level time ticks, like hours or minutes, represent points
+		            // in time and not ranges. These should be aligned left in the grid
+		            // cell by default. The same applies to years of higher order.
+		            if (
+		                tickInfo &&
+		                (
+		                    options.dateTimeLabelFormats[tickInfo.unitName]
+		                        .range === false ||
+		                    tickInfo.count > 1 // years
+		                ) &&
+		                !defined(userLabels.align)
+		            ) {
+		                options.labels.align = 'left';
 
-		    }
-		});
-
-		/**
-		 * Ensures a left wall on horizontal axes with series inheriting from column.
-		 * ColumnSeries normally sets pointRange to null, resulting in Axis to select
-		 * other values for point ranges. This enforces the above Axis.setOptions()
-		 * override.
-		 *                  _________________________
-		 * Enforce this:    ___|_____|_____|_____|__|
-		 *                  ^
-		 *                  _________________________
-		 * To be this:      |_____|_____|_____|_____|
-		 *                  ^
-		 *
-		 * @param {function} proceed - the original function
-		 * @param {object} options - the pure axis options as input by the user
-		 */
-		wrap(Axis.prototype, 'setAxisTranslation', function (proceed) {
-		    var axis = this,
-		        options = axis.options,
-		        gridOptions = (options && isObject(options.grid)) ? options.grid : {},
-		        tickInfo = this.tickPositions && this.tickPositions.info,
-		        userLabels = this.userOptions.labels || {};
-
-		    if (this.horiz) {
-		        if (gridOptions.enabled === true) {
-		            each(axis.series, function (series) {
-		                series.options.pointRange = 0;
-		            });
-		        }
-
-		        // Lower level time ticks, like hours or minutes, represent points in
-		        // time and not ranges. These should be aligned left in the grid cell
-		        // by default. The same applies to years of higher order.
-		        if (
-		            tickInfo &&
-		            (
-		                options.dateTimeLabelFormats[tickInfo.unitName]
-		                    .range === false ||
-		                tickInfo.count > 1 // years
-		            ) &&
-		            !defined(userLabels.align)
-		        ) {
-		            options.labels.align = 'left';
-
-		            if (!defined(userLabels.x)) {
-		                options.labels.x = 3;
+		                if (!defined(userLabels.x)) {
+		                    options.labels.x = 3;
+		                }
 		            }
 		        }
+
+		        proceed.apply(axis, argsToArray(arguments));
 		    }
+		);
 
-		    proceed.apply(axis, argsToArray(arguments));
-		});
-
-		// TODO: Does this function do what the drawing says? Seems to affect ticks and
+		// @todo Does this function do what the drawing says? Seems to affect ticks and
 		//       not the labels directly?
-		/**
-		 * Makes tick labels which are usually ignored in a linked axis displayed if
-		 * they are within range of linkedParent.min.
-		 *                        _____________________________
-		 *                        |   |       |       |       |
-		 * Make this:             |   |   2   |   3   |   4   |
-		 *                        |___|_______|_______|_______|
-		 *                          ^
-		 *                        _____________________________
-		 *                        |   |       |       |       |
-		 * Into this:             | 1 |   2   |   3   |   4   |
-		 *                        |___|_______|_______|_______|
-		 *                          ^
-		 * @param {function} proceed - the original function
-		 */
-		wrap(Axis.prototype, 'trimTicks', function (proceed) {
-		    var axis = this,
-		        options = axis.options,
-		        gridOptions = (options && isObject(options.grid)) ? options.grid : {},
-		        categoryAxis = axis.categories,
-		        tickPositions = axis.tickPositions,
-		        firstPos = tickPositions[0],
-		        lastPos = tickPositions[tickPositions.length - 1],
-		        linkedMin = axis.linkedParent && axis.linkedParent.min,
-		        linkedMax = axis.linkedParent && axis.linkedParent.max,
-		        min = linkedMin || axis.min,
-		        max = linkedMax || axis.max,
-		        tickInterval = axis.tickInterval,
-		        moreThanMin = firstPos > min,
-		        lessThanMax = lastPos < max,
-		        endMoreThanMin = firstPos < min && firstPos + tickInterval > min,
-		        startLessThanMax = lastPos > max && lastPos - tickInterval < max;
+		wrap(Axis.prototype, 'trimTicks',
+		    /**
+		     * Makes tick labels which are usually ignored in a linked axis displayed if
+		     * they are within range of linkedParent.min.
+		     * ```
+		     *                        _____________________________
+		     *                        |   |       |       |       |
+		     * Make this:             |   |   2   |   3   |   4   |
+		     *                        |___|_______|_______|_______|
+		     *                          ^
+		     *                        _____________________________
+		     *                        |   |       |       |       |
+		     * Into this:             | 1 |   2   |   3   |   4   |
+		     *                        |___|_______|_______|_______|
+		     *                          ^
+		     * ```
+		     *
+		     * @private
+		     * @function
+		     *
+		     * @param {Function} proceed
+		     *        the original function
+		     */
+		    function (proceed) {
+		        var axis = this,
+		            options = axis.options,
+		            gridOptions = (
+		                (options && isObject(options.grid)) ? options.grid : {}
+		            ),
+		            categoryAxis = axis.categories,
+		            tickPositions = axis.tickPositions,
+		            firstPos = tickPositions[0],
+		            lastPos = tickPositions[tickPositions.length - 1],
+		            linkedMin = axis.linkedParent && axis.linkedParent.min,
+		            linkedMax = axis.linkedParent && axis.linkedParent.max,
+		            min = linkedMin || axis.min,
+		            max = linkedMax || axis.max,
+		            tickInterval = axis.tickInterval,
+		            moreThanMin = firstPos > min,
+		            lessThanMax = lastPos < max,
+		            endMoreThanMin = firstPos < min && firstPos + tickInterval > min,
+		            startLessThanMax = lastPos > max && lastPos - tickInterval < max;
 
-		    if (
-		        gridOptions.enabled === true &&
-		        !categoryAxis &&
-		        (axis.horiz || axis.isLinked)
-		    ) {
-		        if ((moreThanMin || endMoreThanMin) && !options.startOnTick) {
-		            tickPositions[0] = min;
-		        }
-
-		        if ((lessThanMax || startLessThanMax) && !options.endOnTick) {
-		            tickPositions[tickPositions.length - 1] = max;
-		        }
-		    }
-
-		    proceed.apply(axis, argsToArray(arguments));
-		});
-
-		/**
-		 * Draw an extra line on the far side of the outermost axis,
-		 * creating floor/roof/wall of a grid. And some padding.
-		 *
-		 * Make this:
-		 *             (axis.min) __________________________ (axis.max)
-		 *                           |    |    |    |    |
-		 * Into this:
-		 *             (axis.min) __________________________ (axis.max)
-		 *                        ___|____|____|____|____|__
-		 *
-		 * @param {function} proceed - the original function
-		 */
-		wrap(Axis.prototype, 'render', function (proceed) {
-		    var axis = this,
-		        options = axis.options,
-		        gridOptions = (options && isObject(options.grid)) ? options.grid : {},
-		        labelPadding,
-		        distance,
-		        lineWidth,
-		        linePath,
-		        yStartIndex,
-		        yEndIndex,
-		        xStartIndex,
-		        xEndIndex,
-		        renderer = axis.chart.renderer,
-		        horiz = axis.horiz,
-		        axisGroupBox;
-
-		    if (gridOptions.enabled === true) {
-		        // TODO acutual label padding (top, bottom, left, right)
-		        // Label padding is needed to figure out where to draw the outer line.
-		        labelPadding = (Math.abs(axis.defaultLeftAxisOptions.labels.x) * 2);
-		        axis.maxLabelDimensions = axis.getMaxLabelDimensions(
-		            axis.ticks,
-		            axis.tickPositions
-		        );
-		        distance = axis.maxLabelDimensions.width + labelPadding;
-		        lineWidth = options.lineWidth;
-
-		        // Remove right wall before rendering if updating
-		        if (axis.rightWall) {
-		            axis.rightWall.destroy();
-		        }
-
-		        // Call original Axis.render() to obtain axis.axisLine and
-		        // axis.axisGroup
-		        proceed.apply(axis);
-
-		        axisGroupBox = axis.axisGroup.getBBox();
-
-		        /*
-		         * Draw an extra axis line on outer axes
-		         *             >
-		         * Make this:    |______|______|______|___
-		         *
-		         *             > _________________________
-		         * Into this:    |______|______|______|__|
-		         *
-		         */
-		        if (axis.isOuterAxis() && axis.axisLine) {
-		            if (horiz) {
-		                // -1 to avoid adding distance each time the chart updates
-		                distance = axisGroupBox.height - 1;
+		        if (
+		            gridOptions.enabled === true &&
+		            !categoryAxis &&
+		            (axis.horiz || axis.isLinked)
+		        ) {
+		            if ((moreThanMin || endMoreThanMin) && !options.startOnTick) {
+		                tickPositions[0] = min;
 		            }
 
-		            if (lineWidth) {
-		                linePath = axis.getLinePath(lineWidth);
-		                xStartIndex = linePath.indexOf('M') + 1;
-		                xEndIndex = linePath.indexOf('L') + 1;
-		                yStartIndex = linePath.indexOf('M') + 2;
-		                yEndIndex = linePath.indexOf('L') + 2;
+		            if ((lessThanMax || startLessThanMax) && !options.endOnTick) {
+		                tickPositions[tickPositions.length - 1] = max;
+		            }
+		        }
 
-		                // Negate distance if top or left axis
-		                if (axis.side === axisSide.top || axis.side === axisSide.left) {
-		                    distance = -distance;
-		                }
+		        proceed.apply(axis, argsToArray(arguments));
+		    }
+		);
 
-		                // If axis is horizontal, reposition line path vertically
+		wrap(Axis.prototype, 'render',
+		    /**
+		     * Draw an extra line on the far side of the outermost axis,
+		     * creating floor/roof/wall of a grid. And some padding.
+		     * ```
+		     * Make this:
+		     *             (axis.min) __________________________ (axis.max)
+		     *                           |    |    |    |    |
+		     * Into this:
+		     *             (axis.min) __________________________ (axis.max)
+		     *                        ___|____|____|____|____|__
+		     * ```
+		     *
+		     * @private
+		     * @function
+		     *
+		     * @param {Function} proceed
+		     *        the original function
+		     */
+		    function (proceed) {
+		        var axis = this,
+		            options = axis.options,
+		            gridOptions = ((
+		                options && isObject(options.grid)) ? options.grid : {}
+		            ),
+		            labelPadding,
+		            distance,
+		            lineWidth,
+		            linePath,
+		            yStartIndex,
+		            yEndIndex,
+		            xStartIndex,
+		            xEndIndex,
+		            renderer = axis.chart.renderer,
+		            horiz = axis.horiz,
+		            axisGroupBox;
+
+		        if (gridOptions.enabled === true) {
+
+		            // @todo acutual label padding (top, bottom, left, right)
+
+		            // Label padding is needed to figure out where to draw the outer
+		            // line.
+		            labelPadding = (Math.abs(axis.defaultLeftAxisOptions.labels.x) * 2);
+		            axis.maxLabelDimensions = axis.getMaxLabelDimensions(
+		                axis.ticks,
+		                axis.tickPositions
+		            );
+		            distance = axis.maxLabelDimensions.width + labelPadding;
+		            lineWidth = options.lineWidth;
+
+		            // Remove right wall before rendering if updating
+		            if (axis.rightWall) {
+		                axis.rightWall.destroy();
+		            }
+
+		            // Call original Axis.render() to obtain axis.axisLine and
+		            // axis.axisGroup
+		            proceed.apply(axis);
+
+		            axisGroupBox = axis.axisGroup.getBBox();
+
+		            /*
+		               Draw an extra axis line on outer axes
+		                           >
+		               Make this:    |______|______|______|___
+
+		                           > _________________________
+		               Into this:    |______|______|______|__|
+		                                                       */
+		            if (axis.isOuterAxis() && axis.axisLine) {
 		                if (horiz) {
-		                    linePath[yStartIndex] = linePath[yStartIndex] + distance;
-		                    linePath[yEndIndex] = linePath[yEndIndex] + distance;
-		                } else {
-		                    // If axis is vertical, reposition line path horizontally
-		                    linePath[xStartIndex] = linePath[xStartIndex] + distance;
-		                    linePath[xEndIndex] = linePath[xEndIndex] + distance;
+		                    // -1 to avoid adding distance each time the chart updates
+		                    distance = axisGroupBox.height - 1;
 		                }
 
-		                if (!axis.axisLineExtra) {
-		                    axis.axisLineExtra = renderer.path(linePath)
-		                        .attr({
-                            
-		                            stroke: options.lineColor,
-		                            'stroke-width': lineWidth,
-                            
-		                            zIndex: 7
-		                        })
-		                        .addClass('highcharts-axis-line')
-		                        .add(axis.axisGroup);
-		                } else {
-		                    axis.axisLineExtra.animate({
-		                        d: linePath
-		                    });
-		                }
+		                if (lineWidth) {
+		                    linePath = axis.getLinePath(lineWidth);
+		                    xStartIndex = linePath.indexOf('M') + 1;
+		                    xEndIndex = linePath.indexOf('L') + 1;
+		                    yStartIndex = linePath.indexOf('M') + 2;
+		                    yEndIndex = linePath.indexOf('L') + 2;
 
-		                // show or hide the line depending on options.showEmpty
-		                axis.axisLine[axis.showAxis ? 'show' : 'hide'](true);
+		                    // Negate distance if top or left axis
+		                    if (axis.side === axisSide.top ||
+		                        axis.side === axisSide.left
+		                    ) {
+		                        distance = -distance;
+		                    }
+
+		                    // If axis is horizontal, reposition line path vertically
+		                    if (horiz) {
+		                        linePath[yStartIndex] = (
+		                            linePath[yStartIndex] + distance
+		                        );
+		                        linePath[yEndIndex] = linePath[yEndIndex] + distance;
+		                    } else {
+		                        // If axis is vertical, reposition line path
+		                        // horizontally
+		                        linePath[xStartIndex] = (
+		                            linePath[xStartIndex] + distance
+		                        );
+		                        linePath[xEndIndex] = linePath[xEndIndex] + distance;
+		                    }
+
+		                    if (!axis.axisLineExtra) {
+		                        axis.axisLineExtra = renderer.path(linePath)
+		                            .attr({
+                                
+		                                stroke: options.lineColor,
+		                                'stroke-width': lineWidth,
+                                
+		                                zIndex: 7
+		                            })
+		                            .addClass('highcharts-axis-line')
+		                            .add(axis.axisGroup);
+		                    } else {
+		                        axis.axisLineExtra.animate({
+		                            d: linePath
+		                        });
+		                    }
+
+		                    // show or hide the line depending on options.showEmpty
+		                    axis.axisLine[axis.showAxis ? 'show' : 'hide'](true);
+		                }
 		            }
+
+		        } else {
+		            proceed.apply(axis);
 		        }
-
-		    } else {
-		        proceed.apply(axis);
 		    }
-		});
+		);
 
-		/**
-		 * Wraps axis init to draw cell walls on vertical axes.
-		 *
-		 * @param {function} proceed - the original function
-		 */
+		// Wraps axis init to draw cell walls on vertical axes.
 		wrap(Axis.prototype, 'init', function (proceed, chart, userOptions) {
 		    var axis = this,
 		        gridOptions = (
@@ -989,32 +1074,26 @@
 		        }
 		        options.labels.align = pick(options.labels.align, 'center');
 
-		        // TODO: Check against tickLabelPlacement between/on etc
-		        /**
-		         * Prevents adding the last tick label if the axis is not a category
-		         * axis.
-		         *
-		         * Since numeric labels are normally placed at starts and ends of a
-		         * range of value, and this module makes the label point at the value,
-		         * an "extra" label would appear.
-		         */
+		        // @todo: Check against tickLabelPlacement between/on etc
+
+		        /* Prevents adding the last tick label if the axis is not a category
+		           axis.
+		           Since numeric labels are normally placed at starts and ends of a
+		           range of value, and this module makes the label point at the value,
+		           an "extra" label would appear. */
 		        if (!axis.categories) {
 		            options.showLastLabel = false;
 		        }
 
-		        /**
-		         * Make tick marks taller, creating cell walls of a grid.
-		         * Use cellHeight axis option if set
-		         */
+		        // Make tick marks taller, creating cell walls of a grid. Use cellHeight
+		        // axis option if set
 		        if (axis.horiz) {
 		            options.tickLength = gridOptions.cellHeight ||
 		                    fontMetrics.h * fontSizeToCellHeightRatio;
 		        }
 
-		        /**
-		         * Prevents rotation of labels when squished, as rotating them would not
-		         * help.
-		         */
+		        // Prevents rotation of labels when squished, as rotating them would not
+		        // help.
 		        axis.labelRotation = 0;
 		        options.labels.rotation = 0;
 		    }
@@ -1080,14 +1159,15 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2018 Torstein Honsi, Lars Cabrera
 		 *
 		 * License: www.highcharts.com/license
 		 */
 
+
+
 		var Chart = H.Chart,
-		    each = H.each,
 		    pick = H.pick;
 
 		/**
@@ -1097,11 +1177,13 @@
 		 * height of the chart adjusts. Adding or removing items will make the chart
 		 * resize.
 		 *
-		 * @type {number}
-		 * @sample gantt/xrange-series/demo/ X-range series with static scale
-		 * @since 6.2.0
-		 * @product gantt
-		 * @default 50
+		 * @sample gantt/xrange-series/demo/
+		 *         X-range series with static scale
+		 *
+		 * @type      {number}
+		 * @default   50
+		 * @since     6.2.0
+		 * @product   gantt
 		 * @apioption yAxis.staticScale
 		 */
 
@@ -1117,7 +1199,7 @@
 
 		Chart.prototype.adjustHeight = function () {
 		    if (this.redrawTrigger !== 'adjustHeight') {
-		        each(this.axes || [], function (axis) {
+		        (this.axes || []).forEach(function (axis) {
 		            var chart = axis.chart,
 		                animate = !!chart.initiatedScale && chart.options.animation,
 		                staticScale = axis.options.staticScale,
@@ -1144,7 +1226,7 @@
 
 		                // Make sure clip rects have the right height before initial
 		                // animation.
-		                each(axis.series, function (series) {
+		                axis.series.forEach(function (series) {
 		                    var clipRect =
 		                        series.sharedClipKey && chart[series.sharedClipKey];
 		                    if (clipRect) {
@@ -1164,33 +1246,44 @@
 
 	}(Highcharts));
 	var Tree = (function (H) {
-		/**
-		* (c) 2016 Highsoft AS
-		* Authors: Jon Arild Nygard
-		*
-		* License: www.highcharts.com/license
-		*/
+		/* *
+		 *
+		 *  (c) 2016-2018 Highsoft AS
+		 *
+		 *  Authors: Jon Arild Nygard
+		 *
+		 *  License: www.highcharts.com/license
+		 *
+		 * */
+
 		/* eslint no-console: 0 */
-		var each = H.each,
-		    extend = H.extend,
+
+
+
+		var extend = H.extend,
 		    isNumber = H.isNumber,
-		    keys = H.keys,
-		    map = H.map,
 		    pick = H.pick,
-		    reduce = H.reduce,
 		    isFunction = function (x) {
 		        return typeof x === 'function';
 		    };
 
 		/**
 		 * Creates an object map from parent id to childrens index.
-		 * @param   {Array}  data          List of points set in options.
-		 * @param   {string} data[].parent Parent id of point.
-		 * @param   {Array}  ids           List of all point ids.
-		 * @returns {Object}               Map from parent id to children index in data
+		 *
+		 * @private
+		 * @function Highcharts.Tree#getListOfParents
+		 *
+		 * @param {Array<*>} data
+		 *        List of points set in options. `Array<*>.parent`is parent id of point.
+		 *
+		 * @param {Array<string>} ids
+		 *        List of all point ids.
+		 *
+		 * @return {object}
+		 *         Map from parent id to children index in data
 		 */
 		var getListOfParents = function (data, ids) {
-		    var listOfParents = reduce(data, function (prev, curr) {
+		    var listOfParents = data.reduce(function (prev, curr) {
 		            var parent = pick(curr.parent, '');
 		            if (prev[parent] === undefined) {
 		                prev[parent] = [];
@@ -1198,13 +1291,13 @@
 		            prev[parent].push(curr);
 		            return prev;
 		        }, {}),
-		        parents = keys(listOfParents);
+		        parents = Object.keys(listOfParents);
 
 		    // If parent does not exist, hoist parent to root of tree.
-		    each(parents, function (parent, list) {
+		    parents.forEach(function (parent, list) {
 		        var children = listOfParents[parent];
-		        if ((parent !== '') && (H.inArray(parent, ids) === -1)) {
-		            each(children, function (child) {
+		        if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+		            children.forEach(function (child) {
 		                list[''].push(child);
 		            });
 		            delete list[parent];
@@ -1233,11 +1326,9 @@
 		        before(node, options);
 		    }
 
-		    /**
-		     * Call getNode recursively on the children. Calulate the height of the
-		     * node, and the number of descendants.
-		     */
-		    children = map((mapOfIdToChildren[id] || []), function (child) {
+		    // Call getNode recursively on the children. Calulate the height of the
+		    // node, and the number of descendants.
+		    children = ((mapOfIdToChildren[id] || [])).map(function (child) {
 		        var node = getNode(
 		                child.id,
 		                id,
@@ -1293,7 +1384,7 @@
 		    return node;
 		};
 		var getTree = function (data, options) {
-		    var ids = map(data, function (d) {
+		    var ids = data.map(function (d) {
 		            return d.id;
 		        }),
 		        mapOfIdToChildren = getListOfParents(data, ids);
@@ -1310,8 +1401,8 @@
 		return Tree;
 	}(Highcharts));
 	var result = (function (H) {
-		var each = H.each,
-		    extend = H.extend,
+
+		var extend = H.extend,
 		    isArray = H.isArray,
 		    isBoolean = function (x) {
 		        return typeof x === 'boolean';
@@ -1322,8 +1413,8 @@
 		    isObject = H.isObject,
 		    isNumber = H.isNumber,
 		    merge = H.merge,
-		    pick = H.pick,
-		    reduce = H.reduce;
+		    pick = H.pick;
+
 		// TODO Combine buildTree and buildNode with setTreeValues
 		// TODO Remove logic from Treemap and make it utilize this mixin.
 		var setTreeValues = function setTreeValues(tree, options) {
@@ -1354,7 +1445,7 @@
 		        tree = before(tree, options);
 		    }
 		    // First give the children some values
-		    each(tree.children, function (child, i) {
+		    tree.children.forEach(function (child, i) {
 		        var newOptions = extend({}, options);
 		        extend(newOptions, {
 		            index: i,
@@ -1389,6 +1480,7 @@
 		        siblings = options.siblings,
 		        points = series.points,
 		        getColorByPoint,
+		        chartOptionsChart = series.chart.options.chart,
 		        point,
 		        level,
 		        colorByPoint,
@@ -1416,21 +1508,22 @@
 		        if (getColorByPoint) {
 		            colorIndexByPoint = point.index % (colors ?
 		                colors.length :
-		                series.chart.options.chart.colorCount
+		                chartOptionsChart.colorCount
 		            );
 		            colorByPoint = colors && colors[colorIndexByPoint];
 		        }
 
-        
 		        // Select either point color, level color or inherited color.
-		        color = pick(
-		            point && point.options.color,
-		            level && level.color,
-		            colorByPoint,
-		            parentColor && variation(parentColor),
-		            series.color
-		        );
-        
+		        if (!series.chart.styledMode) {
+		            color = pick(
+		                point && point.options.color,
+		                level && level.color,
+		                colorByPoint,
+		                parentColor && variation(parentColor),
+		                series.color
+		            );
+		        }
+
 		        colorIndex = pick(
 		            point && point.options.colorIndex,
 		            level && level.colorIndex,
@@ -1446,16 +1539,22 @@
 		};
 
 		/**
-		 * getLevelOptions - Creates a map from level number to its given options.
-		 * @param {Object} params Object containing parameters.
-		 * @param {Object} params.defaults Object containing default options. The
-		 * default options are merged with the userOptions to get the final options for
-		 * a specific level.
-		 * @param {Number} params.from The lowest level number.
-		 * @param {Array} params.levels User options from series.levels.
-		 * @param {Number} params.to The highest level number.
-		 * @return {null|Object} Returns a map from level number to its given options.
-		 * Returns null if invalid input parameters.
+		 * Creates a map from level number to its given options.
+		 *
+		 * @private
+		 * @function getLevelOptions
+		 *
+		 * @param {object} params
+		 *        Object containing parameters.
+		 *        - `defaults` Object containing default options. The default options
+		 *           are merged with the userOptions to get the final options for a
+		 *           specific level.
+		 *        - `from` The lowest level number.
+		 *        - `levels` User options from series.levels.
+		 *        - `to` The highest level number.
+		 *
+		 * @return {Highcharts.Dictionary<object>}
+		 *         Returns a map from level number to its given options.
 		 */
 		var getLevelOptions = function getLevelOptions(params) {
 		    var result = null,
@@ -1472,7 +1571,7 @@
 		        converted = {};
 		        defaults = isObject(params.defaults) ? params.defaults : {};
 		        if (isArray(levels)) {
-		            converted = reduce(levels, function (obj, item) {
+		            converted = levels.reduce(function (obj, item) {
 		                var level,
 		                    levelIsConstant,
 		                    options;
@@ -1512,8 +1611,15 @@
 		/**
 		 * Update the rootId property on the series. Also makes sure that it is
 		 * accessible to exporting.
-		 * @param {object} series The series to operate on.
-		 * @returns Returns the resulting rootId after update.
+		 *
+		 * @private
+		 * @function updateRootId
+		 *
+		 * @param {object} series
+		 *        The series to operate on.
+		 *
+		 * @return {string}
+		 *         Returns the resulting rootId after update.
 		 */
 		var updateRootId = function (series) {
 		    var rootId,
@@ -1542,6 +1648,7 @@
 		    updateRootId: updateRootId
 		};
 
+
 		return result;
 	}(Highcharts));
 	(function (H) {
@@ -1551,10 +1658,11 @@
 		 * License: www.highcharts.com/license
 		 */
 
+
+
 		var addEvent = H.addEvent,
 		    pick = H.pick,
 		    wrap = H.wrap,
-		    each = H.each,
 		    extend = H.extend,
 		    isArray = H.isArray,
 		    fireEvent = H.fireEvent,
@@ -1653,10 +1761,15 @@
 		/**
 		 * Dynamically set or unset breaks in an axis. This function in lighter than
 		 * usin Axis.update, and it also preserves animation.
-		 * @param  {Array} [breaks]
-		 *         The breaks to add. When `undefined` it removes existing breaks.
-		 * @param  {Boolean} [redraw=true]
-		 *         Whether to redraw the chart immediately.
+		 *
+		 * @private
+		 * @function Highcharts.Axis#setBreaks
+		 *
+		 * @param {Array<*>} [breaks]
+		 *        The breaks to add. When `undefined` it removes existing breaks.
+		 *
+		 * @param {boolean} [redraw=true]
+		 *        Whether to redraw the chart immediately.
 		 */
 		Axis.prototype.setBreaks = function (breaks, redraw) {
 		    var axis = this,
@@ -1762,7 +1875,7 @@
 		                    i;
 
 		                // Min & max check (#4247)
-		                each(breaks, function (brk) {
+		                breaks.forEach(function (brk) {
 		                    repeat = brk.repeat || Infinity;
 		                    if (axis.isInBreak(brk, min)) {
 		                        min += (brk.to % repeat) - (min % repeat);
@@ -1773,7 +1886,7 @@
 		                });
 
 		                // Construct an array holding all breaks in the axis
-		                each(breaks, function (brk) {
+		                breaks.forEach(function (brk) {
 		                    start = brk.from;
 		                    repeat = brk.repeat || Infinity;
 
@@ -1809,7 +1922,7 @@
 		                inBrk = 0;
 		                start = min;
 
-		                each(breakArrayT, function (brk) {
+		                breakArrayT.forEach(function (brk) {
 		                    inBrk += (brk.move === 'in' ? 1 : -1);
 
 		                    if (inBrk === 1 && brk.move === 'in') {
@@ -1911,14 +2024,14 @@
 		        return; // #5950
 		    }
 
-		    each(keys, function (key) {
+		    keys.forEach(function (key) {
 		        breaks = axis.breakArray || [];
 		        threshold = axis.isXAxis ?
 		            axis.min :
 		            pick(series.options.threshold, axis.min);
-		        each(points, function (point) {
+		        points.forEach(function (point) {
 		            y = pick(point['stack' + key.toUpperCase()], point[key]);
-		            each(breaks, function (brk) {
+		            breaks.forEach(function (brk) {
 		                eventName = false;
 
 		                if (
@@ -1946,6 +2059,9 @@
 		 * Extend getGraphPath by identifying gaps in the data so that we can draw a gap
 		 * in the line or area. This was moved from ordinal axis module to broken axis
 		 * module as of #5045.
+		 *
+		 * @private
+		 * @function Highcharts.Series#gappedPath
 		 */
 		H.Series.prototype.gappedPath = function () {
 		    var currentDataGrouping = this.currentDataGrouping,
@@ -1972,14 +2088,16 @@
 		     * time series. In a stock chart, intraday data is available for daytime
 		     * hours, while gaps will appear in nights and weekends.
 		     *
-		     * @type    {Number}
-		     * @see     [gapUnit](plotOptions.series.gapUnit) and
-		     *          [xAxis.breaks](#xAxis.breaks)
-		     * @sample  {highstock} stock/plotoptions/series-gapsize/
-		     *          Setting the gap size to 2 introduces gaps for weekends in daily
-		     *          datasets.
-		     * @default 0
-		     * @product highstock
+		     * @see [gapUnit](plotOptions.series.gapUnit)
+		     * @see [xAxis.breaks](#xAxis.breaks)
+		     *
+		     * @sample {highstock} stock/plotoptions/series-gapsize/
+		     *         Setting the gap size to 2 introduces gaps for weekends in daily
+		     *         datasets.
+		     *
+		     * @type      {number}
+		     * @default   0
+		     * @product   highstock
 		     * @apioption plotOptions.series.gapSize
 		     */
 
@@ -1995,13 +2113,14 @@
 		     * which on a datetime axis is milliseconds. This also applies to the
 		     * navigator series that inherits gap options from the base series.
 		     *
-		     * @type {String}
 		     * @see [gapSize](plotOptions.series.gapSize)
-		     * @default relative
+		     *
+		     * @type       {string}
+		     * @default    relative
+		     * @since      5.0.13
+		     * @product    highstock
 		     * @validvalue ["relative", "value"]
-		     * @since 5.0.13
-		     * @product highstock
-		     * @apioption plotOptions.series.gapUnit
+		     * @apioption  plotOptions.series.gapUnit
 		     */
 
 		    if (gapSize && i > 0) { // #5008
@@ -2055,25 +2174,26 @@
 
 	}(Highcharts));
 	(function (H, Tree, mixinTreeSeries) {
-		/**
-		* (c) 2016 Highsoft AS
-		* Authors: Jon Arild Nygard
-		*
-		* License: www.highcharts.com/license
-		*/
+		/* *
+		 * (c) 2016 Highsoft AS
+		 * Authors: Jon Arild Nygard
+		 *
+		 * License: www.highcharts.com/license
+		 */
+
 		/* eslint no-console: 0 */
+
+
+
 		var argsToArray = function (args) {
 		        return Array.prototype.slice.call(args, 1);
 		    },
 		    defined = H.defined,
-		    each = H.each,
 		    extend = H.extend,
 		    find = H.find,
 		    fireEvent = H.fireEvent,
 		    getLevelOptions = mixinTreeSeries.getLevelOptions,
-		    map = H.map,
 		    merge = H.merge,
-		    inArray = H.inArray,
 		    isBoolean = function (x) {
 		        return typeof x === 'boolean';
 		    },
@@ -2083,29 +2203,10 @@
 		        return H.isObject(x, true);
 		    },
 		    isString = H.isString,
-		    keys = H.keys,
 		    pick = H.pick,
-		    reduce = H.reduce,
 		    wrap = H.wrap,
 		    GridAxis = H.Axis,
 		    GridAxisTick = H.Tick;
-
-		/**
-		 * some - Equivalent of Array.prototype.some
-		 *
-		 * @param  {Array}    arr       Array to look for matching elements in.
-		 * @param  {function} condition The condition to check against.
-		 * @return {boolean}            Whether some elements pass the condition.
-		 */
-		var some = function (arr, condition) {
-		    var result = false;
-		    each(arr, function (element, index, array) {
-		        if (!result) {
-		            result = condition(element, index, array);
-		        }
-		    });
-		    return result;
-		};
 
 		var override = function (obj, methods) {
 		    var method,
@@ -2121,15 +2222,21 @@
 		/**
 		 * getCategoriesFromTree - getCategories based on a tree
 		 *
-		 * @param  {object} tree Root of tree to collect categories from
-		 * @return {Array}       Array of categories
+		 * @private
+		 * @function getCategoriesFromTree
+		 *
+		 * @param {object} tree
+		 *        Root of tree to collect categories from
+		 *
+		 * @return {Array<string>}
+		 *         Array of categories
 		 */
 		var getCategoriesFromTree = function (tree) {
 		    var categories = [];
 		    if (tree.data) {
 		        categories.push(tree.data.name);
 		    }
-		    each(tree.children, function (child) {
+		    tree.children.forEach(function (child) {
 		        categories = categories.concat(getCategoriesFromTree(child));
 		    });
 		    return categories;
@@ -2138,9 +2245,9 @@
 		var mapTickPosToNode = function (node, categories) {
 		    var map = {},
 		        name = node.data && node.data.name,
-		        pos = inArray(name, categories);
+		        pos = categories.indexOf(name);
 		    map[pos] = node;
-		    each(node.children, function (child) {
+		    node.children.forEach(function (child) {
 		        extend(map, mapTickPosToNode(child, categories));
 		    });
 		    return map;
@@ -2170,16 +2277,17 @@
 		 * Creates a list of positions for the ticks on the axis. Filters out positions
 		 * that are outside min and max, or is inside an axis break.
 		 *
-		 * @param {Object} axis The Axis to get the tick positions from.
-		 * @param {number} axis.min The minimum value of the axis.
-		 * @param {number} axis.max The maximum value of the axis.
-		 * @param {function} axis.isInAnyBreak Function to determine if a position is
-		 * inside any breaks on the axis.
-		 * @returns {number[]} List of positions.
+		 * @private
+		 * @function getTickPositions
+		 *
+		 * @param {Highcharts.Axis} axis
+		 *        The Axis to get the tick positions from.
+		 *
+		 * @return {Array<number>}
+		 *         List of positions.
 		 */
 		var getTickPositions = function (axis) {
-		    return reduce(
-		        keys(axis.mapOfPosToGridNode),
+		    return Object.keys(axis.mapOfPosToGridNode).reduce(
 		        function (arr, key) {
 		            var pos = +key;
 		            if (
@@ -2194,27 +2302,50 @@
 		        []
 		    );
 		};
+
 		/**
 		 * Check if a node is collapsed.
-		 * @param {object} axis The axis to check against.
-		 * @param {object} node The node to check if is collapsed.
-		 * @param {number} pos The tick position to collapse.
-		 * @returns {boolean} Returns true if collapsed, false if expanded.
+		 *
+		 * @private
+		 * @function isCollapsed
+		 *
+		 * @param {Highcharts.Axis} axis
+		 *        The axis to check against.
+		 *
+		 * @param {object} node
+		 *        The node to check if is collapsed.
+		 *
+		 * @param {number} pos
+		 *        The tick position to collapse.
+		 *
+		 * @return {boolean}
+		 *         Returns true if collapsed, false if expanded.
 		 */
 		var isCollapsed = function (axis, node) {
 		    var breaks = (axis.options.breaks || []),
 		        obj = getBreakFromNode(node, axis.max);
-		    return some(breaks, function (b) {
+		    return breaks.some(function (b) {
 		        return b.from === obj.from && b.to === obj.to;
 		    });
 		};
 
 		/**
 		 * Calculates the new axis breaks to collapse a node.
-		 * @param {object} axis The axis to check against.
-		 * @param {object} node The node to collapse.
-		 * @param {number} pos The tick position to collapse.
-		 * @returns {array} Returns an array of the new breaks for the axis.
+		 *
+		 * @private
+		 * @function collapse
+		 *
+		 * @param {Highcharts.Axis} axis
+		 *        The axis to check against.
+		 *
+		 * @param {object} node
+		 *        The node to collapse.
+		 *
+		 * @param {number} pos
+		 *        The tick position to collapse.
+		 *
+		 * @return {Array<object>}
+		 *         Returns an array of the new breaks for the axis.
 		 */
 		var collapse = function (axis, node) {
 		    var breaks = (axis.options.breaks || []),
@@ -2225,16 +2356,26 @@
 
 		/**
 		 * Calculates the new axis breaks to expand a node.
-		 * @param {object} axis The axis to check against.
-		 * @param {object} node The node to expand.
-		 * @param {number} pos The tick position to expand.
-		 * @returns {array} Returns an array of the new breaks for the axis.
+		 *
+		 * @private
+		 * @function expand
+		 *
+		 * @param {Highcharts.Axis} axis
+		 *        The axis to check against.
+		 *
+		 * @param {object} node
+		 *        The node to expand.
+		 *
+		 * @param {number} pos
+		 *        The tick position to expand.
+		 *
+		 * @returns {Array<object>} Returns an array of the new breaks for the axis.
 		 */
 		var expand = function (axis, node) {
 		    var breaks = (axis.options.breaks || []),
 		        obj = getBreakFromNode(node, axis.max);
 		    // Remove the break from the axis breaks array.
-		    return reduce(breaks, function (arr, b) {
+		    return breaks.reduce(function (arr, b) {
 		        if (b.to !== obj.to || b.from !== obj.from) {
 		            arr.push(b);
 		        }
@@ -2246,10 +2387,21 @@
 		 * Calculates the new axis breaks after toggling the collapse/expand state of a
 		 * node. If it is collapsed it will be expanded, and if it is exapended it will
 		 * be collapsed.
-		 * @param {object} axis The axis to check against.
-		 * @param {object} node The node to toggle.
-		 * @param {number} pos The tick position to toggle.
-		 * @returns {array} Returns an array of the new breaks for the axis.
+		 *
+		 * @private
+		 * @function toggleCollapse
+		 *
+		 * @param {Highcharts.Axis} axis
+		 *        The axis to check against.
+		 *
+		 * @param {object} node
+		 *        The node to toggle.
+		 *
+		 * @param {number} pos
+		 *        The tick position to toggle.
+		 *
+		 * @return {Array<object>}
+		 *         Returns an array of the new breaks for the axis.
 		 */
 		var toggleCollapse = function (axis, node) {
 		    return (
@@ -2289,19 +2441,19 @@
 		        icon.attr({ y: -9999 }); // #1338
 		    }
 
-    
 		    // Presentational attributes
-		    icon
-		        .attr({
-		            'stroke-width': 1,
-		            'fill': pick(params.color, '#666666')
-		        })
-		        .css({
-		            cursor: 'pointer',
-		            stroke: options.lineColor,
-		            strokeWidth: options.lineWidth
-		        });
-    
+		    if (!renderer.styledMode) {
+		        icon
+		            .attr({
+		                'stroke-width': 1,
+		                'fill': pick(params.color, '#666666')
+		            })
+		            .css({
+		                cursor: 'pointer',
+		                stroke: options.lineColor,
+		                strokeWidth: options.lineWidth
+		            });
+		    }
 
 		    // Update the icon positions
 		    icon[isNew ? 'attr' : 'animate']({
@@ -2313,30 +2465,42 @@
 		};
 		var onTickHover = function (label) {
 		    label.addClass('highcharts-treegrid-node-active');
-    
-		    label.css({
-		        textDecoration: 'underline'
-		    });
-    
+
+		    if (!label.renderer.styledMode) {
+		        label.css({
+		            textDecoration: 'underline'
+		        });
+		    }
 		};
 		var onTickHoverExit = function (label, options) {
 		    var css = defined(options.style) ? options.style : {};
 		    label.removeClass('highcharts-treegrid-node-active');
-    
-		    label.css({
-		        textDecoration: css.textDecoration
-		    });
-    
+
+		    if (!label.renderer.styledMode) {
+		        label.css({
+		            textDecoration: css.textDecoration
+		        });
+		    }
 		};
 
 		/**
 		 * Creates a tree structure of the data, and the treegrid. Calculates
 		 * categories, and y-values of points based on the tree.
-		 * @param {Array} data All the data points to display in the axis.
-		 * @param {boolean} uniqueNames Wether or not the data node with the same name
-		 * should share grid cell. If true they do share cell. False by default.
-		 * @returns {object} Returns an object containing categories, mapOfIdToNode,
-		 * mapOfPosToGridNode, and tree.
+		 *
+		 * @private
+		 * @function getTreeGridFromData
+		 *
+		 * @param {Array<*>} data
+		 *        All the data points to display in the axis.
+		 *
+		 * @param {boolean} uniqueNames
+		 *        Wether or not the data node with the same name should share grid cell.
+		 *        If true they do share cell. False by default.
+		 *
+		 * @return {object}
+		 *         Returns an object containing categories, mapOfIdToNode,
+		 *         mapOfPosToGridNode, and tree.
+		 *
 		 * @todo There should be only one point per line.
 		 * @todo It should be optional to have one category per point, or merge cells
 		 * @todo Add unit-tests.
@@ -2359,7 +2523,7 @@
 		            var gridNode = mapOfPosToGridNode[node.pos],
 		                height = 0,
 		                descendants = 0;
-		            each(gridNode.children, function (child) {
+		            gridNode.children.forEach(function (child) {
 		                descendants += child.descendants + 1;
 		                height = Math.max(child.height + 1, height);
 		            });
@@ -2445,7 +2609,7 @@
 		                padding = 0.5,
 		                pos = start + diff;
 
-		            each(nodes, function (node) {
+		            nodes.forEach(function (node) {
 		                var data = node.data;
 		                if (isObject(data)) {
 		                    // Update point
@@ -2463,7 +2627,7 @@
 		            gridNode.collapseStart = end + padding;
 
 
-		            each(gridNode.children, function (child) {
+		            gridNode.children.forEach(function (child) {
 		                setValues(child, end + 1, result);
 		                end = child.collapseEnd - padding;
 		            });
@@ -2515,10 +2679,11 @@
 		                    * Set options on specific levels in a tree grid axis. Takes
 		                    * precedence over labels options.
 		                    *
-		                    * @product gantt
 		                    * @sample {gantt} gantt/treegrid-axis/labels-levels
-		                    *           Levels on TreeGrid Labels
-		                    * @type {Array<Object>}
+		                    *         Levels on TreeGrid Labels
+		                    *
+		                    * @type      {Array<*>}
+		                    * @product   gantt
 		                    * @apioption yAxis.labels.levels
 		                    */
 		                    levels: [{
@@ -2527,11 +2692,21 @@
 		                        * applies to.
 		                        *
 		                        * @sample {gantt} gantt/treegrid-axis/labels-levels
+		                        *
+		                        * @type      {number}
+		                        * @product   gantt
+		                        * @apioption yAxis.labels.levels.level
 		                        */
 		                        level: undefined
 		                    }, {
 		                        level: 1,
+		                        /**
+		                         * @type      {Highcharts.CSSObject}
+		                         * @product   gantt
+		                         * @apioption yAxis.labels.levels.style
+		                         */
 		                        style: {
+		                            /** @ignore-option */
 		                            fontWeight: 'bold'
 		                        }
 		                    }],
@@ -2540,7 +2715,7 @@
 		                     * The symbol for the collapse and expand icon in a
 		                     * treegrid.
 		                     *
-		                     * @product gantt
+		                     * @product      gantt
 		                     * @optionparent yAxis.labels.symbol
 		                     */
 		                    symbol: {
@@ -2548,7 +2723,7 @@
 		                         * The symbol type. Points to a definition function in
 		                         * the `Highcharts.Renderer.symbols` collection.
 		                         *
-		                         * @validvalue ['arc', 'circle', 'diamond', 'square', 'triangle', 'triangle-down']
+		                         * @validvalue ["arc", "circle", "diamond", "square", "triangle", "triangle-down"]
 		                         */
 		                        type: 'triangle',
 		                        x: -5,
@@ -2584,8 +2759,8 @@
 		                // Update yData now that we have calculated the y values
 		                // TODO: it would be better to be able to calculate y values
 		                // before Series.setData
-		                each(axis.series, function (series) {
-		                    series.yData = map(series.options.data, function (data) {
+		                axis.series.forEach(function (series) {
+		                    series.yData = series.options.data.map(function (data) {
 		                        return data.y;
 		                    });
 		                });
@@ -2604,7 +2779,7 @@
 		                // its dependency on axis.max.
 		                removeFoundExtremesEvent =
 		                    H.addEvent(axis, 'foundExtremes', function () {
-		                        each(axis.collapsedNodes, function (node) {
+		                        axis.collapsedNodes.forEach(function (node) {
 		                            var breaks = collapse(axis, node);
 		                            axis.setBreaks(breaks, false);
 		                        });
@@ -2617,8 +2792,12 @@
 		    },
 		    /**
 		     * Override to add indentation to axis.maxLabelDimensions.
-		     * @param  {Function}   proceed the original function
-		     * @returns {undefined}
+		     *
+		     * @private
+		     * @function Highcharts.GridAxis#getMaxLabelDimensions
+		     *
+		     * @param {Function} proceed
+		     *        The original function
 		     */
 		    getMaxLabelDimensions: function (proceed) {
 		        var axis = this,
@@ -2644,8 +2823,13 @@
 		     * Generates a tick for initial positioning.
 		     *
 		     * @private
-		     * @param {function} proceed The original generateTick function.
-		     * @param {number} pos The tick position in axis values.
+		     * @function Highcharts.GridAxis#generateTick
+		     *
+		     * @param {Function} proceed
+		     *        The original generateTick function.
+		     *
+		     * @param {number} pos
+		     *        The tick position in axis values.
 		     */
 		    generateTick: function (proceed, pos) {
 		        var axis = this,
@@ -2690,6 +2874,10 @@
 		     * Set the tick positions, tickInterval, axis min and max.
 		     *
 		     * @private
+		     * @function Highcharts.GridAxis#setTickInterval
+		     *
+		     * @param {Function} proceed
+		     *        The original setTickInterval function.
 		     */
 		    setTickInterval: function (proceed) {
 		        var axis = this,
@@ -2789,11 +2977,12 @@
 		            level = node && node.depth,
 		            isTreeGrid = options.type === 'treegrid',
 		            hasLabel = !!(label && label.element),
-		            shouldRender = inArray(pos, axis.tickPositions) > -1,
+		            shouldRender = axis.tickPositions.indexOf(pos) > -1,
 		            prefixClassName = 'highcharts-treegrid-node-',
 		            collapsed,
 		            addClassName,
-		            removeClassName;
+		            removeClassName,
+		            styledMode = axis.chart.styledMode;
 
 		        if (isTreeGrid && node) {
 		            // Add class name for hierarchical styling.
@@ -2810,9 +2999,7 @@
 		            renderLabelIcon(
 		                tick,
 		                {
-                    
-		                    color: label.styles.color,
-                    
+		                    color: !styledMode && label.styles.color,
 		                    collapsed: collapsed,
 		                    group: label.parentGroup,
 		                    options: symbolOptions,
@@ -2832,14 +3019,14 @@
 		                .addClass(addClassName)
 		                .removeClass(removeClassName);
 
-            
-		            label.css({
-		                cursor: 'pointer'
-		            });
-            
+		            if (!styledMode) {
+		                label.css({
+		                    cursor: 'pointer'
+		                });
+		            }
 
 		            // Add events to both label text and icon
-		            each([label, tick.labelIcon], function (object) {
+		            [label, tick.labelIcon].forEach(function (object) {
 		                if (!object.attachedTreeGridEvents) {
 		                    // On hover
 		                    H.addEvent(object.element, 'mouseover', function () {
@@ -2862,12 +3049,18 @@
 		});
 
 		extend(GridAxisTick.prototype, /** @lends Highcharts.Tick.prototype */{
+
 		    /**
 		     * Collapse the grid cell. Used when axis is of type treegrid.
-		     * @param  {boolean} [redraw=true] Whether to redraw the chart or wait for
-		     * an explicit call to {@link Highcharts.Chart#redraw}
-		     * @sample {gantt} gantt/treegrid-axis/collapsed-dynamically/demo.js
-		     * Dynamically collapse
+		     *
+		     * @see gantt/treegrid-axis/collapsed-dynamically/demo.js
+		     *
+		     * @private
+		     * @function Highcharts.GridAxisTick#collapse
+		     *
+		     * @param {boolean} [redraw=true]
+		     *        Whether to redraw the chart or wait for an explicit call to
+		     *        {@link Highcharts.Chart#redraw}
 		     */
 		    collapse: function (redraw) {
 		        var tick = this,
@@ -2880,10 +3073,14 @@
 		    /**
 		     * Expand the grid cell. Used when axis is of type treegrid.
 		     *
-		     * @param  {boolean} [redraw=true] Whether to redraw the chart or wait for
-		     * an explicit call to {@link Highcharts.Chart#redraw}
-		     * @sample {gantt} gantt/treegrid-axis/collapsed-dynamically/demo.js
-		     * Dynamically collapse
+		     * @see gantt/treegrid-axis/collapsed-dynamically/demo.js
+		     *
+		     * @private
+		     * @function Highcharts.GridAxisTick#expand
+		     *
+		     * @param {boolean} [redraw=true]
+		     *        Whether to redraw the chart or wait for an explicit call to
+		     *        {@link Highcharts.Chart#redraw}
 		     */
 		    expand: function (redraw) {
 		        var tick = this,
@@ -2897,10 +3094,14 @@
 		     * Toggle the collapse/expand state of the grid cell. Used when axis is of
 		     * type treegrid.
 		     *
-		     * @param  {boolean} [redraw=true] Whether to redraw the chart or wait for
-		     * an explicit call to {@link Highcharts.Chart#redraw}
-		     * @sample {gantt} gantt/treegrid-axis/collapsed-dynamically/demo.js
-		     * Dynamically collapse
+		     * @see gantt/treegrid-axis/collapsed-dynamically/demo.js
+		     *
+		     * @private
+		     * @function Highcharts.GridAxisTick#toggleCollapse
+		     *
+		     * @param {boolean} [redraw=true]
+		     *        Whether to redraw the chart or wait for an explicit call to
+		     *        {@link Highcharts.Chart#redraw}
 		     */
 		    toggleCollapse: function (redraw) {
 		        var tick = this,
@@ -2925,10 +3126,10 @@
 
 		    if (isTreeGrid && isYAxis) {
 		        // Concatenate data from all series assigned to this axis.
-		        data = reduce(series, function (arr, s) {
+		        data = series.reduce(function (arr, s) {
 		            if (s.visible) {
 		                // Push all data to array
-		                each(s.options.data, function (data) {
+		                s.options.data.forEach(function (data) {
 		                    if (isObject(data)) {
 		                        // Set series index on data. Removed again after use.
 		                        data.seriesIndex = numberOfSeries;
@@ -2968,12 +3169,14 @@
 
 	}(Highcharts, Tree, result));
 	var algorithms = (function (H) {
-		/**
+		/* *
 		 * (c) 2016 Highsoft AS
 		 * Author: Øystein Moseng
 		 *
 		 * License: www.highcharts.com/license
 		 */
+
+
 
 		var min = Math.min,
 		    max = Math.max,
@@ -2984,12 +3187,20 @@
 		 * Get index of last obstacle before xMin. Employs a type of binary search, and
 		 * thus requires that obstacles are sorted by xMin value.
 		 *
-		 * @param {Array} obstacles Array of obstacles to search in.
-		 * @param {Number} xMin The xMin threshold.
-		 * @param {Number} startIx Starting index to search from. Must be within array
-		 *  range.
+		 * @private
+		 * @function findLastObstacleBefore
 		 *
-		 * @return {Number} result The index of the last obstacle element before xMin.
+		 * @param {Array<object>} obstacles
+		 *        Array of obstacles to search in.
+		 *
+		 * @param {number} xMin
+		 *        The xMin threshold.
+		 *
+		 * @param {number} startIx
+		 *        Starting index to search from. Must be within array range.
+		 *
+		 * @return {number}
+		 *         The index of the last obstacle element before xMin.
 		 */
 		function findLastObstacleBefore(obstacles, xMin, startIx) {
 		    var left = startIx || 0, // left limit
@@ -3014,10 +3225,17 @@
 		/**
 		 * Test if a point lays within an obstacle.
 		 *
-		 * @param {Object} obstacle Obstacle to test.
-		 * @param {Object} point Point with x/y props.
+		 * @private
+		 * @function pointWithinObstacle
 		 *
-		 * @return {Boolean} result Whether point is within the obstacle or not.
+		 * @param {object} obstacle
+		 *        Obstacle to test.
+		 *
+		 * @param {Highcharts.Point} point
+		 *        Point with x/y props.
+		 *
+		 * @return {boolean}
+		 *         Whether point is within the obstacle or not.
 		 */
 		function pointWithinObstacle(obstacle, point) {
 		    return (
@@ -3032,10 +3250,17 @@
 		 * Find the index of an obstacle that wraps around a point.
 		 * Returns -1 if not found.
 		 *
-		 * @param {Array} obstacles Obstacles to test.
-		 * @param {Object} point Point with x/y props.
+		 * @private
+		 * @function findObstacleFromPoint
 		 *
-		 * @return {Number} result Ix of the obstacle in the array, or -1 if not found.
+		 * @param {Array<object>} obstacles
+		 *        Obstacles to test.
+		 *
+		 * @param {Highcharts.Point} point
+		 *        Point with x/y props.
+		 *
+		 * @return {number}
+		 *         Ix of the obstacle in the array, or -1 if not found.
 		 */
 		function findObstacleFromPoint(obstacles, point) {
 		    var i = findLastObstacleBefore(obstacles, point.x + 1) + 1;
@@ -3052,9 +3277,14 @@
 		/**
 		 * Get SVG path array from array of line segments.
 		 *
-		 * @param {Array} segments The segments to build the path from.
+		 * @private
+		 * @function pathFromSegments
 		 *
-		 * @return {Array} result SVG path array as accepted by the SVG Renderer.
+		 * @param {Array<object>} segments
+		 *        The segments to build the path from.
+		 *
+		 * @return {Highcharts.SVGPathArray}
+		 *         SVG path array as accepted by the SVG Renderer.
 		 */
 		function pathFromSegments(segments) {
 		    var path = [];
@@ -3071,8 +3301,14 @@
 		 * Limits obstacle max/mins in all directions to bounds. Modifies input
 		 * obstacle.
 		 *
-		 * @param {Object} obstacle Obstacle to limit.
-		 * @param {Object} bounds Bounds to use as limit.
+		 * @private
+		 * @function limitObstacleToBounds
+		 *
+		 * @param {object} obstacle
+		 *        Obstacle to limit.
+		 *
+		 * @param {object} bounds
+		 *        Bounds to use as limit.
 		 */
 		function limitObstacleToBounds(obstacle, bounds) {
 		    obstacle.yMin = max(obstacle.yMin, bounds.yMin);
@@ -3092,12 +3328,18 @@
 		     * Get an SVG path from a starting coordinate to an ending coordinate.
 		     * Draws a straight line.
 		     *
-		     * @param {Object} start Starting coordinate, object with x/y props.
-		     * @param {Object} end Ending coordinate, object with x/y props.
+		     * @function Highcharts.Pathfinder.algorithms.straight
 		     *
-		     * @return {Object} result An object with the SVG path in Array form as
-		     *  accepted by the SVG renderer, as well as an array of new obstacles
-		     *  making up this path.
+		     * @param {object} start
+		     *        Starting coordinate, object with x/y props.
+		     *
+		     * @param {object} end
+		     *        Ending coordinate, object with x/y props.
+		     *
+		     * @return {object}
+		     *         An object with the SVG path in Array form as accepted by the SVG
+		     *         renderer, as well as an array of new obstacles making up this
+		     *         path.
 		     */
 		    straight: function (start, end) {
 		        return {
@@ -3111,20 +3353,25 @@
 		     * right angles only, and taking only starting/ending obstacle into
 		     * consideration.
 		     *
-		     *  Options
-		     *      - chartObstacles:   Array of chart obstacles to avoid
-		     *      - startDirectionX:  Optional. True if starting in the X direction.
-		     *                          If not provided, the algorithm starts in the
-		     *                          direction that is the furthest between
-		     *                          start/end.
+		     * @function Highcharts.Pathfinder.algorithms.simpleConnect
 		     *
-		     * @param {Object} start Starting coordinate, object with x/y props.
-		     * @param {Object} end Ending coordinate, object with x/y props.
-		     * @param {Object} options Options for the algorithm.
+		     * @param {object} start
+		     *        Starting coordinate, object with x/y props.
 		     *
-		     * @return {Object} result An object with the SVG path in Array form as
-		     *  accepted by the SVG renderer, as well as an array of new obstacles
-		     *  making up this path.
+		     * @param {object} end
+		     *        Ending coordinate, object with x/y props.
+		     *
+		     * @param {object} options
+		     *        Options for the algorithm:
+		     *        - chartObstacles: Array of chart obstacles to avoid
+		     *        - startDirectionX: Optional. True if starting in the X direction.
+		     *          If not provided, the algorithm starts in the direction that is
+		     *          the furthest between start/end.
+		     *
+		     * @return {object}
+		     *         An object with the SVG path in Array form as accepted by the SVG
+		     *         renderer, as well as an array of new obstacles making up this
+		     *         path.
 		     */
 		    simpleConnect: H.extend(function (start, end, options) {
 		        var segments = [],
@@ -3250,24 +3497,30 @@
 		     * obstacles into consideration. Might not always find the optimal path,
 		     * but is fast, and usually good enough.
 		     *
-		     *  Options
-		     *      - chartObstacles:   Array of chart obstacles to avoid
-		     *      - lineObstacles:    Array of line obstacles to jump over
-		     *      - obstacleMetrics:  Object with metrics of chartObstacles cached
-		     *      - hardBounds:       Hard boundaries to not cross
-		     *      - obstacleOptions:  Options for the obstacles, including margin
-		     *      - startDirectionX:  Optional. True if starting in the X direction.
-		     *                          If not provided, the algorithm starts in the
-		     *                          direction that is the furthest between
-		     *                          start/end.
+		     * @function Highcharts.Pathfinder.algorithms.fastAvoid
 		     *
-		     * @param {Object} start Starting coordinate, object with x/y props.
-		     * @param {Object} end Ending coordinate, object with x/y props.
-		     * @param {Object} options Options for the algorithm.
+		     * @param {object} start
+		     *        Starting coordinate, object with x/y props.
 		     *
-		     * @return {Object} result An object with the SVG path in Array form as
-		     *  accepted by the SVG renderer, as well as an array of new obstacles
-		     *  making up this path.
+		     * @param {object} end
+		     *        Ending coordinate, object with x/y props.
+		     *
+		     * @param {object} options
+		     *        Options for the algorithm.
+		     *        - chartObstacles:  Array of chart obstacles to avoid
+		     *        - lineObstacles:   Array of line obstacles to jump over
+		     *        - obstacleMetrics: Object with metrics of chartObstacles cached
+		     *        - hardBounds:      Hard boundaries to not cross
+		     *        - obstacleOptions: Options for the obstacles, including margin
+		     *        - startDirectionX: Optional. True if starting in the X direction.
+		     *                           If not provided, the algorithm starts in the
+		     *                           direction that is the furthest between
+		     *                           start/end.
+		     *
+		     * @return {object}
+		     *         An object with the SVG path in Array form as accepted by the SVG
+		     *         renderer, as well as an array of new obstacles making up this
+		     *         path.
 		     */
 		    fastAvoid: H.extend(function (start, end, options) {
 		        /*
@@ -3282,7 +3535,7 @@
 		            Soft min/max x = start/destination x +/- widest obstacle + margin
 		            Soft min/max y = start/destination y +/- tallest obstacle + margin
 
-		            TODO:
+		            @todo:
 		                - Make retrospective, try changing prev segment to reduce
 		                  corners
 		                - Fix logic for breaking out of end-points - not always picking
@@ -3394,16 +3647,28 @@
 		         * Considers desired direction, which way is shortest, soft and hard
 		         * bounds.
 		         *
-		         * Returns a string, either xMin, xMax, yMin or yMax.
+		         * (? Returns a string, either xMin, xMax, yMin or yMax.)
 		         *
-		         * @param {Object} obstacle Obstacle to dodge/escape.
-		         * @param {Object} fromPoint Point with x/y props that's
-		         * dodging/escaping.
-		         * @param {Object} toPoint Goal point.
-		         * @param {Boolean} dirIsX Dodge in X dimension.
-		         * @param {Object} bounds Hard and soft boundaries.
+		         * @private
+		         * @function
 		         *
-		         * @return {Boolean} result Use max or not.
+		         * @param {object} obstacle
+		         *        Obstacle to dodge/escape.
+		         *
+		         * @param {object} fromPoint
+		         *        Point with x/y props that's dodging/escaping.
+		         *
+		         * @param {object} toPoint
+		         *        Goal point.
+		         *
+		         * @param {boolean} dirIsX
+		         *        Dodge in X dimension.
+		         *
+		         * @param {object} bounds
+		         *        Hard and soft boundaries.
+		         *
+		         * @return {boolean}
+		         *         Use max or not.
 		         */
 		        function getDodgeDirection(
 		            obstacle,
@@ -3714,15 +3979,18 @@
 		return algorithms;
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2017 Highsoft AS
 		 * Authors: Lars A. V. Cabrera
 		 *
 		 * License: www.highcharts.com/license
 		 */
 
+
+
 		/**
 		 * Creates an arrow symbol. Like a triangle, except not filled.
+		 * ```
 		 *                   o
 		 *             o
 		 *       o
@@ -3730,11 +3998,25 @@
 		 *       o
 		 *             o
 		 *                   o
-		 * @param  {number} x x position of the arrow
-		 * @param  {number} y y position of the arrow
-		 * @param  {number} w width of the arrow
-		 * @param  {number} h height of the arrow
-		 * @return {Array}   Path array
+		 * ```
+		 *
+		 * @private
+		 * @function
+		 *
+		 * @param {number} x
+		 *        x position of the arrow
+		 *
+		 * @param {number} y
+		 *        y position of the arrow
+		 *
+		 * @param {number} w
+		 *        width of the arrow
+		 *
+		 * @param {number} h
+		 *        height of the arrow
+		 *
+		 * @return {Highcharts.SVGPathArray}
+		 *         Path array
 		 */
 		H.SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
 		    return [
@@ -3747,16 +4029,31 @@
 
 		/**
 		 * Creates a half-width arrow symbol. Like a triangle, except not filled.
+		 * ```
 		 *       o
 		 *    o
 		 * o
 		 *    o
 		 *       o
-		 * @param  {number} x x position of the arrow
-		 * @param  {number} y y position of the arrow
-		 * @param  {number} w width of the arrow
-		 * @param  {number} h height of the arrow
-		 * @return {Array}   Path array
+		 * ```
+		 *
+		 * @private
+		 * @function
+		 *
+		 * @param {number} x
+		 *        x position of the arrow
+		 *
+		 * @param {number} y
+		 *        y position of the arrow
+		 *
+		 * @param {number} w
+		 *        width of the arrow
+		 *
+		 * @param {number} h
+		 *        height of the arrow
+		 *
+		 * @return {Highcharts.SVGPathArray}
+		 *         Path array
 		 */
 		H.SVGRenderer.prototype.symbols['arrow-half'] = function (x, y, w, h) {
 		    return H.SVGRenderer.prototype.symbols.arrow(x, y, w / 2, h);
@@ -3764,16 +4061,31 @@
 
 		/**
 		 * Creates a left-oriented triangle.
+		 * ```
 		 *             o
 		 *       ooooooo
 		 * ooooooooooooo
 		 *       ooooooo
 		 *             o
-		 * @param  {number} x x position of the triangle
-		 * @param  {number} y y position of the triangle
-		 * @param  {number} w width of the triangle
-		 * @param  {number} h height of the triangle
-		 * @return {Array}   Path array
+		 * ```
+		 *
+		 * @private
+		 * @function
+		 *
+		 * @param {number} x
+		 *        x position of the triangle
+		 *
+		 * @param {number} y
+		 *        y position of the triangle
+		 *
+		 * @param {number} w
+		 *        width of the triangle
+		 *
+		 * @param {number} h
+		 *        height of the triangle
+		 *
+		 * @return {Highcharts.SVGPathArray}
+		 *         Path array
 		 */
 		H.SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
 		    return [
@@ -3786,27 +4098,55 @@
 
 		/**
 		 * Alias function for triangle-left.
-		 * @param  {number} x x position of the arrow
-		 * @param  {number} y y position of the arrow
-		 * @param  {number} w width of the arrow
-		 * @param  {number} h height of the arrow
-		 * @return {Array}   Path array
+		 *
+		 * @private
+		 * @function
+		 *
+		 * @param {number} x
+		 *        x position of the arrow
+		 *
+		 * @param {number} y
+		 *        y position of the arrow
+		 *
+		 * @param {number} w
+		 *        width of the arrow
+		 *
+		 * @param {number} h
+		 *        height of the arrow
+		 *
+		 * @return {Highcharts.SVGPathArray}
+		 *         Path array
 		 */
 		H.SVGRenderer.prototype.symbols['arrow-filled'] =
 		        H.SVGRenderer.prototype.symbols['triangle-left'];
 
 		/**
 		 * Creates a half-width, left-oriented triangle.
+		 * ```
 		 *       o
 		 *    oooo
 		 * ooooooo
 		 *    oooo
 		 *       o
-		 * @param  {number} x x position of the triangle
-		 * @param  {number} y y position of the triangle
-		 * @param  {number} w width of the triangle
-		 * @param  {number} h height of the triangle
-		 * @return {Array}   Path array
+		 * ```
+		 *
+		 * @private
+		 * @function
+		 *
+		 * @param {number} x
+		 *        x position of the triangle
+		 *
+		 * @param {number} y
+		 *        y position of the triangle
+		 *
+		 * @param {number} w
+		 *        width of the triangle
+		 *
+		 * @param {number} h
+		 *        height of the triangle
+		 *
+		 * @return {Highcharts.SVGPathArray}
+		 *         Path array
 		 */
 		H.SVGRenderer.prototype.symbols['triangle-left-half'] = function (x, y, w, h) {
 		    return H.SVGRenderer.prototype.symbols['triangle-left'](x, y, w / 2, h);
@@ -3814,28 +4154,42 @@
 
 		/**
 		 * Alias function for triangle-left-half.
-		 * @param  {number} x x position of the arrow
-		 * @param  {number} y y position of the arrow
-		 * @param  {number} w width of the arrow
-		 * @param  {number} h height of the arrow
-		 * @return {Array}   Path array
+		 *
+		 * @private
+		 * @function
+		 *
+		 * @param {number} x
+		 *        x position of the arrow
+		 *
+		 * @param {number} y
+		 *        y position of the arrow
+		 *
+		 * @param {number} w
+		 *        width of the arrow
+		 *
+		 * @param {number} h
+		 *        height of the arrow
+		 *
+		 * @return {Highcharts.SVGPathArray}
+		 *         Path array
 		 */
 		H.SVGRenderer.prototype.symbols['arrow-filled-half'] =
 		        H.SVGRenderer.prototype.symbols['triangle-left-half'];
 
 	}(Highcharts));
 	(function (H, pathfinderAlgorithms) {
-		/**
+		/* *
 		 * (c) 2016 Highsoft AS
 		 * Authors: Øystein Moseng, Lars A. V. Cabrera
 		 *
 		 * License: www.highcharts.com/license
 		 */
 
+
+
 		var defined = H.defined,
 		    deg2rad = H.deg2rad,
 		    extend = H.extend,
-		    each = H.each,
 		    addEvent = H.addEvent,
 		    merge = H.merge,
 		    pick = H.pick,
@@ -3843,10 +4197,7 @@
 		    min = Math.min;
 
 		/*
-		 TODO:
-		     - Test dynamics, hiding/adding/removing/updating chart/series/points/axes
-		     - Test connecting to multiple points
-		     - Add demos/samples
+		 @todo:
 		     - Document how to write your own algorithms
 		     - Consider adding a Point.pathTo method that wraps creating a connection
 		       and rendering it
@@ -3856,46 +4207,49 @@
 		// Set default Pathfinder options
 		extend(H.defaultOptions, {
 		    /**
-		     * The Pathfinder allows you to define connections between any two points,
-		     * represented as lines - optionally with markers for the start and/or end
-		     * points. Multiple algorithms are available for calculating how the
-		     * connecting lines are drawn.
+		     * The Pathfinder module allows you to define connections between any two
+		     * points, represented as lines - optionally with markers for the start
+		     * and/or end points. Multiple algorithms are available for calculating how
+		     * the connecting lines are drawn.
 		     *
-		     * Pathfinder functionality requires Highcharts Gantt to be loaded. In Gantt
-		     * charts, the Pathfinder is used to draw dependencies between tasks.
+		     * Connector functionality requires Highcharts Gantt to be loaded. In Gantt
+		     * charts, the connectors are used to draw dependencies between tasks.
 		     *
-		     * @product gantt
 		     * @see [dependency](series.gantt.data.dependency)
-		     * @optionparent pathfinder
+		     *
+		     * @sample gantt/pathfinder/demo
+		     *         Pathfinder connections
+		     *
+		     * @product      gantt
+		     * @optionparent connectors
 		     */
-		    pathfinder: {
+		    connectors: {
+
 		        /**
-		         * Enable the pathfinder for this chart. Requires Highcharts Gantt.
+		         * Enable connectors for this chart. Requires Highcharts Gantt.
 		         *
-		         * @type {boolean}
-		         * @default true
-		         * @since 6.2.0
-		         * @apioption pathfinder.enabled
+		         * @type      {boolean}
+		         * @default   true
+		         * @since     6.2.0
+		         * @apioption connectors.enabled
 		         */
 
 		        /**
-		         * Set the default dash style for this chart's Pathfinder connecting
-		         * lines.
+		         * Set the default dash style for this chart's connecting lines.
 		         *
-		         * @type {string}
-		         * @default solid
-		         * @since 6.2.0
-		         * @apioption pathfinder.dashStyle
+		         * @type      {string}
+		         * @default   solid
+		         * @since     6.2.0
+		         * @apioption connectors.dashStyle
 		         */
 
 		        /**
 		         * Set the default color for this chart's Pathfinder connecting lines.
 		         * Defaults to the color of the point being connected.
 		         *
-		         * @type {Color}
-		         * @default null
-		         * @since 6.2.0
-		         * @apioption pathfinder.lineColor
+		         * @type      {Highcharts.ColorString}
+		         * @since     6.2.0
+		         * @apioption connectors.lineColor
 		         */
 
 		        /**
@@ -3909,36 +4263,44 @@
 		         * number. For more space around existing points, set this number
 		         * higher.
 		         *
-		         * @type {number}
-		         * @default null
-		         * @since 6.2.0
-		         * @apioption pathfinder.algorithmMargin
+		         * @sample gantt/pathfinder/algorithm-margin
+		         *         Small algorithmMargin
+		         *
+		         * @type      {number}
+		         * @since     6.2.0
+		         * @apioption connectors.algorithmMargin
 		         */
 
 		        /**
 		         * Set the default pathfinder algorithm to use for this chart. It is
 		         * possible to define your own algorithms by adding them to the
-		         * Highcharts.Pathfinder.prototype.algorithms object after the chart
+		         * Highcharts.Pathfinder.prototype.algorithms object before the chart
 		         * has been created.
 		         *
 		         * The default algorithms are as follows:
 		         *
-		         * straight:        Draws a straight line between the connecting points.
-		         *                  Does not avoid other points when drawing.
+		         * `straight`:      Draws a straight line between the connecting
+		         *                  points. Does not avoid other points when drawing.
 		         *
-		         * simpleConnect:   Finds a path between the points using right angles
+		         * `simpleConnect`: Finds a path between the points using right angles
 		         *                  only. Takes only starting/ending points into
 		         *                  account, and will not avoid other points.
 		         *
-		         * fastAvoid:       Finds a path between the points using right angles
+		         * `fastAvoid`:     Finds a path between the points using right angles
 		         *                  only. Will attempt to avoid other points, but its
 		         *                  focus is performance over accuracy. Works well with
 		         *                  less dense datasets.
 		         *
-		         * @type {string}
-		         * @default straight
-		         * @since 6.2.0
-		         * @apioption pathfinder.type
+		         * Default value: `straight` is used as default for most series types,
+		         * while `simpleConnect` is used as default for Gantt series, to show
+		         * dependencies between points.
+		         *
+		         * @sample gantt/pathfinder/demo
+		         *         Different types used
+		         *
+		         * @default    undefined
+		         * @since      6.2.0
+		         * @validvalue ["straight", "simpleConnect", "fastAvoid"]
 		         */
 		        type: 'straight',
 
@@ -3946,72 +4308,64 @@
 		         * Set the default pixel width for this chart's Pathfinder connecting
 		         * lines.
 		         *
-		         * @type {number}
-		         * @default 1
 		         * @since 6.2.0
-		         * @apioption pathfinder.lineWidth
 		         */
 		        lineWidth: 1,
 
 		        /**
-		         * Marker options for this chart's Pathfinder connectors.
+		         * Marker options for this chart's Pathfinder connectors. Note that
+		         * this option is overridden by the `startMarker` and `endMarker`
+		         * options.
 		         *
-		         * @type {object}
 		         * @since 6.2.0
-		         * @apioption pathfinder.marker
 		         */
 		        marker: {
 		            /**
-		             * Set the radius of the pathfinder markers. The default is
+		             * Set the radius of the connector markers. The default is
 		             * automatically computed based on the algorithmMargin setting.
 		             *
 		             * Setting marker.width and marker.height will override this
 		             * setting.
 		             *
-		             * @type {number}
-		             * @default null
-		             * @since 6.2.0
-		             * @apioption pathfinder.marker.radius
+		             * @type      {number}
+		             * @since     6.2.0
+		             * @apioption connectors.marker.radius
 		             */
 
 		            /**
-		             * Set the width of the pathfinder markers. If not supplied, this
+		             * Set the width of the connector markers. If not supplied, this
 		             * is inferred from the marker radius.
 		             *
-		             * @type {number}
-		             * @default null
-		             * @since 6.2.0
-		             * @apioption pathfinder.marker.width
+		             * @type      {number}
+		             * @since     6.2.0
+		             * @apioption connectors.marker.width
 		             */
 
 		            /**
-		             * Set the height of the pathfinder markers. If not supplied, this
+		             * Set the height of the connector markers. If not supplied, this
 		             * is inferred from the marker radius.
 		             *
-		             * @type {number}
-		             * @default null
-		             * @since 6.2.0
-		             * @apioption pathfinder.marker.height
+		             * @type      {number}
+		             * @since     6.2.0
+		             * @apioption connectors.marker.height
 		             */
 
 		            /**
-		             * Set the color of the pathfinder markers. By default this is the
+		             * Set the color of the connector markers. By default this is the
 		             * same as the connector color.
 		             *
-		             * @type {Color}
-		             * @default null
-		             * @since 6.2.0
-		             * @apioption pathfinder.marker.color
+		             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject}
+		             * @since     6.2.0
+		             * @apioption connectors.marker.color
 		             */
 
 		            /**
-		             * Set the line/border color of the pathfinder markers. By default
+		             * Set the line/border color of the connector markers. By default
 		             * this is the same as the marker color.
 		             *
-		             * @type {Color}
-		             * @default null
-		             * @since 6.2.0
-		             * @apioption pathfinder.marker.lineColor
+		             * @type      {Highcharts.ColorString}
+		             * @since     6.2.0
+		             * @apioption connectors.marker.lineColor
 		             */
 
 		            /**
@@ -4044,14 +4398,12 @@
 		         * Marker options specific to the start markers for this chart's
 		         * Pathfinder connectors. Overrides the generic marker options.
 		         *
-		         * @type {object}
-		         * @since 6.2.0
-		         * @extends pathfinder.marker
-		         * @apioption pathfinder.startMarker
+		         * @extends connectors.marker
+		         * @since   6.2.0
 		         */
 		        startMarker: {
 		            /**
-		             * Set the symbol of the pathfinder start markers.
+		             * Set the symbol of the connector start markers.
 		             */
 		            symbol: 'diamond'
 		        },
@@ -4060,14 +4412,12 @@
 		         * Marker options specific to the end markers for this chart's
 		         * Pathfinder connectors. Overrides the generic marker options.
 		         *
-		         * @type {object}
-		         * @since 6.2.0
-		         * @extends pathfinder.marker
-		         * @apioption pathfinder.endMarker
+		         * @extends connectors.marker
+		         * @since   6.2.0
 		         */
 		        endMarker: {
 		            /**
-		             * Set the symbol of the pathfinder end markers.
+		             * Set the symbol of the connector end markers.
 		             */
 		            symbol: 'arrow-filled'
 		        }
@@ -4075,33 +4425,39 @@
 		});
 
 		/**
-		 * Override Pathfinder options for a series. Requires Highcharts Gantt or the
-		 * Pathfinder module.
+		 * Override Pathfinder connector options for a series. Requires Highcharts Gantt
+		 * to be loaded.
 		 *
-		 * @since 6.2.0
-		 * @extends pathfinder
-		 * @product gantt
-		 * @apioption plotOptions.series.pathfinder
-		 * @excluding enabled,algorithmMargin
+		 * @extends   connectors
+		 * @since     6.2.0
+		 * @excluding enabled, algorithmMargin
+		 * @product   gantt
+		 * @apioption plotOptions.series.connectors
 		 */
 
 		/**
 		 * Connect to a point. Requires Highcharts Gantt to be loaded. This option can
-		 * be either a string, referring to the ID of another point, or an object.
+		 * be either a string, referring to the ID of another point, or an object, or an
+		 * array of either. If the option is an array, each element defines a
+		 * connection.
 		 *
-		 * @type {string|object}
-		 * @since 6.2.0
-		 * @extends plotOptions.series.pathfinder
-		 * @product gantt
+		 * @sample gantt/pathfinder/demo
+		 *         Different connection types
+		 *
+		 * @type      {string|Array<string|*>|*}
+		 * @extends   plotOptions.series.connectors
+		 * @since     6.2.0
+		 * @excluding enabled
+		 * @product   gantt
 		 * @apioption series.xrange.data.connect
 		 */
 
 		/**
 		 * The ID of the point to connect to.
 		 *
-		 * @type {string}
-		 * @since 6.2.0
-		 * @product gantt
+		 * @type      {string}
+		 * @since     6.2.0
+		 * @product   gantt
 		 * @apioption series.xrange.data.connect.to
 		 */
 
@@ -4110,11 +4466,14 @@
 		 * Get point bounding box using plotX/plotY and shapeArgs. If using
 		 * graphic.getBBox() directly, the bbox will be affected by animation.
 		 *
-		 * @param   {Highcharts.Point} point
-		 *          The point to get BB of.
+		 * @private
+		 * @function
 		 *
-		 * @return  {object}
-		 *          Result xMax, xMin, yMax, yMin.
+		 * @param {Highcharts.Point} point
+		 *        The point to get BB of.
+		 *
+		 * @return {object}
+		 *         Result xMax, xMin, yMax, yMin.
 		 */
 		function getPointBB(point) {
 		    var shapeArgs = point.shapeArgs,
@@ -4145,11 +4504,14 @@
 		 * Calculate margin to place around obstacles for the pathfinder in pixels.
 		 * Returns a minimum of 1 pixel margin.
 		 *
-		 * @param   {Array} obstacles
-		 *          Obstacles to calculate margin from.
+		 * @private
+		 * @function
 		 *
-		 * @return  {number}
-		 *          The calculated margin in pixels. At least 1.
+		 * @param {Array<object>} obstacles
+		 *        Obstacles to calculate margin from.
+		 *
+		 * @return {number}
+		 *         The calculated margin in pixels. At least 1.
 		 */
 		function calculateObstacleMargin(obstacles) {
 		    var len = obstacles.length,
@@ -4220,16 +4582,17 @@
 		 * points.
 		 *
 		 * @private
-		 * @class Connection
+		 * @class
+		 * @name Highcharts.Connection
 		 *
-		 * @param   {Highcharts.Point} from
-		 *          Connection runs from this Point.
+		 * @param {Highcharts.Point} from
+		 *        Connection runs from this Point.
 		 *
-		 * @param   {Highcharts.Point} to
-		 *          Connection runs to this Point.
+		 * @param {Highcharts.Point} to
+		 *        Connection runs to this Point.
 		 *
-		 * @param   {object} [options]
-		 *          Connection options.
+		 * @param {Highcharts.ConnectorsOptions} [options]
+		 *        Connection options.
 		 */
 		function Connection(from, to, options) {
 		    this.init(from, to, options);
@@ -4241,16 +4604,14 @@
 		     *
 		     * @function Highcharts.Connection#init
 		     *
-		     * @param   {Highcharts.Point} from
-		     *          Connection runs from this Point.
+		     * @param {Highcharts.Point} from
+		     *        Connection runs from this Point.
 		     *
-		     * @param   {Highcharts.Point} to
-		     *          Connection runs to this Point.
+		     * @param {Highcharts.Point} to
+		     *        Connection runs to this Point.
 		     *
-		     * @param   {object} [options]
-		     *          Connection options.
-		     *
-		     * @return  {void}
+		     * @param {Highcharts.ConnectorsOptions} [options]
+		     *        Connection options.
 		     */
 		    init: function (from, to, options) {
 		        this.fromPoint = from;
@@ -4266,27 +4627,27 @@
 		     *
 		     * @function Highcharts.Connection#renderPath
 		     *
-		     * @param   {Array} path
-		     *          Path to render, in array format. E.g. ['M', 0, 0, 'L', 10, 10]
+		     * @param {Highcharts.SVGPathArray} path
+		     *        Path to render, in array format. E.g. ['M', 0, 0, 'L', 10, 10]
 		     *
-		     * @param   {object} [attribs]
-		     *          SVG attributes for the path.
+		     * @param {Highcharts.SVGAttributes} [attribs]
+		     *        SVG attributes for the path.
 		     *
-		     * @param   {object} [animation]
-		     *          Animation options for the rendering.
+		     * @param {Highcharts.AnimationOptionsObject} [animation]
+		     *        Animation options for the rendering.
 		     *
-		     * @param   {Function} [complete]
-		     *          Callback function when the path has been rendered and animation
-		     *          is complete.
-		     *
-		     * @return  {void}
+		     * @param {Function} [complete]
+		     *        Callback function when the path has been rendered and animation is
+		     *        complete.
 		     */
 		    renderPath: function (path, attribs, animation) {
 		        var connection = this,
 		            chart = this.chart,
+		            styledMode = chart.styledMode,
 		            pathfinder = chart.pathfinder,
 		            animate = !chart.options.chart.forExport && animation !== false,
-		            pathGraphic = connection.graphics && connection.graphics.path;
+		            pathGraphic = connection.graphics && connection.graphics.path,
+		            anim;
 
 		        // Add the SVG element of the pathfinder group if it doesn't exist
 		        if (!pathfinder.group) {
@@ -4304,22 +4665,21 @@
 		        // Create path if does not exist
 		        if (!(pathGraphic && pathGraphic.renderer)) {
 		            pathGraphic = chart.renderer.path()
-                
-		                .attr({
-		                    opacity: 0
-		                })
-                
 		                .add(pathfinder.group);
+		            if (!styledMode) {
+		                pathGraphic.attr({
+		                    opacity: 0
+		                });
+		            }
 		        }
 
 		        // Set path attribs and animate to the new path
 		        pathGraphic.attr(attribs);
-		        pathGraphic[animate ? 'animate' : 'attr']({
-            
-		            opacity: 1,
-            
-		            d: path
-		        }, animation);
+		        anim = { d: path };
+		        if (!styledMode) {
+		            anim.opacity = 1;
+		        }
+		        pathGraphic[animate ? 'animate' : 'attr'](anim, animation);
 
 		        // Store reference on connection
 		        this.graphics = this.graphics || {};
@@ -4333,18 +4693,16 @@
 		     *
 		     * @function Highcharts.Connection#addMarker
 		     *
-		     * @param   {string} type
-		     *          Marker type, either 'start' or 'end'.
+		     * @param {string} type
+		     *        Marker type, either 'start' or 'end'.
 		     *
-		     * @param   {object} options
-		     *          All options for this marker. Not calculated or merged with other
-		     *          options.
+		     * @param {Highcharts.ConnectorsMarkerOptions} options
+		     *        All options for this marker. Not calculated or merged with other
+		     *        options.
 		     *
-		     * @param   {Array} path
-		     *          Connection path in array format. This is used to calculate the
-		     *          rotation angle of the markers.
-		     *
-		     * @return  {void}
+		     * @param {Highcharts.SVGPathArray} path
+		     *        Connection path in array format. This is used to calculate the
+		     *        rotation angle of the markers.
 		     */
 		    addMarker: function (type, options, path) {
 		        var connection = this,
@@ -4428,9 +4786,10 @@
 		                    'highcharts-point-connecting-path-' + type + '-marker'
 		                )
 		                .attr(box)
+		                .add(pathfinder.group);
 
-                
-		                .attr({
+		            if (!renderer.styledMode) {
+		                connection.graphics[type].attr({
 		                    fill: options.color || connection.fromPoint.color,
 		                    stroke: options.lineColor,
 		                    'stroke-width': options.lineWidth,
@@ -4438,9 +4797,9 @@
 		                })
 		                .animate({
 		                    opacity: 1
-		                }, point.series.options.animation)
-                
-		                .add(pathfinder.group);
+		                }, point.series.options.animation);
+		            }
+
 		        } else {
 		            connection.graphics[type].animate(box);
 		        }
@@ -4452,11 +4811,11 @@
 		     *
 		     * @function Highcharts.Connection#getPath
 		     *
-		     * @param   {object} options
-		     *          Pathfinder options. Not calculated or merged with other options.
+		     * @param {Highcharts.ConnectorsOptions} options
+		     *        Connector options. Not calculated or merged with other options.
 		     *
-		     * @return  {Array}
-		     *          Calculated SVG path data in array format.
+		     * @return {Highcharts.SVHPathArray}
+		     *         Calculated SVG path data in array format.
 		     */
 		    getPath: function (options) {
 		        var pathfinder = this.pathfinder,
@@ -4479,7 +4838,7 @@
 
 		            // If the algorithmMargin was computed, store the result in default
 		            // options.
-		            chart.options.pathfinder.algorithmMargin = options.algorithmMargin;
+		            chart.options.connectors.algorithmMargin = options.algorithmMargin;
 
 		            // Cache some metrics too
 		            pathfinder.chartObstacleMetrics =
@@ -4526,19 +4885,19 @@
 		            pathResult,
 		            path,
 		            options = merge(
-		                chart.options.pathfinder, series.options.pathfinder,
-		                fromPoint.options.pathfinder, connection.options
+		                chart.options.connectors, series.options.connectors,
+		                fromPoint.options.connectors, connection.options
 		            ),
 		            attribs = {};
 
 		        // Set path attribs
-        
-		        attribs.stroke = options.lineColor || fromPoint.color;
-		        attribs['stroke-width'] = options.lineWidth;
-		        if (options.dashStyle) {
-		            attribs.dashstyle = options.dashStyle;
+		        if (!chart.styledMode) {
+		            attribs.stroke = options.lineColor || fromPoint.color;
+		            attribs['stroke-width'] = options.lineWidth;
+		            if (options.dashStyle) {
+		                attribs.dashstyle = options.dashStyle;
+		            }
 		        }
-        
 
 		        attribs.class = 'highcharts-point-connecting-path ' +
 		            'highcharts-color-' + fromPoint.colorIndex;
@@ -4598,16 +4957,21 @@
 		 * The Pathfinder class.
 		 *
 		 * @private
-		 * @class Pathfinder
+		 * @class
+		 * @name Highcharts.Pathfinder
 		 *
-		 * @param   {Highcharts.Chart} chart
-		 *          The chart to operate on.
+		 * @param {Highcharts.Chart} chart
+		 *        The chart to operate on.
 		 */
 		function Pathfinder(chart) {
 		    this.init(chart);
 		}
 		Pathfinder.prototype = {
 
+		    /**
+		     * @name Highcharts.Pathfinder#algorithms
+		     * @type {Highcharts.Dictionary<Function>}
+		     */
 		    algorithms: pathfinderAlgorithms,
 
 		    /**
@@ -4615,10 +4979,8 @@
 		     *
 		     * @function Highcharts.Pathfinder#init
 		     *
-		     * @param   {Highcharts.Chart} chart
-		     *          The chart context.
-		     *
-		     * @return  {void}
+		     * @param {Highcharts.Chart} chart
+		     *        The chart context.
 		     */
 		    init: function (chart) {
 		        // Initialize pathfinder with chart context
@@ -4638,9 +5000,9 @@
 		     *
 		     * @function Highcharts.Pathfinder#update
 		     *
-		     * @param {boolean} deferRender Whether or not to defer rendering of
-		     *      connections until series.afterAnimate event has fired. Used on first
-		     *      render.
+		     * @param {boolean} deferRender
+		     *        Whether or not to defer rendering of connections until
+		     *        series.afterAnimate event has fired. Used on first render.
 		     */
 		    update: function (deferRender) {
 		        var chart = this.chart,
@@ -4649,9 +5011,9 @@
 
 		        // Rebuild pathfinder connections from options
 		        pathfinder.connections = [];
-		        each(chart.series, function (series) {
+		        chart.series.forEach(function (series) {
 		            if (series.visible) {
-		                each(series.points, function (point) {
+		                series.points.forEach(function (point) {
 		                    var to,
 		                        connects = (
 		                            point.options &&
@@ -4659,7 +5021,7 @@
 		                            H.splat(point.options.connect)
 		                        );
 		                    if (point.visible && point.isInside !== false && connects) {
-		                        each(connects, function (connect) {
+		                        connects.forEach(function (connect) {
 		                            to = chart.get(typeof connect === 'string' ?
 		                                connect : connect.to
 		                            );
@@ -4724,19 +5086,20 @@
 		     *
 		     * @function Highcharts.Pathfinder#renderConnections
 		     *
-		     * @param {boolean} deferRender Whether or not to defer render until series
-		     *      animation is finished. Used on first render.
+		     * @param {boolean} deferRender
+		     *        Whether or not to defer render until series animation is finished.
+		     *        Used on first render.
 		     */
 		    renderConnections: function (deferRender) {
 		        if (deferRender) {
 		            // Render after series are done animating
-		            each(this.chart.series, function (series) {
+		            this.chart.series.forEach(function (series) {
 		                var render = function () {
 		                    // Find pathfinder connections belonging to this series
 		                    // that haven't rendered, and render them now.
 		                    var pathfinder = series.chart.pathfinder,
 		                        conns = pathfinder && pathfinder.connections || [];
-		                    each(conns, function (connection) {
+		                    conns.forEach(function (connection) {
 		                        if (
 		                            connection.fromPoint &&
 		                            connection.fromPoint.series === series
@@ -4759,7 +5122,7 @@
 		            });
 		        } else {
 		            // Go through connections and render them
-		            each(this.connections, function (connection) {
+		            this.connections.forEach(function (connection) {
 		                connection.render();
 		            });
 		        }
@@ -4771,13 +5134,13 @@
 		     *
 		     * @function Highcharts.Pathfinder#getChartObstacles
 		     *
-		     * @param   {object} options
-		     *          Options for the calculation. Currenlty only
-		     *          options.algorithmMargin.
+		     * @param {object} options
+		     *        Options for the calculation. Currenlty only
+		     *        options.algorithmMargin.
 		     *
-		     * @return  {Array}
-		     *          An array of calculated obstacles. Each obstacle is defined as
-		     *          an object with xMin, xMax, yMin and yMax properties.
+		     * @return {Array<object>}
+		     *         An array of calculated obstacles. Each obstacle is defined as an
+		     *         object with xMin, xMax, yMin and yMax properties.
 		     */
 		    getChartObstacles: function (options) {
 		        var obstacles = [],
@@ -4817,7 +5180,7 @@
 		            calculatedMargin =
 		                options.algorithmMargin =
 		                calculateObstacleMargin(obstacles);
-		            each(obstacles, function (obstacle) {
+		            obstacles.forEach(function (obstacle) {
 		                obstacle.xMin -= calculatedMargin;
 		                obstacle.xMax += calculatedMargin;
 		                obstacle.yMin -= calculatedMargin;
@@ -4830,17 +5193,17 @@
 
 		    /**
 		     * Utility function to get metrics for obstacles:
-		     *  - Widest obstacle width
-		     *  - Tallest obstacle height
+		     * - Widest obstacle width
+		     * - Tallest obstacle height
 		     *
 		     * @function Highcharts.Pathfinder#getObstacleMetrics
 		     *
-		     * @param   {Array} obstacles
-		     *          An array of obstacles to inspect.
+		     * @param {Array<object>} obstacles
+		     *        An array of obstacles to inspect.
 		     *
-		     * @return  {object}
-		     *          The calculated metrics, as an object with maxHeight and maxWidth
-		     *          properties.
+		     * @return {object}
+		     *         The calculated metrics, as an object with maxHeight and maxWidth
+		     *         properties.
 		     */
 		    getObstacleMetrics: function (obstacles) {
 		        var maxWidth = 0,
@@ -4872,12 +5235,11 @@
 		     *
 		     * @function Highcharts.Pathfinder#getAlgorithmStartDirection
 		     *
-		     * @param   {object} markerOptions
-		     *          Marker options to calculate from.
+		     * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
+		     *        Marker options to calculate from.
 		     *
-		     * @return  {boolean}
-		     *          Returns true for X, false for Y, and undefined for
-		     *          autocalculate.
+		     * @return {boolean}
+		     *         Returns true for X, false for Y, and undefined for autocalculate.
 		     */
 		    getAlgorithmStartDirection: function (markerOptions) {
 		        var xCenter = markerOptions.align !== 'left' &&
@@ -4906,12 +5268,12 @@
 		     * @private
 		     * @function Highcharts.Point#getPathfinderAnchorPoint
 		     *
-		     * @param   {object} markerOptions
-		     *          Connection options for position on point.
+		     * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
+		     *        Connection options for position on point.
 		     *
-		     * @return  {object}
-		     *          An object with x/y properties for the position. Coordinates are
-		     *          in plot values, not relative to point.
+		     * @return {object}
+		     *         An object with x/y properties for the position. Coordinates are
+		     *         in plot values, not relative to point.
 		     */
 		    getPathfinderAnchorPoint: function (markerOptions) {
 		        var bb = getPointBB(this),
@@ -4919,19 +5281,19 @@
 		            y;
 
 		        switch (markerOptions.align) { // eslint-disable-line default-case
-		            case 'right':
-		                x = 'xMax';
-		                break;
-		            case 'left':
-		                x = 'xMin';
+		        case 'right':
+		            x = 'xMax';
+		            break;
+		        case 'left':
+		            x = 'xMin';
 		        }
 
 		        switch (markerOptions.verticalAlign) { // eslint-disable-line default-case
-		            case 'top':
-		                y = 'yMin';
-		                break;
-		            case 'bottom':
-		                y = 'yMax';
+		        case 'top':
+		            y = 'yMin';
+		            break;
+		        case 'bottom':
+		            y = 'yMax';
 		        }
 
 		        return {
@@ -4946,14 +5308,14 @@
 		     * @private
 		     * @function Highcharts.Point#getRadiansToVector
 		     *
-		     * @param   {object} v1
-		     *          The first vector, as an object with x/y properties.
+		     * @param {object} v1
+		     *        The first vector, as an object with x/y properties.
 		     *
-		     * @param   {object} v2
-		     *          The second vector, as an object with x/y properties.
+		     * @param {object} v2
+		     *        The second vector, as an object with x/y properties.
 		     *
-		     * @return  {number}
-		     *          The angle in degrees
+		     * @return {number}
+		     *         The angle in degrees
 		     */
 		    getRadiansToVector: function (v1, v2) {
 		        var box;
@@ -4974,19 +5336,19 @@
 		     * @private
 		     * @function Highcharts.Point#getMarkerVector
 		     *
-		     * @param   {number} radians
-		     *          The angle in radians from the point center to another vector.
+		     * @param {number} radians
+		     *        The angle in radians from the point center to another vector.
 		     *
-		     * @param   {number} markerRadius
-		     *          The radius of the marker, to calculate the additional distance
-		     *          to the center of the marker.
+		     * @param {number} markerRadius
+		     *        The radius of the marker, to calculate the additional distance to
+		     *        the center of the marker.
 		     *
-		     * @param   {object} anchor
-		     *          The anchor point of the path and marker as an object with x/y
-		     *          properties.
+		     * @param {object} anchor
+		     *        The anchor point of the path and marker as an object with x/y
+		     *        properties.
 		     *
-		     * @return  {object}
-		     *          The marker vector as an object with x/y properties.
+		     * @return {object}
+		     *         The marker vector as an object with x/y properties.
 		     */
 		    getMarkerVector: function (radians, markerRadius, anchor) {
 		        var twoPI = Math.PI * 2.0,
@@ -5058,10 +5420,39 @@
 		    }
 		});
 
+
+		// Warn if using legacy options. Copy the options over. Note that this will
+		// still break if using the legacy options in chart.update, addSeries etc.
+		function warnLegacy(chart) {
+		    if (
+		        chart.options.pathfinder ||
+		        chart.series.reduce(function (acc, series) {
+		            if (series.options) {
+		                merge(true,
+		                    (
+		                        series.options.connectors = series.options.connectors ||
+		                        {}
+		                    ), series.options.pathfinder
+		                );
+		            }
+		            return acc || series.options && series.options.pathfinder;
+		        }, false)
+		    ) {
+		        merge(true,
+		            (chart.options.connectors = chart.options.connectors || {}),
+		            chart.options.pathfinder
+		        );
+		        H.error('WARNING: Pathfinder options have been renamed. ' +
+		            'Use "chart.connectors" or "series.connectors" instead.');
+		    }
+		}
+
+
 		// Initialize Pathfinder for charts
 		H.Chart.prototype.callbacks.push(function (chart) {
 		    var options = chart.options;
-		    if (options.pathfinder.enabled !== false) {
+		    if (options.connectors.enabled !== false) {
+		        warnLegacy(chart);
 		        this.pathfinder = new Pathfinder(this);
 		        this.pathfinder.update(true); // First draw, defer render
 		    }
@@ -5069,7 +5460,7 @@
 
 	}(Highcharts, algorithms));
 	(function (H) {
-		/**
+		/* *
 		 * X-range series module
 		 *
 		 * (c) 2010-2018 Torstein Honsi, Lars A. V. Cabrera
@@ -5083,7 +5474,7 @@
 		    defined = H.defined,
 		    color = H.Color,
 		    columnType = H.seriesTypes.column,
-		    each = H.each,
+		    correctFloat = H.correctFloat,
 		    isNumber = H.isNumber,
 		    isObject = H.isObject,
 		    merge = H.merge,
@@ -5097,12 +5488,19 @@
 		/**
 		 * Return color of a point based on its category.
 		 *
-		 * @param {object} series The series which the point belongs to.
-		 * @param {object} point The point to calculate its color for.
-		 * @returns {object} Returns an object containing the properties color and
-		 * colorIndex.
+		 * @private
+		 * @function getColorByCategory
+		 *
+		 * @param {object} series
+		 *        The series which the point belongs to.
+		 *
+		 * @param {object} point
+		 *        The point to calculate its color for.
+		 *
+		 * @return {object}
+		 *         Returns an object containing the properties color and colorIndex.
 		 */
-		var getColorByCategory = function getColorByCategory(series, point) {
+		function getColorByCategory(series, point) {
 		    var colors = series.options.colors || series.chart.options.colors,
 		        colorCount = colors ?
 		            colors.length :
@@ -5114,7 +5512,7 @@
 		        colorIndex: colorIndex,
 		        color: color
 		    };
-		};
+		}
 
 		/**
 		 * @private
@@ -5129,20 +5527,21 @@
 		 * The X-range series displays ranges on the X axis, typically time intervals
 		 * with a start and end date.
 		 *
-		 * @extends      {plotOptions.column}
-		 * @excluding    boostThreshold,crisp,cropThreshold,depth,edgeColor,edgeWidth,
-		 *               findNearestPointBy,getExtremesFromAll,negativeColor,
-		 *               pointInterval,pointIntervalUnit,pointPlacement,
-		 *               pointRange,pointStart,softThreshold,stacking,threshold,data
-		 * @product      highcharts highstock gantt
-		 * @sample       {highcharts} highcharts/demo/x-range/
-		 *               X-range
-		 * @sample       {highcharts} highcharts/css/x-range/
-		 *               Styled mode X-range
-		 * @sample       {highcharts} highcharts/chart/inverted-xrange/
-		 *               Inverted X-range
+		 * @sample {highcharts} highcharts/demo/x-range/
+		 *         X-range
+		 * @sample {highcharts} highcharts/css/x-range/
+		 *         Styled mode X-range
+		 * @sample {highcharts} highcharts/chart/inverted-xrange/
+		 *         Inverted X-range
+		 *
+		 * @extends      plotOptions.column
 		 * @since        6.0.0
-		 * @product      highcharts highstock
+		 * @product      highcharts highstock gantt
+		 * @excluding    boostThreshold, crisp, cropThreshold, depth, edgeColor,
+		 *               edgeWidth, findNearestPointBy, getExtremesFromAll,
+		 *               negativeColor, pointInterval, pointIntervalUnit,
+		 *               pointPlacement, pointRange, pointStart, softThreshold,
+		 *               stacking, threshold, data
 		 * @optionparent plotOptions.xrange
 		 */
 		, {
@@ -5170,16 +5569,14 @@
 
 		    /**
 		     * A partial fill for each point, typically used to visualize how much of
-		     * a task is performed. The partial fill object can be set either on series
-		     * or point level.
+		     * a task is performed. See [completed](series.gantt.data.completed).
 		     *
-		     * @sample    {highcharts} highcharts/demo/x-range
-		     *            X-range with partial fill
-		     * @type      {Object}
-		     * @extends   plotOptions.xrange.partialFill
-		     * @apioption series.xrange.data.partialFill
+		     * @sample gantt/demo/progress-indicator
+		     *         Gantt with progress indicator
+		     *
+		     * @product   gantt
+		     * @apioption plotOptions.gantt.partialFill
 		     */
-
 
 		    /**
 		     * In an X-range series, this option makes all points of the same Y-axis
@@ -5197,7 +5594,7 @@
 		         * The default formatter for X-range data labels displays the percentage
 		         * of the partial fill amount.
 		         *
-		         * @type    {Highcharts.FormatterCallbackFunction}
+		         * @type    {Highcharts.FormatterCallbackFunction<Highcharts.SeriesDataLabelsFormatterContextObject>}
 		         * @default function () { return (amount * 100) + '%'; }
 		         */
 		        formatter: function () {
@@ -5209,13 +5606,13 @@
 		            if (!defined(amount)) {
 		                amount = 0;
 		            }
-		            return (amount * 100) + '%';
+		            return correctFloat(amount * 100) + '%';
 		        }
 		    },
 
 		    tooltip: {
 
-		        headerFormat: '<span style="font-size: 0.85em">{point.x} - {point.x2}</span><br/>',
+		        headerFormat: '<span style="font-size: 10px">{point.x} - {point.x2}</span><br/>',
 
 		        pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.yCategory}</b><br/>'
 		    },
@@ -5238,7 +5635,7 @@
 		     * access to features like groupPadding, grouping, pointWidth etc.
 		     *
 		     * @private
-		     * @function Higcharts.seriesTypes.xrange#getColumnMetrics
+		     * @function Higcharts.Series#getColumnMetrics
 		     *
 		     * @return {Highcharts.ColumnMetricsObject}
 		     */
@@ -5247,7 +5644,7 @@
 		            chart = this.chart;
 
 		        function swapAxes() {
-		            each(chart.series, function (s) {
+		            chart.series.forEach(function (s) {
 		                var xAxis = s.xAxis;
 		                s.xAxis = s.yAxis;
 		                s.yAxis = xAxis;
@@ -5268,7 +5665,7 @@
 		     * but one of them is inside.
 		     *
 		     * @private
-		     * @function Highcharts.seriesTypes.xrange#cropData
+		     * @function Highcharts.Series#cropData
 		     *
 		     * @param {Array<number>} xData
 		     *
@@ -5296,7 +5693,7 @@
 
 		    /**
 		     * @private
-		     * @function Highcharts.seriesTypes.xrange#translatePoint
+		     * @function Highcharts.Series#translatePoint
 		     *
 		     * @param {Highcharts.Point} point
 		     */
@@ -5412,20 +5809,15 @@
 		                height: shapeArgs.height
 		            };
 		        }
-
-		        // Category from Y axis
-		        if (yAxis.categories) {
-		            point.category = yAxis.categories[point.y];
-		        }
 		    },
 
 		    /**
 		     * @private
-		     * @function Highcharts.seriesTypes.xrange#translate
+		     * @function Highcharts.Series#translate
 		     */
 		    translate: function () {
 		        columnType.prototype.translate.apply(this, arguments);
-		        each(this.points, function (point) {
+		        this.points.forEach(function (point) {
 		            this.translatePoint(point);
 		        }, this);
 		    },
@@ -5437,7 +5829,7 @@
 		     * graphic and an overlay displaying the partial fill.
 		     *
 		     * @private
-		     * @function Highcharts.seriesTypes.xrange#drawPoint
+		     * @function Highcharts.Series#drawPoint
 		     *
 		     * @param {Highcharts.Point} point
 		     *        An instance of Point in the series.
@@ -5505,33 +5897,33 @@
 		            }
 
 
-            
 		            // Presentational
-		            point.graphicOriginal
-		                .attr(series.pointAttribs(point, state))
-		                .shadow(seriesOpts.shadow, null, cutOff);
-		            if (partShapeArgs) {
-		                // Ensure pfOptions is an object
-		                if (!isObject(pfOptions)) {
-		                    pfOptions = {};
-		                }
-		                if (isObject(seriesOpts.partialFill)) {
-		                    pfOptions = merge(pfOptions, seriesOpts.partialFill);
-		                }
-
-		                fill = (
-		                    pfOptions.fill ||
-		                    color(point.color || series.color).brighten(-0.3).get()
-		                );
-
-		                point.graphicOverlay
+		            if (!series.chart.styledMode) {
+		                point.graphicOriginal
 		                    .attr(series.pointAttribs(point, state))
-		                    .attr({
-		                        'fill': fill
-		                    })
 		                    .shadow(seriesOpts.shadow, null, cutOff);
+		                if (partShapeArgs) {
+		                    // Ensure pfOptions is an object
+		                    if (!isObject(pfOptions)) {
+		                        pfOptions = {};
+		                    }
+		                    if (isObject(seriesOpts.partialFill)) {
+		                        pfOptions = merge(pfOptions, seriesOpts.partialFill);
+		                    }
+
+		                    fill = (
+		                        pfOptions.fill ||
+		                        color(point.color || series.color).brighten(-0.3).get()
+		                    );
+
+		                    point.graphicOverlay
+		                        .attr(series.pointAttribs(point, state))
+		                        .attr({
+		                            'fill': fill
+		                        })
+		                        .shadow(seriesOpts.shadow, null, cutOff);
+		                }
 		            }
-            
 
 		        } else if (graphic) {
 		            point.graphic = graphic.destroy(); // #1269
@@ -5540,14 +5932,14 @@
 
 		    /**
 		     * @private
-		     * @function Highcharts.seriesTypes.xrange#drawPoints
+		     * @function Highcharts.Series#drawPoints
 		     */
 		    drawPoints: function () {
 		        var series = this,
 		            verb = series.getAnimationVerb();
 
 		        // Draw the columns
-		        each(series.points, function (point) {
+		        series.points.forEach(function (point) {
 		            series.drawPoint(point, verb);
 		        });
 		    },
@@ -5558,7 +5950,7 @@
 		     * animation limit.
 		     *
 		     * @private
-		     * @function Highcharts.seriesTypes.xrange#getAnimationVerb
+		     * @function Highcharts.Series#getAnimationVerb
 		     *
 		     * @return {string}
 		     */
@@ -5567,16 +5959,8 @@
 		             'animate' : 'attr';
 		    }
 
-		    /**
-		     * Override to remove stroke from points.
-		     * For partial fill.
-		     *
-		     * @ignore
-		     * @private
-		     * @function Highcharts.seriesTypes.xrange#pointAttribs
-		     *
-		     * @return {*}
-		     * /
+		    /*
+		    // Override to remove stroke from points. For partial fill.
 		    pointAttribs: function () {
 		        var series = this,
 		            retVal = columnType.prototype.pointAttribs.apply(series, arguments);
@@ -5603,9 +5987,11 @@
 
 		        if (series.options.colorByPoint && !point.options.color) {
 		            colorByPoint = getColorByCategory(series, point);
-            
-		            point.color = colorByPoint.color;
-            
+
+		            if (!series.chart.styledMode) {
+		                point.color = colorByPoint.color;
+		            }
+
 		            if (!point.options.colorIndex) {
 		                point.colorIndex = colorByPoint.colorIndex;
 		            }
@@ -5680,9 +6066,9 @@
 
 		    if (axis.isXAxis) {
 		        dataMax = pick(axis.dataMax, -Number.MAX_VALUE);
-		        each(axisSeries, function (series) {
+		        axisSeries.forEach(function (series) {
 		            if (series.x2Data) {
-		                each(series.x2Data, function (val) {
+		                series.x2Data.forEach(function (val) {
 		                    if (val > dataMax) {
 		                        dataMax = val;
 		                        modMax = true;
@@ -5702,10 +6088,10 @@
 		 * specified, it is inherited from [chart.type](#chart.type).
 		 *
 		 * @extends   series,plotOptions.xrange
-		 * @excluding boostThreshold,crisp,cropThreshold,depth,edgeColor,edgeWidth,
-		 *            findNearestPointBy,getExtremesFromAll,
-		 *            negativeColor,pointInterval,pointIntervalUnit,pointPlacement,
-		 *            pointRange,pointStart,softThreshold,stacking,threshold
+		 * @excluding boostThreshold, crisp, cropThreshold, depth, edgeColor, edgeWidth,
+		 *            findNearestPointBy, getExtremesFromAll, negativeColor,
+		 *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+		 *            pointStart, softThreshold, stacking, threshold
 		 * @product   highcharts highstock gantt
 		 * @apioption series.xrange
 		 */
@@ -5714,24 +6100,24 @@
 		 * An array of data points for the series. For the `xrange` series type,
 		 * points can be given in the following ways:
 		 *
-		 * 1.  An array of objects with named values. The objects are point
-		 * configuration objects as seen below.
+		 * 1. An array of objects with named values. The objects are point configuration
+		 *    objects as seen below.
 		 *
-		 *  ```js
-		 *     data: [{
-		 *         x: Date.UTC(2017, 0, 1),
-		 *         x2: Date.UTC(2017, 0, 3),
-		 *         name: "Test",
-		 *         y: 0,
-		 *         color: "#00FF00"
-		 *     }, {
-		 *         x: Date.UTC(2017, 0, 4),
-		 *         x2: Date.UTC(2017, 0, 5),
-		 *         name: "Deploy",
-		 *         y: 1,
-		 *         color: "#FF0000"
-		 *     }]
-		 *  ```
+		 *    ```js
+		 *        data: [{
+		 *            x: Date.UTC(2017, 0, 1),
+		 *            x2: Date.UTC(2017, 0, 3),
+		 *            name: "Test",
+		 *            y: 0,
+		 *            color: "#00FF00"
+		 *        }, {
+		 *            x: Date.UTC(2017, 0, 4),
+		 *            x2: Date.UTC(2017, 0, 5),
+		 *            name: "Deploy",
+		 *            y: 1,
+		 *            color: "#FF0000"
+		 *        }]
+		 *    ```
 		 *
 		 * @sample {highcharts} highcharts/chart/reflow-true/
 		 *         Numerical values
@@ -5815,12 +6201,16 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
-		* (c) 2016 Highsoft AS
-		* Authors: Lars A. V. Cabrera
-		*
-		* License: www.highcharts.com/license
-		*/
+		/* *
+		 *
+		 *  (c) 2016-2018 Highsoft AS
+		 *
+		 *  Author: Lars A. V. Cabrera
+		 *
+		 *  License: www.highcharts.com/license
+		 *
+		 * */
+
 
 
 		var dateFormat = H.dateFormat,
@@ -5835,15 +6225,23 @@
 		    parent = seriesTypes.xrange;
 
 		/**
+		 * @private
+		 * @class
+		 * @name Highcharts.seriesTypes.gantt
+		 *
+		 * @augments Highcharts.Series
+		 */
+		seriesType('gantt', 'xrange'
+
+		/**
 		 * A `gantt` series. If the [type](#series.gantt.type) option is not specified,
 		 * it is inherited from [chart.type](#chart.type).
 		 *
-		 * @type {Object}
-		 * @extends {plotOptions.xrange}
-		 * @product gantt
+		 * @extends      plotOptions.xrange
+		 * @product      gantt
 		 * @optionparent plotOptions.gantt
 		 */
-		seriesType('gantt', 'xrange', {
+		, {
 		    // options - default options merged with parent
 
 		    grouping: false,
@@ -5863,9 +6261,7 @@
 		        }
 		    },
 		    tooltip: {
-		        headerFormat: '<span style="color:{point.color};text-align:right">' +
-		                            '{series.name}' +
-		                        '</span><br/>',
+		        headerFormat: '<span style="font-size: 10px">{series.name}</span><br/>',
 		        pointFormat: null,
 		        pointFormatter: function () {
 		            var point = this,
@@ -5881,10 +6277,7 @@
 		                start,
 		                end,
 		                milestone = point.options.milestone,
-		                dateRowStart = '<span style="font-size: 0.8em">',
-		                dateRowEnd = '</span><br/>',
-		                retVal = '<b>' + (point.name || point.category) + '</b>';
-
+		                retVal = '<b>' + (point.name || point.yCategory) + '</b>';
 		            if (ttOptions.pointFormat) {
 		                return point.tooltipFormatter(ttOptions.pointFormat);
 		            }
@@ -5906,16 +6299,16 @@
 		            retVal += '<br/>';
 
 		            if (!milestone) {
-		                retVal += dateRowStart + 'Start: ' + start + dateRowEnd;
-		                retVal += dateRowStart + 'End: ' + end + dateRowEnd;
+		                retVal += 'Start: ' + start + '<br/>';
+		                retVal += 'End: ' + end + '<br/>';
 		            } else {
-		                retVal += dateRowStart + 'Date ' + start + dateRowEnd;
+		                retVal += 'Date ' + start + '<br/>';
 		            }
 
 		            return retVal;
 		        }
 		    },
-		    pathfinder: {
+		    connectors: {
 		        type: 'simpleConnect',
 		        animation: {
 		            reversed: true // Dependencies go from child to parent
@@ -5934,6 +6327,8 @@
 		    }
 		}, {
 		    // props - series member overrides
+
+		    pointArrayMap: ['start', 'end', 'y'],
 
 		    // Keyboard navigation, don't use nearest vertical mode
 		    keyboardMoveVertical: false,
@@ -5964,10 +6359,16 @@
 		     * This override draws the point as a diamond if point.options.milestone is
 		     * true, and uses the original drawPoint() if it is false or not set.
 		     *
-		     * @param  {Object} point an instance of Point in the series
-		     * @param  {string} verb 'animate' (animates changes) or 'attr' (sets
-		     *                       options)
-		     * @returns {void}
+		     * @requires module:highcharts-gantt
+		     *
+		     * @private
+		     * @function Highcharts.seriesTypes.gantt#drawPoint
+		     *
+		     * @param {Highcharts.Point} point
+		     *        An instance of Point in the series
+		     *
+		     * @param {"animate"|"attr"} verb
+		     *        'animate' (animates changes) or 'attr' (sets options)
 		     */
 		    drawPoint: function (point, verb) {
 		        var series = this,
@@ -5999,12 +6400,13 @@
 		                    .addClass(point.getClassName(), true)
 		                    .add(point.group || series.group);
 		                }
-                
+
 		                // Presentational
-		                point.graphic
-		                    .attr(series.pointAttribs(point, state))
-		                    .shadow(seriesOpts.shadow, null, cutOff);
-                
+		                if (!series.chart.styledMode) {
+		                    point.graphic
+		                        .attr(series.pointAttribs(point, state))
+		                        .shadow(seriesOpts.shadow, null, cutOff);
+		                }
 		            } else if (graphic) {
 		                point.graphic = graphic.destroy(); // #1269
 		            }
@@ -6036,16 +6438,23 @@
 		     * Applies the options containing the x and y data and possible some extra
 		     * properties. This is called on point init or from point.update.
 		     *
-		     * @param {Object} options the point options
-		     * @param {number} x the x value
-		     * @return {Object} the Point instance
+		     * @private
+		     * @function Highcharts.Point#applyOptions
+		     *
+		     * @param {object} options
+		     *        The point options
+		     *
+		     * @param {number} x
+		     *        The x value
+		     *
+		     * @return {Highcharts.Point}
+		     *         The Point instance
 		     */
 		    applyOptions: function (options, x) {
 		        var point = this,
-		            series = point.series,
 		            retVal = merge(options);
 
-		        series.setGanttPointAliases(retVal);
+		        H.seriesTypes.gantt.prototype.setGanttPointAliases(retVal);
 
 		        retVal = parent.prototype.pointClass.prototype.applyOptions
 		            .call(point, retVal, x);
@@ -6054,12 +6463,24 @@
 		}));
 
 		/**
+		 * A `gantt` series.
+		 *
+		 * @extends   series,plotOptions.gantt
+		 * @excluding boostThreshold, connectors, dashStyle, findNearestPointBy,
+		 *            getExtremesFromAll, marker, negativeColor, pointInterval,
+		 *            pointIntervalUnit, pointPlacement, pointStart
+		 * @product   gantt
+		 * @apioption series.gantt
+		 */
+
+		/**
 		 * Data for a Gantt series.
 		 *
-		 * @type {Object}
-		 * @extends {series.xrange.data}
-		 * @excluding connect,x,x2,partialFill
-		 * @product gantt
+		 * @type      {Array<*>}
+		 * @extends   series.xrange.data
+		 * @excluding className, color, colorIndex, connect, dataLabels, events, id,
+		 *            partialFill, selected, x, x2
+		 * @product   gantt
 		 * @apioption series.gantt.data
 		 */
 
@@ -6067,34 +6488,36 @@
 		 * Whether the grid node belonging to this point should start as collapsed. Used
 		 * in axes of type treegrid.
 		 *
-		 * @type {Boolean}
-		 * @default false
-		 * @product gantt
-		 * @sample {gantt} gantt/treegrid-axis/collapsed/ Start as collapsed
+		 * @sample {gantt} gantt/treegrid-axis/collapsed/
+		 *         Start as collapsed
+		 *
+		 * @type      {boolean}
+		 * @default   false
+		 * @product   gantt
 		 * @apioption series.gantt.data.collapsed
 		 */
 
 		/**
 		 * The start time of a task.
 		 *
-		 * @type {number}
-		 * @product gantt
+		 * @type      {number}
+		 * @product   gantt
 		 * @apioption series.gantt.data.start
 		 */
 
 		/**
 		 * The end time of a task.
 		 *
-		 * @type {number}
-		 * @product gantt
+		 * @type      {number}
+		 * @product   gantt
 		 * @apioption series.gantt.data.end
 		 */
 
 		/**
 		 * The Y value of a task.
 		 *
-		 * @type {number}
-		 * @product gantt
+		 * @type      {number}
+		 * @product   gantt
 		 * @apioption series.gantt.data.y
 		 */
 
@@ -6102,8 +6525,8 @@
 		 * The name of a task. If a `treegrid` y-axis is used (default in Gantt charts),
 		 * this will be picked up automatically, and used to calculate the y-value.
 		 *
-		 * @type {string}
-		 * @product gantt
+		 * @type      {string}
+		 * @product   gantt
 		 * @apioption series.gantt.data.name
 		 */
 
@@ -6111,11 +6534,12 @@
 		 * Progress indicator, how much of the task completed. If it is a number, the
 		 * `fill` will be applied automatically.
 		 *
-		 * @type {object|number}
-		 * @default undefined
-		 * @extends {series.xrange.data.partialFill}
-		 * @product gantt
-		 * @sample {gantt} gantt/demo/progress-indicator Progress indicator
+		 * @sample {gantt} gantt/demo/progress-indicator
+		 *         Progress indicator
+		 *
+		 * @type      {number|*}
+		 * @extends   series.xrange.data.partialFill
+		 * @product   gantt
 		 * @apioption series.gantt.data.completed
 		 */
 
@@ -6123,8 +6547,8 @@
 		 * The amount of the progress indicator, ranging from 0 (not started) to 1
 		 * (finished).
 		 *
-		 * @type {number}
-		 * @default 0
+		 * @type      {number}
+		 * @default   0
 		 * @apioption series.gantt.data.completed.amount
 		 */
 
@@ -6132,23 +6556,25 @@
 		 * The fill of the progress indicator. Defaults to a darkened variety of the
 		 * main color.
 		 *
-		 * @type {Highcharts.ColorString}
-		 * @default undefined
+		 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		 * @apioption series.gantt.data.completed.fill
 		 */
 
 		/**
 		 * The ID of the point (task) that this point depends on in Gantt charts.
-		 * Aliases [connect](series.xrange.data#connect). Can also be an object,
-		 * specifying further connecting [options](series.gantt.pathfinder) between the
-		 * points.
+		 * Aliases [connect](series.xrange.data.connect). Can also be an object,
+		 * specifying further connecting [options](series.gantt.connectors) between the
+		 * points. Multiple connections can be specified by providing an array.
 		 *
-		 * @type {string|object}
-		 * @extends {series.xrange.data.connect}
-		 * @since 6.2.0
-		 * @sample  gantt/demo/project-management
-		 *          Dependencies
-		 * @product gantt
+		 * @sample gantt/demo/project-management
+		 *         Dependencies
+		 * @sample gantt/pathfinder/demo
+		 *         Different connection types
+		 *
+		 * @type      {string|Array<string|*>|*}
+		 * @extends   series.xrange.data.connect
+		 * @since     6.2.0
+		 * @product   gantt
 		 * @apioption series.gantt.data.dependency
 		 */
 
@@ -6156,64 +6582,84 @@
 		 * Whether this point is a milestone. If so, only the `start` option is handled,
 		 * while `end` is ignored.
 		 *
-		 * @type {boolean}
-		 * @since 6.2.0
-		 * @sample  gantt/gantt/milestones
-		 *          Milestones
-		 * @product gantt
+		 * @sample gantt/gantt/milestones
+		 *         Milestones
+		 *
+		 * @type      {boolean}
+		 * @since     6.2.0
+		 * @product   gantt
 		 * @apioption series.gantt.data.milestone
 		 */
 
 		/**
 		 * The ID of the parent point (task) of this point in Gantt charts.
 		 *
-		 * @type {string}
-		 * @since 6.2.0
-		 * @sample  gantt/demo/subtasks
-		 *          Gantt chart with subtasks
-		 * @product gantt
+		 * @sample gantt/demo/subtasks
+		 *         Gantt chart with subtasks
+		 *
+		 * @type      {string}
+		 * @since     6.2.0
+		 * @product   gantt
 		 * @apioption series.gantt.data.parent
 		 */
 
 		/**
-		 * A `gantt` series.
-		 *
-		 * @type {Object}
-		 * @extends {plotOptions.gantt}
-		 * @product gantt
-		 * @apioption series.gantt
+		 * @excluding afterAnimate
+		 * @apioption series.gantt.events
 		 */
 
 	}(Highcharts));
 	(function (H) {
-		/**
-		* (c) 2016 Highsoft AS
-		* Authors: Lars A. V. Cabrera
-		*
-		* License: www.highcharts.com/license
-		*/
+		/* *
+		 * (c) 2016 Highsoft AS
+		 * Authors: Lars A. V. Cabrera
+		 *
+		 * License: www.highcharts.com/license
+		 */
 
-		var each = H.each,
-		    map = H.map,
-		    merge = H.merge,
+
+
+		var merge = H.merge,
 		    splat = H.splat,
 		    Chart = H.Chart;
 
 		/**
-		 * The GanttChart class.
-		 * @class Highcharts.ganttChart
-		 * @memberOf Highcharts
-		 * @param {String|HTMLDOMElement} renderTo The DOM element to render to, or
-		 *                                         its id.
-		 * @param {ChartOptions}          options  The chart options structure.
-		 * @param {Function}              callback Function to run when the chart has
-		 *                                         loaded.
+		 * Factory function for Gantt charts.
+		 *
+		 * @example
+		 * // Render a chart in to div#container
+		 * var chart = Highcharts.ganttChart('container', {
+		 *     title: {
+		 *         text: 'My chart'
+		 *     },
+		 *     series: [{
+		 *         data: ...
+		 *     }]
+		 * });
+		 *
+		 * @function Highcharts.ganttChart
+		 *
+		 * @param {string|Highcharts.HTMLDOMElement} [renderTo]
+		 *        The DOM element to render to, or its id.
+		 *
+		 * @param {Highcharts.Options} options
+		 *        The chart options structure.
+		 *
+		 * @param {Highcharts.ChartCallbackFunction} [callback]
+		 *        Function to run when the chart has loaded and and all external images
+		 *        are loaded. Defining a
+		 *        [chart.event.load](https://api.highcharts.com/highcharts/chart.events.load)
+		 *        handler is equivalent.
+		 *
+		 * @return {Highcharts.Chart}
+		 *         Returns the Chart object.
 		 */
 		H.ganttChart = function (renderTo, options, callback) {
 		    var hasRenderToArg = typeof renderTo === 'string' || renderTo.nodeName,
 		        seriesOptions = options.series,
 		        defaultOptions = H.getOptions(),
-		        defaultLinkedTo;
+		        defaultLinkedTo,
+		        userOptions = options;
 		    options = arguments[hasRenderToArg ? 1 : 0];
 
 		    // If user hasn't defined axes as array, make it into an array and add a
@@ -6223,7 +6669,7 @@
 		    }
 
 		    // apply X axis options to both single and multi x axes
-		    options.xAxis = map(options.xAxis, function (xAxisOptions, i) {
+		    options.xAxis = options.xAxis.map(function (xAxisOptions, i) {
 		        if (i === 1) { // Second xAxis
 		            defaultLinkedTo = 0;
 		        }
@@ -6244,7 +6690,7 @@
 		    });
 
 		    // apply Y axis options to both single and multi y axes
-		    options.yAxis = map(splat(options.yAxis || {}), function (yAxisOptions) {
+		    options.yAxis = (splat(options.yAxis || {})).map(function (yAxisOptions) {
 		        return merge(
 		            defaultOptions.yAxis, // #3802
 		            { // defaults
@@ -6267,6 +6713,7 @@
 		    options.series = null;
 
 		    options = merge(
+		        true,
 		        {
 		            chart: {
 		                type: 'gantt'
@@ -6279,13 +6726,18 @@
 		            }
 		        },
 
-		        options // user's options
+		        options, // user's options
+
+		        // forced options
+		        {
+		            isGantt: true
+		        }
 		    );
 
-		    options.series = seriesOptions;
+		    options.series = userOptions.series = seriesOptions;
 
-		    each(options.series, function (series) {
-		        each(series.data, function (point) {
+		    options.series.forEach(function (series) {
+		        series.data.forEach(function (point) {
 		            H.seriesTypes.gantt.prototype.setGanttPointAliases(point);
 		        });
 		    });

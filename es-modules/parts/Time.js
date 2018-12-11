@@ -7,31 +7,52 @@
 /**
  * Normalized interval.
  *
- * @typedef Highcharts.NormalizedIntervalObject
+ * @interface Highcharts.NormalizedIntervalObject
+ *//**
+ * The interval in axis values (ms).
  *
- * @property {number} unitRange
- *           The interval in axis values (ms)
+ * @name Highcharts.NormalizedIntervalObject#unitRange
+ * @type {number}
+ *//**
+ * The count.
  *
- * @property {number} count
- *           The count
+ * @name Highcharts.NormalizedIntervalObject#count
+ * @type {number}
+ */
+
+/**
+ * Function of an additional date format specifier.
+ *
+ * @callback Highcharts.TimeFormatCallbackFunction
+ *
+ * @param {number} timestamp
+ *        The time to format.
+ *
+ * @return {string}
+ *         The formatted portion of the date.
  */
 
 /**
  * Additonal time tick information.
  *
- * @typedef {Highcharts.NormalizedIntervalObject} Highcharts.TimeTicksInfoObject
- *
- * @property {Array<string>} higherRanks
- *
- * @property {number} totalRange
+ * @interface Highcharts.TimeTicksInfoObject
+ * @augments Highcharts.NormalizedIntervalObject
+ *//**
+ * @name Highcharts.TimeTicksInfoObject#higherRanks
+ * @type {Array<string>}
+ *//**
+ * @name Highcharts.TimeTicksInfoObject#totalRange
+ * @type {number}
  */
 
 /**
  * Time ticks.
  *
- * @typedef {Array<number>} Highcharts.TimeTicksObject
- *
- * @property {Highcharts.TimeTicksInfoObject} info
+ * @interface Highcharts.TimeTicksObject
+ * @augments Array<number>
+ *//**
+ * @name Highcharts.TimeTicksObject#info
+ * @type {Highcharts.TimeTicksInfoObject}
  */
 
 'use strict';
@@ -40,7 +61,6 @@ import Highcharts from './Globals.js';
 
 var H = Highcharts,
     defined = H.defined,
-    each = H.each,
     extend = H.extend,
     merge = H.merge,
     pick = H.pick,
@@ -52,8 +72,7 @@ var H = Highcharts,
  * `Highcharts.setOptions`, or individually for each Chart item through the
  * [time](https://api.highcharts.com/highcharts/time) options set.
  *
- * The Time object is available from
- * [Chart.time](http://api.highcharts.com/class-reference/Highcharts.Chart#.time),
+ * The Time object is available from {@link Highcharts.Chart#time},
  * which refers to  `Highcharts.time` if no individual time settings are
  * applied.
  *
@@ -576,7 +595,7 @@ Highcharts.Time.prototype = {
                  *         Adding support for week number
                  *
                  * @name Highcharts.dateFormats
-                 * @type {Highcharts.Dictionary<Function>}
+                 * @type {Highcharts.Dictionary<Highcharts.TimeFormatCallbackFunction>}
                  */
                 H.dateFormats
             );
@@ -705,7 +724,12 @@ Highcharts.Time.prototype = {
                     minDate,
                     interval >= timeUnits.month ?
                         1 :
-                        count * Math.floor(time.get('Date', minDate) / count)
+                        Math.max(
+                            1,
+                            count * Math.floor(
+                                time.get('Date', minDate) / count
+                            )
+                        )
                     );
             }
 
@@ -825,7 +849,7 @@ Highcharts.Time.prototype = {
             // (#950, #1649, #1760, #3349). Use a reasonable dropout threshold
             // to prevent looping over dense data grouping (#6156).
             if (interval <= timeUnits.hour && tickPositions.length < 10000) {
-                each(tickPositions, function (t) {
+                tickPositions.forEach(function (t) {
                     if (
                         // Speed optimization, no need to run dateFormat unless
                         // we're on a full or half hour

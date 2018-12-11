@@ -3,7 +3,54 @@
  *
  * License: www.highcharts.com/license
  */
+
+/**
+ * Gets fired when an area of the chart has been selected. The default action
+ * for the selection event is to zoom the chart to the selected area. It can be
+ * prevented by calling `event.preventDefault()` or return false.
+ *
+ * @callback Highcharts.ChartSelectionCallbackFunction
+ *
+ * @param {global.Event} event
+ *        Event informations
+ *
+ * @return {boolean|undefined}
+ *         Return false to prevent the default action, usually zoom.
+ */
+
+/**
+ * @interface Highcharts.TooltipFormatterContextObject
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#color
+ * @type {Highcharts.ColorString}
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#colorIndex
+ * @type {number|undefined}
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#key
+ * @type {number}
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#percentage
+ * @type {number|undefined}
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#point
+ * @type {Highcharts.Point}
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#series
+ * @type {Highcharts.Series}
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#total
+ * @type {number|undefined}
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#x
+ * @type {number}
+ *//**
+ * @name Highcharts.TooltipFormatterContextObject#y
+ * @type {number}
+ */
+
 'use strict';
+
 import H from './Globals.js';
 import './Color.js';
 import './Utilities.js';
@@ -26,7 +73,6 @@ var color = H.color,
  * @optionparent
  */
 H.defaultOptions = {
-    
 
     /**
      * An array containing the default colors for the chart's series. When
@@ -61,7 +107,6 @@ H.defaultOptions = {
      *          "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"]
      */
     colors: '#7cb5ec #434348 #90ed7d #f7a35c #8085e9 #f15c80 #e4d354 #2b908f #f45b5b #91e8e1'.split(' '),
-    
 
 
     /**
@@ -243,12 +288,10 @@ H.defaultOptions = {
 
         /**
          * The default thousands separator used in the `Highcharts.numberFormat`
-         * method unless otherwise specified in the function arguments. Since
-         * Highcharts 4.1 it defaults to a single space character, which is
-         * compatible with ISO and works across Anglo-American and continental
-         * European languages.
-         *
-         * The default is a single space.
+         * method unless otherwise specified in the function arguments. Defaults
+         * to a single space character, which is recommended in
+         * [ISO 31-0](https://en.wikipedia.org/wiki/ISO_31-0#Numbers) and works
+         * across Anglo-American and continental European languages.
          *
          * @default \u0020
          * @since   1.2.2
@@ -579,7 +622,7 @@ H.defaultOptions = {
          * passed to the function, containing common event information. The
          * default action for the selection event is to zoom the chart to the
          * selected area. It can be prevented by calling
-         * `event.preventDefault()`.
+         * `event.preventDefault()` or return false.
          *
          * Information on the selected area can be found through `event.xAxis`
          * and `event.yAxis`, which are arrays containing the axes of each
@@ -613,7 +656,7 @@ H.defaultOptions = {
          *         Select a range of points through a drag selection
          *         (Highcharts)
          *
-         * @type      {Function}
+         * @type      {Highcharts.ChartSelectionCallbackFunction}
          * @apioption chart.events.selection
          */
 
@@ -756,6 +799,20 @@ H.defaultOptions = {
          * @apioption  chart.pinchType
          */
 
+
+        /**
+         * Whether to apply styled mode. When in styled mode, no presentational
+         * attributes or CSS are applied to the chart SVG. Instead, CSS rules
+         * are required to style the chart. The default style sheet is
+         * available from `https://code.highcharts.com/css/highcharts.css`.
+         *
+         * @type       {boolean}
+         * @default    false
+         * @since      7.0
+         * @apioption  chart.styledMode
+         */
+        styledMode: false,
+
         /**
          * The corner radius of the outer chart border.
          *
@@ -769,7 +826,16 @@ H.defaultOptions = {
          */
         borderRadius: 0,
 
-        
+        /**
+         * In styled mode, this sets how many colors the class names
+         * should rotate between. With ten colors, series (or points) are
+         * given class names like `highcharts-color-0`, `highcharts-color-0`
+         * [...] `highcharts-color-9`. The equivalent in non-styled mode
+         * is to set colors using the [colors](#colors) setting.
+         *
+         * @since      5.0.0
+         */
+        colorCount: 10,
 
         /**
          * Alias of `type`.
@@ -962,7 +1028,8 @@ H.defaultOptions = {
 
         /**
          * When true, cartesian charts like line, spline, area and column are
-         * transformed into the polar coordinate system. Requires
+         * transformed into the polar coordinate system. This produces _polar
+         * charts_, also known as _radar charts_. Requires
          * `highcharts-more.js`.
          *
          * @sample {highcharts} highcharts/demo/polar/
@@ -1264,8 +1331,6 @@ H.defaultOptions = {
          */
         height: null,
 
-        
-
         /**
          * The color of the outer chart border.
          *
@@ -1383,8 +1448,6 @@ H.defaultOptions = {
          * @type {Highcharts.ColorString}
          */
         plotBorderColor: '#cccccc'
-
-        
 
     },
 
@@ -1954,10 +2017,9 @@ H.defaultOptions = {
          */
 
         /**
-         * A [format string](https://www.highcharts.com/docs/chart-concepts/
-         * labels-and-string-formatting) for each legend label. Available
-         * variables relates to properties on the series, or the point in case
-         * of pies.
+         * A [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+         * for each legend label. Available variables relates to properties on
+         * the series, or the point in case of pies.
          *
          * @type      {string}
          * @default   {name}
@@ -2077,7 +2139,7 @@ H.defaultOptions = {
              * @sample {highstock} highcharts/legend/navigation/
              *         Legend page navigation demonstrated
              *
-             * @type      {boolean|Highcharts.AnimationObject}
+             * @type      {boolean|Highcharts.AnimationOptionsObject}
              * @default   true
              * @since     2.2.4
              * @apioption legend.navigation.animation
@@ -2129,8 +2191,6 @@ H.defaultOptions = {
              * @apioption legend.navigation.style
              */
 
-            
-
             /**
              * The color for the active up or down arrow in the legend page
              * navigation.
@@ -2164,7 +2224,6 @@ H.defaultOptions = {
              * @since 2.2.4
              */
             inactiveColor: '#cccccc'
-            
         },
 
         /**
@@ -2223,8 +2282,6 @@ H.defaultOptions = {
          * @apioption legend.style
          */
 
-        
-
         /**
          * CSS styles for each legend item. Only a subset of CSS is supported,
          * notably those options related to text. The default `textOverflow`
@@ -2248,6 +2305,10 @@ H.defaultOptions = {
              * @ignore
              */
             color: '#333333',
+            /**
+             * @ignore
+             */
+            cursor: 'pointer',
             /**
              * @ignore
              */
@@ -2323,8 +2384,6 @@ H.defaultOptions = {
          * @type {boolean|Highcharts.CSSObject}
          */
         shadow: false,
-
-        
 
         /**
          * Default styling for the checkbox next to a legend item when
@@ -2412,8 +2471,8 @@ H.defaultOptions = {
          */
 
         /**
-         * Whether to [use HTML](https://www.highcharts.com/docs/chart-concepts/
-         * labels-and-string-formatting#html) to render the legend item texts.
+         * Whether to [use HTML](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting#html)
+         * to render the legend item texts.
          *
          * Prior to 4.1.7, when using HTML, [legend.navigation](
          * #legend.navigation) was disabled.
@@ -2516,8 +2575,6 @@ H.defaultOptions = {
              * @apioption legend.title.text
              */
 
-            
-
             /**
              * Generic CSS styles for the legend title.
              *
@@ -2534,9 +2591,6 @@ H.defaultOptions = {
                  */
                 fontWeight: 'bold'
             }
-
-            
-
         }
     },
 
@@ -2575,8 +2629,6 @@ H.defaultOptions = {
          * @since     1.2.0
          * @apioption loading.showDuration
          */
-
-        
 
         /**
          * CSS styles for the loading label `span`.
@@ -2641,7 +2693,6 @@ H.defaultOptions = {
              */
             textAlign: 'center'
         }
-        
     },
 
 
@@ -2789,7 +2840,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/formatter/
          *         String formatting
          *
-         * @type      {Function}
+         * @type      {Highcharts.FormatterCallbackFunction<Highcharts.TooltipFormatterContextObject>}
          * @apioption tooltip.formatter
          */
 
@@ -2839,6 +2890,13 @@ H.defaultOptions = {
          * where the reference point is in the plot area. Add `chart.plotLeft`
          * and `chart.plotTop` to get the full coordinates.
          *
+         * Since v7, when [tooltip.split](#tooltip.split) option is enabled,
+         * positioner is called for each of the boxes separately, including
+         * xAxis header. xAxis header is not a point, instead `point` argument
+         * contains info:
+         * `{ plotX: Number, plotY: Number, isHeader: Boolean }`
+         *
+         *
          * The return should be an object containing x and y values, for example
          * `{ x: 100, y: 100 }`.
          *
@@ -2848,6 +2906,8 @@ H.defaultOptions = {
          *         A fixed tooltip position on top of the chart
          * @sample {highmaps} maps/tooltip/positioner/
          *         A fixed tooltip position
+         * @sample {highstock} stock/tooltip/split-positioner/
+         *         Split tooltip with fixed positions
          *
          * @type      {Function}
          * @since     2.2.4
@@ -2856,7 +2916,10 @@ H.defaultOptions = {
 
         /**
          * The name of a symbol to use for the border around the tooltip. Can
-         * be one of: `"callout"`, `"circle"` or `"square"`.
+         * be one of: `"callout"`, `"circle"` or `"square"`. When
+         * [tooltip.split](#tooltip.split) option is enabled, shape is applied
+         * to all boxes except header, which is controlled by
+         * [tooltip.headerShape](#tooltip.headerShape).
          *
          * Custom callbacks for symbol path generation can also be added to
          * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
@@ -2867,6 +2930,25 @@ H.defaultOptions = {
          * @since      4.0
          * @validvalue ["callout", "square"]
          * @apioption  tooltip.shape
+         */
+
+         /**
+         * The name of a symbol to use for the border around the tooltip
+         * header. Applies only when [tooltip.split](#tooltip.split) is
+         * enabled.
+         *
+         * Custom callbacks for symbol path generation can also be added to
+         * `Highcharts.SVGRenderer.prototype.symbols` the same way as for
+         * [series.marker.symbol](plotOptions.line.marker.symbol).
+         *
+         * @see [tooltip.shape](#tooltip.shape)
+         * @type {String}
+         * @default callout
+         * @sample {highstock} stock/tooltip/split-positioner/
+         *         Different shapes for header and split boxes
+         * @validvalue ["callout", "square"]
+         * @since 7.0
+         * @apioption tooltip.headerShape
          */
 
         /**
@@ -3098,8 +3180,49 @@ H.defaultOptions = {
          * @product highcharts highstock
          */
         snap: isTouchDevice ? 25 : 10,
+        /**
+         * The HTML of the tooltip header line. Variables are enclosed by
+         * curly brackets. Available variables are `point.key`, `series.name`,
+         * `series.color` and other members from the `point` and `series`
+         * objects. The `point.key` variable contains the category name, x
+         * value or datetime string depending on the type of axis. For datetime
+         * axes, the `point.key` date format can be set using
+         * `tooltip.xDateFormat`.
+         *
+         * @sample {highcharts} highcharts/tooltip/footerformat/
+         *         An HTML table in the tooltip
+         * @sample {highstock} highcharts/tooltip/footerformat/
+         *         An HTML table in the tooltip
+         * @sample {highmaps} maps/tooltip/format/
+         *         Format demo
+         *
+         * @type       {string}
+         * @apioption  tooltip.headerFormat
+         */
+        headerFormat: '<span style="font-size: 10px">{point.key}</span><br/>',
 
-        
+        /**
+         * The HTML of the point's line in the tooltip. Variables are enclosed
+         * by curly brackets. Available variables are point.x, point.y, series.
+         * name and series.color and other properties on the same form.
+         * Furthermore, `point.y` can be extended by the `tooltip.valuePrefix`
+         * and `tooltip.valueSuffix` variables. This can also be overridden for
+         * each series, which makes it a good hook for displaying units.
+         *
+         * In styled mode, the dot is colored by a class name rather
+         * than the point color.
+         *
+         * @sample {highcharts} highcharts/tooltip/pointformat/
+         *         A different point format with value suffix
+         * @sample {highmaps} maps/tooltip/format/
+         *         Format demo
+         *
+         * @type       {string}
+         * @default    <span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y}</b><br/>
+         * @since      2.2
+         * @apioption  tooltip.pointFormat
+         */
+        pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y}</b><br/>',
 
         /**
          * The background color or gradient for the tooltip.
@@ -3151,45 +3274,6 @@ H.defaultOptions = {
         borderWidth: 1,
 
         /**
-         * The HTML of the tooltip header line. Variables are enclosed by
-         * curly brackets. Available variables are `point.key`, `series.name`,
-         * `series.color` and other members from the `point` and `series`
-         * objects. The `point.key` variable contains the category name, x
-         * value or datetime string depending on the type of axis. For datetime
-         * axes, the `point.key` date format can be set using
-         * `tooltip.xDateFormat`. To access the original point use
-         * `point.point`.
-         *
-         * @sample {highcharts} highcharts/tooltip/footerformat/
-         *         An HTML table in the tooltip
-         * @sample {highstock} highcharts/tooltip/footerformat/
-         *         An HTML table in the tooltip
-         * @sample {highmaps} maps/tooltip/format/
-         *         Format demo
-         */
-        headerFormat: '<span style="font-size: 10px">{point.key}</span><br/>',
-
-        /**
-         * The HTML of the point's line in the tooltip. Variables are enclosed
-         * by curly brackets. Available variables are point.x, point.y, series.
-         * name and series.color and other properties on the same form.
-         * Furthermore, `point.y` can be extended by the `tooltip.valuePrefix`
-         * and `tooltip.valueSuffix` variables. This can also be overridden for
-         * each series, which makes it a good hook for displaying units.
-         *
-         * In styled mode, the dot is colored by a class name rather
-         * than the point color.
-         *
-         * @sample {highcharts} highcharts/tooltip/pointformat/
-         *         A different point format with value suffix
-         * @sample {highmaps} maps/tooltip/format/
-         *         Format demo
-         *
-         * @since 2.2
-         */
-        pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.y}</b><br/>',
-
-        /**
          * Whether to apply a drop shadow to the tooltip.
          *
          * @sample {highcharts} highcharts/tooltip/bordercolor-default/
@@ -3234,7 +3318,6 @@ H.defaultOptions = {
              */
             whiteSpace: 'nowrap'
         }
-        
     },
 
 
@@ -3294,7 +3377,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/credits/customized/
          *         Custom URL and text
          */
-        href: 'https://www.highcharts.com',
+        href: 'https://www.highcharts.com?credits',
 
         /**
          * Position configuration for the credits label.
@@ -3338,8 +3421,6 @@ H.defaultOptions = {
 
         },
 
-        
-
         /**
          * CSS styles for the credits label.
          *
@@ -3363,8 +3444,6 @@ H.defaultOptions = {
              */
             fontSize: '9px'
         },
-
-        
 
         /**
          * The text for the credits label.
@@ -3444,14 +3523,13 @@ H.time = new H.Time(merge(H.defaultOptions.global, H.defaultOptions.time));
 /**
  * Formats a JavaScript date timestamp (milliseconds since Jan 1st 1970) into a
  * human readable date string. The format is a subset of the formats for PHP's
- * [strftime]{@link
- * http://www.php.net/manual/en/function.strftime.php} function. Additional
- * formats can be given in the {@link Highcharts.dateFormats} hook.
+ * [strftime](http://www.php.net/manual/en/function.strftime.php) function.
+ * Additional formats can be given in the {@link Highcharts.dateFormats} hook.
  *
  * Since v6.0.5, all internal dates are formatted through the
- * [Chart.time](Chart#time) instance to respect chart-level time settings. The
- * `Highcharts.dateFormat` function only reflects global time settings set with
- * `setOptions`.
+ * {@link Highcharts.Chart#time} instance to respect chart-level time settings.
+ * The `Highcharts.dateFormat` function only reflects global time settings set
+ * with `setOptions`.
  *
  * @function Highcharts.dateFormat
  *
@@ -3471,3 +3549,6 @@ H.time = new H.Time(merge(H.defaultOptions.global, H.defaultOptions.time));
 H.dateFormat = function (format, timestamp, capitalize) {
     return H.time.dateFormat(format, timestamp, capitalize);
 };
+
+
+
