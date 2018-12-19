@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.0.0 (2018-12-11)
+ * @license Highmaps JS v7.0.1 (2018-12-19)
  * Highmaps as a plugin for Highcharts or Highstock.
  *
  * (c) 2011-2018 Torstein Honsi
@@ -572,6 +572,12 @@
 		             * @type      {boolean}
 		             * @product   highcharts highmaps
 		             * @apioption colorAxis.reversed
+		             */
+
+		            /**
+		             * @product   highcharts highmaps
+		             * @excluding afterBreaks, pointBreak, pointInBreak
+		             * @apioption colorAxis.events
 		             */
 
 		            /**
@@ -1854,7 +1860,7 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
@@ -1991,7 +1997,7 @@
 		         *
 		         * @type      {Highcharts.ColorString}
 		         * @default   '#cccccc'
-		         * @product   highmaps highcharts
+		         * @product   highmaps
 		         * @apioption plotOptions.series.borderColor
 		         */
 		        borderColor: '#cccccc',
@@ -2005,7 +2011,9 @@
 		         * @sample maps/plotoptions/series-border/
 		         *         Borders demo
 		         *
-		         * @product   highmaps highcharts
+		         * @type      {number}
+		         * @default   1
+		         * @product   highmaps
 		         * @apioption plotOptions.series.borderWidth
 		         */
 		        borderWidth: 1,
@@ -3459,14 +3467,12 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
+		 * (c) 2010-2018 Highsoft AS
 		 *
-		 *  (c) 2010-2018 Highsoft AS
+		 * Author: Paweł Potaczek
 		 *
-		 *  Author: Paweł Potaczek
-		 *
-		 *  License: www.highcharts.com/license
-		 *
-		 * */
+		 * License: www.highcharts.com/license
+		 */
 
 		/**
 		 * @interface Highcharts.LegendBubbleLegendFormatterContextObject
@@ -4181,7 +4187,7 @@
 		                maxLabel = labelSize;
 		            }
 		        });
-		        return maxLabel;
+		        return maxLabel || {};
 		    },
 
 		    /**
@@ -4628,7 +4634,7 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
@@ -5214,45 +5220,42 @@
 		 * An array of data points for the series. For the `bubble` series type,
 		 * points can be given in the following ways:
 		 *
-		 * 1.  An array of arrays with 3 or 2 values. In this case, the values
-		 * correspond to `x,y,z`. If the first value is a string, it is applied
-		 * as the name of the point, and the `x` value is inferred. The `x`
-		 * value can also be omitted, in which case the inner arrays should
-		 * be of length 2\. Then the `x` value is automatically calculated,
-		 * either starting at 0 and incremented by 1, or from `pointStart` and
-		 * `pointInterval` given in the series options.
+		 * 1. An array of arrays with 3 or 2 values. In this case, the values correspond
+		 *    to `x,y,z`. If the first value is a string, it is applied as the name of
+		 *    the point, and the `x` value is inferred. The `x` value can also be
+		 *    omitted, in which case the inner arrays should be of length 2\. Then the
+		 *    `x` value is automatically calculated, either starting at 0 and
+		 *    incremented by 1, or from `pointStart` and `pointInterval` given in the
+		 *    series options.
+		 *    ```js
+		 *    data: [
+		 *        [0, 1, 2],
+		 *        [1, 5, 5],
+		 *        [2, 0, 2]
+		 *    ]
+		 *    ```
 		 *
-		 *  ```js
-		 *     data: [
-		 *         [0, 1, 2],
-		 *         [1, 5, 5],
-		 *         [2, 0, 2]
-		 *     ]
-		 *  ```
+		 * 2. An array of objects with named values. The following snippet shows only a
+		 *    few settings, see the complete options set below. If the total number of
+		 *    data points exceeds the series'
+		 *    [turboThreshold](#series.bubble.turboThreshold), this option is not
+		 *    available.
+		 *    ```js
+		 *    data: [{
+		 *        x: 1,
+		 *        y: 1,
+		 *        z: 1,
+		 *        name: "Point2",
+		 *        color: "#00FF00"
+		 *    }, {
+		 *        x: 1,
+		 *        y: 5,
+		 *        z: 4,
+		 *        name: "Point1",
+		 *        color: "#FF00FF"
+		 *    }]
+		 *    ```
 		 *
-		 * 2.  An array of objects with named values. The following snippet shows only a
-		 * few settings, see the complete options set below. If the total number of data
-		 * points exceeds the series' [turboThreshold](#series.bubble.turboThreshold),
-		 * this option is not available.
-		 *
-		 *  ```js
-		 *     data: [{
-		 *         x: 1,
-		 *         y: 1,
-		 *         z: 1,
-		 *         name: "Point2",
-		 *         color: "#00FF00"
-		 *     }, {
-		 *         x: 1,
-		 *         y: 5,
-		 *         z: 4,
-		 *         name: "Point1",
-		 *         color: "#FF00FF"
-		 *     }]
-		 *  ```
-		 *
-		 * @sample {highcharts} highcharts/chart/reflow-true/
-		 *         Numerical values
 		 * @sample {highcharts} highcharts/series/data-array-of-arrays/
 		 *         Arrays of numeric x and y
 		 * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
@@ -5262,7 +5265,7 @@
 		 * @sample {highcharts} highcharts/series/data-array-of-objects/
 		 *         Config objects
 		 *
-		 * @type      {Array<Array<number>|*>}
+		 * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
 		 * @extends   series.line.data
 		 * @excluding marker
 		 * @product   highcharts

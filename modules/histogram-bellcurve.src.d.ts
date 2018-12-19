@@ -20,11 +20,5 @@ declare module "../highcharts.src" {
      *        width of the bin
      */
     function fitToBinLeftClosed(binWidth: number): () => void;
-    /**
-     * ***************************************************************************
-     *
-     * BELL CURVE
-     */
-    function mean(): void;
 }
 export default factory;

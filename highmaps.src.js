@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.0.0 (2018-12-11)
+ * @license Highmaps JS v7.0.1 (2018-12-19)
  *
  * (c) 2011-2018 Torstein Honsi
  *
@@ -59,7 +59,7 @@
 
 		var Highcharts = glob.Highcharts ? glob.Highcharts.error(16, true) : {
 		    product: 'Highmaps',
-		    version: '7.0.0',
+		    version: '7.0.1',
 		    deg2rad: Math.PI * 2 / 360,
 		    doc: doc,
 		    hasBidiBug: hasBidiBug,
@@ -276,6 +276,18 @@
 		 *
 		 * @param {Highcharts.Dictionary<*>} [eventArguments]
 		 *        Event arguments.
+		 */
+
+		/**
+		 * The event options for adding function callback.
+		 *
+		 * @interface Highcharts.EventOptionsObject
+		 *//**
+		 * The order the event handler should be called. This opens for having one
+		 * handler be called before another, independent of in which order they were
+		 * added.
+		 * @name Highcharts.EventOptionsObject#order
+		 * @type {number}
 		 */
 
 		/**
@@ -2387,13 +2399,8 @@
 		 * @param {Highcharts.EventCallbackFunction<T>} fn
 		 *        The function callback to execute when the event is fired.
 		 *
-		 * @param {Highcharts.Dictionary<*>} options
-		 *        Event options
-		 *
-		 * @param {number} options.order
-		 *        The order the event handler should be called. This opens for having
-		 *        one handler be called before another, independent of in which order
-		 *        they were added.
+		 * @param {Highcharts.EventOptionsObject} [options]
+		 *        Options for adding the event.
 		 *
 		 * @return {Function}
 		 *         A callback function to remove the added event.
@@ -5092,7 +5099,7 @@
 		         * @sample {highstock} stock/chart/renderto-jquery/
 		         *         Object reference through jQuery
 		         *
-		         * @type      {string|Highcharts.SVGDOMElement}
+		         * @type      {string|Highcharts.HTMLDOMElement}
 		         * @apioption chart.renderTo
 		         */
 
@@ -10177,7 +10184,7 @@
 		        // Add description
 		        desc = this.createElement('desc').add();
 		        desc.element.appendChild(
-		            doc.createTextNode('Created with Highmaps 7.0.0')
+		            doc.createTextNode('Created with Highmaps 7.0.1')
 		        );
 
 		        /**
@@ -13899,12 +13906,10 @@
 	}(Highcharts));
 	var Axis = (function (H) {
 		/* *
+		 * (c) 2010-2018 Torstein Honsi
 		 *
-		 *  (c) 2010-2018 Torstein Honsi
-		 *
-		 *  License: www.highcharts.com/license
-		 *
-		 * */
+		 * License: www.highcharts.com/license
+		 */
 
 		/**
 		 * @callback Highcharts.AxisEventCallbackFunction
@@ -20449,7 +20454,7 @@
 
 	}(Highcharts));
 	(function (H, Axis) {
-		/**
+		/* *
 		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
@@ -21688,7 +21693,7 @@
 		            opacity: 0.5,
 		            children: [{
 		                tagName: 'feGaussianBlur',
-		                in: 'SourceAlpha',
+		                'in': 'SourceAlpha',
 		                stdDeviation: 1
 		            }, {
 		                tagName: 'feOffset',
@@ -21707,7 +21712,7 @@
 		                    tagName: 'feMergeNode'
 		                }, {
 		                    tagName: 'feMergeNode',
-		                    in: 'SourceGraphic'
+		                    'in': 'SourceGraphic'
 		                }]
 		            }]
 		        });
@@ -21816,6 +21821,7 @@
 		     * @function Highcharts.Tooltip#update
 		     *
 		     * @param {Highcharts.TooltipOptions} options
+		     *        The tooltip options to update.
 		     */
 		    update: function (options) {
 		        this.destroy();
@@ -23424,7 +23430,7 @@
 
 		        // Just move the tooltip, #349
 		        if (allowMove) {
-		            if (tooltip && tooltipPoints) {
+		            if (tooltip && tooltipPoints && tooltipPoints.length) {
 		                tooltip.refresh(tooltipPoints);
 		                if (tooltip.shared && hoverPoints) { // #8284
 		                    hoverPoints.forEach(function (point) {
@@ -24805,10 +24811,12 @@
 		     *        Legend options.
 		     *
 		     * @param {boolean} [redraw=true]
+		     *        Whether to redraw the chart after the axis is altered. If doing
+		     *        more operations on the chart, it is a good idea to set redraw to
+		     *        false and call {@link Chart#redraw} after.
 		     *        Whether to redraw the chart.
 		     *
-		     * @todo
-		     * Make events official: Fires the event `afterUpdate`.
+		     * @fires Highcharts.Legends#event:afterUpdate
 		     */
 		    update: function (options, redraw) {
 		        var chart = this.chart;
@@ -26070,6 +26078,11 @@
 		 *
 		 * @param {Highcharts.TitleOptions} titleOptions
 		 *        Options to modify.
+		 *
+		 * @param {boolean} [redraw=true]
+		 *        Whether to redraw the chart after the title is altered. If doing more
+		 *        operations on the chart, it is a good idea to set redraw to false and
+		 *        call {@link Chart#redraw} after.
 		 */
 
 		/**
@@ -26086,6 +26099,11 @@
 		 *
 		 * @param {Highcharts.SubtitleOptions} subtitleOptions
 		 *        Options to modify.
+		 *
+		 * @param {boolean} [redraw=true]
+		 *        Whether to redraw the chart after the subtitle is altered. If doing
+		 *        more operations on the chart, it is a good idea to set redraw to false
+		 *        and call {@link Chart#redraw} after.
 		 */
 
 
@@ -27338,7 +27356,7 @@
 		     *
 		     * @function Highcharts.Chart#reflow
 		     *
-		     * @param {global.Event} e
+		     * @param {global.Event} [e]
 		     *        Event arguments. Used primarily when the function is called
 		     *        internally as a response to window resize.
 		     */
@@ -28233,9 +28251,11 @@
 		        chart.getAxes();
 
 		        // Initialize the series
-		        (options.series || []).forEach(function (serieOptions) {
-		            chart.initSeries(serieOptions);
-		        });
+		        (H.isArray(options.series) ? options.series : []).forEach( // #9680
+		            function (serieOptions) {
+		                chart.initSeries(serieOptions);
+		            }
+		        );
 
 		        chart.linkSeries();
 
@@ -28989,7 +29009,7 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
@@ -29199,7 +29219,7 @@
 		 * @param {Highcharts.Chart} chart
 		 *        The chart instance.
 		 *
-		 * @param {Highcharts.SeriesOptions|object} options
+		 * @param {Highcharts.SeriesOptionsType|object} options
 		 *        The series options.
 		 *//**
 		 * The line series is the base type and is therefor the series base prototype.
@@ -31336,9 +31356,9 @@
 		     *
 		     * @since     2.3
 		     * @extends   tooltip
-		     * @excluding animation,backgroundColor,borderColor,borderRadius,
-		     *            borderWidth,crosshairs,enabled,formatter,positioner,shadow,
-		     *            shared,shape,snap,style,useHTML
+		     * @excluding animation, backgroundColor, borderColor, borderRadius,
+		     *            borderWidth, crosshairs, enabled, formatter, positioner,
+		     *            shadow, shape, shared, snap, style, useHTML
 		     * @apioption plotOptions.series.tooltip
 		     */
 
@@ -31500,7 +31520,7 @@
 		         * {@link Series#update}.
 		         *
 		         * @name Highcharts.Series#options
-		         * @type {Highcharts.PlotSeriesOptions}
+		         * @type {Highcharts.SeriesOptionsType}
 		         */
 		        series.options = options = series.setOptions(options);
 		        series.linkedSeries = [];
@@ -31795,10 +31815,10 @@
 		     *
 		     * @function Highcharts.Series#setOptions
 		     *
-		     * @param {Highcharts.PlotSeriesOptions} itemOptions
+		     * @param {Highcharts.SeriesOptionsType} itemOptions
 		     *        The series options.
 		     *
-		     * @return {Highcharts.PlotSeriesOptions}
+		     * @return {Highcharts.SeriesOptionsType}
 		     *
 		     * @fires Highcharts.Series#event:afterSetOptions
 		     */
@@ -31907,7 +31927,7 @@
 		     *         The series name.
 		     */
 		    getName: function () {
-		        return this.name || 'Series ' + (this.index + 1);
+		        return pick(this.options.name, 'Series ' + (this.index + 1)); // #4119
 		    },
 
 		    /**
@@ -34329,46 +34349,44 @@
 		 * An array of data points for the series. For the `line` series type,
 		 * points can be given in the following ways:
 		 *
-		 * 1.  An array of numerical values. In this case, the numerical values
-		 * will be interpreted as `y` options. The `x` values will be automatically
-		 * calculated, either starting at 0 and incremented by 1, or from `pointStart`
-		 * and `pointInterval` given in the series options. If the axis has
-		 * categories, these will be used. Example:
+		 * 1. An array of numerical values. In this case, the numerical values will be
+		 *    interpreted as `y` options. The `x` values will be automatically
+		 *    calculated, either starting at 0 and incremented by 1, or from
+		 *    `pointStart` and `pointInterval` given in the series options. If the axis
+		 *    has categories, these will be used. Example:
+		 *    ```js
+		 *    data: [0, 5, 3, 5]
+		 *    ```
 		 *
-		 *  ```js
-		 *  data: [0, 5, 3, 5]
-		 *  ```
+		 * 2. An array of arrays with 2 values. In this case, the values correspond to
+		 *    `x,y`. If the first value is a string, it is applied as the name of the
+		 *    point, and the `x` value is inferred.
+		 *    ```js
+		 *    data: [
+		 *        [0, 1],
+		 *        [1, 2],
+		 *        [2, 8]
+		 *    ]
+		 *    ```
 		 *
-		 * 2.  An array of arrays with 2 values. In this case, the values correspond
-		 * to `x,y`. If the first value is a string, it is applied as the name
-		 * of the point, and the `x` value is inferred.
-		 *
-		 *  ```js
-		 *     data: [
-		 *         [0, 1],
-		 *         [1, 2],
-		 *         [2, 8]
-		 *     ]
-		 *  ```
-		 *
-		 * 3.  An array of objects with named values. The following snippet shows only a
-		 * few settings, see the complete options set below. If the total number of data
-		 * points exceeds the series' [turboThreshold](#series.line.turboThreshold),
-		 * this option is not available.
-		 *
-		 *  ```js
-		 *     data: [{
-		 *         x: 1,
-		 *         y: 9,
-		 *         name: "Point2",
-		 *         color: "#00FF00"
-		 *     }, {
-		 *         x: 1,
-		 *         y: 6,
-		 *         name: "Point1",
-		 *         color: "#FF00FF"
-		 *     }]
-		 *  ```
+		 * 3. An array of objects with named values. The following snippet shows only a
+		 *    few settings, see the complete options set below. If the total number of
+		 *    data points exceeds the series'
+		 *    [turboThreshold](#series.line.turboThreshold), this option is not
+		 *    available.
+		 *    ```js
+		 *    data: [{
+		 *        x: 1,
+		 *        y: 9,
+		 *        name: "Point2",
+		 *        color: "#00FF00"
+		 *    }, {
+		 *        x: 1,
+		 *        y: 6,
+		 *        name: "Point1",
+		 *        color: "#FF00FF"
+		 *    }]
+		 *    ```
 		 *
 		 * @sample {highcharts} highcharts/chart/reflow-true/
 		 *         Numerical values
@@ -34381,7 +34399,7 @@
 		 * @sample {highcharts} highcharts/series/data-array-of-objects/
 		 *         Config objects
 		 *
-		 * @type      {Array<number|Array<number|string>|*>}
+		 * @type      {Array<number|Array<(number|string),number>|*>}
 		 * @apioption series.line.data
 		 */
 
@@ -34552,28 +34570,28 @@
 		    setAnimation = H.setAnimation,
 		    splat = H.splat;
 
+
 		// Remove settings that have not changed, to avoid unnecessary rendering or
 		// computing (#9197)
 		H.cleanRecursively = function (newer, older) {
-		    var total = 0,
-		        removed = 0;
+		    var result = {};
 		    objectEach(newer, function (val, key) {
+		        var ob;
+
+		        // Dive into objects
 		        if (isObject(newer[key], true) && older[key]) {
-		            if (H.cleanRecursively(newer[key], older[key])) {
-		                delete newer[key];
+		            ob = H.cleanRecursively(newer[key], older[key]);
+		            if (Object.keys(ob).length) {
+		                result[key] = ob;
 		            }
-		        } else if (
-		            !isObject(newer[key]) &&
-		            newer[key] === older[key]
-		        ) {
-		            delete newer[key];
-		            removed++;
+
+		        // Arrays or primitives are copied directly
+		        } else if (isObject(newer[key]) || newer[key] !== older[key]) {
+		            result[key] = newer[key];
 		        }
-		        total++;
 		    });
 
-		    // Return true if all sub nodes are removed
-		    return total === removed;
+		    return result;
 		};
 
 		// Extend the Chart prototype for dynamic methods
@@ -34593,7 +34611,7 @@
 		     *
 		     * @function Highcharts.Chart#addSeries
 		     *
-		     * @param {Highcharts.SeriesOptions} options
+		     * @param {Highcharts.SeriesOptionsType} options
 		     *        The config options for the series.
 		     *
 		     * @param {boolean} [redraw=true]
@@ -34921,7 +34939,7 @@
 
 		        fireEvent(chart, 'update', { options: options });
 
-		        H.cleanRecursively(options, chart.options);
+		        options = H.cleanRecursively(options, chart.options);
 
 		        // If the top-level chart option is present, some special updates are
 		        // required
@@ -35521,7 +35539,7 @@
 		     *
 		     * @function Highcharts.Series#update
 		     *
-		     * @param {Highcharts.SeriesOptions} options
+		     * @param {Highcharts.SeriesOptionsType} options
 		     *        New options that will be merged with the series' existing options.
 		     *
 		     * @param {boolean} [redraw=true]
@@ -35533,7 +35551,7 @@
 		     */
 		    update: function (newOptions, redraw) {
 
-		        H.cleanRecursively(newOptions, this.userOptions);
+		        newOptions = H.cleanRecursively(newOptions, this.userOptions);
 
 		        var series = this,
 		            chart = series.chart,
@@ -35681,6 +35699,11 @@
 		     * @param {Highcharts.XAxisOptions|Highcharts.YAxisOptions|Highcharts.ZAxisOptions} options
 		     *        The new options that will be merged in with existing options on
 		     *        the axis.
+		     *
+		     * @param {boolean} [redraw=true]
+		     *        Whether to redraw the chart after the axis is altered. If doing
+		     *        more operations on the chart, it is a good idea to set redraw to
+		     *        false and call {@link Chart#redraw} after.
 		     */
 		    update: function (options, redraw) {
 		        var chart = this.chart,
@@ -35799,7 +35822,7 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
@@ -36099,7 +36122,7 @@
 		            /**
 		             * A specific color for the hovered point.
 		             *
-		             * @type      {Highcharts.ColorString}
+		             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		             * @product   highcharts gantt
 		             * @apioption plotOptions.column.states.hover.color
 		             */
@@ -36132,7 +36155,7 @@
 		            /**
 		             * A specific color for the selected point.
 		             *
-		             * @type    {Highcharts.ColorString}
+		             * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		             * @default #cccccc
 		             * @product highcharts highstock gantt
 		             */
@@ -36797,46 +36820,44 @@
 		 * An array of data points for the series. For the `column` series type,
 		 * points can be given in the following ways:
 		 *
-		 * 1.  An array of numerical values. In this case, the numerical values
-		 * will be interpreted as `y` options. The `x` values will be automatically
-		 * calculated, either starting at 0 and incremented by 1, or from `pointStart`
-		 * and `pointInterval` given in the series options. If the axis has
-		 * categories, these will be used. Example:
+		 * 1. An array of numerical values. In this case, the numerical values will be
+		 *    interpreted as `y` options. The `x` values will be automatically
+		 *    calculated, either starting at 0 and incremented by 1, or from
+		 *    `pointStart` and `pointInterval` given in the series options. If the axis
+		 *    has categories, these will be used. Example:
+		 *    ```js
+		 *    data: [0, 5, 3, 5]
+		 *    ```
 		 *
-		 *  ```js
-		 *  data: [0, 5, 3, 5]
-		 *  ```
+		 * 2. An array of arrays with 2 values. In this case, the values correspond to
+		 *    `x,y`. If the first value is a string, it is applied as the name of the
+		 *    point, and the `x` value is inferred.
+		 *    ```js
+		 *    data: [
+		 *        [0, 6],
+		 *        [1, 2],
+		 *        [2, 6]
+		 *    ]
+		 *    ```
 		 *
-		 * 2.  An array of arrays with 2 values. In this case, the values correspond
-		 * to `x,y`. If the first value is a string, it is applied as the name
-		 * of the point, and the `x` value is inferred.
-		 *
-		 *  ```js
-		 *     data: [
-		 *         [0, 6],
-		 *         [1, 2],
-		 *         [2, 6]
-		 *     ]
-		 *  ```
-		 *
-		 * 3.  An array of objects with named values. The following snippet shows only a
-		 * few settings, see the complete options set below. If the total number of data
-		 * points exceeds the series' [turboThreshold](#series.column.turboThreshold),
-		 * this option is not available.
-		 *
-		 *  ```js
-		 *     data: [{
-		 *         x: 1,
-		 *         y: 9,
-		 *         name: "Point2",
-		 *         color: "#00FF00"
-		 *     }, {
-		 *         x: 1,
-		 *         y: 6,
-		 *         name: "Point1",
-		 *         color: "#FF00FF"
-		 *     }]
-		 *  ```
+		 * 3. An array of objects with named values. The following snippet shows only a
+		 *    few settings, see the complete options set below. If the total number of
+		 *    data points exceeds the series'
+		 *    [turboThreshold](#series.column.turboThreshold), this option is not
+		 *    available.
+		 *    ```js
+		 *    data: [{
+		 *        x: 1,
+		 *        y: 9,
+		 *        name: "Point2",
+		 *        color: "#00FF00"
+		 *    }, {
+		 *        x: 1,
+		 *        y: 6,
+		 *        name: "Point1",
+		 *        color: "#FF00FF"
+		 *    }]
+		 *    ```
 		 *
 		 * @sample {highcharts} highcharts/chart/reflow-true/
 		 *         Numerical values
@@ -36849,7 +36870,7 @@
 		 * @sample {highcharts} highcharts/series/data-array-of-objects/
 		 *         Config objects
 		 *
-		 * @type      {Array<number|Array<number|string|Date>|*>}
+		 * @type      {Array<number|Array<(number|string),number>|*>}
 		 * @extends   series.line.data
 		 * @excluding marker
 		 * @product   highcharts highstock
@@ -36898,7 +36919,7 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
@@ -37018,46 +37039,44 @@
 		 * An array of data points for the series. For the `scatter` series
 		 * type, points can be given in the following ways:
 		 *
-		 * 1.  An array of numerical values. In this case, the numerical values
-		 * will be interpreted as `y` options. The `x` values will be automatically
-		 * calculated, either starting at 0 and incremented by 1, or from `pointStart`
-		 * and `pointInterval` given in the series options. If the axis has
-		 * categories, these will be used. Example:
+		 * 1. An array of numerical values. In this case, the numerical values will be
+		 *    interpreted as `y` options. The `x` values will be automatically
+		 *    calculated, either starting at 0 and incremented by 1, or from
+		 *    `pointStart` and `pointInterval` given in the series options. If the axis
+		 *    has categories, these will be used. Example:
+		 *    ```js
+		 *    data: [0, 5, 3, 5]
+		 *    ```
 		 *
-		 *  ```js
-		 *  data: [0, 5, 3, 5]
-		 *  ```
+		 * 2. An array of arrays with 2 values. In this case, the values correspond to
+		 *    `x,y`. If the first value is a string, it is applied as the name of the
+		 *    point, and the `x` value is inferred.
+		 *    ```js
+		 *    data: [
+		 *        [0, 0],
+		 *        [1, 8],
+		 *        [2, 9]
+		 *    ]
+		 *    ```
 		 *
-		 * 2.  An array of arrays with 2 values. In this case, the values correspond
-		 * to `x,y`. If the first value is a string, it is applied as the name
-		 * of the point, and the `x` value is inferred.
-		 *
-		 *  ```js
-		 *     data: [
-		 *         [0, 0],
-		 *         [1, 8],
-		 *         [2, 9]
-		 *     ]
-		 *  ```
-		 *
-		 * 3.  An array of objects with named values. The following snippet shows only a
-		 * few settings, see the complete options set below. If the total number of data
-		 * points exceeds the series' [turboThreshold](#series.scatter.turboThreshold),
-		 * this option is not available.
-		 *
-		 *  ```js
-		 *     data: [{
-		 *         x: 1,
-		 *         y: 2,
-		 *         name: "Point2",
-		 *         color: "#00FF00"
-		 *     }, {
-		 *         x: 1,
-		 *         y: 4,
-		 *         name: "Point1",
-		 *         color: "#FF00FF"
-		 *     }]
-		 *  ```
+		 * 3. An array of objects with named values. The following snippet shows only a
+		 *    few settings, see the complete options set below. If the total number of
+		 *    data points exceeds the series'
+		 *    [turboThreshold](#series.scatter.turboThreshold), this option is not
+		 *    available.
+		 *    ```js
+		 *    data: [{
+		 *        x: 1,
+		 *        y: 2,
+		 *        name: "Point2",
+		 *        color: "#00FF00"
+		 *    }, {
+		 *        x: 1,
+		 *        y: 4,
+		 *        name: "Point1",
+		 *        color: "#FF00FF"
+		 *    }]
+		 *    ```
 		 *
 		 * @sample {highcharts} highcharts/chart/reflow-true/
 		 *         Numerical values
@@ -37070,7 +37089,7 @@
 		 * @sample {highcharts} highcharts/series/data-array-of-objects/
 		 *         Config objects
 		 *
-		 * @type      {Array<number|Array<number>|*>}
+		 * @type      {Array<number|Array<(number|string),number>|*>}
 		 * @extends   series.line.data
 		 * @product   highcharts highstock
 		 * @apioption series.scatter.data
@@ -40870,6 +40889,12 @@
 		             */
 
 		            /**
+		             * @product   highcharts highmaps
+		             * @excluding afterBreaks, pointBreak, pointInBreak
+		             * @apioption colorAxis.events
+		             */
+
+		            /**
 		             * Fires when the legend item belonging to the colorAxis is clicked.
 		             * One parameter, `event`, is passed to the function.
 		             *
@@ -42149,7 +42174,7 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
@@ -42286,7 +42311,7 @@
 		         *
 		         * @type      {Highcharts.ColorString}
 		         * @default   '#cccccc'
-		         * @product   highmaps highcharts
+		         * @product   highmaps
 		         * @apioption plotOptions.series.borderColor
 		         */
 		        borderColor: '#cccccc',
@@ -42300,7 +42325,9 @@
 		         * @sample maps/plotoptions/series-border/
 		         *         Borders demo
 		         *
-		         * @product   highmaps highcharts
+		         * @type      {number}
+		         * @default   1
+		         * @product   highmaps
 		         * @apioption plotOptions.series.borderWidth
 		         */
 		        borderWidth: 1,
@@ -43754,14 +43781,12 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
+		 * (c) 2010-2018 Highsoft AS
 		 *
-		 *  (c) 2010-2018 Highsoft AS
+		 * Author: Paweł Potaczek
 		 *
-		 *  Author: Paweł Potaczek
-		 *
-		 *  License: www.highcharts.com/license
-		 *
-		 * */
+		 * License: www.highcharts.com/license
+		 */
 
 		/**
 		 * @interface Highcharts.LegendBubbleLegendFormatterContextObject
@@ -44476,7 +44501,7 @@
 		                maxLabel = labelSize;
 		            }
 		        });
-		        return maxLabel;
+		        return maxLabel || {};
 		    },
 
 		    /**
@@ -44923,7 +44948,7 @@
 
 	}(Highcharts));
 	(function (H) {
-		/**
+		/* *
 		 * (c) 2010-2018 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
@@ -45509,45 +45534,42 @@
 		 * An array of data points for the series. For the `bubble` series type,
 		 * points can be given in the following ways:
 		 *
-		 * 1.  An array of arrays with 3 or 2 values. In this case, the values
-		 * correspond to `x,y,z`. If the first value is a string, it is applied
-		 * as the name of the point, and the `x` value is inferred. The `x`
-		 * value can also be omitted, in which case the inner arrays should
-		 * be of length 2\. Then the `x` value is automatically calculated,
-		 * either starting at 0 and incremented by 1, or from `pointStart` and
-		 * `pointInterval` given in the series options.
+		 * 1. An array of arrays with 3 or 2 values. In this case, the values correspond
+		 *    to `x,y,z`. If the first value is a string, it is applied as the name of
+		 *    the point, and the `x` value is inferred. The `x` value can also be
+		 *    omitted, in which case the inner arrays should be of length 2\. Then the
+		 *    `x` value is automatically calculated, either starting at 0 and
+		 *    incremented by 1, or from `pointStart` and `pointInterval` given in the
+		 *    series options.
+		 *    ```js
+		 *    data: [
+		 *        [0, 1, 2],
+		 *        [1, 5, 5],
+		 *        [2, 0, 2]
+		 *    ]
+		 *    ```
 		 *
-		 *  ```js
-		 *     data: [
-		 *         [0, 1, 2],
-		 *         [1, 5, 5],
-		 *         [2, 0, 2]
-		 *     ]
-		 *  ```
+		 * 2. An array of objects with named values. The following snippet shows only a
+		 *    few settings, see the complete options set below. If the total number of
+		 *    data points exceeds the series'
+		 *    [turboThreshold](#series.bubble.turboThreshold), this option is not
+		 *    available.
+		 *    ```js
+		 *    data: [{
+		 *        x: 1,
+		 *        y: 1,
+		 *        z: 1,
+		 *        name: "Point2",
+		 *        color: "#00FF00"
+		 *    }, {
+		 *        x: 1,
+		 *        y: 5,
+		 *        z: 4,
+		 *        name: "Point1",
+		 *        color: "#FF00FF"
+		 *    }]
+		 *    ```
 		 *
-		 * 2.  An array of objects with named values. The following snippet shows only a
-		 * few settings, see the complete options set below. If the total number of data
-		 * points exceeds the series' [turboThreshold](#series.bubble.turboThreshold),
-		 * this option is not available.
-		 *
-		 *  ```js
-		 *     data: [{
-		 *         x: 1,
-		 *         y: 1,
-		 *         z: 1,
-		 *         name: "Point2",
-		 *         color: "#00FF00"
-		 *     }, {
-		 *         x: 1,
-		 *         y: 5,
-		 *         z: 4,
-		 *         name: "Point1",
-		 *         color: "#FF00FF"
-		 *     }]
-		 *  ```
-		 *
-		 * @sample {highcharts} highcharts/chart/reflow-true/
-		 *         Numerical values
 		 * @sample {highcharts} highcharts/series/data-array-of-arrays/
 		 *         Arrays of numeric x and y
 		 * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
@@ -45557,7 +45579,7 @@
 		 * @sample {highcharts} highcharts/series/data-array-of-objects/
 		 *         Config objects
 		 *
-		 * @type      {Array<Array<number>|*>}
+		 * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
 		 * @extends   series.line.data
 		 * @excluding marker
 		 * @product   highcharts

@@ -3,6 +3,6 @@
  */
 
 import * as Highcharts from './highcharts';
-import MapModule from './highcharts/modules/map';
+import MapModule from './modules/map';
 
 export = Highcharts;
