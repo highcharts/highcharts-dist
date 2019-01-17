@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Rafal Sebestjanski
+ * (c) 2010-2019 Rafal Sebestjanski
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 }(function (Highcharts) {
 	var requiredIndicatorMixin = (function (H) {
 		/**
-		 * (c) 2010-2018 Daniel Studencki
+		 * (c) 2010-2019 Daniel Studencki
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -65,6 +66,7 @@
 		    }
 		};
 
+
 		return requiredIndicatorMixin;
 	}(Highcharts));
 	(function (H, requiredIndicatorMixin) {
@@ -90,7 +92,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('tema', 'ema',
+		H.seriesType(
+		    'tema',
+		    'ema',
 		    /**
 		     * Normalized average true range indicator (NATR). This series requires
 		     * `linkedTo` option to be set and should be loaded after the
@@ -154,10 +158,12 @@
 		        ) {
 		            var TEMAPoint = [
 		                xVal[i - 3],
-		                correctFloat(3 * EMAlevels.level1 -
-		                  3 * EMAlevels.level2 + EMAlevels.level3
+		                correctFloat(
+		                    3 * EMAlevels.level1 -
+		                    3 * EMAlevels.level2 + EMAlevels.level3
 		                )
 		            ];
+
 		            return TEMAPoint;
 		        },
 		        getValues: function (series, params) {
@@ -202,9 +208,9 @@
 		            // Accumulate first N-points
 		            accumulatePeriodPoints =
 		              EMAindicator.prototype.accumulatePeriodPoints(
-		                period,
-		                index,
-		                yVal
+		                  period,
+		                  index,
+		                  yVal
 		              );
 
 		            // first point
@@ -270,10 +276,10 @@
 		                            SMA
 		                        )[1];
 		                        TEMAPoint = this.getPoint(
-		                          xVal,
-		                          tripledPeriod,
-		                          EMAlevels,
-		                          i
+		                            xVal,
+		                            tripledPeriod,
+		                            EMAlevels,
+		                            i
 		                        );
 		                        // Make sure that point exists (for TRIX oscillator)
 		                        if (TEMAPoint) {

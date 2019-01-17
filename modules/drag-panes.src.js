@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Drag-panes module
  *
- * (c) 2010-2018 Highsoft AS
+ * (c) 2010-2019 Highsoft AS
  * Author: Kacper Madej
  *
  * License: www.highcharts.com/license
@@ -10,6 +10,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -198,6 +199,7 @@
 		            y: 0
 		        }
 		    };
+
 		merge(true, Axis.prototype.defaultYAxisOptions, resizerOptions);
 
 		/**

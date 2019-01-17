@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Accessibility module
  *
- * (c) 2010-2018 Highsoft AS
+ * (c) 2010-2019 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license
@@ -10,6 +10,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -23,7 +24,7 @@
 		/**
 		 * Accessibility module - internationalization support
 		 *
-		 * (c) 2010-2018 Highsoft AS
+		 * (c) 2010-2019 Highsoft AS
 		 * Author: Øystein Moseng
 		 *
 		 * License: www.highcharts.com/license
@@ -81,6 +82,7 @@
 		            eachArguments = eachStatement.split(','),
 		            lenArg = Number(eachArguments[1]),
 		            len;
+
 		        result = '';
 		        arr = ctx[eachArguments[0]];
 		        if (arr) {
@@ -102,6 +104,7 @@
 		            pluralStatement = statement.substring(pluralStart + 8, pluralEnd),
 		            pluralArguments = pluralStatement.split(','),
 		            num = Number(ctx[pluralArguments[0]]);
+
 		        switch (num) {
 		        case 0:
 		            result = pick(pluralArguments[4], pluralArguments[1]);
@@ -123,6 +126,7 @@
 		        var arrayName = statement.substring(0, indexStart),
 		            ix = Number(statement.substring(indexStart + 1, indexEnd)),
 		            val;
+
 		        arr = ctx[arrayName];
 		        if (!isNaN(ix) && arr) {
 		            if (ix < 0) {
@@ -224,6 +228,7 @@
 		            var str = sourceStr.slice(offset || 0),
 		                startBracket = str.indexOf('{'),
 		                endBracket = str.indexOf('}');
+
 		            if (startBracket > -1 && endBracket > startBracket) {
 		                return {
 		                    statement: str.substring(startBracket + 1, endBracket),
@@ -300,6 +305,7 @@
 		    var keys = langKey.split('.'),
 		        formatString = this.options.lang,
 		        i = 0;
+
 		    for (; i < keys.length; ++i) {
 		        formatString = formatString && formatString[keys[i]];
 		    }
@@ -308,9 +314,10 @@
 		    );
 		};
 
-		H.setOptions({ lang: {
+		H.setOptions({
+		    lang: {
 
-		    /**
+		        /**
 		     * Configure the accessibility strings in the chart. Requires the
 		     * [accessibility module](//code.highcharts.com/modules/accessibility.js)
 		     * to be loaded. For a description of the module and information on its
@@ -328,28 +335,28 @@
 		     * @since        6.0.6
 		     * @optionparent lang.accessibility
 		     */
-		    accessibility: {
+		        accessibility: {
 
-		        /* eslint-disable max-len */
-		        screenReaderRegionLabel: 'Chart screen reader information.',
-		        navigationHint: 'Use regions/landmarks to skip ahead to chart {#plural(numSeries, and navigate between data series,)}',
-		        defaultChartTitle: 'Chart',
-		        longDescriptionHeading: 'Long description.',
-		        noDescription: 'No description available.',
-		        structureHeading: 'Structure.',
-		        viewAsDataTable: 'View as data table.',
-		        chartHeading: 'Chart graphic.',
-		        chartContainerLabel: 'Interactive chart. {title}. Use up and down arrows to navigate with most screen readers.',
-		        rangeSelectorMinInput: 'Select start date.',
-		        rangeSelectorMaxInput: 'Select end date.',
-		        tableSummary: 'Table representation of chart.',
-		        mapZoomIn: 'Zoom chart',
-		        mapZoomOut: 'Zoom out chart',
-		        rangeSelectorButton: 'Select range {buttonText}',
-		        legendItem: 'Toggle visibility of series {itemName}',
-		        /* eslint-enable max-len */
+		            /* eslint-disable max-len */
+		            screenReaderRegionLabel: 'Chart screen reader information.',
+		            navigationHint: 'Use regions/landmarks to skip ahead to chart {#plural(numSeries, and navigate between data series,)}',
+		            defaultChartTitle: 'Chart',
+		            longDescriptionHeading: 'Long description.',
+		            noDescription: 'No description available.',
+		            structureHeading: 'Structure.',
+		            viewAsDataTable: 'View as data table.',
+		            chartHeading: 'Chart graphic.',
+		            chartContainerLabel: 'Interactive chart. {title}. Use up and down arrows to navigate with most screen readers.',
+		            rangeSelectorMinInput: 'Select start date.',
+		            rangeSelectorMaxInput: 'Select end date.',
+		            tableSummary: 'Table representation of chart.',
+		            mapZoomIn: 'Zoom chart',
+		            mapZoomOut: 'Zoom out chart',
+		            rangeSelectorButton: 'Select range {buttonText}',
+		            legendItem: 'Toggle visibility of series {itemName}',
+		            /* eslint-enable max-len */
 
-		        /**
+		            /**
 		         * Title element text for the chart SVG element. Leave this
 		         * empty to disable adding the title element. Browsers will display
 		         * this content when hovering over elements in the chart. Assistive
@@ -357,40 +364,40 @@
 		         *
 		         * @since 6.0.8
 		         */
-		        svgContainerTitle: '{chartTitle}',
+		            svgContainerTitle: '{chartTitle}',
 
-		        /**
+		            /**
 		         * Descriptions of lesser known series types. The relevant
 		         * description is added to the screen reader information region
 		         * when these series types are used.
 		         *
 		         * @since 6.0.6
 		         */
-		        seriesTypeDescriptions: {
-		            boxplot: 'Box plot charts are typically used to display ' +
+		            seriesTypeDescriptions: {
+		                boxplot: 'Box plot charts are typically used to display ' +
 		                'groups of statistical data. Each data point in the ' +
 		                'chart can have up to 5 values: minimum, lower quartile, ' +
 		                'median, upper quartile, and maximum.',
-		            arearange: 'Arearange charts are line charts displaying a ' +
+		                arearange: 'Arearange charts are line charts displaying a ' +
 		                'range between a lower and higher value for each point.',
-		            areasplinerange: 'These charts are line charts displaying a ' +
+		                areasplinerange: 'These charts are line charts displaying a ' +
 		                'range between a lower and higher value for each point.',
-		            bubble: 'Bubble charts are scatter charts where each data ' +
+		                bubble: 'Bubble charts are scatter charts where each data ' +
 		                'point also has a size value.',
-		            columnrange: 'Columnrange charts are column charts ' +
+		                columnrange: 'Columnrange charts are column charts ' +
 		                'displaying a range between a lower and higher value for ' +
 		                'each point.',
-		            errorbar: 'Errorbar series are used to display the ' +
+		                errorbar: 'Errorbar series are used to display the ' +
 		                'variability of the data.',
-		            funnel: 'Funnel charts are used to display reduction of data ' +
+		                funnel: 'Funnel charts are used to display reduction of data ' +
 		                'in stages.',
-		            pyramid: 'Pyramid charts consist of a single pyramid with ' +
+		                pyramid: 'Pyramid charts consist of a single pyramid with ' +
 		                'item heights corresponding to each point value.',
-		            waterfall: 'A waterfall chart is a column chart where each ' +
+		                waterfall: 'A waterfall chart is a column chart where each ' +
 		                'column contributes towards a total end value.'
-		        },
+		            },
 
-		        /**
+		            /**
 		         * Chart type description strings. This is added to the chart
 		         * information region.
 		         *
@@ -402,57 +409,57 @@
 		         *
 		         * @since 6.0.6
 		         */
-		        chartTypes: {
+		            chartTypes: {
 		            /* eslint-disable max-len */
-		            emptyChart: 'Empty chart',
-		            mapTypeDescription: 'Map of {mapTitle} with {numSeries} data series.',
-		            unknownMap: 'Map of unspecified region with {numSeries} data series.',
-		            combinationChart: 'Combination chart with {numSeries} data series.',
-		            defaultSingle: 'Chart with {numPoints} data {#plural(numPoints, points, point)}.',
-		            defaultMultiple: 'Chart with {numSeries} data series.',
-		            splineSingle: 'Line chart with {numPoints} data {#plural(numPoints, points, point)}.',
-		            splineMultiple: 'Line chart with {numSeries} lines.',
-		            lineSingle: 'Line chart with {numPoints} data {#plural(numPoints, points, point)}.',
-		            lineMultiple: 'Line chart with {numSeries} lines.',
-		            columnSingle: 'Bar chart with {numPoints} {#plural(numPoints, bars, bar)}.',
-		            columnMultiple: 'Bar chart with {numSeries} data series.',
-		            barSingle: 'Bar chart with {numPoints} {#plural(numPoints, bars, bar)}.',
-		            barMultiple: 'Bar chart with {numSeries} data series.',
-		            pieSingle: 'Pie chart with {numPoints} {#plural(numPoints, slices, slice)}.',
-		            pieMultiple: 'Pie chart with {numSeries} pies.',
-		            scatterSingle: 'Scatter chart with {numPoints} {#plural(numPoints, points, point)}.',
-		            scatterMultiple: 'Scatter chart with {numSeries} data series.',
-		            boxplotSingle: 'Boxplot with {numPoints} {#plural(numPoints, boxes, box)}.',
-		            boxplotMultiple: 'Boxplot with {numSeries} data series.',
-		            bubbleSingle: 'Bubble chart with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
-		            bubbleMultiple: 'Bubble chart with {numSeries} data series.'
-		        },  /* eslint-enable max-len */
+		                emptyChart: 'Empty chart',
+		                mapTypeDescription: 'Map of {mapTitle} with {numSeries} data series.',
+		                unknownMap: 'Map of unspecified region with {numSeries} data series.',
+		                combinationChart: 'Combination chart with {numSeries} data series.',
+		                defaultSingle: 'Chart with {numPoints} data {#plural(numPoints, points, point)}.',
+		                defaultMultiple: 'Chart with {numSeries} data series.',
+		                splineSingle: 'Line chart with {numPoints} data {#plural(numPoints, points, point)}.',
+		                splineMultiple: 'Line chart with {numSeries} lines.',
+		                lineSingle: 'Line chart with {numPoints} data {#plural(numPoints, points, point)}.',
+		                lineMultiple: 'Line chart with {numSeries} lines.',
+		                columnSingle: 'Bar chart with {numPoints} {#plural(numPoints, bars, bar)}.',
+		                columnMultiple: 'Bar chart with {numSeries} data series.',
+		                barSingle: 'Bar chart with {numPoints} {#plural(numPoints, bars, bar)}.',
+		                barMultiple: 'Bar chart with {numSeries} data series.',
+		                pieSingle: 'Pie chart with {numPoints} {#plural(numPoints, slices, slice)}.',
+		                pieMultiple: 'Pie chart with {numSeries} pies.',
+		                scatterSingle: 'Scatter chart with {numPoints} {#plural(numPoints, points, point)}.',
+		                scatterMultiple: 'Scatter chart with {numSeries} data series.',
+		                boxplotSingle: 'Boxplot with {numPoints} {#plural(numPoints, boxes, box)}.',
+		                boxplotMultiple: 'Boxplot with {numSeries} data series.',
+		                bubbleSingle: 'Bubble chart with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
+		                bubbleMultiple: 'Bubble chart with {numSeries} data series.'
+		            }, /* eslint-enable max-len */
 
-		        /**
+		            /**
 		         * Axis description format strings.
 		         *
 		         * @since 6.0.6
 		         */
-		        axis: {
+		            axis: {
 		            /* eslint-disable max-len */
-		            xAxisDescriptionSingular: 'The chart has 1 X axis displaying {names[0]}.',
-		            xAxisDescriptionPlural: 'The chart has {numAxes} X axes displaying {#names.forEach(-1) }and {names[-1]}',
-		            yAxisDescriptionSingular: 'The chart has 1 Y axis displaying {names[0]}.',
-		            yAxisDescriptionPlural: 'The chart has {numAxes} Y axes displaying {#names.forEach(-1) }and {names[-1]}'
-		        },  /* eslint-enable max-len */
+		                xAxisDescriptionSingular: 'The chart has 1 X axis displaying {names[0]}.',
+		                xAxisDescriptionPlural: 'The chart has {numAxes} X axes displaying {#names.forEach(-1) }and {names[-1]}',
+		                yAxisDescriptionSingular: 'The chart has 1 Y axis displaying {names[0]}.',
+		                yAxisDescriptionPlural: 'The chart has {numAxes} Y axes displaying {#names.forEach(-1) }and {names[-1]}'
+		            }, /* eslint-enable max-len */
 
-		        /**
+		            /**
 		         * Exporting menu format strings for accessibility module.
 		         *
 		         * @since 6.0.6
 		         */
-		        exporting: {
-		            chartMenuLabel: 'Chart export',
-		            menuButtonLabel: 'View export menu',
-		            exportRegionLabel: 'Chart export menu'
-		        },
+		            exporting: {
+		                chartMenuLabel: 'Chart export',
+		                menuButtonLabel: 'View export menu',
+		                exportRegionLabel: 'Chart export menu'
+		            },
 
-		        /**
+		            /**
 		         * Lang configuration for different series types. For more dynamic
 		         * control over the series element descriptions, see
 		         * [accessibility.seriesDescriptionFormatter](
@@ -460,7 +467,7 @@
 		         *
 		         * @since 6.0.6
 		         */
-		        series: {
+		            series: {
 		            /**
 		             * Lang configuration for the series main summary. Each series
 		             * type has two modes:
@@ -475,63 +482,64 @@
 		             *
 		             * @since 6.0.6
 		             */
-		            summary: {
+		                summary: {
 		                /* eslint-disable max-len */
-		                'default': '{name}, series {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-		                defaultCombination: '{name}, series {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-		                line: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-		                lineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
-		                spline: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-		                splineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
-		                column: '{name}, bar series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bars, bar)}.',
-		                columnCombination: '{name}, series {ix} of {numSeries}. Bar series with {numPoints} {#plural(numPoints, bars, bar)}.',
-		                bar: '{name}, bar series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bars, bar)}.',
-		                barCombination: '{name}, series {ix} of {numSeries}. Bar series with {numPoints} {#plural(numPoints, bars, bar)}.',
-		                pie: '{name}, pie {ix} of {numSeries} with {numPoints} {#plural(numPoints, slices, slice)}.',
-		                pieCombination: '{name}, series {ix} of {numSeries}. Pie with {numPoints} {#plural(numPoints, slices, slice)}.',
-		                scatter: '{name}, scatter plot {ix} of {numSeries} with {numPoints} {#plural(numPoints, points, point)}.',
-		                scatterCombination: '{name}, series {ix} of {numSeries}, scatter plot with {numPoints} {#plural(numPoints, points, point)}.',
-		                boxplot: '{name}, boxplot {ix} of {numSeries} with {numPoints} {#plural(numPoints, boxes, box)}.',
-		                boxplotCombination: '{name}, series {ix} of {numSeries}. Boxplot with {numPoints} {#plural(numPoints, boxes, box)}.',
-		                bubble: '{name}, bubble series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
-		                bubbleCombination: '{name}, series {ix} of {numSeries}. Bubble series with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
-		                map: '{name}, map {ix} of {numSeries} with {numPoints} {#plural(numPoints, areas, area)}.',
-		                mapCombination: '{name}, series {ix} of {numSeries}. Map with {numPoints} {#plural(numPoints, areas, area)}.',
-		                mapline: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-		                maplineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
-		                mapbubble: '{name}, bubble series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
-		                mapbubbleCombination: '{name}, series {ix} of {numSeries}. Bubble series with {numPoints} {#plural(numPoints, bubbles, bubble)}.'
-		            },  /* eslint-enable max-len */
+		                    'default': '{name}, series {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
+		                    defaultCombination: '{name}, series {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
+		                    line: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
+		                    lineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
+		                    spline: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
+		                    splineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
+		                    column: '{name}, bar series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bars, bar)}.',
+		                    columnCombination: '{name}, series {ix} of {numSeries}. Bar series with {numPoints} {#plural(numPoints, bars, bar)}.',
+		                    bar: '{name}, bar series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bars, bar)}.',
+		                    barCombination: '{name}, series {ix} of {numSeries}. Bar series with {numPoints} {#plural(numPoints, bars, bar)}.',
+		                    pie: '{name}, pie {ix} of {numSeries} with {numPoints} {#plural(numPoints, slices, slice)}.',
+		                    pieCombination: '{name}, series {ix} of {numSeries}. Pie with {numPoints} {#plural(numPoints, slices, slice)}.',
+		                    scatter: '{name}, scatter plot {ix} of {numSeries} with {numPoints} {#plural(numPoints, points, point)}.',
+		                    scatterCombination: '{name}, series {ix} of {numSeries}, scatter plot with {numPoints} {#plural(numPoints, points, point)}.',
+		                    boxplot: '{name}, boxplot {ix} of {numSeries} with {numPoints} {#plural(numPoints, boxes, box)}.',
+		                    boxplotCombination: '{name}, series {ix} of {numSeries}. Boxplot with {numPoints} {#plural(numPoints, boxes, box)}.',
+		                    bubble: '{name}, bubble series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
+		                    bubbleCombination: '{name}, series {ix} of {numSeries}. Bubble series with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
+		                    map: '{name}, map {ix} of {numSeries} with {numPoints} {#plural(numPoints, areas, area)}.',
+		                    mapCombination: '{name}, series {ix} of {numSeries}. Map with {numPoints} {#plural(numPoints, areas, area)}.',
+		                    mapline: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
+		                    maplineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
+		                    mapbubble: '{name}, bubble series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
+		                    mapbubbleCombination: '{name}, series {ix} of {numSeries}. Bubble series with {numPoints} {#plural(numPoints, bubbles, bubble)}.'
+		                }, /* eslint-enable max-len */
 
-		            /**
+		                /**
 		             * User supplied description text. This is added after the main
 		             * summary if present.
 		             *
 		             * @since 6.0.6
 		             */
-		            description: '{description}',
+		                description: '{description}',
 
-		            /**
+		                /**
 		             * xAxis description for series if there are multiple xAxes in
 		             * the chart.
 		             *
 		             * @since 6.0.6
 		             */
-		            xAxisDescription: 'X axis, {name}',
+		                xAxisDescription: 'X axis, {name}',
 
-		            /**
+		                /**
 		             * yAxis description for series if there are multiple yAxes in
 		             * the chart.
 		             *
 		             * @since 6.0.6
 		             */
-		            yAxisDescription: 'Y axis, {name}'
+		                yAxisDescription: 'Y axis, {name}'
+
+		            }
 
 		        }
 
 		    }
-
-		} });
+		});
 
 	}(Highcharts));
 	(function (H) {
@@ -755,8 +763,8 @@
 		                ) && {} || chart.getAxesDescription();
 
 		            return '<div>' + chart.langFormat(
-		                        'accessibility.navigationHint', formatContext
-		                    ) + '</div><h3>' +
+		                'accessibility.navigationHint', formatContext
+		            ) + '</div><h3>' +
 		                    (
 		                        options.title.text ?
 		                            htmlencode(options.title.text) :
@@ -770,16 +778,16 @@
 		                            ''
 		                    ) +
 		                    '</h3><h4>' + chart.langFormat(
-		                        'accessibility.longDescriptionHeading', formatContext
-		                    ) + '</h4><div>' +
+		                'accessibility.longDescriptionHeading', formatContext
+		            ) + '</h4><div>' +
 		                    (
 		                        options.chart.description || chart.langFormat(
 		                            'accessibility.noDescription', formatContext
 		                        )
 		                    ) +
 		                    '</div><h4>' + chart.langFormat(
-		                        'accessibility.structureHeading', formatContext
-		                    ) + '</h4><div>' +
+		                'accessibility.structureHeading', formatContext
+		            ) + '</h4><div>' +
 		                    (
 		                        options.chart.typeDescription ||
 		                        chart.getTypeDescription()
@@ -810,7 +818,7 @@
 		 * @apioption chart.description
 		 */
 
-		 /**
+		/**
 		 * A text description of the chart type.
 		 *
 		 * If the Accessibility module is loaded, this will be included in the
@@ -837,6 +845,7 @@
 		 */
 		function reverseChildNodes(node) {
 		    var i = node.childNodes.length;
+
 		    while (i--) {
 		        node.appendChild(node.childNodes[i]);
 		    }
@@ -970,12 +979,12 @@
 		        );
 
 		    return summary + (description ? ' ' + description : '') + (
-		            chart.yAxis.length > 1 && this.yAxis ?
-		                ' ' + yAxisInfo : ''
-		        ) + (
-		            chart.xAxis.length > 1 && this.xAxis ?
-		                ' ' + xAxisInfo : ''
-		        );
+		        chart.yAxis.length > 1 && this.yAxis ?
+		            ' ' + yAxisInfo : ''
+		    ) + (
+		        chart.xAxis.length > 1 && this.xAxis ?
+		            ' ' + xAxisInfo : ''
+		    );
 		};
 
 
@@ -1068,6 +1077,7 @@
 		// Whenever adding or removing series, keep track of types present in chart
 		addEvent(H.Series, 'afterInit', function () {
 		    var chart = this.chart;
+
 		    if (chart.options.accessibility.enabled) {
 		        chart.types = chart.types || [];
 
@@ -1128,7 +1138,9 @@
 		        return this.langFormat(
 		            'accessibility.chartTypes.emptyChart', formatContext
 		        );
-		    } else if (firstType === 'map') {
+		    }
+
+		    if (firstType === 'map') {
 		        return mapTitle ?
 		            this.langFormat(
 		                'accessibility.chartTypes.mapTypeDescription',
@@ -1138,7 +1150,9 @@
 		                'accessibility.chartTypes.unknownMap',
 		                formatContext
 		            );
-		    } else if (this.types.length > 1) {
+		    }
+
+		    if (this.types.length > 1) {
 		        return this.langFormat(
 		            'accessibility.chartTypes.combinationChart', formatContext
 		        );
@@ -1213,6 +1227,7 @@
 		 */
 		H.Chart.prototype.addAccessibleContextMenuAttribs = function () {
 		    var exportList = this.exportDivElements;
+
 		    if (exportList) {
 		        // Set tabindex on the menu items to allow focusing by script
 		        // Set role to give screen readers a chance to pick up the contents
@@ -1225,7 +1240,8 @@
 		        });
 		        // Set accessibility properties on parent div
 		        exportList[0].parentNode.setAttribute('role', 'menu');
-		        exportList[0].parentNode.setAttribute('aria-label',
+		        exportList[0].parentNode.setAttribute(
+		            'aria-label',
 		            this.langFormat(
 		                'accessibility.exporting.chartMenuLabel', { chart: this }
 		            )
@@ -1322,9 +1338,9 @@
 		    // Add SVG title tag if it is set
 		    if (svgContainerTitle.length) {
 		        titleElement = doc.createElementNS(
-		                'http://www.w3.org/2000/svg',
-		                'title'
-		            );
+		            'http://www.w3.org/2000/svg',
+		            'title'
+		        );
 		        titleElement.textContent = svgContainerTitle;
 		        titleElement.id = titleId;
 		        descElement.parentNode.insertBefore(titleElement, descElement);
@@ -1351,6 +1367,7 @@
 		        // Set event handler on button
 		        var button = chart.exportSVGElements[0].element,
 		            oldExportCallback = button.onclick;
+
 		        button.onclick = function () {
 		            oldExportCallback.apply(
 		                this,
@@ -1371,7 +1388,8 @@
 
 		        // Set props on group
 		        chart.exportingGroup.element.setAttribute('role', 'region');
-		        chart.exportingGroup.element.setAttribute('aria-label',
+		        chart.exportingGroup.element.setAttribute(
+		            'aria-label',
 		            chart.langFormat(
 		                'accessibility.exporting.exportRegionLabel', { chart: chart }
 		            )
@@ -1406,13 +1424,13 @@
 		    chart.addScreenReaderRegion(hiddenSectionId, tableId);
 
 		    // Add ID and summary attr to table HTML
-		    H.wrap(chart, 'getTable', function (proceed) {
-		        return proceed.apply(this, Array.prototype.slice.call(arguments, 1))
+		    addEvent(chart, 'afterGetTable', function (e) {
+		        e.html = e.html
 		            .replace(
-		                '<table>',
-		                '<table id="' + tableId + '" summary="' + chart.langFormat(
+		                '<table ',
+		                '<table summary="' + chart.langFormat(
 		                    'accessibility.tableSummary', { chart: chart }
-		                ) + '">'
+		                ) + '"'
 		            );
 		    });
 		});
@@ -1467,11 +1485,11 @@
 		            bb.height + 2 * pad,
 		            style && style.borderRadius
 		        )
-		        .addClass('highcharts-focus-border')
-		        .attr({
-		            zIndex: 99
-		        })
-		        .add(this.parentGroup);
+		            .addClass('highcharts-focus-border')
+		            .attr({
+		                zIndex: 99
+		            })
+		            .add(this.parentGroup);
 
 		        if (!this.renderer.styledMode) {
 		            this.focusBorder.attr({
@@ -1541,6 +1559,7 @@
 		    var index = point.index,
 		        points = point.series.points,
 		        i = points.length;
+
 		    if (points[index] !== point) {
 		        while (i--) {
 		            if (points[i] === point) {
@@ -1616,32 +1635,12 @@
 		                 * @since   6.0.3
 		                 */
 		                style: {
-
-		                    /**
-		                     * Color of the focus border.
-		                     *
-		                     * @ignore
-		                     * @type  {Highcharts.ColorString}
-		                     * @since 6.0.3
-		                    */
+		                    /** @ignore-option */
 		                    color: '#335cad',
-
-		                    /**
-		                     * Line width of the focus border.
-		                     *
-		                     * @ignore
-		                     * @since 6.0.3
-		                    */
+		                    /** @ignore-option */
 		                    lineWidth: 2,
-
-		                    /**
-		                     * Border radius of the focus border.
-		                     *
-		                     * @ignore
-		                     * @since 6.0.3
-		                    */
+		                    /** @ignore-option */
 		                    borderRadius: 3
-
 		                },
 
 		                /**
@@ -1749,13 +1748,11 @@
 		            keyCode = e.which || e.keyCode,
 		            found = false,
 		            handled = false;
+
 		        this.keyCodeMap.forEach(function (codeSet) {
 		            if (codeSet[0].indexOf(keyCode) > -1) {
 		                found = true;
-		                handled = codeSet[1].call(navModule, keyCode, e) === false ?
-		                    // If explicitly returning false, we haven't handled it
-		                    false :
-		                    true;
+		                handled = codeSet[1].call(navModule, keyCode, e) !== false;
 		            }
 		        });
 		        // Default tab handler, move to next/prev module
@@ -1778,6 +1775,7 @@
 		     */
 		    move: function (direction) {
 		        var chart = this.chart;
+
 		        if (this.terminate) {
 		            this.terminate(direction);
 		        }
@@ -1827,6 +1825,7 @@
 		 */
 		function fakeClickEvent(element) {
 		    var fakeEvent;
+
 		    if (element && element.onclick && doc.createEvent) {
 		        fakeEvent = doc.createEvent('Events');
 		        fakeEvent.initEvent('click', true, false);
@@ -1847,6 +1846,7 @@
 		 */
 		function isSkipSeries(series) {
 		    var a11yOptions = series.chart.options.accessibility;
+
 		    return series.options.skipKeyboardNavigation ||
 		        series.options.enableMouseTracking === false || // #8440
 		        !series.visible ||
@@ -1869,6 +1869,7 @@
 		 */
 		function isSkipPoint(point) {
 		    var a11yOptions = point.series.chart.options.accessibility;
+
 		    return point.isNull && a11yOptions.keyboardNavigation.skipNullPoints ||
 		        point.visible === false ||
 		        isSkipSeries(point.series);
@@ -1898,6 +1899,7 @@
 		        minIx,
 		        distance,
 		        i = series.points.length;
+
 		    if (point.plotX === undefined || point.plotY === undefined) {
 		        return;
 		    }
@@ -1937,6 +1939,7 @@
 		        newMax = extremes.max + step,
 		        newMin = extremes.min + step,
 		        size = newMax - newMin;
+
 		    if (direction < 0 && newMin < extremes.dataMin) {
 		        newMin = extremes.dataMin;
 		        newMax = newMin + size;
@@ -1964,8 +1967,9 @@
 		 */
 		H.Chart.prototype.setFocusToElement = function (svgElement, focusElement) {
 		    var focusBorderOptions = this.options.accessibility
-		                .keyboardNavigation.focusBorder,
+		            .keyboardNavigation.focusBorder,
 		        browserFocusElement = focusElement || svgElement;
+
 		    // Set browser focus if possible
 		    if (
 		        browserFocusElement.element &&
@@ -2004,6 +2008,7 @@
 		 */
 		H.Point.prototype.highlight = function () {
 		    var chart = this.series.chart;
+
 		    if (!this.isNull) {
 		        this.onMouseOver(); // Show the hover marker and tooltip
 		    } else {
@@ -2271,6 +2276,7 @@
 		H.Chart.prototype.hideExportMenu = function () {
 		    var chart = this,
 		        exportList = chart.exportDivElements;
+
 		    if (exportList && chart.exportContextMenu) {
 		        // Reset hover states etc.
 		        exportList.forEach(function (el) {
@@ -2340,6 +2346,7 @@
 		H.Chart.prototype.highlightLastExportItem = function () {
 		    var chart = this,
 		        i;
+
 		    if (chart.exportDivElements) {
 		        i = chart.exportDivElements.length;
 		        while (i--) {
@@ -2363,6 +2370,7 @@
 		 */
 		H.Chart.prototype.highlightRangeSelectorButton = function (ix) {
 		    var buttons = this.rangeSelector.buttons;
+
 		    // Deselect old
 		    if (buttons[this.highlightedRangeSelectorItemIx]) {
 		        buttons[this.highlightedRangeSelectorItemIx].setState(
@@ -2394,6 +2402,7 @@
 		H.Chart.prototype.highlightLegendItem = function (ix) {
 		    var items = this.legend.allItems,
 		        oldIx = this.highlightedLegendItemIx;
+
 		    if (items[ix]) {
 		        if (items[oldIx]) {
 		            fireEvent(
@@ -2463,6 +2472,7 @@
 		            // Left/Right
 		            [[37, 39], function (keyCode) {
 		                var right = keyCode === 39;
+
 		                if (!chart.highlightAdjacentPoint(right)) {
 		                    // Failed to highlight next, wrap to last/first
 		                    return this.init(right ? 1 : -1);
@@ -2473,6 +2483,7 @@
 		            [[38, 40], function (keyCode) {
 		                var down = keyCode !== 38,
 		                    navOptions = chart.options.accessibility.keyboardNavigation;
+
 		                if (navOptions.mode && navOptions.mode === 'serialize') {
 		                    // Act like left/right
 		                    if (!chart.highlightAdjacentPoint(down)) {
@@ -2483,8 +2494,9 @@
 		                // Normal mode, move between series
 		                var highlightMethod = chart.highlightedPoint &&
 		                        chart.highlightedPoint.series.keyboardMoveVertical ?
-		                        'highlightAdjacentPointVertical' :
-		                        'highlightAdjacentSeries';
+		                    'highlightAdjacentPointVertical' :
+		                    'highlightAdjacentSeries';
+
 		                chart[highlightMethod](down);
 		                return true;
 		            }],
@@ -2500,6 +2512,7 @@
 		                var numSeries = chart.series.length,
 		                    i = dir > 0 ? 0 : numSeries,
 		                    res;
+
 		                if (dir > 0) {
 		                    delete chart.highlightedPoint;
 		                    // Find first valid point to highlight
@@ -2541,6 +2554,7 @@
 		            [[37, 38], function () {
 		                var i = chart.highlightedExportItem || 0,
 		                    reachedEnd = true;
+
 		                // Try to highlight prev item in list. Highlighting e.g.
 		                // separators will fail.
 		                while (i--) {
@@ -2558,6 +2572,7 @@
 		            [[39, 40], function () {
 		                var highlightedExportItem = chart.highlightedExportItem || 0,
 		                    reachedEnd = true;
+
 		                // Try to highlight next item in list. Highlighting e.g.
 		                // separators will fail.
 		                for (
@@ -2620,6 +2635,7 @@
 		            // Tabs
 		            [[9], function (keyCode, e) {
 		                var button;
+
 		                // Deselect old
 		                chart.mapNavButtons[chart.focusedMapNavButtonIx].setState(0);
 		                if (
@@ -2681,6 +2697,7 @@
 		            // Left/Right/Up/Down
 		            [[37, 39, 38, 40], function (keyCode) {
 		                var direction = (keyCode === 37 || keyCode === 38) ? -1 : 1;
+
 		                // Try to highlight next/prev button
 		                if (
 		                    !chart.highlightRangeSelectorButton(
@@ -2759,6 +2776,7 @@
 		                    chart.rangeSelector.inputGroup.element
 		                        .getAttribute('visibility') !== 'hidden'
 		                );
+
 		                return (
 		                    inputVisible &&
 		                    chart.options.rangeSelector.inputEnabled !== false &&
@@ -2781,6 +2799,7 @@
 		            // Left/Right/Up/Down
 		            [[37, 39, 38, 40], function (keyCode) {
 		                var direction = (keyCode === 37 || keyCode === 38) ? -1 : 1;
+
 		                // Try to highlight next/prev legend item
 		                if (!chart.highlightLegendItem(
 		                    chart.highlightedLegendItemIx + direction
@@ -2792,10 +2811,11 @@
 		            // Enter/Spacebar
 		            [[13, 32], function () {
 		                var legendElement = chart.legend.allItems[
-		                        chart.highlightedLegendItemIx
-		                    ].legendItem.element;
+		                    chart.highlightedLegendItemIx
+		                ].legendItem.element;
+
 		                fakeClickEvent(
-		                     !chart.legend.options.useHTML ? // #8561
+		                    !chart.legend.options.useHTML ? // #8561
 		                        legendElement.parentNode : legendElement
 		                );
 		            }]
@@ -2852,6 +2872,7 @@
 		 */
 		H.Chart.prototype.addExitAnchor = function () {
 		    var chart = this;
+
 		    chart.tabExitAnchor = doc.createElement('div');
 		    chart.tabExitAnchor.setAttribute('tabindex', '0');
 
@@ -2866,7 +2887,9 @@
 		    });
 
 		    chart.renderTo.appendChild(chart.tabExitAnchor);
-		    return addEvent(chart.tabExitAnchor, 'focus',
+		    return addEvent(
+		        chart.tabExitAnchor,
+		        'focus',
 		        function (ev) {
 		            var e = ev || win.event,
 		                curModule;
@@ -2919,6 +2942,7 @@
 		                chart.keyboardNavigationModuleIndex || 0
 		            ]
 		        );
+
 		    if (curMod && curMod.terminate) {
 		        curMod.terminate();
 		    }
@@ -2933,6 +2957,7 @@
 		// On destroy, we need to clean up the focus border and the state.
 		H.addEvent(H.Series, 'destroy', function () {
 		    var chart = this.chart;
+
 		    if (chart.highlightedPoint && chart.highlightedPoint.series === this) {
 		        delete chart.highlightedPoint;
 		        if (chart.focusElement) {
@@ -2945,6 +2970,7 @@
 		// Add keyboard navigation events on chart load.
 		H.Chart.prototype.callbacks.push(function (chart) {
 		    var a11yOptions = chart.options.accessibility;
+
 		    if (a11yOptions.enabled && a11yOptions.keyboardNavigation.enabled) {
 
 		        // Init nav modules. We start at the first module, and as the user
@@ -2973,6 +2999,7 @@
 		                    curNavModule = chart.keyboardNavigationModules[
 		                        chart.keyboardNavigationModuleIndex
 		                    ];
+
 		                chart.keyboardReset = false;
 		                // If there is a nav module for the current index, run it.
 		                // Otherwise, we are outside of the chart in some direction.

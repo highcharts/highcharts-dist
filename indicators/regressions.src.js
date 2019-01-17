@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Kamil Kulig
+ * (c) 2010-2019 Kamil Kulig
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -22,7 +23,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Kamil Kulig
+		 *  (c) 2010-2019 Kamil Kulig
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -42,7 +43,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('linearRegression', 'sma',
+		seriesType(
+		    'linearRegression',
+		    'sma',
 		    /**
 		     * Linear regression indicator. This series requires `linkedTo` option to be
 		     * set.
@@ -86,9 +89,9 @@
 		             * // base series:
 		             *
 		             * data: [
-		             *   [Date.UTC(2018, 0, 1), 1],
-		             *   [Date.UTC(2018, 0, 2), 3],
-		             *   [Date.UTC(2018, 0, 3), 5]
+		             *   [Date.UTC(2019, 0, 1), 1],
+		             *   [Date.UTC(2019, 0, 2), 3],
+		             *   [Date.UTC(2019, 0, 3), 5]
 		             * ]
 		             *
 		             * // This will produce one point in the indicator series that has a
@@ -149,7 +152,7 @@
 		            }
 
 		            slope = formulaDenominator ?
-		              formulaNumerator / formulaDenominator : 0; // don't divide by 0
+		                formulaNumerator / formulaDenominator : 0; // don't divide by 0
 
 		            return {
 		                slope: slope,
@@ -180,6 +183,7 @@
 		         */
 		        transformXData: function (xData, xAxisUnit) {
 		            var xOffset = xData[0];
+
 		            return xData.map(function (xValue) {
 		                return (xValue - xOffset) / xAxisUnit;
 		            });
@@ -217,7 +221,7 @@
 		                periodStart,
 		                periodEnd,
 		                indicatorData = { // format required to be returned
-		                    xData: [],    // by getValues() method
+		                    xData: [], // by getValues() method
 		                    yData: [],
 		                    values: []
 		                },
@@ -240,14 +244,14 @@
 		                periodXData = xData.slice(periodStart, periodEnd);
 		                periodYData = yData.slice(periodStart, periodEnd);
 		                periodTransformedXData = this.transformXData(periodXData,
-		                  xAxisUnit);
+		                    xAxisUnit);
 
 		                lineParameters = this.getRegressionLineParameters(
-		                  periodTransformedXData, periodYData
+		                    periodTransformedXData, periodYData
 		                );
 
 		                endPointY = this.getEndPointY(lineParameters,
-		                periodTransformedXData[periodTransformedXData.length - 1]);
+		                    periodTransformedXData[periodTransformedXData.length - 1]);
 
 		                indicatorData.values.push({
 		                    regressionLineParameters: lineParameters,
@@ -286,7 +290,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('linearRegressionSlope', 'linearRegression',
+		seriesType(
+		    'linearRegressionSlope',
+		    'linearRegression',
 		    /**
 		     * Linear regression slope indicator. This series requires `linkedTo`
 		     * option to be set.
@@ -334,7 +340,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('linearRegressionIntercept', 'linearRegression',
+		seriesType(
+		    'linearRegressionIntercept',
+		    'linearRegression',
 		    /**
 		     * Linear regression intercept indicator. This series requires `linkedTo`
 		     * option to be set.
@@ -382,7 +390,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('linearRegressionAngle', 'linearRegression',
+		seriesType(
+		    'linearRegressionAngle',
+		    'linearRegression',
 		    /**
 		     * Linear regression angle indicator. This series requires `linkedTo`
 		     * option to be set.
@@ -407,7 +417,7 @@
 		    {
 		        nameBase: 'Linear Regression Angle Indicator',
 
-		       /**
+		        /**
 		        * Convert a slope of a line to angle (in degrees) between
 		        * the line and x axis
 		        * @private

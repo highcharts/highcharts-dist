@@ -1,14 +1,15 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  * Force directed graph module
  *
- * (c) 2010-2018 Torstein Honsi
+ * (c) 2010-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -55,6 +56,7 @@
 		            node.getSum = function () {
 		                var sumTo = 0,
 		                    sumFrom = 0;
+
 		                node.linksTo.forEach(function (link) {
 		                    sumTo += link.weight;
 		                });
@@ -66,6 +68,7 @@
 		            // Get the offset in weight values of a point/link.
 		            node.offset = function (point, coll) {
 		                var offset = 0;
+
 		                for (var i = 0; i < node[coll].length; i++) {
 		                    if (node[coll][i] === point) {
 		                        return offset;
@@ -78,6 +81,7 @@
 		            // outgoing.
 		            node.hasShape = function () {
 		                var outgoing = 0;
+
 		                node.linksTo.forEach(function (link) {
 		                    if (link.outgoing) {
 		                        outgoing++;
@@ -97,7 +101,7 @@
 		/**
 		 * Networkgraph series
 		 *
-		 * (c) 2010-2018 Paweł Fus
+		 * (c) 2010-2019 Paweł Fus
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -306,12 +310,16 @@
 		                rootNodes = nodes.filter(function (node) {
 		                    return node.linksTo.length === 0;
 		                }),
-		                sortedNodes = [];
+		                sortedNodes = [],
+		                visitedNodes = {};
 
 		            function addToNodes(node) {
 		                node.linksFrom.forEach(function (link) {
-		                    sortedNodes.push(link.toNode);
-		                    addToNodes(link.toNode);
+		                    if (!visitedNodes[link.toNode.id]) {
+		                        visitedNodes[link.toNode.id] = true;
+		                        sortedNodes.push(link.toNode);
+		                        addToNodes(link.toNode);
+		                    }
 		                });
 		            }
 
@@ -361,6 +369,7 @@
 		            // input. For the initial positions
 		            function unrandom(n) {
 		                var rand = n * n / Math.PI;
+
 		                rand = rand - Math.floor(rand);
 		                return rand;
 		            }
@@ -452,28 +461,30 @@
 		                k = this.k;
 
 		            links.forEach(function (link) {
-		                var distanceXY = layout.getDistXY(
-		                        link.fromNode,
-		                        link.toNode
-		                    ),
-		                    distanceR = layout.vectorLength(distanceXY),
-		                    force = options.attractiveForce.call(
-		                        layout, distanceR, k
-		                    );
+		                if (link.fromNode && link.toNode) {
+		                    var distanceXY = layout.getDistXY(
+		                            link.fromNode,
+		                            link.toNode
+		                        ),
+		                        distanceR = layout.vectorLength(distanceXY),
+		                        force = options.attractiveForce.call(
+		                            layout, distanceR, k
+		                        );
 
-		                if (distanceR !== 0) {
-		                    if (!link.fromNode.fixedPosition) {
-		                        link.fromNode.dispX -= (distanceXY.x / distanceR) *
-		                            force;
-		                        link.fromNode.dispY -= (distanceXY.y / distanceR) *
-		                            force;
-		                    }
+		                    if (distanceR !== 0) {
+		                        if (!link.fromNode.fixedPosition) {
+		                            link.fromNode.dispX -= (distanceXY.x / distanceR) *
+		                                force;
+		                            link.fromNode.dispY -= (distanceXY.y / distanceR) *
+		                                force;
+		                        }
 
-		                    if (!link.toNode.fixedPosition) {
-		                        link.toNode.dispX += (distanceXY.x / distanceR) *
-		                            force;
-		                        link.toNode.dispY += (distanceXY.y / distanceR) *
-		                            force;
+		                        if (!link.toNode.fixedPosition) {
+		                            link.toNode.dispX += (distanceXY.x / distanceR) *
+		                                force;
+		                            link.toNode.dispY += (distanceXY.y / distanceR) *
+		                                force;
+		                        }
 		                    }
 		                }
 		            });
@@ -597,7 +608,7 @@
 		/**
 		 * Networkgraph series
 		 *
-		 * (c) 2010-2018 Paweł Fus
+		 * (c) 2010-2019 Paweł Fus
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -926,8 +937,10 @@
 		        this.points = points;
 
 		        points.forEach(function (point) {
-		            point.renderLink();
-		            point.redrawLink();
+		            if (point.fromNode && point.toNode) {
+		                point.renderLink();
+		                point.redrawLink();
+		            }
 		        });
 
 		        if (hoverPoint && hoverPoint.series === this) {
@@ -1020,16 +1033,18 @@
 		}, {
 		    getDegree: function () {
 		        var deg = this.isNode ? this.linksFrom.length + this.linksTo.length : 0;
+
 		        return deg === 0 ? 1 : deg;
 		    },
 		    // Links:
 		    getLinkAttribues: function () {
-		        var linkOptions = this.series.options.link;
+		        var linkOptions = this.series.options.link,
+		            pointOptions = this.options;
 
 		        return {
-		            'stroke-width': linkOptions.width,
-		            stroke: linkOptions.color,
-		            dashstyle: linkOptions.dashStyle
+		            'stroke-width': pick(pointOptions.width, linkOptions.width),
+		            stroke: pointOptions.color || linkOptions.color,
+		            dashstyle: pointOptions.dashStyle || linkOptions.dashStyle
 		        };
 		    },
 		    renderLink: function () {
@@ -1095,10 +1110,12 @@
 		});
 
 		addEvent(seriesTypes.networkgraph.prototype.pointClass, 'remove', function () {
-		    if (this.isNode && this.series.layout) {
-		        this.series.layout.removeNode(this);
-		    } else {
-		        this.series.layout.removeLink(this);
+		    if (this.series.layout) {
+		        if (this.isNode) {
+		            this.series.layout.removeNode(this);
+		        } else {
+		            this.series.layout.removeLink(this);
+		        }
 		    }
 		});
 
@@ -1152,42 +1169,40 @@
 		        var chart = this,
 		            unbinders = [];
 
-		        unbinders.push(
-		            addEvent(
-		                chart.container,
-		                'mousedown',
-		                function (event) {
-		                    var point = chart.hoverPoint;
+		        if (chart.container) {
+		            unbinders.push(
+		                addEvent(
+		                    chart.container,
+		                    'mousedown',
+		                    function (event) {
+		                        var point = chart.hoverPoint;
 
-		                    if (
-		                        point &&
-		                        point.series &&
-		                        point.series.isNetworkgraph &&
-		                        point.series.options.draggable
-		                    ) {
-		                        point.series.onMouseDown(point, event);
-		                        unbinders.push(
-		                             addEvent(
+		                        if (
+		                            point &&
+		                            point.series &&
+		                            point.series.isNetworkgraph &&
+		                            point.series.options.draggable
+		                        ) {
+		                            point.series.onMouseDown(point, event);
+		                            unbinders.push(addEvent(
 		                                chart.container,
 		                                'mousemove',
 		                                function (e) {
 		                                    return point.series.onMouseMove(point, e);
 		                                }
-		                            )
-		                        );
-		                        unbinders.push(
-		                             addEvent(
+		                            ));
+		                            unbinders.push(addEvent(
 		                                chart.container.ownerDocument,
 		                                'mouseup',
 		                                function (e) {
 		                                    return point.series.onMouseUp(point, e);
 		                                }
-		                            )
-		                        );
+		                            ));
+		                        }
 		                    }
-		                }
-		            )
-		        );
+		                )
+		            );
+		        }
 
 		        addEvent(chart, 'destroy', function () {
 		            unbinders.forEach(function (unbind) {
@@ -1272,6 +1287,58 @@
 		 * @product   highcharts
 		 * @apioption series.networkgraph.data.weight
 		 */
+
+		/**
+		  * A collection of options for the individual nodes. The nodes in a
+		  * networkgraph diagram are auto-generated instances of `Highcharts.Point`,
+		  * but options can be applied here and linked by the `id`.
+		  *
+		  * @sample highcharts/series-networkgraph/data-options/
+		  *         Networkgraph diagram with node options
+		  *
+		  * @type      {Array<*>}
+		  * @product   highcharts
+		  * @apioption series.networkgraph.nodes
+		  */
+
+		/**
+		  * The id of the auto-generated node, refering to the `from` or `to` setting of
+		  * the link.
+		  *
+		  * @type      {string}
+		  * @product   highcharts
+		  * @apioption series.networkgraph.nodes.id
+		  */
+
+		/**
+		  * The color of the auto generated node.
+		  *
+		  * @type      {Highcharts.ColorString}
+		  * @product   highcharts
+		  * @apioption series.networkgraph.nodes.color
+		  */
+
+		/**
+		  * The color index of the auto generated node, especially for use in styled
+		  * mode.
+		  *
+		  * @type      {number}
+		  * @product   highcharts
+		  * @apioption series.networkgraph.nodes.colorIndex
+		  */
+
+		/**
+		  * The name to display for the node in data labels and tooltips. Use this when
+		  * the name is different from the `id`. Where the id must be unique for each
+		  * node, this is not necessary for the name.
+		  *
+		  * @sample highcharts/series-networkgraph/data-options/
+		  *         Networkgraph diagram with node options
+		  *
+		  * @type      {string}
+		  * @product   highcharts
+		  * @apioption series.networkgraph.nodes.name
+		  */
 
 	}(Highcharts));
 	return (function () {

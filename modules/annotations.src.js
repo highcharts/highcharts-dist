@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Annotations module
  *
- * (c) 2009-2018 Torstein Honsi
+ * (c) 2009-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -150,7 +151,14 @@
 		     * @param {Object} e event
 		     */
 		    onMouseUp: function () {
+		        var chart = this.chart,
+		            annotation = this.target || this,
+		            annotationsOptions = chart.options.annotations,
+		            index = chart.annotations.indexOf(annotation);
+
 		        this.removeDocEvents();
+
+		        annotationsOptions[index] = annotation.options;
 		    },
 
 		    /**
@@ -609,7 +617,7 @@
 		     */
 		    getOptions: function () {
 		        return this.hasDynamicOptions() ?
-		            this.options.call(this, this.target) :
+		            this.options(this.target) :
 		            this.options;
 		    },
 
@@ -640,10 +648,10 @@
 
 		        this.series[axisName] =
 		            axisOptions instanceof H.Axis ?
-		            axisOptions :
-		            H.defined(axisOptions) ?
-		            chart[axisName][axisOptions] || chart.get(axisOptions) :
-		            null;
+		                axisOptions :
+		                H.defined(axisOptions) ?
+		                    chart[axisName][axisOptions] || chart.get(axisOptions) :
+		                    null;
 		    },
 
 		    /**
@@ -843,13 +851,15 @@
 		     *
 		     * @param {Annotation} annotation - an annotation instance
 		     * @param {Object} options - options specific for controllable
+		     * @param {number} index - index of the controllable element
 		     **/
-		    init: function (annotation, options) {
+		    init: function (annotation, options, index) {
 		        this.annotation = annotation;
 		        this.chart = annotation.chart;
 		        this.options = options;
 		        this.points = [];
 		        this.controlPoints = [];
+		        this.index = index;
 
 		        this.linkPoints();
 		        this.addControlPoints();
@@ -941,10 +951,10 @@
 		        var plotBox = point.series.getPlotBox(),
 
 		            box = point.mock ?
-		            point.toAnchor() :
-		            H.Tooltip.prototype.getAnchor.call({
-		                chart: point.series.chart
-		            }, point),
+		                point.toAnchor() :
+		                H.Tooltip.prototype.getAnchor.call({
+		                    chart: point.series.chart
+		                }, point),
 
 		            anchor = {
 		                x: box[0] + (this.options.x || 0),
@@ -1100,6 +1110,7 @@
 		    transform: function (transformation, cx, cy, p1, p2) {
 		        if (this.chart.inverted) {
 		            var temp = cx;
+
 		            cx = cy;
 		            cy = temp;
 		        }
@@ -1348,8 +1359,8 @@
 		            defs = chart.options.defs,
 		            fill = itemOptions.fill,
 		            color = H.defined(fill) && fill !== 'none' ?
-		            fill :
-		            itemOptions.stroke,
+		                fill :
+		                itemOptions.stroke,
 
 		            setMarker = function (markerType) {
 		                var markerId = itemOptions[markerType],
@@ -1393,6 +1404,7 @@
 
 		    function recurse(config, parent) {
 		        var ret;
+
 		        H.splat(config).forEach(function (item) {
 		            var node = ren.createElement(item.tagName),
 		                attr = {};
@@ -1459,9 +1471,11 @@
 		 *
 		 * @param {Highcharts.Annotation}
 		 * @param {Object} options a path's options object
+		 * @param {number} index of the path
 		 **/
-		function ControllablePath(annotation, options) {
-		    this.init(annotation, options);
+		function ControllablePath(annotation, options, index) {
+		    this.init(annotation, options, index);
+		    this.collection = 'shapes';
 		}
 
 		/**
@@ -1541,9 +1555,9 @@
 		                showPath = point.series.visible;
 		            }
 
-		            return showPath ? this.chart.renderer.crispLine(
-		                    d, this.graphic.strokeWidth()
-		                ) : null;
+		            return showPath ?
+		                this.chart.renderer.crispLine(d, this.graphic.strokeWidth()) :
+		                null;
 		        },
 
 		        shouldBeDrawn: function () {
@@ -1626,9 +1640,11 @@
 		 *
 		 * @param {Highcharts.Annotation} annotation an annotation instance
 		 * @param {Object} options a rect's options
+		 * @param {number} index of the rectangle
 		 **/
-		function ControllableRect(annotation, options) {
-		    this.init(annotation, options);
+		function ControllableRect(annotation, options, index) {
+		    this.init(annotation, options, index);
+		    this.collection = 'shapes';
 		}
 
 		/**
@@ -1691,7 +1707,13 @@
 		        },
 
 		        translate: function (dx, dy) {
+		            var annotationOptions = this.annotation.userOptions,
+		                shapeOptions = annotationOptions[this.collection][this.index];
+
 		            this.translatePoint(dx, dy, 0);
+
+		            // Options stored in chart:
+		            shapeOptions.point = this.options.point;
 		        }
 		    }
 		);
@@ -1710,9 +1732,11 @@
 		 *
 		 * @param {Highcharts.Annotation} annotation an annotation instance
 		 * @param {Object} options a shape's options
+		 * @param {number} index of the circle
 		 **/
-		function ControllableCircle(annotation, options) {
-		    this.init(annotation, options);
+		function ControllableCircle(annotation, options, index) {
+		    this.init(annotation, options, index);
+		    this.collection = 'shapes';
 		}
 
 		/**
@@ -1764,7 +1788,13 @@
 		        },
 
 		        translate: function (dx, dy) {
+		            var annotationOptions = this.annotation.userOptions,
+		                shapeOptions = annotationOptions[this.collection][this.index];
+
 		            this.translatePoint(dx, dy, 0);
+
+		            // Options stored in chart:
+		            shapeOptions.point = this.options.point;
 		        },
 
 		        /**
@@ -1792,9 +1822,11 @@
 		 *
 		 * @param {Highcharts.Annotation} annotation an annotation instance
 		 * @param {Object} options a label's options
+		 * @param {number} index of the label
 		 **/
-		function ControllableLabel(annotation, options) {
-		    this.init(annotation, options);
+		function ControllableLabel(annotation, options, index) {
+		    this.init(annotation, options, index);
+		    this.collection = 'labels';
 		}
 
 		/**
@@ -1971,8 +2003,16 @@
 		         * @param {number} dy translation for y coordinate
 		         **/
 		        translate: function (dx, dy) {
+		            var annotationOptions = this.annotation.userOptions,
+		                labelOptions = annotationOptions[this.collection][this.index];
+
+		            // Local options:
 		            this.options.x += dx;
 		            this.options.y += dy;
+
+		            // Options stored in chart:
+		            labelOptions.x = this.options.x;
+		            labelOptions.y = this.options.y;
 		        },
 
 		        render: function (parent) {
@@ -2028,12 +2068,12 @@
 
 		            label.attr({
 		                text: text ?
-		                H.format(
-		                    text,
-		                    point.getLabelConfig(),
-		                    this.annotation.chart.time
-		                ) :
-		                options.formatter.call(point, this)
+		                    H.format(
+		                        text,
+		                        point.getLabelConfig(),
+		                        this.annotation.chart.time
+		                    ) :
+		                    options.formatter.call(point, this)
 		            });
 
 		            anchor = this.anchor(point);
@@ -2168,7 +2208,8 @@
 
 		            return showItem ? itemPosition : null;
 		        }
-		    });
+		    }
+		);
 
 		/* ********************************************************************** */
 
@@ -2230,9 +2271,11 @@
 		 *
 		 * @param {Highcharts.Annotation} annotation - an annotation instance
 		 * @param {Object} options a controllable's options
+		 * @param {number} index of the image
 		 **/
-		function ControllableImage(annotation, options) {
-		    this.init(annotation, options);
+		function ControllableImage(annotation, options, index) {
+		    this.init(annotation, options, index);
+		    this.collection = 'shapes';
 		}
 
 		/**
@@ -2302,9 +2345,16 @@
 		        },
 
 		        translate: function (dx, dy) {
+		            var annotationOptions = this.annotation.userOptions,
+		                shapeOptions = annotationOptions[this.collection][this.index];
+
 		            this.translatePoint(dx, dy, 0);
+
+		            // Options stored in chart:
+		            shapeOptions.point = this.options.point;
 		        }
-		    });
+		    }
+		);
 
 
 		return ControllableImage;
@@ -2361,6 +2411,7 @@
 		 */
 		var Annotation = H.Annotation = function (chart, options) {
 		    var labelsAndShapes;
+
 		    /**
 		     * The chart that the annotation belongs to.
 		     *
@@ -2494,7 +2545,7 @@
 		             */
 		            visible: true,
 
-		             /**
+		            /**
 		             * Allow an annotation to be draggable by a user. Possible
 		             * values are `"x"`, `"xy"`, `"y"` and `""` (disabled).
 		             *
@@ -2790,7 +2841,6 @@
 		             */
 
 
-
 		            /**
 		             * An array of shapes for the annotation. For options that apply to
 		             * multiple shapes, then can be added to the
@@ -3002,7 +3052,7 @@
 
 		        addShapes: function () {
 		            (this.options.shapes || []).forEach(function (shapeOptions, i) {
-		                var shape = this.initShape(shapeOptions);
+		                var shape = this.initShape(shapeOptions, i);
 
 		                this.options.shapes[i] = shape.options;
 		            }, this);
@@ -3010,7 +3060,7 @@
 
 		        addLabels: function () {
 		            (this.options.labels || []).forEach(function (labelOptions, i) {
-		                var label = this.initLabel(labelOptions);
+		                var label = this.initLabel(labelOptions, i);
 
 		                this.options.labels[i] = label.options;
 		            }, this);
@@ -3133,8 +3183,8 @@
 		                .attr({
 		                    zIndex: this.options.zIndex,
 		                    visibility: this.options.visible ?
-		                    'visible' :
-		                    'hidden'
+		                        'visible' :
+		                        'hidden'
 		                })
 		                .add();
 
@@ -3236,6 +3286,7 @@
 		                    this.userOptions,
 		                    userOptions
 		                ),
+		                userOptionsIndex = chart.annotations.indexOf(this),
 		                options = H.merge(true, this.userOptions, userOptions);
 
 		            options.labels = labelsAndShapes.labels;
@@ -3243,6 +3294,9 @@
 
 		            this.destroy();
 		            this.constructor(chart, options);
+
+		            // Update options in chart options, used in exporting (#9767):
+		            chart.options.annotations[userOptionsIndex] = options;
 
 		            this.redraw();
 		        },
@@ -3257,17 +3311,18 @@
 		         *
 		         * @param {Object} shapeOptions - a confg object for a single shape
 		         **/
-		        initShape: function (shapeOptions) {
+		        initShape: function (shapeOptions, index) {
 		            var options = merge(
-		                this.options.shapeOptions,
-		                {
-		                    controlPointOptions: this.options.controlPointOptions
-		                },
-		                shapeOptions
-		            ),
+		                    this.options.shapeOptions,
+		                    {
+		                        controlPointOptions: this.options.controlPointOptions
+		                    },
+		                    shapeOptions
+		                ),
 		                shape = new Annotation.shapesMap[options.type](
 		                    this,
-		                    options
+		                    options,
+		                    index
 		                );
 
 		            shape.itemType = 'shape';
@@ -3282,17 +3337,18 @@
 		         *
 		         * @param {Object} labelOptions
 		         **/
-		        initLabel: function (labelOptions) {
+		        initLabel: function (labelOptions, index) {
 		            var options = merge(
-		                this.options.labelOptions,
-		                {
-		                    controlPointOptions: this.options.controlPointOptions
-		                },
-		                labelOptions
-		            ),
+		                    this.options.labelOptions,
+		                    {
+		                        controlPointOptions: this.options.controlPointOptions
+		                    },
+		                    labelOptions
+		                ),
 		                label = new ControllableLabel(
 		                    this,
-		                    options
+		                    options,
+		                    index
 		                );
 
 		            label.itemType = 'label';
@@ -3334,7 +3390,7 @@
 		         * @param {Annotation.Label|Annotation.Shape} item
 		         */
 
-		        adjustVisibility: function (item) {  // #9481
+		        adjustVisibility: function (item) { // #9481
 		            var hasVisiblePoints = false,
 		                label = item.graphic;
 
@@ -3372,11 +3428,12 @@
 		        renderItem: function (item) {
 		            item.render(
 		                item.itemType === 'label' ?
-		                this.labelsGroup :
-		                this.shapesGroup
+		                    this.labelsGroup :
+		                    this.shapesGroup
 		            );
 		        }
-		    });
+		    }
+		);
 
 		/**
 		 * An object uses for mapping between a shape type and a constructor.
@@ -3523,7 +3580,68 @@
 		});
 
 	}(Highcharts, controllableMixin, ControllableRect, ControllableCircle, ControllablePath, ControllableImage, ControllableLabel, eventEmitterMixin, MockPoint, ControlPoint));
-	(function (H) {
+	var chartNavigation = (function () {
+		/**
+		 * (c) 2010-2018 Paweł Fus
+		 *
+		 * License: www.highcharts.com/license
+		 */
+
+
+		var chartNavigation = {
+		    /**
+		     * Initializes `chart.navigation` object which delegates `update()` methods
+		     * to all other common classes (used in exporting and navigationBindings).
+		     *
+		     * @private
+		     *
+		     * @param {Highcharts.Chart} chart
+		     *        The chart instance.
+		     */
+		    initUpdate: function (chart) {
+		        if (!chart.navigation) {
+		            chart.navigation = {
+		                updates: [],
+		                update: function (options, redraw) {
+		                    this.updates.forEach(function (updateConfig) {
+		                        updateConfig.update.call(
+		                            updateConfig.context,
+		                            options,
+		                            redraw
+		                        );
+		                    });
+		                }
+		            };
+		        }
+		    },
+		    /**
+		     * Registers an `update()` method in the `chart.navigation` object.
+		     *
+		     * @private
+		     *
+		     * @param {function} update
+		     *        The `update()` method that will be called in `chart.update()`.
+		     *
+		     * @param {Highcharts.Chart} chart
+		     *        The chart instance. `update()` will use that as a context
+		     *        (`this`).
+		     */
+		    addUpdate: function (update, chart) {
+		        if (!chart.navigation) {
+		            this.initUpdate(chart);
+		        }
+
+		        chart.navigation.updates.push({
+		            update: update,
+		            context: chart
+		        });
+		    }
+		};
+
+
+		return chartNavigation;
+	}());
+	(function (H, chartNavigationMixin) {
 		/**
 		 * (c) 2009-2017 Highsoft, Black Label
 		 *
@@ -3533,6 +3651,7 @@
 		var doc = H.doc,
 		    addEvent = H.addEvent,
 		    pick = H.pick,
+		    merge = H.merge,
 		    extend = H.extend,
 		    isNumber = H.isNumber,
 		    fireEvent = H.fireEvent,
@@ -3561,18 +3680,16 @@
 		     */
 		    updateRectSize: function (event, annotation) {
 		        var options = annotation.options.typeOptions,
-		            xStart = this.chart.xAxis[0].toPixels(options.point.x),
-		            yStart = this.chart.yAxis[0].toPixels(options.point.y),
-		            x = event.chartX,
-		            y = event.chartY,
-		            width = x - xStart,
-		            height = y - yStart;
+		            x = this.chart.xAxis[0].toValue(event.chartX),
+		            y = this.chart.yAxis[0].toValue(event.chartY),
+		            width = x - options.point.x,
+		            height = options.point.y - y;
 
 		        annotation.update({
 		            typeOptions: {
 		                background: {
-		                    width: width + 'px',
-		                    height: height + 'px'
+		                    width: width,
+		                    height: height
 		                }
 		            }
 		        });
@@ -3747,6 +3864,23 @@
 		    },
 
 		    /**
+		     * Common chart.update() delegation, shared between bindings and exporting.
+		     *
+		     * @private
+		     * @function Highcharts.NavigationBindings#initUpdate
+		     */
+		    initUpdate: function () {
+		        var navigation = this;
+
+		        chartNavigationMixin.addUpdate(
+		            function (options) {
+		                navigation.update(options);
+		            },
+		            this.chart
+		        );
+		    },
+
+		    /**
 		     * Hook for click on a button, method selcts/unselects buttons,
 		     * then calls `bindings.init` callback.
 		     *
@@ -3871,8 +4005,7 @@
 		            }
 		        } else {
 
-		            navigation.nextEvent.call(
-		                navigation,
+		            navigation.nextEvent(
 		                clickEvent,
 		                navigation.currentUserDetails
 		            );
@@ -3921,8 +4054,7 @@
 		     */
 		    bindingsContainerMouseMove: function (container, moveEvent) {
 		        if (this.mouseMoveEvent) {
-		            this.mouseMoveEvent.call(
-		                this,
+		            this.mouseMoveEvent(
 		                moveEvent,
 		                this.currentUserDetails
 		            );
@@ -4227,7 +4359,8 @@
 		     * @private
 		     * @function Highcharts.NavigationBindings#update
 		     */
-		    update: function () {
+		    update: function (options) {
+		        this.options = merge(true, this.options, options);
 		        this.removeEvents();
 		        this.initEvents();
 		    },
@@ -4255,7 +4388,7 @@
 		    utils: bindingsUtils
 		});
 
-		addEvent(H.Chart, 'load', function () {
+		H.Chart.prototype.initNavigationBindings = function () {
 		    var chart = this,
 		        options = chart.options;
 
@@ -4265,7 +4398,12 @@
 		            options.navigation
 		        );
 		        chart.navigationBindings.initEvents();
+		        chart.navigationBindings.initUpdate();
 		    }
+		};
+
+		addEvent(H.Chart, 'load', function () {
+		    this.initNavigationBindings();
 		});
 
 		addEvent(H.Chart, 'destroy', function () {
@@ -4480,9 +4618,9 @@
 		                            controlPoints: [{
 		                                positioner: function (target) {
 		                                    var xy = H.Annotation.MockPoint
-		                                        .pointToPixels(
-		                                            target.points[0]
-		                                        ),
+		                                            .pointToPixels(
+		                                                target.points[0]
+		                                            ),
 		                                        r = target.options.r;
 
 		                                    return {
@@ -4496,8 +4634,9 @@
 		                                    // TRANSFORM RADIUS ACCORDING TO Y
 		                                    // TRANSLATION
 		                                    drag: function (e, target) {
-		                                        var position = this
-		                                            .mouseMoveToTranslation(e);
+		                                        var annotation = target.annotation,
+		                                            position = this
+		                                                .mouseMoveToTranslation(e);
 
 		                                        target.setRadius(
 		                                            Math.max(
@@ -4507,6 +4646,10 @@
 		                                                5
 		                                            )
 		                                        );
+
+		                                        annotation.options.shapes[0] =
+		                                            annotation.userOptions.shapes[0] =
+		                                            target.options;
 
 		                                        target.redraw(false);
 		                                    }
@@ -4580,8 +4723,9 @@
 		                                    },
 		                                    events: {
 		                                        drag: function (e, target) {
-		                                            var xy = this
-		                                                .mouseMoveToTranslation(e);
+		                                            var annotation = target.annotation,
+		                                                xy = this
+		                                                    .mouseMoveToTranslation(e);
 
 		                                            target.options.width = Math.max(
 		                                                target.options.width + xy.x,
@@ -4591,6 +4735,11 @@
 		                                                target.options.height + xy.y,
 		                                                5
 		                                            );
+
+		                                            annotation.options.shapes[0] =
+		                                                target.options;
+		                                            annotation.userOptions.shapes[0] =
+		                                                target.options;
 
 		                                            target.redraw(false);
 		                                        }
@@ -4678,6 +4827,10 @@
 		                                        var xy = this.mouseMoveToTranslation(e);
 
 		                                        target.translatePoint(xy.x, xy.y);
+
+		                                        target.annotation.labels[0].options =
+		                                            target.options;
+
 		                                        target.redraw(false);
 		                                    }
 		                                }
@@ -4706,6 +4859,10 @@
 		                                        var xy = this.mouseMoveToTranslation(e);
 
 		                                        target.translate(xy.x, xy.y);
+
+		                                        target.annotation.labels[0].options =
+		                                            target.options;
+
 		                                        target.redraw(false);
 		                                    }
 		                                }
@@ -4766,7 +4923,7 @@
 		    }
 		});
 
-	}(Highcharts));
+	}(Highcharts, chartNavigation));
 	(function (H) {
 		/**
 		 * Popup generator for Stock tools
@@ -4835,7 +4992,7 @@
 		        this.lang = this.getLangpack();
 
 		        // add close button
-		        this.addCloseBtn.call(this);
+		        this.addCloseBtn();
 		    },
 		    /*
 		     * Create HTML element and attach click event (close popup).
@@ -4850,8 +5007,10 @@
 		            className: PREFIX + 'popup-close'
 		        }, null, this.container);
 
-		        addEvent(closeBtn, 'click', function () {
-		            _self.closePopup.call(_self);
+		        ['click', 'touchstart'].forEach(function (eventName) {
+		            addEvent(closeBtn, eventName, function () {
+		                _self.closePopup();
+		            });
 		        });
 		    },
 		    /*
@@ -4948,12 +5107,14 @@
 		            innerHTML: label
 		        }, null, parentDiv);
 
-		        addEvent(button, 'click', function () {
-		            closePopup.call(_self);
+		        ['click', 'touchstart'].forEach(function (eventName) {
+		            addEvent(button, eventName, function () {
+		                closePopup.call(_self);
 
-		            return callback(
-		                getFields(fieldsDiv, type)
-		            );
+		                return callback(
+		                    getFields(fieldsDiv, type)
+		                );
+		            });
 		        });
 
 		        return button;
@@ -5000,7 +5161,7 @@
 
 		        if (volumeTo) {
 		            fieldsOutput.fields['params.volumeSeriesID'] = volumeTo
-		                                                        .getAttribute('value');
+		                .getAttribute('value');
 		        }
 
 		        return fieldsOutput;
@@ -5018,7 +5179,7 @@
 		        var popupDiv = this.container,
 		            toolbarClass = PREFIX + 'annotation-toolbar',
 		            popupCloseBtn = popupDiv
-		                            .querySelectorAll('.' + PREFIX + 'popup-close')[0];
+		                .querySelectorAll('.' + PREFIX + 'popup-close')[0];
 
 		        // reset content
 		        popupDiv.innerHTML = '';
@@ -5078,7 +5239,7 @@
 		            this.annotations.addForm.call(this, chart, options, callback, true);
 		        }
 		    },
-		     /*
+		    /*
 		     * Return lang definitions for popup.
 		     *
 		     * @return {Object} - elements translations.
@@ -5123,8 +5284,7 @@
 		            }, null, popupDiv);
 
 		            // add buttons
-		            button = this.addButton.call(
-		                this,
+		            button = this.addButton(
 		                popupDiv,
 		                lang.removeButton || 'remove',
 		                'remove',
@@ -5134,8 +5294,7 @@
 
 		            button.className += ' ' + PREFIX + 'annotation-remove-button';
 
-		            button = this.addButton.call(
-		                this,
+		            button = this.addButton(
 		                popupDiv,
 		                lang.editButton || 'edit',
 		                'edit',
@@ -5194,8 +5353,7 @@
 		                true
 		            );
 
-		            this.addButton.call(
-		                this,
+		            this.addButton(
 		                bottomRow,
 		                isInit ?
 		                    (lang.addButton || 'add') :
@@ -5235,7 +5393,7 @@
 
 		                // create name like params.styles.fontSize
 		                parentFullName = parentNode !== '' ?
-		                                    parentNode + '.' + option : option;
+		                    parentNode + '.' + option : option;
 
 		                if (isObject(value)) {
 		                    if (
@@ -5315,7 +5473,7 @@
 
 		            // get all tabs content divs
 		            tabsContainers = this.popup.container
-		                        .querySelectorAll('.' + PREFIX + 'tab-item-content');
+		                .querySelectorAll('.' + PREFIX + 'tab-item-content');
 
 		            // ADD tab
 		            this.addColsContainer(tabsContainers[0]);
@@ -5327,10 +5485,9 @@
 		            );
 
 		            buttonParentDiv = tabsContainers[0]
-		                        .querySelectorAll('.' + PREFIX + 'popup-rhs-col')[0];
+		                .querySelectorAll('.' + PREFIX + 'popup-rhs-col')[0];
 
-		            this.addButton.call(
-		                this,
+		            this.addButton(
 		                buttonParentDiv,
 		                lang.addButton || 'add',
 		                'add',
@@ -5348,18 +5505,16 @@
 		            );
 
 		            buttonParentDiv = tabsContainers[1]
-		                        .querySelectorAll('.' + PREFIX + 'popup-rhs-col')[0];
+		                .querySelectorAll('.' + PREFIX + 'popup-rhs-col')[0];
 
-		            this.addButton.call(
-		                this,
+		            this.addButton(
 		                buttonParentDiv,
 		                lang.saveButton || 'save',
 		                'edit',
 		                callback,
 		                buttonParentDiv
 		            );
-		            this.addButton.call(
-		                this,
+		            this.addButton(
 		                buttonParentDiv,
 		                lang.removeButton || 'remove',
 		                'remove',
@@ -5379,13 +5534,13 @@
 		        addIndicatorList: function (chart, parentDiv, listType) {
 		            var _self = this,
 		                lhsCol = parentDiv
-		                        .querySelectorAll('.' + PREFIX + 'popup-lhs-col')[0],
+		                    .querySelectorAll('.' + PREFIX + 'popup-lhs-col')[0],
 		                rhsCol = parentDiv
-		                        .querySelectorAll('.' + PREFIX + 'popup-rhs-col')[0],
+		                    .querySelectorAll('.' + PREFIX + 'popup-rhs-col')[0],
 		                defaultOptions = H.getOptions(),
 		                isEdit = listType === 'edit',
 		                series = isEdit ? chart.series : // EDIT mode
-		                                defaultOptions.plotOptions, // ADD mode
+		                    defaultOptions.plotOptions, // ADD mode
 		                addFormFields = this.indicators.addFormFields,
 		                rhsColWrapper,
 		                indicatorList,
@@ -5405,38 +5560,41 @@
 		                if (
 		                    serie.params ||
 		                    seriesOptions && seriesOptions.params
-		                    ) {
+		                ) {
 
 		                    var indicatorNameType = _self.indicators
-		                                                    .getNameType(serie, value);
+		                            .getNameType(serie, value),
+		                        indicatorType = indicatorNameType.type;
 
 		                    item = createElement(LI, {
 		                        className: PREFIX + 'indicator-list',
 		                        innerHTML: indicatorNameType.name
 		                    }, null, indicatorList);
 
-		                    addEvent(item, 'click', function () {
+		                    ['click', 'touchstart'].forEach(function (eventName) {
+		                        addEvent(item, eventName, function () {
 
-		                        addFormFields.call(
-		                            _self,
-		                            chart,
-		                            isEdit ? serie : series[indicatorNameType.type],
-		                            indicatorNameType.type,
-		                            rhsColWrapper
-		                        );
-
-		                        // add hidden input with series.id
-		                        if (isEdit && serie.options) {
-		                            createElement(INPUT, {
-		                                type: 'hidden',
-		                                name: PREFIX + 'id-' + indicatorNameType.type,
-		                                value: serie.options.id
-		                            }, null, rhsColWrapper)
-		                            .setAttribute(
-		                                PREFIX + 'data-series-id',
-		                                serie.options.id
+		                            addFormFields.call(
+		                                _self,
+		                                chart,
+		                                isEdit ? serie : series[indicatorType],
+		                                indicatorNameType.type,
+		                                rhsColWrapper
 		                            );
-		                        }
+
+		                            // add hidden input with series.id
+		                            if (isEdit && serie.options) {
+		                                createElement(INPUT, {
+		                                    type: 'hidden',
+		                                    name: PREFIX + 'id-' + indicatorType,
+		                                    value: serie.options.id
+		                                }, null, rhsColWrapper)
+		                                    .setAttribute(
+		                                        PREFIX + 'data-series-id',
+		                                        serie.options.id
+		                                    );
+		                            }
+		                        });
 		                    });
 		                }
 		            });
@@ -5522,7 +5680,7 @@
 		                    !seriesOptions.params &&
 		                    seriesOptions.id &&
 		                    seriesOptions.id !== PREFIX + 'navigator-series'
-		                    ) {
+		                ) {
 		                    createElement(
 		                        OPTION,
 		                        {
@@ -5639,9 +5797,9 @@
 		                        parentDiv
 		                    );
 		                } else if (
-		                        // skip volume field which is created by addFormFields
-		                        parentFullName !== 'params.volumeSeriesID'
-		                    ) {
+		                // skip volume field which is created by addFormFields
+		                    parentFullName !== 'params.volumeSeriesID'
+		                ) {
 		                    addInput.call(
 		                        _self,
 		                        parentFullName,
@@ -5667,7 +5825,7 @@
 		                if (
 		                    serie.params ||
 		                    seriesOptions && seriesOptions.params
-		                    ) {
+		                ) {
 		                    counter++;
 		                }
 		            });
@@ -5771,11 +5929,13 @@
 		                    return;
 		                }
 
-		                addEvent(tab, 'click', function () {
+		                ['click', 'touchstart'].forEach(function (eventName) {
+		                    addEvent(tab, eventName, function () {
 
-		                    // reset class on other elements
-		                    _self.tabs.deselectAll.call(_self);
-		                    _self.tabs.selectTab.call(_self, this, i);
+		                        // reset class on other elements
+		                        _self.tabs.deselectAll.call(_self);
+		                        _self.tabs.selectTab.call(_self, this, i);
+		                    });
 		                });
 		            });
 		        },
@@ -5788,7 +5948,7 @@
 		         */
 		        selectTab: function (tab, index) {
 		            var allTabs = this.popup.container
-		                        .querySelectorAll('.' + PREFIX + 'tab-item-content');
+		                .querySelectorAll('.' + PREFIX + 'tab-item-content');
 
 		            tab.className += ' ' + PREFIX + 'tab-item-active';
 		            allTabs[index].className += ' ' + PREFIX + 'tab-item-show';
@@ -5800,9 +5960,9 @@
 		        deselectAll: function () {
 		            var popupDiv = this.popup.container,
 		                tabs = popupDiv
-		                        .querySelectorAll('.' + PREFIX + 'tab-item'),
+		                    .querySelectorAll('.' + PREFIX + 'tab-item'),
 		                tabsContent = popupDiv
-		                        .querySelectorAll('.' + PREFIX + 'tab-item-content'),
+		                    .querySelectorAll('.' + PREFIX + 'tab-item-content'),
 		                i;
 
 		            for (i = 0; i < tabs.length; i++) {
@@ -5832,7 +5992,6 @@
 		        this.popup.closePopup();
 		    }
 		});
-
 
 	}(Highcharts));
 	return (function () {

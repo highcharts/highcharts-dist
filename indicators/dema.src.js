@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Rafał Sebestjański
+ * (c) 2010-2019 Rafał Sebestjański
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 }(function (Highcharts) {
 	var requiredIndicatorMixin = (function (H) {
 		/**
-		 * (c) 2010-2018 Daniel Studencki
+		 * (c) 2010-2019 Daniel Studencki
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -65,6 +66,7 @@
 		    }
 		};
 
+
 		return requiredIndicatorMixin;
 	}(Highcharts));
 	(function (H, requiredIndicatorMixin) {
@@ -90,7 +92,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('dema', 'ema',
+		H.seriesType(
+		    'dema',
+		    'ema',
 		    /**
 		     * Normalized average true range indicator (NATR). This series requires
 		     * `linkedTo` option to be set and should be loaded after the
@@ -133,7 +137,7 @@
 		            index,
 		            i,
 		            xVal
-		          ) {
+		        ) {
 
 		            return EMAindicator.prototype.calculateEma(
 		                xVal || [],
@@ -167,6 +171,7 @@
 		                EMAvalues = [],
 		                i,
 		                DEMAPoint;
+
 		            series.EMApercent = (2 / (period + 1));
 
 		            // Check period, if bigger than EMA points length, skip
@@ -185,7 +190,7 @@
 		                    period,
 		                    index,
 		                    yVal
-		            );
+		                );
 
 		            // first point
 		            SMA = accumulatePeriodPoints / period;

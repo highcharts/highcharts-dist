@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Paweł Dalek
+ * (c) 2010-2019 Paweł Dalek
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -22,7 +23,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Paweł Dalek
+		 *  (c) 2010-2019 Paweł Dalek
 		 *
 		 *  Volume By Price (VBP) indicator for Highstock
 		 *
@@ -73,7 +74,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('vbp', 'sma',
+		seriesType(
+		    'vbp',
+		    'sma',
 		    /**
 		     * Volume By Price indicator.
 		     *
@@ -111,20 +114,18 @@
 		             * Enable/disable zone lines.
 		             */
 		            enabled: true,
+		            /**
+		             * Specify the style of zone lines.
+		             *
+		             * @type    {Highcharts.CSSObject}
+		             * @default {"color": "#0A9AC9", "dashStyle": "LongDash", "lineWidth": 1}
+		             */
 		            styles: {
-		                /**
-		                 * Color of zone lines.
-		                 *
-		                 * @type {Highcharts.ColorString}
-		                 */
+		                /** @ignore-options */
 		                color: '#0A9AC9',
-		                /**
-		                 * The dash style of zone lines.
-		                 */
+		                /** @ignore-options */
 		                dashStyle: 'LongDash',
-		                /**
-		                 * Pixel width of zone lines.
-		                 */
+		                /** @ignore-options */
 		                lineWidth: 1
 		            }
 		        },
@@ -391,7 +392,7 @@
 		                    );
 		                    point.pointWidth = barWidth;
 
-		                    point.shapeArgs = indicator.crispCol.apply(
+		                    point.shapeArgs = indicator.crispCol.apply( // eslint-disable-line no-useless-call
 		                        indicator,
 		                        [barX, barY, barWidth, barHeight]
 		                    );
@@ -660,7 +661,7 @@
 		                        'dashstyle': zonesStyles.dashStyle,
 		                        'zIndex': indicator.group.zIndex + 0.1
 		                    })
-		                    .add(indicator.group);
+		                        .add(indicator.group);
 		            }
 		        }
 		    },

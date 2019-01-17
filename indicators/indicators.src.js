@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Pawel Fus, Sebastian Bochan
+ * (c) 2010-2019 Pawel Fus, Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 }(function (Highcharts) {
 	var requiredIndicatorMixin = (function (H) {
 		/**
-		 * (c) 2010-2018 Daniel Studencki
+		 * (c) 2010-2019 Daniel Studencki
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -65,6 +66,7 @@
 		    }
 		};
 
+
 		return requiredIndicatorMixin;
 	}(Highcharts));
 	(function (H, requiredIndicatorMixin) {
@@ -106,7 +108,7 @@
 		    if (
 		        options.useOhlcData &&
 		        options.id !== 'highcharts-navigator-series'
-		        ) {
+		    ) {
 
 		        if (dataGrouping && dataGrouping.enabled) {
 		            dataGrouping.approximation = 'ohlc';
@@ -130,7 +132,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('sma', 'line',
+		seriesType(
+		    'sma',
+		    'line',
 		    /**
 		     * Simple moving average indicator (SMA). This series requires `linkedTo`
 		     * option to be set.

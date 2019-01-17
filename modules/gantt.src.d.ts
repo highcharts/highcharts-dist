@@ -16,7 +16,7 @@ declare module "../highcharts.src" {
      *
      * @param callback
      *        Function to run when the chart has loaded and and all external
-     *        images are loaded. Defining a chart.event.load handler is
+     *        images are loaded. Defining a chart.events.load handler is
      *        equivalent.
      *
      * @return Returns the Chart object.
@@ -35,7 +35,7 @@ declare module "../highcharts.src" {
      *
      * @param callback
      *        Function to run when the chart has loaded and and all external
-     *        images are loaded. Defining a chart.event.load handler is
+     *        images are loaded. Defining a chart.events.load handler is
      *        equivalent.
      *
      * @return Returns the Chart object.

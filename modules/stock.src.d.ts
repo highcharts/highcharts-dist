@@ -65,7 +65,7 @@ declare module "../highcharts.src" {
      *        initialized before the document is ready, and in these cases the
      *        chart object will not be finished synchronously. As a consequence,
      *        code that relies on the newly built Chart object should always run
-     *        in the callback. Defining a chart.event.load handler is
+     *        in the callback. Defining a chart.events.load handler is
      *        equivalent.
      *
      * @return The chart object.
@@ -90,7 +90,7 @@ declare module "../highcharts.src" {
      *        initialized before the document is ready, and in these cases the
      *        chart object will not be finished synchronously. As a consequence,
      *        code that relies on the newly built Chart object should always run
-     *        in the callback. Defining a chart.event.load handler is
+     *        in the callback. Defining a chart.events.load handler is
      *        equivalent.
      *
      * @return The chart object.

@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Rafal Sebestjanski
+ * (c) 2010-2019 Rafal Sebestjanski
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 }(function (Highcharts) {
 	var requiredIndicatorMixin = (function (H) {
 		/**
-		 * (c) 2010-2018 Daniel Studencki
+		 * (c) 2010-2019 Daniel Studencki
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -65,6 +66,7 @@
 		    }
 		};
 
+
 		return requiredIndicatorMixin;
 	}(Highcharts));
 	(function (H, requiredIndicator) {
@@ -88,7 +90,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('trix', 'tema',
+		H.seriesType(
+		    'trix',
+		    'tema',
 		    /**
 		     * Normalized average true range indicator (NATR). This series requires
 		     * `linkedTo` option to be set.
@@ -136,7 +140,7 @@
 		                var TRIXPoint = [
 		                    xVal[i - 3],
 		                    EMAlevels.prevLevel3 !== 0 ?
-		                      correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
+		                        correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
 		                      EMAlevels.prevLevel3 * 100 : null
 		                ];
 		            }

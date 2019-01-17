@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * StaticScale
  *
- * (c) 2016-2018 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2016-2019 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -20,7 +21,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/* *
-		 * (c) 2018 Torstein Honsi, Lars Cabrera
+		 * (c) 2016-2019 Torstein Honsi, Lars Cabrera
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -89,6 +90,7 @@
 		                axis.series.forEach(function (series) {
 		                    var clipRect =
 		                        series.sharedClipKey && chart[series.sharedClipKey];
+
 		                    if (clipRect) {
 		                        clipRect.attr({
 		                            height: chart.plotHeight

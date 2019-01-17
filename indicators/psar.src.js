@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Parabolic SAR Indicator for Highstock
  *
- * (c) 2010-2018 Grzegorz Blachliński
+ * (c) 2010-2019 Grzegorz Blachliński
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -24,7 +25,7 @@
 		 *
 		 *  Parabolic SAR indicator for Highstock
 		 *
-		 *  (c) 2010-2018 Grzegorz Blachliński
+		 *  (c) 2010-2019 Grzegorz Blachliński
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -62,7 +63,8 @@
 		    if (dir === pDir) {
 		        if (dir === 1 && (eP > pEP)) {
 		            return (pAcc === maxAcc) ? maxAcc : toFixed(pAcc + inc, 2);
-		        } else if (dir === -1 && (eP < pEP)) {
+		        }
+		        if (dir === -1 && (eP < pEP)) {
 		            return (pAcc === maxAcc) ? maxAcc : toFixed(pAcc + inc, 2);
 		        }
 		        return pAcc;
@@ -112,7 +114,6 @@
 		}
 
 
-
 		/**
 		 * The Parabolic SAR series type.
 		 *
@@ -122,7 +123,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('psar', 'sma',
+		H.seriesType(
+		    'psar',
+		    'sma',
 		    /**
 		     * Parabolic SAR. This series requires `linkedTo`
 		     * option to be set and should be loaded

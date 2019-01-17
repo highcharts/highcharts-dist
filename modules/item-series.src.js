@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Item series type for Highcharts
  *
- * (c) 2010-2018 Torstein Honsi
+ * (c) 2010-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -22,7 +23,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Torstein Honsi
+		 *  (c) 2009-2019 Torstein Honsi
 		 *
 		 *  Item series type for Highcharts
 		 *
@@ -166,7 +167,6 @@
 		H.SVGRenderer.prototype.symbols.rect = function (x, y, w, h, options) {
 		    return H.SVGRenderer.prototype.symbols.callout(x, y, w, h, options);
 		};
-
 
 	}(Highcharts));
 	return (function () {

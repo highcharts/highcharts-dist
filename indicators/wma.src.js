@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Kacper Madej
+ * (c) 2010-2019 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -22,7 +23,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Kacper Madej
+		 *  (c) 2010-2019 Kacper Madej
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -72,7 +73,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('wma', 'sma',
+		seriesType(
+		    'wma',
+		    'sma',
 		    /**
 		     * Weighted moving average indicator (WMA). This series requires `linkedTo`
 		     * option to be set.

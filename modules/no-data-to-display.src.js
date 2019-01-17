@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Plugin for displaying a message when there is no data visible in chart.
  *
- * (c) 2010-2018 Highsoft AS
+ * (c) 2010-2019 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license
@@ -10,6 +10,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -24,7 +25,7 @@
 		 *
 		 *  Plugin for displaying a message when there is no data visible in chart.
 		 *
-		 *  (c) 2010-2018 Highsoft AS
+		 *  (c) 2010-2019 Highsoft AS
 		 *
 		 *  Author: Oystein Moseng
 		 *
@@ -40,7 +41,8 @@
 		    extend = H.extend;
 
 		// Add language option
-		extend(defaultOptions.lang,
+		extend(
+		    defaultOptions.lang,
 		    /**
 		     * @optionparent lang
 		     */
@@ -99,6 +101,7 @@
 		    /**
 		     * The position of the no-data label, relative to the plot area.
 		     *
+		     * @type  {Highcharts.AlignObject}
 		     * @since 3.0.8
 		     */
 		    position: {
@@ -116,14 +119,14 @@
 		        /**
 		         * Horizontal alignment of the label.
 		         *
-		         * @validvalue ["left", "center", "right"]
+		         * @type {Highcharts.AlignType}
 		         */
 		        align: 'center',
 
 		        /**
 		         * Vertical alignment of the label.
 		         *
-		         * @validvalue ["top", "middle", "bottom"]
+		         * @type {Highcharts.VerticalAlignType}
 		         */
 		        verticalAlign: 'middle'
 		    },
@@ -153,6 +156,7 @@
 		    'bubble',
 		    'gauge',
 		    'heatmap',
+		    'networkgraph',
 		    'pie',
 		    'sankey',
 		    'treemap',
@@ -176,9 +180,12 @@
 		 */
 		H.Series.prototype.hasData = function () {
 		    return (
-		        this.visible &&
-		        this.dataMax !== undefined &&
-		        this.dataMin !== undefined // #3703
+		        (
+		            this.visible &&
+		            this.dataMax !== undefined &&
+		            this.dataMin !== undefined
+		        ) || // #3703
+		        (this.visible && this.yData && this.yData.length > 0) // #9758
 		    );
 		};
 
@@ -235,6 +242,7 @@
 		 */
 		chartPrototype.hideNoData = function () {
 		    var chart = this;
+
 		    if (chart.noDataLabel) {
 		        chart.noDataLabel = chart.noDataLabel.destroy();
 		    }

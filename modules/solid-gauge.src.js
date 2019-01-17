@@ -1,14 +1,15 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  * Solid angular gauge module
  *
- * (c) 2010-2018 Torstein Honsi
+ * (c) 2010-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -22,7 +23,7 @@
 		/* *
 		 * Solid angular gauge module
 		 *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -76,6 +77,7 @@
 		    function (proceed, x, y, w, h, options) {
 		        var arc = proceed,
 		            path = arc(x, y, w, h, options);
+
 		        if (options.rounded) {
 		            var r = options.r || w,
 		                smallR = (r - options.innerR) / 2,
@@ -85,6 +87,7 @@
 		                y2 = path[13],
 		                roundStart = ['A', smallR, smallR, 0, 1, 1, x1, y1],
 		                roundEnd = ['A', smallR, smallR, 0, 1, 1, x2, y2];
+
 		            // Insert rounded edge on end, and remove line.
 		            path.splice.apply(path, [path.length - 1, 0].concat(roundStart));
 		            // Insert rounded edge on end, and remove line.
@@ -105,6 +108,7 @@
 		            dataClasses,
 		            colorCounter = 0,
 		            options = this.options;
+
 		        this.dataClasses = dataClasses = [];
 
 		        userOptions.dataClasses.forEach(function (dataClass, i) {
@@ -275,6 +279,7 @@
 		    // decoration (#5895).
 		    translate: function () {
 		        var axis = this.yAxis;
+
 		        H.extend(axis, colorAxisMethods);
 
 		        // Prepare data classes

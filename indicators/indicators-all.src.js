@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * All technical indicators for Highstock
  *
- * (c) 2010-2018 Pawel Fus
+ * (c) 2010-2019 Pawel Fus
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 }(function (Highcharts) {
 	var requiredIndicatorMixin = (function (H) {
 		/**
-		 * (c) 2010-2018 Daniel Studencki
+		 * (c) 2010-2019 Daniel Studencki
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -65,6 +66,7 @@
 		    }
 		};
 
+
 		return requiredIndicatorMixin;
 	}(Highcharts));
 	(function (H, requiredIndicatorMixin) {
@@ -106,7 +108,7 @@
 		    if (
 		        options.useOhlcData &&
 		        options.id !== 'highcharts-navigator-series'
-		        ) {
+		    ) {
 
 		        if (dataGrouping && dataGrouping.enabled) {
 		            dataGrouping.approximation = 'ohlc';
@@ -130,7 +132,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('sma', 'line',
+		seriesType(
+		    'sma',
+		    'line',
 		    /**
 		     * Simple moving average indicator (SMA). This series requires `linkedTo`
 		     * option to be set.
@@ -506,7 +510,6 @@
 
 		                if (len > 0) {
 		                    ADPoint[1] += AD[len - 1][1];
-		                    ADPoint[1] = ADPoint[1];
 		                }
 
 		                AD.push(ADPoint);
@@ -557,7 +560,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('ao', 'sma',
+		H.seriesType(
+		    'ao',
+		    'sma',
 		    /**
 		     * Awesome Oscillator. This series requires the `linkedTo` option to
 		     * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -742,7 +747,7 @@
 	var multipleLinesMixin = (function (H) {
 		/**
 		 *
-		 *  (c) 2010-2018 Wojciech Chmiel
+		 *  (c) 2010-2019 Wojciech Chmiel
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -1001,7 +1006,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('aroon', 'sma',
+		H.seriesType(
+		    'aroon',
+		    'sma',
 		    /**
 		     * Aroon. This series requires the `linkedTo` option to be
 		     * set and should be loaded after the `stock/indicators/indicators.js`.
@@ -1154,7 +1161,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('aroonoscillator', 'aroon',
+		H.seriesType(
+		    'aroonoscillator',
+		    'aroon',
 		    /**
 		     * Aroon Oscillator. This series requires the `linkedTo` option to be set
 		     * and should be loaded after the `stock/indicators/indicators.js` and
@@ -1309,7 +1318,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('atr', 'sma',
+		seriesType(
+		    'atr',
+		    'sma',
 		    /**
 		     * Average true range indicator (ATR). This series requires `linkedTo`
 		     * option to be set.
@@ -1447,7 +1458,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('bb', 'sma',
+		H.seriesType(
+		    'bb',
+		    'sma',
 		    /**
 		     * Bollinger bands (BB). This series requires the `linkedTo` option to be
 		     * set and should be loaded after the `stock/indicators/indicators.js` file.
@@ -1653,7 +1666,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('cci', 'sma',
+		seriesType(
+		    'cci',
+		    'sma',
 		    /**
 		     * Commodity Channel Index (CCI). This series requires `linkedTo` option to
 		     * be set.
@@ -1745,7 +1760,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Highsoft AS
+		 *  (c) 2010-2019 Highsoft AS
 		 *
 		 *  Author: Sebastian Domas
 		 *
@@ -2004,6 +2019,7 @@
 		// Utils
 		function accumulatePoints(sum, yVal, i, index, subtract) {
 		    var price = pick(yVal[i][index], yVal[i]);
+
 		    if (subtract) {
 		        return correctFloat(sum - price);
 		    }
@@ -2019,7 +2035,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('dpo', 'sma',
+		H.seriesType(
+		    'dpo',
+		    'sma',
 		    /**
 		     * Detrended Price Oscillator. This series requires the `linkedTo` option to
 		     * be set and should be loaded after the `stock/indicators/indicators.js`.
@@ -2147,7 +2165,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('ema', 'sma',
+		seriesType(
+		    'ema',
+		    'sma',
 		    /**
 		     * Exponential moving average indicator (EMA). This series requires the
 		     * `linkedTo` option to be set.
@@ -2187,6 +2207,7 @@
 		            var sum = 0,
 		                i = 0,
 		                y = 0;
+
 		            while (i < period) {
 		                y = index < 0 ? yVal[i] : yVal[i][index];
 		                sum = sum + y;
@@ -2253,14 +2274,14 @@
 		            // Calculate value one-by-one for each period in visible data
 		            for (i = period; i < yValLen + 1; i++) {
 		                EMAPoint = this.calculateEma(
-		                        xVal,
-		                        yVal,
-		                        i,
-		                        EMApercent,
-		                        calEMA,
-		                        index,
-		                        SMA
-		                    );
+		                    xVal,
+		                    yVal,
+		                    i,
+		                    EMApercent,
+		                    calEMA,
+		                    index,
+		                    SMA
+		                );
 		                EMA.push(EMAPoint);
 		                xData.push(EMAPoint[0]);
 		                yData.push(EMAPoint[1]);
@@ -2312,7 +2333,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('chaikin', 'ema',
+		H.seriesType(
+		    'chaikin',
+		    'ema',
 		    /**
 		     * Chaikin Oscillator. This series requires the `linkedTo` option to
 		     * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -2474,7 +2497,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('dema', 'ema',
+		H.seriesType(
+		    'dema',
+		    'ema',
 		    /**
 		     * Normalized average true range indicator (NATR). This series requires
 		     * `linkedTo` option to be set and should be loaded after the
@@ -2517,7 +2542,7 @@
 		            index,
 		            i,
 		            xVal
-		          ) {
+		        ) {
 
 		            return EMAindicator.prototype.calculateEma(
 		                xVal || [],
@@ -2551,6 +2576,7 @@
 		                EMAvalues = [],
 		                i,
 		                DEMAPoint;
+
 		            series.EMApercent = (2 / (period + 1));
 
 		            // Check period, if bigger than EMA points length, skip
@@ -2569,7 +2595,7 @@
 		                    period,
 		                    index,
 		                    yVal
-		            );
+		                );
 
 		            // first point
 		            SMA = accumulatePeriodPoints / period;
@@ -2661,7 +2687,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('tema', 'ema',
+		H.seriesType(
+		    'tema',
+		    'ema',
 		    /**
 		     * Normalized average true range indicator (NATR). This series requires
 		     * `linkedTo` option to be set and should be loaded after the
@@ -2725,10 +2753,12 @@
 		        ) {
 		            var TEMAPoint = [
 		                xVal[i - 3],
-		                correctFloat(3 * EMAlevels.level1 -
-		                  3 * EMAlevels.level2 + EMAlevels.level3
+		                correctFloat(
+		                    3 * EMAlevels.level1 -
+		                    3 * EMAlevels.level2 + EMAlevels.level3
 		                )
 		            ];
+
 		            return TEMAPoint;
 		        },
 		        getValues: function (series, params) {
@@ -2773,9 +2803,9 @@
 		            // Accumulate first N-points
 		            accumulatePeriodPoints =
 		              EMAindicator.prototype.accumulatePeriodPoints(
-		                period,
-		                index,
-		                yVal
+		                  period,
+		                  index,
+		                  yVal
 		              );
 
 		            // first point
@@ -2841,10 +2871,10 @@
 		                            SMA
 		                        )[1];
 		                        TEMAPoint = this.getPoint(
-		                          xVal,
-		                          tripledPeriod,
-		                          EMAlevels,
-		                          i
+		                            xVal,
+		                            tripledPeriod,
+		                            EMAlevels,
+		                            i
 		                        );
 		                        // Make sure that point exists (for TRIX oscillator)
 		                        if (TEMAPoint) {
@@ -2901,7 +2931,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('trix', 'tema',
+		H.seriesType(
+		    'trix',
+		    'tema',
 		    /**
 		     * Normalized average true range indicator (NATR). This series requires
 		     * `linkedTo` option to be set.
@@ -2949,7 +2981,7 @@
 		                var TRIXPoint = [
 		                    xVal[i - 3],
 		                    EMAlevels.prevLevel3 !== 0 ?
-		                      correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
+		                        correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
 		                      EMAlevels.prevLevel3 * 100 : null
 		                ];
 		            }
@@ -2995,7 +3027,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('apo', 'ema',
+		H.seriesType(
+		    'apo',
+		    'ema',
 		    /**
 		     * Absolute Price Oscillator. This series requires the `linkedTo` option to
 		     * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -3254,7 +3288,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('ikh', 'sma',
+		seriesType(
+		    'ikh',
+		    'sma',
 		    /**
 		     * Ichimoku Kinko Hyo (IKH). This series requires `linkedTo` option to be
 		     * set.
@@ -3589,10 +3625,10 @@
 		                    // Check if lines intersect
 		                    var index = ikhMap.senkouSpanB.length - 1,
 		                        intersect = checkLineIntersection(
-		                          ikhMap.senkouSpanA[index - 1],
-		                          ikhMap.senkouSpanA[index],
-		                          ikhMap.senkouSpanB[index - 1],
-		                          ikhMap.senkouSpanB[index]
+		                            ikhMap.senkouSpanA[index - 1],
+		                            ikhMap.senkouSpanA[index],
+		                            ikhMap.senkouSpanB[index - 1],
+		                            ikhMap.senkouSpanB[index]
 		                        ),
 		                        intersectPointObj = {
 		                            plotX: intersect.plotX,
@@ -3617,8 +3653,8 @@
 		                    // First line is rendered by default option
 		                    indicator.points = allIchimokuPoints[lineIndex];
 		                    indicator.options = merge(
-		                      mainLineOptions[lineName].styles,
-		                      gappedExtend
+		                        mainLineOptions[lineName].styles,
+		                        gappedExtend
 		                    );
 		                    indicator.graph = indicator['graph' + lineName];
 
@@ -3708,7 +3744,7 @@
 		                            concatArrIndex =
 		                                sectionPoints[x].plotY >
 		                                sectionNextPoints[x].plotY ?
-		                                0 : 1;
+		                                    0 : 1;
 
 		                            points[concatArrIndex] =
 		                                points[concatArrIndex].concat(sectionPoints);
@@ -3723,7 +3759,7 @@
 		                        concatArrIndex =
 		                                sectionPoints[0].plotY >
 		                                sectionNextPoints[0].plotY ?
-		                                0 : 1;
+		                                    0 : 1;
 
 		                        points[concatArrIndex] =
 		                            points[concatArrIndex].concat(sectionPoints);
@@ -3759,7 +3795,8 @@
 		                            indicator[areaName] = indicator.graph;
 		                            indicator.graphCollection.push(areaName);
 		                        }
-		                    });
+		                    }
+		                );
 
 		            } else {
 		                // When user set only senkouSpan style.fill property
@@ -3808,9 +3845,9 @@
 		                spanA[0] = 'L';
 
 		                path = SMA.prototype.getGraphPath.call(
-		                        indicator,
-		                        points
-		                    );
+		                    indicator,
+		                    points
+		                );
 
 		                spanAarr = spanA.slice(0, path.length);
 
@@ -3905,7 +3942,7 @@
 		                    SSB = (pointSSB.high + pointSSB.low) / 2;
 		                }
 
-		                CS = yVal[i][0];
+		                CS = yVal[i][3];
 
 		                date = xVal[i];
 
@@ -3921,9 +3958,9 @@
 		                IKH[i + period][1] = KS;
 		                IKH[i + period][2] = UNDEFINED;
 
-		                if (i >= period) {
-		                    IKH[i - period][2] = CS;
-		                } else {
+		                IKH[i][2] = CS;
+
+		                if (i <= period) {
 		                    IKH[i + period][3] = UNDEFINED;
 		                    IKH[i + period][4] = UNDEFINED;
 		                }
@@ -3989,7 +4026,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('keltnerchannels', 'sma',
+		H.seriesType(
+		    'keltnerchannels',
+		    'sma',
 		    /**
 		     * Keltner Channels. This series requires the `linkedTo` option to be set
 		     * and should be loaded after the `stock/indicators/indicators.js`,
@@ -4182,7 +4221,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('macd', 'sma',
+		seriesType(
+		    'macd',
+		    'sma',
 
 		    /**
 		     * Moving Average Convergence Divergence (MACD). This series requires
@@ -4469,13 +4510,15 @@
 		            }
 
 		            // Calculating the short and long EMA used when calculating the MACD
-		            shortEMA = EMA.prototype.getValues(series,
+		            shortEMA = EMA.prototype.getValues(
+		                series,
 		                {
 		                    period: params.shortPeriod
 		                }
 		            );
 
-		            longEMA = EMA.prototype.getValues(series,
+		            longEMA = EMA.prototype.getValues(
+		                series,
 		                {
 		                    period: params.longPeriod
 		                }
@@ -4493,7 +4536,7 @@
 		                    defined(longEMA[i - 1][1]) &&
 		                    defined(shortEMA[i + params.shortPeriod + 1]) &&
 		                    defined(shortEMA[i + params.shortPeriod + 1][0])
-		                    ) {
+		                ) {
 		                    MACD.push([
 		                        shortEMA[i + params.shortPeriod + 1][0],
 		                        0,
@@ -4573,7 +4616,7 @@
 		 *
 		 *  Money Flow Index indicator for Highstock
 		 *
-		 *  (c) 2010-2018 Grzegorz Blachliński
+		 *  (c) 2010-2019 Grzegorz Blachliński
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -4612,7 +4655,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('mfi', 'sma',
+		H.seriesType(
+		    'mfi',
+		    'sma',
 		    /**
 		     * Money Flow Index. This series requires `linkedTo` option to be set and
 		     * should be loaded after the `stock/indicators/indicators.js` file.
@@ -4699,7 +4744,7 @@
 		                // Calculate if up or down
 		                oldTypicalPrice = newTypicalPrice;
 		                newTypicalPrice = calculateTypicalPrice(yVal[range]);
-		                isUp = newTypicalPrice >= oldTypicalPrice ? true : false;
+		                isUp = newTypicalPrice >= oldTypicalPrice;
 		                // Calculate raw money flow
 		                rawMoneyFlow = calculateRawMoneyFlow(
 		                    newTypicalPrice,
@@ -4718,7 +4763,7 @@
 		                    // Calculate if up or down
 		                    oldTypicalPrice = newTypicalPrice;
 		                    newTypicalPrice = calculateTypicalPrice(yVal[i]);
-		                    isUp = newTypicalPrice > oldTypicalPrice ? true : false;
+		                    isUp = newTypicalPrice > oldTypicalPrice;
 		                    // Calculate raw money flow
 		                    rawMoneyFlow = calculateRawMoneyFlow(
 		                        newTypicalPrice,
@@ -4794,7 +4839,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('momentum', 'sma',
+		seriesType(
+		    'momentum',
+		    'sma',
 		    /**
 		     * Momentum. This series requires `linkedTo` option to be set.
 		     *
@@ -4994,7 +5041,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('pivotpoints', 'sma',
+		H.seriesType(
+		    'pivotpoints',
+		    'sma',
 		    /**
 		     * Pivot points indicator. This series requires the `linkedTo` option to be
 		     * set and should be loaded after `stock/indicators/indicators.js` file.
@@ -5202,7 +5251,7 @@
 
 		                lastPP = PP.push(
 		                    [endTimestamp]
-		                    .concat(avg)
+		                        .concat(avg)
 		                );
 
 		                xData.push(endTimestamp);
@@ -5227,6 +5276,7 @@
 		                low = Infinity,
 		                close = values[values.length - 1][3],
 		                pivot;
+
 		            values.forEach(function (p) {
 		                high = Math.max(high, p[1]);
 		                low = Math.min(low, p[2]);
@@ -5335,7 +5385,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('ppo', 'ema',
+		H.seriesType(
+		    'ppo',
+		    'ema',
 		    /**
 		     * Percentage Price Oscillator. This series requires the
 		     * `linkedTo` option to be set and should be loaded after the
@@ -5463,7 +5515,7 @@
 	}(Highcharts, requiredIndicatorMixin));
 	var reduceArrayMixin = (function (H) {
 		/**
-		 * (c) 2010-2018 Pawel Fus & Daniel Studencki
+		 * (c) 2010-2019 Pawel Fus & Daniel Studencki
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -5511,6 +5563,7 @@
 		    }
 		};
 
+
 		return reduceArrayMixin;
 	}(Highcharts));
 	(function (H, reduceArrayMixin, multipleLinesMixin) {
@@ -5534,7 +5587,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('pc', 'sma',
+		H.seriesType(
+		    'pc',
+		    'sma',
 		    /**
 		     * Price channel (PC). This series requires the `linkedTo` option to be
 		     * set and should be loaded after the `stock/indicators/indicators.js`.
@@ -5680,7 +5735,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('priceenvelopes', 'sma',
+		H.seriesType(
+		    'priceenvelopes',
+		    'sma',
 		    /**
 		     * Price envelopes indicator based on [SMA](#plotOptions.sma) calculations.
 		     * This series requires the `linkedTo` option to be set and should be loaded
@@ -5912,7 +5969,7 @@
 		 *
 		 *  Parabolic SAR indicator for Highstock
 		 *
-		 *  (c) 2010-2018 Grzegorz Blachliński
+		 *  (c) 2010-2019 Grzegorz Blachliński
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -5950,7 +6007,8 @@
 		    if (dir === pDir) {
 		        if (dir === 1 && (eP > pEP)) {
 		            return (pAcc === maxAcc) ? maxAcc : toFixed(pAcc + inc, 2);
-		        } else if (dir === -1 && (eP < pEP)) {
+		        }
+		        if (dir === -1 && (eP < pEP)) {
 		            return (pAcc === maxAcc) ? maxAcc : toFixed(pAcc + inc, 2);
 		        }
 		        return pAcc;
@@ -6000,7 +6058,6 @@
 		}
 
 
-
 		/**
 		 * The Parabolic SAR series type.
 		 *
@@ -6010,7 +6067,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('psar', 'sma',
+		H.seriesType(
+		    'psar',
+		    'sma',
 		    /**
 		     * Parabolic SAR. This series requires `linkedTo`
 		     * option to be set and should be loaded
@@ -6215,7 +6274,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Kacper Madej
+		 *  (c) 2010-2019 Kacper Madej
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -6263,7 +6322,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('roc', 'sma',
+		seriesType(
+		    'roc',
+		    'sma',
 		    /**
 		     * Rate of change indicator (ROC). The indicator value for each point
 		     * is defined as:
@@ -6384,7 +6445,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('rsi', 'sma',
+		H.seriesType(
+		    'rsi',
+		    'sma',
 		    /**
 		     * Relative strength index (RSI) technical indicator. This series
 		     * requires the `linkedTo` option to be set and should be loaded after
@@ -6543,7 +6606,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('stochastic', 'sma',
+		H.seriesType(
+		    'stochastic',
+		    'sma',
 		    /**
 		     * Stochastic oscillator. This series requires the `linkedTo` option to be
 		     * set and should be loaded after the `stock/indicators/indicators.js` file.
@@ -6727,6 +6792,7 @@
 		// Utils:
 		function createPointObj(mainSeries, index, close) {
 		    return {
+		        index: index,
 		        close: mainSeries.yData[index][close],
 		        x: mainSeries.xData[index]
 		    };
@@ -6741,7 +6807,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('supertrend', 'sma',
+		H.seriesType(
+		    'supertrend',
+		    'sma',
 		    /**
 		     * Supertrend indicator. This series requires the `linkedTo` option to be
 		     * set and should be loaded after the `stock/indicators/indicators.js` and
@@ -6753,10 +6821,10 @@
 		     * @extends      plotOptions.sma
 		     * @since        7.0.0
 		     * @product      highstock
-		     * @excluding    allAreas, color, negativeColor, colorAxis, joinBy, keys,
-		     *               navigatorOptions, pointInterval, pointIntervalUnit,
-		     *               pointPlacement, pointRange, pointStart, showInNavigator,
-		     *               stacking, threshold
+		     * @excluding    allAreas, color, cropThreshold, negativeColor, colorAxis,
+		     *               joinBy, keys, navigatorOptions, pointInterval,
+		     *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
+		     *               showInNavigator, stacking, threshold
 		     * @optionparent plotOptions.supertrend
 		     */
 		    {
@@ -6821,15 +6889,12 @@
 		                 * [this demonstration](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
 		                 *
 		                 * @sample {highcharts} highcharts/yaxis/gridlinedashstyle/
-		                 *          Long dashes
+		                 *         Long dashes
 		                 * @sample {highstock} stock/xaxis/gridlinedashstyle/
-		                 *          Long dashes
+		                 *         Long dashes
 		                 *
-		                 * @since      7.0.0
-		                 * @validvalue ["Dash", "DashDot", "Dot", "LongDash",
-		                 *             "LongDashDot", "LongDashDotDot", "ShortDash",
-		                 *             "ShortDashDot", "ShortDashDotDot", "ShortDot",
-		                 *             "Solid"]
+		                 * @type  {Highcharts.DashStyleType}
+		                 * @since 7.0.0
 		                 */
 		                dashStyle: 'LongDash'
 		            }
@@ -6842,13 +6907,27 @@
 		        nameBase: 'Supertrend',
 		        nameComponents: ['multiplier', 'period'],
 		        requiredIndicators: ['atr'],
+		        init: function () {
+		            var options,
+		                parentOptions;
+
+		            SMA.prototype.init.apply(this, arguments);
+
+		            options = this.options;
+		            parentOptions = this.linkedParent.options;
+
+		            // Indicator cropThreshold has to be equal linked series one
+		            // reduced by period due to points comparison in drawGraph method
+		            // (#9787)
+		            options.cropThreshold =
+		                parentOptions.cropThreshold - (options.params.period - 1);
+		        },
 		        drawGraph: function () {
 		            var indicator = this,
-		                chart = indicator.chart,
 		                indicOptions = indicator.options,
 
-		                // series that indicator is linked to
-		                mainSeries = chart.get(indicOptions.linkedTo),
+		                // Series that indicator is linked to
+		                mainSeries = indicator.linkedParent,
 		                mainLinePoints = mainSeries ? mainSeries.points : [],
 		                indicPoints = indicator.points,
 		                indicPath = indicator.graph,
@@ -6973,27 +7052,30 @@
 
 		                // Check if points are shifted relative to each other
 		                if (
+		                    point &&
 		                    mainPoint &&
 		                    prevMainPoint &&
 		                    nextMainPoint &&
 		                    point.x !== mainPoint.x
 		                ) {
-		                    if (point && point.x === prevMainPoint.x) {
+		                    if (point.x === prevMainPoint.x) {
 		                        nextMainPoint = mainPoint;
 		                        mainPoint = prevMainPoint;
-		                    } else if (point && point.x === nextMainPoint.x) {
+		                    } else if (point.x === nextMainPoint.x) {
 		                        mainPoint = nextMainPoint;
 		                        nextMainPoint = {
 		                            close: mainSeries.yData[mainPoint.index - 1][close],
 		                            x: mainSeries.xData[mainPoint.index - 1]
 		                        };
-		                    } else if (point && point.x === prevPrevMainPoint.x) {
+		                    } else if (
+		                        prevPrevMainPoint && point.x === prevPrevMainPoint.x
+		                    ) {
 		                        mainPoint = prevPrevMainPoint;
 		                        nextMainPoint = prevMainPoint;
 		                    }
 		                }
 
-		                if (nextPoint && nextMainPoint) {
+		                if (nextPoint && nextMainPoint && mainPoint) {
 
 		                    newNextPoint = {
 		                        x: nextPoint.x,
@@ -7228,10 +7310,10 @@
 		 * @extends   series,plotOptions.supertrend
 		 * @since     7.0.0
 		 * @product   highstock
-		 * @excluding allAreas, color, colorAxis, data, dataParser, dataURL, joinBy,
-		 *            keys, navigatorOptions, negativeColor, pointInterval,
-		 *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
-		 *            showInNavigator, stacking, threshold
+		 * @excluding allAreas, color, colorAxis, cropThreshold, data, dataParser,
+		 *            dataURL, joinBy, keys, navigatorOptions, negativeColor,
+		 *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+		 *            pointStart, showInNavigator, stacking, threshold
 		 * @apioption series.supertrend
 		 */
 
@@ -7239,7 +7321,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Paweł Dalek
+		 *  (c) 2010-2019 Paweł Dalek
 		 *
 		 *  Volume By Price (VBP) indicator for Highstock
 		 *
@@ -7290,7 +7372,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('vbp', 'sma',
+		seriesType(
+		    'vbp',
+		    'sma',
 		    /**
 		     * Volume By Price indicator.
 		     *
@@ -7328,20 +7412,18 @@
 		             * Enable/disable zone lines.
 		             */
 		            enabled: true,
+		            /**
+		             * Specify the style of zone lines.
+		             *
+		             * @type    {Highcharts.CSSObject}
+		             * @default {"color": "#0A9AC9", "dashStyle": "LongDash", "lineWidth": 1}
+		             */
 		            styles: {
-		                /**
-		                 * Color of zone lines.
-		                 *
-		                 * @type {Highcharts.ColorString}
-		                 */
+		                /** @ignore-options */
 		                color: '#0A9AC9',
-		                /**
-		                 * The dash style of zone lines.
-		                 */
+		                /** @ignore-options */
 		                dashStyle: 'LongDash',
-		                /**
-		                 * Pixel width of zone lines.
-		                 */
+		                /** @ignore-options */
 		                lineWidth: 1
 		            }
 		        },
@@ -7608,7 +7690,7 @@
 		                    );
 		                    point.pointWidth = barWidth;
 
-		                    point.shapeArgs = indicator.crispCol.apply(
+		                    point.shapeArgs = indicator.crispCol.apply( // eslint-disable-line no-useless-call
 		                        indicator,
 		                        [barX, barY, barWidth, barHeight]
 		                    );
@@ -7877,7 +7959,7 @@
 		                        'dashstyle': zonesStyles.dashStyle,
 		                        'zIndex': indicator.group.zIndex + 0.1
 		                    })
-		                    .add(indicator.group);
+		                        .add(indicator.group);
 		            }
 		        }
 		    },
@@ -7910,7 +7992,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Paweł Dalek
+		 *  (c) 2010-2019 Paweł Dalek
 		 *
 		 *  Volume Weighted Average Price (VWAP) indicator for Highstock
 		 *
@@ -8117,7 +8199,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('williamsr', 'sma',
+		H.seriesType(
+		    'williamsr',
+		    'sma',
 		    /**
 		     * Williams %R. This series requires the `linkedTo` option to be
 		     * set and should be loaded after the `stock/indicators/indicators.js`.
@@ -8224,7 +8308,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Kacper Madej
+		 *  (c) 2010-2019 Kacper Madej
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -8274,7 +8358,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('wma', 'sma',
+		seriesType(
+		    'wma',
+		    'sma',
 		    /**
 		     * Weighted moving average indicator (WMA). This series requires `linkedTo`
 		     * option to be set.
@@ -8368,7 +8454,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Kacper Madej
+		 *  (c) 2010-2019 Kacper Madej
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -8388,7 +8474,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('zigzag', 'sma',
+		seriesType(
+		    'zigzag',
+		    'sma',
 		    /**
 		     * Zig Zag indicator.
 		     *
@@ -8587,7 +8675,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Kamil Kulig
+		 *  (c) 2010-2019 Kamil Kulig
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -8607,7 +8695,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('linearRegression', 'sma',
+		seriesType(
+		    'linearRegression',
+		    'sma',
 		    /**
 		     * Linear regression indicator. This series requires `linkedTo` option to be
 		     * set.
@@ -8651,9 +8741,9 @@
 		             * // base series:
 		             *
 		             * data: [
-		             *   [Date.UTC(2018, 0, 1), 1],
-		             *   [Date.UTC(2018, 0, 2), 3],
-		             *   [Date.UTC(2018, 0, 3), 5]
+		             *   [Date.UTC(2019, 0, 1), 1],
+		             *   [Date.UTC(2019, 0, 2), 3],
+		             *   [Date.UTC(2019, 0, 3), 5]
 		             * ]
 		             *
 		             * // This will produce one point in the indicator series that has a
@@ -8714,7 +8804,7 @@
 		            }
 
 		            slope = formulaDenominator ?
-		              formulaNumerator / formulaDenominator : 0; // don't divide by 0
+		                formulaNumerator / formulaDenominator : 0; // don't divide by 0
 
 		            return {
 		                slope: slope,
@@ -8745,6 +8835,7 @@
 		         */
 		        transformXData: function (xData, xAxisUnit) {
 		            var xOffset = xData[0];
+
 		            return xData.map(function (xValue) {
 		                return (xValue - xOffset) / xAxisUnit;
 		            });
@@ -8782,7 +8873,7 @@
 		                periodStart,
 		                periodEnd,
 		                indicatorData = { // format required to be returned
-		                    xData: [],    // by getValues() method
+		                    xData: [], // by getValues() method
 		                    yData: [],
 		                    values: []
 		                },
@@ -8805,14 +8896,14 @@
 		                periodXData = xData.slice(periodStart, periodEnd);
 		                periodYData = yData.slice(periodStart, periodEnd);
 		                periodTransformedXData = this.transformXData(periodXData,
-		                  xAxisUnit);
+		                    xAxisUnit);
 
 		                lineParameters = this.getRegressionLineParameters(
-		                  periodTransformedXData, periodYData
+		                    periodTransformedXData, periodYData
 		                );
 
 		                endPointY = this.getEndPointY(lineParameters,
-		                periodTransformedXData[periodTransformedXData.length - 1]);
+		                    periodTransformedXData[periodTransformedXData.length - 1]);
 
 		                indicatorData.values.push({
 		                    regressionLineParameters: lineParameters,
@@ -8851,7 +8942,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('linearRegressionSlope', 'linearRegression',
+		seriesType(
+		    'linearRegressionSlope',
+		    'linearRegression',
 		    /**
 		     * Linear regression slope indicator. This series requires `linkedTo`
 		     * option to be set.
@@ -8899,7 +8992,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('linearRegressionIntercept', 'linearRegression',
+		seriesType(
+		    'linearRegressionIntercept',
+		    'linearRegression',
 		    /**
 		     * Linear regression intercept indicator. This series requires `linkedTo`
 		     * option to be set.
@@ -8947,7 +9042,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('linearRegressionAngle', 'linearRegression',
+		seriesType(
+		    'linearRegressionAngle',
+		    'linearRegression',
 		    /**
 		     * Linear regression angle indicator. This series requires `linkedTo`
 		     * option to be set.
@@ -8972,7 +9069,7 @@
 		    {
 		        nameBase: 'Linear Regression Angle Indicator',
 
-		       /**
+		        /**
 		        * Convert a slope of a line to angle (in degrees) between
 		        * the line and x axis
 		        * @private
@@ -9039,7 +9136,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('abands', 'sma',
+		H.seriesType(
+		    'abands',
+		    'sma',
 		    /**
 		     * Acceleration bands (ABANDS). This series requires the `linkedTo` option
 		     * to be set and should be loaded after the

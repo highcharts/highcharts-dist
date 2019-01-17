@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Tree Grid
  *
- * (c) 2016-2018 Jon Arild Nygard
+ * (c) 2016-2019 Jon Arild Nygard
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -28,7 +29,8 @@
 
 
 
-		var argsToArray = function (args) {
+		var addEvent = H.addEvent,
+		    argsToArray = function (args) {
 		        return Array.prototype.slice.call(args, 1);
 		    },
 		    dateFormat = H.dateFormat,
@@ -216,6 +218,7 @@
 		        var d = new Date(timestamp),
 		            yearStart,
 		            weekNo;
+
 		        d.setHours(0, 0, 0, 0);
 		        d.setDate(d.getDate() - (d.getDay() || 7));
 		        yearStart = new Date(d.getFullYear(), 0, 1);
@@ -228,56 +231,17 @@
 		    }
 		};
 
-		wrap(Axis.prototype, 'autoLabelAlign',
-		    /**
-		     * If chart is stockChart, always return 'left' to avoid labels being placed
-		     * inside chart. Stock charts place yAxis labels inside by default.
-		     *
-		     * @private
-		     * @function
-		     *
-		     * @param {Function} proceed
-		     *        the original function
-		     *
-		     * @return {string}
-		     *         'left' if stockChart, or auto calculated alignment
-		     */
-		    function (proceed) {
-		        var axis = this,
-		            retVal;
-		        if (axis.chart.isStock) {
-		            retVal = 'left';
-		        } else {
-		            retVal = proceed.apply(axis, argsToArray(arguments));
-		        }
-		        return retVal;
-		    }
-		);
-
-		wrap(Tick.prototype, 'getLabelPosition',
+		addEvent(
+		    Tick,
+		    'afterGetLabelPosition',
 		    /**
 		     * Center tick labels in cells.
 		     *
 		     * @private
-		     * @function
-		     *
-		     * @param {Function} proceed
-		     *        the original function
-		     *
-		     * @return {object}
-		     *         an object containing x and y positions for the tick
 		     */
-		    function (
-		        proceed,
-		        x,
-		        y,
-		        label,
-		        horiz,
-		        labelOpts,
-		        tickmarkOffset,
-		        index
-		    ) {
+		    function (e) {
 		        var tick = this,
+		            label = tick.label,
 		            axis = tick.axis,
 		            reversed = axis.reversed,
 		            chart = axis.chart,
@@ -285,16 +249,18 @@
 		            gridOptions = (
 		                (options && isObject(options.grid)) ? options.grid : {}
 		            ),
+		            labelOpts = axis.options.labels,
 		            align = labelOpts.align,
 		            // verticalAlign is currently not supported for axis.labels.
 		            verticalAlign = 'middle', // labelOpts.verticalAlign,
 		            side = axisSide[axis.side],
+		            tickmarkOffset = e.tickmarkOffset,
 		            tickPositions = axis.tickPositions,
 		            tickPos = tick.pos - tickmarkOffset,
 		            nextTickPos = (
-		                isNumber(tickPositions[index + 1]) ?
-		                tickPositions[index + 1] - tickmarkOffset :
-		                axis.max + tickmarkOffset
+		                isNumber(tickPositions[e.index + 1]) ?
+		                    tickPositions[e.index + 1] - tickmarkOffset :
+		                    axis.max + tickmarkOffset
 		            ),
 		            tickSize = axis.tickSize('tick', true),
 		            tickWidth = isArray(tickSize) ? tickSize[0] : 0,
@@ -302,7 +268,6 @@
 		            labelHeight,
 		            lblMetrics,
 		            lines,
-		            result,
 		            bottom,
 		            top,
 		            left,
@@ -310,6 +275,7 @@
 
 		        // Only center tick labels in grid axes
 		        if (gridOptions.enabled === true) {
+
 		            // Calculate top and bottom positions of the cell.
 		            if (side === 'top') {
 		                bottom = axis.top + axis.offset;
@@ -345,22 +311,20 @@
 		            tick.slotWidth = right - left;
 
 		            // Calculate the positioning of the label based on alignment.
-		            result = {
-		                x: (
-		                    align === 'left' ?
+		            e.pos.x = (
+		                align === 'left' ?
 		                    left :
 		                    align === 'right' ?
-		                    right :
-		                    left + ((right - left) / 2) // default to center
-		                ),
-		                y: (
-		                    verticalAlign === 'top' ?
+		                        right :
+		                        left + ((right - left) / 2) // default to center
+		            );
+		            e.pos.y = (
+		                verticalAlign === 'top' ?
 		                    top :
 		                    verticalAlign === 'bottom' ?
-		                    bottom :
-		                    top + ((bottom - top) / 2) // default to middle
-		                )
-		            };
+		                        bottom :
+		                        top + ((bottom - top) / 2) // default to middle
+		            );
 
 		            lblMetrics = chart.renderer.fontMetrics(
 		                labelOpts.style.fontSize,
@@ -372,7 +336,7 @@
 		            // Would be better to have a setter or similar for this.
 		            if (!labelOpts.useHTML) {
 		                lines = Math.round(labelHeight / lblMetrics.h);
-		                result.y += (
+		                e.pos.y += (
 		                    // Center the label
 		                    // TODO: why does this actually center the label?
 		                    ((lblMetrics.b - (lblMetrics.h - lblMetrics.f)) / 2) +
@@ -380,7 +344,7 @@
 		                    -(((lines - 1) * lblMetrics.h) / 2)
 		                );
 		            } else {
-		                result.y += (
+		                e.pos.y += (
 		                    // Readjust yCorr in htmlUpdateTransform
 		                    lblMetrics.b +
 		                    // Adjust for height of html label
@@ -388,32 +352,18 @@
 		                );
 		            }
 
-		            result.x += (axis.horiz && labelOpts.x || 0);
-		        } else {
-		            result = proceed.apply(tick, argsToArray(arguments));
+		            e.pos.x += (axis.horiz && labelOpts.x || 0);
 		        }
-		        return result;
 		    }
 		);
 
-		/**
-		 * Draw vertical axis ticks extra long to create cell floors and roofs.
-		 * Overrides the tickLength for vertical axes.
-		 *
-		 * @private
-		 * @function
-		 *
-		 * @param {Function} proceed
-		 *        the original function
-		 *
-		 * @returns {Array<number>}
-		 */
-		wrap(Axis.prototype, 'tickSize', function (proceed) {
+		// Draw vertical axis ticks extra long to create cell floors and roofs.
+		// Overrides the tickLength for vertical axes.
+		addEvent(Axis, 'afterTickSize', function (e) {
 		    var axis = this,
 		        dimensions = axis.maxLabelDimensions,
 		        options = axis.options,
 		        gridOptions = (options && isObject(options.grid)) ? options.grid : {},
-		        retVal = proceed.apply(axis, argsToArray(arguments)),
 		        labelPadding,
 		        distance;
 
@@ -422,16 +372,15 @@
 		        distance = labelPadding +
 		            (axis.horiz ? dimensions.height : dimensions.width);
 
-		        if (isArray(retVal)) {
-		            retVal[0] = distance;
+		        if (isArray(e.tickSize)) {
+		            e.tickSize[0] = distance;
 		        } else {
-		            retVal = [distance];
+		            e.tickSize = [distance];
 		        }
 		    }
-		    return retVal;
 		});
 
-		wrap(Axis.prototype, 'getTitlePosition', function (proceed) {
+		addEvent(Axis, 'afterGetTitlePosition', function (e) {
 		    var axis = this,
 		        options = axis.options,
 		        gridOptions = (options && isObject(options.grid)) ? options.grid : {};
@@ -464,23 +413,19 @@
 		                (tickSize[0] / 2) +
 		                (axis.side === axisSide.bottom ? titleFontSize : 0);
 
-		        return {
-		            x: horiz ?
-		                axisLeft - titleWidth / 2 - titleMargin + xOption :
-		                offAxis + (opposite ? axisWidth : 0) + offset + xOption,
-		            y: horiz ?
-		                (
-		                    offAxis -
-		                    (opposite ? axisHeight : 0) +
-		                    (opposite ? titleFontSize : -titleFontSize) / 2 +
-		                    offset +
-		                    yOption
-		                ) :
-		                axisTop - titleMargin + yOption
-		        };
+		        e.titlePosition.x = horiz ?
+		            axisLeft - titleWidth / 2 - titleMargin + xOption :
+		            offAxis + (opposite ? axisWidth : 0) + offset + xOption;
+		        e.titlePosition.y = horiz ?
+		            (
+		                offAxis -
+		                (opposite ? axisHeight : 0) +
+		                (opposite ? titleFontSize : -titleFontSize) / 2 +
+		                offset +
+		                yOption
+		            ) :
+		            axisTop - titleMargin + yOption;
 		    }
-
-		    return proceed.apply(this, argsToArray(arguments));
 		});
 
 		// Avoid altering tickInterval when reserving space.
@@ -496,7 +441,9 @@
 		    return proceed.apply(this, argsToArray(arguments));
 		});
 
-		H.addEvent(Axis, 'afterSetOptions',
+		addEvent(
+		    Axis,
+		    'afterSetOptions',
 		    /**
 		     * Creates a left and right wall on horizontal axes:
 		     *
@@ -689,28 +636,10 @@
 		    }
 		);
 
-		wrap(Axis.prototype, 'setAxisTranslation',
-		    /**
-		     * Ensures a left wall on horizontal axes with series inheriting from
-		     * column. ColumnSeries normally sets pointRange to null, resulting in Axis
-		     * to select other values for point ranges. This enforces the above
-		     * Axis.setOptions() override.
-		     * ```
-		     *                  _________________________
-		     * Enforce this:    ___|_____|_____|_____|__|
-		     *                  ^
-		     *                  _________________________
-		     * To be this:      |_____|_____|_____|_____|
-		     *                  ^
-		     * ```
-		     *
-		     * @private
-		     * @function
-		     *
-		     * @param {Function} proceed
-		     *        the original function
-		     */
-		    function (proceed) {
+		addEvent(
+		    Axis,
+		    'afterSetAxisTranslation',
+		    function () {
 		        var axis = this,
 		            options = axis.options,
 		            gridOptions = (
@@ -745,14 +674,14 @@
 		                }
 		            }
 		        }
-
-		        proceed.apply(axis, argsToArray(arguments));
 		    }
 		);
 
 		// @todo Does this function do what the drawing says? Seems to affect ticks and
 		//       not the labels directly?
-		wrap(Axis.prototype, 'trimTicks',
+		addEvent(
+		    Axis,
+		    'trimTicks',
 		    /**
 		     * Makes tick labels which are usually ignored in a linked axis displayed if
 		     * they are within range of linkedParent.min.
@@ -770,12 +699,8 @@
 		     * ```
 		     *
 		     * @private
-		     * @function
-		     *
-		     * @param {Function} proceed
-		     *        the original function
 		     */
-		    function (proceed) {
+		    function () {
 		        var axis = this,
 		            options = axis.options,
 		            gridOptions = (
@@ -808,12 +733,12 @@
 		                tickPositions[tickPositions.length - 1] = max;
 		            }
 		        }
-
-		        proceed.apply(axis, argsToArray(arguments));
 		    }
 		);
 
-		wrap(Axis.prototype, 'render',
+		addEvent(
+		    Axis,
+		    'afterRender',
 		    /**
 		     * Draw an extra line on the far side of the outermost axis,
 		     * creating floor/roof/wall of a grid. And some padding.
@@ -832,7 +757,7 @@
 		     * @param {Function} proceed
 		     *        the original function
 		     */
-		    function (proceed) {
+		    function () {
 		        var axis = this,
 		            options = axis.options,
 		            gridOptions = ((
@@ -868,10 +793,6 @@
 		            if (axis.rightWall) {
 		                axis.rightWall.destroy();
 		            }
-
-		            // Call original Axis.render() to obtain axis.axisLine and
-		            // axis.axisGroup
-		            proceed.apply(axis);
 
 		            axisGroupBox = axis.axisGroup.getBBox();
 
@@ -940,25 +861,26 @@
 		                }
 		            }
 
-		        } else {
-		            proceed.apply(axis);
 		        }
 		    }
 		);
 
 		// Wraps axis init to draw cell walls on vertical axes.
-		wrap(Axis.prototype, 'init', function (proceed, chart, userOptions) {
+		addEvent(Axis, 'init', function (e) {
 		    var axis = this,
+		        chart = axis.chart,
+		        userOptions = e.userOptions,
 		        gridOptions = (
 		            (userOptions && isObject(userOptions.grid)) ?
-		            userOptions.grid :
-		            {}
+		                userOptions.grid :
+		                {}
 		        ),
 		        columnOptions,
 		        column,
 		        columnIndex,
 		        i;
-		    function applyGridOptions(axis) {
+
+		    function applyGridOptions() {
 		        var options = axis.options,
 		            // TODO: Consider using cell margins defined in % of font size?
 		            // 25 is optimal height for default fontSize (11px)
@@ -1019,7 +941,7 @@
 
 		                delete columnOptions.grid.columns; // Prevent recursion
 
-		                column = new Axis(chart, columnOptions);
+		                column = new Axis(axis.chart, columnOptions);
 		                column.isColumn = true;
 		                column.columnIndex = columnIndex;
 
@@ -1045,14 +967,14 @@
 
 		                columnIndex++;
 		            }
+		            // This axis should not be shown, instead the column axes take over
+		            addEvent(this, 'afterInit', function () {
+		                H.erase(chart.axes, this);
+		                H.erase(chart[axis.coll], this);
+		            });
 		        } else {
-		            // Call original Axis.init()
-		            proceed.apply(axis, argsToArray(arguments));
-		            applyGridOptions(axis);
+		            addEvent(this, 'afterInit', applyGridOptions);
 		        }
-		    } else {
-		        // Call original Axis.init()
-		        proceed.apply(axis, argsToArray(arguments));
 		    }
 		});
 
@@ -1060,7 +982,7 @@
 	var Tree = (function (H) {
 		/* *
 		 *
-		 *  (c) 2016-2018 Highsoft AS
+		 *  (c) 2016-2019 Highsoft AS
 		 *
 		 *  Authors: Jon Arild Nygard
 		 *
@@ -1097,6 +1019,7 @@
 		var getListOfParents = function (data, ids) {
 		    var listOfParents = data.reduce(function (prev, curr) {
 		            var parent = pick(curr.parent, '');
+
 		            if (prev[parent] === undefined) {
 		                prev[parent] = [];
 		            }
@@ -1108,6 +1031,7 @@
 		    // If parent does not exist, hoist parent to root of tree.
 		    parents.forEach(function (parent, list) {
 		        var children = listOfParents[parent];
+
 		        if ((parent !== '') && (ids.indexOf(parent) === -1)) {
 		            children.forEach(function (child) {
 		                list[''].push(child);
@@ -1152,23 +1076,23 @@
 		            childStart = child.start,
 		            childEnd = (
 		                child.milestone === true ?
-		                childStart :
-		                child.end
+		                    childStart :
+		                    child.end
 		            );
 
 		        // Start should be the lowest child.start.
 		        start = (
 		            (!isNumber(start) || childStart < start) ?
-		            childStart :
-		            start
+		                childStart :
+		                start
 		        );
 
 		        // End should be the largest child.end.
 		        // If child is milestone, then use start as end.
 		        end = (
 		            (!isNumber(end) || childEnd > end) ?
-		            childEnd :
-		            end
+		                childEnd :
+		                end
 		        );
 
 		        descendants = descendants + 1 + node.descendants;
@@ -1200,6 +1124,7 @@
 		            return d.id;
 		        }),
 		        mapOfIdToChildren = getListOfParents(data, ids);
+
 		    return getNode('', null, 1, null, mapOfIdToChildren, options);
 		};
 
@@ -1236,8 +1161,8 @@
 		        nodeRoot = mapIdToNode[idRoot],
 		        levelIsConstant = (
 		            isBoolean(options.levelIsConstant) ?
-		            options.levelIsConstant :
-		            true
+		                options.levelIsConstant :
+		                true
 		        ),
 		        points = options.points,
 		        point = points[tree.i],
@@ -1245,6 +1170,7 @@
 		        childrenTotal = 0,
 		        children = [],
 		        value;
+
 		    extend(tree, {
 		        levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
 		        name: pick(point && point.name, ''),
@@ -1259,6 +1185,7 @@
 		    // First give the children some values
 		    tree.children.forEach(function (child, i) {
 		        var newOptions = extend({}, options);
+
 		        extend(newOptions, {
 		            index: i,
 		            siblings: tree.children.length,
@@ -1299,8 +1226,10 @@
 		        colorIndexByPoint,
 		        color,
 		        colorIndex;
+
 		    function variation(color) {
 		        var colorVariation = level && level.colorVariation;
+
 		        if (colorVariation) {
 		            if (colorVariation.key === 'brightness') {
 		                return H.color(color).brighten(
@@ -1376,6 +1305,7 @@
 		        from,
 		        to,
 		        levels;
+
 		    if (isObject(params)) {
 		        result = {};
 		        from = isNumber(params.from) ? params.from : 1;
@@ -1387,12 +1317,13 @@
 		                var level,
 		                    levelIsConstant,
 		                    options;
+
 		                if (isObject(item) && isNumber(item.level)) {
 		                    options = merge({}, item);
 		                    levelIsConstant = (
 		                        isBoolean(options.levelIsConstant) ?
-		                        options.levelIsConstant :
-		                        defaults.levelIsConstant
+		                            options.levelIsConstant :
+		                            defaults.levelIsConstant
 		                    );
 		                    // Delete redundant properties.
 		                    delete options.levelIsConstant;
@@ -1436,6 +1367,7 @@
 		var updateRootId = function (series) {
 		    var rootId,
 		        options;
+
 		    if (isObject(series)) {
 		        // Get the series options.
 		        options = isObject(series.options) ? series.options : {};
@@ -1465,7 +1397,7 @@
 	}(Highcharts));
 	(function (H) {
 		/**
-		 * (c) 2009-2018 Torstein Honsi
+		 * (c) 2009-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -1474,16 +1406,11 @@
 
 		var addEvent = H.addEvent,
 		    pick = H.pick,
-		    wrap = H.wrap,
 		    extend = H.extend,
 		    isArray = H.isArray,
 		    fireEvent = H.fireEvent,
 		    Axis = H.Axis,
 		    Series = H.Series;
-
-		function stripArguments() {
-		    return Array.prototype.slice.call(arguments, 1);
-		}
 
 		extend(Axis.prototype, {
 		    isInBreak: function (brk, val) {
@@ -1522,7 +1449,7 @@
 		                    if (!keep) {
 		                        keep = pick(
 		                            breaks[i].showPoints,
-		                            this.isXAxis ? false : true
+		                            !this.isXAxis
 		                        );
 		                    }
 		                }
@@ -1675,7 +1602,7 @@
 		            this.unitLength = null;
 		            if (this.isBroken) {
 		                var breaks = axis.options.breaks,
-		                    breakArrayT = [],    // Temporary one
+		                    breakArrayT = [], // Temporary one
 		                    breakArray = [],
 		                    length = 0,
 		                    inBrk,
@@ -1725,8 +1652,11 @@
 		                breakArrayT.sort(function (a, b) {
 		                    return (
 		                        (a.value === b.value) ?
-		                        (a.move === 'in' ? 0 : 1) - (b.move === 'in' ? 0 : 1) :
-		                        a.value - b.value
+		                            (
+		                                (a.move === 'in' ? 0 : 1) -
+		                                (b.move === 'in' ? 0 : 1)
+		                            ) :
+		                            a.value - b.value
 		                    );
 		                });
 
@@ -1780,9 +1710,7 @@
 		    }
 		};
 
-		wrap(Series.prototype, 'generatePoints', function (proceed) {
-
-		    proceed.apply(this, stripArguments(arguments));
+		addEvent(Series, 'afterGeneratePoints', function () {
 
 		    var series = this,
 		        xAxis = series.xAxis,
@@ -1818,11 +1746,10 @@
 
 		});
 
-		function drawPointsWrapped(proceed) {
-		    proceed.apply(this);
+		addEvent(Series, 'afterRender', function drawPointsWrapped() {
 		    this.drawBreaks(this.xAxis, ['x']);
 		    this.drawBreaks(this.yAxis, pick(this.pointArrayMap, ['y']));
-		}
+		});
 
 		H.Series.prototype.drawBreaks = function (axis, keys) {
 		    var series = this,
@@ -1981,9 +1908,6 @@
 		    return this.getGraphPath(points);
 		};
 
-		wrap(H.seriesTypes.column.prototype, 'drawPoints', drawPointsWrapped);
-		wrap(H.Series.prototype, 'drawPoints', drawPointsWrapped);
-
 	}(Highcharts));
 	(function (H, Tree, mixinTreeSeries) {
 		/* *
@@ -2023,46 +1947,13 @@
 		var override = function (obj, methods) {
 		    var method,
 		        func;
+
 		    for (method in methods) {
 		        if (methods.hasOwnProperty(method)) {
 		            func = methods[method];
 		            wrap(obj, method, func);
 		        }
 		    }
-		};
-
-		/**
-		 * getCategoriesFromTree - getCategories based on a tree
-		 *
-		 * @private
-		 * @function getCategoriesFromTree
-		 *
-		 * @param {object} tree
-		 *        Root of tree to collect categories from
-		 *
-		 * @return {Array<string>}
-		 *         Array of categories
-		 */
-		var getCategoriesFromTree = function (tree) {
-		    var categories = [];
-		    if (tree.data) {
-		        categories.push(tree.data.name);
-		    }
-		    tree.children.forEach(function (child) {
-		        categories = categories.concat(getCategoriesFromTree(child));
-		    });
-		    return categories;
-		};
-
-		var mapTickPosToNode = function (node, categories) {
-		    var map = {},
-		        name = node.data && node.data.name,
-		        pos = categories.indexOf(name);
-		    map[pos] = node;
-		    node.children.forEach(function (child) {
-		        extend(map, mapTickPosToNode(child, categories));
-		    });
-		    return map;
 		};
 
 		var getBreakFromNode = function (node, max) {
@@ -2102,6 +1993,7 @@
 		    return Object.keys(axis.mapOfPosToGridNode).reduce(
 		        function (arr, key) {
 		            var pos = +key;
+
 		            if (
 		                axis.min <= pos &&
 		                axis.max >= pos &&
@@ -2136,6 +2028,7 @@
 		var isCollapsed = function (axis, node) {
 		    var breaks = (axis.options.breaks || []),
 		        obj = getBreakFromNode(node, axis.max);
+
 		    return breaks.some(function (b) {
 		        return b.from === obj.from && b.to === obj.to;
 		    });
@@ -2162,6 +2055,7 @@
 		var collapse = function (axis, node) {
 		    var breaks = (axis.options.breaks || []),
 		        obj = getBreakFromNode(node, axis.max);
+
 		    breaks.push(obj);
 		    return breaks;
 		};
@@ -2186,6 +2080,7 @@
 		var expand = function (axis, node) {
 		    var breaks = (axis.options.breaks || []),
 		        obj = getBreakFromNode(node, axis.max);
+
 		    // Remove the break from the axis breaks array.
 		    return breaks.reduce(function (arr, b) {
 		        if (b.to !== obj.to || b.from !== obj.from) {
@@ -2218,8 +2113,8 @@
 		var toggleCollapse = function (axis, node) {
 		    return (
 		        isCollapsed(axis, node) ?
-		        expand(axis, node) :
-		        collapse(axis, node)
+		            expand(axis, node) :
+		            collapse(axis, node)
 		    );
 		};
 		var renderLabelIcon = function (tick, params) {
@@ -2244,8 +2139,8 @@
 		            width,
 		            height
 		        ))
-		        .addClass('highcharts-label-icon')
-		        .add(params.group);
+		            .addClass('highcharts-label-icon')
+		            .add(params.group);
 		    }
 
 		    // Set the new position, and show or hide
@@ -2286,6 +2181,7 @@
 		};
 		var onTickHoverExit = function (label, options) {
 		    var css = defined(options.style) ? options.style : {};
+
 		    label.removeClass('highcharts-treegrid-node-active');
 
 		    if (!label.renderer.styledMode) {
@@ -2335,6 +2231,7 @@
 		            var gridNode = mapOfPosToGridNode[node.pos],
 		                height = 0,
 		                descendants = 0;
+
 		            gridNode.children.forEach(function (child) {
 		                descendants += child.descendants + 1;
 		                height = Math.max(child.height + 1, height);
@@ -2352,8 +2249,8 @@
 		                parentNode = mapOfIdToNode[node.parent],
 		                parentGridNode = (
 		                    isObject(parentNode) ?
-		                    mapOfPosToGridNode[parentNode.pos] :
-		                    null
+		                        mapOfPosToGridNode[parentNode.pos] :
+		                        null
 		                ),
 		                hasSameName = function (x) {
 		                    return x.name === name;
@@ -2423,6 +2320,7 @@
 
 		            nodes.forEach(function (node) {
 		                var data = node.data;
+
 		                if (isObject(data)) {
 		                    // Update point
 		                    data.y = start + data.seriesIndex;
@@ -2471,11 +2369,56 @@
 		    };
 		};
 
+		H.addEvent(H.Chart, 'beforeRender', function () {
+
+		    this.axes.forEach(function (axis) {
+		        if (axis.userOptions.type === 'treegrid') {
+		            var labelOptions = axis.options && axis.options.labels,
+		                removeFoundExtremesEvent;
+
+		            // beforeRender is fired after all the series is initialized,
+		            // which is an ideal time to update the axis.categories.
+		            axis.updateYNames();
+
+		            // Update yData now that we have calculated the y values
+		            // TODO: it would be better to be able to calculate y values
+		            // before Series.setData
+		            axis.series.forEach(function (series) {
+		                series.yData = series.options.data.map(function (data) {
+		                    return data.y;
+		                });
+		            });
+
+		            // Calculate the label options for each level in the tree.
+		            axis.mapOptionsToLevel = getLevelOptions({
+		                defaults: labelOptions,
+		                from: 1,
+		                levels: labelOptions.levels,
+		                to: axis.tree.height
+		            });
+
+		            // Collapse all the nodes belonging to a point where collapsed
+		            // equals true.
+		            // Can be called from beforeRender, if getBreakFromNode removes
+		            // its dependency on axis.max.
+		            removeFoundExtremesEvent =
+		                H.addEvent(axis, 'foundExtremes', function () {
+		                    axis.collapsedNodes.forEach(function (node) {
+		                        var breaks = collapse(axis, node);
+
+		                        axis.setBreaks(breaks, false);
+		                    });
+		                    removeFoundExtremesEvent();
+		                });
+		        }
+		    });
+		});
+
 		override(GridAxis.prototype, {
 		    init: function (proceed, chart, userOptions) {
 		        var axis = this,
-		            removeFoundExtremesEvent,
 		            isTreeGrid = userOptions.type === 'treegrid';
+
 		        // Set default and forced options for TreeGrid
 		        if (isTreeGrid) {
 		            userOptions = merge({
@@ -2561,43 +2504,6 @@
 		        // which are sliced off this function's arguments
 		        proceed.apply(axis, [chart, userOptions]);
 		        if (isTreeGrid) {
-		            H.addEvent(axis.chart, 'beforeRender', function () {
-		                var labelOptions = axis.options && axis.options.labels;
-
-		                // beforeRender is fired after all the series is initialized,
-		                // which is an ideal time to update the axis.categories.
-		                axis.updateYNames();
-
-		                // Update yData now that we have calculated the y values
-		                // TODO: it would be better to be able to calculate y values
-		                // before Series.setData
-		                axis.series.forEach(function (series) {
-		                    series.yData = series.options.data.map(function (data) {
-		                        return data.y;
-		                    });
-		                });
-
-		                // Calculate the label options for each level in the tree.
-		                axis.mapOptionsToLevel = getLevelOptions({
-		                    defaults: labelOptions,
-		                    from: 1,
-		                    levels: labelOptions.levels,
-		                    to: axis.tree.height
-		                });
-
-		                // Collapse all the nodes belonging to a point where collapsed
-		                // equals true.
-		                // Can be called from beforeRender, if getBreakFromNode removes
-		                // its dependency on axis.max.
-		                removeFoundExtremesEvent =
-		                    H.addEvent(axis, 'foundExtremes', function () {
-		                        axis.collapsedNodes.forEach(function (node) {
-		                            var breaks = collapse(axis, node);
-		                            axis.setBreaks(breaks, false);
-		                        });
-		                        removeFoundExtremesEvent();
-		                    });
-		            });
 		            axis.hasNames = true;
 		            axis.options.showLastLabel = true;
 		        }
@@ -2617,14 +2523,14 @@
 		            labelOptions = options && options.labels,
 		            indentation = (
 		                labelOptions && isNumber(labelOptions.indentation) ?
-		                options.labels.indentation :
-		                0
+		                    options.labels.indentation :
+		                    0
 		            ),
 		            retVal = proceed.apply(axis, argsToArray(arguments)),
 		            isTreeGrid = axis.options.type === 'treegrid',
 		            treeDepth;
 
-		        if (isTreeGrid) {
+		        if (isTreeGrid && this.mapOfPosToGridNode) {
 		            treeDepth = axis.mapOfPosToGridNode[-1].height;
 		            retVal.width += indentation * (treeDepth - 1);
 		        }
@@ -2696,7 +2602,7 @@
 		            options = axis.options,
 		            isTreeGrid = options.type === 'treegrid';
 
-		        if (isTreeGrid) {
+		        if (isTreeGrid && this.mapOfPosToGridNode) {
 		            axis.min = pick(axis.userMin, options.min, axis.dataMin);
 		            axis.max = pick(axis.userMax, options.max, axis.dataMax);
 
@@ -2748,13 +2654,13 @@
 		        if (isTreeGrid) {
 		            symbolOptions = (
 		                lbOptions && isObject(lbOptions.symbol) ?
-		                lbOptions.symbol :
-		                {}
+		                    lbOptions.symbol :
+		                    {}
 		            );
 		            indentation = (
 		                lbOptions && isNumber(lbOptions.indentation) ?
-		                lbOptions.indentation :
-		                0
+		                    lbOptions.indentation :
+		                    0
 		            );
 		            mapOfPosToGridNode = axis.mapOfPosToGridNode;
 		            node = mapOfPosToGridNode && mapOfPosToGridNode[pos];
@@ -2782,8 +2688,8 @@
 		            ),
 		            symbolOptions = (
 		                labelOptions && isObject(labelOptions.symbol) ?
-		                labelOptions.symbol :
-		                {}
+		                    labelOptions.symbol :
+		                    {}
 		            ),
 		            node = mapOfPosToGridNode && mapOfPosToGridNode[pos],
 		            level = node && node.depth,
@@ -2880,6 +2786,7 @@
 		            pos = tick.pos,
 		            node = axis.mapOfPosToGridNode[pos],
 		            breaks = collapse(axis, node);
+
 		        axis.setBreaks(breaks, pick(redraw, true));
 		    },
 		    /**
@@ -2900,6 +2807,7 @@
 		            pos = tick.pos,
 		            node = axis.mapOfPosToGridNode[pos],
 		            breaks = expand(axis, node);
+
 		        axis.setBreaks(breaks, pick(redraw, true));
 		    },
 		    /**
@@ -2921,6 +2829,7 @@
 		            pos = tick.pos,
 		            node = axis.mapOfPosToGridNode[pos],
 		            breaks = toggleCollapse(axis, node);
+
 		        axis.setBreaks(breaks, pick(redraw, true));
 		    }
 		});

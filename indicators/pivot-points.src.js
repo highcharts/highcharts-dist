@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Paweł Fus
+ * (c) 2010-2019 Paweł Fus
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -58,7 +59,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('pivotpoints', 'sma',
+		H.seriesType(
+		    'pivotpoints',
+		    'sma',
 		    /**
 		     * Pivot points indicator. This series requires the `linkedTo` option to be
 		     * set and should be loaded after `stock/indicators/indicators.js` file.
@@ -266,7 +269,7 @@
 
 		                lastPP = PP.push(
 		                    [endTimestamp]
-		                    .concat(avg)
+		                        .concat(avg)
 		                );
 
 		                xData.push(endTimestamp);
@@ -291,6 +294,7 @@
 		                low = Infinity,
 		                close = values[values.length - 1][3],
 		                pivot;
+
 		            values.forEach(function (p) {
 		                high = Math.max(high, p[1]);
 		                low = Math.min(low, p[2]);

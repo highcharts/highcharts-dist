@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Paweł Fus
+ * (c) 2010-2019 Paweł Fus
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -44,7 +45,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('rsi', 'sma',
+		H.seriesType(
+		    'rsi',
+		    'sma',
 		    /**
 		     * Relative strength index (RSI) technical indicator. This series
 		     * requires the `linkedTo` option to be set and should be loaded after

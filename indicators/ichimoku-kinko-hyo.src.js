@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Sebastian Bochan
+ * (c) 2010-2019 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -155,7 +156,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('ikh', 'sma',
+		seriesType(
+		    'ikh',
+		    'sma',
 		    /**
 		     * Ichimoku Kinko Hyo (IKH). This series requires `linkedTo` option to be
 		     * set.
@@ -490,10 +493,10 @@
 		                    // Check if lines intersect
 		                    var index = ikhMap.senkouSpanB.length - 1,
 		                        intersect = checkLineIntersection(
-		                          ikhMap.senkouSpanA[index - 1],
-		                          ikhMap.senkouSpanA[index],
-		                          ikhMap.senkouSpanB[index - 1],
-		                          ikhMap.senkouSpanB[index]
+		                            ikhMap.senkouSpanA[index - 1],
+		                            ikhMap.senkouSpanA[index],
+		                            ikhMap.senkouSpanB[index - 1],
+		                            ikhMap.senkouSpanB[index]
 		                        ),
 		                        intersectPointObj = {
 		                            plotX: intersect.plotX,
@@ -518,8 +521,8 @@
 		                    // First line is rendered by default option
 		                    indicator.points = allIchimokuPoints[lineIndex];
 		                    indicator.options = merge(
-		                      mainLineOptions[lineName].styles,
-		                      gappedExtend
+		                        mainLineOptions[lineName].styles,
+		                        gappedExtend
 		                    );
 		                    indicator.graph = indicator['graph' + lineName];
 
@@ -609,7 +612,7 @@
 		                            concatArrIndex =
 		                                sectionPoints[x].plotY >
 		                                sectionNextPoints[x].plotY ?
-		                                0 : 1;
+		                                    0 : 1;
 
 		                            points[concatArrIndex] =
 		                                points[concatArrIndex].concat(sectionPoints);
@@ -624,7 +627,7 @@
 		                        concatArrIndex =
 		                                sectionPoints[0].plotY >
 		                                sectionNextPoints[0].plotY ?
-		                                0 : 1;
+		                                    0 : 1;
 
 		                        points[concatArrIndex] =
 		                            points[concatArrIndex].concat(sectionPoints);
@@ -660,7 +663,8 @@
 		                            indicator[areaName] = indicator.graph;
 		                            indicator.graphCollection.push(areaName);
 		                        }
-		                    });
+		                    }
+		                );
 
 		            } else {
 		                // When user set only senkouSpan style.fill property
@@ -709,9 +713,9 @@
 		                spanA[0] = 'L';
 
 		                path = SMA.prototype.getGraphPath.call(
-		                        indicator,
-		                        points
-		                    );
+		                    indicator,
+		                    points
+		                );
 
 		                spanAarr = spanA.slice(0, path.length);
 
@@ -806,7 +810,7 @@
 		                    SSB = (pointSSB.high + pointSSB.low) / 2;
 		                }
 
-		                CS = yVal[i][0];
+		                CS = yVal[i][3];
 
 		                date = xVal[i];
 
@@ -822,9 +826,9 @@
 		                IKH[i + period][1] = KS;
 		                IKH[i + period][2] = UNDEFINED;
 
-		                if (i >= period) {
-		                    IKH[i - period][2] = CS;
-		                } else {
+		                IKH[i][2] = CS;
+
+		                if (i <= period) {
 		                    IKH[i + period][3] = UNDEFINED;
 		                    IKH[i + period][4] = UNDEFINED;
 		                }

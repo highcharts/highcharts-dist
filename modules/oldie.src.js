@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
- * (c) 2010-2018 Highsoft AS
+ * (c) 2010-2019 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -10,6 +10,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * Support for old IE browsers (6, 7 and 8) in Highcharts v6+.
 		 *
@@ -53,8 +54,7 @@
 		    svg = H.svg,
 		    SVGElement = H.SVGElement,
 		    SVGRenderer = H.SVGRenderer,
-		    win = H.win,
-		    wrap = H.wrap;
+		    win = H.win;
 
 
 		/**
@@ -67,7 +67,7 @@
 		 * @apioption global.VMLRadialGradientURL
 		 */
 		H.getOptions().global.VMLRadialGradientURL =
-		    'http://code.highcharts.com/7.0.1/gfx/vml-radial-gradient.png';
+		    'http://code.highcharts.com/7.0.2/gfx/vml-radial-gradient.png';
 
 
 		// Utilites
@@ -111,13 +111,12 @@
 		    // This applies only to charts for export, where IE runs the SVGRenderer
 		    // instead of the VMLRenderer
 		    // (#1079, #1063)
-		    wrap(H.SVGRenderer.prototype, 'text', function (proceed) {
-		        return proceed.apply(
-		            this,
-		            Array.prototype.slice.call(arguments, 1)
-		        ).css({
-		            position: 'absolute'
-		        });
+		    H.addEvent(SVGElement, 'afterInit', function () {
+		        if (this.element.nodeName === 'text') {
+		            this.css({
+		                position: 'absolute'
+		            });
+		        }
 		    });
 
 		    /**
@@ -226,6 +225,7 @@
 		     */
 		    H.addEventListenerPolyfill = function (type, fn) {
 		        var el = this;
+
 		        function wrappedFn(e) {
 		            e.target = e.srcElement || win; // #2820
 		            fn.call(el, e);
@@ -581,6 +581,7 @@
 		            // simplest possible event model for internal use
 		            this.element['on' + eventType] = function () {
 		                var evt = win.event;
+
 		                evt.target = evt.srcElement;
 		                handler(evt);
 		            };
@@ -663,7 +664,8 @@
 		                        '" />'
 		                    ];
 
-		                    shadow = createElement(renderer.prepVML(markup),
+		                    shadow = createElement(
+		                        renderer.prepVML(markup),
 		                        null, {
 		                            left: pInt(elemStyle.left) +
 		                                pick(shadowOptions.offsetX, 1),
@@ -728,6 +730,7 @@
 		                    null,
 		                    element
 		                );
+
 		            strokeElem[key] = value || 'solid';
 		            // Because changing stroke-width will change the dash length and
 		            // cause an epileptic effect
@@ -736,6 +739,7 @@
 		        dSetter: function (value, key, element) {
 		            var i,
 		                shadows = this.shadows;
+
 		            value = value || [];
 		            // Used in getter for animation
 		            this.d = value.join && value.join(' ');
@@ -755,6 +759,7 @@
 		        },
 		        fillSetter: function (value, key, element) {
 		            var nodeName = element.nodeName;
+
 		            if (nodeName === 'SPAN') { // text color
 		                element.style.color = value;
 		            } else if (nodeName !== 'IMG') { // #1336
@@ -779,6 +784,7 @@
 		        opacitySetter: noop,
 		        rotationSetter: function (value, key, element) {
 		            var style = element.style;
+
 		            this[key] = style[key] = value; // style is for #1873
 
 		            // Correction for the 1x1 size of the shape container. Used in gauge
@@ -1081,8 +1087,8 @@
 		                        // the meanings of opacity and o:opacity2 are reversed.
 		                        markup = ['<fill colors="' + colors.join(',') +
 		                            '" opacity="', opacity2, '" o:opacity2="',
-		                            opacity1, '" type="', fillType, '" ', fillAttr,
-		                            'focus="100%" method="any" />'];
+		                        opacity1, '" type="', fillType, '" ', fillAttr,
+		                        'focus="100%" method="any" />'];
 		                        createElement(
 		                            renderer.prepVML(markup),
 		                            null,
@@ -1144,7 +1150,7 @@
 		                        fillAttr = 'angle="' + (90 - Math.atan(
 		                            (y2 - y1) / // y vector
 		                            (x2 - x1) // x vector
-		                            ) * 180 / Math.PI) + '"';
+		                        ) * 180 / Math.PI) + '"';
 
 		                        addFillNode();
 
@@ -1218,6 +1224,7 @@
 		            } else {
 		                // 'stroke' or 'fill' node
 		                var propNodes = elem.getElementsByTagName(prop);
+
 		                if (propNodes.length) {
 		                    propNodes[0].opacity = 1;
 		                    propNodes[0].type = 'solid';
@@ -1288,6 +1295,7 @@
 		                // subpixel precision down to 0.1 (width and height = 1px)
 		                coordsize: '10 10'
 		            };
+
 		            if (isArray(path)) {
 		                attr.d = path;
 		            } else if (isObject(path)) { // attributes
@@ -1311,6 +1319,7 @@
 		         */
 		        circle: function (x, y, r) {
 		            var circle = this.symbol('circle');
+
 		            if (isObject(x)) {
 		                r = x.r;
 		                y = x.y;
@@ -1456,7 +1465,7 @@
 		                    x + radius * cosStart, // start x
 		                    y + radius * sinStart, // start y
 		                    x + radius * cosEnd, // end x
-		                    y + radius * sinEnd  // end y
+		                    y + radius * sinEnd // end y
 		                ];
 
 		                if (options.open && !innerRadius) {
@@ -1508,9 +1517,9 @@
 		                    x + w, // right
 		                    y + h, // bottom
 		                    x + w, // start x
-		                    y + h / 2,     // start y
+		                    y + h / 2, // start y
 		                    x + w, // end x
-		                    y + h / 2,     // end y
+		                    y + h / 2, // end y
 		                    'e' // close
 		                ];
 		            },
@@ -1564,8 +1573,6 @@
 		    discardElement(measuringSpan); // #2463
 		    return offsetWidth;
 		};
-
-
 
 	}(Highcharts));
 	return (function () {

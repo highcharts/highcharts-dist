@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -8,6 +8,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -19,7 +20,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -417,7 +418,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -881,7 +882,8 @@
 
 		    // Actions before axis init.
 		    addEvent(Axis, 'init', function (e) {
-		        var chart = this.chart,
+		        var axis = this,
+		            chart = this.chart,
 		            angular = chart.angular,
 		            polar = chart.polar,
 		            isX = this.isXAxis,
@@ -913,6 +915,24 @@
 		            this.isRadial = true;
 		            chart.inverted = false;
 		            chartOptions.chart.zoomType = null;
+
+		            // Prevent overlapping axis labels (#9761)
+		            chart.labelCollectors.push(function () {
+		                if (
+		                    axis.isRadial &&
+		                    axis.tickPositions &&
+		                    // undocumented option for now, but working
+		                    axis.options.labels.allowOverlap !== true
+		                ) {
+		                    return axis.tickPositions
+		                        .map(function (pos) {
+		                            return axis.ticks[pos] && axis.ticks[pos].label;
+		                        })
+		                        .filter(function (label) {
+		                            return Boolean(label);
+		                        });
+		                }
+		            });
 		        } else {
 		            this.isRadial = false;
 		        }
@@ -953,16 +973,13 @@
 
 		    });
 
-		    /* *
-		     * Wrap auto label align to avoid setting axis-wide rotation on radial axes
-		     * (#4920)
-		     * @param   {Function} proceed
-		     * @returns {String} Alignment
-		     */
-		    wrap(axisProto, 'autoLabelAlign', function (proceed) {
-		        if (!this.isRadial) {
-		            return proceed.apply(this, [].slice.call(arguments, 1));
-		        } // else return undefined
+		    // Wrap auto label align to avoid setting axis-wide rotation on radial axes
+		    // (#4920)
+		    addEvent(Axis, 'autoLabelAlign', function (e) {
+		        if (this.isRadial) {
+		            e.align = undefined;
+		            e.preventDefault();
+		        }
 		    });
 
 		    // Add special cases within the Tick class' methods for radial axes.
@@ -1083,7 +1100,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -1165,7 +1182,13 @@
 		     */
 		    dataLabels: {
 
+		        /**
+		         * @type {Highcharts.AlignType|null}
+		         */
 		        align: null,
+		        /**
+		         * @type {Highcharts.VerticalAlignType|null}
+		         */
 		        verticalAlign: null,
 
 		        /**
@@ -1235,6 +1258,7 @@
 		                point.rectPlotX,
 		                this.yAxis.len - point.plotHigh
 		            );
+
 		        point.plotHighX = xy.x - chart.plotLeft;
 		        point.plotHigh = xy.y - chart.plotTop;
 		        point.plotLowX = point.plotX;
@@ -1530,7 +1554,7 @@
 		            while (i--) {
 		                point = data[i];
 		                if (point) {
-		                    point.dataLabels = [point.dataLabel, point.dataLabelUpper]
+		                    point.dataLabels = [point.dataLabelUpper, point.dataLabel]
 		                        .filter(function (label) {
 		                            return !!label;
 		                        });
@@ -1790,7 +1814,7 @@
 		 * @apioption series.arearange.data.low
 		 */
 
-		 /**
+		/**
 		 * @excluding x, y
 		 * @product   highcharts highstock
 		 * @apioption series.arearange.dataLabels
@@ -1799,7 +1823,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -1896,7 +1920,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -1953,6 +1977,7 @@
 		        }
 		    }
 		};
+
 		/**
 		 * The ColumnRangeSeries class
 		 *
@@ -2039,17 +2064,17 @@
 		                shapeArgs.y = y;
 
 		                point.tooltipPos = chart.inverted ?
-		                [
-		                    yAxis.len + yAxis.pos - chart.plotLeft - y - height / 2,
-		                    xAxis.len + xAxis.pos - chart.plotTop - shapeArgs.x -
+		                    [
+		                        yAxis.len + yAxis.pos - chart.plotLeft - y - height / 2,
+		                        xAxis.len + xAxis.pos - chart.plotTop - shapeArgs.x -
 		                        shapeArgs.width / 2,
-		                    height
-		                ] : [
-		                    xAxis.left - chart.plotLeft + shapeArgs.x +
+		                        height
+		                    ] : [
+		                        xAxis.left - chart.plotLeft + shapeArgs.x +
 		                        shapeArgs.width / 2,
-		                    yAxis.pos - chart.plotTop + y + height / 2,
-		                    height
-		                ]; // don't inherit from column tooltip position - #3372
+		                        yAxis.pos - chart.plotTop + y + height / 2,
+		                        height
+		                    ]; // don't inherit from column tooltip position - #3372
 		            }
 		        });
 		    },
@@ -2173,7 +2198,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Sebastian Bochan
+		 * (c) 2010-2019 Sebastian Bochan
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -2197,7 +2222,7 @@
 		 */
 		seriesType('columnpyramid', 'column'
 
-		/**
+		    /**
 		 * Column pyramid series display one pyramid per value along an X axis.
 		 * Requires `highcharts-more.js`. To display horizontal pyramids,
 		 * set [chart.inverted](#chart.inverted) to `true`.
@@ -2217,95 +2242,95 @@
 		 *               threshold, zoneAxis, zones
 		 * @optionparent plotOptions.columnpyramid
 		 */
-		, {}, {
+		    , {}, {
 		    // Overrides the column translate method
-		    translate: function () {
-		        var series = this,
-		            chart = series.chart,
-		            options = series.options,
-		            dense = series.dense =
+		        translate: function () {
+		            var series = this,
+		                chart = series.chart,
+		                options = series.options,
+		                dense = series.dense =
 		            series.closestPointRange * series.xAxis.transA < 2,
-		            borderWidth = series.borderWidth = pick(
-		                options.borderWidth,
-		                dense ? 0 : 1 // #3635
-		            ),
-		            yAxis = series.yAxis,
-		            threshold = options.threshold,
-		            translatedThreshold = series.translatedThreshold =
-		            yAxis.getThreshold(threshold),
-		            minPointLength = pick(options.minPointLength, 5),
-		            metrics = series.getColumnMetrics(),
-		            pointWidth = metrics.width,
-		            // postprocessed for border width
-		            seriesBarW = series.barW =
-		            Math.max(pointWidth, 1 + 2 * borderWidth),
-		            pointXOffset = series.pointXOffset = metrics.offset;
-
-		        if (chart.inverted) {
-		            translatedThreshold -= 0.5; // #3355
-		        }
-
-		        // When the pointPadding is 0,
-		        // we want the pyramids to be packed tightly,
-		        // so we allow individual pyramids to have individual sizes.
-		        // When pointPadding is greater,
-		        // we strive for equal-width columns (#2694).
-		        if (options.pointPadding) {
-		            seriesBarW = Math.ceil(seriesBarW);
-		        }
-
-		        colProto.translate.apply(series);
-
-		        // Record the new values
-		        series.points.forEach(function (point) {
-		            var yBottom = pick(point.yBottom, translatedThreshold),
-		                safeDistance = 999 + Math.abs(yBottom),
-		                plotY = Math.min(
-		                    Math.max(-safeDistance, point.plotY),
-		                    yAxis.len + safeDistance
+		                borderWidth = series.borderWidth = pick(
+		                    options.borderWidth,
+		                    dense ? 0 : 1 // #3635
 		                ),
-		                // Don't draw too far outside plot area
-		                // (#1303, #2241, #4264)
-		                barX = point.plotX + pointXOffset,
-		                barW = seriesBarW / 2,
-		                barY = Math.min(plotY, yBottom),
-		                barH = Math.max(plotY, yBottom) - barY,
-		                stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth,
-		                invBarPos,
-		                x1, x2, x3, x4, y1, y2;
+		                yAxis = series.yAxis,
+		                threshold = options.threshold,
+		                translatedThreshold = series.translatedThreshold =
+		            yAxis.getThreshold(threshold),
+		                minPointLength = pick(options.minPointLength, 5),
+		                metrics = series.getColumnMetrics(),
+		                pointWidth = metrics.width,
+		                // postprocessed for border width
+		                seriesBarW = series.barW =
+		            Math.max(pointWidth, 1 + 2 * borderWidth),
+		                pointXOffset = series.pointXOffset = metrics.offset;
 
-
-		            point.barX = barX;
-		            point.pointWidth = pointWidth;
-
-		            // Fix the tooltip on center of grouped pyramids
-		            // (#1216, #424, #3648)
-		            point.tooltipPos = chart.inverted ? [
-		                yAxis.len + yAxis.pos - chart.plotLeft - plotY,
-		                series.xAxis.len - barX - barW, barH
-		            ] : [barX + barW, plotY + yAxis.pos - chart.plotTop, barH];
-
-		            stackTotal = threshold + (point.total || point.y);
-
-		            // overwrite stacktotal (always 100 / -100)
-		            if (options.stacking === 'percent') {
-		                stackTotal = threshold + (point.y < 0) ? -100 : 100;
+		            if (chart.inverted) {
+		                translatedThreshold -= 0.5; // #3355
 		            }
 
-		            // get the highest point (if stack, extract from total)
-		            topPointY = yAxis.toPixels((stackTotal), true);
+		            // When the pointPadding is 0,
+		            // we want the pyramids to be packed tightly,
+		            // so we allow individual pyramids to have individual sizes.
+		            // When pointPadding is greater,
+		            // we strive for equal-width columns (#2694).
+		            if (options.pointPadding) {
+		                seriesBarW = Math.ceil(seriesBarW);
+		            }
 
-		            // calculate height of stack (in pixels)
-		            stackHeight = chart.plotHeight - topPointY -
+		            colProto.translate.apply(series);
+
+		            // Record the new values
+		            series.points.forEach(function (point) {
+		                var yBottom = pick(point.yBottom, translatedThreshold),
+		                    safeDistance = 999 + Math.abs(yBottom),
+		                    plotY = Math.min(
+		                        Math.max(-safeDistance, point.plotY),
+		                        yAxis.len + safeDistance
+		                    ),
+		                    // Don't draw too far outside plot area
+		                    // (#1303, #2241, #4264)
+		                    barX = point.plotX + pointXOffset,
+		                    barW = seriesBarW / 2,
+		                    barY = Math.min(plotY, yBottom),
+		                    barH = Math.max(plotY, yBottom) - barY,
+		                    stackTotal, stackHeight, topPointY, topXwidth, bottomXwidth,
+		                    invBarPos,
+		                    x1, x2, x3, x4, y1, y2;
+
+
+		                point.barX = barX;
+		                point.pointWidth = pointWidth;
+
+		                // Fix the tooltip on center of grouped pyramids
+		                // (#1216, #424, #3648)
+		                point.tooltipPos = chart.inverted ? [
+		                    yAxis.len + yAxis.pos - chart.plotLeft - plotY,
+		                    series.xAxis.len - barX - barW, barH
+		                ] : [barX + barW, plotY + yAxis.pos - chart.plotTop, barH];
+
+		                stackTotal = threshold + (point.total || point.y);
+
+		                // overwrite stacktotal (always 100 / -100)
+		                if (options.stacking === 'percent') {
+		                    stackTotal = threshold + (point.y < 0) ? -100 : 100;
+		                }
+
+		                // get the highest point (if stack, extract from total)
+		                topPointY = yAxis.toPixels((stackTotal), true);
+
+		                // calculate height of stack (in pixels)
+		                stackHeight = chart.plotHeight - topPointY -
 		                            (chart.plotHeight - translatedThreshold);
 
-		            // topXwidth and bottomXwidth = width of lines from the center
-		            // calculated from tanges proportion.
-		            topXwidth = (barW * (barY - topPointY)) / stackHeight;
-		            // like topXwidth, but with height of point
-		            bottomXwidth = (barW * (barY + barH - topPointY)) / stackHeight;
+		                // topXwidth and bottomXwidth = width of lines from the center
+		                // calculated from tanges proportion.
+		                topXwidth = (barW * (barY - topPointY)) / stackHeight;
+		                // like topXwidth, but with height of point
+		                bottomXwidth = (barW * (barY + barH - topPointY)) / stackHeight;
 
-		            /*
+		                /*
 		                        /\
 		                        /  \
 		                x1,y1,------ x2,y1
@@ -2314,65 +2339,65 @@
 		                x4,y2        x3,y2
 		             */
 
-		            x1 = barX - topXwidth + barW;
-		            x2 = barX + topXwidth + barW;
-		            x3 = barX + bottomXwidth + barW;
-		            x4 = barX - bottomXwidth + barW;
+		                x1 = barX - topXwidth + barW;
+		                x2 = barX + topXwidth + barW;
+		                x3 = barX + bottomXwidth + barW;
+		                x4 = barX - bottomXwidth + barW;
 
-		            y1 = barY - minPointLength;
-		            y2 = barY + barH;
-
-		            if (point.y < 0) {
-		                y1 = barY;
-		                y2 = barY + barH + minPointLength;
-		            }
-
-		            // inverted chart
-		            if (chart.inverted) {
-		                invBarPos = chart.plotWidth - barY;
-		                stackHeight = (topPointY -
-		                    (chart.plotWidth - translatedThreshold));
-
-		                // proportion tanges
-		                topXwidth = (barW *
-		                    (topPointY - invBarPos)) / stackHeight;
-		                bottomXwidth = (barW *
-		                    (topPointY - (invBarPos - barH))) / stackHeight;
-
-		                x1 = barX + barW + topXwidth; // top bottom
-		                x2 = x1 - 2 * topXwidth; // top top
-		                x3 = barX - bottomXwidth + barW; // bottom top
-		                x4 = barX + bottomXwidth + barW; // bottom bottom
-
-		                y1 = barY;
-		                y2 = barY + barH - minPointLength;
+		                y1 = barY - minPointLength;
+		                y2 = barY + barH;
 
 		                if (point.y < 0) {
+		                    y1 = barY;
 		                    y2 = barY + barH + minPointLength;
 		                }
-		            }
 
-		            // Register shape type and arguments to be used in drawPoints
-		            point.shapeType = 'path';
-		            point.shapeArgs = {
+		                // inverted chart
+		                if (chart.inverted) {
+		                    invBarPos = chart.plotWidth - barY;
+		                    stackHeight = (topPointY -
+		                    (chart.plotWidth - translatedThreshold));
+
+		                    // proportion tanges
+		                    topXwidth = (barW *
+		                    (topPointY - invBarPos)) / stackHeight;
+		                    bottomXwidth = (barW *
+		                    (topPointY - (invBarPos - barH))) / stackHeight;
+
+		                    x1 = barX + barW + topXwidth; // top bottom
+		                    x2 = x1 - 2 * topXwidth; // top top
+		                    x3 = barX - bottomXwidth + barW; // bottom top
+		                    x4 = barX + bottomXwidth + barW; // bottom bottom
+
+		                    y1 = barY;
+		                    y2 = barY + barH - minPointLength;
+
+		                    if (point.y < 0) {
+		                        y2 = barY + barH + minPointLength;
+		                    }
+		                }
+
+		                // Register shape type and arguments to be used in drawPoints
+		                point.shapeType = 'path';
+		                point.shapeArgs = {
 		                // args for datalabels positioning
-		                x: x1,
-		                y: y1,
-		                width: x2 - x1,
-		                height: barH,
-		                // path of pyramid
-		                d: ['M',
-		                    x1, y1,
-		                    'L',
-		                    x2, y1,
-		                    x3, y2,
-		                    x4, y2,
-		                    'Z'
-		                ]
-		            };
-		        });
-		    }
-		});
+		                    x: x1,
+		                    y: y1,
+		                    width: x2 - x1,
+		                    height: barH,
+		                    // path of pyramid
+		                    d: ['M',
+		                        x1, y1,
+		                        'L',
+		                        x2, y1,
+		                        x3, y2,
+		                        x4, y2,
+		                        'Z'
+		                    ]
+		                };
+		            });
+		        }
+		    });
 
 
 		/**
@@ -2461,7 +2486,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -2674,7 +2699,7 @@
 		     * @sample {highcharts} highcharts/plotoptions/gauge-dial/
 		     *         Dial options demonstrated
 		     *
-		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject}
+		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		     * @default   #000000
 		     * @since     2.3.0
 		     * @product   highcharts
@@ -2788,7 +2813,7 @@
 		     * @sample {highcharts} highcharts/plotoptions/gauge-pivot/
 		     *         Pivot options demonstrated
 		     *
-		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject}
+		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		     * @default   #000000
 		     * @since     2.3.0
 		     * @product   highcharts
@@ -3075,7 +3100,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3149,7 +3174,7 @@
 		     * @sample {highcharts} highcharts/plotoptions/box-plot-styling/
 		     *         Box plot styling
 		     *
-		     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject}
+		     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		     * @default #ffffff
 		     * @since   3.0
 		     * @product highcharts
@@ -3250,14 +3275,11 @@
 		     * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
 		     *         Error bar styling
 		     *
-		     * @type       {string}
-		     * @default    Solid
-		     * @since      3.0
-		     * @product    highcharts
-		     * @validvalue ["Solid", "ShortDash", "ShortDot", "ShortDashDot",
-		     *              "ShortDashDotDot", "Dot", "Dash" ,"LongDash", "DashDot",
-		     *              "LongDashDot", "LongDashDotDot"]
-		     * @apioption  plotOptions.boxplot.stemDashStyle
+		     * @type      {Highcharts.DashStyleType}
+		     * @default   Solid
+		     * @since     3.0
+		     * @product   highcharts
+		     * @apioption plotOptions.boxplot.stemDashStyle
 		     */
 
 		    /**
@@ -3483,19 +3505,21 @@
 		                // The stem
 		                crispCorr = (point.stem.strokeWidth() % 2) / 2;
 		                crispX = left + halfWidth + crispCorr;
-		                point.stem[verb]({ d: [
+		                point.stem[verb]({
+		                    d: [
 		                    // stem up
-		                    'M',
-		                    crispX, q3Plot,
-		                    'L',
-		                    crispX, highPlot,
+		                        'M',
+		                        crispX, q3Plot,
+		                        'L',
+		                        crispX, highPlot,
 
-		                    // stem down
-		                    'M',
-		                    crispX, q1Plot,
-		                    'L',
-		                    crispX, lowPlot
-		                ] });
+		                        // stem down
+		                        'M',
+		                        crispX, q1Plot,
+		                        'L',
+		                        crispX, lowPlot
+		                    ]
+		                });
 
 		                // The box
 		                if (doQuartiles) {
@@ -3504,19 +3528,21 @@
 		                    q3Plot = Math.floor(q3Plot) + crispCorr;
 		                    left += crispCorr;
 		                    right += crispCorr;
-		                    point.box[verb]({ d: [
-		                        'M',
-		                        left, q3Plot,
-		                        'L',
-		                        left, q1Plot,
-		                        'L',
-		                        right, q1Plot,
-		                        'L',
-		                        right, q3Plot,
-		                        'L',
-		                        left, q3Plot,
-		                        'z'
-		                    ] });
+		                    point.box[verb]({
+		                        d: [
+		                            'M',
+		                            left, q3Plot,
+		                            'L',
+		                            left, q1Plot,
+		                            'L',
+		                            right, q1Plot,
+		                            'L',
+		                            right, q3Plot,
+		                            'L',
+		                            left, q3Plot,
+		                            'z'
+		                        ]
+		                    });
 		                }
 
 		                // The whiskers
@@ -3527,23 +3553,25 @@
 		                    pointWiskerLength = (/%$/).test(whiskerLength) ?
 		                        halfWidth * parseFloat(whiskerLength) / 100 :
 		                        whiskerLength / 2;
-		                    point.whiskers[verb]({ d: [
+		                    point.whiskers[verb]({
+		                        d: [
 		                        // High whisker
-		                        'M',
-		                        crispX - pointWiskerLength,
-		                        highPlot,
-		                        'L',
-		                        crispX + pointWiskerLength,
-		                        highPlot,
+		                            'M',
+		                            crispX - pointWiskerLength,
+		                            highPlot,
+		                            'L',
+		                            crispX + pointWiskerLength,
+		                            highPlot,
 
-		                        // Low whisker
-		                        'M',
-		                        crispX - pointWiskerLength,
-		                        lowPlot,
-		                        'L',
-		                        crispX + pointWiskerLength,
-		                        lowPlot
-		                    ] });
+		                            // Low whisker
+		                            'M',
+		                            crispX - pointWiskerLength,
+		                            lowPlot,
+		                            'L',
+		                            crispX + pointWiskerLength,
+		                            lowPlot
+		                        ]
+		                    });
 		                }
 
 		                // The median
@@ -3551,14 +3579,16 @@
 		                crispCorr = (point.medianShape.strokeWidth() % 2) / 2;
 		                medianPlot = medianPlot + crispCorr;
 
-		                point.medianShape[verb]({ d: [
-		                    'M',
-		                    left,
-		                    medianPlot,
-		                    'L',
-		                    right,
-		                    medianPlot
-		                ] });
+		                point.medianShape[verb]({
+		                    d: [
+		                        'M',
+		                        left,
+		                        medianPlot,
+		                        'L',
+		                        right,
+		                        medianPlot
+		                    ]
+		                });
 		            }
 		        });
 
@@ -3686,7 +3716,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3721,7 +3751,7 @@
 		     * @sample {highcharts} highcharts/plotoptions/error-bar-styling/
 		     *         Error bar styling
 		     *
-		     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject}
+		     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		     * @default #000000
 		     * @since   3.0
 		     * @product highcharts
@@ -3769,6 +3799,7 @@
 		    drawDataLabels: seriesTypes.arearange ?
 		        function () {
 		            var valKey = this.pointValKey;
+
 		            seriesTypes.arearange.prototype.drawDataLabels.call(this);
 		            // Arearange drawDataLabels does not reset point.y to high,
 		            // but to low after drawing (#4133)
@@ -3855,7 +3886,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3865,10 +3896,39 @@
 		var correctFloat = H.correctFloat,
 		    isNumber = H.isNumber,
 		    pick = H.pick,
+		    objectEach = H.objectEach,
+		    arrayMin = H.arrayMin,
+		    arrayMax = H.arrayMax,
+		    addEvent = H.addEvent,
+		    Axis = H.Axis,
+		    Chart = H.Chart,
 		    Point = H.Point,
 		    Series = H.Series,
 		    seriesType = H.seriesType,
 		    seriesTypes = H.seriesTypes;
+
+		addEvent(Axis, 'afterInit', function () {
+		    if (!this.isXAxis) {
+		        this.waterfallStacks = {};
+		    }
+		});
+
+		addEvent(Chart, 'beforeRedraw', function () {
+		    var axes = this.axes,
+		        series = this.series,
+		        i = series.length;
+
+		    while (i--) {
+		        if (series[i].options.stacking) {
+		            axes.forEach(function (axis) {
+		                if (!axis.isXAxis) {
+		                    axis.waterfallStacks = {};
+		                }
+		            });
+		            i = 0;
+		        }
+		    }
+		});
 
 		/**
 		 * A waterfall chart displays sequentially introduced positive or negative
@@ -3888,6 +3948,11 @@
 		seriesType('waterfall', 'column', {
 
 		    /**
+		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+		     * @apioption plotOptions.waterfall.color
+		     */
+
+		    /**
 		     * The color used specifically for positive point columns. When not
 		     * specified, the general series color is used.
 		     *
@@ -3898,7 +3963,7 @@
 		     * @sample {highcharts} highcharts/demo/waterfall/
 		     *         Waterfall
 		     *
-		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject}
+		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		     * @product   highcharts
 		     * @apioption plotOptions.waterfall.upColor
 		     */
@@ -3934,12 +3999,9 @@
 		     * In styled mode, the stroke dash-array can be set with the
 		     * `.highcharts-graph` class.
 		     *
-		     * @type       {string}
-		     * @since      3.0
-		     * @validvalue ["Dash", "DashDot", "Dot", "LongDash", "LongDashDot",
-		     *             "LongDashDotDot", "ShortDash", "ShortDashDot",
-		     *             "ShortDashDotDot", "ShortDot", "Solid"]
-		     * @product    highcharts
+		     * @type    {Highcharts.DashStyleType}
+		     * @since   3.0
+		     * @product highcharts
 		     */
 		    dashStyle: 'Dot',
 
@@ -3971,11 +4033,11 @@
 
 		    // After generating points, set y-values for all sums.
 		    generatePoints: function () {
-		        var previousIntermediate = this.options.threshold,
-		            point,
+		        var point,
 		            len,
 		            i,
 		            y;
+
 		        // Parent call:
 		        seriesTypes.column.prototype.generatePoints.apply(this);
 
@@ -3984,11 +4046,8 @@
 		            y = this.processedYData[i];
 		            // override point value for sums
 		            // #3710 Update point does not propagate to sum
-		            if (point.isSum) {
+		            if (point.isIntermediateSum || point.isSum) {
 		                point.y = correctFloat(y);
-		            } else if (point.isIntermediateSum) {
-		                point.y = correctFloat(y - previousIntermediate); // #3840
-		                previousIntermediate = y;
 		            }
 		        }
 		    },
@@ -4003,7 +4062,6 @@
 		            points,
 		            point,
 		            shapeArgs,
-		            stack,
 		            y,
 		            yValue,
 		            previousY,
@@ -4013,8 +4071,13 @@
 		            halfMinPointLength = minPointLength / 2,
 		            threshold = options.threshold,
 		            stacking = options.stacking,
-		            stackIndicator,
-		            tooltipY;
+		            tooltipY,
+		            actualStack = yAxis.waterfallStacks[series.stackKey],
+		            actualStackX,
+		            total,
+		            pointY,
+		            yPos,
+		            hPos;
 
 		        // run column series translate
 		        seriesTypes.column.prototype.translate.apply(series);
@@ -4028,61 +4091,112 @@
 		            yValue = series.processedYData[i];
 		            shapeArgs = point.shapeArgs;
 
-		            // get current stack
-		            stack = stacking &&
-		                yAxis.stacks[
-		                    (series.negStacks && yValue < threshold ? '-' : '') +
-		                        series.stackKey
-		                ];
-		            stackIndicator = series.getStackIndicator(
-		                stackIndicator,
-		                point.x,
-		                series.index
-		            );
-		            range = pick(
-		                stack && stack[point.x].points[stackIndicator.key],
-		                [0, yValue]
-		            );
+		            range = [0, yValue];
+		            pointY = point.y;
 
-		            // up points
-		            y = Math.max(previousY, previousY + point.y) + range[0];
-		            shapeArgs.y = yAxis.translate(y, 0, 1, 0, 1);
+		            // code responsible for correct positions of stacked points
+		            // starts here
+		            if (stacking) {
+		                if (actualStack) {
+		                    actualStackX = actualStack[i];
 
-		            // sum points
-		            if (point.isSum) {
-		                shapeArgs.y = yAxis.translate(range[1], 0, 1, 0, 1);
-		                shapeArgs.height = Math.min(
+		                    if (stacking === 'overlap') {
+		                        total = actualStackX.threshold + actualStackX.total;
+		                        actualStackX.total -= pointY;
+
+		                        y = pointY >= 0 ? total : total - pointY;
+		                    } else {
+		                        if (pointY >= 0) {
+		                            total = actualStackX.threshold +
+		                                actualStackX.posTotal;
+
+		                            actualStackX.posTotal -= pointY;
+		                            y = total;
+		                        } else {
+		                            total = actualStackX.threshold +
+		                                actualStackX.negTotal;
+
+		                            actualStackX.negTotal -= pointY;
+		                            y = total - pointY;
+		                        }
+		                    }
+
+		                    if (!point.isSum) {
+		                        // the connectorThreshold property is later used in
+		                        // getCrispPath function to draw a connector line in a
+		                        // correct place
+		                        actualStackX.connectorThreshold =
+		                            actualStackX.threshold + actualStackX.stackTotal;
+		                    }
+
+		                    if (yAxis.reversed) {
+		                        yPos = (pointY >= 0) ? (y - pointY) : (y + pointY);
+		                        hPos = y;
+		                    } else {
+		                        yPos = y;
+		                        hPos = y - pointY;
+		                    }
+
+		                    point.below = yPos <= pick(threshold, 0);
+
+		                    shapeArgs.y = yAxis.translate(yPos, 0, 1, 0, 1);
+		                    shapeArgs.height = Math.abs(shapeArgs.y -
+		                        yAxis.translate(hPos, 0, 1, 0, 1));
+		                }
+		            } else {
+		                // up points
+		                y = Math.max(previousY, previousY + pointY) + range[0];
+		                shapeArgs.y = yAxis.translate(y, 0, 1, 0, 1);
+
+		                // sum points
+		                if (point.isSum) {
+		                    shapeArgs.y = yAxis.translate(range[1], 0, 1, 0, 1);
+		                    shapeArgs.height = Math.min(
 		                        yAxis.translate(range[0], 0, 1, 0, 1),
 		                        yAxis.len
 		                    ) - shapeArgs.y; // #4256
 
-		            } else if (point.isIntermediateSum) {
-		                shapeArgs.y = yAxis.translate(range[1], 0, 1, 0, 1);
-		                shapeArgs.height = Math.min(
-		                        yAxis.translate(previousIntermediate, 0, 1, 0, 1),
+		                } else if (point.isIntermediateSum) {
+		                    if (pointY >= 0) {
+		                        yPos = range[1] + previousIntermediate;
+		                        hPos = previousIntermediate;
+		                    } else {
+		                        yPos = previousIntermediate;
+		                        hPos = range[1] + previousIntermediate;
+		                    }
+
+		                    if (yAxis.reversed) {
+		                        // swapping values
+		                        yPos ^= hPos;
+		                        hPos ^= yPos;
+		                        yPos ^= hPos;
+		                    }
+
+		                    shapeArgs.y = yAxis.translate(yPos, 0, 1, 0, 1);
+		                    shapeArgs.height = Math.abs(shapeArgs.y - Math.min(
+		                        yAxis.translate(hPos, 0, 1, 0, 1),
 		                        yAxis.len
-		                    ) - shapeArgs.y;
-		                previousIntermediate = range[1];
+		                    ));
 
-		            // If it's not the sum point, update previous stack end position
-		            // and get shape height (#3886)
-		            } else {
-		                shapeArgs.height = yValue > 0 ?
-		                    yAxis.translate(previousY, 0, 1, 0, 1) - shapeArgs.y :
-		                    yAxis.translate(previousY, 0, 1, 0, 1) -
-		                        yAxis.translate(previousY - yValue, 0, 1, 0, 1);
+		                    previousIntermediate += range[1];
 
-		                previousY += stack && stack[point.x] ?
-		                    stack[point.x].total :
-		                    yValue;
+		                // If it's not the sum point, update previous stack end position
+		                // and get shape height (#3886)
+		                } else {
+		                    shapeArgs.height = yValue > 0 ?
+		                        yAxis.translate(previousY, 0, 1, 0, 1) - shapeArgs.y :
+		                        yAxis.translate(previousY, 0, 1, 0, 1) -
+		                            yAxis.translate(previousY - yValue, 0, 1, 0, 1);
 
-		                point.below = previousY < pick(threshold, 0);
-		            }
+		                    previousY += yValue;
+		                    point.below = previousY < pick(threshold, 0);
+		                }
 
-		            // #3952 Negative sum or intermediate sum not rendered correctly
-		            if (shapeArgs.height < 0) {
-		                shapeArgs.y += shapeArgs.height;
-		                shapeArgs.height *= -1;
+		                // #3952 Negative sum or intermediate sum not rendered correctly
+		                if (shapeArgs.height < 0) {
+		                    shapeArgs.y += shapeArgs.height;
+		                    shapeArgs.height *= -1;
+		                }
 		            }
 
 		            point.plotY = shapeArgs.y = Math.round(shapeArgs.y) -
@@ -4125,7 +4239,7 @@
 		            options = series.options,
 		            yData = series.yData,
 		            // #3710 Update point does not propagate to sum
-		            points = series.options.data,
+		            points = options.data,
 		            point,
 		            dataLength = yData.length,
 		            threshold = options.threshold || 0,
@@ -4136,7 +4250,7 @@
 		            y,
 		            i;
 
-		        sum = subSum = dataMin = dataMax = threshold;
+		        sum = subSum = dataMin = dataMax = 0;
 
 		        for (i = 0; i < dataLength; i++) {
 		            y = yData[i];
@@ -4146,6 +4260,7 @@
 		                yData[i] = correctFloat(sum);
 		            } else if (y === 'intermediateSum' || point.isIntermediateSum) {
 		                yData[i] = correctFloat(subSum);
+		                subSum = 0;
 		            } else {
 		                sum += y;
 		                subSum += y;
@@ -4157,8 +4272,8 @@
 		        Series.prototype.processData.call(this, force);
 
 		        // Record extremes only if stacking was not set:
-		        if (!series.options.stacking) {
-		            series.dataMin = dataMin;
+		        if (!options.stacking) {
+		            series.dataMin = dataMin + threshold;
 		            series.dataMax = dataMax;
 		        }
 		    },
@@ -4187,10 +4302,10 @@
 		        }
 
 		        attr = seriesTypes.column.prototype.pointAttribs.call(
-		                this,
-		                point,
-		                state
-		            );
+		            this,
+		            point,
+		            state
+		        );
 
 		        // The dashStyle option in waterfall applies to the graph, not
 		        // the points
@@ -4209,12 +4324,20 @@
 		    getCrispPath: function () {
 
 		        var data = this.data,
+		            yAxis = this.yAxis,
 		            length = data.length,
-		            lineWidth = this.graph.strokeWidth() + this.borderWidth,
-		            normalizer = Math.round(lineWidth) % 2 / 2,
+		            graphNormalizer = Math.round(this.graph.strokeWidth()) % 2 / 2,
+		            borderNormalizer = Math.round(this.borderWidth) % 2 / 2,
 		            reversedXAxis = this.xAxis.reversed,
 		            reversedYAxis = this.yAxis.reversed,
+		            stacking = this.options.stacking,
 		            path = [],
+		            connectorThreshold,
+		            prevStack,
+		            prevStackX,
+		            prevPoint,
+		            yPos,
+		            isPos,
 		            prevArgs,
 		            pointArgs,
 		            i,
@@ -4222,20 +4345,43 @@
 
 		        for (i = 1; i < length; i++) {
 		            pointArgs = data[i].shapeArgs;
+		            prevPoint = data[i - 1];
 		            prevArgs = data[i - 1].shapeArgs;
+		            prevStack = yAxis.waterfallStacks[this.stackKey];
+		            isPos = prevPoint.y > 0 ? -prevArgs.height : 0;
 
-		            d = [
-		                'M',
-		                prevArgs.x + (reversedXAxis ? 0 : prevArgs.width),
-		                prevArgs.y + data[i - 1].minPointLengthOffset + normalizer,
-		                'L',
-		                pointArgs.x + (reversedXAxis ? prevArgs.width : 0),
-		                prevArgs.y + data[i - 1].minPointLengthOffset + normalizer
-		            ];
+		            if (prevStack) {
+		                prevStackX = prevStack[i - 1];
+
+		                // y position of the connector is different when series are
+		                // stacked, yAxis is reversed and it also depends on point's
+		                // value
+		                if (stacking) {
+		                    connectorThreshold = prevStackX.connectorThreshold;
+
+		                    yPos = Math.round(
+		                        (yAxis.translate(connectorThreshold, 0, 1, 0, 1) +
+		                        (reversedYAxis ? isPos : 0))
+		                    ) - graphNormalizer;
+		                } else {
+		                    yPos = prevArgs.y + prevPoint.minPointLengthOffset +
+		                        borderNormalizer - graphNormalizer;
+		                }
+
+		                d = [
+		                    'M',
+		                    prevArgs.x + (reversedXAxis ? 0 : prevArgs.width),
+		                    yPos,
+		                    'L',
+		                    pointArgs.x + (reversedXAxis ? pointArgs.width : 0),
+		                    yPos
+		                ];
+		            }
 
 		            if (
-		                (data[i - 1].y < 0 && !reversedYAxis) ||
-		                (data[i - 1].y > 0 && reversedYAxis)
+		                !stacking &&
+		                (prevPoint.y < 0 && !reversedYAxis) ||
+		                (prevPoint.y > 0 && reversedYAxis)
 		            ) {
 		                d[2] += prevArgs.height;
 		                d[5] += prevArgs.height;
@@ -4260,21 +4406,74 @@
 		    setStackedPoints: function () {
 		        var series = this,
 		            options = series.options,
-		            stackedYLength,
-		            i;
+		            waterfallStacks = series.yAxis.waterfallStacks,
+		            seriesThreshold = options.threshold,
+		            stackThreshold = seriesThreshold || 0,
+		            interSum = seriesThreshold || 0,
+		            stackKey = series.stackKey,
+		            xData = series.xData,
+		            xLength = xData.length,
+		            actualStack,
+		            actualStackX,
+		            posTotal,
+		            negTotal,
+		            xPoint,
+		            yVal,
+		            x;
 
-		        Series.prototype.setStackedPoints.apply(series, arguments);
+		        // code responsible for creating stacks for waterfall series
+		        if (series.visible || !series.chart.options.chart.ignoreHiddenSeries) {
+		            if (!waterfallStacks[stackKey]) {
+		                waterfallStacks[stackKey] = {};
+		            }
 
-		        stackedYLength = series.stackedYData ? series.stackedYData.length : 0;
+		            actualStack = waterfallStacks[stackKey];
 
-		        // Start from the second point:
-		        for (i = 1; i < stackedYLength; i++) {
-		            if (
-		                !options.data[i].isSum &&
-		                !options.data[i].isIntermediateSum
-		            ) {
-		                // Sum previous stacked data as waterfall can grow up/down:
-		                series.stackedYData[i] += series.stackedYData[i - 1];
+		            for (var i = 0; i < xLength; i++) {
+		                x = xData[i];
+
+		                if (!actualStack[x]) {
+		                    actualStack[x] = {
+		                        negTotal: 0,
+		                        posTotal: 0,
+		                        total: 0,
+		                        stackTotal: 0,
+		                        threshold: 0,
+		                        stackState: [stackThreshold]
+		                    };
+		                }
+
+		                actualStackX = actualStack[x];
+		                yVal = series.yData[i];
+
+		                if (yVal >= 0) {
+		                    actualStackX.posTotal += yVal;
+		                } else {
+		                    actualStackX.negTotal += yVal;
+		                }
+
+		                // points do not exist yet, so raw data is used
+		                xPoint = options.data[i];
+		                posTotal = actualStackX.posTotal;
+		                negTotal = actualStackX.negTotal;
+
+		                if (xPoint && xPoint.isIntermediateSum) {
+		                    // swapping values
+		                    stackThreshold ^= interSum;
+		                    interSum ^= stackThreshold;
+		                    stackThreshold ^= interSum;
+		                } else if (xPoint && xPoint.isSum) {
+		                    stackThreshold = seriesThreshold;
+		                }
+
+		                actualStackX.stackTotal = posTotal + negTotal;
+		                actualStackX.total = actualStackX.stackTotal;
+		                actualStackX.threshold = stackThreshold;
+
+		                actualStackX.stackState[0] = stackThreshold;
+		                actualStackX.stackState.push(actualStackX.stackTotal);
+
+		                stackThreshold += actualStackX.stackTotal;
 		            }
 		        }
 		    },
@@ -4282,8 +4481,48 @@
 		    // Extremes for a non-stacked series are recorded in processData.
 		    // In case of stacking, use Series.stackedYData to calculate extremes.
 		    getExtremes: function () {
-		        if (this.options.stacking) {
-		            return Series.prototype.getExtremes.apply(this, arguments);
+		        var stacking = this.options.stacking,
+		            yAxis,
+		            waterfallStacks,
+		            stackedYNeg,
+		            stackedYPos,
+		            states,
+		            firstState;
+
+		        if (stacking) {
+		            yAxis = this.yAxis;
+		            waterfallStacks = yAxis.waterfallStacks;
+		            stackedYNeg = this.stackedYNeg = [];
+		            stackedYPos = this.stackedYPos = [];
+
+		            // the visible y range can be different when stacking is set to
+		            // overlap and different when it's set to normal
+		            if (stacking === 'overlap') {
+		                objectEach(waterfallStacks[this.stackKey], function (stackX) {
+
+		                    states = [];
+		                    stackX.stackState.forEach(function (state, stateIndex) {
+		                        firstState = stackX.stackState[0];
+
+		                        if (stateIndex) {
+		                            states.push(state + firstState);
+		                        } else {
+		                            states.push(firstState);
+		                        }
+		                    });
+
+		                    stackedYNeg.push(arrayMin(states));
+		                    stackedYPos.push(arrayMax(states));
+		                });
+		            } else {
+		                objectEach(waterfallStacks[this.stackKey], function (stackX) {
+		                    stackedYNeg.push(stackX.negTotal + stackX.threshold);
+		                    stackedYPos.push(stackX.posTotal + stackX.threshold);
+		                });
+		            }
+
+		            this.dataMin = arrayMin(stackedYNeg);
+		            this.dataMax = arrayMax(stackedYPos);
 		        }
 		    }
 
@@ -4409,7 +4648,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -4435,7 +4674,7 @@
 		 *
 		 * @extends      plotOptions.scatter
 		 * @since        4.1.0
-		 * @excluding    softThreshold, threshold
+		 * @excluding    jitter, softThreshold, threshold
 		 * @product      highcharts highstock
 		 * @optionparent plotOptions.polygon
 		 */
@@ -4481,7 +4720,6 @@
 		    drawTracker: Series.prototype.drawTracker,
 		    setStackedPoints: noop // No stacking points on polygons (#5310)
 		});
-
 
 
 		/**
@@ -4557,7 +4795,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Highsoft AS
+		 * (c) 2010-2019 Highsoft AS
 		 *
 		 * Author: Paweł Potaczek
 		 *
@@ -4600,7 +4838,7 @@
 		    arrayMin = H.arrayMin,
 		    arrayMax = H.arrayMax;
 
-		setOptions({  // Set default bubble legend options
+		setOptions({ // Set default bubble legend options
 		    legend: {
 		        /**
 		         * The bubble legend is an additional element in legend which presents
@@ -4771,13 +5009,13 @@
 		             * specified, the `minSize` and the `maxSize` are calculated from
 		             * bubble series.
 		             */
-		            maxSize: 60,  // Number
+		            maxSize: 60, // Number
 		            /**
 		             * Minimum bubble legend range size. If values for ranges are not
 		             * specified, the `minSize` and the `maxSize` are calculated from
 		             * bubble series.
 		             */
-		            minSize: 10,  // Number
+		            minSize: 10, // Number
 		            /**
 		             * The position of the bubble legend in the legend.
 		             * @sample highcharts/bubble-legend/connectorandlabels/
@@ -4796,9 +5034,9 @@
 		             * @type {Array<*>}
 		             */
 		            ranges: {
-		               /**
-		                * Range size value, similar to bubble Z data.
-		                */
+		                /**
+		                 * Range size value, similar to bubble Z data.
+		                 */
 		                value: undefined,
 		                /**
 		                 * The color of the border for individual range.
@@ -5172,7 +5410,7 @@
 
 		        // Set options for centered labels
 		        if (labelsAlign === 'center') {
-		            connectorLength = 0;  // do not use connector
+		            connectorLength = 0; // do not use connector
 		            options.connectorDistance = 0;
 		            range.labelStyle.align = 'center';
 		        }
@@ -5210,8 +5448,8 @@
 		            renderer
 		                .path(renderer.crispLine(
 		                    ['M', posX, posY, 'L', posX + connectorLength, posY],
-		                     options.connectorWidth)
-		                )
+		                    options.connectorWidth
+		                ))
 		                .attr(
 		                    styledMode ? {} : range.connectorStyle
 		                )
@@ -5299,7 +5537,7 @@
 
 		        return format ? H.format(format, range) :
 		            formatter ? formatter.call(range) :
-		            numberFormat(range.value, 1);
+		                numberFormat(range.value, 1);
 		    },
 
 		    /**
@@ -5431,13 +5669,13 @@
 		            calculatedSize = ((plotSize + lastLineHeight - fontMetrics.h / 2) *
 		               maxSize / 100) / (maxSize / 100 + 1);
 
-		           // Get maxPxSize from bubble series if calculated bubble legend
-		           // size will not affect to bubbles series.
+		            // Get maxPxSize from bubble series if calculated bubble legend
+		            // size will not affect to bubbles series.
 		            if (
-		               (horizontal && plotSizeY - calculatedSize >=
+		                (horizontal && plotSizeY - calculatedSize >=
 		               plotSizeX) || (!horizontal && plotSizeX -
 		               calculatedSize >= plotSizeY)
-		           ) {
+		            ) {
 		                calculatedSize = maxPxSize;
 		            }
 		        }
@@ -5497,7 +5735,7 @@
 		    if (bubbleLegend && bubbleLegend.ranges && bubbleLegend.ranges.length) {
 		        // Allow change the way of calculating ranges in update
 		        if (options.ranges.length) {
-		            options.autoRanges = options.ranges[0].autoRanges ? true : false;
+		            options.autoRanges = !!options.ranges[0].autoRanges;
 		        }
 		        // Update bubbleLegend dimensions in each redraw
 		        legend.destroyItem(bubbleLegend);
@@ -5562,7 +5800,7 @@
 		            // for bubbleLegend
 		            items[i].itemHeight = items[i].legendItemHeight;
 		        }
-		        if (  // Line break
+		        if ( // Line break
 		            items[i] === items[length - 1] ||
 		            items[i + 1] &&
 		            items[i]._legendItemPos[1] !==
@@ -5607,7 +5845,7 @@
 
 		        if (movementX || (rtl && item.ranges)) {
 		            movementX = rtl ? orgTranslateX - item.options.maxSize / 2 :
-		            orgTranslateX + movementX;
+		                orgTranslateX + movementX;
 
 		            item.legendGroup.attr({ translateX: movementX });
 		        }
@@ -5725,7 +5963,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -5884,7 +6122,7 @@
 		     * @sample {highcharts} highcharts/plotoptions/bubble-negative/
 		     *         Negative bubbles
 		     *
-		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject}
+		     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		     * @since     3.0
 		     * @product   highcharts
 		     * @apioption plotOptions.bubble.negativeColor
@@ -6380,7 +6618,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Grzegorz Blachlinski, Sebastian Bochan
+		 * (c) 2010-2019 Grzegorz Blachlinski, Sebastian Bochan
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -6402,7 +6640,9 @@
 		 *
 		 * @requires modules:highcharts-more
 		 */
-		seriesType('packedbubble', 'bubble',
+		seriesType(
+		    'packedbubble',
+		    'bubble',
 
 		    /**
 		     * A packed bubble series is a two dimensional series type, where each point
@@ -6416,8 +6656,8 @@
 		     * @extends      plotOptions.bubble
 		     * @since        7.0.0
 		     * @product      highcharts
-		     * @excluding    connectEnds, connectNulls, keys, sizeByAbsoluteValue, step,
-		     *               zMax, zMin
+		     * @excluding    connectEnds, connectNulls, jitter, keys,
+		     *               sizeByAbsoluteValue, step, zMax, zMin
 		     * @optionparent plotOptions.packedbubble
 		     */
 		    {
@@ -6572,21 +6812,21 @@
 		                pow = Math.pow,
 		                abs = Math.abs,
 		                distance = sqrt( // dist between lastBubble and newOrigin
-		                  pow((lastBubble[0] - newOrigin[0]), 2) +
+		                    pow((lastBubble[0] - newOrigin[0]), 2) +
 		                  pow((lastBubble[1] - newOrigin[1]), 2)
 		                ),
 		                alfa = acos(
-		                  // from cosinus theorem: alfa is an angle used for
-		                  // calculating correct position
-		                  (
-		                    pow(distance, 2) +
+		                    // from cosinus theorem: alfa is an angle used for
+		                    // calculating correct position
+		                    (
+		                        pow(distance, 2) +
 		                    pow(nextBubble[2] + newOrigin[2], 2) -
 		                    pow(nextBubble[2] + lastBubble[2], 2)
-		                  ) / (2 * (nextBubble[2] + newOrigin[2]) * distance)
+		                    ) / (2 * (nextBubble[2] + newOrigin[2]) * distance)
 		                ),
 
 		                beta = asin( // from sinus theorem.
-		                  abs(lastBubble[0] - newOrigin[0]) /
+		                    abs(lastBubble[0] - newOrigin[0]) /
 		                  distance
 		                ),
 		                // providing helping variables, related to angle between
@@ -6598,7 +6838,7 @@
 
 		                delta = (lastBubble[0] - newOrigin[0]) *
 		                (lastBubble[1] - newOrigin[1]) < 0 ?
-		                1 : -1, // (1st and 3rd quarter)
+		                    1 : -1, // (1st and 3rd quarter)
 		                finalAngle = gamma + alfa + beta * delta,
 		                cosA = Math.cos(finalAngle),
 		                sinA = Math.sin(finalAngle),
@@ -6644,7 +6884,8 @@
 		            // if length is 0, return empty array
 		            if (!sortedArr.length) {
 		                return [];
-		            } else if (sortedArr.length < 2) {
+		            }
+		            if (sortedArr.length < 2) {
 		                // if length is 1,return only one bubble
 		                return [
 		                    0, 0,
@@ -6696,11 +6937,11 @@
 		                    // around it, we are starting from first bubble in next
 		                    // stage because we are changing level to higher
 		                    bubblePos[stage + 1].push(
-		                      positionBubble(
-		                        bubblePos[stage][j],
-		                        bubblePos[stage][0],
-		                        sortedArr[i]
-		                      )
+		                        positionBubble(
+		                            bubblePos[stage][j],
+		                            bubblePos[stage][0],
+		                            sortedArr[i]
+		                        )
 		                    );
 		                    // (last added bubble, 1st. bbl from cur stage, new bubble)
 		                    stage++; // the new level is created, above current one
@@ -6715,10 +6956,12 @@
 		                    // to recalculate it.
 		                    k++;
 		                    bubblePos[stage].push(
-		                      positionBubble(bubblePos[stage][j],
-		                        bubblePos[stage - 1][k],
-		                        sortedArr[i]
-		                      ));
+		                        positionBubble(
+		                            bubblePos[stage][j],
+		                            bubblePos[stage - 1][k],
+		                            sortedArr[i]
+		                        )
+		                    );
 		                    // (last added bubble, previous stage bubble, new bubble)
 		                    j++;
 		                } else { // simply add calculated bubble
@@ -6861,6 +7104,7 @@
 		// When one series is modified, the others need to be recomputed
 		H.addEvent(H.seriesTypes.packedbubble, 'updatedData', function () {
 		    var self = this;
+
 		    this.chart.series.forEach(function (s) {
 		        if (s.type === self.type) {
 		            s.isDirty = true;
@@ -6937,7 +7181,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -7090,22 +7334,6 @@
 		    };
 
 		    /**
-		     * Wrap the buildKDTree function so that it searches by angle (clientX) in
-		     * case of shared tooltip, and by two dimensional distance in case of
-		     * non-shared.
-		     */
-		    wrap(seriesProto, 'buildKDTree', function (proceed) {
-		        if (this.chart.polar) {
-		            if (this.kdByAngle) {
-		                this.searchPoint = this.searchPointByAngle;
-		            } else {
-		                this.options.findNearestPointBy = 'xy';
-		            }
-		        }
-		        proceed.apply(this);
-		    });
-
-		    /**
 		     * Translate a point's plotX and plotY from the internal angle and radius
 		     * measures to true plotX, plotY coordinates
 		     */
@@ -7199,9 +7427,18 @@
 		            i;
 
 		        if (chart.polar) {
-		            // Postprocess plot coordinates
-		            this.kdByAngle = chart.tooltip && chart.tooltip.shared;
 
+		            // Prepare k-d-tree handling. It searches by angle (clientX) in
+		            // case of shared tooltip, and by two dimensional distance in case
+		            // of non-shared.
+		            this.kdByAngle = chart.tooltip && chart.tooltip.shared;
+		            if (this.kdByAngle) {
+		                this.searchPoint = this.searchPointByAngle;
+		            } else {
+		                this.options.findNearestPointBy = 'xy';
+		            }
+
+		            // Postprocess plot coordinates
 		            if (!this.preventPostTranslate) {
 		                points = this.points;
 		                i = points.length;
@@ -7218,6 +7455,7 @@
 		                this.hasClipCircleSetter = Boolean(
 		                    H.addEvent(this, 'afterRender', function () {
 		                        var circ;
+
 		                        if (chart.polar) {
 		                            circ = this.yAxis.center;
 		                            this.group.clip(

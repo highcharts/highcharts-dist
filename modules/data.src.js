@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Data module
  *
- * (c) 2012-2018 Torstein Honsi
+ * (c) 2012-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -146,7 +147,7 @@
 		/**
 		 * Data module
 		 *
-		 * (c) 2012-2018 Torstein Honsi
+		 * (c) 2012-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -833,6 +834,7 @@
 		        });
 
 		        var globalPointArrayMap = getPointArrayMap(globalType);
+
 		        if (globalPointArrayMap === undefined) {
 		            globalPointArrayMap = ['y'];
 		        }
@@ -1025,7 +1027,9 @@
 		                    // The rest of the row is a comment
 		                    push();
 		                    return;
-		                } else if (c === '"') {
+		                }
+
+		                if (c === '"') {
 		                    read(++i);
 
 		                    while (i < columnStr.length) {
@@ -1073,8 +1077,7 @@
 		                    c,
 		                    cn,
 		                    cl,
-		                    token = ''
-		                    ;
+		                    token = '';
 
 
 		                // We should be able to detect dateformats within 13 rows
@@ -1090,7 +1093,9 @@
 		                    if (c === '#') {
 		                        // Skip the rest of the line - it's a comment
 		                        return;
-		                    } else if (c === '"') {
+		                    }
+
+		                    if (c === '"') {
 		                        if (inStr) {
 		                            if (cl !== '"' && cn !== '"') {
 		                                while (cn === ' ' && j < columnStr.length) {
@@ -1198,11 +1203,11 @@
 		                    data[i] && data[i].length
 		                ) {
 		                    thing = data[i]
-		                            .trim()
-		                            .replace(/\//g, ' ')
-		                            .replace(/\-/g, ' ')
-		                            .replace(/\./g, ' ')
-		                            .split(' ');
+		                        .trim()
+		                        .replace(/\//g, ' ')
+		                        .replace(/\-/g, ' ')
+		                        .replace(/\./g, ' ')
+		                        .split(' ');
 
 		                    guessedFormat = [
 		                        '',
@@ -1918,8 +1923,7 @@
 		            regex: /^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{2})$/,
 		            parser: function (match) {
 		                var year = +match[3],
-		                    d = new Date()
-		                ;
+		                    d = new Date();
 
 		                if (year > (d.getFullYear() - 2000)) {
 		                    year += 1900;
@@ -2233,7 +2237,6 @@
 		            }
 
 
-
 		            // Do the callback
 		            chartOptions = {
 		                series: series
@@ -2271,6 +2274,7 @@
 		     */
 		    update: function (options, redraw) {
 		        var chart = this.chart;
+
 		        if (options) {
 		            // Set the complete handler
 		            options.afterComplete = function (dataOptions) {
@@ -2450,6 +2454,7 @@
 		    // Then, build an array or point based on the readers names.
 		    builder.readers.forEach(function (reader) {
 		        var value = columns[reader.columnIndex][rowIndex];
+
 		        if (pointIsArray) {
 		            point.push(value);
 		        } else {
@@ -2542,6 +2547,7 @@
 		 */
 		SeriesBuilder.prototype.hasReader = function (configName) {
 		    var i, columnReader;
+
 		    for (i = 0; i < this.readers.length; i = i + 1) {
 		        columnReader = this.readers[i];
 		        if (columnReader.configName === configName) {

@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Sebastian Bochan
+ * (c) 2010-2019 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -41,7 +42,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('ema', 'sma',
+		seriesType(
+		    'ema',
+		    'sma',
 		    /**
 		     * Exponential moving average indicator (EMA). This series requires the
 		     * `linkedTo` option to be set.
@@ -81,6 +84,7 @@
 		            var sum = 0,
 		                i = 0,
 		                y = 0;
+
 		            while (i < period) {
 		                y = index < 0 ? yVal[i] : yVal[i][index];
 		                sum = sum + y;
@@ -147,14 +151,14 @@
 		            // Calculate value one-by-one for each period in visible data
 		            for (i = period; i < yValLen + 1; i++) {
 		                EMAPoint = this.calculateEma(
-		                        xVal,
-		                        yVal,
-		                        i,
-		                        EMApercent,
-		                        calEMA,
-		                        index,
-		                        SMA
-		                    );
+		                    xVal,
+		                    yVal,
+		                    i,
+		                    EMApercent,
+		                    calEMA,
+		                    index,
+		                    SMA
+		                );
 		                EMA.push(EMAPoint);
 		                xData.push(EMAPoint[0]);
 		                yData.push(EMAPoint[1]);

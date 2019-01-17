@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  *
  * 3D features for Highcharts JS
  *
@@ -8,6 +8,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -19,7 +20,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -73,8 +74,9 @@
 		// needed also outside of perspective() function (#8042).
 		H.perspective3D = function (coordinate, origin, distance) {
 		    var projection = ((distance > 0) && (distance < Number.POSITIVE_INFINITY)) ?
-		    distance / (coordinate.z + origin.z + distance) :
-		    1;
+		        distance / (coordinate.z + origin.z + distance) :
+		        1;
+
 		    return {
 		        x: coordinate.x * projection,
 		        y: coordinate.y * projection
@@ -176,6 +178,7 @@
 		            Math.pow(cameraPosition.y - coordinates.plotY, 2) +
 		            Math.pow(cameraPosition.z - coordinates.plotZ, 2)
 		        );
+
 		    return distance;
 		};
 
@@ -194,6 +197,7 @@
 		    var area = 0,
 		        i,
 		        j;
+
 		    for (i = 0; i < vertexes.length; i++) {
 		        j = (i + 1) % vertexes.length;
 		        area += vertexes[i].x * vertexes[j].y - vertexes[j].x * vertexes[i].y;
@@ -219,11 +223,10 @@
 		    return H.shapeArea(H.perspective(vertexes, chart, insidePlotArea));
 		};
 
-
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * Extensions to the SVGRenderer class to enable 3D shapes
 		 *
@@ -247,11 +250,11 @@
 		    pick = H.pick,
 		    SVGElement = H.SVGElement,
 		    SVGRenderer = H.SVGRenderer,
-		    wrap = H.wrap,
 
 		    dFactor,
 		    element3dMethods,
 		    cuboidMethods;
+
 		/*
 		    EXTENSION TO THE SVG-RENDERER TO ENABLE 3D SHAPES
 		*/
@@ -262,6 +265,7 @@
 		function curveTo(cx, cy, rx, ry, start, end, dx, dy) {
 		    var result = [],
 		        arcAngle = end - start;
+
 		    if ((end > start) && (end - start > Math.PI / 2 + 0.0001)) {
 		        result = result.concat(
 		            curveTo(cx, cy, rx, ry, start, start + (Math.PI / 2), dx, dy)
@@ -295,47 +299,6 @@
 		        cy + (ry * Math.sin(end)) + dy
 		    ];
 		}
-
-		/* @merge v6.2
-
-		     if (!build.classic) {
-
-		// Override the SVGRenderer initiator to add definitions used by brighter and
-		// darker faces of the cuboids.
-		wrap(SVGRenderer.prototype, 'init', function (proceed) {
-		    proceed.apply(this, [].slice.call(arguments, 1));
-
-		    each([{
-		        name: 'darker',
-		        slope: 0.6
-		    }, {
-		        name: 'brighter',
-		        slope: 1.4
-		    }], function (cfg) {
-		        this.definition({
-		            tagName: 'filter',
-		            id: 'highcharts-' + cfg.name,
-		            children: [{
-		                tagName: 'feComponentTransfer',
-		                children: [{
-		                    tagName: 'feFuncR',
-		                    type: 'linear',
-		                    slope: cfg.slope
-		                }, {
-		                    tagName: 'feFuncG',
-		                    type: 'linear',
-		                    slope: cfg.slope
-		                }, {
-		                    tagName: 'feFuncB',
-		                    type: 'linear',
-		                    slope: cfg.slope
-		                }]
-		            }]
-		        });
-		    }, this);
-		});
-
-		*/
 
 		SVGRenderer.prototype.toLinePath = function (points, closed) {
 		    var result = [];
@@ -376,11 +339,12 @@
 		SVGRenderer.prototype.face3d = function (args) {
 		    var renderer = this,
 		        ret = this.createElement('path');
+
 		    ret.vertexes = [];
 		    ret.insidePlotArea = false;
 		    ret.enabled = true;
 
-		    wrap(ret, 'attr', function (proceed, hash) {
+		    ret.attr = function (hash) {
 		        if (
 		            typeof hash === 'object' &&
 		            (
@@ -412,10 +376,10 @@
 		            hash.d = path;
 		            hash.visibility = visibility;
 		        }
-		        return proceed.apply(this, [].slice.call(arguments, 1));
-		    });
+		        return SVGElement.prototype.attr.apply(this, arguments);
+		    };
 
-		    wrap(ret, 'animate', function (proceed, params) {
+		    ret.animate = function (params) {
 		        if (
 		            typeof params === 'object' &&
 		            (
@@ -448,8 +412,8 @@
 		            this.attr('visibility', visibility);
 		        }
 
-		        return proceed.apply(this, [].slice.call(arguments, 1));
-		    });
+		        return SVGElement.prototype.animate.apply(this, arguments);
+		    };
 
 		    return ret.attr(args);
 		};
@@ -479,36 +443,31 @@
 		        return destroy.call(this);
 		    };
 
-		    wrap(
-		        result,
-		        'attr',
-		        function (proceed, hash, val, complete, continueAnimation) {
-		            if (typeof hash === 'object' && defined(hash.faces)) {
-		                while (result.faces.length > hash.faces.length) {
-		                    result.faces.pop().destroy();
-		                }
-		                while (result.faces.length < hash.faces.length) {
-		                    result.faces.push(renderer.face3d().add(result));
-		                }
-		                for (var i = 0; i < hash.faces.length; i++) {
-		                    if (renderer.styledMode) {
-		                        delete hash.faces[i].fill;
-		                    }
-		                    result.faces[i].attr(
-		                        hash.faces[i],
-		                        null,
-		                        complete,
-		                        continueAnimation
-		                    );
-		                }
-		                delete hash.faces;
+		    result.attr = function (hash, val, complete, continueAnimation) {
+		        if (typeof hash === 'object' && defined(hash.faces)) {
+		            while (result.faces.length > hash.faces.length) {
+		                result.faces.pop().destroy();
 		            }
-		            return proceed.apply(this, [].slice.call(arguments, 1));
+		            while (result.faces.length < hash.faces.length) {
+		                result.faces.push(renderer.face3d().add(result));
+		            }
+		            for (var i = 0; i < hash.faces.length; i++) {
+		                if (renderer.styledMode) {
+		                    delete hash.faces[i].fill;
+		                }
+		                result.faces[i].attr(
+		                    hash.faces[i],
+		                    null,
+		                    complete,
+		                    continueAnimation
+		                );
+		            }
+		            delete hash.faces;
 		        }
+		        return SVGElement.prototype.attr.apply(this, arguments);
+		    };
 
-		    );
-
-		    wrap(result, 'animate', function (proceed, params, duration, complete) {
+		    result.animate = function (params, duration, complete) {
 		        if (params && params.faces) {
 		            while (result.faces.length > params.faces.length) {
 		                result.faces.pop().destroy();
@@ -521,8 +480,8 @@
 		            }
 		            delete params.faces;
 		        }
-		        return proceed.apply(this, [].slice.call(arguments, 1));
-		    });
+		        return SVGElement.prototype.animate.apply(this, arguments);
+		    };
 
 		    return result.attr(args);
 		};
@@ -603,7 +562,7 @@
 		    // Destroy all parts
 		    destroyParts: function () {
 		        this.processParts(null, null, 'destroy');
-		        return this.originalDestroy.call(this);
+		        return this.originalDestroy();
 		    }
 		};
 
@@ -616,6 +575,7 @@
 		        // Resolve setting attributes by string name
 		        if (typeof args === 'string' && typeof val !== 'undefined') {
 		            var key = args;
+
 		            args = {};
 		            args[key] = val;
 		        }
@@ -779,8 +739,9 @@
 		     */
 		    pickShape = function (path1, path2) {
 		        var ret = [
-		                [], -1
+		            [], -1
 		        ];
+
 		        path1 = path1.map(mapPath);
 		        path2 = path2.map(mapPath);
 		        if (H.shapeArea(path1) < 0) {
@@ -897,6 +858,7 @@
 		    wrapper.onAdd = function () {
 		        var parent = wrapper.parentGroup,
 		            className = wrapper.attr('class');
+
 		        wrapper.top.add(wrapper);
 
 		        // These faces are added outside the wrapper group because the z index
@@ -914,6 +876,7 @@
 		    ['addClass', 'removeClass'].forEach(function (fn) {
 		        wrapper[fn] = function () {
 		            var args = arguments;
+
 		            ['top', 'out', 'inn', 'side1', 'side2'].forEach(function (face) {
 		                wrapper[face][fn].apply(wrapper[face], args);
 		            });
@@ -975,8 +938,9 @@
 		    );
 
 		    // Override attr to remove shape attributes and use those to set child paths
-		    wrap(wrapper, 'attr', function (proceed, params) {
+		    wrapper.attr = function (params) {
 		        var ca;
+
 		        if (typeof params === 'object') {
 		            ca = suckOutCustom(params);
 		            if (ca) {
@@ -984,12 +948,12 @@
 		                wrapper.setPaths(wrapper.attribs);
 		            }
 		        }
-		        return proceed.apply(this, [].slice.call(arguments, 1));
-		    });
+		        return SVGElement.prototype.attr.apply(wrapper, arguments);
+		    };
 
 		    // Override the animate function by sucking out custom parameters related to
 		    // the shapes directly, and update the shapes from the animation step.
-		    wrap(wrapper, 'animate', function (proceed, params, animation, complete) {
+		    wrapper.animate = function (params, animation, complete) {
 		        var ca,
 		            from = this.attribs,
 		            to,
@@ -1036,8 +1000,13 @@
 		            }
 		            animation = anim; // Only when duration (#5572)
 		        }
-		        return proceed.call(this, params, animation, complete);
-		    });
+		        return SVGElement.prototype.animate.call(
+		            this,
+		            params,
+		            animation,
+		            complete
+		        );
+		    };
 
 		    // destroy all children
 		    wrapper.destroy = function () {
@@ -1080,19 +1049,20 @@
 		        beta = shapeArgs.beta; // beta rotation of the chart
 
 		    // Derived Variables
-		    var cs = Math.cos(start),        // cosinus of the start angle
-		        ss = Math.sin(start),        // sinus of the start angle
-		        ce = Math.cos(end),            // cosinus of the end angle
-		        se = Math.sin(end),            // sinus of the end angle
-		        rx = r * Math.cos(beta),        // x-radius
-		        ry = r * Math.cos(alpha),    // y-radius
-		        irx = ir * Math.cos(beta),    // x-radius (inner)
-		        iry = ir * Math.cos(alpha),    // y-radius (inner)
-		        dx = d * Math.sin(beta),        // distance between top and bottom in x
-		        dy = d * Math.sin(alpha);    // distance between top and bottom in y
+		    var cs = Math.cos(start), // cosinus of the start angle
+		        ss = Math.sin(start), // sinus of the start angle
+		        ce = Math.cos(end), // cosinus of the end angle
+		        se = Math.sin(end), // sinus of the end angle
+		        rx = r * Math.cos(beta), // x-radius
+		        ry = r * Math.cos(alpha), // y-radius
+		        irx = ir * Math.cos(beta), // x-radius (inner)
+		        iry = ir * Math.cos(alpha), // y-radius (inner)
+		        dx = d * Math.sin(beta), // distance between top and bottom in x
+		        dy = d * Math.sin(alpha); // distance between top and bottom in y
 
 		    // TOP
 		    var top = ['M', cx + (rx * cs), cy + (ry * ss)];
+
 		    top = top.concat(curveTo(cx, cy, rx, ry, start, end, 0, 0));
 		    top = top.concat([
 		        'L', cx + (irx * ce), cy + (iry * se)
@@ -1133,6 +1103,7 @@
 		    // startAngle
 
 		    var out = ['M', cx + (rx * cos(start2)), cy + (ry * sin(start2))];
+
 		    out = out.concat(curveTo(cx, cy, rx, ry, start2, end2, 0, 0));
 
 		    // When shape is wide, it can cross both, (c) and (d) edges, when using
@@ -1188,6 +1159,7 @@
 
 		    // INSIDE
 		    var inn = ['M', cx + (irx * cs), cy + (iry * ss)];
+
 		    inn = inn.concat(curveTo(cx, cy, irx, iry, start, end, 0, 0));
 		    inn = inn.concat([
 		        'L', cx + (irx * Math.cos(end)) + dx, cy + (iry * Math.sin(end)) + dy
@@ -1254,7 +1226,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * Extension for 3D charts
 		 *
@@ -1291,6 +1263,7 @@
 		            var type = s.type ||
 		                options.chart.type ||
 		                options.chart.defaultSeriesType;
+
 		            if (type === 'scatter') {
 		                s.type = 'scatter3d';
 		            }
@@ -1425,7 +1398,6 @@
 		}
 
 
-
 		H.wrap(H.Chart.prototype, 'isInsidePlot', function (proceed) {
 		    return this.is3d() || proceed.apply(this, [].slice.call(arguments, 1));
 		});
@@ -1540,7 +1512,7 @@
 		                /**
 		                 * The color of the panel.
 		                 *
-		                 * @type      {Highcharts.ColorString}
+		                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		                 * @default   transparent
 		                 * @since     4.0
 		                 * @product   highcharts
@@ -2583,6 +2555,7 @@
 		        zp = options3d.depth,
 		        faceOrientation = function (vertexes) {
 		            var area = H.shapeArea3d(vertexes, chart);
+
 		            // Give it 0.5 squared-pixel as a margin for rounding errors.
 		            if (area > 0.5) {
 		                return 1;
@@ -2659,11 +2632,14 @@
 		    var getFaceOptions = function (sources, faceOrientation, defaultVisible) {
 		        var faceAttrs = ['size', 'color', 'visible'];
 		        var options = {};
+
 		        for (var i = 0; i < faceAttrs.length; i++) {
 		            var attr = faceAttrs[i];
+
 		            for (var j = 0; j < sources.length; j++) {
 		                if (typeof sources[j] === 'object') {
 		                    var val = sources[j][attr];
+
 		                    if (val !== undefined && val !== null) {
 		                        options[attr] = val;
 		                        break;
@@ -2672,6 +2648,7 @@
 		            }
 		        }
 		        var isVisible = defaultVisible;
+
 		        if (options.visible === true || options.visible === false) {
 		            isVisible = options.visible;
 		        } else if (options.visible === 'auto') {
@@ -2755,6 +2732,7 @@
 		        };
 
 		        var yEdges = [];
+
 		        if (isValidEdge(ret.left, ret.front)) {
 		            yEdges.push({
 		                y: (ym + yp) / 2,
@@ -2789,6 +2767,7 @@
 		        }
 
 		        var xBottomEdges = [];
+
 		        if (isValidEdge(ret.bottom, ret.front)) {
 		            xBottomEdges.push({
 		                x: (xm + xp) / 2,
@@ -2807,6 +2786,7 @@
 		        }
 
 		        var xTopEdges = [];
+
 		        if (isValidEdge(ret.top, ret.front)) {
 		            xTopEdges.push({
 		                x: (xm + xp) / 2,
@@ -2825,6 +2805,7 @@
 		        }
 
 		        var zBottomEdges = [];
+
 		        if (isValidEdge(ret.bottom, ret.left)) {
 		            zBottomEdges.push({
 		                z: (zm + zp) / 2,
@@ -2843,6 +2824,7 @@
 		        }
 
 		        var zTopEdges = [];
+
 		        if (isValidEdge(ret.top, ret.left)) {
 		            zTopEdges.push({
 		                z: (zm + zp) / 2,
@@ -2863,11 +2845,13 @@
 		        var pickEdge = function (edges, axis, mult) {
 		            if (edges.length === 0) {
 		                return null;
-		            } else if (edges.length === 1) {
+		            }
+		            if (edges.length === 1) {
 		                return edges[0];
 		            }
 		            var best = 0,
 		                projections = perspective(edges, chart, false);
+
 		            for (var i = 1; i < projections.length; i++) {
 		                if (
 		                    mult * projections[i][axis] >
@@ -2886,6 +2870,7 @@
 		            }
 		            return edges[best];
 		        };
+
 		        ret.axes = {
 		            y: {
 		                'left': pickEdge(yEdges, 'x', -1),
@@ -2935,10 +2920,12 @@
 		// Animation setter for matrix property.
 		H.Fx.prototype.matrixSetter = function () {
 		    var interpolated;
+
 		    if (this.pos < 1 &&
 		            (H.isArray(this.start) || H.isArray(this.end))) {
-		        var start = this.start || [ 1, 0, 0, 1, 0, 0];
-		        var end = this.end || [ 1, 0, 0, 1, 0, 0];
+		        var start = this.start || [1, 0, 0, 1, 0, 0];
+		        var end = this.end || [1, 0, 0, 1, 0, 0];
+
 		        interpolated = [];
 		        for (var i = 0; i < 6; i++) {
 		            interpolated.push(this.pos * end[i] + (1 - this.pos) * start[i]);
@@ -2970,7 +2957,7 @@
 		 * The color of the panel.
 		 *
 		 * @deprecated
-		 * @type      {Highcharts.ColorString}
+		 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
 		 * @default   transparent
 		 * @since     4.0
 		 * @product   highcharts
@@ -2991,7 +2978,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * Extenstion for 3d axes
 		 *
@@ -3124,6 +3111,7 @@
 
 		addEvent(Axis, 'afterSetOptions', function () {
 		    var options;
+
 		    if (this.chart.is3d && this.chart.is3d() && this.coll !== 'colorAxis') {
 		        options = this.options;
 		        options.tickWidth = pick(options.tickWidth, 0);
@@ -3156,7 +3144,8 @@
 		    ];
 
 		    var pathSegments = [];
-		    if (!this.horiz) {  // Y-Axis
+
+		    if (!this.horiz) { // Y-Axis
 		        if (frame.front.visible) {
 		            pathSegments.push(pArr[0], pArr[2]);
 		        }
@@ -3169,7 +3158,7 @@
 		        if (frame.right.visible) {
 		            pathSegments.push(pArr[2], pArr[3]);
 		        }
-		    } else if (this.isZAxis) {  // Z-Axis
+		    } else if (this.isZAxis) { // Z-Axis
 		        if (frame.left.visible) {
 		            pathSegments.push(pArr[0], pArr[2]);
 		        }
@@ -3182,7 +3171,7 @@
 		        if (frame.bottom.visible) {
 		            pathSegments.push(pArr[2], pArr[3]);
 		        }
-		    } else {  // X-Axis
+		    } else { // X-Axis
 		        if (frame.front.visible) {
 		            pathSegments.push(pArr[0], pArr[2]);
 		        }
@@ -3232,7 +3221,8 @@
 		                'L', fromPath[i + 4], fromPath[i + 5],
 		                'L', toPath[i + 4], toPath[i + 5],
 		                'L', toPath[i + 1], toPath[i + 2],
-		                'Z');
+		                'Z'
+		            );
 		        }
 		    }
 
@@ -3272,7 +3262,7 @@
 		    pos = axis.swapZ({ x: pos.x, y: pos.y, z: 0 });
 
 
-		    if (axis.isZAxis) {  // Z Axis
+		    if (axis.isZAxis) { // Z Axis
 		        if (axis.opposite) {
 		            if (frame.axes.z.top === null) {
 		                return {};
@@ -3292,7 +3282,7 @@
 		            vecX = frame.axes.z.bottom.xDir;
 		            reverseFlap = !frame.bottom.frontFacing;
 		        }
-		    } else if (axis.horiz) {  // X Axis
+		    } else if (axis.horiz) { // X Axis
 		        if (axis.opposite) {
 		            if (frame.axes.x.top === null) {
 		                return {};
@@ -3312,7 +3302,7 @@
 		            vecX = frame.axes.x.bottom.xDir;
 		            reverseFlap = !frame.bottom.frontFacing;
 		        }
-		    } else {  // Y Axis
+		    } else { // Y Axis
 		        if (axis.opposite) {
 		            if (frame.axes.y.right === null) {
 		                return {};
@@ -3340,11 +3330,12 @@
 
 		    } else if (positionMode === 'flap') {
 		        // Labels are be rotated around the axis direction to face the screen
-		        if (!axis.horiz) {  // Y Axis
+		        if (!axis.horiz) { // Y Axis
 		            vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
-		        } else {  // X and Z Axis
+		        } else { // X and Z Axis
 		            var sin = Math.sin(alpha);
 		            var cos = Math.cos(alpha);
+
 		            if (axis.opposite) {
 		                sin = -sin;
 		            }
@@ -3355,14 +3346,15 @@
 		        }
 		    } else if (positionMode === 'ortho') {
 		        // Labels will be rotated to be ortogonal to the axis
-		        if (!axis.horiz) {  // Y Axis
+		        if (!axis.horiz) { // Y Axis
 		            vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
-		        } else {  // X and Z Axis
+		        } else { // X and Z Axis
 		            var sina = Math.sin(alpha);
 		            var cosa = Math.cos(alpha);
 		            var sinb = Math.sin(beta);
 		            var cosb = Math.cos(beta);
 		            var vecZ = { x: sinb * cosa, y: -sina, z: -cosa * cosb };
+
 		            vecY = {
 		                x: vecX.y * vecZ.z - vecX.z * vecZ.y,
 		                y: vecX.z * vecZ.x - vecX.x * vecZ.z,
@@ -3371,17 +3363,18 @@
 		            var scale = 1 / Math.sqrt(
 		                vecY.x * vecY.x + vecY.y * vecY.y + vecY.z * vecY.z
 		            );
+
 		            if (reverseFlap) {
 		                scale = -scale;
 		            }
 		            vecY = { x: scale * vecY.x, y: scale * vecY.y, z: scale * vecY.z };
 		        }
-		    } else {  // positionMode  == 'offset'
+		    } else { // positionMode  == 'offset'
 		        // Labels will be skewd to maintain vertical / horizontal offsets from
 		        // axis
-		        if (!axis.horiz) {  // Y Axis
+		        if (!axis.horiz) { // Y Axis
 		            vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
-		        } else {  // X and Z Axis
+		        } else { // X and Z Axis
 		            vecY = {
 		                x: Math.sin(beta) * Math.sin(alpha),
 		                y: Math.cos(alpha),
@@ -3402,6 +3395,7 @@
 		            { x: pos.x + vecX.x, y: pos.y + vecX.y, z: pos.z + vecX.z },
 		            { x: pos.x + vecY.x, y: pos.y + vecY.y, z: pos.z + vecY.z }
 		        ], axis.chart)) < 0;
+
 		        if (isMirrored) {
 		            vecX = { x: -vecX.x, y: -vecX.y, z: -vecX.z };
 		        }
@@ -3450,6 +3444,7 @@
 
 		wrap(Axis.prototype, 'getTitlePosition', function (proceed) {
 		    var pos = proceed.apply(this, [].slice.call(arguments, 1));
+
 		    return fix3dPosition(this, pos, true);
 		});
 
@@ -3478,6 +3473,7 @@
 		Axis.prototype.swapZ = function (p, insidePlotArea) {
 		    if (this.isZAxis) {
 		        var plotLeft = insidePlotArea ? 0 : this.chart.plotLeft;
+
 		        return {
 		            x: plotLeft + p.z,
 		            y: p.y,
@@ -3570,6 +3566,7 @@
 		        // Z-Axis is shown horizontally, so it's kind of a X-Axis
 		        axisOptions.isX = true;
 		        var zAxis = new ZAxis(chart, axisOptions);
+
 		        zAxis.setScale();
 		    });
 		});
@@ -3633,9 +3630,11 @@
 		        // calculated, then return difference between the first and the second
 		        // label. If there is no next label position calculated, return the
 		        // difference between the first grid line and left 3d frame.
-		        slotWidth = Math.abs(prevLabelPos ?
-		            labelPos.x - prevLabelPos.x : nextLabelPos ?
-		                nextLabelPos.x - labelPos.x : firstGridLine.x - frame3DLeft.x
+		        slotWidth = Math.abs(
+		            prevLabelPos ?
+		                labelPos.x - prevLabelPos.x : nextLabelPos ?
+		                    nextLabelPos.x - labelPos.x :
+		                    firstGridLine.x - frame3DLeft.x
 		        );
 		        return slotWidth;
 		    }
@@ -3645,7 +3644,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * Extension to the Series object in 3D charts.
 		 *
@@ -3718,7 +3717,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -3905,7 +3904,7 @@
 		                series.data.forEach(function (point) {
 		                    if (point.y !== null) {
 		                        point.height = point.shapeArgs.height;
-		                        point.shapey = point.shapeArgs.y;    // #2968
+		                        point.shapey = point.shapeArgs.y; // #2968
 		                        point.shapeArgs.height = 1;
 		                        if (!reversed) {
 		                            if (point.stackY) {
@@ -3916,8 +3915,8 @@
 		                                    point.plotY +
 		                                    (
 		                                        point.negative ?
-		                                        -point.height :
-		                                        point.height
+		                                            -point.height :
+		                                            point.height
 		                                    );
 		                            }
 		                        }
@@ -3928,7 +3927,7 @@
 		                series.data.forEach(function (point) {
 		                    if (point.y !== null) {
 		                        point.shapeArgs.height = point.height;
-		                        point.shapeArgs.y = point.shapey;    // #2968
+		                        point.shapeArgs.y = point.shapey; // #2968
 		                        // null value do not have a graphic
 		                        if (point.graphic) {
 		                            point.graphic.animate(
@@ -3977,6 +3976,7 @@
 		    function (proceed, vis) {
 		        var series = this,
 		            pointVis;
+
 		        if (series.chart.is3d()) {
 		            series.data.forEach(function (point) {
 		                point.visible = point.options.visible = vis =
@@ -4008,6 +4008,7 @@
 		            var stacks = this.chart.retrieveStacks(stacking),
 		                stack = seriesOptions.stack || 0,
 		                i; // position within the stack
+
 		            for (i = 0; i < stacks[stack].series.length; i++) {
 		                if (stacks[stack].series[i] === this) {
 		                    break;
@@ -4063,6 +4064,7 @@
 		            point = args[1];
 
 		        var pos = ({ x: alignTo.x, y: alignTo.y, z: series.z });
+
 		        pos = perspective([pos], chart, true)[0];
 		        alignTo.x = pos.x;
 		        // #7103 If point is outside of plotArea, hide data label.
@@ -4083,6 +4085,7 @@
 		            y: stackBox.y,
 		            z: 0
 		        });
+
 		        pos = H.perspective([pos], chart, true)[0];
 		        stackBox.x = pos.x;
 		        stackBox.y = pos.y;
@@ -4150,7 +4153,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * 3D pie series
 		 *
@@ -4234,6 +4237,7 @@
 		    'haloPath',
 		    function (proceed) {
 		        var args = arguments;
+
 		        return this.series.chart.is3d() ? [] : proceed.call(this, args[1]);
 		    }
 		);
@@ -4259,6 +4263,7 @@
 		        var series = this,
 		            chart = series.chart,
 		            options3d = chart.options.chart.options3d;
+
 		        series.data.forEach(function (point) {
 		            var shapeArgs = point.shapeArgs,
 		                r = shapeArgs.r,
@@ -4355,7 +4360,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * Scatter 3D series.
 		 *
@@ -4375,7 +4380,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('scatter3d', 'scatter',
+		seriesType(
+		    'scatter3d',
+		    'scatter',
 		    /**
 		     * A 3D scatter plot uses x, y and z coordinates to display values for three
 		     * variables for a set of data.
@@ -4507,7 +4514,7 @@
 	}(Highcharts));
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * Extension to the VML Renderer
 		 *
@@ -4538,6 +4545,7 @@
 
 		    VMLRenderer.prototype.arc3d = function (shapeArgs) {
 		        var result = SVGRenderer.prototype.arc3d.call(this, shapeArgs);
+
 		        result.css({ zIndex: result.zIndex });
 		        return result;
 		    };

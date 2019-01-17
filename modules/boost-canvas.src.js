@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Boost module
  *
- * (c) 2010-2018 Highsoft AS
+ * (c) 2010-2019 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -10,6 +10,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -109,7 +110,8 @@
 		            } else {
 		                this.chart.showLoading(
 		                    'Your browser doesn\'t support HTML5 canvas, <br>' +
-		                    'please use a modern browser');
+		                    'please use a modern browser'
+		                );
 
 		                // Uncomment this to provide low-level (slow) support in oldIE.
 		                // It will cause script errors on charts with more than a few
@@ -157,8 +159,8 @@
 		                    width,
 		                    height
 		                )
-		                .addClass('highcharts-boost-canvas')
-		                .add(targetGroup);
+		                    .addClass('highcharts-boost-canvas')
+		                    .add(targetGroup);
 
 		                target.ctx = ctx = target.canvas.getContext('2d');
 
@@ -297,10 +299,10 @@
 		                index,
 		                sdata = isStacked ? series.data : (xData || rawData),
 		                fillColor = series.fillOpacity ?
-		                        new Color(series.color).setOpacity(
-		                            pick(options.fillOpacity, 0.75)
-		                        ).get() :
-		                        series.color,
+		                    new Color(series.color).setOpacity(
+		                        pick(options.fillOpacity, 0.75)
+		                    ).get() :
+		                    series.color,
 
 		                stroke = function () {
 		                    if (doFill) {
@@ -613,6 +615,7 @@
 		            }, function () {
 		                var loadingDiv = chart.loadingDiv,
 		                    loadingShown = chart.loadingShown;
+
 		                stroke();
 
 		                // if (series.boostCopy || series.chart.boostCopy) {

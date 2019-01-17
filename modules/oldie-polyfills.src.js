@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Old IE (v6, v7, v8) array polyfills for Highcharts v7+.
  *
- * (c) 2010-2018 Highsoft AS
+ * (c) 2010-2019 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -10,6 +10,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 }(function (Highcharts) {
 	(function () {
 		/**
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * Simple polyfills for array functions in old IE browsers (6, 7 and 8) in
 		 * Highcharts v7+. These polyfills are sufficient for Highcharts to work, but
@@ -36,6 +37,7 @@
 		    Array.prototype.forEach = function (fn, ctx) {
 		        var i = 0,
 		            len = this.length;
+
 		        for (; i < len; i++) {
 		            if (
 		                this[i] !== undefined && // added check
@@ -117,6 +119,7 @@
 		            i = arguments.length > 1 ? 0 : 1,
 		            accumulator = arguments.length > 1 ? initialValue : this[0],
 		            len = this.length;
+
 		        for (; i < len; ++i) {
 		            accumulator = func.call(context, accumulator, this[i], i, this);
 		        }
@@ -129,6 +132,7 @@
 		        var result = [],
 		            hasOwnProperty = Object.prototype.hasOwnProperty,
 		            prop;
+
 		        for (prop in obj) {
 		            if (hasOwnProperty.call(obj, prop)) {
 		                result.push(prop);
@@ -137,7 +141,6 @@
 		        return result;
 		    };
 		}
-
 
 	}());
 	return (function () {

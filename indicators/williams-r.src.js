@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Wojciech Chmiel
+ * (c) 2010-2019 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 }(function (Highcharts) {
 	var reduceArrayMixin = (function (H) {
 		/**
-		 * (c) 2010-2018 Pawel Fus & Daniel Studencki
+		 * (c) 2010-2019 Pawel Fus & Daniel Studencki
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -69,6 +70,7 @@
 		    }
 		};
 
+
 		return reduceArrayMixin;
 	}(Highcharts));
 	(function (H, reduceArrayMixin) {
@@ -92,7 +94,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('williamsr', 'sma',
+		H.seriesType(
+		    'williamsr',
+		    'sma',
 		    /**
 		     * Williams %R. This series requires the `linkedTo` option to be
 		     * set and should be loaded after the `stock/indicators/indicators.js`.

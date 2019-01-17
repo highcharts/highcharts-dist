@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Debugger module
  *
- * (c) 2012-2018 Torstein Honsi
+ * (c) 2012-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -22,7 +23,7 @@
 		/* eslint-disable */
 		/* *
 		 * Error information for the debugger module
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 * License: www.highcharts.com/license
 		 */
 
@@ -142,8 +143,7 @@
 		            "errors/28/readme.md",
 		            "errors/29/readme.md",
 		            "errors/30/readme.md"
-		        ],
-		        "version": "6.2.0"
+		        ]
 		    }
 		};
 
@@ -151,7 +151,7 @@
 	(function (H) {
 		/* *
 		 *
-		 *  (c) 2010-2018 Torstein Honsi
+		 *  (c) 2010-2019 Torstein Honsi
 		 *
 		 *  License: www.highcharts.com/license
 		 *

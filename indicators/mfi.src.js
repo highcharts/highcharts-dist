@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Money Flow Index indicator for Highstock
  *
- * (c) 2010-2018 Grzegorz Blachliński
+ * (c) 2010-2019 Grzegorz Blachliński
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -24,7 +25,7 @@
 		 *
 		 *  Money Flow Index indicator for Highstock
 		 *
-		 *  (c) 2010-2018 Grzegorz Blachliński
+		 *  (c) 2010-2019 Grzegorz Blachliński
 		 *
 		 *  License: www.highcharts.com/license
 		 *
@@ -63,7 +64,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('mfi', 'sma',
+		H.seriesType(
+		    'mfi',
+		    'sma',
 		    /**
 		     * Money Flow Index. This series requires `linkedTo` option to be set and
 		     * should be loaded after the `stock/indicators/indicators.js` file.
@@ -150,7 +153,7 @@
 		                // Calculate if up or down
 		                oldTypicalPrice = newTypicalPrice;
 		                newTypicalPrice = calculateTypicalPrice(yVal[range]);
-		                isUp = newTypicalPrice >= oldTypicalPrice ? true : false;
+		                isUp = newTypicalPrice >= oldTypicalPrice;
 		                // Calculate raw money flow
 		                rawMoneyFlow = calculateRawMoneyFlow(
 		                    newTypicalPrice,
@@ -169,7 +172,7 @@
 		                    // Calculate if up or down
 		                    oldTypicalPrice = newTypicalPrice;
 		                    newTypicalPrice = calculateTypicalPrice(yVal[i]);
-		                    isUp = newTypicalPrice > oldTypicalPrice ? true : false;
+		                    isUp = newTypicalPrice > oldTypicalPrice;
 		                    // Calculate raw money flow
 		                    rawMoneyFlow = calculateRawMoneyFlow(
 		                        newTypicalPrice,

@@ -3,6 +3,6 @@
  */
 
 import * as Highcharts from './highcharts';
-import StockModule from '../modules/stock';
+import StockModule from './modules/stock';
 
 export = Highcharts;

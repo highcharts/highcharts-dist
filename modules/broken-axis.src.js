@@ -1,13 +1,14 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  *
- * (c) 2009-2018 Torstein Honsi
+ * (c) 2009-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -19,7 +20,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/**
-		 * (c) 2009-2018 Torstein Honsi
+		 * (c) 2009-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -28,16 +29,11 @@
 
 		var addEvent = H.addEvent,
 		    pick = H.pick,
-		    wrap = H.wrap,
 		    extend = H.extend,
 		    isArray = H.isArray,
 		    fireEvent = H.fireEvent,
 		    Axis = H.Axis,
 		    Series = H.Series;
-
-		function stripArguments() {
-		    return Array.prototype.slice.call(arguments, 1);
-		}
 
 		extend(Axis.prototype, {
 		    isInBreak: function (brk, val) {
@@ -76,7 +72,7 @@
 		                    if (!keep) {
 		                        keep = pick(
 		                            breaks[i].showPoints,
-		                            this.isXAxis ? false : true
+		                            !this.isXAxis
 		                        );
 		                    }
 		                }
@@ -229,7 +225,7 @@
 		            this.unitLength = null;
 		            if (this.isBroken) {
 		                var breaks = axis.options.breaks,
-		                    breakArrayT = [],    // Temporary one
+		                    breakArrayT = [], // Temporary one
 		                    breakArray = [],
 		                    length = 0,
 		                    inBrk,
@@ -279,8 +275,11 @@
 		                breakArrayT.sort(function (a, b) {
 		                    return (
 		                        (a.value === b.value) ?
-		                        (a.move === 'in' ? 0 : 1) - (b.move === 'in' ? 0 : 1) :
-		                        a.value - b.value
+		                            (
+		                                (a.move === 'in' ? 0 : 1) -
+		                                (b.move === 'in' ? 0 : 1)
+		                            ) :
+		                            a.value - b.value
 		                    );
 		                });
 
@@ -334,9 +333,7 @@
 		    }
 		};
 
-		wrap(Series.prototype, 'generatePoints', function (proceed) {
-
-		    proceed.apply(this, stripArguments(arguments));
+		addEvent(Series, 'afterGeneratePoints', function () {
 
 		    var series = this,
 		        xAxis = series.xAxis,
@@ -372,11 +369,10 @@
 
 		});
 
-		function drawPointsWrapped(proceed) {
-		    proceed.apply(this);
+		addEvent(Series, 'afterRender', function drawPointsWrapped() {
 		    this.drawBreaks(this.xAxis, ['x']);
 		    this.drawBreaks(this.yAxis, pick(this.pointArrayMap, ['y']));
-		}
+		});
 
 		H.Series.prototype.drawBreaks = function (axis, keys) {
 		    var series = this,
@@ -534,9 +530,6 @@
 		    // Call base method
 		    return this.getGraphPath(points);
 		};
-
-		wrap(H.seriesTypes.column.prototype, 'drawPoints', drawPointsWrapped);
-		wrap(H.Series.prototype, 'drawPoints', drawPointsWrapped);
 
 	}(Highcharts));
 	return (function () {

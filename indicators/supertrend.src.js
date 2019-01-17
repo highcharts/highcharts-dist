@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Wojciech Chmiel
+ * (c) 2010-2019 Wojciech Chmiel
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -37,6 +38,7 @@
 		// Utils:
 		function createPointObj(mainSeries, index, close) {
 		    return {
+		        index: index,
 		        close: mainSeries.yData[index][close],
 		        x: mainSeries.xData[index]
 		    };
@@ -51,7 +53,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		H.seriesType('supertrend', 'sma',
+		H.seriesType(
+		    'supertrend',
+		    'sma',
 		    /**
 		     * Supertrend indicator. This series requires the `linkedTo` option to be
 		     * set and should be loaded after the `stock/indicators/indicators.js` and
@@ -63,10 +67,10 @@
 		     * @extends      plotOptions.sma
 		     * @since        7.0.0
 		     * @product      highstock
-		     * @excluding    allAreas, color, negativeColor, colorAxis, joinBy, keys,
-		     *               navigatorOptions, pointInterval, pointIntervalUnit,
-		     *               pointPlacement, pointRange, pointStart, showInNavigator,
-		     *               stacking, threshold
+		     * @excluding    allAreas, color, cropThreshold, negativeColor, colorAxis,
+		     *               joinBy, keys, navigatorOptions, pointInterval,
+		     *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
+		     *               showInNavigator, stacking, threshold
 		     * @optionparent plotOptions.supertrend
 		     */
 		    {
@@ -131,15 +135,12 @@
 		                 * [this demonstration](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
 		                 *
 		                 * @sample {highcharts} highcharts/yaxis/gridlinedashstyle/
-		                 *          Long dashes
+		                 *         Long dashes
 		                 * @sample {highstock} stock/xaxis/gridlinedashstyle/
-		                 *          Long dashes
+		                 *         Long dashes
 		                 *
-		                 * @since      7.0.0
-		                 * @validvalue ["Dash", "DashDot", "Dot", "LongDash",
-		                 *             "LongDashDot", "LongDashDotDot", "ShortDash",
-		                 *             "ShortDashDot", "ShortDashDotDot", "ShortDot",
-		                 *             "Solid"]
+		                 * @type  {Highcharts.DashStyleType}
+		                 * @since 7.0.0
 		                 */
 		                dashStyle: 'LongDash'
 		            }
@@ -152,13 +153,27 @@
 		        nameBase: 'Supertrend',
 		        nameComponents: ['multiplier', 'period'],
 		        requiredIndicators: ['atr'],
+		        init: function () {
+		            var options,
+		                parentOptions;
+
+		            SMA.prototype.init.apply(this, arguments);
+
+		            options = this.options;
+		            parentOptions = this.linkedParent.options;
+
+		            // Indicator cropThreshold has to be equal linked series one
+		            // reduced by period due to points comparison in drawGraph method
+		            // (#9787)
+		            options.cropThreshold =
+		                parentOptions.cropThreshold - (options.params.period - 1);
+		        },
 		        drawGraph: function () {
 		            var indicator = this,
-		                chart = indicator.chart,
 		                indicOptions = indicator.options,
 
-		                // series that indicator is linked to
-		                mainSeries = chart.get(indicOptions.linkedTo),
+		                // Series that indicator is linked to
+		                mainSeries = indicator.linkedParent,
 		                mainLinePoints = mainSeries ? mainSeries.points : [],
 		                indicPoints = indicator.points,
 		                indicPath = indicator.graph,
@@ -283,27 +298,30 @@
 
 		                // Check if points are shifted relative to each other
 		                if (
+		                    point &&
 		                    mainPoint &&
 		                    prevMainPoint &&
 		                    nextMainPoint &&
 		                    point.x !== mainPoint.x
 		                ) {
-		                    if (point && point.x === prevMainPoint.x) {
+		                    if (point.x === prevMainPoint.x) {
 		                        nextMainPoint = mainPoint;
 		                        mainPoint = prevMainPoint;
-		                    } else if (point && point.x === nextMainPoint.x) {
+		                    } else if (point.x === nextMainPoint.x) {
 		                        mainPoint = nextMainPoint;
 		                        nextMainPoint = {
 		                            close: mainSeries.yData[mainPoint.index - 1][close],
 		                            x: mainSeries.xData[mainPoint.index - 1]
 		                        };
-		                    } else if (point && point.x === prevPrevMainPoint.x) {
+		                    } else if (
+		                        prevPrevMainPoint && point.x === prevPrevMainPoint.x
+		                    ) {
 		                        mainPoint = prevPrevMainPoint;
 		                        nextMainPoint = prevMainPoint;
 		                    }
 		                }
 
-		                if (nextPoint && nextMainPoint) {
+		                if (nextPoint && nextMainPoint && mainPoint) {
 
 		                    newNextPoint = {
 		                        x: nextPoint.x,
@@ -538,10 +556,10 @@
 		 * @extends   series,plotOptions.supertrend
 		 * @since     7.0.0
 		 * @product   highstock
-		 * @excluding allAreas, color, colorAxis, data, dataParser, dataURL, joinBy,
-		 *            keys, navigatorOptions, negativeColor, pointInterval,
-		 *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
-		 *            showInNavigator, stacking, threshold
+		 * @excluding allAreas, color, colorAxis, cropThreshold, data, dataParser,
+		 *            dataURL, joinBy, keys, navigatorOptions, negativeColor,
+		 *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
+		 *            pointStart, showInNavigator, stacking, threshold
 		 * @apioption series.supertrend
 		 */
 

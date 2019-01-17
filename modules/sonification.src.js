@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Sonification module
  *
- * (c) 2012-2018 Øystein Moseng
+ * (c) 2012-2019 Øystein Moseng
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -21,7 +22,7 @@
 	var Instrument = (function (H) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  Instrument class for sonification module.
 		 *
@@ -171,6 +172,7 @@
 
 		    // Init the audio nodes
 		    var ctx = H.audioContext;
+
 		    this.gainNode = ctx.createGain();
 		    this.setGain(0);
 		    this.panNode = ctx.createStereoPanner && ctx.createStereoPanner();
@@ -219,6 +221,7 @@
 		Instrument.prototype.initAudioContext = function () {
 		    var Context = H.win.AudioContext || H.win.webkitAudioContext,
 		        hasOldContext = !!H.audioContext;
+
 		    if (Context) {
 		        H.audioContext = H.audioContext || new Context();
 		        if (
@@ -246,6 +249,7 @@
 		 */
 		Instrument.prototype.initOscillator = function (options) {
 		    var ctx = H.audioContext;
+
 		    this.oscillator = ctx.createOscillator();
 		    this.oscillator.type = options.waveformShape;
 		    this.oscillator.connect(this.gainNode);
@@ -322,16 +326,17 @@
 		    var validFrequencies = this.options.allowedFrequencies,
 		        maximum = H.pick(max, Infinity),
 		        minimum = H.pick(min, -Infinity);
+
 		    return !validFrequencies || !validFrequencies.length ?
-		            // No valid frequencies for this instrument, return the target
-		            frequency :
-		            // Use the valid frequencies and return the closest match
-		            validFrequencies.reduce(function (acc, cur) {
-		                // Find the closest allowed value
-		                return Math.abs(cur - frequency) < Math.abs(acc - frequency) &&
-		                    cur < maximum && cur > minimum ?
-		                    cur : acc;
-		            }, Infinity);
+		        // No valid frequencies for this instrument, return the target
+		        frequency :
+		        // Use the valid frequencies and return the closest match
+		        validFrequencies.reduce(function (acc, cur) {
+		            // Find the closest allowed value
+		            return Math.abs(cur - frequency) < Math.abs(acc - frequency) &&
+		                cur < maximum && cur > minimum ?
+		                cur : acc;
+		        }, Infinity);
 		};
 
 
@@ -358,6 +363,7 @@
 		        validFrequency = this.getValidFrequency(
 		            frequency, limits.min, limits.max
 		        );
+
 		    if (this.options.type === 'oscillator') {
 		        this.oscillatorPlay(validFrequency);
 		    }
@@ -421,10 +427,12 @@
 		            var target = options.duration,
 		                currentDurationIx = 0,
 		                callbackInterval = instrument.options.playCallbackInterval;
+
 		            if (typeof value === 'function') {
 		                var timer = setInterval(function () {
 		                    currentDurationIx++;
 		                    var curTime = currentDurationIx * callbackInterval / target;
+
 		                    if (curTime >= 1) {
 		                        instrument[setter](value(1), setterData);
 		                        clearInterval(timer);
@@ -432,6 +440,7 @@
 		                        instrument[setter](value(curTime), setterData);
 		                    }
 		                }, callbackInterval);
+
 		                instrument.playCallbackTimers.push(timer);
 		            } else {
 		                instrument[setter](value, setterData);
@@ -497,6 +506,7 @@
 		        delete instrument.stopTimeout;
 		        instrument.stop(immediate);
 		    };
+
 		    if (duration) {
 		        instrument.stopTimeout = setTimeout(
 		            onStop,
@@ -569,6 +579,7 @@
 		                instr.stopCallback(callbackData);
 		            }
 		        };
+
 		    // Clear any existing timers
 		    if (instr.playCallbackTimers.length) {
 		        instr.clearPlayCallbackTimers();
@@ -594,7 +605,7 @@
 	var frequencies = (function () {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  List of musical frequencies from C0 to C8.
 		 *
@@ -613,10 +624,10 @@
 		    23.12465141947715,
 		    24.499714748859326,
 		    25.956543598746574,
-		    27.5,               // A0
+		    27.5, // A0
 		    29.13523509488062,
 		    30.86770632850775,
-		    32.70319566257483,  // C1
+		    32.70319566257483, // C1
 		    34.64782887210901,
 		    36.70809598967594,
 		    38.890872965260115,
@@ -625,10 +636,10 @@
 		    46.2493028389543,
 		    48.999429497718666,
 		    51.91308719749314,
-		    55,                 // A1
+		    55, // A1
 		    58.27047018976124,
 		    61.7354126570155,
-		    65.40639132514966,  // C2
+		    65.40639132514966, // C2
 		    69.29565774421802,
 		    73.41619197935188,
 		    77.78174593052023,
@@ -637,10 +648,10 @@
 		    92.4986056779086,
 		    97.99885899543733,
 		    103.82617439498628,
-		    110,                // A2
+		    110, // A2
 		    116.54094037952248,
 		    123.47082531403103,
-		    130.8127826502993,  // C3
+		    130.8127826502993, // C3
 		    138.59131548843604,
 		    146.8323839587038,
 		    155.56349186104046,
@@ -649,10 +660,10 @@
 		    184.9972113558172,
 		    195.99771799087463,
 		    207.65234878997256,
-		    220,                // A3
+		    220, // A3
 		    233.08188075904496,
 		    246.94165062806206,
-		    261.6255653005986,  // C4
+		    261.6255653005986, // C4
 		    277.1826309768721,
 		    293.6647679174076,
 		    311.1269837220809,
@@ -661,10 +672,10 @@
 		    369.9944227116344,
 		    391.99543598174927,
 		    415.3046975799451,
-		    440,                // A4
+		    440, // A4
 		    466.1637615180899,
 		    493.8833012561241,
-		    523.2511306011972,  // C5
+		    523.2511306011972, // C5
 		    554.3652619537442,
 		    587.3295358348151,
 		    622.2539674441618,
@@ -673,7 +684,7 @@
 		    739.9888454232688,
 		    783.9908719634985,
 		    830.6093951598903,
-		    880,                // A5
+		    880, // A5
 		    932.3275230361799,
 		    987.7666025122483,
 		    1046.5022612023945, // C6
@@ -685,10 +696,10 @@
 		    1479.9776908465376,
 		    1567.981743926997,
 		    1661.2187903197805,
-		    1760,               // A6
+		    1760, // A6
 		    1864.6550460723597,
 		    1975.533205024496,
-		    2093.004522404789,  // C7
+		    2093.004522404789, // C7
 		    2217.4610478149766,
 		    2349.31814333926,
 		    2489.0158697766474,
@@ -697,10 +708,10 @@
 		    2959.955381693075,
 		    3135.9634878539946,
 		    3322.437580639561,
-		    3520,               // A7
+		    3520, // A7
 		    3729.3100921447194,
 		    3951.066410048992,
-		    4186.009044809578   // C8
+		    4186.009044809578 // C8
 		];
 
 
@@ -709,7 +720,7 @@
 	var utilities = (function (musicalFrequencies) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  Utility functions for sonification.
 		 *
@@ -752,6 +763,7 @@
 		 */
 		SignalHandler.prototype.registerSignalCallbacks = function (signals) {
 		    var signalHandler = this;
+
 		    signalHandler.supportedSignals.forEach(function (supportedSignal) {
 		        if (signals[supportedSignal]) {
 		            (
@@ -773,6 +785,7 @@
 		 */
 		SignalHandler.prototype.clearSignalCallbacks = function (signalNames) {
 		    var signalHandler = this;
+
 		    if (signalNames) {
 		        signalNames.forEach(function (signalName) {
 		            if (signalHandler.signals[signalName]) {
@@ -794,9 +807,11 @@
 		 */
 		SignalHandler.prototype.emitSignal = function (signalName, data) {
 		    var retval;
+
 		    if (this.signals[signalName]) {
 		        this.signals[signalName].forEach(function (handler) {
 		            var result = handler(data);
+
 		            retval = result !== undefined ? result : retval;
 		        });
 		    }
@@ -825,6 +840,7 @@
 		    getMusicalScale: function (semitones) {
 		        return musicalFrequencies.filter(function (freq, i) {
 		            var interval = i % 12 + 1;
+
 		            return semitones.some(function (allowedInterval) {
 		                return allowedInterval === interval;
 		            });
@@ -844,7 +860,8 @@
 		            // users to zoom in for better fidelity.
 		            series.points.forEach(function (point) {
 		                var val = point[prop] !== undefined ?
-		                        point[prop] : point.options[prop];
+		                    point[prop] : point.options[prop];
+
 		                extremes.min = Math.min(extremes.min, val);
 		                extremes.max = Math.max(extremes.max, val);
 		            });
@@ -882,7 +899,7 @@
 	var instruments = (function (Instrument, utilities) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  Instrument definitions for sonification module.
 		 *
@@ -893,6 +910,7 @@
 
 
 		var instruments = {};
+
 		['sine', 'square', 'triangle', 'sawtooth'].forEach(function (waveform) {
 		    // Add basic instruments
 		    instruments[waveform] = new Instrument({
@@ -918,7 +936,7 @@
 	var Earcon = (function (H) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  Earcons for the sonification module in Highcharts.
 		 *
@@ -1034,6 +1052,7 @@
 		            instrOnEnd,
 		            instrumentCopy,
 		            copyId;
+
 		        if (instrument && instrument.play) {
 		            if (opts.playOptions) {
 		                // Handle master pan/volume
@@ -1086,6 +1105,7 @@
 		Earcon.prototype.cancelSonify = function (fadeOut) {
 		    var playing = this.instrumentsPlaying,
 		        instrIds = playing && Object.keys(playing);
+
 		    if (instrIds && instrIds.length) {
 		        instrIds.forEach(function (instr) {
 		            playing[instr].stop(!fadeOut, null, 'cancelled');
@@ -1101,7 +1121,7 @@
 	var pointSonifyFunctions = (function (H, utilities) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  Code for sonifying single points.
 		 *
@@ -1363,6 +1383,7 @@
 		    var signalHandler = point.sonification.signalHandler =
 		        point.sonification.signalHandler ||
 		        new utilities.SignalHandler(['onEnd']);
+
 		    signalHandler.clearSignalCallbacks();
 		    signalHandler.registerSignalCallbacks({ onEnd: options.onEnd });
 
@@ -1463,6 +1484,7 @@
 		function pointCancelSonify(fadeOut) {
 		    var playing = this.sonification && this.sonification.instrumentsPlaying,
 		        instrIds = playing && Object.keys(playing);
+
 		    if (instrIds && instrIds.length) {
 		        instrIds.forEach(function (instr) {
 		            playing[instr].stop(!fadeOut, null, 'cancelled');
@@ -1478,12 +1500,13 @@
 		    pointCancelSonify: pointCancelSonify
 		};
 
+
 		return pointSonifyFunctions;
 	}(Highcharts, utilities));
 	var chartSonifyFunctions = (function (H, utilities) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  Sonification functions for chart/series.
 		 *
@@ -1608,6 +1631,7 @@
 		    // Compute the extremes from the visible points.
 		    return series.points.reduce(function (acc, point) {
 		        var value = getPointTimeValue(point, timeProp);
+
 		        acc.min = Math.min(acc.min, value);
 		        acc.max = Math.max(acc.max, value);
 		        return acc;
@@ -1636,6 +1660,7 @@
 		                var value = instrumentDefinition.instrumentMapping[
 		                    instrumentParameter
 		                ];
+
 		                if (typeof value === 'string' && !newExtremes[value]) {
 		                    // This instrument parameter is mapped to a data prop.
 		                    // If we don't have predefined data extremes, find them.
@@ -1664,6 +1689,7 @@
 		        function (earcons, earconDefinition) {
 		            var cond,
 		                earcon = earconDefinition.earcon;
+
 		            if (earconDefinition.condition) {
 		                // We have a condition. This overrides onPoint
 		                cond = earconDefinition.condition(point);
@@ -1702,6 +1728,7 @@
 		            copy = (typeof instrument === 'string' ?
 		                H.sonification.instruments[instrument] :
 		                instrument).copy();
+
 		        return H.merge(instrumentDef, { instrument: copy });
 		    });
 		}
@@ -1741,6 +1768,7 @@
 		        timelineEvents = series.points.reduce(function (events, point) {
 		            var earcons = getPointEarcons(point, options.earcons || []),
 		                time = pointToTime(point);
+
 		            return events.concat(
 		                // Event object for point
 		                new H.sonification.TimelineEvent({
@@ -1772,6 +1800,7 @@
 		        },
 		        onEventStart: function (event) {
 		            var eventObject = event.options && event.options.eventObject;
+
 		            if (eventObject instanceof H.Point) {
 		                // Check for hidden series
 		                if (
@@ -1794,6 +1823,7 @@
 		        onEventEnd: function (eventData) {
 		            var eventObject = eventData.event && eventData.event.options &&
 		                    eventData.event.options.eventObject;
+
 		            if (eventObject instanceof H.Point && options.onPointEnd) {
 		                options.onPointEnd(eventData.event, eventObject);
 		            }
@@ -1855,6 +1885,7 @@
 		 */
 		function buildSeriesOptions(series, dataExtremes, chartSonifyOptions) {
 		    var seriesOptions = chartSonifyOptions.seriesOptions || {};
+
 		    return H.merge(
 		        {
 		            // Calculated dataExtremes for chart
@@ -1903,6 +1934,7 @@
 		 */
 		function buildPathOrder(orderOptions, chart, seriesOptionsCallback) {
 		    var order;
+
 		    if (orderOptions === 'sequential' || orderOptions === 'simultaneous') {
 		        // Just add the series from the chart
 		        order = chart.series.reduce(function (seriesList, series) {
@@ -1930,6 +1962,7 @@
 		                // Is this item a series ID?
 		                if (typeof item === 'string') {
 		                    var series = chart.get(item);
+
 		                    if (series.visible) {
 		                        itemObject = {
 		                            series: series,
@@ -1946,8 +1979,10 @@
 		                        })]
 		                    });
 
+		                }
+
 		                // Is this item a silent wait? If so, just create the path.
-		                } if (item.silentWait) {
+		                if (item.silentWait) {
 		                    itemObject = new H.sonification.TimelinePath({
 		                        silentWait: item.silentWait
 		                    });
@@ -1985,6 +2020,7 @@
 
 		    return order.reduce(function (newOrder, orderDef, i) {
 		        var simultaneousPaths = H.splat(orderDef);
+
 		        newOrder.push(simultaneousPaths);
 
 		        // Go through the simultaneous paths and see if there is a series there
@@ -2016,6 +2052,7 @@
 		function getWaitTime(order) {
 		    return order.reduce(function (waitTime, orderDef) {
 		        var def = H.splat(orderDef);
+
 		        return waitTime + (
 		            def.length === 1 && def[0].options && def[0].options.silentWait || 0
 		        );
@@ -2033,6 +2070,7 @@
 		    // Find the extremes for these paths
 		    var extremes = paths.reduce(function (extremes, path) {
 		        var events = path.events;
+
 		        if (events && events.length) {
 		            extremes.min = Math.min(events[0].time, extremes.min);
 		            extremes.max = Math.max(
@@ -2050,6 +2088,7 @@
 		        var events = path.events,
 		            hasEvents = events && events.length,
 		            eventsToAdd = [];
+
 		        if (!(hasEvents && events[0].time <= extremes.min)) {
 		            eventsToAdd.push(new H.sonification.TimelineEvent({
 		                time: extremes.min
@@ -2081,11 +2120,14 @@
 		            function (maxPathDuration, item) {
 		                var timeExtremes = item.series && item.seriesOptions &&
 		                        item.seriesOptions.timeExtremes;
+
 		                return timeExtremes ?
 		                    Math.max(
 		                        maxPathDuration, timeExtremes.max - timeExtremes.min
 		                    ) : maxPathDuration;
-		            }, 0);
+		            },
+		            0
+		        );
 		    }, 0);
 		}
 
@@ -2136,30 +2178,30 @@
 		    // Go through the order list and convert the items
 		    return order.reduce(function (allPaths, orderDef) {
 		        var simultaneousPaths = H.splat(orderDef).reduce(
-		                function (simulPaths, item) {
-		                    if (item instanceof H.sonification.TimelinePath) {
-		                        // This item is already a path object
-		                        simulPaths.push(item);
-		                    } else if (item.series) {
-		                        // We have a series.
-		                        // We need to set the duration of the series
-		                        item.seriesOptions.duration =
-		                            item.seriesOptions.duration || getSeriesDurationMs(
-		                                item.seriesOptions.timeExtremes.max -
-		                                item.seriesOptions.timeExtremes.min,
-		                                totalUsedDuration,
-		                                totalAvailableDurationMs
-		                            );
+		            function (simulPaths, item) {
+		                if (item instanceof H.sonification.TimelinePath) {
+		                    // This item is already a path object
+		                    simulPaths.push(item);
+		                } else if (item.series) {
+		                    // We have a series.
+		                    // We need to set the duration of the series
+		                    item.seriesOptions.duration =
+		                        item.seriesOptions.duration || getSeriesDurationMs(
+		                            item.seriesOptions.timeExtremes.max -
+		                            item.seriesOptions.timeExtremes.min,
+		                            totalUsedDuration,
+		                            totalAvailableDurationMs
+		                        );
 
-		                        // Add the path
-		                        simulPaths.push(buildTimelinePathFromSeries(
-		                            item.series,
-		                            item.seriesOptions
-		                        ));
-		                    }
-		                    return simulPaths;
-		                }, []
-		            );
+		                    // Add the path
+		                    simulPaths.push(buildTimelinePathFromSeries(
+		                        item.series,
+		                        item.seriesOptions
+		                    ));
+		                }
+		                return simulPaths;
+		            }, []
+		        );
 
 		        // Add in the simultaneous paths
 		        allPaths.push(simultaneousPaths);
@@ -2329,6 +2371,7 @@
 		 */
 		function getCurrentPoints() {
 		    var cursorObj;
+
 		    if (this.sonification.timeline) {
 		        cursorObj = this.sonification.timeline.getCursor(); // Cursor per pathID
 		        return Object.keys(cursorObj).map(function (path) {
@@ -2357,6 +2400,7 @@
 		 */
 		function setCursor(points) {
 		    var timeline = this.sonification.timeline;
+
 		    if (timeline) {
 		        H.splat(points).forEach(function (point) {
 		            // We created the events with the ID of the points, which makes
@@ -2482,12 +2526,13 @@
 		    resetCursorEnd: resetCursorEnd
 		};
 
+
 		return chartSonifyFunctions;
 	}(Highcharts, utilities));
 	var timelineClasses = (function (H, utilities) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  TimelineEvent class definition.
 		 *
@@ -2577,6 +2622,7 @@
 		        playOptions.onEnd = masterOnEnd || playOnEnd || playOptionsOnEnd ?
 		            function () {
 		                var args = arguments;
+
 		                [masterOnEnd, playOnEnd, playOptionsOnEnd].forEach(
 		                    function (onEnd) {
 		                        if (onEnd) {
@@ -2675,8 +2721,7 @@
 		    this.eventsPlaying = {};
 
 		    // Handle silent wait, otherwise use events from options
-		    this.events =
-		        options.silentWait ?
+		    this.events = options.silentWait ?
 		        [
 		            new TimelineEvent({ time: 0 }),
 		            new TimelineEvent({ time: options.silentWait })
@@ -2755,6 +2800,7 @@
 		 */
 		TimelinePath.prototype.setCursor = function (eventId) {
 		    var ix = this.eventIdMap[eventId];
+
 		    if (ix !== undefined) {
 		        this.cursor = ix;
 		        return true;
@@ -2908,7 +2954,6 @@
 		        }
 		    }
 		};
-
 
 
 		/* ************************************************************************** *
@@ -3183,12 +3228,13 @@
 		    Timeline: Timeline
 		};
 
+
 		return timelineClasses;
 	}(Highcharts, utilities));
 	(function (H, Instrument, instruments, Earcon, pointSonifyFunctions, chartSonifyFunctions, utilities, TimelineClasses) {
 		/* *
 		 *
-		 *  (c) 2009-2018 Øystein Moseng
+		 *  (c) 2009-2019 Øystein Moseng
 		 *
 		 *  Sonification module for Highcharts
 		 *

@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Support for parallel coordinates in Highcharts
  *
- * (c) 2010-2018 Pawel Fus
+ * (c) 2010-2019 Pawel Fus
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -23,7 +24,7 @@
 		/* *
 		 * Parallel coordinates module
 		 *
-		 * (c) 2010-2018 Pawel Fus
+		 * (c) 2010-2019 Pawel Fus
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -33,7 +34,6 @@
 		// Extensions for parallel coordinates plot.
 		var Axis = H.Axis,
 		    Chart = H.Chart,
-		    SeriesProto = H.Series.prototype,
 		    ChartProto = Chart.prototype,
 		    AxisProto = H.Axis.prototype;
 
@@ -143,6 +143,7 @@
 		        defaultyAxis = splat(options.yAxis || {}),
 		        yAxisLength = defaultyAxis.length,
 		        newYAxes = [];
+
 		    /**
 		     * Flag used in parallel coordinates plot to check if chart has ||-coords
 		     * (parallel coords).
@@ -197,6 +198,7 @@
 		// Initialize parallelCoordinates
 		addEvent(Chart, 'update', function (e) {
 		    var options = e.options;
+
 		    if (options.chart) {
 		        if (defined(options.chart.parallelCoordinates)) {
 		            this.hasParallelCoordinates = options.chart.parallelCoordinates;
@@ -295,6 +297,7 @@
 		    if (this.chart && this.chart.hasParallelCoordinates && !this.isXAxis) {
 		        var index = this.parallelPosition,
 		            currentPoints = [];
+
 		        this.series.forEach(function (series) {
 		            if (series.visible && defined(series.yData[index])) {
 		                // We need to use push() beacause of null points
@@ -326,6 +329,7 @@
 		    setParallelPosition: function (axisPosition, options) {
 		        var fraction = (this.parallelPosition + 0.5) /
 		            (this.chart.parallelInfo.counter + 1);
+
 		        if (this.chart.polar) {
 		            options.angle = 360 * fraction;
 		        } else {
@@ -342,17 +346,18 @@
 
 		// Bind each series to each yAxis. yAxis needs a reference to all series to
 		// calculate extremes.
-		wrap(SeriesProto, 'bindAxes', function (proceed) {
+		addEvent(H.Series, 'bindAxes', function (e) {
 		    if (this.chart.hasParallelCoordinates) {
 		        var series = this;
+
 		        this.chart.axes.forEach(function (axis) {
 		            series.insert(axis.series);
 		            axis.isDirty = true;
 		        });
 		        series.xAxis = this.chart.xAxis[0];
 		        series.yAxis = this.chart.yAxis[0];
-		    } else {
-		        proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+
+		        e.preventDefault();
 		    }
 		});
 

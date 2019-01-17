@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Exporting module
  *
- * (c) 2010-2018 Torstein Honsi
+ * (c) 2010-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -146,7 +147,7 @@
 		/* *
 		 * Mixin for downloading content in the browser
 		 *
-		 * (c) 2018 Oystein Moseng
+		 * (c) 2015-2019 Oystein Moseng
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -162,6 +163,7 @@
 		// Convert base64 dataURL to Blob if supported, otherwise returns undefined
 		Highcharts.dataURLtoBlob = function (dataURL) {
 		    var parts = dataURL.match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+
 		    if (
 		        parts &&
 		        parts.length > 3 &&
@@ -219,7 +221,7 @@
 		    if (isEdgeBrowser || dataURL.length > 2000000) {
 		        dataURL = Highcharts.dataURLtoBlob(dataURL);
 		        if (!dataURL) {
-		            throw 'Failed to convert to blob';
+		            throw new Error('Failed to convert to blob');
 		        }
 		    }
 
@@ -235,7 +237,7 @@
 		        try {
 		            windowRef = win.open(dataURL, 'chart');
 		            if (windowRef === undefined || windowRef === null) {
-		                throw 'Failed to open window';
+		                throw new Error('Failed to open window');
 		            }
 		        } catch (e) {
 		            // window.open failed, trying location.href
@@ -249,7 +251,7 @@
 		/**
 		 * Experimental data export module for Highcharts
 		 *
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -528,6 +530,7 @@
 		        columnHeaderFormatter = function (item, key, keyLength) {
 		            if (csvOptions.columnHeaderFormatter) {
 		                var s = csvOptions.columnHeaderFormatter(item, key, keyLength);
+
 		                if (s !== false) {
 		                    return s;
 		                }
@@ -724,6 +727,7 @@
 		        // Add the category column
 		        rowArr.forEach(function (row) { // eslint-disable-line no-loop-func
 		            var category = row.name;
+
 		            if (xAxis && !defined(category)) {
 		                if (xAxis.isDatetimeAxis) {
 		                    if (row.x instanceof Date) {
@@ -790,6 +794,7 @@
 		    rows.forEach(function (row, i) {
 		        var val = '',
 		            j = row.length;
+
 		        while (j--) {
 		            val = row[j];
 		            if (typeof val === 'string') {
@@ -831,7 +836,7 @@
 		 *         HTML representation of the data.
 		 */
 		Highcharts.Chart.prototype.getTable = function (useLocalDecimalPoint) {
-		    var html = '<table>',
+		    var html = '<table id="highcharts-data-table-' + this.index + '">',
 		        options = this.options,
 		        decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.',
 		        useMultiLevelHeaders = pick(
@@ -844,6 +849,7 @@
 		        // Compare two rows for equality
 		        isRowEqual = function (row1, row2) {
 		            var i = row1.length;
+
 		            if (row2.length === i) {
 		                while (i--) {
 		                    if (row1[i] !== row2[i]) {
@@ -859,6 +865,7 @@
 		        getCellHTMLFromValue = function (tag, classes, attrs, value) {
 		            var val = pick(value, ''),
 		                className = 'text' + (classes ? ' ' + classes : '');
+
 		            // Convert to string if number
 		            if (typeof val === 'number') {
 		                val = val.toString();
@@ -882,6 +889,7 @@
 		                cur,
 		                curColspan = 0,
 		                rowspan;
+
 		            // Clean up multiple table headers. Chart.getDataRows() returns two
 		            // levels of headers when using multilevel, not merged. We need to
 		            // merge identical headers, remove redundant headers, and keep it
@@ -929,7 +937,7 @@
 		                            'scope="col"' +
 		                            (rowspan > 1 ?
 		                                ' valign="top" rowspan="' + rowspan + '"' :
-		                            ''),
+		                                ''),
 		                            cur
 		                        );
 		                    }
@@ -956,13 +964,13 @@
 		    // Add table caption
 		    if (options.exporting.tableCaption !== false) {
 		        html += '<caption class="highcharts-table-caption">' + pick(
-		                options.exporting.tableCaption,
-		                (
-		                    options.title.text ?
+		            options.exporting.tableCaption,
+		            (
+		                options.title.text ?
 		                    htmlencode(options.title.text) :
 		                    'Chart'
-		                )) +
-		                '</caption>';
+		            )
+		        ) + '</caption>';
 		    }
 
 		    // Find longest row
@@ -998,7 +1006,11 @@
 		    });
 		    html += '</tbody></table>';
 
-		    return html;
+		    var e = { html: html };
+
+		    Highcharts.fireEvent(this, 'afterGetTable', e);
+
+		    return e.html;
 		};
 
 
@@ -1029,6 +1041,7 @@
 		 */
 		Highcharts.Chart.prototype.downloadCSV = function () {
 		    var csv = this.getCSV(true);
+
 		    downloadURL(
 		        getBlobFromContent(csv, 'text/csv') ||
 		            'data:text/csv,\uFEFF' + encodeURIComponent(csv),
@@ -1128,11 +1141,13 @@
 
 		    function openInCloud() {
 		        var form = doc.createElement('form');
+
 		        doc.body.appendChild(form);
 		        form.method = 'post';
 		        form.action = 'https://cloud-api.highcharts.com/openincloud';
 		        form.target = '_blank';
 		        var input = doc.createElement('input');
+
 		        input.type = 'hidden';
 		        input.name = 'chart';
 		        input.value = params;
@@ -1161,6 +1176,7 @@
 
 		// Add "Download CSV" to the exporting menu.
 		var exportingOptions = Highcharts.getOptions().exporting;
+
 		if (exportingOptions) {
 
 		    Highcharts.extend(exportingOptions.menuItemDefinitions, {

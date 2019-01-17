@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Highcharts cylinder module
  *
- * (c) 2010-2018 Kacper Madej
+ * (c) 2010-2019 Kacper Madej
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -20,7 +21,7 @@
 }(function (Highcharts) {
 	(function (H) {
 		/* *
-		 * (c) 2010-2018 Kacper Madej
+		 * (c) 2010-2019 Kacper Madej
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -38,7 +39,7 @@
 		    cuboidPath = RendererProto.cuboidPath,
 		    cylinderMethods;
 
-		 /**
+		/**
 		  * The cylinder series type.
 		  *
 		  * @requires module:highcharts-3d
@@ -50,7 +51,9 @@
 		  *
 		  * @augments Highcharts.Series
 		  */
-		seriesType('cylinder', 'column',
+		seriesType(
+		    'cylinder',
+		    'column',
 		    /**
 		     * A cylinder graph is a variation of a 3d column graph. The cylinder graph
 		     * features cylindrical points.
@@ -271,7 +274,7 @@
 
 		// Retruns cylinder path for top or bottom
 		RendererProto.getCylinderEnd = function (chart, shapeArgs, isBottom) {
-		        // A half of the smaller one out of width or depth
+		    // A half of the smaller one out of width or depth
 		    var radius = Math.min(shapeArgs.width, shapeArgs.depth) / 2,
 
 		        // Approximated longest diameter

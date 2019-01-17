@@ -1,8 +1,8 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Module for adding patterns and images as point fills.
  *
- * (c) 2010-2018 Highsoft AS
+ * (c) 2010-2019 Highsoft AS
  * Author: Torstein Hønsi, Øystein Moseng
  *
  * License: www.highcharts.com/license
@@ -10,6 +10,7 @@
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -23,7 +24,7 @@
 		/* *
 		 * Module for using patterns or images as point fills.
 		 *
-		 * (c) 2010-2018 Highsoft AS
+		 * (c) 2010-2019 Highsoft AS
 		 * Author: Torstein Hønsi, Øystein Moseng
 		 *
 		 * License: www.highcharts.com/license
@@ -124,7 +125,8 @@
 
 
 
-		var wrap = H.wrap,
+		var addEvent = H.addEvent,
+		    wrap = H.wrap,
 		    merge = H.merge,
 		    pick = H.pick;
 
@@ -246,7 +248,7 @@
 		            bBox.aspectWidth ?
 		                Math.abs(bBox.aspectWidth - bBox.width) / 2 :
 		                0
-		            );
+		        );
 		    }
 		    if (!pattern.height) {
 		        pattern._y = pattern.y || 0;
@@ -254,7 +256,7 @@
 		            bBox.aspectHeight ?
 		                Math.abs(bBox.aspectHeight - bBox.height) / 2 :
 		                0
-		            );
+		        );
 		    }
 		};
 
@@ -373,6 +375,7 @@
 		// Make sure we have a series color
 		wrap(H.Series.prototype, 'getColor', function (proceed) {
 		    var oldColor = this.options.color;
+
 		    // Temporarely remove color options to get defaults
 		    if (oldColor && oldColor.pattern && !oldColor.pattern.color) {
 		        delete this.options.color;
@@ -389,11 +392,13 @@
 
 
 		// Calculate pattern dimensions on points that have their own pattern.
-		wrap(H.Series.prototype, 'render', function (proceed) {
+		addEvent(H.Series, 'render', function () {
 		    var isResizing = this.chart.isResizing;
+
 		    if (this.isDirtyData || isResizing || !this.chart.hasRendered) {
 		        (this.points || []).forEach(function (point) {
 		            var colorOptions = point.options && point.options.color;
+
 		            if (colorOptions && colorOptions.pattern) {
 		                // For most points we want to recalculate the dimensions on
 		                // render, where we have the shape args and bbox. But if we
@@ -415,13 +420,12 @@
 		            }
 		        });
 		    }
-		    return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
 		});
 
 
 		// Merge series color options to points
-		wrap(H.Point.prototype, 'applyOptions', function (proceed) {
-		    var point = proceed.apply(this, Array.prototype.slice.call(arguments, 1)),
+		addEvent(H.Point, 'afterInit', function () {
+		    var point = this,
 		        colorOptions = point.options.color;
 
 		    // Only do this if we have defined a specific color on this point. Otherwise
@@ -439,7 +443,6 @@
 		            point.series.options.color, colorOptions
 		        );
 		    }
-		    return point;
 		});
 
 
@@ -535,6 +538,7 @@
 		        this.series.forEach(function (series) {
 		            series.points.forEach(function (point) {
 		                var colorOptions = point.options && point.options.color;
+
 		                if (colorOptions && colorOptions.pattern) {
 		                    colorOptions.pattern._width = 'defer';
 		                    colorOptions.pattern._height = 'defer';
@@ -569,10 +573,12 @@
 		                var id = node.getAttribute('fill') ||
 		                        node.getAttribute('color') ||
 		                        node.getAttribute('stroke');
+
 		                if (id) {
-		                    usedIds.push(id
-		                        .substring(id.indexOf('url(#') + 5)
-		                        .replace(')', '')
+		                    usedIds.push(
+		                        id
+		                            .substring(id.indexOf('url(#') + 5)
+		                            .replace(')', '')
 		                    );
 		                }
 		            }
@@ -597,6 +603,7 @@
 		// Add the predefined patterns
 		H.Chart.prototype.callbacks.push(function (chart) {
 		    var colors = H.getOptions().colors;
+
 		    [
 		        'M 0 0 L 10 10 M 9 -1 L 11 1 M -1 9 L 1 11',
 		        'M 0 10 L 10 0 M -1 1 L 1 -1 M 9 11 L 11 9',

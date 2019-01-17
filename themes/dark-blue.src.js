@@ -1,13 +1,14 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  *
- * (c) 2009-2018 Torstein Honsi
+ * (c) 2009-2019 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -19,7 +20,7 @@
 }(function (Highcharts) {
 	(function (Highcharts) {
 		/**
-		 * (c) 2010-2018 Torstein Honsi
+		 * (c) 2010-2019 Torstein Honsi
 		 *
 		 * License: www.highcharts.com/license
 		 *
@@ -240,8 +241,8 @@
 		        barBackgroundColor: {
 		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
 		            stops: [
-		                    [0.4, '#888'],
-		                    [0.6, '#555']
+		                [0.4, '#888'],
+		                [0.6, '#555']
 		            ]
 		        },
 		        barBorderColor: '#CCC',
@@ -249,8 +250,8 @@
 		        buttonBackgroundColor: {
 		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
 		            stops: [
-		                    [0.4, '#888'],
-		                    [0.6, '#555']
+		                [0.4, '#888'],
+		                [0.6, '#555']
 		            ]
 		        },
 		        buttonBorderColor: '#CCC',

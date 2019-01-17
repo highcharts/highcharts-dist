@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * Client side exporting module
  *
- * (c) 2015-2018 Torstein Honsi / Oystein Moseng
+ * (c) 2015-2019 Torstein Honsi / Oystein Moseng
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -22,7 +23,7 @@
 		/* *
 		 * Mixin for downloading content in the browser
 		 *
-		 * (c) 2018 Oystein Moseng
+		 * (c) 2015-2019 Oystein Moseng
 		 *
 		 * License: www.highcharts.com/license
 		 */
@@ -38,6 +39,7 @@
 		// Convert base64 dataURL to Blob if supported, otherwise returns undefined
 		Highcharts.dataURLtoBlob = function (dataURL) {
 		    var parts = dataURL.match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+
 		    if (
 		        parts &&
 		        parts.length > 3 &&
@@ -95,7 +97,7 @@
 		    if (isEdgeBrowser || dataURL.length > 2000000) {
 		        dataURL = Highcharts.dataURLtoBlob(dataURL);
 		        if (!dataURL) {
-		            throw 'Failed to convert to blob';
+		            throw new Error('Failed to convert to blob');
 		        }
 		    }
 
@@ -111,7 +113,7 @@
 		        try {
 		            windowRef = win.open(dataURL, 'chart');
 		            if (windowRef === undefined || windowRef === null) {
-		                throw 'Failed to open window';
+		                throw new Error('Failed to open window');
 		            }
 		        } catch (e) {
 		            // window.open failed, trying location.href
@@ -188,6 +190,7 @@
 		        nav.userAgent.indexOf('WebKit') > -1 &&
 		        nav.userAgent.indexOf('Chrome') < 0
 		    );
+
 		    try {
 		        // Safari requires data URI since it doesn't allow navigation to blob
 		        // URLs. Firefox has an issue with Blobs and internal references,
@@ -253,6 +256,7 @@
 		                var canvas = doc.createElement('canvas'),
 		                    ctx = canvas.getContext && canvas.getContext('2d'),
 		                    dataURL;
+
 		                try {
 		                    if (!ctx) {
 		                        noCanvasSupportCallback(
@@ -404,6 +408,7 @@
 		            // container.
 		            setStylePropertyFromParents = function (el, propName) {
 		                var curParent = el;
+
 		                while (curParent && curParent !== dummySVGContainer) {
 		                    if (curParent.style[propName]) {
 		                        el.style[propName] = curParent.style[propName];
@@ -640,10 +645,13 @@
 		        // Go through the images we want to embed
 		        for (i = 0, l = images.length; i < l; ++i) {
 		            el = images[i];
-		            Highcharts.imageToDataUrl(el.getAttributeNS(
-		                'http://www.w3.org/1999/xlink',
-		                'href'
-		            ), 'image/png', { imageElement: el }, options.scale,
+		            Highcharts.imageToDataUrl(
+		                el.getAttributeNS(
+		                    'http://www.w3.org/1999/xlink',
+		                    'href'
+		                ),
+		                'image/png',
+		                { imageElement: el }, options.scale,
 		                embeddedSuccess,
 		                // Tainted canvas
 		                failCallback,
@@ -783,7 +791,7 @@
 
 		// Extend the default options to use the local exporter logic
 		merge(true, Highcharts.getOptions().exporting, {
-		    libURL: 'https://code.highcharts.com/7.0.1/lib/',
+		    libURL: 'https://code.highcharts.com/7.0.2/lib/',
 
 		    // When offline-exporting is loaded, redefine the menu item definitions
 		    // related to download.

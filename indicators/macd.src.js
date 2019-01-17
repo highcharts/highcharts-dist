@@ -1,15 +1,16 @@
 /**
- * @license  Highcharts JS v7.0.1 (2018-12-19)
+ * @license  Highcharts JS v7.0.2 (2019-01-17)
  *
  * Indicator series type for Highstock
  *
- * (c) 2010-2018 Sebastian Bochan
+ * (c) 2010-2019 Sebastian Bochan
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -46,7 +47,9 @@
 		 *
 		 * @augments Highcharts.Series
 		 */
-		seriesType('macd', 'sma',
+		seriesType(
+		    'macd',
+		    'sma',
 
 		    /**
 		     * Moving Average Convergence Divergence (MACD). This series requires
@@ -333,13 +336,15 @@
 		            }
 
 		            // Calculating the short and long EMA used when calculating the MACD
-		            shortEMA = EMA.prototype.getValues(series,
+		            shortEMA = EMA.prototype.getValues(
+		                series,
 		                {
 		                    period: params.shortPeriod
 		                }
 		            );
 
-		            longEMA = EMA.prototype.getValues(series,
+		            longEMA = EMA.prototype.getValues(
+		                series,
 		                {
 		                    period: params.longPeriod
 		                }
@@ -357,7 +362,7 @@
 		                    defined(longEMA[i - 1][1]) &&
 		                    defined(shortEMA[i + params.shortPeriod + 1]) &&
 		                    defined(shortEMA[i + params.shortPeriod + 1][0])
-		                    ) {
+		                ) {
 		                    MACD.push([
 		                        shortEMA[i + params.shortPeriod + 1][0],
 		                        0,

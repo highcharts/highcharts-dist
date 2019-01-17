@@ -1,14 +1,15 @@
 /**
- * @license Highcharts JS v7.0.1 (2018-12-19)
+ * @license Highcharts JS v7.0.2 (2019-01-17)
  * GridAxis
  *
- * (c) 2016-2018 Lars A. V. Cabrera
+ * (c) 2016-2019 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
 'use strict';
 (function (factory) {
 	if (typeof module === 'object' && module.exports) {
+		factory['default'] = factory;
 		module.exports = factory;
 	} else if (typeof define === 'function' && define.amd) {
 		define(function () {
@@ -28,7 +29,8 @@
 
 
 
-		var argsToArray = function (args) {
+		var addEvent = H.addEvent,
+		    argsToArray = function (args) {
 		        return Array.prototype.slice.call(args, 1);
 		    },
 		    dateFormat = H.dateFormat,
@@ -216,6 +218,7 @@
 		        var d = new Date(timestamp),
 		            yearStart,
 		            weekNo;
+
 		        d.setHours(0, 0, 0, 0);
 		        d.setDate(d.getDate() - (d.getDay() || 7));
 		        yearStart = new Date(d.getFullYear(), 0, 1);
@@ -228,56 +231,17 @@
 		    }
 		};
 
-		wrap(Axis.prototype, 'autoLabelAlign',
-		    /**
-		     * If chart is stockChart, always return 'left' to avoid labels being placed
-		     * inside chart. Stock charts place yAxis labels inside by default.
-		     *
-		     * @private
-		     * @function
-		     *
-		     * @param {Function} proceed
-		     *        the original function
-		     *
-		     * @return {string}
-		     *         'left' if stockChart, or auto calculated alignment
-		     */
-		    function (proceed) {
-		        var axis = this,
-		            retVal;
-		        if (axis.chart.isStock) {
-		            retVal = 'left';
-		        } else {
-		            retVal = proceed.apply(axis, argsToArray(arguments));
-		        }
-		        return retVal;
-		    }
-		);
-
-		wrap(Tick.prototype, 'getLabelPosition',
+		addEvent(
+		    Tick,
+		    'afterGetLabelPosition',
 		    /**
 		     * Center tick labels in cells.
 		     *
 		     * @private
-		     * @function
-		     *
-		     * @param {Function} proceed
-		     *        the original function
-		     *
-		     * @return {object}
-		     *         an object containing x and y positions for the tick
 		     */
-		    function (
-		        proceed,
-		        x,
-		        y,
-		        label,
-		        horiz,
-		        labelOpts,
-		        tickmarkOffset,
-		        index
-		    ) {
+		    function (e) {
 		        var tick = this,
+		            label = tick.label,
 		            axis = tick.axis,
 		            reversed = axis.reversed,
 		            chart = axis.chart,
@@ -285,16 +249,18 @@
 		            gridOptions = (
 		                (options && isObject(options.grid)) ? options.grid : {}
 		            ),
+		            labelOpts = axis.options.labels,
 		            align = labelOpts.align,
 		            // verticalAlign is currently not supported for axis.labels.
 		            verticalAlign = 'middle', // labelOpts.verticalAlign,
 		            side = axisSide[axis.side],
+		            tickmarkOffset = e.tickmarkOffset,
 		            tickPositions = axis.tickPositions,
 		            tickPos = tick.pos - tickmarkOffset,
 		            nextTickPos = (
-		                isNumber(tickPositions[index + 1]) ?
-		                tickPositions[index + 1] - tickmarkOffset :
-		                axis.max + tickmarkOffset
+		                isNumber(tickPositions[e.index + 1]) ?
+		                    tickPositions[e.index + 1] - tickmarkOffset :
+		                    axis.max + tickmarkOffset
 		            ),
 		            tickSize = axis.tickSize('tick', true),
 		            tickWidth = isArray(tickSize) ? tickSize[0] : 0,
@@ -302,7 +268,6 @@
 		            labelHeight,
 		            lblMetrics,
 		            lines,
-		            result,
 		            bottom,
 		            top,
 		            left,
@@ -310,6 +275,7 @@
 
 		        // Only center tick labels in grid axes
 		        if (gridOptions.enabled === true) {
+
 		            // Calculate top and bottom positions of the cell.
 		            if (side === 'top') {
 		                bottom = axis.top + axis.offset;
@@ -345,22 +311,20 @@
 		            tick.slotWidth = right - left;
 
 		            // Calculate the positioning of the label based on alignment.
-		            result = {
-		                x: (
-		                    align === 'left' ?
+		            e.pos.x = (
+		                align === 'left' ?
 		                    left :
 		                    align === 'right' ?
-		                    right :
-		                    left + ((right - left) / 2) // default to center
-		                ),
-		                y: (
-		                    verticalAlign === 'top' ?
+		                        right :
+		                        left + ((right - left) / 2) // default to center
+		            );
+		            e.pos.y = (
+		                verticalAlign === 'top' ?
 		                    top :
 		                    verticalAlign === 'bottom' ?
-		                    bottom :
-		                    top + ((bottom - top) / 2) // default to middle
-		                )
-		            };
+		                        bottom :
+		                        top + ((bottom - top) / 2) // default to middle
+		            );
 
 		            lblMetrics = chart.renderer.fontMetrics(
 		                labelOpts.style.fontSize,
@@ -372,7 +336,7 @@
 		            // Would be better to have a setter or similar for this.
 		            if (!labelOpts.useHTML) {
 		                lines = Math.round(labelHeight / lblMetrics.h);
-		                result.y += (
+		                e.pos.y += (
 		                    // Center the label
 		                    // TODO: why does this actually center the label?
 		                    ((lblMetrics.b - (lblMetrics.h - lblMetrics.f)) / 2) +
@@ -380,7 +344,7 @@
 		                    -(((lines - 1) * lblMetrics.h) / 2)
 		                );
 		            } else {
-		                result.y += (
+		                e.pos.y += (
 		                    // Readjust yCorr in htmlUpdateTransform
 		                    lblMetrics.b +
 		                    // Adjust for height of html label
@@ -388,32 +352,18 @@
 		                );
 		            }
 
-		            result.x += (axis.horiz && labelOpts.x || 0);
-		        } else {
-		            result = proceed.apply(tick, argsToArray(arguments));
+		            e.pos.x += (axis.horiz && labelOpts.x || 0);
 		        }
-		        return result;
 		    }
 		);
 
-		/**
-		 * Draw vertical axis ticks extra long to create cell floors and roofs.
-		 * Overrides the tickLength for vertical axes.
-		 *
-		 * @private
-		 * @function
-		 *
-		 * @param {Function} proceed
-		 *        the original function
-		 *
-		 * @returns {Array<number>}
-		 */
-		wrap(Axis.prototype, 'tickSize', function (proceed) {
+		// Draw vertical axis ticks extra long to create cell floors and roofs.
+		// Overrides the tickLength for vertical axes.
+		addEvent(Axis, 'afterTickSize', function (e) {
 		    var axis = this,
 		        dimensions = axis.maxLabelDimensions,
 		        options = axis.options,
 		        gridOptions = (options && isObject(options.grid)) ? options.grid : {},
-		        retVal = proceed.apply(axis, argsToArray(arguments)),
 		        labelPadding,
 		        distance;
 
@@ -422,16 +372,15 @@
 		        distance = labelPadding +
 		            (axis.horiz ? dimensions.height : dimensions.width);
 
-		        if (isArray(retVal)) {
-		            retVal[0] = distance;
+		        if (isArray(e.tickSize)) {
+		            e.tickSize[0] = distance;
 		        } else {
-		            retVal = [distance];
+		            e.tickSize = [distance];
 		        }
 		    }
-		    return retVal;
 		});
 
-		wrap(Axis.prototype, 'getTitlePosition', function (proceed) {
+		addEvent(Axis, 'afterGetTitlePosition', function (e) {
 		    var axis = this,
 		        options = axis.options,
 		        gridOptions = (options && isObject(options.grid)) ? options.grid : {};
@@ -464,23 +413,19 @@
 		                (tickSize[0] / 2) +
 		                (axis.side === axisSide.bottom ? titleFontSize : 0);
 
-		        return {
-		            x: horiz ?
-		                axisLeft - titleWidth / 2 - titleMargin + xOption :
-		                offAxis + (opposite ? axisWidth : 0) + offset + xOption,
-		            y: horiz ?
-		                (
-		                    offAxis -
-		                    (opposite ? axisHeight : 0) +
-		                    (opposite ? titleFontSize : -titleFontSize) / 2 +
-		                    offset +
-		                    yOption
-		                ) :
-		                axisTop - titleMargin + yOption
-		        };
+		        e.titlePosition.x = horiz ?
+		            axisLeft - titleWidth / 2 - titleMargin + xOption :
+		            offAxis + (opposite ? axisWidth : 0) + offset + xOption;
+		        e.titlePosition.y = horiz ?
+		            (
+		                offAxis -
+		                (opposite ? axisHeight : 0) +
+		                (opposite ? titleFontSize : -titleFontSize) / 2 +
+		                offset +
+		                yOption
+		            ) :
+		            axisTop - titleMargin + yOption;
 		    }
-
-		    return proceed.apply(this, argsToArray(arguments));
 		});
 
 		// Avoid altering tickInterval when reserving space.
@@ -496,7 +441,9 @@
 		    return proceed.apply(this, argsToArray(arguments));
 		});
 
-		H.addEvent(Axis, 'afterSetOptions',
+		addEvent(
+		    Axis,
+		    'afterSetOptions',
 		    /**
 		     * Creates a left and right wall on horizontal axes:
 		     *
@@ -689,28 +636,10 @@
 		    }
 		);
 
-		wrap(Axis.prototype, 'setAxisTranslation',
-		    /**
-		     * Ensures a left wall on horizontal axes with series inheriting from
-		     * column. ColumnSeries normally sets pointRange to null, resulting in Axis
-		     * to select other values for point ranges. This enforces the above
-		     * Axis.setOptions() override.
-		     * ```
-		     *                  _________________________
-		     * Enforce this:    ___|_____|_____|_____|__|
-		     *                  ^
-		     *                  _________________________
-		     * To be this:      |_____|_____|_____|_____|
-		     *                  ^
-		     * ```
-		     *
-		     * @private
-		     * @function
-		     *
-		     * @param {Function} proceed
-		     *        the original function
-		     */
-		    function (proceed) {
+		addEvent(
+		    Axis,
+		    'afterSetAxisTranslation',
+		    function () {
 		        var axis = this,
 		            options = axis.options,
 		            gridOptions = (
@@ -745,14 +674,14 @@
 		                }
 		            }
 		        }
-
-		        proceed.apply(axis, argsToArray(arguments));
 		    }
 		);
 
 		// @todo Does this function do what the drawing says? Seems to affect ticks and
 		//       not the labels directly?
-		wrap(Axis.prototype, 'trimTicks',
+		addEvent(
+		    Axis,
+		    'trimTicks',
 		    /**
 		     * Makes tick labels which are usually ignored in a linked axis displayed if
 		     * they are within range of linkedParent.min.
@@ -770,12 +699,8 @@
 		     * ```
 		     *
 		     * @private
-		     * @function
-		     *
-		     * @param {Function} proceed
-		     *        the original function
 		     */
-		    function (proceed) {
+		    function () {
 		        var axis = this,
 		            options = axis.options,
 		            gridOptions = (
@@ -808,12 +733,12 @@
 		                tickPositions[tickPositions.length - 1] = max;
 		            }
 		        }
-
-		        proceed.apply(axis, argsToArray(arguments));
 		    }
 		);
 
-		wrap(Axis.prototype, 'render',
+		addEvent(
+		    Axis,
+		    'afterRender',
 		    /**
 		     * Draw an extra line on the far side of the outermost axis,
 		     * creating floor/roof/wall of a grid. And some padding.
@@ -832,7 +757,7 @@
 		     * @param {Function} proceed
 		     *        the original function
 		     */
-		    function (proceed) {
+		    function () {
 		        var axis = this,
 		            options = axis.options,
 		            gridOptions = ((
@@ -868,10 +793,6 @@
 		            if (axis.rightWall) {
 		                axis.rightWall.destroy();
 		            }
-
-		            // Call original Axis.render() to obtain axis.axisLine and
-		            // axis.axisGroup
-		            proceed.apply(axis);
 
 		            axisGroupBox = axis.axisGroup.getBBox();
 
@@ -940,25 +861,26 @@
 		                }
 		            }
 
-		        } else {
-		            proceed.apply(axis);
 		        }
 		    }
 		);
 
 		// Wraps axis init to draw cell walls on vertical axes.
-		wrap(Axis.prototype, 'init', function (proceed, chart, userOptions) {
+		addEvent(Axis, 'init', function (e) {
 		    var axis = this,
+		        chart = axis.chart,
+		        userOptions = e.userOptions,
 		        gridOptions = (
 		            (userOptions && isObject(userOptions.grid)) ?
-		            userOptions.grid :
-		            {}
+		                userOptions.grid :
+		                {}
 		        ),
 		        columnOptions,
 		        column,
 		        columnIndex,
 		        i;
-		    function applyGridOptions(axis) {
+
+		    function applyGridOptions() {
 		        var options = axis.options,
 		            // TODO: Consider using cell margins defined in % of font size?
 		            // 25 is optimal height for default fontSize (11px)
@@ -1019,7 +941,7 @@
 
 		                delete columnOptions.grid.columns; // Prevent recursion
 
-		                column = new Axis(chart, columnOptions);
+		                column = new Axis(axis.chart, columnOptions);
 		                column.isColumn = true;
 		                column.columnIndex = columnIndex;
 
@@ -1045,14 +967,14 @@
 
 		                columnIndex++;
 		            }
+		            // This axis should not be shown, instead the column axes take over
+		            addEvent(this, 'afterInit', function () {
+		                H.erase(chart.axes, this);
+		                H.erase(chart[axis.coll], this);
+		            });
 		        } else {
-		            // Call original Axis.init()
-		            proceed.apply(axis, argsToArray(arguments));
-		            applyGridOptions(axis);
+		            addEvent(this, 'afterInit', applyGridOptions);
 		        }
-		    } else {
-		        // Call original Axis.init()
-		        proceed.apply(axis, argsToArray(arguments));
 		    }
 		});
 
