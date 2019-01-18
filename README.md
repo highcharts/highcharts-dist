@@ -81,12 +81,3 @@ Highcharts.chart('container', {
 });
 ```
 
-## Styled mode vs classic 
-* The files for _classic_ mode are available on root. This is the regular mode
-where presentational attributes and styling is set in the options structure.
-* The JavaScript files for _styled mode_ are available under the `/js/` folder.
-In these files, most presentational code including options are removed, so
-without styling it will draw an ugly black-and-white chart if anything.
-* The default CSS file for _styled mode_ is available as `/css/highcharts.css`.
-This CSS is in turn based on a SCSS file, `/css/highcharts.scss`.
-
