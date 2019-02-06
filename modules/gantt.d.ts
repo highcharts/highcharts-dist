@@ -43,5 +43,18 @@ declare module "../highcharts" {
      * @see https://api.highcharts.com/class-reference/Highcharts#ganttChart
      */
     function ganttChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): Chart;
+    /**
+     * Builds the tree of categories and calculates its positions.
+     *
+     * @param e
+     *        Event object
+     *
+     * @param target
+     *        The chart instance which the event was fired on.
+     *
+     * @param axes
+     *        The axes of the chart.
+     */
+    function onBeforeRender(e: object, target: object, axes: Array<object>): void;
 }
 export default factory;

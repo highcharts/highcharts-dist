@@ -750,7 +750,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          * maximum in axis values. The actual data extremes are found in
          * `event.dataMin` and `event.dataMax`.
          *
-         * @type      {Highcharts.AxisEventCallbackFunction}
+         * @type      {Highcharts.AxisSetExtremesEventCallbackFunction}
          * @since     2.3
          * @context   Axis
          * @apioption xAxis.events.afterSetExtremes
@@ -1019,7 +1019,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
              * `"justify"` labels inside the chart area. If there is room to
              * move it, it will be aligned to the edge, else it will be removed.
              *
-             * @type       {boolean|string}
+             * @type       {string}
              * @default    justify
              * @since      2.2.5
              * @validvalue ["allow", "justify"]
@@ -2610,6 +2610,16 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
          */
 
         /**
+         * If there are multiple axes on the same side of the chart, the pixel
+         * margin between the axes. Defaults to 0 on vertical axes, 15 on
+         * horizontal axes.
+         *
+         * @type      number
+         * @since     7.0.3
+         * @apioption xAxis.margin
+         */
+
+        /**
          * @sample {highcharts} highcharts/yaxis/max-200/
          *         Y axis max of 200
          * @sample {highcharts} highcharts/yaxis/max-logarithmic/
@@ -3066,6 +3076,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
             // overflow: undefined,
             // staggerLines: null
         },
+        margin: 15,
         title: {
             rotation: 0
         }
@@ -3079,6 +3090,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
             // overflow: undefined
             // staggerLines: null
         },
+        margin: 15,
         title: {
             rotation: 0
         }
@@ -4863,7 +4875,15 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
      */
     setScale: function () {
         var axis = this,
-            isDirtyData,
+            isDirtyData = axis.series.some(function (series) {
+                return (
+                    series.isDirtyData ||
+                    series.isDirty ||
+                    // When x axis is dirty, we need new data extremes for y as
+                    // well
+                    series.xAxis.isDirty
+                );
+            }),
             isDirtyAxisLength;
 
         axis.oldMin = axis.min;
@@ -4873,18 +4893,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
         // set the new axisLength
         axis.setAxisSize();
         isDirtyAxisLength = axis.len !== axis.oldAxisLength;
-
-        // is there new data?
-        axis.series.forEach(function (series) {
-            if (
-                series.isDirtyData ||
-                series.isDirty ||
-                // When x axis is dirty, we need new data extremes for y as well
-                series.xAxis.isDirty
-            ) {
-                isDirtyData = true;
-            }
-        });
 
         // do we really need to go through all this?
         if (
@@ -5769,7 +5777,10 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */{
         axis.renderLine();
 
         // handle automatic or user set offset
-        axis.offset = directionFactor * pick(options.offset, axisOffset[side]);
+        axis.offset = directionFactor * pick(
+            options.offset,
+            axisOffset[side] ? axisOffset[side] + (options.margin || 0) : 0
+        );
 
         axis.tickRotCorr = axis.tickRotCorr || { x: 0, y: 0 }; // polar
         if (side === 0) {

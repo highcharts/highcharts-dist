@@ -268,7 +268,7 @@ extend(defaultOptions, {
          * @sample {highstock} stock/rangeselector/styling/
          *         Styling the buttons and inputs
          *
-         * @type {Highcharts.CSSObject}
+         * @type {Highcharts.SVGAttributes}
          */
         buttonTheme: {
             /** @ignore */
@@ -523,7 +523,7 @@ defaultOptions.lang = merge(
 
     /**
      * Language object. The language object is global and it can't be set
-     * on each chart initiation. Instead, use `Highcharts.setOptions` to
+     * on each chart initialization. Instead, use `Highcharts.setOptions` to
      * set it before any chart is initialized.
      *
      * <pre>Highcharts.setOptions({
@@ -953,6 +953,11 @@ RangeSelector.prototype = {
             // If state has changed, update the button
             if (button.state !== state) {
                 button.setState(state);
+
+                // Reset (#9209)
+                if (state === 0 && selected === i) {
+                    rangeSelector.setSelected(null);
+                }
             }
         });
     },

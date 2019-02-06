@@ -28,15 +28,15 @@
  * @type {Highcharts.SeriesOptionsType}
  *//**
  * Prevents the default behaviour of the event.
- * @name Highcharts.DrilldownEventObject#preventDefault
+ * @name Highcharts.ChartAddSeriesEventObject#preventDefault
  * @type {Function}
  *//**
  * The event target.
- * @name Highcharts.DrilldownEventObject#target
+ * @name Highcharts.ChartAddSeriesEventObject#target
  * @type {Highcharts.Chart}
  *//**
  * The event type.
- * @name Highcharts.DrilldownEventObject#type
+ * @name Highcharts.ChartAddSeriesEventObject#type
  * @type {"drilldown"}
  */
 
@@ -135,11 +135,47 @@
  * @param {Highcharts.Chart} this
  *        The chart on which the event occured.
  *
- * @param {global.Event} event
+ * @param {global.ChartSelectionContextObject} event
  *        Event informations
  *
  * @return {boolean|undefined}
  *         Return false to prevent the default action, usually zoom.
+ */
+
+/**
+ * The primary axes are `xAxis[0]` and `yAxis[0]`. Remember the unit of a
+ * datetime axis is milliseconds since 1970-01-01 00:00:00.
+ *
+ * @interface Highcharts.ChartSelectionContextObject
+ * @extends global.Event
+ *//**
+ * Arrays containing the axes of each dimension and each axis' min and max
+ * values.
+ * @name Highcharts.ChartSelectionContextObject#xAxis
+ * @type {Array<Highcharts.ChartSelectionAxisContextObject>}
+ *//**
+ * Arrays containing the axes of each dimension and each axis' min and max
+ * values.
+ * @name Highcharts.ChartSelectionContextObject#yAxis
+ * @type {Array<Highcharts.ChartSelectionAxisContextObject>}
+ */
+
+/**
+ * Axis context of the selection.
+ *
+ * @interface Highcharts.ChartSelectionAxisContextObject
+ *//**
+ * The selected Axis.
+ * @name Highcharts.ChartSelectionAxisContextObject#axis
+ * @type {Highcharts.Axis}
+ *//**
+ * The maximum axis value, either automatic or set manually.
+ * @name Highcharts.ChartSelectionAxisContextObject#max
+ * @type {number}
+ *//**
+ * The minimum axis value, either automatic or set manually.
+ * @name Highcharts.ChartSelectionAxisContextObject#min
+ * @type {number}
  */
 
 /**
@@ -251,7 +287,7 @@ H.defaultOptions = {
 
     /**
      * The language object is global and it can't be set on each chart
-     * initiation. Instead, use `Highcharts.setOptions` to set it before any
+     * initialization. Instead, use `Highcharts.setOptions` to set it before any
      * chart is initialized.
      *
      * <pre>Highcharts.setOptions({
@@ -1067,6 +1103,7 @@ H.defaultOptions = {
              * @sample {highstock} highcharts/chart/resetzoombutton-theme/
              *         Theming the button
              *
+             * @type {Highcharts.SVGAttributes}
              * @since 2.2
              */
             theme: {
@@ -1365,10 +1402,11 @@ H.defaultOptions = {
 
         /**
          * The default series type for the chart. Can be any of the chart types
-         * listed under [plotOptions](#plotOptions).
+         * listed under [plotOptions](#plotOptions) and [series](#series) or can
+         * be a series provided by an additional module.
          *
-         * In TypeScript instead the `type` option must always be set in the
-         * series.
+         * In TypeScript this option has no effect in sense of typing and
+         * instead the `type` option must always be set in the series.
          *
          * @sample {highcharts} highcharts/chart/type-bar/
          *         Bar
@@ -1382,11 +1420,6 @@ H.defaultOptions = {
          * @default    {highstock} line
          * @default    {highmaps} map
          * @since      2.1.0
-         * @validvalue ["line", "spline", "column", "bar", "area", "areaspline",
-         *             "pie", "arearange", "areasplinerange", "boxplot",
-         *             "bubble", "columnrange", "errorbar", "funnel", "gauge",
-         *             "heatmap", "polygon", "pyramid", "scatter", "solidgauge",
-         *             "treemap", "waterfall"]
          * @apioption  chart.type
          */
 
@@ -2905,8 +2938,12 @@ H.defaultOptions = {
          */
 
         /**
-         * Callback function to format the text of the tooltip from scratch.
-         * Return `false` to disable tooltip for a specific point on series.
+         * Callback function to format the text of the tooltip from scratch. In
+         * case of single or [shared](#tooltip.shared) tooltips, a string should
+         * be returned. In case of [split](#tooltip.split) tooltips, it should
+         * return an array where the first item is the header, and subsequent
+         * items are mapped to the points. Return `false` to disable tooltip for
+         * a specific point on series.
          *
          * A subset of HTML is supported. Unless `useHTML` is true, the HTML of
          * the tooltip is parsed and converted to SVG, therefore this isn't a
@@ -2915,10 +2952,9 @@ H.defaultOptions = {
          * with a `style` attribute, but only text-related CSS that is shared
          * with SVG is handled.
          *
-         * Since version 2.1 the tooltip can be shared between multiple series
-         * through the `shared` option. The available data in the formatter
-         * differ a bit depending on whether the tooltip is shared or not. In
-         * a shared tooltip, all properties except `x`, which is common for
+         * The available data in the formatter differ a bit depending on whether
+         * the tooltip is shared or split, or belongs to a single point. In a
+         * shared/split tooltip, all properties except `x`, which is common for
          * all points, are kept in an array, `this.points`.
          *
          * Available data are:
@@ -2967,6 +3003,10 @@ H.defaultOptions = {
          *         Simple string formatting
          * @sample {highcharts} highcharts/tooltip/formatter-shared/
          *         Formatting with shared tooltip
+         * @sample {highcharts|highstock} highcharts/tooltip/formatter-split/
+         *         Formatting with split tooltip
+         * @sample highcharts/tooltip/formatter-conditional-default/
+         *         Extending default formatter
          * @sample {highstock} stock/tooltip/formatter/
          *         Formatting with shared tooltip
          * @sample {highmaps} maps/tooltip/formatter/
@@ -3123,6 +3163,8 @@ H.defaultOptions = {
          *
          * @sample highcharts/tooltip/split/
          *         Split tooltip
+         * @sample {highcharts|highstock} highcharts/tooltip/formatter-split/
+         *         Split tooltip and custom formatter callback
          *
          * @type      {boolean}
          * @default   {highcharts} false
@@ -3421,6 +3463,10 @@ H.defaultOptions = {
          * CSS styles for the tooltip. The tooltip can also be styled through
          * the CSS class `.highcharts-tooltip`.
          *
+         * Note that the default `pointerEvents` style makes the tooltip ignore
+         * mouse events, so in order to use clickable tooltips, this value must
+         * be set to `auto`.
+         *
          * @sample {highcharts} highcharts/tooltip/style/
          *         Greater padding, bold text
          *
@@ -3444,7 +3490,6 @@ H.defaultOptions = {
              * @ignore
              */
             pointerEvents: 'none',
-            // #1686 http://caniuse.com/#feat=pointer-events
             /**
              * @ignore
              */

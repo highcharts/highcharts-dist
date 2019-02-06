@@ -7,16 +7,6 @@
  * */
 
 /**
- * Reference to the global SVGElement class as a workaround for a name conflict
- * in the Highcharts namespace.
- *
- * @see https://developer.mozilla.org/en-US/docs/Web/API/SVGElement
- *
- * @global
- * @typedef {global.SVGElement} GlobalSVGElement
- */
-
-/**
  * An animation configuration. Animation configurations can also be defined as
  * booleans, where `false` turns off animation and `true` defaults to a duration
  * of 500ms.
@@ -283,7 +273,7 @@
  * @interface Highcharts.SVGAttributes
  *//**
  * @name Highcharts.SVGAttributes#[key:string]
- * @type {boolean|number|string|Array<number|string>|undefined}
+ * @type {boolean|number|string|Array<number|string>|Dictionary<boolean|number|string|undefined>|undefined}
  *//**
  * @name Highcharts.SVGAttributes#d
  * @type {string|Highcharts.SVGPathArray|undefined}
@@ -293,9 +283,6 @@
  *//**
  * @name Highcharts.SVGAttributes#matrix
  * @type {Array<number>|undefined}
- *//**
- * @name Highcharts.SVGAttributes#stroke
- * @type {Highcharts.ColorString|undefined}
  *//**
  * @name Highcharts.SVGAttributes#rotation
  * @type {string|undefined}
@@ -311,6 +298,12 @@
  *//**
  * @name Highcharts.SVGAttributes#scaleY
  * @type {number|undefined}
+ *//**
+ * @name Highcharts.SVGAttributes#stroke
+ * @type {Highcharts.ColorString|undefined}
+ *//**
+ * @name Highcharts.SVGAttributes#style
+ * @type {string|Highcharts.CSSObject|undefined}
  *//**
  * @name Highcharts.SVGAttributes#translateX
  * @type {number|undefined}
@@ -1652,6 +1645,10 @@ H.normalizeTickInterval = function (
  *        The function to sort it with, like with regular Array.prototype.sort.
  */
 H.stableSort = function (arr, sortFunction) {
+
+    // @todo It seems like Chrome since v70 sorts in a stable way internally,
+    // plus all other browsers do it, so over time we may be able to remove this
+    // function
     var length = arr.length,
         sortValue,
         i;

@@ -7,5 +7,19 @@ import * as Highcharts from "../highcharts.src";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts.src" {}
+declare module "../highcharts.src" {
+    /**
+     * Builds the tree of categories and calculates its positions.
+     *
+     * @param e
+     *        Event object
+     *
+     * @param target
+     *        The chart instance which the event was fired on.
+     *
+     * @param axes
+     *        The axes of the chart.
+     */
+    function onBeforeRender(e: object, target: object, axes: Array<object>): void;
+}
 export default factory;
