@@ -106,7 +106,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
                 chart.isDirtyLegend = true;
                 chart.linkSeries();
 
-                fireEvent(chart, 'afterAddSeries');
+                fireEvent(chart, 'afterAddSeries', { series: series });
 
                 if (redraw) {
                     chart.redraw(animation);
@@ -597,14 +597,26 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
         // Update size. Redraw is forced.
         newWidth = optionsChart && optionsChart.width;
         newHeight = optionsChart && optionsChart.height;
-        if ((isNumber(newWidth) && newWidth !== chart.chartWidth) ||
-                (isNumber(newHeight) && newHeight !== chart.chartHeight)) {
+        if (H.isString(newHeight)) {
+            newHeight = H.relativeLength(
+                newHeight,
+                newWidth || chart.chartWidth
+            );
+        }
+        if (
+            (isNumber(newWidth) && newWidth !== chart.chartWidth) ||
+            (isNumber(newHeight) && newHeight !== chart.chartHeight)
+        ) {
             chart.setSize(newWidth, newHeight, animation);
         } else if (pick(redraw, true)) {
             chart.redraw(animation);
         }
 
-        fireEvent(chart, 'afterUpdate', { options: options });
+        fireEvent(chart, 'afterUpdate', {
+            options: options,
+            redraw: redraw,
+            animation: animation
+        });
 
     },
 
@@ -809,8 +821,13 @@ extend(Series.prototype, /** @lends Series.prototype */ {
      * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
      *        Whether to apply animation, and optionally animation
      *        configuration.
+     *
+     * @param {boolean} [withEvent=true]
+     *        Used internally, whether to fire the series `addPoint` event.
+     *
+     * @fires Highcharts.Series#event:addPoint
      */
-    addPoint: function (options, redraw, shift, animation) {
+    addPoint: function (options, redraw, shift, animation, withEvent) {
         var series = this,
             seriesOptions = series.options,
             data = series.data,
@@ -873,6 +890,11 @@ extend(Series.prototype, /** @lends Series.prototype */ {
 
                 dataOptions.shift();
             }
+        }
+
+        // Fire event
+        if (withEvent !== false) {
+            fireEvent(series, 'addPoint', { point: point });
         }
 
         // redraw
@@ -1027,22 +1049,40 @@ extend(Series.prototype, /** @lends Series.prototype */ {
      *        more operations on the chart, it is a good idea to set redraw to
      *        false and call {@link Chart#redraw} after.
      *
+     * @fires Highcharts.Series#event:update
      * @fires Highcharts.Series#event:afterUpdate
      */
     update: function (options, redraw) {
 
         options = H.cleanRecursively(options, this.userOptions);
 
+        fireEvent(this, 'update', { options: options });
+
         var series = this,
             chart = series.chart,
             // must use user options when changing type because series.options
             // is merged in with type specific plotOptions
             oldOptions = series.userOptions,
+            seriesOptions,
             initialType = series.initialType || series.type,
             newType = (
                 options.type ||
                 oldOptions.type ||
                 chart.options.chart.type
+            ),
+            keepPoints = !(
+                // Indicators, histograms etc recalculate the data. It should be
+                // possible to omit this.
+                this.hasDerivedData ||
+                // Changes to data grouping requires new points in new groups
+                options.dataGrouping ||
+                // New type requires new point classes
+                (newType && newType !== this.type) ||
+                // New options affecting how the data points are built
+                options.pointStart !== undefined ||
+                options.pointInterval ||
+                options.pointIntervalUnit ||
+                options.keys
             ),
             initialSeriesProto = seriesTypes[initialType].prototype,
             n,
@@ -1061,91 +1101,131 @@ extend(Series.prototype, /** @lends Series.prototype */ {
             // directly after chart initialization, or when applying responsive
             // rules (#6912).
             animation = series.finishedAnimating && { animation: false },
-            allowSoftUpdate = [
-                'data',
-                'name',
-                'turboThreshold'
-            ],
-            keys = Object.keys(options),
-            doSoftUpdate = keys.length > 0;
+            kinds = {};
 
-        // Running Series.update to update the data only is an intuitive usage,
-        // so we want to make sure that when used like this, we run the
-        // cheaper setData function and allow animation instead of completely
-        // recreating the series instance. This includes sideways animation when
-        // adding points to the data set. The `name` should also support soft
-        // update because the data module sets name and data when setting new
-        // data by `chart.update`.
-        keys.forEach(function (key) {
-            if (allowSoftUpdate.indexOf(key) === -1) {
-                doSoftUpdate = false;
+        if (keepPoints) {
+            preserve.push(
+                'data',
+                'isDirtyData',
+                'points',
+                'processedXData',
+                'processedYData',
+                'xIncrement'
+            );
+            if (options.visible !== false) {
+                preserve.push('area', 'graph');
             }
-        });
-        if (doSoftUpdate) {
+            series.parallelArrays.forEach(function (key) {
+                preserve.push(key + 'Data');
+            });
+
             if (options.data) {
                 this.setData(options.data, false);
             }
-            if (options.name) {
-                this.setName(options.name, false);
-            }
-        } else {
-
-            // Make sure preserved properties are not destroyed (#3094)
-            preserve = groups.concat(preserve);
-            preserve.forEach(function (prop) {
-                preserve[prop] = series[prop];
-                delete series[prop];
-            });
-
-            // Do the merge, with some forced options
-            options = merge(oldOptions, animation, {
-                index: series.index,
-                pointStart: pick(
-                    oldOptions.pointStart, // when updating from blank (#7933)
-                    series.xData[0] // when updating after addPoint
-                )
-            }, { data: series.options.data }, options);
-
-            // Destroy the series and delete all properties. Reinsert all
-            // methods and properties from the new type prototype (#2270,
-            // #3719).
-            series.remove(false, null, false, true);
-            for (n in initialSeriesProto) {
-                series[n] = undefined;
-            }
-            if (seriesTypes[newType || initialType]) {
-                extend(series, seriesTypes[newType || initialType].prototype);
-            } else {
-                H.error(17, true, chart);
-            }
-
-            // Re-register groups (#3094) and other preserved properties
-            preserve.forEach(function (prop) {
-                series[prop] = preserve[prop];
-            });
-
-            series.init(chart, options);
-
-            // Update the Z index of groups (#3380, #7397)
-            if (options.zIndex !== oldOptions.zIndex) {
-                groups.forEach(function (groupName) {
-                    if (series[groupName]) {
-                        series[groupName].attr({
-                            zIndex: options.zIndex
-                        });
-                    }
-                });
-            }
-
-
-            series.initialType = initialType;
-            chart.linkSeries(); // Links are lost in series.remove (#3028)
-
         }
+
+        // Do the merge, with some forced options
+        options = merge(oldOptions, animation, {
+            // When oldOptions.index is null it should't be cleared.
+            // Otherwise navigator series will have wrong indexes (#10193).
+            index: oldOptions.index === undefined ?
+                series.index : oldOptions.index,
+            pointStart: pick(
+                // when updating from blank (#7933)
+                oldOptions.pointStart,
+                // when updating after addPoint
+                series.xData[0]
+            )
+        }, !keepPoints && { data: series.options.data }, options);
+
+        // Make sure preserved properties are not destroyed (#3094)
+        preserve = groups.concat(preserve);
+        preserve.forEach(function (prop) {
+            preserve[prop] = series[prop];
+            delete series[prop];
+        });
+
+        // Destroy the series and delete all properties. Reinsert all
+        // methods and properties from the new type prototype (#2270,
+        // #3719).
+        series.remove(false, null, false, true);
+        for (n in initialSeriesProto) {
+            series[n] = undefined;
+        }
+        if (seriesTypes[newType || initialType]) {
+            extend(series, seriesTypes[newType || initialType].prototype);
+        } else {
+            H.error(17, true, chart);
+        }
+
+        // Re-register groups (#3094) and other preserved properties
+        preserve.forEach(function (prop) {
+            series[prop] = preserve[prop];
+        });
+
+        series.init(chart, options);
+
+        // Remove particular elements of the points. Check `series.options`
+        // because we need to consider the options being set on plotOptions as
+        // well.
+        if (keepPoints && this.points) {
+            seriesOptions = series.options;
+            // What kind of elements to destroy
+            if (seriesOptions.visible === false) {
+                kinds.graphic = 1;
+                kinds.dataLabel = 1;
+            } else {
+                if (
+                    seriesOptions.marker &&
+                    seriesOptions.marker.enabled === false
+                ) {
+                    kinds.graphic = 1;
+                }
+                if (
+                    seriesOptions.dataLabels &&
+                    seriesOptions.dataLabels.enabled === false
+                ) {
+                    kinds.dataLabel = 1;
+                }
+            }
+            this.points.forEach(function (point) {
+                if (point && point.series) {
+                    point.resolveColor();
+                    // Destroy elements in order to recreate based on updated
+                    // series options.
+                    if (Object.keys(kinds).length) {
+                        point.destroyElements(kinds);
+                    }
+                    if (
+                        seriesOptions.showInLegend === false &&
+                        point.legendItem
+                    ) {
+                        chart.legend.destroyItem(point);
+                    }
+                }
+            }, this);
+        }
+
+        // Update the Z index of groups (#3380, #7397)
+        if (options.zIndex !== oldOptions.zIndex) {
+            groups.forEach(function (groupName) {
+                if (series[groupName]) {
+                    series[groupName].attr({
+                        zIndex: options.zIndex
+                    });
+                }
+            });
+        }
+
+
+        series.initialType = initialType;
+        chart.linkSeries(); // Links are lost in series.remove (#3028)
+
+
         fireEvent(this, 'afterUpdate');
 
         if (pick(redraw, true)) {
-            chart.redraw(doSoftUpdate ? undefined : false);
+            chart.redraw(keepPoints ? undefined : false);
         }
     },
 

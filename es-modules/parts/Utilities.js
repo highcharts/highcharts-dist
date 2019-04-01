@@ -72,7 +72,7 @@
  *//**
  * Style of the mouse cursor when resting over the element.
  * @name Highcharts.CSSObject#cursor
- * @type {Highcharts.CursorType|undefined}
+ * @type {Highcharts.CursorValue|undefined}
  *//**
  * Font family of the element text. Multiple values have to be in decreasing
  * preference order and separated by comma.
@@ -148,13 +148,13 @@
 /**
  * All possible cursor styles.
  *
- * @typedef {"alias"|"all-scroll"|"auto"|"cell"|"col-resize"|"context-menu"|"copy"|"crosshair"|"default"|"e-resize"|"ew-resize"|"grab"|"grabbing"|"help"|"move"|"n-resize"|"ne-resize"|"nesw-resize"|"no-drop"|"none"|"not-allowed"|"ns-resize"|"nw-resize"|"nwse-resize"|"pointer"|"progress"|"row-resize"|"s-resize"|"se-resize"|"sw-resize"|"text"|"vertical-text"|"w-resize"|"wait"|"zoom-in"|"zoom-out"} Highcharts.CursorType
+ * @typedef {"alias"|"all-scroll"|"auto"|"cell"|"col-resize"|"context-menu"|"copy"|"crosshair"|"default"|"e-resize"|"ew-resize"|"grab"|"grabbing"|"help"|"move"|"n-resize"|"ne-resize"|"nesw-resize"|"no-drop"|"none"|"not-allowed"|"ns-resize"|"nw-resize"|"nwse-resize"|"pointer"|"progress"|"row-resize"|"s-resize"|"se-resize"|"sw-resize"|"text"|"vertical-text"|"w-resize"|"wait"|"zoom-in"|"zoom-out"} Highcharts.CursorValue
  */
 
 /**
  * All possible dash styles.
  *
- * @typedef {"Dash"|"DashDot"|"Dot"|"LongDash"|"LongDashDot"|"LongDashDotDot"|"ShortDash"|"ShortDashDot"|"ShortDashDotDot"|"ShortDot"|"Solid"} Highcharts.DashStyleType
+ * @typedef {"Dash"|"DashDot"|"Dot"|"LongDash"|"LongDashDot"|"LongDashDotDot"|"ShortDash"|"ShortDashDot"|"ShortDashDotDot"|"ShortDot"|"Solid"} Highcharts.DashStyleValue
  */
 
 /**
@@ -197,8 +197,10 @@
  * @callback Highcharts.FormatterCallbackFunction<T>
  *
  * @param {T} this
+ *        Context to format
  *
  * @return {string}
+ *         Formatted text
  */
 
 /**
@@ -255,87 +257,24 @@
  */
 
 /**
- * An object of key-value pairs for SVG attributes. Attributes in Highcharts
- * elements for the most parts correspond to SVG, but some are specific to
- * Highcharts, like `zIndex`, `rotation`, `rotationOriginX`,
- * `rotationOriginY`, `translateX`, `translateY`, `scaleX` and `scaleY`. SVG
- * attributes containing a hyphen are _not_ camel-cased, they should be
- * quoted to preserve the hyphen.
+ * Proceed function to call original (wrapped) function.
  *
- * @example
- * {
- *     'stroke': '#ff0000', // basic
- *     'stroke-width': 2, // hyphenated
- *     'rotation': 45 // custom
- *     'd': ['M', 10, 10, 'L', 30, 30, 'z'] // path definition, note format
- * }
+ * @callback Highcharts.WrapProceedFunction
  *
- * @interface Highcharts.SVGAttributes
- *//**
- * @name Highcharts.SVGAttributes#[key:string]
- * @type {boolean|number|string|Array<number|string>|Dictionary<boolean|number|string|undefined>|undefined}
- *//**
- * @name Highcharts.SVGAttributes#d
- * @type {string|Highcharts.SVGPathArray|undefined}
- *//**
- * @name Highcharts.SVGAttributes#inverted
- * @type {boolean|undefined}
- *//**
- * @name Highcharts.SVGAttributes#matrix
- * @type {Array<number>|undefined}
- *//**
- * @name Highcharts.SVGAttributes#rotation
- * @type {string|undefined}
- *//**
- * @name Highcharts.SVGAttributes#rotationOriginX
- * @type {number|undefined}
- *//**
- * @name Highcharts.SVGAttributes#rotationOriginY
- * @type {number|undefined}
- *//**
- * @name Highcharts.SVGAttributes#scaleX
- * @type {number|undefined}
- *//**
- * @name Highcharts.SVGAttributes#scaleY
- * @type {number|undefined}
- *//**
- * @name Highcharts.SVGAttributes#stroke
- * @type {Highcharts.ColorString|undefined}
- *//**
- * @name Highcharts.SVGAttributes#style
- * @type {string|Highcharts.CSSObject|undefined}
- *//**
- * @name Highcharts.SVGAttributes#translateX
- * @type {number|undefined}
- *//**
- * @name Highcharts.SVGAttributes#translateY
- * @type {number|undefined}
- *//**
- * @name Highcharts.SVGAttributes#zIndex
- * @type {number|undefined}
- */
-
-/**
- * An SVG DOM element. The type is a reference to the regular SVGElement in the
- * global scope.
+ * @param {*} [arg1]
+ *        Optional argument. Without any arguments defaults to first argument of
+ *        the wrapping function.
  *
- * @typedef {globals.GlobalSVGElement} Highcharts.SVGDOMElement
+ * @param {*} [arg2]
+ *        Optional argument. Without any arguments defaults to second argument
+ *        of the wrapping function.
  *
- * @see https://developer.mozilla.org/en-US/docs/Web/API/SVGElement
- */
-
-/**
- * Array of path commands, that will go into the `d` attribute of an SVG
- * element.
+ * @param {*} [arg3]
+ *        Optional argument. Without any arguments defaults to third argument of
+ *        the wrapping function.
  *
- * @typedef {Array<number|Highcharts.SVGPathCommand>} Highcharts.SVGPathArray
- */
-
-/**
- * Possible path commands in a SVG path array.
- *
- * @typedef {string} Highcharts.SVGPathCommand
- * @validvalue ["a","c","h","l","m","q","s","t","v","z","A","C","H","L","M","Q","S","T","V","Z"]
+ * @return {*}
+ *         Return value of the original function.
  */
 
 'use strict';
@@ -385,18 +324,24 @@ var charts = H.charts,
  */
 H.error = function (code, stop, chart) {
     var msg = H.isNumber(code) ?
-        'Highcharts error #' + code + ': www.highcharts.com/errors/' + code :
-        code;
+            'Highcharts error #' + code + ': www.highcharts.com/errors/' +
+            code : code,
+        defaultHandler = function () {
+            if (stop) {
+                throw new Error(msg);
+            }
+            // else ...
+            if (win.console) {
+                console.log(msg); // eslint-disable-line no-console
+            }
+        };
 
     if (chart) {
-        H.fireEvent(chart, 'displayError', { code: code });
-    }
-    if (stop) {
-        throw new Error(msg);
-    }
-    // else ...
-    if (win.console) {
-        console.log(msg); // eslint-disable-line no-console
+        H.fireEvent(
+            chart, 'displayError', { code: code, message: msg }, defaultHandler
+        );
+    } else {
+        defaultHandler();
     }
 };
 
@@ -1351,7 +1296,7 @@ H.relativeLength = function (value, base, offset) {
  * @param {string} method
  *        The name of the method to extend.
  *
- * @param {Function} func
+ * @param {Highcharts.WrapProceedFunction} func
  *        A wrapper function callback. This function is called with the same
  *        arguments as the original function, except that the original function
  *        is unshifted and passed as the first argument.

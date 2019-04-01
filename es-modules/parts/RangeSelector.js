@@ -5,6 +5,12 @@
  */
 
 /**
+ * Define the time span for the button
+ *
+ * @typedef {"all"|"day"|"hour"|"millisecond"|"minute"|"month"|"second"|"week"|"year"|"ytd"} Highcharts.RangeSelectorButtonTypeValue
+ */
+
+/**
  * Callback function to react on button clicks.
  *
  * @callback Highcharts.RangeSelectorClickCallbackFunction
@@ -63,7 +69,7 @@ extend(defaultOptions, {
      * the chart, like 1 day, 1 week, 1 month etc. It also provides input
      * boxes where min and max dates can be manually input.
      *
-     * @product      highstock
+     * @product      highstock gantt
      * @optionparent rangeSelector
      */
     rangeSelector: {
@@ -210,10 +216,10 @@ extend(defaultOptions, {
 
         /**
          * Defined the time span for the button. Can be one of `millisecond`,
-         * `second`, `minute`, `hour`, `day`, `week`, `month`, `ytd`, `all`.
+         * `second`, `minute`, `hour`, `day`, `week`, `month`, `year`, `ytd`,
+         * and `all`.
          *
-         * @type       {string}
-         * @validvalue ["millisecond", "second", "minute", "day", "week", "month", "ytd", "all"]
+         * @type       {Highcharts.RangeSelectorButtonTypeValue}
          * @apioption  rangeSelector.buttons.type
          */
 
@@ -245,7 +251,7 @@ extend(defaultOptions, {
          * @sample {highstock} stock/rangeselector/vertical-align-bottom/
          *         Bottom
          *
-         * @type  {Highcharts.VerticalAlignType}
+         * @type  {Highcharts.VerticalAlignValue}
          * @since 6.0.0
          */
         verticalAlign: 'top',
@@ -431,7 +437,7 @@ extend(defaultOptions, {
              * @sample {highstock} stock/rangeselector/input-button-position/
              *         Alignment
              *
-             * @type  {Highcharts.AlignType}
+             * @type  {Highcharts.AlignValue}
              * @since 6.0.0
              */
             align: 'right',
@@ -451,7 +457,6 @@ extend(defaultOptions, {
          * The index of the button to appear pre-selected.
          *
          * @type      {number}
-         * @product   highstock
          * @apioption rangeSelector.selected
          */
 
@@ -469,8 +474,8 @@ extend(defaultOptions, {
              * @sample {highstock} stock/rangeselector/input-button-position/
              *         Alignment
              *
-             * @since      6.0.0
-             * @validvalue ["left", "center", "right"]
+             * @type  {Highcharts.AlignValue}
+             * @since 6.0.0
              */
             align: 'left',
 
@@ -547,7 +552,7 @@ defaultOptions.lang = merge(
         /**
          * The text for the label for the range selector buttons.
          *
-         * @product highstock
+         * @product highstock gantt
          */
         rangeSelectorZoom: 'Zoom',
 
@@ -555,14 +560,14 @@ defaultOptions.lang = merge(
          * The text for the label for the "from" input box in the range
          * selector.
          *
-         * @product highstock
+         * @product highstock gantt
          */
         rangeSelectorFrom: 'From',
 
         /**
          * The text for the label for the "to" input box in the range selector.
          *
-         * @product highstock
+         * @product highstock gantt
          */
         rangeSelectorTo: 'To'
     }
@@ -811,7 +816,6 @@ RangeSelector.prototype = {
         rangeSelector.options = options;
         rangeSelector.buttons = [];
 
-        chart.extraTopMargin = options.height;
         rangeSelector.buttonOptions = buttonOptions;
 
         this.unMouseDown = addEvent(chart.container, 'mousedown', blurInputs);
@@ -1233,6 +1237,7 @@ RangeSelector.prototype = {
                 // clicking inside the SVG (#4710)
                 updateExtremes();
                 rangeSelector.hideInput(name);
+                input.blur(); // #4606
             }
         };
 
@@ -1401,7 +1406,7 @@ RangeSelector.prototype = {
                     rangeOptions.text,
                     0,
                     0,
-                    function () {
+                    function (e) {
 
                         // extract events from button object and call
                         var buttonEvents = (
@@ -1412,7 +1417,7 @@ RangeSelector.prototype = {
 
                         if (buttonEvents) {
                             callDefaultEvent =
-                                    buttonEvents.call(rangeOptions);
+                                    buttonEvents.call(rangeOptions, e);
                         }
 
                         if (callDefaultEvent !== false) {
@@ -1689,6 +1694,10 @@ RangeSelector.prototype = {
             rangeSelectorHeight = 0,
             minPosition;
 
+        if (options.height) {
+            return options.height;
+        }
+
         rangeSelectorHeight = rangeSelectorGroup ?
             // 13px to keep back compatibility
             (rangeSelectorGroup.getBBox(true).height) + 13 + yPosition :
@@ -1731,10 +1740,11 @@ RangeSelector.prototype = {
      */
     update: function (options) {
         var chart = this.chart;
-
         merge(true, chart.options.rangeSelector, options);
+
         this.destroy();
         this.init(chart);
+
         chart.rangeSelector.render();
     },
 
@@ -1777,49 +1787,6 @@ RangeSelector.prototype = {
             }
         }, this);
     }
-};
-
-/**
- * Add logic to normalize the zoomed range in order to preserve the pressed
- * state of range selector buttons
- *
- * @private
- * @function Highcharts.Axis#toFixedRange
- *
- * @param {number} pxMin
- *
- * @param {number} pxMax
- *
- * @param {number} fixedMin
- *
- * @param {number} fixedMax
- *
- * @return {*}
- */
-Axis.prototype.toFixedRange = function (pxMin, pxMax, fixedMin, fixedMax) {
-    var fixedRange = this.chart && this.chart.fixedRange,
-        newMin = pick(fixedMin, this.translate(pxMin, true, !this.horiz)),
-        newMax = pick(fixedMax, this.translate(pxMax, true, !this.horiz)),
-        changeRatio = fixedRange && (newMax - newMin) / fixedRange;
-
-    // If the difference between the fixed range and the actual requested range
-    // is too great, the user is dragging across an ordinal gap, and we need to
-    // release the range selector button.
-    if (changeRatio > 0.7 && changeRatio < 1.3) {
-        if (fixedMax) {
-            newMin = newMax - fixedRange;
-        } else {
-            newMax = newMin + fixedRange;
-        }
-    }
-    if (!isNumber(newMin) || !isNumber(newMax)) { // #1195, #7411
-        newMin = newMax = undefined;
-    }
-
-    return {
-        min: newMin,
-        max: newMax
-    };
 };
 
 /**
@@ -1886,178 +1853,174 @@ Axis.prototype.minFromRange = function () {
 
 };
 
-// Initialize rangeselector for stock charts
-addEvent(Chart, 'afterGetContainer', function () {
-    if (this.options.rangeSelector.enabled) {
-        this.rangeSelector = new RangeSelector(this);
-    }
-});
-
-addEvent(Chart, 'beforeRender', function () {
-
-    var chart = this,
-        axes = chart.axes,
-        rangeSelector = chart.rangeSelector,
-        verticalAlign;
-
-    if (rangeSelector) {
-
-        if (isNumber(rangeSelector.deferredYTDClick)) {
-            rangeSelector.clickButton(rangeSelector.deferredYTDClick);
-            delete rangeSelector.deferredYTDClick;
-        }
-
-        axes.forEach(function (axis) {
-            axis.updateNames();
-            axis.setScale();
-        });
-
-        chart.getAxisMargins();
-
-        rangeSelector.render();
-        verticalAlign = rangeSelector.options.verticalAlign;
-
-        if (!rangeSelector.options.floating) {
-            if (verticalAlign === 'bottom') {
-                this.extraBottomMargin = true;
-            } else if (verticalAlign !== 'middle') {
-                this.extraTopMargin = true;
-            }
-        }
-    }
-
-});
-
-addEvent(Chart, 'update', function (e) {
-
-    var chart = this,
-        options = e.options,
-        optionsRangeSelector = options.rangeSelector,
-        rangeSelector = chart.rangeSelector,
-        verticalAlign,
-        extraBottomMarginWas = this.extraBottomMargin,
-        extraTopMarginWas = this.extraTopMargin;
-
-    if (
-        optionsRangeSelector &&
-        optionsRangeSelector.enabled &&
-        !defined(rangeSelector)
-    ) {
-        this.options.rangeSelector.enabled = true;
-        this.rangeSelector = new RangeSelector(this);
-    }
-
-
-    this.extraBottomMargin = false;
-    this.extraTopMargin = false;
-
-    if (rangeSelector) {
-
-        rangeSelector.render();
-
-        verticalAlign = (
-            optionsRangeSelector &&
-            optionsRangeSelector.verticalAlign
-        ) || (
-            rangeSelector.options && rangeSelector.options.verticalAlign
-        );
-
-        if (!rangeSelector.options.floating) {
-            if (verticalAlign === 'bottom') {
-                this.extraBottomMargin = true;
-            } else if (verticalAlign !== 'middle') {
-                this.extraTopMargin = true;
-            }
-        }
-
-        if (
-            this.extraBottomMargin !== extraBottomMarginWas ||
-            this.extraTopMargin !== extraTopMarginWas
-        ) {
-            this.isDirtyBox = true;
-        }
-
-    }
-
-});
-
-addEvent(Chart, 'render', function () {
-    var chart = this,
-        rangeSelector = chart.rangeSelector,
-        verticalAlign;
-
-    if (rangeSelector && !rangeSelector.options.floating) {
-
-        rangeSelector.render();
-        verticalAlign = rangeSelector.options.verticalAlign;
-
-        if (verticalAlign === 'bottom') {
-            this.extraBottomMargin = true;
-        } else if (verticalAlign !== 'middle') {
-            this.extraTopMargin = true;
-        }
-    }
-});
-
-addEvent(Chart, 'getMargins', function () {
-    var rangeSelector = this.rangeSelector,
-        rangeSelectorHeight;
-
-    if (rangeSelector) {
-        rangeSelectorHeight = rangeSelector.getHeight();
-
-        if (this.extraTopMargin) {
-            this.plotTop += rangeSelectorHeight;
-        }
-
-        if (this.extraBottomMargin) {
-            this.marginBottom += rangeSelectorHeight;
-        }
-    }
-});
-
-Chart.prototype.callbacks.push(function (chart) {
-    var extremes,
-        rangeSelector = chart.rangeSelector,
-        unbindRender,
-        unbindSetExtremes;
-
-    function renderRangeSelector() {
-        extremes = chart.xAxis[0].getExtremes();
-        if (isNumber(extremes.min)) {
-            rangeSelector.render(extremes.min, extremes.max);
-        }
-    }
-
-    if (rangeSelector) {
-        // redraw the scroller on setExtremes
-        unbindSetExtremes = addEvent(
-            chart.xAxis[0],
-            'afterSetExtremes',
-            function (e) {
-                rangeSelector.render(e.min, e.max);
-            }
-        );
-
-        // redraw the scroller chart resize
-        unbindRender = addEvent(chart, 'redraw', renderRangeSelector);
-
-        // do it now
-        renderRangeSelector();
-    }
-
-    // Remove resize/afterSetExtremes at chart destroy
-    addEvent(chart, 'destroy', function destroyEvents() {
-        if (rangeSelector) {
-            unbindRender();
-            unbindSetExtremes();
+if (!H.RangeSelector) {
+    // Initialize rangeselector for stock charts
+    addEvent(Chart, 'afterGetContainer', function () {
+        if (this.options.rangeSelector.enabled) {
+            this.rangeSelector = new RangeSelector(this);
         }
     });
-});
+
+    addEvent(Chart, 'beforeRender', function () {
+
+        var chart = this,
+            axes = chart.axes,
+            rangeSelector = chart.rangeSelector,
+            verticalAlign;
+
+        if (rangeSelector) {
+
+            if (isNumber(rangeSelector.deferredYTDClick)) {
+                rangeSelector.clickButton(rangeSelector.deferredYTDClick);
+                delete rangeSelector.deferredYTDClick;
+            }
+
+            axes.forEach(function (axis) {
+                axis.updateNames();
+                axis.setScale();
+            });
+
+            chart.getAxisMargins();
+
+            rangeSelector.render();
+            verticalAlign = rangeSelector.options.verticalAlign;
+
+            if (!rangeSelector.options.floating) {
+                if (verticalAlign === 'bottom') {
+                    this.extraBottomMargin = true;
+                } else if (verticalAlign !== 'middle') {
+                    this.extraTopMargin = true;
+                }
+            }
+        }
+
+    });
+
+    addEvent(Chart, 'update', function (e) {
+
+        var chart = this,
+            options = e.options,
+            optionsRangeSelector = options.rangeSelector,
+            rangeSelector = chart.rangeSelector,
+            verticalAlign,
+            extraBottomMarginWas = this.extraBottomMargin,
+            extraTopMarginWas = this.extraTopMargin;
+
+        if (
+            optionsRangeSelector &&
+            optionsRangeSelector.enabled &&
+            !defined(rangeSelector)
+        ) {
+            this.options.rangeSelector.enabled = true;
+            this.rangeSelector = new RangeSelector(this);
+        }
+
+        this.extraBottomMargin = false;
+        this.extraTopMargin = false;
+
+        if (rangeSelector) {
+
+            rangeSelector.render();
+
+            verticalAlign = (
+                optionsRangeSelector &&
+                optionsRangeSelector.verticalAlign
+            ) || (
+                rangeSelector.options && rangeSelector.options.verticalAlign
+            );
+
+            if (!rangeSelector.options.floating) {
+                if (verticalAlign === 'bottom') {
+                    this.extraBottomMargin = true;
+                } else if (verticalAlign !== 'middle') {
+                    this.extraTopMargin = true;
+                }
+            }
+
+            if (
+                this.extraBottomMargin !== extraBottomMarginWas ||
+                this.extraTopMargin !== extraTopMarginWas
+            ) {
+                this.isDirtyBox = true;
+            }
+
+        }
+
+    });
+
+    addEvent(Chart, 'render', function () {
+        var chart = this,
+            rangeSelector = chart.rangeSelector,
+            verticalAlign;
+
+        if (rangeSelector && !rangeSelector.options.floating) {
+
+            rangeSelector.render();
+            verticalAlign = rangeSelector.options.verticalAlign;
+
+            if (verticalAlign === 'bottom') {
+                this.extraBottomMargin = true;
+            } else if (verticalAlign !== 'middle') {
+                this.extraTopMargin = true;
+            }
+        }
+    });
+
+    addEvent(Chart, 'getMargins', function () {
+        var rangeSelector = this.rangeSelector,
+            rangeSelectorHeight;
+
+        if (rangeSelector) {
+            rangeSelectorHeight = rangeSelector.getHeight();
+            if (this.extraTopMargin) {
+                this.plotTop += rangeSelectorHeight;
+            }
+
+            if (this.extraBottomMargin) {
+                this.marginBottom += rangeSelectorHeight;
+            }
+        }
+    });
+
+    Chart.prototype.callbacks.push(function (chart) {
+        var extremes,
+            rangeSelector = chart.rangeSelector,
+            unbindRender,
+            unbindSetExtremes;
+
+        function renderRangeSelector() {
+            extremes = chart.xAxis[0].getExtremes();
+            if (isNumber(extremes.min)) {
+                rangeSelector.render(extremes.min, extremes.max);
+            }
+        }
+
+        if (rangeSelector) {
+            // redraw the scroller on setExtremes
+            unbindSetExtremes = addEvent(
+                chart.xAxis[0],
+                'afterSetExtremes',
+                function (e) {
+                    rangeSelector.render(e.min, e.max);
+                }
+            );
+
+            // redraw the scroller chart resize
+            unbindRender = addEvent(chart, 'redraw', renderRangeSelector);
+
+            // do it now
+            renderRangeSelector();
+        }
+
+        // Remove resize/afterSetExtremes at chart destroy
+        addEvent(chart, 'destroy', function destroyEvents() {
+            if (rangeSelector) {
+                unbindRender();
+                unbindSetExtremes();
+            }
+        });
+    });
 
 
-H.RangeSelector = RangeSelector;
-
-/* ****************************************************************************
- * End Range Selector code                                                     *
- *****************************************************************************/
+    H.RangeSelector = RangeSelector;
+}

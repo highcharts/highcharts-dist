@@ -1,5 +1,10 @@
-import * as globals from "../globals";
-import * as Highcharts from "../highcharts.src";
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
+import * as globals from "../globals.src";
+import * as _Highcharts from "../highcharts.src";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -7,5 +12,21 @@ import * as Highcharts from "../highcharts.src";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts.src" {}
+declare module "../highcharts.src" {
+    /**
+     * Returns the first break found where the x is larger then break.from and
+     * smaller then break.to.
+     *
+     * @param x
+     *        The number which should be within a break.
+     *
+     * @param breaks
+     *        The array of breaks to search within.
+     *
+     * @return Returns the first break found that matches, returns false if no
+     *         break is found.
+     */
+    function findBreakAt(x: number, breaks: any[]): (boolean|object);
+}
 export default factory;
+export let Highcharts: typeof _Highcharts;

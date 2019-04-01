@@ -1,5 +1,10 @@
-import * as globals from "../globals";
-import * as Highcharts from "../highcharts.src";
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
+import * as globals from "../globals.src";
+import * as _Highcharts from "../highcharts.src";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -68,8 +73,6 @@ declare module "../highcharts.src" {
          *        documentation.
          *
          * @return An object with `x` and `y` properties.
-         *
-         * @see https://api.highcharts.com/class-reference/Highcharts.Chart#transformFromLatLon
          */
         transformFromLatLon(latLon: MapLatLonObject, transform: object): MapCoordinateObject;
         /**
@@ -86,8 +89,6 @@ declare module "../highcharts.src" {
          *        documentation.
          *
          * @return An object with `lat` and `lon` properties.
-         *
-         * @see https://api.highcharts.com/class-reference/Highcharts.Chart#transformToLatLon
          */
         transformToLatLon(point: (MapCoordinateObject|Point), transform: object): MapLatLonObject;
     }
@@ -150,8 +151,6 @@ declare module "../highcharts.src" {
      *        return GeoJSON points and multipoints.
      *
      * @return An object ready for the `mapData` option.
-     *
-     * @see https://api.highcharts.com/class-reference/Highcharts#geojson
      */
     function geojson(geojson: object, hType?: string): Array<object>;
     /**
@@ -172,8 +171,6 @@ declare module "../highcharts.src" {
      *        equivalent.
      *
      * @return The chart object.
-     *
-     * @see https://api.highcharts.com/class-reference/Highcharts#mapChart
      */
     function mapChart(options: Options, callback?: ChartCallbackFunction): Chart;
     /**
@@ -197,8 +194,6 @@ declare module "../highcharts.src" {
      *        equivalent.
      *
      * @return The chart object.
-     *
-     * @see https://api.highcharts.com/class-reference/Highcharts#mapChart
      */
     function mapChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): Chart;
     /**
@@ -207,3 +202,4 @@ declare module "../highcharts.src" {
     function splitPath(path: string): SVGPathArray;
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

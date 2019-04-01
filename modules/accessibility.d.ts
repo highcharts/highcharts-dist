@@ -1,5 +1,10 @@
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
 import * as globals from "../globals";
-import * as Highcharts from "../highcharts";
+import * as _Highcharts from "../highcharts";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -21,6 +26,80 @@ declare module "../highcharts" {
          * @return The formatted string.
          */
         langFormat(langKey: string, context: Dictionary<any>): string;
+    }
+    /**
+     * The AccessibilityComponent base class, representing a part of the chart
+     * that has accessibility logic connected to it. This class can be inherited
+     * from to create a custom accessibility component for a chart.
+     *
+     * A component:
+     *
+     * - Must call initBase after inheriting.
+     *
+     * - Can override any of the following functions: init(), destroy(),
+     * getKeyboardNavigation(), onChartUpdate().
+     *
+     * - Should take care to destroy added elements and unregister event
+     * handlers on destroy.
+     */
+    class AccessibilityComponent {
+        /**
+         * Called when accessibility is disabled or chart is destroyed. Should
+         * call destroyBase to make sure events/elements added are removed.
+         */
+        static destroy(): void;
+        /**
+         * Get keyboard navigation handler for this component.
+         */
+        static getKeyboardNavigation(): KeyboardNavigationHandler;
+        /**
+         * Initialize component.
+         */
+        static init(): void;
+        /**
+         * Called on every chart render.
+         */
+        static onChartRender(): void;
+        /**
+         * Called on updates to the chart, including options changes. Note that
+         * this is also called on first render of chart.
+         */
+        static onChartUpdate(): void;
+    }
+    /**
+     * Define a keyboard navigation handler for use with a
+     * Highcharts.AccessibilityComponent instance. This functions as an
+     * abstraction layer for keyboard navigation, and defines a map of keyCodes
+     * to handler functions.
+     */
+    class KeyboardNavigationHandler {
+        /**
+         * Define a keyboard navigation handler for use with a
+         * Highcharts.AccessibilityComponent instance. This functions as an
+         * abstraction layer for keyboard navigation, and defines a map of
+         * keyCodes to handler functions.
+         *
+         * @param chart
+         *        The chart this module should act on.
+         *
+         * @param keyCodeMap
+         *        An array containing pairs of an array of keycodes, mapped to a
+         *        handler function. When the keycode is received, the handler is
+         *        called with the keycode as parameter.
+         *
+         * @param init
+         *        Function to run on initialization of module
+         *
+         * @param validate
+         *        Function to run to validate module. Should return false if
+         *        module should not run, true otherwise. Receives chart as
+         *        parameter.
+         *
+         * @param terminate
+         *        Function to run before moving to next/prev module. Receives
+         *        moving direction as parameter: +1 for next, -1 for previous.
+         */
+        constructor(chart: Chart, options: object, keyCodeMap: [Array<number>, Function], init?: Function, validate?: Function, terminate?: Function);
     }
     /**
      * i18n formatting function. Extends Highcharts.format() functionality by
@@ -90,3 +169,4 @@ declare module "../highcharts" {
     function i18nFormat(formatString: string, context: Dictionary<any>, time: Time): string;
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

@@ -599,7 +599,7 @@ Annotation.prototype = {
              * @sample highcharts/annotations/label-position/
              *         Set labels position
              *
-             * @type {Highcharts.AlignType}
+             * @type {Highcharts.AlignValue}
              */
             align: 'center',
 
@@ -793,7 +793,7 @@ Annotation.prototype = {
              * @sample highcharts/annotations/label-position/
              *         Set labels position
              *
-             * @type {Highcharts.VerticalAlignType}
+             * @type {Highcharts.VerticalAlignValue}
              */
             verticalAlign: 'bottom',
 
@@ -1015,7 +1015,33 @@ Annotation.prototype = {
         /**
          * The Z index of the annotation.
          */
-        zIndex: 6
+        zIndex: 6,
+
+        /**
+         * Events available in annotations.
+         *
+         * @type {Object}
+         */
+        /**
+         * Event callback when annotation is added to the chart.
+         *
+         * @since 7.1.0
+         * @apioption annotations.events.add
+         */
+        /**
+         * Event callback when annotation is updated (e.g. drag and
+         * droppped or resized by control points).
+         *
+         * @since 7.1.0
+         * @apioption annotations.events.afterUpdate
+         */
+        /**
+         * Event callback when annotation is removed from the chart.
+         *
+         * @since 7.1.0
+         * @apioption annotations.events.remove
+         */
+        events: {}
     },
 
     /**

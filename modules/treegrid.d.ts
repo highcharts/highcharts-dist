@@ -1,5 +1,10 @@
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
 import * as globals from "../globals";
-import * as Highcharts from "../highcharts";
+import * as _Highcharts from "../highcharts";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -9,17 +14,19 @@ import * as Highcharts from "../highcharts";
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
     /**
-     * Builds the tree of categories and calculates its positions.
+     * Returns the first break found where the x is larger then break.from and
+     * smaller then break.to.
      *
-     * @param e
-     *        Event object
+     * @param x
+     *        The number which should be within a break.
      *
-     * @param target
-     *        The chart instance which the event was fired on.
+     * @param breaks
+     *        The array of breaks to search within.
      *
-     * @param axes
-     *        The axes of the chart.
+     * @return Returns the first break found that matches, returns false if no
+     *         break is found.
      */
-    function onBeforeRender(e: object, target: object, axes: Array<object>): void;
+    function findBreakAt(x: number, breaks: any[]): (boolean|object);
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

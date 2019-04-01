@@ -1,5 +1,10 @@
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
 import * as globals from "../globals";
-import * as Highcharts from "../highcharts";
+import * as _Highcharts from "../highcharts";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -31,3 +36,4 @@ declare module "../highcharts" {
     }
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

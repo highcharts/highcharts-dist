@@ -117,7 +117,8 @@ seriesType(
          * or indicator values.
          *
          * @sample {highstock} stock/plotoptions/series-comparetomain/
-         *         compareToMain
+         *         Difference between comparing SMA values to the main series
+         *         and its own values.
          *
          * @type {boolean}
          */
@@ -159,6 +160,7 @@ seriesType(
             series: true,
             eventName: 'updatedData'
         },
+        hasDerivedData: true,
         useCommonDataGrouping: true,
         nameComponents: ['period'],
         nameSuffixes: [], // e.g. Zig Zag uses extra '%'' in the legend name

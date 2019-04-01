@@ -1,5 +1,10 @@
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
 import * as globals from "../globals";
-import * as Highcharts from "../highcharts";
+import * as _Highcharts from "../highcharts";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -20,8 +25,6 @@ declare module "../highcharts" {
          *        Additional chart options for the exported chart. For example a
          *        different background color can be added here, or `dataLabels`
          *        for export only.
-         *
-         * @see https://api.highcharts.com/class-reference/Highcharts.Chart#exportChart
          */
         exportChart(exportingOptions: ExportingOptions, chartOptions: Options): void;
         /**
@@ -45,7 +48,7 @@ declare module "../highcharts" {
          * @param chartOptions
          *        Additional chart options for the generated SVG representation.
          *        For collections like `xAxis`, `yAxis` or `series`, the
-         *        additional options is either merged in to the orininal item of
+         *        additional options is either merged in to the original item of
          *        the same `id`, or to the first item if a common id is not
          *        found.
          *
@@ -53,7 +56,7 @@ declare module "../highcharts" {
          *
          * @fires Highcharts.Chart#getSVG
          */
-        getSVG(chartOptions: Options): string;
+        getSVG(chartOptions?: Options): string;
         /**
          * Exporting module required. Clears away other elements in the page and
          * prints the chart as it is displayed. By default, when the exporting
@@ -67,3 +70,4 @@ declare module "../highcharts" {
     }
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

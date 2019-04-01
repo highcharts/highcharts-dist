@@ -1,5 +1,10 @@
-import * as globals from "../globals";
-import * as Highcharts from "../highcharts.src";
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
+import * as globals from "../globals.src";
+import * as _Highcharts from "../highcharts.src";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -21,8 +26,6 @@ declare module "../highcharts.src" {
          *
          * @param options
          *        The series options for the new, detailed series.
-         *
-         * @see https://api.highcharts.com/class-reference/Highcharts.Chart#addSeriesAsDrilldown
          */
         addSeriesAsDrilldown(point: Point, options: SeriesOptionsType): void;
         /**
@@ -40,3 +43,4 @@ declare module "../highcharts.src" {
     }
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

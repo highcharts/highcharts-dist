@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.0.3 (2019-02-06)
+ * @license Highcharts JS v7.1.0 (2019-04-01)
  *
  * 3D features for Highcharts JS
  *
@@ -11,14 +11,22 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define(function () {
+        define('highcharts/highcharts-3d', ['highcharts'], function (Highcharts) {
+            factory(Highcharts);
+            factory.Highcharts = Highcharts;
             return factory;
         });
     } else {
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
-    (function (H) {
+    var _modules = Highcharts ? Highcharts._modules : {};
+    function _registerModule(obj, path, args, fn) {
+        if (!obj.hasOwnProperty(path)) {
+            obj[path] = fn.apply(null, args);
+        }
+    }
+    _registerModule(_modules, 'parts-3d/Math.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -223,8 +231,8 @@
             return H.shapeArea(H.perspective(vertexes, chart, insidePlotArea));
         };
 
-    }(Highcharts));
-    (function (H) {
+    });
+    _registerModule(_modules, 'parts-3d/SVGRenderer.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -603,8 +611,6 @@
                     this.attr({
                         zIndex: paths.zIndexes.group
                     });
-                } else if (args.opacity) {
-                    this.processParts(args, null, 'animate', duration, complete);
                 } else {
                     SVGElement.prototype.animate.call(this, args, duration, complete);
                 }
@@ -621,9 +627,6 @@
                 this.color = this.fill = fill;
 
                 return this;
-            },
-            opacitySetter: function (opacity) {
-                return this.singleSetterForParts('opacity', opacity);
             }
         });
 
@@ -1223,8 +1226,8 @@
             };
         };
 
-    }(Highcharts));
-    (function (H) {
+    });
+    _registerModule(_modules, 'parts-3d/Chart.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -2975,8 +2978,8 @@
          * @apioption chart.options3d.frame.side.size
          */
 
-    }(Highcharts));
-    (function (H) {
+    });
+    _registerModule(_modules, 'parts-3d/Axis.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -3641,8 +3644,8 @@
             return proceed.apply(this, [].slice.call(arguments, 1));
         });
 
-    }(Highcharts));
-    (function (H) {
+    });
+    _registerModule(_modules, 'parts-3d/Series.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -3714,8 +3717,8 @@
             }
         };
 
-    }(Highcharts));
-    (function (H) {
+    });
+    _registerModule(_modules, 'parts-3d/Column.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -4040,9 +4043,27 @@
             return attr;
         }
 
+        // In 3D mode, all column-series are rendered in one main group.
+        // Because of that we need to apply inactive state on all points.
+        function setState(proceed, state, inherit) {
+            var is3d = this.chart.is3d && this.chart.is3d();
+
+            if (is3d) {
+                this.options.inactiveOtherPoints = true;
+            }
+
+            proceed.call(this, state, inherit);
+
+            if (is3d) {
+                this.options.inactiveOtherPoints = false;
+            }
+        }
+
         wrap(seriesTypes.column.prototype, 'pointAttribs', pointAttribs);
+        wrap(seriesTypes.column.prototype, 'setState', setState);
         if (seriesTypes.columnrange) {
             wrap(seriesTypes.columnrange.prototype, 'pointAttribs', pointAttribs);
+            wrap(seriesTypes.columnrange.prototype, 'setState', setState);
             seriesTypes.columnrange.prototype.plotGroup =
                 seriesTypes.column.prototype.plotGroup;
             seriesTypes.columnrange.prototype.setVisible =
@@ -4150,8 +4171,8 @@
         });
         */
 
-    }(Highcharts));
-    (function (H) {
+    });
+    _registerModule(_modules, 'parts-3d/Pie.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -4357,8 +4378,8 @@
             }
         });
 
-    }(Highcharts));
-    (function (H) {
+    });
+    _registerModule(_modules, 'parts-3d/Scatter.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -4511,8 +4532,8 @@
          * @apioption series.scatter3d.data.z
          */
 
-    }(Highcharts));
-    (function (H) {
+    });
+    _registerModule(_modules, 'parts-3d/VMLRenderer.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          * (c) 2010-2019 Torstein Honsi
          *
@@ -4571,9 +4592,9 @@
 
         }
 
-    }(Highcharts));
-    return (function () {
+    });
+    _registerModule(_modules, 'masters/highcharts-3d.src.js', [], function () {
 
 
-    }());
+    });
 }));

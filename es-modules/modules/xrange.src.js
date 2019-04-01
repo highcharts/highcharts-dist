@@ -64,79 +64,68 @@ function getColorByCategory(series, point) {
 seriesType('xrange', 'column'
 
     /**
- * The X-range series displays ranges on the X axis, typically time intervals
- * with a start and end date.
- *
- * @sample {highcharts} highcharts/demo/x-range/
- *         X-range
- * @sample {highcharts} highcharts/css/x-range/
- *         Styled mode X-range
- * @sample {highcharts} highcharts/chart/inverted-xrange/
- *         Inverted X-range
- *
- * @extends      plotOptions.column
- * @since        6.0.0
- * @product      highcharts highstock gantt
- * @excluding    boostThreshold, crisp, cropThreshold, depth, edgeColor,
- *               edgeWidth, findNearestPointBy, getExtremesFromAll,
- *               negativeColor, pointInterval, pointIntervalUnit,
- *               pointPlacement, pointRange, pointStart, softThreshold,
- *               stacking, threshold, data
- * @optionparent plotOptions.xrange
- */
+     * The X-range series displays ranges on the X axis, typically time
+     * intervals with a start and end date.
+     *
+     * @sample {highcharts} highcharts/demo/x-range/
+     *         X-range
+     * @sample {highcharts} highcharts/css/x-range/
+     *         Styled mode X-range
+     * @sample {highcharts} highcharts/chart/inverted-xrange/
+     *         Inverted X-range
+     *
+     * @extends      plotOptions.column
+     * @since        6.0.0
+     * @product      highcharts highstock gantt
+     * @excluding    boostThreshold, crisp, cropThreshold, depth, edgeColor,
+     *               edgeWidth, findNearestPointBy, getExtremesFromAll,
+     *               negativeColor, pointInterval, pointIntervalUnit,
+     *               pointPlacement, pointRange, pointStart, softThreshold,
+     *               stacking, threshold, data
+     * @optionparent plotOptions.xrange
+     */
     , {
 
         /**
-     * A partial fill for each point, typically used to visualize how much of
-     * a task is performed. The partial fill object can be set either on series
-     * or point level.
-     *
-     * @sample {highcharts} highcharts/demo/x-range
-     *         X-range with partial fill
-     *
-     * @product   highcharts highstock gantt
-     * @apioption plotOptions.xrange.partialFill
-     */
+         * A partial fill for each point, typically used to visualize how much
+         * of a task is performed. The partial fill object can be set either on
+         * series or point level.
+         *
+         * @sample {highcharts} highcharts/demo/x-range
+         *         X-range with partial fill
+         *
+         * @product   highcharts highstock gantt
+         * @apioption plotOptions.xrange.partialFill
+         */
 
         /**
-     * The fill color to be used for partial fills. Defaults to a darker shade
-     * of the point color.
-     *
-     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-     * @product   highcharts highstock gantt
-     * @apioption plotOptions.xrange.partialFill.fill
-     */
+         * The fill color to be used for partial fills. Defaults to a darker
+         * shade of the point color.
+         *
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+         * @product   highcharts highstock gantt
+         * @apioption plotOptions.xrange.partialFill.fill
+         */
 
         /**
-     * A partial fill for each point, typically used to visualize how much of
-     * a task is performed. See [completed](series.gantt.data.completed).
-     *
-     * @sample gantt/demo/progress-indicator
-     *         Gantt with progress indicator
-     *
-     * @product   gantt
-     * @apioption plotOptions.gantt.partialFill
-     */
+         * A partial fill for each point, typically used to visualize how much
+         * of a task is performed. See [completed](series.gantt.data.completed).
+         *
+         * @sample gantt/demo/progress-indicator
+         *         Gantt with progress indicator
+         *
+         * @product   gantt
+         * @apioption plotOptions.gantt.partialFill
+         */
 
         /**
-     * In an X-range series, this option makes all points of the same Y-axis
-     * category the same color.
-     */
+         * In an X-range series, this option makes all points of the same Y-axis
+         * category the same color.
+         */
         colorByPoint: true,
 
         dataLabels: {
-
-            verticalAlign: 'middle',
-
-            inside: true,
-
-            /**
-         * The default formatter for X-range data labels displays the percentage
-         * of the partial fill amount.
-         *
-         * @type    {Highcharts.FormatterCallbackFunction<Highcharts.SeriesDataLabelsFormatterContextObject>}
-         * @default function () { return (amount * 100) + '%'; }
-         */
+            /** @ignore-option */
             formatter: function () {
                 var point = this.point,
                     amount = point.partialFill;
@@ -148,7 +137,11 @@ seriesType('xrange', 'column'
                     amount = 0;
                 }
                 return correctFloat(amount * 100) + '%';
-            }
+            },
+            /** @ignore-option */
+            inside: true,
+            /** @ignore-option */
+            verticalAlign: 'middle'
         },
 
         tooltip: {
@@ -232,7 +225,51 @@ seriesType('xrange', 'column'
 
             return crop;
         },
+        /**
+         * Finds the index of an existing point that matches the given point
+         * options.
+         *
+         * @private
+         * @function Highcharts.Series#findPointIndex
+         * @param {object} options The options of the point.
+         * @returns {number|undefined} Returns index of a matching point,
+         * returns undefined if no match is found.
+         */
+        findPointIndex: function (options) {
+            var series = this,
+                // Search in data, since broken-axis can remove points inside a
+                // break.
+                points = series.data,
+                oldData = series.points,
+                id = options.id,
+                point,
+                pointIndex;
 
+            if (id) {
+                point = H.find(points, function (point) {
+                    return point.id === id;
+                });
+                pointIndex = point ? point.index : undefined;
+            }
+
+            if (pointIndex === undefined) {
+                point = H.find(points, function (point) {
+                    return (
+                        point.x === options.x &&
+                        point.x2 === options.x2 &&
+                        !(oldData[pointIndex] && oldData[pointIndex].touched)
+                    );
+                });
+                pointIndex = point ? point.index : undefined;
+            }
+
+            // Reduce pointIndex if data is cropped
+            if (series.cropped && pointIndex >= series.cropStart) {
+                pointIndex -= series.cropStart;
+            }
+
+            return pointIndex;
+        },
         /**
      * @private
      * @function Highcharts.Series#translatePoint
@@ -412,24 +449,28 @@ seriesType('xrange', 'column'
                 partShapeArgs = point.partShapeArgs,
                 clipRectArgs = point.clipRectArgs,
                 pfOptions = point.partialFill,
-                fill,
-                state = point.selected && 'select',
-                cutOff = seriesOpts.stacking && !seriesOpts.borderRadius;
+                cutOff = seriesOpts.stacking && !seriesOpts.borderRadius,
+                pointState = point.state,
+                stateOpts = seriesOpts.states[pointState || 'normal'] || {},
+                attrOrAnim = pointState === undefined ? 'attr' : 'animate',
+                pointAttr = series.pointAttribs(point, pointState),
+                animation = pick(
+                    series.chart.options.chart.animation,
+                    stateOpts.animation
+                ),
+                fill;
 
             if (!point.isNull) {
 
                 // Original graphic
                 if (graphic) { // update
-                    point.graphicOriginal[verb](
-                        merge(shapeArgs)
-                    );
-
+                    point.graphicOriginal[verb](shapeArgs);
                 } else {
                     point.graphic = graphic = renderer.g('point')
                         .addClass(point.getClassName())
                         .add(point.group || series.group);
 
-                    point.graphicOriginal = renderer[type](shapeArgs)
+                    point.graphicOriginal = renderer[type](merge(shapeArgs))
                         .addClass(point.getClassName())
                         .addClass('highcharts-partfill-original')
                         .add(graphic);
@@ -438,9 +479,6 @@ seriesType('xrange', 'column'
                 // Partial fill graphic
                 if (partShapeArgs) {
                     if (point.graphicOverlay) {
-                        point.graphicOverlay[verb](
-                            merge(partShapeArgs)
-                        );
                         point.clipRect.animate(
                             merge(clipRectArgs)
                         );
@@ -465,10 +503,11 @@ seriesType('xrange', 'column'
                 // Presentational
                 if (!series.chart.styledMode) {
                     point.graphicOriginal
-                        .attr(series.pointAttribs(point, state))
+                        .animate(pointAttr, animation)
                         .shadow(seriesOpts.shadow, null, cutOff);
+
                     if (partShapeArgs) {
-                    // Ensure pfOptions is an object
+                        // Ensure pfOptions is an object
                         if (!isObject(pfOptions)) {
                             pfOptions = {};
                         }
@@ -480,14 +519,13 @@ seriesType('xrange', 'column'
 
                         fill = (
                             pfOptions.fill ||
-                        color(point.color || series.color).brighten(-0.3).get()
+                            color(pointAttr.fill).brighten(-0.3).get() ||
+                            color(point.color || series.color)
+                                .brighten(-0.3).get()
                         );
 
-                        point.graphicOverlay
-                            .attr(series.pointAttribs(point, state))
-                            .attr({
-                                'fill': fill
-                            })
+                        pointAttr.fill = fill;
+                        point.graphicOverlay[attrOrAnim](pointAttr, animation)
                             .shadow(seriesOpts.shadow, null, cutOff);
                     }
                 }
@@ -550,24 +588,24 @@ seriesType('xrange', 'column'
      *
      * @return {Highcharts.Series}
      */
-        applyOptions: function () {
-            var point = Point.prototype.applyOptions.apply(this, arguments),
-                series = point.series,
+        resolveColor: function () {
+            var series = this.series,
                 colorByPoint;
 
-            if (series.options.colorByPoint && !point.options.color) {
-                colorByPoint = getColorByCategory(series, point);
+            if (series.options.colorByPoint && !this.options.color) {
+                colorByPoint = getColorByCategory(series, this);
 
                 if (!series.chart.styledMode) {
-                    point.color = colorByPoint.color;
+                    this.color = colorByPoint.color;
                 }
 
-                if (!point.options.colorIndex) {
-                    point.colorIndex = colorByPoint.colorIndex;
+                if (!this.options.colorIndex) {
+                    this.colorIndex = colorByPoint.colorIndex;
                 }
+            } else if (!this.color) {
+                this.color = series.color;
             }
 
-            return point;
         },
         /**
      * Extend init to have y default to 0.

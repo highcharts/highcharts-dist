@@ -1,8 +1,10 @@
-/**
- * (c) 2010-2019 Torstein Honsi
+/* *
  *
- * License: www.highcharts.com/license
- */
+ *  (c) 2010-2019 Torstein Honsi
+ *
+ *  License: www.highcharts.com/license
+ *
+ * */
 
 'use strict';
 
@@ -126,13 +128,19 @@ seriesType(
         nullColor: '#f7f7f7',
 
         dataLabels: {
+            /** @ignore-option */
             formatter: function () { // #2945
                 return this.point.value;
             },
+            /** @ignore-option */
             inside: true,
+            /** @ignore-option */
             verticalAlign: 'middle',
+            /** @ignore-option */
             crop: false,
+            /** @ignore-option */
             overflow: false,
+            /** @ignore-option */
             padding: 0 // #3837
         },
 
@@ -277,6 +285,12 @@ seriesType(
             this.points.forEach(function (point) {
                 point.graphic[func](this.colorAttribs(point));
             }, this);
+        },
+
+        // Define hasData function for non-cartesian series.
+        // Returns true if the series has points at all.
+        hasData: function () {
+            return !!this.processedXData.length; // != 0
         },
 
         // Override to also allow null points, used when building the k-d-tree

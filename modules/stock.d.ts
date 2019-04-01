@@ -1,5 +1,10 @@
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
 import * as globals from "../globals";
-import * as Highcharts from "../highcharts";
+import * as _Highcharts from "../highcharts";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -20,8 +25,6 @@ declare module "../highcharts" {
          * @param redraw
          *        Whether to redraw the chart or to wait for a later call to
          *        Chart#redraw.
-         *
-         * @see https://api.highcharts.com/class-reference/Highcharts.Axis#setCompare
          */
         setCompare(compare: string, redraw?: boolean): void;
         /**
@@ -46,8 +49,6 @@ declare module "../highcharts" {
          *
          * @param compare
          *        Can be one of `null`, `"percent"` or `"value"`.
-         *
-         * @see https://api.highcharts.com/class-reference/Highcharts.Series#setCompare
          */
         setCompare(compare: string): void;
     }
@@ -69,8 +70,6 @@ declare module "../highcharts" {
      *        equivalent.
      *
      * @return The chart object.
-     *
-     * @see https://api.highcharts.com/class-reference/Highcharts#stockChart
      */
     function stockChart(options: Options, callback?: ChartCallbackFunction): Chart;
     /**
@@ -94,8 +93,6 @@ declare module "../highcharts" {
      *        equivalent.
      *
      * @return The chart object.
-     *
-     * @see https://api.highcharts.com/class-reference/Highcharts#stockChart
      */
     function stockChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): Chart;
     /**
@@ -109,5 +106,20 @@ declare module "../highcharts" {
      *        If vertical scrollbar, swap x-y values.
      */
     function swapXY(path: Array<(number|string)>, vertical: boolean): Array<(number|string)>;
+    /**
+     * Returns the first break found where the x is larger then break.from and
+     * smaller then break.to.
+     *
+     * @param x
+     *        The number which should be within a break.
+     *
+     * @param breaks
+     *        The array of breaks to search within.
+     *
+     * @return Returns the first break found that matches, returns false if no
+     *         break is found.
+     */
+    function findBreakAt(x: number, breaks: any[]): (boolean|object);
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

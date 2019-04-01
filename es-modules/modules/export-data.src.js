@@ -23,11 +23,14 @@ var defined = Highcharts.defined,
     win = Highcharts.win,
     doc = win.document,
     seriesTypes = Highcharts.seriesTypes,
-    downloadURL = Highcharts.downloadURL;
+    downloadURL = Highcharts.downloadURL,
+    fireEvent = Highcharts.fireEvent;
+
 
 // Can we add this to utils? Also used in screen-reader.js
 /**
  * HTML encode some characters vulnerable for XSS.
+ * @private
  * @param  {string} html The input string
  * @return {string} The excaped string
  */
@@ -42,9 +45,22 @@ function htmlencode(html) {
 }
 
 Highcharts.setOptions({
+    /**
+     * Export-data module required. When set to `false` will prevent the series
+     * data from being included in any form of data export.
+     *
+     * Since version 6.0.0 until 7.1.0 the option was existing undocumented
+     * as `includeInCSVExport`.
+     *
+     * @type      {boolean}
+     * @since     7.1.0
+     * @apioption plotOptions.series.includeInDataExport
+     */
 
     /**
      * @optionparent exporting
+     *
+     * @private
      */
     exporting: {
 
@@ -185,6 +201,8 @@ Highcharts.setOptions({
 
     /**
      * @optionparent lang
+     *
+     * @private
      */
     lang: {
 
@@ -346,7 +364,7 @@ Highcharts.Chart.prototype.getDataRows = function (multiLevelHeaders) {
         });
 
         if (
-            series.options.includeInCSVExport !== false &&
+            series.options.includeInDataExport !== false &&
             !series.options.isInternal &&
             series.visible !== false // #55
         ) {
@@ -510,7 +528,7 @@ Highcharts.Chart.prototype.getDataRows = function (multiLevelHeaders) {
     }
     dataRows = dataRows.concat(rowArr);
 
-    Highcharts.fireEvent(this, 'exportData', { dataRows: dataRows });
+    fireEvent(this, 'exportData', { dataRows: dataRows });
 
     return dataRows;
 };
@@ -764,7 +782,7 @@ Highcharts.Chart.prototype.getTable = function (useLocalDecimalPoint) {
 
     var e = { html: html };
 
-    Highcharts.fireEvent(this, 'afterGetTable', e);
+    fireEvent(this, 'afterGetTable', e);
 
     return e.html;
 };
@@ -859,6 +877,7 @@ Highcharts.Chart.prototype.viewData = function () {
     }
 
     this.dataTableDiv.innerHTML = this.getTable();
+    fireEvent(this, 'afterViewData', this.dataTableDiv);
 };
 
 /**
@@ -962,13 +981,15 @@ if (exportingOptions) {
         }
     });
 
-    exportingOptions.buttons.contextButton.menuItems.push(
-        'separator',
-        'downloadCSV',
-        'downloadXLS',
-        'viewData',
-        'openInCloud'
-    );
+    if (exportingOptions.buttons) {
+        exportingOptions.buttons.contextButton.menuItems.push(
+            'separator',
+            'downloadCSV',
+            'downloadXLS',
+            'viewData',
+            'openInCloud'
+        );
+    }
 }
 
 // Series specific

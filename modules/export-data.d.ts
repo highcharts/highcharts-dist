@@ -1,5 +1,10 @@
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
 import * as globals from "../globals";
-import * as Highcharts from "../highcharts";
+import * as _Highcharts from "../highcharts";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -11,9 +16,9 @@ declare module "../highcharts" {
     interface AjaxSettings {
         data: object;
         dataType: ("json"|"octet"|"text"|"xml");
-        error: () => void;
+        error: Function;
         headers: object;
-        success: () => void;
+        success: Function;
         type: ("delete"|"get"|"post"|"update");
         url: string;
     }
@@ -77,14 +82,6 @@ declare module "../highcharts" {
      *        The Ajax settings to use.
      */
     function ajax(attr: AjaxSettings): void;
-    /**
-     * HTML encode some characters vulnerable for XSS.
-     *
-     * @param html
-     *        The input string
-     *
-     * @return The excaped string
-     */
-    function htmlencode(html: string): string;
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

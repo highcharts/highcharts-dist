@@ -71,6 +71,12 @@
  * @type {boolean|undefined}
  */
 
+/**
+ * Possible MIME types for exporting.
+ *
+ * @typedef {"image/png"|"image/jpeg"|"application/pdf"|"image/svg+xml"} Highcharts.ExportingMimeTypeValue
+ */
+
 'use strict';
 
 import H from '../parts/Globals.js';
@@ -103,52 +109,74 @@ var defaultOptions = H.defaultOptions,
 
 // Add language
 extend(defaultOptions.lang
-/**
- * @optionparent lang
- */
+    /**
+     * @optionparent lang
+     */
     , {
 
         /**
-     * Exporting module only. The text for the menu item to print the chart.
-     *
-     * @since 3.0.1
-     */
+         * Exporting module only. View the chart in full screen.
+         *
+         * @since 7.1.0
+         *
+         * @private
+         */
+        viewFullscreen: 'View in full screen',
+
+
+        /**
+         * Exporting module only. The text for the menu item to print the chart.
+         *
+         * @since 3.0.1
+         *
+         * @private
+         */
         printChart: 'Print chart',
 
         /**
-     * Exporting module only. The text for the PNG download menu item.
-     *
-     * @since 2.0
-     */
+         * Exporting module only. The text for the PNG download menu item.
+         *
+         * @since 2.0
+         *
+         * @private
+         */
         downloadPNG: 'Download PNG image',
 
         /**
-     * Exporting module only. The text for the JPEG download menu item.
-     *
-     * @since 2.0
-     */
+         * Exporting module only. The text for the JPEG download menu item.
+         *
+         * @since 2.0
+         *
+         * @private
+         */
         downloadJPEG: 'Download JPEG image',
 
         /**
-     * Exporting module only. The text for the PDF download menu item.
-     *
-     * @since 2.0
-     */
+         * Exporting module only. The text for the PDF download menu item.
+         *
+         * @since 2.0
+         *
+         * @private
+         */
         downloadPDF: 'Download PDF document',
 
         /**
-     * Exporting module only. The text for the SVG download menu item.
-     *
-     * @since 2.0
-     */
+         * Exporting module only. The text for the SVG download menu item.
+         *
+         * @since 2.0
+         *
+         * @private
+         */
         downloadSVG: 'Download SVG vector image',
 
         /**
-     * Exporting module menu. The tooltip title for the context menu holding
-     * print and export menu items.
-     *
-     * @since 3.0
-     */
+         * Exporting module menu. The tooltip title for the context menu holding
+         * print and export menu items.
+         *
+         * @since 3.0
+         *
+         * @private
+         */
         contextButtonTitle: 'Chart context menu'
 
     });
@@ -219,7 +247,7 @@ merge(true, defaultOptions.navigation, {
          * @sample highcharts/navigation/buttonoptions-align/
          *         Center aligned
          *
-         * @type  {Highcharts.AlignType}
+         * @type  {Highcharts.AlignValue}
          * @since 2.0
          */
         align: 'right',
@@ -269,13 +297,13 @@ merge(true, defaultOptions.navigation, {
          */
 
         /**
-         * The vertical alignment of the buttons. Can be one of "top", "middle"
-         * or "bottom".
+         * The vertical alignment of the buttons. Can be one of `"top"`,
+         * `"middle"` or `"bottom"`.
          *
          * @sample highcharts/navigation/buttonoptions-verticalalign/
          *         Buttons at lower right
          *
-         * @type  {Highcharts.VerticalAlignType}
+         * @type  {Highcharts.VerticalAlignValue}
          * @since 2.0
          */
         verticalAlign: 'top',
@@ -317,6 +345,8 @@ merge(true, defaultOptions.navigation
          * @type    {Highcharts.CSSObject}
          * @default {"border": "1px solid #999999", "background": "#ffffff", "padding": "5px 0"}
          * @since   2.0
+         *
+         * @private
          */
         menuStyle: {
             /** @ignore-option */
@@ -342,6 +372,8 @@ merge(true, defaultOptions.navigation
          * @type    {Highcharts.CSSObject}
          * @default {"padding": "0.5em 1em", "color": "#333333", "background": "none", "fontSize": "11px/14px", "transition": "background 250ms, color 250ms"}
          * @since   2.0
+         *
+         * @private
          */
         menuItemStyle: {
             /** @ignore-option */
@@ -370,6 +402,8 @@ merge(true, defaultOptions.navigation
          * @type    {Highcharts.CSSObject}
          * @default {"background": "#335cad", "color": "#ffffff"}
          * @since   2.0
+         *
+         * @private
          */
         menuItemHoverStyle: {
             /** @ignore-option */
@@ -384,6 +418,8 @@ merge(true, defaultOptions.navigation
          *
          * In styled mode, the buttons are styled with the
          * `.highcharts-contextbutton` and `.highcharts-button-symbol` classes.
+         *
+         * @private
          */
         buttonOptions: {
 
@@ -488,9 +524,13 @@ defaultOptions.exporting = {
      */
 
     /**
-     * Additional chart options to be merged into an exported chart. For
-     * example, a common use case is to add data labels to improve readability
-     * of the exported chart, or to add a printer-friendly color scheme.
+     * Additional chart options to be merged into the chart before exporting to
+     * an image format. This does not apply to printing the chart via the export
+     * menu.
+     *
+     * For example, a common use case is to add data labels to improve
+     * readability of the exported chart, or to add a printer-friendly color
+     * scheme to exported PDFs.
      *
      * @sample {highcharts} highcharts/exporting/chartoptions-data-labels/
      *         Added data labels
@@ -634,8 +674,8 @@ defaultOptions.exporting = {
      * without specifying a `type` option. Possible values are `image/png`,
      *  `image/jpeg`, `application/pdf` and `image/svg+xml`.
      *
-     * @since      2.0
-     * @validvalue ["image/png", "image/jpeg", "application/pdf", "image/svg+xml"]
+     * @type  {Highcharts.ExportingMimeTypeValue}
+     * @since 2.0
      */
     type: 'image/png',
 
@@ -752,8 +792,8 @@ defaultOptions.exporting = {
              * @sample highcharts/exporting/buttons-contextbutton-symbol-custom/
              *         Custom shape as symbol
              *
-             * @since      2.0
-             * @validvalue ["menu", "menuball", "exportIcon", "circle", "square", "diamond", "triangle", "triangle-down"]
+             * @type  {Highcharts.SymbolKeyValue|"exportIcon"|"menu"|"menuball"|string}
+             * @since 2.0
              */
             symbol: 'menu',
 
@@ -781,8 +821,8 @@ defaultOptions.exporting = {
              * items. The config options are defined in the
              * `menuItemDefinitions` option.
              *
-             * By default, there is the "Print" menu item plus one menu item
-             * for each of the available export types.
+             * By default, there is the "View in full screen" and "Print" menu
+             * items, plus one menu item for each of the available export types.
              *
              * @sample {highcharts} highcharts/exporting/menuitemdefinitions/
              *         Menu item definitions
@@ -792,10 +832,11 @@ defaultOptions.exporting = {
              *         Menu item definitions
              *
              * @type    {Array<string>}
-             * @default ["printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
+             * @default ["viewFullscreen", "printChart", "separator", "downloadPNG", "downloadJPEG", "downloadPDF", "downloadSVG"]
              * @since   2.0
              */
             menuItems: [
+                'viewFullscreen',
                 'printChart',
                 'separator',
                 'downloadPNG',
@@ -828,10 +869,20 @@ defaultOptions.exporting = {
      *         Menu item definitions
      *
      * @type    {Highcharts.Dictionary<Highcharts.ExportingMenuObject>}
-     * @default {"printChart": {}, "separator": {}, "downloadPNG": {}, "downloadJPEG": {}, "downloadPDF": {}, "downloadSVG": {}}
+     * @default {"viewFullscreen": {}, "printChart": {}, "separator": {}, "downloadPNG": {}, "downloadJPEG": {}, "downloadPDF": {}, "downloadSVG": {}}
      * @since   5.0.13
      */
     menuItemDefinitions: {
+
+        /**
+         * @ignore
+         */
+        viewFullscreen: {
+            textKey: 'viewFullscreen',
+            onclick: function () {
+                this.fullscreen = new H.FullScreen(this.container);
+            }
+        },
 
         /**
          * @ignore
@@ -981,20 +1032,26 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
      * @return {string}
      */
     sanitizeSVG: function (svg, options) {
+
+        var split = svg.indexOf('</svg>') + 6,
+            html = svg.substr(split);
+
+        // Remove any HTML added to the container after the SVG (#894, #9087)
+        svg = svg.substr(0, split);
+
         // Move HTML into a foreignObject
         if (options && options.exporting && options.exporting.allowHTML) {
-            var html = svg.match(/<\/svg>(.*?$)/);
-
-            if (html && html[1]) {
+            if (html) {
                 html = '<foreignObject x="0" y="0" ' +
                             'width="' + options.chart.width + '" ' +
                             'height="' + options.chart.height + '">' +
                     '<body xmlns="http://www.w3.org/1999/xhtml">' +
-                    html[1] +
+                    html +
                     '</body>' +
                     '</foreignObject>';
                 svg = svg.replace('</svg>', html + '</svg>');
             }
+
         }
 
         svg = svg
@@ -1009,8 +1066,6 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
             )
             .replace(/ (|NS[0-9]+\:)href=/g, ' xlink:href=') // #3567
             .replace(/\n/, ' ')
-            // Any HTML added to the container after the SVG (#894)
-            .replace(/<\/svg>.*?$/, '</svg>')
             // Batik doesn't support rgba fills and strokes (#3095)
             .replace(
                 /(fill|stroke)="rgba\(([ 0-9]+,[ 0-9]+,[ 0-9]+),([ 0-9\.]+)\)"/g, // eslint-disable-line max-len
@@ -1056,10 +1111,10 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
      *
      * @function Highcharts.Chart#getSVG
      *
-     * @param {Highcharts.Options} chartOptions
+     * @param {Highcharts.Options} [chartOptions]
      *        Additional chart options for the generated SVG representation. For
      *        collections like `xAxis`, `yAxis` or `series`, the additional
-     *        options is either merged in to the orininal item of the same
+     *        options is either merged in to the original item of the same
      *        `id`, or to the first item if a common id is not found.
      *
      * @return {string}
@@ -1079,7 +1134,6 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
             cssHeight,
             // Copy the options and add extra options
             options = merge(chart.options, chartOptions);
-
 
         // create a sandbox where a new chart will be generated
         sandbox = createElement('div', null, {
@@ -1348,7 +1402,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
         }
 
         // hide all body content
-        childNodes.forEach(function (node, i) {
+        [].forEach.call(childNodes, function (node, i) {
             if (node.nodeType === 1) {
                 origDisplay[i] = node.style.display;
                 node.style.display = 'none';
@@ -1372,7 +1426,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
                 moveContainers(chart.renderTo);
 
                 // restore all body content
-                childNodes.forEach(function (node, i) {
+                [].forEach.call(childNodes, function (node, i) {
                     if (node.nodeType === 1) {
                         node.style.display = origDisplay[i];
                     }
@@ -1465,6 +1519,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
                 }
                 chart.openMenu = false;
                 H.clearTimeout(menu.hideTimer);
+                fireEvent(chart, 'exportMenuHidden');
             };
 
             // Hide the menu some time after mouse leave (#1357)

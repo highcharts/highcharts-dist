@@ -219,7 +219,7 @@ H.Popup.prototype = {
             fields: { }
         };
 
-        inputList.forEach(function (input) {
+        [].forEach.call(inputList, function (input) {
             param = input.getAttribute(PREFIX + 'data-name');
             seriesId = input.getAttribute(PREFIX + 'data-series-id');
 
@@ -612,10 +612,9 @@ H.Popup.prototype = {
                     .querySelectorAll('.' + PREFIX + 'popup-lhs-col')[0],
                 rhsCol = parentDiv
                     .querySelectorAll('.' + PREFIX + 'popup-rhs-col')[0],
-                defaultOptions = H.getOptions(),
                 isEdit = listType === 'edit',
                 series = isEdit ? chart.series : // EDIT mode
-                    defaultOptions.plotOptions, // ADD mode
+                    chart.options.plotOptions, // ADD mode
                 addFormFields = this.indicators.addFormFields,
                 rhsColWrapper,
                 indicatorList,

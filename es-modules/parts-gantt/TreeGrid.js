@@ -287,62 +287,6 @@ var onTickHoverExit = function (label, options) {
 };
 
 /**
- * Builds the tree of categories and calculates its positions.
- *
- * @param {object} e Event object
- * @param {object} e.target The chart instance which the event was fired on.
- * @param {object[]} e.target.axes The axes of the chart.
- */
-var onBeforeRender = function (e) {
-    var chart = e.target,
-        axes = chart.axes;
-
-    axes
-        .filter(function (axis) {
-            return axis.options.type === 'treegrid';
-        })
-        .forEach(function (axis) {
-            var labelOptions = axis.options && axis.options.labels,
-                removeFoundExtremesEvent;
-
-            // setScale is fired after all the series is initialized,
-            // which is an ideal time to update the axis.categories.
-            axis.updateYNames();
-
-            // Update yData now that we have calculated the y values
-            // TODO: it would be better to be able to calculate y values
-            // before Series.setData
-            axis.series.forEach(function (series) {
-                series.yData = series.options.data.map(function (data) {
-                    return data.y;
-                });
-            });
-
-            // Calculate the label options for each level in the tree.
-            axis.mapOptionsToLevel = getLevelOptions({
-                defaults: labelOptions,
-                from: 1,
-                levels: labelOptions.levels,
-                to: axis.tree.height
-            });
-
-            // Collapse all the nodes belonging to a point where collapsed
-            // equals true.
-            // Can be called from beforeRender, if getBreakFromNode removes
-            // its dependency on axis.max.
-            removeFoundExtremesEvent =
-                H.addEvent(axis, 'foundExtremes', function () {
-                    axis.collapsedNodes.forEach(function (node) {
-                        var breaks = collapse(axis, node);
-
-                        axis.setBreaks(breaks, false);
-                    });
-                    removeFoundExtremesEvent();
-                });
-        });
-};
-
-/**
  * Creates a tree structure of the data, and the treegrid. Calculates
  * categories, and y-values of points based on the tree.
  *
@@ -520,6 +464,97 @@ var getTreeGridFromData = function (data, uniqueNames, numberOfSeries) {
     };
 };
 
+/**
+ * Builds the tree of categories and calculates its positions.
+ * @private
+ * @param {object} e Event object
+ * @param {object} e.target The chart instance which the event was fired on.
+ * @param {object[]} e.target.axes The axes of the chart.
+ */
+var onBeforeRender = function (e) {
+    var chart = e.target,
+        axes = chart.axes;
+
+    axes
+        .filter(function (axis) {
+            return axis.options.type === 'treegrid';
+        })
+        .forEach(function (axis) {
+            var options = axis.options || {},
+                labelOptions = options.labels,
+                removeFoundExtremesEvent,
+                uniqueNames = options.uniqueNames,
+                numberOfSeries = 0,
+                // Concatenate data from all series assigned to this axis.
+                data = axis.series.reduce(function (arr, s) {
+                    if (s.visible) {
+                        // Push all data to array
+                        s.options.data.forEach(function (data) {
+                            if (isObject(data)) {
+                                // Set series index on data. Removed again after
+                                // use.
+                                data.seriesIndex = numberOfSeries;
+                                arr.push(data);
+                            }
+                        });
+
+                        // Increment series index
+                        if (uniqueNames === true) {
+                            numberOfSeries++;
+                        }
+                    }
+                    return arr;
+                }, []),
+                // setScale is fired after all the series is initialized,
+                // which is an ideal time to update the axis.categories.
+                treeGrid = getTreeGridFromData(
+                    data,
+                    uniqueNames,
+                    (uniqueNames === true) ? numberOfSeries : 1
+                );
+
+            // Assign values to the axis.
+            axis.categories = treeGrid.categories;
+            axis.mapOfPosToGridNode = treeGrid.mapOfPosToGridNode;
+            axis.hasNames = true;
+            axis.tree = treeGrid.tree;
+
+            // Update yData now that we have calculated the y values
+            axis.series.forEach(function (series) {
+                var data = series.options.data.map(function (d) {
+                    return isObject(d) ? merge(d) : d;
+                });
+
+                // Avoid destroying points when series is not visible
+                if (series.visible) {
+                    series.setData(data, false);
+                }
+            });
+
+            // Calculate the label options for each level in the tree.
+            axis.mapOptionsToLevel = getLevelOptions({
+                defaults: labelOptions,
+                from: 1,
+                levels: labelOptions.levels,
+                to: axis.tree.height
+            });
+
+            // Collapse all the nodes belonging to a point where collapsed
+            // equals true.
+            // Can be called from beforeRender, if getBreakFromNode removes
+            // its dependency on axis.max.
+            removeFoundExtremesEvent =
+                H.addEvent(axis, 'foundExtremes', function () {
+                    treeGrid.collapsedNodes.forEach(function (node) {
+                        var breaks = collapse(axis, node);
+
+                        axis.setBreaks(breaks, false);
+                    });
+                    removeFoundExtremesEvent();
+                });
+        });
+};
+
 override(GridAxis.prototype, {
     init: function (proceed, chart, userOptions) {
         var axis = this,
@@ -552,6 +587,8 @@ override(GridAxis.prototype, {
                     * @type      {Array<*>}
                     * @product   gantt
                     * @apioption yAxis.labels.levels
+                    *
+                    * @private
                     */
                     levels: [{
                         /**
@@ -563,6 +600,8 @@ override(GridAxis.prototype, {
                         * @type      {number}
                         * @product   gantt
                         * @apioption yAxis.labels.levels.level
+                        *
+                        * @private
                         */
                         level: undefined
                     }, {
@@ -571,6 +610,8 @@ override(GridAxis.prototype, {
                          * @type      {Highcharts.CSSObject}
                          * @product   gantt
                          * @apioption yAxis.labels.levels.style
+                         *
+                         * @private
                          */
                         style: {
                             /** @ignore-option */
@@ -584,13 +625,17 @@ override(GridAxis.prototype, {
                      *
                      * @product      gantt
                      * @optionparent yAxis.labels.symbol
+                     *
+                     * @private
                      */
                     symbol: {
                         /**
                          * The symbol type. Points to a definition function in
                          * the `Highcharts.Renderer.symbols` collection.
                          *
-                         * @validvalue ["arc", "circle", "diamond", "square", "triangle", "triangle-down"]
+                         * @type {Highcharts.SymbolKeyValue}
+                         *
+                         * @private
                          */
                         type: 'triangle',
                         x: -5,
@@ -880,7 +925,7 @@ override(GridAxisTick.prototype, {
     }
 });
 
-extend(GridAxisTick.prototype, /** @lends Highcharts.Tick.prototype */{
+extend(GridAxisTick.prototype, /** @lends Highcharts.Tick.prototype */ {
 
     /**
      * Collapse the grid cell. Used when axis is of type treegrid.
@@ -947,55 +992,6 @@ extend(GridAxisTick.prototype, /** @lends Highcharts.Tick.prototype */{
         axis.setBreaks(breaks, pick(redraw, true));
     }
 });
-
-GridAxis.prototype.updateYNames = function () {
-    var axis = this,
-        options = axis.options,
-        isTreeGrid = options.type === 'treegrid',
-        uniqueNames = options.uniqueNames,
-        isYAxis = !axis.isXAxis,
-        series = axis.series,
-        numberOfSeries = 0,
-        treeGrid,
-        data;
-
-    if (isTreeGrid && isYAxis) {
-        // Concatenate data from all series assigned to this axis.
-        data = series.reduce(function (arr, s) {
-            if (s.visible) {
-                // Push all data to array
-                s.options.data.forEach(function (data) {
-                    if (isObject(data)) {
-                        // Set series index on data. Removed again after use.
-                        data.seriesIndex = numberOfSeries;
-                        arr.push(data);
-                    }
-                });
-
-                // Increment series index
-                if (uniqueNames === true) {
-                    numberOfSeries++;
-                }
-            }
-            return arr;
-        }, []);
-
-        // Calculate categories and the hierarchy for the grid.
-        treeGrid = getTreeGridFromData(
-            data,
-            uniqueNames,
-            (uniqueNames === true) ? numberOfSeries : 1
-        );
-
-        // Assign values to the axis.
-        axis.categories = treeGrid.categories;
-        axis.mapOfPosToGridNode = treeGrid.mapOfPosToGridNode;
-        // Used on init to start a node as collapsed
-        axis.collapsedNodes = treeGrid.collapsedNodes;
-        axis.hasNames = true;
-        axis.tree = treeGrid.tree;
-    }
-};
 
 // Make utility functions available for testing.
 GridAxis.prototype.utils = {

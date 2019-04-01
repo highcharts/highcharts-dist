@@ -4,6 +4,10 @@
  * License: www.highcharts.com/license
  */
 
+/**
+ * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
+ */
+
 'use strict';
 
 import H from '../parts/Globals.js';
@@ -45,10 +49,13 @@ var arrayMax = H.arrayMax,
 seriesType('bubble', 'scatter', {
 
     dataLabels: {
+        /** @ignore-option */
         formatter: function () { // #2945
             return this.point.z;
         },
+        /** @ignore-option */
         inside: true,
+        /** @ignore-option */
         verticalAlign: 'middle'
     },
 
@@ -95,7 +102,7 @@ seriesType('bubble', 'scatter', {
          * In bubble charts, the radius is overridden and determined based on
          * the point's data value.
          *
-         * @ignore
+         * @ignore-option
          */
         radius: null,
 
@@ -122,9 +129,8 @@ seriesType('bubble', 'scatter', {
          * @sample     {highcharts} highcharts/plotoptions/series-marker-symbol/
          *             General chart with predefined, graphic and custom markers
          *
-         * @since      5.0.11
-         * @validvalue ["circle", "square", "diamond", "triangle",
-         *             "triangle-down"]
+         * @type  {Highcharts.SymbolKeyValue|string}
+         * @since 5.0.11
          */
         symbol: 'circle'
 
@@ -181,10 +187,9 @@ seriesType('bubble', 'scatter', {
      * @sample {highcharts} highcharts/plotoptions/bubble-sizeby/
      *         Comparison of area and size
      *
-     * @type       {string}
+     * @type       {Highcharts.BubbleSizeByValue}
      * @default    area
      * @since      3.0.7
-     * @validvalue ["area", "width"]
      * @apioption  plotOptions.bubble.sizeBy
      */
 
@@ -395,6 +400,12 @@ seriesType('bubble', 'scatter', {
             // delete this function to allow it only once
             this.animate = null;
         }
+    },
+
+    // Define hasData function for non-cartesian series.
+    // Returns true if the series has points at all.
+    hasData: function () {
+        return !!this.processedXData.length; // != 0
     },
 
     // Extend the base translate method to handle bubble size

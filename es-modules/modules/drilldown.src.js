@@ -165,6 +165,8 @@ extend(
          *
          * @since   3.0.8
          * @product highcharts highmaps
+         *
+         * @private
          */
         drillUpText: '◁ Back to {series.name}'
     }
@@ -307,11 +309,10 @@ defaultOptions.drilldown = {
          * What box to align the button to. Can be either `plotBox` or
          * `spacingBox`.
          *
-         * @type       {string}
+         * @type       {Highcharts.ButtonRelativeToValue}
          * @default    plotBox
          * @since      3.0.8
          * @product    highcharts highmaps
-         * @validvalue ["plotBox", "spacingBox"]
          * @apioption  drilldown.drillUpButton.relativeTo
          */
 
@@ -349,7 +350,7 @@ defaultOptions.drilldown = {
             /**
              * Vertical alignment of the button.
              *
-             * @type      {Highcharts.VerticalAlignType}
+             * @type      {Highcharts.VerticalAlignValue}
              * @default   top
              * @product   highcharts highmaps
              * @apioption drilldown.drillUpButton.position.verticalAlign
@@ -358,7 +359,7 @@ defaultOptions.drilldown = {
             /**
              * Horizontal alignment.
              *
-             * @type {Highcharts.AlignType}
+             * @type {Highcharts.AlignValue}
              */
             align: 'right',
 
@@ -617,6 +618,7 @@ Chart.prototype.applyDrilldown = function () {
     this.pointer.reset();
     this.redraw();
     this.showDrillUpButton();
+    fireEvent(this, 'afterDrilldown');
 };
 
 Chart.prototype.getDrilldownBackText = function () {
@@ -779,9 +781,6 @@ Chart.prototype.drillUp = function () {
         }
     }
 
-    // Fire a once-off event after all series have been drilled up (#5158)
-    fireEvent(chart, 'drillupall');
-
     this.redraw();
 
     if (this.drilldownLevels.length === 0) {
@@ -794,6 +793,9 @@ Chart.prototype.drillUp = function () {
     }
 
     this.ddDupes.length = []; // #3315
+
+    // Fire a once-off event after all series have been drilled up (#5158)
+    fireEvent(chart, 'drillupall');
 };
 
 // Add update function to be called internally from Chart.update (#7600)

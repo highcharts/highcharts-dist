@@ -1,4 +1,4 @@
-/**
+/* *
  * Accessibility module - internationalization support
  *
  * (c) 2010-2019 Highsoft AS
@@ -9,10 +9,11 @@
 
 'use strict';
 
-import H from '../parts/Globals.js';
-import '../parts/Utilities.js';
+import H from '../../parts/Globals.js';
+import '../../parts/Utilities.js';
 
 var pick = H.pick;
+
 
 /**
  * String trim that works for IE6-8 as well.
@@ -297,46 +298,54 @@ H.Chart.prototype.langFormat = function (langKey, context, time) {
 H.setOptions({
     lang: {
 
-        /* eslint-disable max-len */
         /**
          * Configure the accessibility strings in the chart. Requires the
-         * [accessibility module](//code.highcharts.com/modules/accessibility.js)
+         * [accessibility module](https://code.highcharts.com/modules/accessibility.js)
          * to be loaded. For a description of the module and information on its
-         * features, see [Highcharts Accessibility](
-         * http://www.highcharts.com/docs/chart-concepts/accessibility).
+         * features, see
+         * [Highcharts Accessibility](https://www.highcharts.com/docs/chart-concepts/accessibility).
          *
          * For more dynamic control over the accessibility functionality, see
-         * [accessibility.pointDescriptionFormatter](
-         * accessibility.pointDescriptionFormatter),
-         * [accessibility.seriesDescriptionFormatter](
-         * accessibility.seriesDescriptionFormatter), and
-         * [accessibility.screenReaderSectionFormatter](
-         * accessibility.screenReaderSectionFormatter).
+         * [accessibility.pointDescriptionFormatter](#accessibility.pointDescriptionFormatter),
+         * [accessibility.seriesDescriptionFormatter](#accessibility.seriesDescriptionFormatter),
+         * and
+         * [accessibility.screenReaderSectionFormatter](#accessibility.screenReaderSectionFormatter).
          *
          * @since        6.0.6
          * @optionparent lang.accessibility
          */
-        /* eslint-enable max-len */
         accessibility: {
 
             /* eslint-disable max-len */
             screenReaderRegionLabel: 'Chart screen reader information.',
-            navigationHint: 'Use regions/landmarks to skip ahead to chart {#plural(numSeries, and navigate between data series,)}',
             defaultChartTitle: 'Chart',
-            longDescriptionHeading: 'Long description.',
-            noDescription: 'No description available.',
-            structureHeading: 'Structure.',
             viewAsDataTable: 'View as data table.',
             chartHeading: 'Chart graphic.',
-            chartContainerLabel: 'Interactive chart. {title}. Use up and down arrows to navigate with most screen readers.',
+            chartContainerLabel: '{title}. Interactive chart.',
+            svgContainerLabel: 'Interactive chart',
             rangeSelectorMinInput: 'Select start date.',
             rangeSelectorMaxInput: 'Select end date.',
             tableSummary: 'Table representation of chart.',
             mapZoomIn: 'Zoom chart',
             mapZoomOut: 'Zoom out chart',
+            resetZoomButton: 'Reset zoom',
+            drillUpButton: '{buttonText}',
             rangeSelectorButton: 'Select range {buttonText}',
             legendLabel: 'Toggle series visibility',
+            legendItem: 'Toggle visibility of {itemName}',
             /* eslint-enable max-len */
+
+            /**
+             * Thousands separator to use when formatting numbers for screen
+             * readers. Note that many screen readers will not handle space as a
+             * thousands separator, and will consider "11 700" as two numbers.
+             *
+             * Set to `null` to use the separator defined in
+             * [lang.thousandsSep](lang.thousandsSep).
+             *
+             * @since 7.1.0
+             */
+            thousandsSep: ',',
 
             /**
              * Title element text for the chart SVG element. Leave this
@@ -346,7 +355,35 @@ H.setOptions({
              *
              * @since 6.0.8
              */
-            svgContainerTitle: '{chartTitle}',
+            svgContainerTitle: '',
+
+            /**
+             * Label for the end of the chart. Announced by screen readers.
+             *
+             * @since .1.0
+             */
+            svgContainerEnd: 'End of interactive chart',
+
+            /**
+             * Default announcement for new data in charts. If addPoint or
+             * addSeries is used, and only one series/point is added, the
+             * `newPointAnnounce` and `newSeriesAnnounce` strings are used.
+             * The `...Single` versions will be used if there is only one chart
+             * on the page, and the `...Multiple` versions will be used if there
+             * are multiple charts on the page. For all other new data events,
+             * the `newDataAnnounce` string will be used.
+             *
+             * @since 7.1.0
+             */
+            announceNewData: {
+                newDataAnnounce: 'Updated data for chart {chartTitle}',
+                newSeriesAnnounceSingle: 'New data series: {seriesDesc}',
+                newPointAnnounceSingle: 'New data point: {pointDesc}',
+                newSeriesAnnounceMultiple:
+                    'New data series in chart {chartTitle}: {seriesDesc}',
+                newPointAnnounceMultiple:
+                    'New data point in chart {chartTitle}: {pointDesc}'
+            },
 
             /**
              * Descriptions of lesser known series types. The relevant
@@ -392,7 +429,7 @@ H.setOptions({
              * @since 6.0.6
              */
             chartTypes: {
-            /* eslint-disable max-len */
+                /* eslint-disable max-len */
                 emptyChart: 'Empty chart',
                 mapTypeDescription: 'Map of {mapTitle} with {numSeries} data series.',
                 unknownMap: 'Map of unspecified region with {numSeries} data series.',
@@ -424,10 +461,16 @@ H.setOptions({
              */
             axis: {
             /* eslint-disable max-len */
-                xAxisDescriptionSingular: 'The chart has 1 X axis displaying {names[0]}.',
-                xAxisDescriptionPlural: 'The chart has {numAxes} X axes displaying {#names.forEach(-1) }and {names[-1]}',
-                yAxisDescriptionSingular: 'The chart has 1 Y axis displaying {names[0]}.',
-                yAxisDescriptionPlural: 'The chart has {numAxes} Y axes displaying {#names.forEach(-1) }and {names[-1]}'
+                xAxisDescriptionSingular: 'The chart has 1 X axis displaying {names[0]}. {ranges[0]}',
+                xAxisDescriptionPlural: 'The chart has {numAxes} X axes displaying {#each(names, -1) }and {names[-1]}.',
+                yAxisDescriptionSingular: 'The chart has 1 Y axis displaying {names[0]}. {ranges[0]}',
+                yAxisDescriptionPlural: 'The chart has {numAxes} Y axes displaying {#each(names, -1) }and {names[-1]}.',
+                timeRangeDays: 'Range: {range} days.',
+                timeRangeHours: 'Range: {range} hours.',
+                timeRangeMinutes: 'Range: {range} minutes.',
+                timeRangeSeconds: 'Range: {range} seconds.',
+                rangeFromTo: 'Range: {rangeFrom} to {rangeTo}.',
+                rangeCategories: 'Range: {numCategories} categories.'
             }, /* eslint-enable max-len */
 
             /**
@@ -444,28 +487,27 @@ H.setOptions({
             /**
              * Lang configuration for different series types. For more dynamic
              * control over the series element descriptions, see
-             * [accessibility.seriesDescriptionFormatter](
-             * accessibility.seriesDescriptionFormatter).
+             * [accessibility.seriesDescriptionFormatter](#accessibility.seriesDescriptionFormatter).
              *
              * @since 6.0.6
              */
             series: {
-            /**
-             * Lang configuration for the series main summary. Each series
-             * type has two modes:
-             *
-             * 1. This series type is the only series type used in the
-             *    chart
-             *
-             * 2. This is a combination chart with multiple series types
-             *
-             * If a definition does not exist for the specific series type
-             * and mode, the 'default' lang definitions are used.
-             *
-             * @since 6.0.6
-             */
+                /**
+                 * Lang configuration for the series main summary. Each series
+                 * type has two modes:
+                 *
+                 * 1. This series type is the only series type used in the
+                 *    chart
+                 *
+                 * 2. This is a combination chart with multiple series types
+                 *
+                 * If a definition does not exist for the specific series type
+                 * and mode, the 'default' lang definitions are used.
+                 *
+                 * @since 6.0.6
+                 */
                 summary: {
-                /* eslint-disable max-len */
+                    /* eslint-disable max-len */
                     'default': '{name}, series {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
                     defaultCombination: '{name}, series {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
                     line: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',

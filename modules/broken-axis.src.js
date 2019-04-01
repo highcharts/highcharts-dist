@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.0.3 (2019-02-06)
+ * @license Highcharts JS v7.1.0 (2019-04-01)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -11,14 +11,22 @@
         factory['default'] = factory;
         module.exports = factory;
     } else if (typeof define === 'function' && define.amd) {
-        define(function () {
+        define('highcharts/modules/broken-axis', ['highcharts'], function (Highcharts) {
+            factory(Highcharts);
+            factory.Highcharts = Highcharts;
             return factory;
         });
     } else {
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
-    (function (H) {
+    var _modules = Highcharts ? Highcharts._modules : {};
+    function _registerModule(obj, path, args, fn) {
+        if (!obj.hasOwnProperty(path)) {
+            obj[path] = fn.apply(null, args);
+        }
+    }
+    _registerModule(_modules, 'modules/broken-axis.src.js', [_modules['parts/Globals.js']], function (H) {
         /**
          * (c) 2009-2019 Torstein Honsi
          *
@@ -31,9 +39,25 @@
             pick = H.pick,
             extend = H.extend,
             isArray = H.isArray,
+            find = H.find,
             fireEvent = H.fireEvent,
             Axis = H.Axis,
             Series = H.Series;
+
+        /**
+         * Returns the first break found where the x is larger then break.from and
+         * smaller then break.to.
+         *
+         * @param {number} x The number which should be within a break.
+         * @param {array} breaks The array of breaks to search within.
+         * @return {object|boolean} Returns the first break found that matches, returns
+         * false if no break is found.
+         */
+        var findBreakAt = function (x, breaks) {
+            return find(breaks, function (b) {
+                return b.from < x && x < b.to;
+            });
+        };
 
         extend(Axis.prototype, {
             isInBreak: function (brk, val) {
@@ -199,14 +223,22 @@
                     animation,
                     eventArguments
                 ) {
-                    // If trying to set extremes inside a break, extend it to before and
-                    // after the break ( #3857 )
+                    // If trying to set extremes inside a break, extend min to after,
+                    // and max to before the break ( #3857 )
                     if (this.isBroken) {
-                        while (this.isInAnyBreak(newMin)) {
-                            newMin -= this.closestPointRange;
+                        var axisBreak,
+                            breaks = this.options.breaks;
+
+                        while ((axisBreak = findBreakAt(newMin, breaks))) {
+                            newMin = axisBreak.to;
                         }
-                        while (this.isInAnyBreak(newMax)) {
-                            newMax -= this.closestPointRange;
+                        while ((axisBreak = findBreakAt(newMax, breaks))) {
+                            newMax = axisBreak.from;
+                        }
+
+                        // If both min and max is within the same break.
+                        if (newMax < newMin) {
+                            newMax = newMin;
                         }
                     }
                     Axis.prototype.setExtremes.call(
@@ -531,9 +563,9 @@
             return this.getGraphPath(points);
         };
 
-    }(Highcharts));
-    return (function () {
+    });
+    _registerModule(_modules, 'masters/modules/broken-axis.src.js', [], function () {
 
 
-    }());
+    });
 }));

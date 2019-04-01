@@ -1,5 +1,10 @@
-import * as globals from "../globals";
-import * as Highcharts from "../highcharts.src";
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
+import * as globals from "../globals.src";
+import * as _Highcharts from "../highcharts.src";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -40,11 +45,8 @@ declare module "../highcharts.src" {
      * - **libURL:** URL pointing to location of dependency scripts to download
      * on demand. Default is the exporting.libURL option of the global
      * Highcharts options pointing to our server.
-     *
-     *
-     *
-     *
      */
-    function downloadSVGLocal(svg: string, options: ExportingOptions, failCallback: () => void, successCallback: () => void): void;
+    function downloadSVGLocal(svg: string, options: ExportingOptions, failCallback: Function, successCallback: Function): void;
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;

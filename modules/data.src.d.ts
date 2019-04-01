@@ -1,5 +1,10 @@
-import * as globals from "../globals";
-import * as Highcharts from "../highcharts.src";
+/*!*
+ *
+ *  Copyright (c) Highsoft AS. All rights reserved.
+ *
+ *!*/
+import * as globals from "../globals.src";
+import * as _Highcharts from "../highcharts.src";
 /**
  * Adds the module to the imported Highcharts namespace.
  *
@@ -24,7 +29,7 @@ declare module "../highcharts.src" {
         /**
          * Function to call on error.
          */
-        error: () => void;
+        error: Function;
         /**
          * The headers; keyed on header name.
          */
@@ -32,7 +37,7 @@ declare module "../highcharts.src" {
         /**
          * Function to call on success.
          */
-        success: () => void;
+        success: Function;
         /**
          * The verb to use.
          */
@@ -62,9 +67,6 @@ declare module "../highcharts.src" {
     class Data {
         /**
          * The Data class
-         *
-         *
-         *
          */
         constructor(dataOptions: DataOptions, chartOptions?: Options, chart?: Chart);
         /**
@@ -89,6 +91,14 @@ declare module "../highcharts.src" {
          * and high values respectively, and an OHLC series takes four columns.
          */
         getColumnDistribution(): void;
+        /**
+         * Get the parsed data in a form that we can apply directly to the
+         * `series.data` config. Array positions can be mapped using the
+         * `series.keys` option.
+         *
+         * @return Data rows
+         */
+        getData(): Array<Array<any>>;
         /**
          * Parse a single column. Set properties like .isDatetime and
          * .isNumeric.
@@ -146,8 +156,6 @@ declare module "../highcharts.src" {
         trim(str: string, inside?: boolean): string;
         /**
          * Updates the chart with new data options.
-         *
-         *
          */
         update(options: DataOptions, redraw?: boolean): void;
     }
@@ -160,10 +168,8 @@ declare module "../highcharts.src" {
     function ajax(attr: AjaxSettings): void;
     /**
      * Creates a data object to parse data for a chart.
-     *
-     *
-     *
      */
     function data(dataOptions: DataOptions, chartOptions?: Options, chart?: Chart): Data;
 }
 export default factory;
+export let Highcharts: typeof _Highcharts;
