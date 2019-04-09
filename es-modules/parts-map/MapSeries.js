@@ -328,6 +328,10 @@ seriesType(
                  * @apioption plotOptions.series.states.select.color
                  */
                 color: '#cccccc'
+            },
+
+            inactive: {
+                opacity: 1
             }
         }
 

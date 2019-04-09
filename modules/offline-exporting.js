@@ -1,5 +1,5 @@
 /*
- Highcharts JS v7.1.0 (2019-04-01)
+ Highcharts JS v7.1.1 (2019-04-09)
 
  Client side exporting module
 
@@ -19,6 +19,6 @@ p,h=e.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1]*p,m=function(){g.draw
 "href",a);t()};e.unbindGetSVG=q(e,"getSVG",function(a){m=a.chartCopy.options;h=a.chartCopy.container.cloneNode(!0)});e.getSVGForExport(b,d);f=h.getElementsByTagName("image");try{if(!f.length){c(e.sanitizeSVG(h.innerHTML,m));return}n=0;for(p=f.length;n<p;++n)l=f[n],(u=l.getAttributeNS("http://www.w3.org/1999/xlink","href"))?a.imageToDataUrl(u,"image/png",{imageElement:l},b.scale,z,k,k,k):(++g,l.parentNode.removeChild(l),t())}catch(r){k(r)}e.unbindGetSVG()};a.Chart.prototype.exportChartLocal=function(b,
 e){var d=this,c=a.merge(d.options.exporting,b),f=function(b){!1===c.fallbackToExportServer?c.error?c.error(c,b):a.error(28,!0):d.exportChart(c)};g&&d.styledMode&&(a.SVGRenderer.prototype.inlineWhitelist=[/^blockSize/,/^border/,/^caretColor/,/^color/,/^columnRule/,/^columnRuleColor/,/^cssFloat/,/^cursor/,/^fill$/,/^fillOpacity/,/^font/,/^inlineSize/,/^length/,/^lineHeight/,/^opacity/,/^outline/,/^parentRule/,/^rx$/,/^ry$/,/^stroke/,/^textAlign/,/^textAnchor/,/^textDecoration/,/^transform/,/^vectorEffect/,
 /^visibility/,/^x$/,/^y$/]);g&&("application/pdf"===c.type||d.container.getElementsByTagName("image").length&&"image/svg+xml"!==c.type)||"application/pdf"===c.type&&d.container.getElementsByTagName("image").length?f("Image type not supported for this chart/browser."):d.getSVGForLocalExport(c,e,f,function(b){-1<b.indexOf("\x3cforeignObject")&&"image/svg+xml"!==c.type?f("Image type not supported for charts with embedded HTML"):a.downloadSVGLocal(b,a.extend({filename:d.getFilename()},c),f)})};p(!0,a.getOptions().exporting,
-{libURL:"https://code.highcharts.com/7.1.0/lib/",menuItemDefinitions:{downloadPNG:{textKey:"downloadPNG",onclick:function(){this.exportChartLocal()}},downloadJPEG:{textKey:"downloadJPEG",onclick:function(){this.exportChartLocal({type:"image/jpeg"})}},downloadSVG:{textKey:"downloadSVG",onclick:function(){this.exportChartLocal({type:"image/svg+xml"})}},downloadPDF:{textKey:"downloadPDF",onclick:function(){this.exportChartLocal({type:"application/pdf"})}}}})});q(b,"masters/modules/offline-exporting.src.js",
+{libURL:"https://code.highcharts.com/7.1.1/lib/",menuItemDefinitions:{downloadPNG:{textKey:"downloadPNG",onclick:function(){this.exportChartLocal()}},downloadJPEG:{textKey:"downloadJPEG",onclick:function(){this.exportChartLocal({type:"image/jpeg"})}},downloadSVG:{textKey:"downloadSVG",onclick:function(){this.exportChartLocal({type:"image/svg+xml"})}},downloadPDF:{textKey:"downloadPDF",onclick:function(){this.exportChartLocal({type:"application/pdf"})}}}})});q(b,"masters/modules/offline-exporting.src.js",
 [],function(){})});
 //# sourceMappingURL=offline-exporting.js.map

@@ -1,5 +1,5 @@
 /*
- Highcharts JS v7.1.0 (2019-04-01)
+ Highcharts JS v7.1.1 (2019-04-09)
 
  Highcharts cylinder module
 

@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.0 (2019-04-01)
+ * @license  Highcharts JS v7.1.1 (2019-04-09)
  *
  * Sankey diagram module
  *
@@ -684,9 +684,7 @@
                     format: undefined,
                     /**
                     /** @ignore-option */
-                    formatter: function () {
-                        return '';
-                    },
+                    formatter: function () {},
                     /** @ignore-option */
                     inside: true
                 },

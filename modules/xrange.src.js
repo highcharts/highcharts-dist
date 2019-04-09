@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  *
  * X-range series
  *
@@ -508,6 +508,9 @@
                         // Partial fill graphic
                         if (partShapeArgs) {
                             if (point.graphicOverlay) {
+                                point.graphicOverlay[verb](
+                                    merge(partShapeArgs)
+                                );
                                 point.clipRect.animate(
                                     merge(clipRectArgs)
                                 );

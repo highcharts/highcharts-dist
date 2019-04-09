@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  * Organization chart series type
  *
  * (c) 2019-2019 Torstein Honsi
@@ -41,7 +41,7 @@
          * node's children will hang below their parent, allowing a tighter packing of
          * nodes in the diagram.
          *
-         * @typedef {"normal"|"hanging"} Highcharts.SeriesOrganizationNodesLayoutValues
+         * @typedef {"normal"|"hanging"} Highcharts.SeriesOrganizationNodesLayoutValue
          */
 
 
@@ -531,7 +531,7 @@
          * @sample highcharts/demo/organization-chart
          *         Hanging layout
          *
-         * @type      {Highcharts.SeriesOrganizationNodesLayoutValues}
+         * @type      {Highcharts.SeriesOrganizationNodesLayoutValue}
          * @default   normal
          * @apioption series.organization.nodes.layout
          */

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  *
  * Highstock as a plugin for Highcharts
  *
@@ -29,7 +29,7 @@
         }
     }
     _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -989,8 +989,8 @@
 
         if (!H.Scrollbar) {
             /* *
-            * Wrap axis initialization and create scrollbar if enabled:
-            */
+             * Wrap axis initialization and create scrollbar if enabled:
+             */
             addEvent(Axis, 'afterInit', function () {
                 var axis = this;
 
@@ -1167,7 +1167,7 @@
 
     });
     _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -3491,11 +3491,9 @@
         if (!H.Navigator) {
             H.Navigator = Navigator;
 
-            /*
-            * For Stock charts, override selection zooming with some special features
-            * because X axis zooming is already allowed by the Navigator and Range
-            * selector.
-            */
+            // For Stock charts, override selection zooming with some special features
+            // because X axis zooming is already allowed by the Navigator and Range
+            // selector.
             addEvent(Axis, 'zoom', function (e) {
                 var chart = this.chart,
                     chartOptions = chart.options,
@@ -3540,11 +3538,9 @@
                 }
             });
 
-            /**
-             * For Stock charts. For x only zooming, do not to create the zoom button
-             * because X axis zooming is already allowed by the Navigator and Range
-             * selector. (#9285)
-             */
+            // For Stock charts. For x only zooming, do not to create the zoom button
+            // because X axis zooming is already allowed by the Navigator and Range
+            // selector. (#9285)
             addEvent(Chart, 'beforeShowResetZoom', function () {
                 var chartOptions = this.options,
                     navigator = chartOptions.navigator,
@@ -3572,12 +3568,10 @@
                 }
             });
 
-            /*
-            * For stock charts, extend the Chart.setChartSize method so that we can set
-            * the final top position of the navigator once the height of the chart,
-            * including the legend, is determined. #367. We can't use Chart.getMargins,
-            * because labels offsets are not calculated yet.
-            */
+            // For stock charts, extend the Chart.setChartSize method so that we can set
+            // the final top position of the navigator once the height of the chart,
+            // including the legend, is determined. #367. We can't use Chart.getMargins,
+            // because labels offsets are not calculated yet.
             addEvent(Chart, 'afterSetChartSize', function () {
 
                 var legend = this.legend,
@@ -3699,7 +3693,7 @@
 
     });
     _registerModule(_modules, 'parts/OrdinalAxis.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -3719,9 +3713,9 @@
             Series = H.Series,
             timeUnits = H.timeUnits;
 
-        /* ****************************************************************************
+        /* ************************************************************************** *
          * Start ordinal axis logic                                                   *
-         *****************************************************************************/
+         * ************************************************************************** */
         addEvent(Series, 'updatedData', function () {
             var xAxis = this.xAxis;
 
@@ -3731,13 +3725,14 @@
             }
         });
 
-        /* *
+        /**
          * In an ordinal axis, there might be areas with dense consentrations of points,
          * then large gaps between some. Creating equally distributed ticks over this
          * entire range may lead to a huge number of ticks that will later be removed.
          * So instead, break the positions up in segments, find the tick positions for
          * each segment then concatenize them. This method is used from both data
          * grouping logic and X axis tick position logic.
+         * @private
          */
         Axis.prototype.getTimeTicks = function (
             normalizedInterval,
@@ -4653,9 +4648,9 @@
             }
         });
 
-        /* ****************************************************************************
-         * End ordinal axis logic                                                   *
-         *****************************************************************************/
+        /* ************************************************************************** *
+         * End ordinal axis logic                                                     *
+         * ************************************************************************** */
 
     });
     _registerModule(_modules, 'modules/broken-axis.src.js', [_modules['parts/Globals.js']], function (H) {
@@ -6442,7 +6437,11 @@
 
                 stickyTracking: true
 
-            }, /** @lends Highcharts.seriesTypes.ohlc */ {
+            },
+            /**
+             * @lends Highcharts.seriesTypes.ohlc
+             */
+            {
                 directTouch: false,
                 pointArrayMap: ['open', 'high', 'low', 'close'],
                 toYData: function (point) {
@@ -6631,7 +6630,9 @@
                 animate: null // Disable animation
 
             },
-            /** @lends Highcharts.seriesTypes.ohlc.prototype.pointClass.prototype */
+            /**
+             * @lends Highcharts.seriesTypes.ohlc.prototype.pointClass.prototype
+             */
             {
 
                 /**
@@ -6867,162 +6868,168 @@
          *
          * @augments Highcharts.seriesTypes.ohlc
          */
-        seriesType('candlestick', 'ohlc', merge(
-            defaultPlotOptions.column,
-            candlestickOptions
-        ), /** @lends seriesTypes.candlestick */ {
-
+        seriesType(
+            'candlestick',
+            'ohlc',
+            merge(
+                defaultPlotOptions.column,
+                candlestickOptions
+            ),
             /**
-             * Postprocess mapping between options and SVG attributes
-             *
-             * @private
-             * @function Highcharts.seriesTypes.candlestick#pointAttribs
-             *
-             * @param {Highcharts.Point} point
-             *
-             * @param {string} [state]
-             *
-             * @return {Highcharts.SVGAttributes}
+             * @lends seriesTypes.candlestick
              */
-            pointAttribs: function (point, state) {
-                var attribs = seriesTypes.column.prototype.pointAttribs.call(
-                        this,
-                        point,
-                        state
-                    ),
-                    options = this.options,
-                    isUp = point.open < point.close,
-                    stroke = options.lineColor || this.color,
-                    stateOptions;
+            {
 
-                attribs['stroke-width'] = options.lineWidth;
+                /**
+                 * Postprocess mapping between options and SVG attributes
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.candlestick#pointAttribs
+                 *
+                 * @param {Highcharts.Point} point
+                 *
+                 * @param {string} [state]
+                 *
+                 * @return {Highcharts.SVGAttributes}
+                 */
+                pointAttribs: function (point, state) {
+                    var attribs = seriesTypes.column.prototype.pointAttribs.call(
+                            this,
+                            point,
+                            state
+                        ),
+                        options = this.options,
+                        isUp = point.open < point.close,
+                        stroke = options.lineColor || this.color,
+                        stateOptions;
 
-                attribs.fill = point.options.color ||
-                    (isUp ? (options.upColor || this.color) : this.color);
-                attribs.stroke = point.lineColor ||
-                    (isUp ? (options.upLineColor || stroke) : stroke);
+                    attribs['stroke-width'] = options.lineWidth;
 
-                // Select or hover states
-                if (state) {
-                    stateOptions = options.states[state];
-                    attribs.fill = stateOptions.color || attribs.fill;
-                    attribs.stroke = stateOptions.lineColor || attribs.stroke;
-                    attribs['stroke-width'] =
-                        stateOptions.lineWidth || attribs['stroke-width'];
-                }
+                    attribs.fill = point.options.color ||
+                        (isUp ? (options.upColor || this.color) : this.color);
+                    attribs.stroke = point.lineColor ||
+                        (isUp ? (options.upLineColor || stroke) : stroke);
 
-
-                return attribs;
-            },
-
-            /**
-             * Draw the data points.
-             *
-             * @private
-             * @function Highcharts.seriesTypes.candlestick#drawPoints
-             */
-            drawPoints: function () {
-                var series = this,
-                    points = series.points,
-                    chart = series.chart,
-                    reversedYAxis = series.yAxis.reversed;
-
-
-                points.forEach(function (point) {
-
-                    var graphic = point.graphic,
-                        plotOpen,
-                        plotClose,
-                        topBox,
-                        bottomBox,
-                        hasTopWhisker,
-                        hasBottomWhisker,
-                        crispCorr,
-                        crispX,
-                        path,
-                        halfWidth,
-                        isNew = !graphic;
-
-                    if (point.plotY !== undefined) {
-
-                        if (!graphic) {
-                            point.graphic = graphic = chart.renderer.path()
-                                .add(series.group);
-                        }
-
-                        if (!series.chart.styledMode) {
-                            graphic
-                                .attr(
-                                    series.pointAttribs(
-                                        point,
-                                        point.selected && 'select'
-                                    )
-                                ) // #3897
-                                .shadow(series.options.shadow);
-                        }
-
-                        // Crisp vector coordinates
-                        crispCorr = (graphic.strokeWidth() % 2) / 2;
-                        crispX = Math.round(point.plotX) - crispCorr; // #2596
-                        plotOpen = point.plotOpen;
-                        plotClose = point.plotClose;
-                        topBox = Math.min(plotOpen, plotClose);
-                        bottomBox = Math.max(plotOpen, plotClose);
-                        halfWidth = Math.round(point.shapeArgs.width / 2);
-                        hasTopWhisker = reversedYAxis ?
-                            bottomBox !== point.yBottom :
-                            Math.round(topBox) !== Math.round(point.plotHigh);
-                        hasBottomWhisker = reversedYAxis ?
-                            Math.round(topBox) !== Math.round(point.plotHigh) :
-                            bottomBox !== point.yBottom;
-                        topBox = Math.round(topBox) + crispCorr;
-                        bottomBox = Math.round(bottomBox) + crispCorr;
-
-                        // Create the path. Due to a bug in Chrome 49, the path is first
-                        // instanciated with no values, then the values pushed. For
-                        // unknown reasons, instanciating the path array with all the
-                        // values would lead to a crash when updating frequently
-                        // (#5193).
-                        path = [];
-                        path.push(
-                            'M',
-                            crispX - halfWidth, bottomBox,
-                            'L',
-                            crispX - halfWidth, topBox,
-                            'L',
-                            crispX + halfWidth, topBox,
-                            'L',
-                            crispX + halfWidth, bottomBox,
-                            'Z', // Ensure a nice rectangle #2602
-                            'M',
-                            crispX, topBox,
-                            'L',
-                            // #460, #2094
-                            crispX, hasTopWhisker ?
-                                Math.round(
-                                    reversedYAxis ? point.yBottom : point.plotHigh
-                                ) :
-                                topBox,
-                            'M',
-                            crispX, bottomBox,
-                            'L',
-                            // #460, #2094
-                            crispX, hasBottomWhisker ?
-                                Math.round(
-                                    reversedYAxis ? point.plotHigh : point.yBottom
-                                ) :
-                                bottomBox
-                        );
-
-                        graphic[isNew ? 'attr' : 'animate']({ d: path })
-                            .addClass(point.getClassName(), true);
-
+                    // Select or hover states
+                    if (state) {
+                        stateOptions = options.states[state];
+                        attribs.fill = stateOptions.color || attribs.fill;
+                        attribs.stroke = stateOptions.lineColor || attribs.stroke;
+                        attribs['stroke-width'] =
+                            stateOptions.lineWidth || attribs['stroke-width'];
                     }
-                });
+
+
+                    return attribs;
+                },
+
+                /**
+                 * Draw the data points.
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.candlestick#drawPoints
+                 */
+                drawPoints: function () {
+                    var series = this,
+                        points = series.points,
+                        chart = series.chart,
+                        reversedYAxis = series.yAxis.reversed;
+
+
+                    points.forEach(function (point) {
+
+                        var graphic = point.graphic,
+                            plotOpen,
+                            plotClose,
+                            topBox,
+                            bottomBox,
+                            hasTopWhisker,
+                            hasBottomWhisker,
+                            crispCorr,
+                            crispX,
+                            path,
+                            halfWidth,
+                            isNew = !graphic;
+
+                        if (point.plotY !== undefined) {
+
+                            if (!graphic) {
+                                point.graphic = graphic = chart.renderer.path()
+                                    .add(series.group);
+                            }
+
+                            if (!series.chart.styledMode) {
+                                graphic
+                                    .attr(
+                                        series.pointAttribs(
+                                            point,
+                                            point.selected && 'select'
+                                        )
+                                    ) // #3897
+                                    .shadow(series.options.shadow);
+                            }
+
+                            // Crisp vector coordinates
+                            crispCorr = (graphic.strokeWidth() % 2) / 2;
+                            crispX = Math.round(point.plotX) - crispCorr; // #2596
+                            plotOpen = point.plotOpen;
+                            plotClose = point.plotClose;
+                            topBox = Math.min(plotOpen, plotClose);
+                            bottomBox = Math.max(plotOpen, plotClose);
+                            halfWidth = Math.round(point.shapeArgs.width / 2);
+                            hasTopWhisker = reversedYAxis ?
+                                bottomBox !== point.yBottom :
+                                Math.round(topBox) !== Math.round(point.plotHigh);
+                            hasBottomWhisker = reversedYAxis ?
+                                Math.round(topBox) !== Math.round(point.plotHigh) :
+                                bottomBox !== point.yBottom;
+                            topBox = Math.round(topBox) + crispCorr;
+                            bottomBox = Math.round(bottomBox) + crispCorr;
+
+                            // Create the path. Due to a bug in Chrome 49, the path is
+                            // first instanciated with no values, then the values
+                            // pushed. For unknown reasons, instanciating the path array
+                            // with all the values would lead to a crash when updating
+                            // frequently (#5193).
+                            path = [];
+                            path.push(
+                                'M',
+                                crispX - halfWidth, bottomBox,
+                                'L',
+                                crispX - halfWidth, topBox,
+                                'L',
+                                crispX + halfWidth, topBox,
+                                'L',
+                                crispX + halfWidth, bottomBox,
+                                'Z', // Ensure a nice rectangle #2602
+                                'M',
+                                crispX, topBox,
+                                'L',
+                                // #460, #2094
+                                crispX, hasTopWhisker ?
+                                    Math.round(
+                                        reversedYAxis ? point.yBottom : point.plotHigh
+                                    ) :
+                                    topBox,
+                                'M',
+                                crispX, bottomBox,
+                                'L',
+                                // #460, #2094
+                                crispX, hasBottomWhisker ?
+                                    Math.round(
+                                        reversedYAxis ? point.plotHigh : point.yBottom
+                                    ) :
+                                    bottomBox
+                            );
+
+                            graphic[isNew ? 'attr' : 'animate']({ d: path })
+                                .addClass(point.getClassName(), true);
+
+                        }
+                    });
+                }
             }
-
-
-        });
+        );
 
         /**
          * A `candlestick` series. If the [type](#series.candlestick.type)
@@ -7525,7 +7532,11 @@
                     fontWeight: 'bold'
                 }
 
-            }, /** @lends seriesTypes.flags.prototype */ {
+            },
+            /**
+             * @lends seriesTypes.flags.prototype
+             */
+            {
                 sorted: false,
                 noSharedTooltip: true,
                 allowDG: false,
@@ -7856,7 +7867,11 @@
                  */
                 invertGroups: noop
 
-            }, /** @lends seriesTypes.column.prototype.pointClass.prototype */ {
+            },
+            /**
+             * @lends seriesTypes.column.prototype.pointClass.prototype
+             */
+            {
                 isValid: function () {
                     // #9233 - Prevent from treating flags as null points (even if
                     // they have no y values defined).
@@ -8004,7 +8019,7 @@
 
     });
     _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -9811,14 +9826,15 @@
                 max = this.max,
                 dataMin,
                 range,
+                time = this.chart.time,
                 // Get the true range from a start date
                 getTrueRange = function (base, count) {
-                    var date = new Date(base),
-                        basePeriod = date['get' + timeName]();
+                    var date = new time.Date(base),
+                        basePeriod = time.get(timeName, date);
 
-                    date['set' + timeName](basePeriod + count);
+                    time.set(timeName, date, basePeriod + count);
 
-                    if (basePeriod === date['get' + timeName]()) {
+                    if (basePeriod === time.get(timeName, date)) {
                         date.setDate(0); // #6537
                     }
 

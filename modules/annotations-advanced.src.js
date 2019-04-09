@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  *
  * Annotations module
  *
@@ -3109,19 +3109,17 @@
                 },
 
                 addShapes: function () {
-                    (this.options.shapes || []).forEach(function (shapeOptions, i) {
-                        var shape = this.initShape(shapeOptions, i);
-
-                        this.options.shapes[i] = shape.options;
-                    }, this);
+                    (this.options.shapes || []).forEach(
+                        this.initShape,
+                        this
+                    );
                 },
 
                 addLabels: function () {
-                    (this.options.labels || []).forEach(function (labelOptions, i) {
-                        var label = this.initLabel(labelOptions, i);
-
-                        this.options.labels[i] = label.options;
-                    }, this);
+                    (this.options.labels || []).forEach(
+                        this.initLabel,
+                        this
+                    );
                 },
 
                 addClipPaths: function () {

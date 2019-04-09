@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.0 (2019-04-01)
+ * @license  Highcharts JS v7.1.1 (2019-04-09)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -90,9 +90,13 @@
             setBaseSeries: function () {
                 var chart = this.chart,
                     baseSeriesOptions = this.options.baseSeries,
-                    baseSeries =
-                baseSeriesOptions &&
-                (chart.series[baseSeriesOptions] || chart.get(baseSeriesOptions));
+                    baseSeries = (
+                        H.defined(baseSeriesOptions) &&
+                        (
+                            chart.series[baseSeriesOptions] ||
+                            chart.get(baseSeriesOptions)
+                        )
+                    );
 
                 this.baseSeries = baseSeries || null;
             },

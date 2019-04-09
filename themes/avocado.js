@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  *
  * (c) 2009-2019 Highsoft AS
  *
@@ -30,7 +30,7 @@
         }
     }
     _registerModule(_modules, 'parts/Globals.js', [], function () {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -71,7 +71,7 @@
 
         var Highcharts = {
             product: 'Highcharts',
-            version: '7.1.0',
+            version: '7.1.1',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,

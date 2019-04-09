@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  *
  * Gantt series
  *
@@ -5939,6 +5939,9 @@
                         // Partial fill graphic
                         if (partShapeArgs) {
                             if (point.graphicOverlay) {
+                                point.graphicOverlay[verb](
+                                    merge(partShapeArgs)
+                                );
                                 point.clipRect.animate(
                                     merge(clipRectArgs)
                                 );
@@ -6416,22 +6419,22 @@
                 },
 
                 /**
-             * Draws a single point in the series.
-             *
-             * This override draws the point as a diamond if point.options.milestone is
-             * true, and uses the original drawPoint() if it is false or not set.
-             *
-             * @requires module:highcharts-gantt
-             *
-             * @private
-             * @function Highcharts.seriesTypes.gantt#drawPoint
-             *
-             * @param {Highcharts.Point} point
-             *        An instance of Point in the series
-             *
-             * @param {"animate"|"attr"} verb
-             *        'animate' (animates changes) or 'attr' (sets options)
-             */
+                 * Draws a single point in the series.
+                 *
+                 * This override draws the point as a diamond if point.options.milestone
+                 * is true, and uses the original drawPoint() if it is false or not set.
+                 *
+                 * @requires module:highcharts-gantt
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.gantt#drawPoint
+                 *
+                 * @param {Highcharts.Point} point
+                 *        An instance of Point in the series
+                 *
+                 * @param {"animate"|"attr"} verb
+                 *        'animate' (animates changes) or 'attr' (sets options)
+                 */
                 drawPoint: function (point, verb) {
                     var series = this,
                         seriesOpts = series.options,
@@ -6812,7 +6815,7 @@
 
     });
     _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -7772,8 +7775,8 @@
 
         if (!H.Scrollbar) {
             /* *
-            * Wrap axis initialization and create scrollbar if enabled:
-            */
+             * Wrap axis initialization and create scrollbar if enabled:
+             */
             addEvent(Axis, 'afterInit', function () {
                 var axis = this;
 
@@ -7950,7 +7953,7 @@
 
     });
     _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -9757,14 +9760,15 @@
                 max = this.max,
                 dataMin,
                 range,
+                time = this.chart.time,
                 // Get the true range from a start date
                 getTrueRange = function (base, count) {
-                    var date = new Date(base),
-                        basePeriod = date['get' + timeName]();
+                    var date = new time.Date(base),
+                        basePeriod = time.get(timeName, date);
 
-                    date['set' + timeName](basePeriod + count);
+                    time.set(timeName, date, basePeriod + count);
 
-                    if (basePeriod === date['get' + timeName]()) {
+                    if (basePeriod === time.get(timeName, date)) {
                         date.setDate(0); // #6537
                     }
 
@@ -9975,7 +9979,7 @@
 
     });
     _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -12299,11 +12303,9 @@
         if (!H.Navigator) {
             H.Navigator = Navigator;
 
-            /*
-            * For Stock charts, override selection zooming with some special features
-            * because X axis zooming is already allowed by the Navigator and Range
-            * selector.
-            */
+            // For Stock charts, override selection zooming with some special features
+            // because X axis zooming is already allowed by the Navigator and Range
+            // selector.
             addEvent(Axis, 'zoom', function (e) {
                 var chart = this.chart,
                     chartOptions = chart.options,
@@ -12348,11 +12350,9 @@
                 }
             });
 
-            /**
-             * For Stock charts. For x only zooming, do not to create the zoom button
-             * because X axis zooming is already allowed by the Navigator and Range
-             * selector. (#9285)
-             */
+            // For Stock charts. For x only zooming, do not to create the zoom button
+            // because X axis zooming is already allowed by the Navigator and Range
+            // selector. (#9285)
             addEvent(Chart, 'beforeShowResetZoom', function () {
                 var chartOptions = this.options,
                     navigator = chartOptions.navigator,
@@ -12380,12 +12380,10 @@
                 }
             });
 
-            /*
-            * For stock charts, extend the Chart.setChartSize method so that we can set
-            * the final top position of the navigator once the height of the chart,
-            * including the legend, is determined. #367. We can't use Chart.getMargins,
-            * because labels offsets are not calculated yet.
-            */
+            // For stock charts, extend the Chart.setChartSize method so that we can set
+            // the final top position of the navigator once the height of the chart,
+            // including the legend, is determined. #367. We can't use Chart.getMargins,
+            // because labels offsets are not calculated yet.
             addEvent(Chart, 'afterSetChartSize', function () {
 
                 var legend = this.legend,

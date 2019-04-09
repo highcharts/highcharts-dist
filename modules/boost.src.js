@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  *
  * Boost module
  *
@@ -111,6 +111,7 @@
             var vertShade = [
                     /* eslint-disable */
                     '#version 100',
+                    '#define LN10 2.302585092994046',
                     'precision highp float;',
 
                     'attribute vec4 aVertexPosition;',
@@ -127,8 +128,6 @@
 
                     'uniform bool skipTranslation;',
 
-                    'uniform float plotHeight;',
-
                     'uniform float xAxisTrans;',
                     'uniform float xAxisMin;',
                     'uniform float xAxisMinPad;',
@@ -139,6 +138,8 @@
                     'uniform float xAxisOrdinalOffset;',
                     'uniform float xAxisPos;',
                     'uniform bool  xAxisCVSCoord;',
+                    'uniform bool  xAxisIsLog;',
+                    'uniform bool  xAxisReversed;',
 
                     'uniform float yAxisTrans;',
                     'uniform float yAxisMin;',
@@ -150,6 +151,8 @@
                     'uniform float yAxisOrdinalOffset;',
                     'uniform float yAxisPos;',
                     'uniform bool  yAxisCVSCoord;',
+                    'uniform bool  yAxisIsLog;',
+                    'uniform bool  yAxisReversed;',
 
                     'uniform bool  isBubble;',
                     'uniform bool  bubbleSizeByArea;',
@@ -195,7 +198,9 @@
                                     'float minPixelPadding,',
                                     'float pointRange,',
                                     'float len,',
-                                    'bool  cvsCoord',
+                                    'bool  cvsCoord,',
+                                    'bool  isLog,',
+                                    'bool  reversed',
                                     '){',
 
                         'float sign = 1.0;',
@@ -206,26 +211,36 @@
                             'cvsOffset = len;',
                         '}',
 
+                        'if (isLog) {',
+                            'val = log(val) / LN10;',
+                        '}',
+
+                        'if (reversed) {',
+                            'sign *= -1.0;',
+                            'cvsOffset -= sign * len;',
+                        '}',
+
                         'return sign * (val - localMin) * localA + cvsOffset + ',
                             '(sign * minPixelPadding);',//' + localA * pointPlacement * pointRange;',
                     '}',
 
-                    'float xToPixels(float value){',
+                    'float xToPixels(float value) {',
                         'if (skipTranslation){',
                             'return value;// + xAxisPos;',
                         '}',
 
-                        'return translate(value, 0.0, xAxisTrans, xAxisMin, xAxisMinPad, xAxisPointRange, xAxisLen, xAxisCVSCoord);// + xAxisPos;',
+                        'return translate(value, 0.0, xAxisTrans, xAxisMin, xAxisMinPad, xAxisPointRange, xAxisLen, xAxisCVSCoord, xAxisIsLog, xAxisReversed);// + xAxisPos;',
                     '}',
 
-                    'float yToPixels(float value, float checkTreshold){',
+                    'float yToPixels(float value, float checkTreshold) {',
                         'float v;',
                         'if (skipTranslation){',
                             'v = value;// + yAxisPos;',
                         '} else {',
-                            'v = translate(value, 0.0, yAxisTrans, yAxisMin, yAxisMinPad, yAxisPointRange, yAxisLen, yAxisCVSCoord);// + yAxisPos;',
-                            'if (v > plotHeight) {',
-                                'v = plotHeight;',
+                            'v = translate(value, 0.0, yAxisTrans, yAxisMin, yAxisMinPad, yAxisPointRange, yAxisLen, yAxisCVSCoord, yAxisIsLog, yAxisReversed);// + yAxisPos;',
+
+                            'if (v > yAxisLen) {',
+                                'v = yAxisLen;',
                             '}',
                         '}',
                         'if (checkTreshold > 0.0 && hasThreshold) {',
@@ -243,8 +258,13 @@
                         //'gl_PointSize = 10.0;',
                         'vColor = aColor;',
 
-                        'if (isInverted) {',
-                            'gl_Position = uPMatrix * vec4(xToPixels(aVertexPosition.y) + yAxisPos, yToPixels(aVertexPosition.x, aVertexPosition.z) + xAxisPos, 0.0, 1.0);',
+                        'if (skipTranslation && isInverted) {',
+                            // If we get translated values from JS, just swap them (x, y)
+                            'gl_Position = uPMatrix * vec4(aVertexPosition.y + yAxisPos, aVertexPosition.x + xAxisPos, 0.0, 1.0);',
+                        '} else if (isInverted) {',
+                            // But when calculating pixel positions directly,
+                            // swap axes and values (x, y)
+                            'gl_Position = uPMatrix * vec4(yToPixels(aVertexPosition.y, aVertexPosition.z) + yAxisPos, xToPixels(aVertexPosition.x) + xAxisPos, 0.0, 1.0);',
                         '} else {',
                             'gl_Position = uPMatrix * vec4(xToPixels(aVertexPosition.x) + xAxisPos, yToPixels(aVertexPosition.y, aVertexPosition.z) + yAxisPos, 0.0, 1.0);',
                         '}',
@@ -309,7 +329,6 @@
                 isCircleUniform,
                 // Uniform for invertion
                 isInverted,
-                plotHeightUniform,
                 // Error stack
                 errors = [],
                 // Texture uniform
@@ -395,7 +414,6 @@
                 skipTranslationUniform = uloc('skipTranslation');
                 isCircleUniform = uloc('isCircle');
                 isInverted = uloc('isInverted');
-                plotHeightUniform = uloc('plotHeight');
 
                 return true;
             }
@@ -465,12 +483,6 @@
             function setDrawAsCircle(flag) {
                 if (gl && shaderProgram) {
                     gl.uniform1i(isCircleUniform, flag ? 1 : 0);
-                }
-            }
-
-            function setPlotHeight(n) {
-                if (gl && shaderProgram) {
-                    gl.uniform1f(plotHeightUniform, n);
                 }
             }
 
@@ -593,7 +605,6 @@
                 fillColorUniform: function () {
                     return fillColorUniform;
                 },
-                setPlotHeight: setPlotHeight,
                 setBubbleUniforms: setBubbleUniforms,
                 bind: bind,
                 program: getProgram,
@@ -799,15 +810,15 @@
         return GLVertexBuffer;
     });
     _registerModule(_modules, 'modules/boost/wgl-renderer.js', [_modules['modules/boost/wgl-shader.js'], _modules['modules/boost/wgl-vbuffer.js'], _modules['parts/Globals.js']], function (GLShader, GLVertexBuffer, H) {
-        /* *
+        /**
          *
-         *  Copyright (c) 2019-2019 Highsoft AS
+         * Copyright (c) 2019-2019 Highsoft AS
          *
-         *  Boost module: stripped-down renderer for higher performance
+         * Boost module: stripped-down renderer for higher performance
          *
-         *  License: highcharts.com/license
+         * License: highcharts.com/license
          *
-         * */
+         */
 
 
 
@@ -817,6 +828,7 @@
             merge = H.merge,
             objEach = H.objEach,
             isNumber = H.isNumber,
+            some = H.some,
             Color = H.Color,
             pick = H.pick;
 
@@ -1060,10 +1072,27 @@
                     isXInside = false,
                     isYInside = true,
                     firstPoint = true,
+                    zones = options.zones || false,
+                    zoneDefColor = false,
                     threshold = options.threshold;
 
                 if (options.boostData && options.boostData.length > 0) {
                     return;
+                }
+
+                if (zones) {
+                    some(zones, function (zone) {
+                        if (typeof zone.value === 'undefined') {
+                            zoneDefColor = H.Color(zone.color); // eslint-disable-line new-cap
+                            return true;
+                        }
+                    });
+
+                    if (!zoneDefColor) {
+                        zoneDefColor = (series.pointAttribs &&
+                                        series.pointAttribs().fill) || series.color;
+                        zoneDefColor = H.Color(zoneDefColor); // eslint-disable-line new-cap
+                    }
                 }
 
                 if (chart.inverted) {
@@ -1398,6 +1427,28 @@
                         continue;
                     }
 
+                    // Note: Boost requires that zones are sorted!
+                    if (zones) {
+                        pcolor = zoneDefColor.rgba;
+                        some(zones, function (zone, i) { // eslint-disable-line no-loop-func
+                            var last = zones[i - 1];
+
+                            if (typeof zone.value !== 'undefined' && y <= zone.value) {
+                                if (!last || y >= last.value) {
+                                    pcolor = H.color(zone.color).rgba;
+
+                                }
+
+                                return true;
+                            }
+                        });
+
+                        pcolor[0] /= 255.0;
+                        pcolor[1] /= 255.0;
+                        pcolor[2] /= 255.0;
+
+                    }
+
                     // Skip translations - temporary floating point fix
                     if (!settings.useGPUTranslations) {
                         inst.skipTranslation = true;
@@ -1443,7 +1494,10 @@
                         }
 
                         if (!isRange && !isStacked) {
-                            minVal = Math.max(threshold, yMin); // #8731
+                            minVal = Math.max(
+                                threshold === null ? yMin : threshold, // #5268
+                                yMin
+                            ); // #8731
                         }
                         if (!settings.useGPUTranslations) {
                             minVal = yAxis.toPixels(minVal, true);
@@ -1662,6 +1716,8 @@
                 shader.setUniform('xAxisLen', axis.len);
                 shader.setUniform('xAxisPos', axis.pos);
                 shader.setUniform('xAxisCVSCoord', !axis.horiz);
+                shader.setUniform('xAxisIsLog', axis.isLog);
+                shader.setUniform('xAxisReversed', !!axis.reversed);
             }
 
             /*
@@ -1680,6 +1736,8 @@
                 shader.setUniform('yAxisLen', axis.len);
                 shader.setUniform('yAxisPos', axis.pos);
                 shader.setUniform('yAxisCVSCoord', !axis.horiz);
+                shader.setUniform('yAxisIsLog', axis.isLog);
+                shader.setUniform('yAxisReversed', !!axis.reversed);
             }
 
             /*
@@ -1724,7 +1782,6 @@
 
                 gl.viewport(0, 0, width, height);
                 shader.setPMatrix(orthoMatrix(width, height));
-                shader.setPlotHeight(chart.plotHeight);
 
                 if (settings.lineWidth > 1 && !H.isMS) {
                     gl.lineWidth(settings.lineWidth);
@@ -3089,6 +3146,7 @@
             shouldForceChartSeriesBoosting = butils.shouldForceChartSeriesBoosting,
             Chart = H.Chart,
             Series = H.Series,
+            Point = H.Point,
             seriesTypes = H.seriesTypes,
             addEvent = H.addEvent,
             isNumber = H.isNumber,
@@ -3178,7 +3236,10 @@
                     xData ? xData[boostPoint.i] : undefined
                 );
 
-                point.category = point.x;
+                point.category = pick(
+                    this.xAxis.categories ? this.xAxis.categories[point.x] : point.x,
+                    point.x
+                );
 
                 point.dist = boostPoint.dist;
                 point.distX = boostPoint.distX;
@@ -3195,6 +3256,54 @@
             return this.getPoint(
                 proceed.apply(this, [].slice.call(arguments, 1))
             );
+        });
+
+        // For inverted series, we need to swap X-Y values before running base methods
+        wrap(Point.prototype, 'haloPath', function (proceed) {
+            var halo,
+                point = this,
+                series = point.series,
+                chart = series.chart,
+                plotX = point.plotX,
+                plotY = point.plotY,
+                inverted = chart.inverted;
+
+            if (series.isSeriesBoosting && inverted) {
+                point.plotX = series.yAxis.len - plotY;
+                point.plotY = series.xAxis.len - plotX;
+            }
+
+            halo = proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+
+            if (series.isSeriesBoosting && inverted) {
+                point.plotX = plotX;
+                point.plotY = plotY;
+            }
+
+            return halo;
+        });
+
+        wrap(Series.prototype, 'markerAttribs', function (proceed, point) {
+            var attribs,
+                series = this,
+                chart = series.chart,
+                plotX = point.plotX,
+                plotY = point.plotY,
+                inverted = chart.inverted;
+
+            if (series.isSeriesBoosting && inverted) {
+                point.plotX = series.yAxis.len - plotY;
+                point.plotY = series.xAxis.len - plotX;
+            }
+
+            attribs = proceed.apply(this, Array.prototype.slice.call(arguments, 1));
+
+            if (series.isSeriesBoosting && inverted) {
+                point.plotX = plotX;
+                point.plotY = plotY;
+            }
+
+            return attribs;
         });
 
         /*
@@ -3465,6 +3574,174 @@
             }
         );
 
+    });
+    _registerModule(_modules, 'modules/boost/named-colors.js', [_modules['parts/Globals.js']], function (H) {
+        /* *
+         *
+         *  Copyright (c) 2019-2019 Highsoft AS
+         *
+         *  Boost module: stripped-down renderer for higher performance
+         *
+         *  License: highcharts.com/license
+         *
+         * */
+
+
+
+        var Color = H.Color;
+
+        // Register color names since GL can't render those directly.
+        // TODO: When supporting modern syntax, make this a const and a named export
+        var defaultHTMLColorMap = {
+            aliceblue: '#f0f8ff',
+            antiquewhite: '#faebd7',
+            aqua: '#00ffff',
+            aquamarine: '#7fffd4',
+            azure: '#f0ffff',
+            beige: '#f5f5dc',
+            bisque: '#ffe4c4',
+            black: '#000000',
+            blanchedalmond: '#ffebcd',
+            blue: '#0000ff',
+            blueviolet: '#8a2be2',
+            brown: '#a52a2a',
+            burlywood: '#deb887',
+            cadetblue: '#5f9ea0',
+            chartreuse: '#7fff00',
+            chocolate: '#d2691e',
+            coral: '#ff7f50',
+            cornflowerblue: '#6495ed',
+            cornsilk: '#fff8dc',
+            crimson: '#dc143c',
+            cyan: '#00ffff',
+            darkblue: '#00008b',
+            darkcyan: '#008b8b',
+            darkgoldenrod: '#b8860b',
+            darkgray: '#a9a9a9',
+            darkgreen: '#006400',
+            darkkhaki: '#bdb76b',
+            darkmagenta: '#8b008b',
+            darkolivegreen: '#556b2f',
+            darkorange: '#ff8c00',
+            darkorchid: '#9932cc',
+            darkred: '#8b0000',
+            darksalmon: '#e9967a',
+            darkseagreen: '#8fbc8f',
+            darkslateblue: '#483d8b',
+            darkslategray: '#2f4f4f',
+            darkturquoise: '#00ced1',
+            darkviolet: '#9400d3',
+            deeppink: '#ff1493',
+            deepskyblue: '#00bfff',
+            dimgray: '#696969',
+            dodgerblue: '#1e90ff',
+            feldspar: '#d19275',
+            firebrick: '#b22222',
+            floralwhite: '#fffaf0',
+            forestgreen: '#228b22',
+            fuchsia: '#ff00ff',
+            gainsboro: '#dcdcdc',
+            ghostwhite: '#f8f8ff',
+            gold: '#ffd700',
+            goldenrod: '#daa520',
+            gray: '#808080',
+            green: '#008000',
+            greenyellow: '#adff2f',
+            honeydew: '#f0fff0',
+            hotpink: '#ff69b4',
+            indianred: '#cd5c5c',
+            indigo: '#4b0082',
+            ivory: '#fffff0',
+            khaki: '#f0e68c',
+            lavender: '#e6e6fa',
+            lavenderblush: '#fff0f5',
+            lawngreen: '#7cfc00',
+            lemonchiffon: '#fffacd',
+            lightblue: '#add8e6',
+            lightcoral: '#f08080',
+            lightcyan: '#e0ffff',
+            lightgoldenrodyellow: '#fafad2',
+            lightgrey: '#d3d3d3',
+            lightgreen: '#90ee90',
+            lightpink: '#ffb6c1',
+            lightsalmon: '#ffa07a',
+            lightseagreen: '#20b2aa',
+            lightskyblue: '#87cefa',
+            lightslateblue: '#8470ff',
+            lightslategray: '#778899',
+            lightsteelblue: '#b0c4de',
+            lightyellow: '#ffffe0',
+            lime: '#00ff00',
+            limegreen: '#32cd32',
+            linen: '#faf0e6',
+            magenta: '#ff00ff',
+            maroon: '#800000',
+            mediumaquamarine: '#66cdaa',
+            mediumblue: '#0000cd',
+            mediumorchid: '#ba55d3',
+            mediumpurple: '#9370d8',
+            mediumseagreen: '#3cb371',
+            mediumslateblue: '#7b68ee',
+            mediumspringgreen: '#00fa9a',
+            mediumturquoise: '#48d1cc',
+            mediumvioletred: '#c71585',
+            midnightblue: '#191970',
+            mintcream: '#f5fffa',
+            mistyrose: '#ffe4e1',
+            moccasin: '#ffe4b5',
+            navajowhite: '#ffdead',
+            navy: '#000080',
+            oldlace: '#fdf5e6',
+            olive: '#808000',
+            olivedrab: '#6b8e23',
+            orange: '#ffa500',
+            orangered: '#ff4500',
+            orchid: '#da70d6',
+            palegoldenrod: '#eee8aa',
+            palegreen: '#98fb98',
+            paleturquoise: '#afeeee',
+            palevioletred: '#d87093',
+            papayawhip: '#ffefd5',
+            peachpuff: '#ffdab9',
+            peru: '#cd853f',
+            pink: '#ffc0cb',
+            plum: '#dda0dd',
+            powderblue: '#b0e0e6',
+            purple: '#800080',
+            red: '#ff0000',
+            rosybrown: '#bc8f8f',
+            royalblue: '#4169e1',
+            saddlebrown: '#8b4513',
+            salmon: '#fa8072',
+            sandybrown: '#f4a460',
+            seagreen: '#2e8b57',
+            seashell: '#fff5ee',
+            sienna: '#a0522d',
+            silver: '#c0c0c0',
+            skyblue: '#87ceeb',
+            slateblue: '#6a5acd',
+            slategray: '#708090',
+            snow: '#fffafa',
+            springgreen: '#00ff7f',
+            steelblue: '#4682b4',
+            tan: '#d2b48c',
+            teal: '#008080',
+            thistle: '#d8bfd8',
+            tomato: '#ff6347',
+            turquoise: '#40e0d0',
+            violet: '#ee82ee',
+            violetred: '#d02090',
+            wheat: '#f5deb3',
+            white: '#ffffff',
+            whitesmoke: '#f5f5f5',
+            yellow: '#ffff00',
+            yellowgreen: '#9acd32'
+        };
+
+        Color.prototype.names = defaultHTMLColorMap;
+
+
+        return defaultHTMLColorMap;
     });
     _registerModule(_modules, 'modules/boost/boost.js', [_modules['parts/Globals.js'], _modules['modules/boost/boost-utils.js'], _modules['modules/boost/boost-init.js']], function (H, butils, init) {
         /* *

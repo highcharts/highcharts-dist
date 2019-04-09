@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  *
  * (c) 2017-2018 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
  *
@@ -30,7 +30,7 @@
         }
     }
     _registerModule(_modules, 'parts/Globals.js', [], function () {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -71,7 +71,7 @@
 
         var Highcharts = {
             product: 'Highcharts',
-            version: '7.1.0',
+            version: '7.1.1',
             deg2rad: Math.PI * 2 / 360,
             doc: doc,
             hasBidiBug: hasBidiBug,
@@ -2819,7 +2819,7 @@
 
     });
     _registerModule(_modules, 'parts/Color.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -6037,7 +6037,7 @@
                 // Add description
                 desc = this.createElement('desc').add();
                 desc.element.appendChild(
-                    doc.createTextNode('Created with Highcharts 7.1.0')
+                    doc.createTextNode('Created with Highcharts 7.1.1')
                 );
 
                 /**
@@ -8531,7 +8531,7 @@
 
     });
     _registerModule(_modules, 'parts/Html.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -9075,7 +9075,7 @@
 
     });
     _registerModule(_modules, 'parts/Time.js', [_modules['parts/Globals.js']], function (Highcharts) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -9944,7 +9944,7 @@
 
     });
     _registerModule(_modules, 'parts/Options.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -10135,9 +10135,10 @@
             merge = H.merge,
             svg = H.svg;
 
-        /* ****************************************************************************
+        /* ************************************************************************** *
          * Handle the options                                                         *
-         *****************************************************************************/
+         * ************************************************************************** */
+
         /**
          * Global default settings.
          *
@@ -12103,8 +12104,8 @@
 
                 /**
                  * Callback function to format each of the series' labels. The `this`
-                 * keyword refers to the series object, or the point object in case
-                 * of pie charts. By default the series or point name is printed.
+                 * keyword refers to the series object, or the point object in case of
+                 * pie charts. By default the series or point name is printed.
                  *
                  * @productdesc {highmaps}
                  * In Highmaps the context can also be a data class in case of a
@@ -12140,9 +12141,9 @@
                  */
 
                 /**
-                 * If the plot area sized is calculated automatically and the legend
-                 * is not floating, the legend margin is the space between the legend
-                 * and the axis labels or plot area.
+                 * If the plot area sized is calculated automatically and the legend is
+                 * not floating, the legend margin is the space between the legend and
+                 * the axis labels or plot area.
                  *
                  * @sample {highcharts} highcharts/legend/margin-default/
                  *         12 pixels by default
@@ -12194,8 +12195,8 @@
                 borderRadius: 0,
 
                 /**
-                 * Options for the paging or navigation appearing when the legend
-                 * is overflown. Navigation works well on screen, but not in static
+                 * Options for the paging or navigation appearing when the legend is
+                 * overflown. Navigation works well on screen, but not in static
                  * exported images. One way of working around that is to
                  * [increase the chart height in
                  * export](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/legend/navigation-enabled-false/).
@@ -13674,7 +13675,7 @@
 
     });
     _registerModule(_modules, 'parts/Tick.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -20916,7 +20917,7 @@
         return Axis;
     });
     _registerModule(_modules, 'parts/DateTimeAxis.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -21050,7 +21051,7 @@
 
     });
     _registerModule(_modules, 'parts/LogarithmicAxis.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -21063,9 +21064,9 @@
             normalizeTickInterval = H.normalizeTickInterval,
             pick = H.pick;
 
-        /*
+        /* ************************************************************************** *
          * Methods defined on the Axis prototype
-         */
+         * ************************************************************************** */
 
         /**
          * Set the tick positions of a logarithmic axis.
@@ -22277,7 +22278,7 @@
 
     });
     _registerModule(_modules, 'parts/Tooltip.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -23667,7 +23668,7 @@
 
     });
     _registerModule(_modules, 'parts/Pointer.js', [_modules['parts/Globals.js']], function (Highcharts) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -25073,7 +25074,7 @@
 
     });
     _registerModule(_modules, 'parts/TouchPointer.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -25477,7 +25478,7 @@
 
     });
     _registerModule(_modules, 'parts/MSPointer.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -25652,7 +25653,7 @@
 
     });
     _registerModule(_modules, 'parts/Legend.js', [_modules['parts/Globals.js']], function (Highcharts) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -27169,7 +27170,7 @@
 
     });
     _registerModule(_modules, 'parts/Chart.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -28486,7 +28487,7 @@
             /**
              * Reflows the chart to its container. By default, the chart reflows
              * automatically to its container following a `window.resize` event, as per
-             * the [chart.reflow](https://api.highcharts/highcharts/chart.reflow)
+             * the [chart.reflow](https://api.highcharts.com/highcharts/chart.reflow)
              * option. However, there are no reliable events for div resize, so if the
              * container is resized without a window resize event, this must be called
              * explicitly.
@@ -29494,7 +29495,7 @@
 
     });
     _registerModule(_modules, 'parts/ScrollablePlotArea.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -29538,6 +29539,19 @@
          *
          * @type      {number}
          * @apioption chart.scrollablePlotArea.scrollPositionX
+         */
+
+        /**
+         * The opacity of mask applied on one of the sides of the plot
+         * area.
+         *
+         * @sample {highcharts} highcharts/chart/scrollable-plotarea-opacity
+         *         Disabled opacity for the mask
+         *
+         * @type        {number}
+         * @default     0.85
+         * @since       7.1.1
+         * @apioption   chart.scrollablePlotArea.opacity
          */
 
         addEvent(Chart, 'afterSetChartSize', function (e) {
@@ -29627,14 +29641,52 @@
         };
 
         /**
+         * These elements are moved over to the fixed renderer and stay fixed when the
+         * user scrolls the chart
+         * @private
+         */
+        Chart.prototype.moveFixedElements = function () {
+            var container = this.container,
+                fixedRenderer = this.fixedRenderer;
+
+            ([
+                this.inverted ?
+                    '.highcharts-xaxis' :
+                    '.highcharts-yaxis',
+                this.inverted ?
+                    '.highcharts-xaxis-labels' :
+                    '.highcharts-yaxis-labels',
+                '.highcharts-contextbutton',
+                '.highcharts-credits',
+                '.highcharts-legend',
+                '.highcharts-reset-zoom',
+                '.highcharts-subtitle',
+                '.highcharts-title',
+                '.highcharts-legend-checkbox'
+            ]).forEach(function (className) {
+                [].forEach.call(
+                    container.querySelectorAll(className),
+                    function (elem) {
+                        (
+                            elem.namespaceURI === fixedRenderer.SVG_NS ?
+                                fixedRenderer.box :
+                                fixedRenderer.box.parentNode
+                        ).appendChild(elem);
+                        elem.style.pointerEvents = 'auto';
+                    }
+                );
+            });
+        };
+
+        /**
          * @private
          * @function Highcharts.Chart#applyFixed
          */
         Chart.prototype.applyFixed = function () {
-            var container = this.container,
-                fixedRenderer,
+            var fixedRenderer,
                 scrollableWidth,
-                firstTime = !this.fixedDiv;
+                firstTime = !this.fixedDiv,
+                scrollableOptions = this.options.chart.scrollablePlotArea;
 
             // First render
             if (firstTime) {
@@ -29670,40 +29722,17 @@
                     .attr({
                         fill: H.color(
                             this.options.chart.backgroundColor || '#fff'
-                        ).setOpacity(0.85).get(),
+                        ).setOpacity(
+                            H.pick(scrollableOptions.opacity, 0.85)
+                        ).get(),
                         zIndex: -1
                     })
                     .addClass('highcharts-scrollable-mask')
                     .add();
 
-                // These elements are moved over to the fixed renderer and stay fixed
-                // when the user scrolls the chart.
-                ([
-                    this.inverted ?
-                        '.highcharts-xaxis' :
-                        '.highcharts-yaxis',
-                    this.inverted ?
-                        '.highcharts-xaxis-labels' :
-                        '.highcharts-yaxis-labels',
-                    '.highcharts-contextbutton',
-                    '.highcharts-credits',
-                    '.highcharts-legend',
-                    '.highcharts-subtitle',
-                    '.highcharts-title',
-                    '.highcharts-legend-checkbox'
-                ]).forEach(function (className) {
-                    [].forEach.call(
-                        container.querySelectorAll(className),
-                        function (elem) {
-                            (
-                                elem.namespaceURI === fixedRenderer.SVG_NS ?
-                                    fixedRenderer.box :
-                                    fixedRenderer.box.parentNode
-                            ).appendChild(elem);
-                            elem.style.pointerEvents = 'auto';
-                        }
-                    );
-                });
+                this.moveFixedElements();
+
+                addEvent(this, 'afterShowResetZoom', this.moveFixedElements);
             }
 
             // Set the size of the fixed renderer to the visible width
@@ -29725,11 +29754,10 @@
 
             // Set scroll position
             if (firstTime) {
-                var options = this.options.chart.scrollablePlotArea;
 
-                if (options.scrollPositionX) {
+                if (scrollableOptions.scrollPositionX) {
                     this.scrollingContainer.scrollLeft =
-                        this.scrollablePixels * options.scrollPositionX;
+                        this.scrollablePixels * scrollableOptions.scrollPositionX;
                 }
             }
 
@@ -29761,7 +29789,7 @@
 
     });
     _registerModule(_modules, 'parts/Point.js', [_modules['parts/Globals.js']], function (Highcharts) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -36101,7 +36129,7 @@
 
     });
     _registerModule(_modules, 'parts/Stacking.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -36742,7 +36770,7 @@
 
     });
     _registerModule(_modules, 'parts/Dynamics.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -37027,6 +37055,21 @@
                 'backgroundColor',
                 'borderColor',
                 'borderWidth',
+                'borderRadius',
+                'plotBackgroundColor',
+                'plotBackgroundImage',
+                'plotBorderColor',
+                'plotBorderWidth',
+                'plotShadow',
+                'shadow'
+            ],
+
+            /**
+             * These properties require a full reflow of chart elements, best
+             * implemented through running `Chart.setSize` internally (#8190).
+             * @type {Array}
+             */
+            propsRequireReflow: [
                 'margin',
                 'marginTop',
                 'marginRight',
@@ -37036,14 +37079,7 @@
                 'spacingTop',
                 'spacingRight',
                 'spacingBottom',
-                'spacingLeft',
-                'borderRadius',
-                'plotBackgroundColor',
-                'plotBackgroundImage',
-                'plotBorderColor',
-                'plotBorderWidth',
-                'plotShadow',
-                'shadow'
+                'spacingLeft'
             ],
 
             /**
@@ -37141,6 +37177,7 @@
                     updateAllSeries,
                     newWidth,
                     newHeight,
+                    runSetSize,
                     itemsForRemoval = [];
 
                 fireEvent(chart, 'update', { options: options });
@@ -37196,6 +37233,10 @@
                         // Only dirty box
                         if (chart.propsRequireDirtyBox.indexOf(key) !== -1) {
                             chart.isDirtyBox = true;
+                        }
+                        // Chart setSize
+                        if (chart.propsRequireReflow.indexOf(key) !== -1) {
+                            runSetSize = true;
                         }
                     });
 
@@ -37340,7 +37381,14 @@
                         newWidth || chart.chartWidth
                     );
                 }
+
                 if (
+                    // In this case, run chart.setSize with newWidth and newHeight which
+                    // are undefined, only for reflowing chart elements because margin
+                    // or spacing has been set (#8190)
+                    runSetSize ||
+
+                    // In this case, the size is actually set
                     (isNumber(newWidth) && newWidth !== chart.chartWidth) ||
                     (isNumber(newHeight) && newHeight !== chart.chartHeight)
                 ) {
@@ -38142,7 +38190,9 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('area', 'line',
+        seriesType(
+            'area',
+            'line',
 
             /**
              * The area series type.
@@ -38213,73 +38263,78 @@
                  */
 
                 /**
-             * A separate color for the negative part of the area.
-             *
-             * In styled mode, a negative color is set with the `.highcharts-negative`
-             * class name.
-             *
-             * @see [negativeColor](#plotOptions.area.negativeColor)
-             *
-             * @sample {highcharts} highcharts/css/series-negative-color/
-             *         Negative color in styled mode
-             *
-             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @since     3.0
-             * @product   highcharts
-             * @apioption plotOptions.area.negativeFillColor
-             */
+                 * A separate color for the negative part of the area.
+                 *
+                 * In styled mode, a negative color is set with the
+                 * `.highcharts-negative` class name.
+                 *
+                 * @see [negativeColor](#plotOptions.area.negativeColor)
+                 *
+                 * @sample {highcharts} highcharts/css/series-negative-color/
+                 *         Negative color in styled mode
+                 *
+                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @since     3.0
+                 * @product   highcharts
+                 * @apioption plotOptions.area.negativeFillColor
+                 */
 
                 /**
-             * Whether the whole area or just the line should respond to mouseover
-             * tooltips and other mouse or touch events.
-             *
-             * @sample {highcharts|highstock} highcharts/plotoptions/area-trackbyarea/
-             *         Display the tooltip when the area is hovered
-             *
-             * @type      {boolean}
-             * @default   false
-             * @since     1.1.6
-             * @product   highcharts highstock
-             * @apioption plotOptions.area.trackByArea
-             */
+                 * Whether the whole area or just the line should respond to mouseover
+                 * tooltips and other mouse or touch events.
+                 *
+                 * @sample {highcharts|highstock} highcharts/plotoptions/area-trackbyarea/
+                 *         Display the tooltip when the area is hovered
+                 *
+                 * @type      {boolean}
+                 * @default   false
+                 * @since     1.1.6
+                 * @product   highcharts highstock
+                 * @apioption plotOptions.area.trackByArea
+                 */
 
                 /**
-             * When this is true, the series will not cause the Y axis to cross
-             * the zero plane (or [threshold](#plotOptions.series.threshold) option)
-             * unless the data actually crosses the plane.
-             *
-             * For example, if `softThreshold` is `false`, a series of 0, 1, 2,
-             * 3 will make the Y axis show negative values according to the `minPadding`
-             * option. If `softThreshold` is `true`, the Y axis starts at 0.
-             *
-             * @since   4.1.9
-             * @product highcharts highstock
-             */
+                 * When this is true, the series will not cause the Y axis to cross
+                 * the zero plane (or [threshold](#plotOptions.series.threshold) option)
+                 * unless the data actually crosses the plane.
+                 *
+                 * For example, if `softThreshold` is `false`, a series of 0, 1, 2,
+                 * 3 will make the Y axis show negative values according to the
+                 * `minPadding` option. If `softThreshold` is `true`, the Y axis starts
+                 * at 0.
+                 *
+                 * @since   4.1.9
+                 * @product highcharts highstock
+                 */
                 softThreshold: false,
 
                 /**
-             * The Y axis value to serve as the base for the area, for distinguishing
-             * between values above and below a threshold. The area between the graph
-             * and the threshold is filled.
-             *
-             * * If a number is given, the Y axis will scale to the threshold.
-             * * If `null`, the scaling behaves like a line series with fill between the
-             *   graph and the Y axis minimum.
-             * * If `Infinity` or `-Infinity`, the area between the graph and the
-             *   corresponing Y axis extreme is filled (since v6.1.0).
-             *
-             * @sample {highcharts} highcharts/plotoptions/area-threshold/
-             *         A threshold of 100
-             * @sample {highcharts} highcharts/plotoptions/area-threshold-infinity/
-             *         A threshold of Infinity
-             *
-             * @since   2.0
-             * @product highcharts highstock
-             */
+                 * The Y axis value to serve as the base for the area, for
+                 * distinguishing between values above and below a threshold. The area
+                 * between the graph and the threshold is filled.
+                 *
+                 * * If a number is given, the Y axis will scale to the threshold.
+                 * * If `null`, the scaling behaves like a line series with fill between
+                 *   the graph and the Y axis minimum.
+                 * * If `Infinity` or `-Infinity`, the area between the graph and the
+                 *   corresponing Y axis extreme is filled (since v6.1.0).
+                 *
+                 * @sample {highcharts} highcharts/plotoptions/area-threshold/
+                 *         A threshold of 100
+                 * @sample {highcharts} highcharts/plotoptions/area-threshold-infinity/
+                 *         A threshold of Infinity
+                 *
+                 * @since   2.0
+                 * @product highcharts highstock
+                 */
                 threshold: 0
 
 
-            }, /** @lends seriesTypes.area.prototype */ {
+            },
+            /**
+             * @lends seriesTypes.area.prototype
+             */
+            {
 
                 singleStacks: false,
 
@@ -38619,7 +38674,8 @@
                 },
 
                 drawLegendSymbol: LegendSymbolMixin.drawRectangle
-            });
+            }
+        );
 
         /**
          * A `area` series. If the [type](#series.area.type) option is not
@@ -38980,7 +39036,9 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('areaspline', 'spline',
+        seriesType(
+            'areaspline',
+            'spline',
 
             /**
              * The area spline series is an area series where the graph between the
@@ -39002,7 +39060,8 @@
                 getGraphPath: areaProto.getGraphPath,
                 drawGraph: areaProto.drawGraph,
                 drawLegendSymbol: LegendSymbolMixin.drawRectangle
-            });
+            }
+        );
 
         /**
          * A `areaspline` series. If the [type](#series.areaspline.type) option
@@ -39126,7 +39185,9 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('column', 'line'
+        seriesType(
+            'column',
+            'line',
 
             /**
              * Column series display one column per value along an X axis.
@@ -39142,7 +39203,7 @@
              * @product      highcharts highstock
              * @optionparent plotOptions.column
              */
-            , {
+            {
 
                 /**
                  * The corner radius of the border surrounding each column or bar.
@@ -39513,7 +39574,11 @@
                  */
                 borderColor: '#ffffff'
 
-            }, /** @lends seriesTypes.column.prototype */ {
+            },
+            /**
+             * @lends seriesTypes.column.prototype
+             */
+            {
                 cropShoulder: 0,
                 // When tooltip is not shared, this series (and derivatives) requires
                 // direct touch/hover. KD-tree does not apply.
@@ -40099,7 +40164,8 @@
 
                     Series.prototype.remove.apply(series, arguments);
                 }
-            });
+            }
+        );
 
 
         /**
@@ -40235,7 +40301,9 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('bar', 'column',
+        seriesType(
+            'bar',
+            'column',
 
             /**
              * A bar series is a special type of column series where the columns are
@@ -40252,11 +40320,11 @@
             /**
              * @ignore
              */
-            null
-
-            , {
+            null,
+            {
                 inverted: true
-            });
+            }
+        );
 
 
         /**
@@ -40928,7 +40996,9 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('pie', 'line',
+        seriesType(
+            'pie',
+            'line',
 
             /**
              * A pie chart is a circular graphic which is divided into slices to
@@ -41258,22 +41328,27 @@
                     hover: {
 
                         /**
-                     * How much to brighten the point on interaction. Requires the main
-                     * color to be defined in hex or rgb(a) format.
-                     *
-                     * In styled mode, the hover brightness is by default replaced
-                     * by a fill-opacity given in the `.highcharts-point-hover` class.
-                     *
-                     * @sample {highcharts} highcharts/plotoptions/pie-states-hover-brightness/
-                     *         Brightened by 0.5
-                     *
-                     * @product highcharts
-                     */
+                         * How much to brighten the point on interaction. Requires the
+                         * main color to be defined in hex or rgb(a) format.
+                         *
+                         * In styled mode, the hover brightness is by default replaced
+                         * by a fill-opacity given in the `.highcharts-point-hover`
+                         * class.
+                         *
+                         * @sample {highcharts} highcharts/plotoptions/pie-states-hover-brightness/
+                         *         Brightened by 0.5
+                         *
+                         * @product highcharts
+                         */
                         brightness: 0.1
                     }
                 }
 
-            }, /** @lends seriesTypes.pie.prototype */ {
+            },
+            /**
+             * @lends seriesTypes.pie.prototype
+             */
+            {
 
                 isCartesian: false,
                 requireSorting: false,
@@ -41412,13 +41487,13 @@
                 },
 
                 /**
-             * Do translation for pie slices
-             *
-             * @private
-             * @function Highcharts.seriesTypes.pie#translate
-             *
-             * @param {Array<number>} positions
-             */
+                 * Do translation for pie slices
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#translate
+                 *
+                 * @param {Array<number>} positions
+                 */
                 translate: function (positions) {
                     this.generatePoints();
 
@@ -41567,19 +41642,19 @@
                 },
 
                 /**
-             * @private
-             * @deprecated
-             * @name Highcharts.seriesTypes.pie#drawGraph
-             * @type {null}
-             */
+                 * @private
+                 * @deprecated
+                 * @name Highcharts.seriesTypes.pie#drawGraph
+                 * @type {null}
+                 */
                 drawGraph: null,
 
                 /**
-             * Draw the data points
-             *
-             * @private
-             * @function Highcharts.seriesTypes.pie#drawPoints
-             */
+                 * Draw the data points
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#drawPoints
+                 */
                 redrawPoints: function () {
                     var series = this,
                         chart = series.chart,
@@ -41685,22 +41760,22 @@
                     });
                 },
                 /**
-             * @private
-             * @deprecated
-             * @function Highcharts.seriesTypes.pie#searchPoint
-             */
+                 * @private
+                 * @deprecated
+                 * @function Highcharts.seriesTypes.pie#searchPoint
+                 */
                 searchPoint: noop,
 
                 /**
-             * Utility for sorting data labels
-             *
-             * @private
-             * @function Highcharts.seriesTypes.pie#sortByAngle
-             *
-             * @param {Array<Highcharts.Point>} points
-             *
-             * @param {number} sign
-             */
+                 * Utility for sorting data labels
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#sortByAngle
+                 *
+                 * @param {Array<Highcharts.Point>} points
+                 *
+                 * @param {number} sign
+                 */
                 sortByAngle: function (points, sign) {
                     points.sort(function (a, b) {
                         return a.angle !== undefined && (b.angle - a.angle) * sign;
@@ -41708,41 +41783,45 @@
                 },
 
                 /**
-             * Use a simple symbol from LegendSymbolMixin.
-             *
-             * @private
-             * @borrows Highcharts.LegendSymbolMixin.drawRectangle as Highcharts.seriesTypes.pie#drawLegendSymbol
-             */
+                 * Use a simple symbol from LegendSymbolMixin.
+                 *
+                 * @private
+                 * @borrows Highcharts.LegendSymbolMixin.drawRectangle as Highcharts.seriesTypes.pie#drawLegendSymbol
+                 */
                 drawLegendSymbol: LegendSymbolMixin.drawRectangle,
 
                 /**
-             * Use the getCenter method from drawLegendSymbol.
-             *
-             * @private
-             * @borrows Highcharts.CenteredSeriesMixin.getCenter as Highcharts.seriesTypes.pie#getCenter
-             */
+                 * Use the getCenter method from drawLegendSymbol.
+                 *
+                 * @private
+                 * @borrows Highcharts.CenteredSeriesMixin.getCenter as Highcharts.seriesTypes.pie#getCenter
+                 */
                 getCenter: CenteredSeriesMixin.getCenter,
 
                 /**
-             * Pies don't have point marker symbols.
-             *
-             * @deprecated
-             * @private
-             * @function Highcharts.seriesTypes.pie#getSymbol
-             */
+                 * Pies don't have point marker symbols.
+                 *
+                 * @deprecated
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#getSymbol
+                 */
                 getSymbol: noop
 
 
-            }, /** @lends seriesTypes.pie.prototype.pointClass.prototype */ {
+            },
+            /**
+             * @lends seriesTypes.pie.prototype.pointClass.prototype
+             */
+            {
 
                 /**
-             * Initialize the pie slice
-             *
-             * @private
-             * @function Highcharts.seriesTypes.pie#pointClass#init
-             *
-             * @return {Highcharts.Point}
-             */
+                 * Initialize the pie slice
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#pointClass#init
+                 *
+                 * @return {Highcharts.Point}
+                 */
                 init: function () {
 
                     Point.prototype.init.apply(this, arguments);
@@ -41763,29 +41842,29 @@
                 },
 
                 /**
-             * Negative points are not valid (#1530, #3623, #5322)
-             *
-             * @private
-             * @function Highcharts.seriesTypes.pie#pointClass#isValid
-             *
-             * @return {boolean}
-             */
+                 * Negative points are not valid (#1530, #3623, #5322)
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#pointClass#isValid
+                 *
+                 * @return {boolean}
+                 */
                 isValid: function () {
                     return H.isNumber(this.y, true) && this.y >= 0;
                 },
 
                 /**
-             * Toggle the visibility of the pie slice
-             *
-             * @private
-             * @function Highcharts.seriesTypes.pie#pointClass#setVisible
-             *
-             * @param {boolean} vis
-             *        Whether to show the slice or not. If undefined, the visibility is
-             *        toggled.
-             *
-             * @param {boolean} [redraw=false]
-             */
+                 * Toggle the visibility of the pie slice
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#pointClass#setVisible
+                 *
+                 * @param {boolean} vis
+                 *        Whether to show the slice or not. If undefined, the visibility
+                 *        is toggled.
+                 *
+                 * @param {boolean} [redraw=false]
+                 */
                 setVisible: function (vis, redraw) {
                     var point = this,
                         series = point.series,
@@ -41834,17 +41913,17 @@
                 },
 
                 /**
-             * Set or toggle whether the slice is cut out from the pie
-             *
-             * @private
-             * @function Highcharts.seriesTypes.pie#pointClass#slice
-             *
-             * @param {boolean} sliced
-             *        When undefined, the slice state is toggled.
-             *
-             * @param {boolean} redraw
-             *        Whether to redraw the chart. True by default.
-             */
+                 * Set or toggle whether the slice is cut out from the pie
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#pointClass#slice
+                 *
+                 * @param {boolean} sliced
+                 *        When undefined, the slice state is toggled.
+                 *
+                 * @param {boolean} redraw
+                 *        Whether to redraw the chart. True by default.
+                 */
                 slice: function (sliced, redraw, animation) {
                     var point = this,
                         series = point.series,
@@ -41869,11 +41948,11 @@
                 },
 
                 /**
-             * @private
-             * @function Highcharts.seriesTypes.pie#pointClass#getTranslate
-             *
-             * @return {*}
-             */
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#pointClass#getTranslate
+                 *
+                 * @return {*}
+                 */
                 getTranslate: function () {
                     return this.sliced ? this.slicedTranslation : {
                         translateX: 0,
@@ -41882,13 +41961,13 @@
                 },
 
                 /**
-             * @private
-             * @function Highcharts.seriesTypes.pie#pointClass#haloPath
-             *
-             * @param {number} size
-             *
-             * @return {Highcharts.SVGPathArray}
-             */
+                 * @private
+                 * @function Highcharts.seriesTypes.pie#pointClass#haloPath
+                 *
+                 * @param {number} size
+                 *
+                 * @return {Highcharts.SVGPathArray}
+                 */
                 haloPath: function (size) {
                     var shapeArgs = this.shapeArgs;
 
@@ -41998,9 +42077,9 @@
                 },
 
                 /**
-             * Extendable method for getting the path of the connector between the data
-             * label and the pie slice.
-             */
+                 * Extendable method for getting the path of the connector between the
+                 * data label and the pie slice.
+                 */
                 getConnectorPath: function () {
                     var labelPosition = this.labelPosition,
                         options = this.series.options.dataLabels,
@@ -42019,7 +42098,8 @@
                         alignment: labelPosition.alignment
                     }, labelPosition.connectorPosition, options);
                 }
-            });
+            }
+        );
 
         /**
          * A `pie` series. If the [type](#series.pie.type) option is not specified,
@@ -42579,8 +42659,7 @@
 
 
 
-        var addEvent = H.addEvent,
-            arrayMax = H.arrayMax,
+        var arrayMax = H.arrayMax,
             defined = H.defined,
             extend = H.extend,
             format = H.format,
@@ -42769,11 +42848,17 @@
                 pointOptions,
                 hasRendered = series.hasRendered || 0,
                 dataLabelsGroup,
-                defer = pick(seriesDlOptions.defer, !!seriesOptions.animation),
+                seriesAnimDuration = H.animObject(seriesOptions.animation).duration,
+                fadeInDuration = Math.min(seriesAnimDuration, 200),
+                defer = pick(
+                    seriesDlOptions.defer,
+                    fadeInDuration > 0
+                ),
                 renderer = chart.renderer;
 
-            /*
+            /**
              * Handle the dataLabels.filter option.
+             * @private
              */
             function applyFilter(point, options) {
                 var filter = options.filter,
@@ -42800,10 +42885,11 @@
                 return true;
             }
 
-            /*
+            /**
              * Merge two objects that can be arrays. If one of them is an array, the
              * other is merged into each element. If both are arrays, each element is
              * merged by index. If neither are arrays, we use normal merge.
+             * @private
              */
             function mergeArrays(one, two) {
                 var res = [],
@@ -42861,14 +42947,17 @@
                 if (defer) {
                     dataLabelsGroup.attr({ opacity: +hasRendered }); // #3300
                     if (!hasRendered) {
-                        addEvent(series, 'afterAnimate', function () {
-                            if (series.visible) { // #2597, #3023, #3024
-                                dataLabelsGroup.show(true);
+                        setTimeout(function () {
+                            var group = series.dataLabelsGroup;
+                            if (group) {
+                                if (series.visible) { // #2597, #3023, #3024
+                                    dataLabelsGroup.show(true);
+                                }
+                                group[
+                                    seriesOptions.animation ? 'animate' : 'attr'
+                                ]({ opacity: 1 }, { duration: fadeInDuration });
                             }
-                            dataLabelsGroup[
-                                seriesOptions.animation ? 'animate' : 'attr'
-                            ]({ opacity: 1 }, { duration: 200 });
-                        });
+                        }, seriesAnimDuration - fadeInDuration);
                     }
                 }
 
@@ -44273,7 +44362,7 @@
 
     });
     _registerModule(_modules, 'parts/Interaction.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -44496,10 +44585,8 @@
         /* End TrackerMixin */
 
 
-        /*
-         * Add tracking event listener to the series group, so the point graphics
-         * themselves act as trackers
-         */
+        // Add tracking event listener to the series group, so the point graphics
+        // themselves act as trackers
 
         if (seriesTypes.column) {
             /**
@@ -44662,10 +44749,7 @@
             }
         });
 
-        /*
-         * Extend the Chart object with interaction
-         */
-
+        // Extend the Chart object with interaction
         extend(Chart.prototype, /** @lends Chart.prototype */ {
 
             /**
@@ -44977,17 +45061,22 @@
                         // unselect all other points unless Ctrl or Cmd + click
                         if (!accumulate) {
                             chart.getSelectedPoints().forEach(function (loopPoint) {
+                                var loopSeries = loopPoint.series;
+
                                 if (loopPoint.selected && loopPoint !== point) {
                                     loopPoint.selected = loopPoint.options.selected =
                                         false;
-                                    series.options.data[
-                                        series.data.indexOf(loopPoint)
+                                    loopSeries.options.data[
+                                        loopSeries.data.indexOf(loopPoint)
                                     ] = loopPoint.options;
+
                                     // Programatically selecting a point should restore
                                     // normal state, but when click happened on other
                                     // point, set inactive state to match other points
                                     loopPoint.setState(
-                                        chart.hoverPoints ? 'inactive' : ''
+                                        chart.hoverPoints &&
+                                            loopSeries.options.inactiveOtherPoints ?
+                                            'inactive' : ''
                                     );
                                     loopPoint.firePointEvent('unselect');
                                 }
@@ -45698,7 +45787,7 @@
 
     });
     _registerModule(_modules, 'parts/Responsive.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -51907,6 +51996,9 @@
                         // Partial fill graphic
                         if (partShapeArgs) {
                             if (point.graphicOverlay) {
+                                point.graphicOverlay[verb](
+                                    merge(partShapeArgs)
+                                );
                                 point.clipRect.animate(
                                     merge(clipRectArgs)
                                 );
@@ -52384,22 +52476,22 @@
                 },
 
                 /**
-             * Draws a single point in the series.
-             *
-             * This override draws the point as a diamond if point.options.milestone is
-             * true, and uses the original drawPoint() if it is false or not set.
-             *
-             * @requires module:highcharts-gantt
-             *
-             * @private
-             * @function Highcharts.seriesTypes.gantt#drawPoint
-             *
-             * @param {Highcharts.Point} point
-             *        An instance of Point in the series
-             *
-             * @param {"animate"|"attr"} verb
-             *        'animate' (animates changes) or 'attr' (sets options)
-             */
+                 * Draws a single point in the series.
+                 *
+                 * This override draws the point as a diamond if point.options.milestone
+                 * is true, and uses the original drawPoint() if it is false or not set.
+                 *
+                 * @requires module:highcharts-gantt
+                 *
+                 * @private
+                 * @function Highcharts.seriesTypes.gantt#drawPoint
+                 *
+                 * @param {Highcharts.Point} point
+                 *        An instance of Point in the series
+                 *
+                 * @param {"animate"|"attr"} verb
+                 *        'animate' (animates changes) or 'attr' (sets options)
+                 */
                 drawPoint: function (point, verb) {
                     var series = this,
                         seriesOpts = series.options,
@@ -52780,7 +52872,7 @@
 
     });
     _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -53740,8 +53832,8 @@
 
         if (!H.Scrollbar) {
             /* *
-            * Wrap axis initialization and create scrollbar if enabled:
-            */
+             * Wrap axis initialization and create scrollbar if enabled:
+             */
             addEvent(Axis, 'afterInit', function () {
                 var axis = this;
 
@@ -53918,7 +54010,7 @@
 
     });
     _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -55725,14 +55817,15 @@
                 max = this.max,
                 dataMin,
                 range,
+                time = this.chart.time,
                 // Get the true range from a start date
                 getTrueRange = function (base, count) {
-                    var date = new Date(base),
-                        basePeriod = date['get' + timeName]();
+                    var date = new time.Date(base),
+                        basePeriod = time.get(timeName, date);
 
-                    date['set' + timeName](basePeriod + count);
+                    time.set(timeName, date, basePeriod + count);
 
-                    if (basePeriod === date['get' + timeName]()) {
+                    if (basePeriod === time.get(timeName, date)) {
                         date.setDate(0); // #6537
                     }
 
@@ -55943,7 +56036,7 @@
 
     });
     _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Globals.js']], function (H) {
-        /**
+        /* *
          * (c) 2010-2019 Torstein Honsi
          *
          * License: www.highcharts.com/license
@@ -58267,11 +58360,9 @@
         if (!H.Navigator) {
             H.Navigator = Navigator;
 
-            /*
-            * For Stock charts, override selection zooming with some special features
-            * because X axis zooming is already allowed by the Navigator and Range
-            * selector.
-            */
+            // For Stock charts, override selection zooming with some special features
+            // because X axis zooming is already allowed by the Navigator and Range
+            // selector.
             addEvent(Axis, 'zoom', function (e) {
                 var chart = this.chart,
                     chartOptions = chart.options,
@@ -58316,11 +58407,9 @@
                 }
             });
 
-            /**
-             * For Stock charts. For x only zooming, do not to create the zoom button
-             * because X axis zooming is already allowed by the Navigator and Range
-             * selector. (#9285)
-             */
+            // For Stock charts. For x only zooming, do not to create the zoom button
+            // because X axis zooming is already allowed by the Navigator and Range
+            // selector. (#9285)
             addEvent(Chart, 'beforeShowResetZoom', function () {
                 var chartOptions = this.options,
                     navigator = chartOptions.navigator,
@@ -58348,12 +58437,10 @@
                 }
             });
 
-            /*
-            * For stock charts, extend the Chart.setChartSize method so that we can set
-            * the final top position of the navigator once the height of the chart,
-            * including the legend, is determined. #367. We can't use Chart.getMargins,
-            * because labels offsets are not calculated yet.
-            */
+            // For stock charts, extend the Chart.setChartSize method so that we can set
+            // the final top position of the navigator once the height of the chart,
+            // including the legend, is determined. #367. We can't use Chart.getMargins,
+            // because labels offsets are not calculated yet.
             addEvent(Chart, 'afterSetChartSize', function () {
 
                 var legend = this.legend,

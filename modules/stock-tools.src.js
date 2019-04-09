@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.0 (2019-04-01)
+ * @license Highcharts JS v7.1.1 (2019-04-09)
  *
  * Advanced Highstock tools
  *
@@ -2326,7 +2326,7 @@
                      * Path where Highcharts will look for icons. Change this to use
                      * icons from a different server.
                      */
-                    iconsURL: 'https://code.highcharts.com/7.1.0/gfx/stock-icons/',
+                    iconsURL: 'https://code.highcharts.com/7.1.1/gfx/stock-icons/',
                     /**
                      * A collection of strings pointing to config options for the
                      * toolbar items. Each name refers to unique key from definitions
