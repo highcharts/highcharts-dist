@@ -454,16 +454,20 @@ H.extend(
                         ) {
                             distanceXY = layout.getDistXY(node, repNode);
                             distanceR = layout.vectorLength(distanceXY);
+                            if (distanceR !== 0) {
+                                force = layout.repulsiveForce(
+                                    distanceR,
+                                    layout.k
+                                );
 
-                            force = layout.repulsiveForce(distanceR, layout.k);
-
-                            layout.force(
-                                'repulsive',
-                                node,
-                                force * repNode.mass,
-                                distanceXY,
-                                distanceR
-                            );
+                                layout.force(
+                                    'repulsive',
+                                    node,
+                                    force * repNode.mass,
+                                    distanceXY,
+                                    distanceR
+                                );
+                            }
                         }
                     });
                 });
@@ -628,9 +632,9 @@ H.extend(
     }
 );
 
-/*
+/* ************************************************************************** *
  * Multiple series support:
- */
+ * ************************************************************************** */
 // Clear previous layouts
 addEvent(Chart, 'predraw', function () {
     if (this.graphLayoutsLookup) {

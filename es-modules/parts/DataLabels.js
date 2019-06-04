@@ -408,6 +408,14 @@
  * @default {"color": "contrast", "fontSize": "11px", "fontWeight": "bold", "textOutline": "1px contrast" }
  * @since 4.1.0
  *//**
+ * Options for a label text which should follow marker's shape. Border and
+ * background are disabled for a label that follows a path.
+ * **Note:** Only SVG-based renderer supports this option. Setting `useHTML` to
+ * true will disable this option.
+ * @name Highcharts.DataLabelsOptionsObject#textPath
+ * @type {Highcharts.DataLabelsTextPath|undefined}
+ * @since 7.1.0
+ *//**
  * Whether to
  * [use HTML](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting#html)
  * to render the labels.
@@ -455,6 +463,27 @@
  * Values for handling data labels that flow outside the plot area.
  *
  * @typedef {"allow"|"justify"} Highcharts.DataLabelsOverflowValue
+ */
+
+/**
+ * Options for a label text which should follow marker's shape.
+ * **Note:** Only SVG-based renderer supports this option.
+ *
+ * @see {@link Highcharts.SeriesNetworkDataLabelsTextPath#linkTextPath}
+ * @see {@link Highcharts.SeriesNetworkDataLabelsTextPath#textPath}
+ *
+ * @interface Highcharts.DataLabelsTextPath
+ * @since 7.1.0
+ *//**
+ * Presentation attributes for the text path.
+ * @name Highcharts.DataLabelsTextPath#attributes
+ * @type {Highcharts.SVGAttributes}
+ * @since 7.1.0
+ *//**
+ * Enable or disable `textPath` option for link's or marker's data labels.
+ * @name Highcharts.DataLabelsTextPath#enabled
+ * @type {boolean|undefined}
+ * @since 7.1.0
  */
 
 'use strict';
@@ -654,7 +683,7 @@ Series.prototype.drawDataLabels = function () {
         dataLabelsGroup,
         seriesAnimDuration = H.animObject(seriesOptions.animation).duration,
         fadeInDuration = Math.min(seriesAnimDuration, 200),
-        defer = pick(
+        defer = !chart.renderer.forExport && pick(
             seriesDlOptions.defer,
             fadeInDuration > 0
         ),
@@ -953,7 +982,7 @@ Series.prototype.drawDataLabels = function () {
                         dataLabel.add(dataLabelsGroup);
                     }
 
-                    if (labelOptions.textPath) {
+                    if (labelOptions.textPath && !labelOptions.useHTML) {
                         dataLabel.setTextPath(
                             (
                                 point.getDataLabelPath &&

@@ -19,13 +19,11 @@ import 'Pathfinder.js';
 import '../modules/xrange.src.js';
 
 var dateFormat = H.dateFormat,
-    isObject = H.isObject,
     isNumber = H.isNumber,
     merge = H.merge,
     pick = H.pick,
     seriesType = H.seriesType,
     seriesTypes = H.seriesTypes,
-    stop = H.stop,
     Series = H.Series,
     parent = seriesTypes.xrange;
 
@@ -53,19 +51,7 @@ seriesType('gantt', 'xrange'
 
         dataLabels: {
             /** @ignore-option */
-            enabled: true,
-            /** @ignore-option */
-            formatter: function () {
-                var point = this,
-                    amount = point.point.partialFill;
-
-                if (isObject(amount)) {
-                    amount = amount.amount;
-                }
-                if (isNumber(amount) && amount > 0) {
-                    return (amount * 100) + '%';
-                }
-            }
+            enabled: true
         },
         tooltip: {
             headerFormat: '<span style="font-size: 10px">{series.name}</span><br/>',
@@ -75,12 +61,10 @@ seriesType('gantt', 'xrange'
                     series = point.series,
                     tooltip = series.chart.tooltip,
                     xAxis = series.xAxis,
-                    options = xAxis.options,
-                    formats = options.dateTimeLabelFormats,
+                    formats = series.tooltipOptions.dateTimeLabelFormats,
                     startOfWeek = xAxis.options.startOfWeek,
                     ttOptions = series.tooltipOptions,
                     format = ttOptions.xDateFormat,
-                    range = point.end ? point.end - point.start : 0,
                     start,
                     end,
                     milestone = point.options.milestone,
@@ -93,7 +77,7 @@ seriesType('gantt', 'xrange'
                 if (!format) {
                     format = H.splat(
                         tooltip.getDateFormat(
-                            range,
+                            xAxis.closestPointRange,
                             point.start,
                             startOfWeek,
                             formats
@@ -110,7 +94,7 @@ seriesType('gantt', 'xrange'
                     retVal += 'Start: ' + start + '<br/>';
                     retVal += 'End: ' + end + '<br/>';
                 } else {
-                    retVal += 'Date ' + start + '<br/>';
+                    retVal += start + '<br/>';
                 }
 
                 return retVal;
@@ -199,7 +183,6 @@ seriesType('gantt', 'xrange'
                     );
 
                     if (graphic) {
-                        stop(graphic);
                         graphic[verb]({
                             d: diamondShape
                         });
@@ -267,6 +250,19 @@ seriesType('gantt', 'xrange'
             retVal = parent.prototype.pointClass.prototype.applyOptions
                 .call(point, retVal, x);
             return retVal;
+        },
+        isValid: function () {
+            return (
+                (
+                    typeof this.start === 'number' ||
+                    typeof this.x === 'number'
+                ) &&
+                (
+                    typeof this.end === 'number' ||
+                    typeof this.x2 === 'number' ||
+                    this.milestone
+                )
+            );
         }
     }));
 

@@ -1232,13 +1232,15 @@ RangeSelector.prototype = {
         };
         // Hide away the input box
         input.onblur = function () {
+            // update extermes only when inputs are active
             if (input === H.doc.activeElement) { // Only when focused
                 // Update also when no `change` event is triggered, like when
                 // clicking inside the SVG (#4710)
                 updateExtremes();
-                rangeSelector.hideInput(name);
-                input.blur(); // #4606
             }
+            // #10404 - move hide and blur outside focus
+            rangeSelector.hideInput(name);
+            input.blur(); // #4606
         };
 
         // handle changes in the input boxes
@@ -1818,7 +1820,7 @@ Axis.prototype.minFromRange = function () {
             time.set(timeName, date, basePeriod + count);
 
             if (basePeriod === time.get(timeName, date)) {
-                date.setDate(0); // #6537
+                time.set('Date', date, 0); // #6537
             }
 
             return date.getTime() - base;

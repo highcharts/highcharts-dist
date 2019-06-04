@@ -192,6 +192,8 @@ H.Tick.prototype = {
             }
 
             label.attr({ text: str });
+
+            label.textPxLength = label.getBBox().width;
         }
     },
 
@@ -374,6 +376,9 @@ H.Tick.prototype = {
                 )
         };
 
+        // Chrome workaround for #10516
+        pos.y = Math.max(Math.min(pos.y, 1e5), -1e5);
+
         fireEvent(this, 'afterGetPosition', { pos: pos });
 
         return pos;
@@ -528,10 +533,12 @@ H.Tick.prototype = {
 
         if (gridLine) {
             gridLinePath = axis.getPlotLinePath(
-                pos + tickmarkOffset,
-                gridLine.strokeWidth() * reverseCrisp,
-                old,
-                'pass'
+                {
+                    value: pos + tickmarkOffset,
+                    lineWidth: gridLine.strokeWidth() * reverseCrisp,
+                    force: 'pass',
+                    old: old
+                }
             );
 
             // If the parameter 'old' is set, the current call will be followed

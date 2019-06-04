@@ -20,7 +20,7 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/series-datalabels|Highcharts-Demo:}
  *      Style mode example
  *
- * @interface Highcharts.PlotPieDataLabelsOptionsObject
+ * @interface Highcharts.SeriesPieDataLabelsOptionsObject
  * @extends Highcharts.DataLabelsOptionsObject
  *//**
  * Alignment method for data labels. Possible values are:
@@ -37,7 +37,7 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/pie-datalabels-alignto-plotedges/|Highcharts-Demo:}
  *      alignTo: plotEdges
  *
- * @name Highcharts.PlotPieDataLabelsOptionsObject#alignTo
+ * @name Highcharts.SeriesPieDataLabelsOptionsObject#alignTo
  * @type {string|undefined}
  * @since 7.0.0
  * @product highcharts
@@ -53,7 +53,7 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/pie-point/|Highcharts-Demo:}
  *      Styled connectors
  *
- * @name Highcharts.PlotPieDataLabelsOptionsObject#connectorColor
+ * @name Highcharts.SeriesPieDataLabelsOptionsObject#connectorColor
  * @type {Highcharts.ColorString|undefined}
  * @since 2.1
  * @product highcharts
@@ -65,7 +65,7 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/pie-datalabels-connectorpadding/|Highcharts-Demo:}
  *      No padding
  *
- * @name Highcharts.PlotPieDataLabelsOptionsObject#connectorPadding
+ * @name Highcharts.SeriesPieDataLabelsOptionsObject#connectorPadding
  * @type {number|undefined}
  * @default 5
  * @since 2.1
@@ -100,7 +100,7 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/pie-datalabels-connectorshape-function/|Highcharts-Demo:}
  *      connectorShape is a function
  *
- * @name Highcharts.PlotPieDataLabelsOptionsObject#connectorShape
+ * @name Highcharts.SeriesPieDataLabelsOptionsObject#connectorShape
  * @type {string|Function|undefined}
  * @default fixedOffset
  * @since 7.0.0
@@ -118,7 +118,7 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/pie-point/|Highcharts-Demo:}
  *      Styled connectors
  *
- * @name Highcharts.PlotPieDataLabelsOptionsObject#connectorWidth
+ * @name Highcharts.SeriesPieDataLabelsOptionsObject#connectorWidth
  * @type {number|undefined}
  * @default 1
  * @since 2.1
@@ -131,20 +131,20 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/pie-datalabels-crookdistance/|Highcharts-Demo:}
  *      crookDistance set to 90%
  *
- * @name Highcharts.PlotPieDataLabelsOptionsObject#crookDistance
+ * @name Highcharts.SeriesPieDataLabelsOptionsObject#crookDistance
  * @type {string|undefined}
  * @default 70%
  * @since 7.0.0
  * @product highcharts
  *//**
  * The distance of the data label from the pie's edge. Negative numbers put the
- * data label on top of the pie slices. Connectors are only shown for data
- * labels outside the pie.
+ * data label on top of the pie slices. Can also be defined as a percentage of
+ * pie's radius. Connectors are only shown for data labels outside the pie.
  *
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/pie-datalabels-distance/|Highcharts-Demo:}
  *      Data labels on top of the pie
  *
- * @name Highcharts.PlotPieDataLabelsOptionsObject#distance
+ * @name Highcharts.SeriesPieDataLabelsOptionsObject#distance
  * @type {number|undefined}
  * @default 30
  * @since 2.1
@@ -158,7 +158,7 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/pie-datalabels-softconnector-false/|Highcharts-Demo:}
  *      Non soft
  *
- * @name Highcharts.PlotPieDataLabelsOptionsObject#softConnector
+ * @name Highcharts.SeriesPieDataLabelsOptionsObject#softConnector
  * @type {number|undefined}
  * @default true
  * @since 2.1.7
@@ -245,6 +245,22 @@ seriesType(
          */
 
         /**
+         * Fires when the legend item belonging to the pie point (slice) is
+         * clicked. The `this` keyword refers to the point itself. One
+         * parameter, `event`, is passed to the function, containing common
+         * event information. The default action is to toggle the visibility of
+         * the point. This can be prevented by calling `event.preventDefault()`.
+         *
+         * @sample {highcharts} highcharts/plotoptions/pie-point-events-legenditemclick/
+         *         Confirm toggle visibility
+         *
+         * @type      {Highcharts.PointLegendItemClickCallbackFunction}
+         * @since     1.2.0
+         * @product   highcharts
+         * @apioption plotOptions.pie.point.events.legendItemClick
+         */
+
+        /**
          * The center of the pie chart relative to the plot area. Can be
          * percentages or pixel values. The default behaviour (as of 3.0) is to
          * center the pie so that all slices and data labels are within the plot
@@ -291,7 +307,8 @@ seriesType(
          */
 
         /**
-         * @type {Highcharts.DataLabelsOptionsObject|Highcharts.PlotPieDataLabelsOptionsObject}
+         * @type    {Highcharts.SeriesPieDataLabelsOptionsObject|Array<Highcharts.SeriesPieDataLabelsOptionsObject>}
+         * @default {"allowOverlap": true, "connectorPadding": 5, "distance": 30, "enabled": true, "formatter": function () { return this.point.name; }, "softConnector": true, "x": 0, "connectorShape": "fixedOffset", "crookDistance": "70%"}
          *
          * @private
          */
@@ -349,7 +366,11 @@ seriesType(
          */
         ignoreHiddenPoint: true,
 
-        /** @ignore-option */
+        /**
+         * @ignore-option
+         *
+         * @private
+         */
         inactiveOtherPoints: true,
 
         /**
@@ -739,21 +760,6 @@ seriesType(
 
                 point = points[i];
 
-                // Used for distance calculation for specific point.
-                point.labelDistance = pick(
-                    (
-                        point.options.dataLabels &&
-                        point.options.dataLabels.distance
-                    ),
-                    labelDistance
-                );
-
-                // Saved for later dataLabels distance calculation.
-                series.maxLabelDistance = Math.max(
-                    series.maxLabelDistance || 0,
-                    point.labelDistance
-                );
-
                 // set start and end angle
                 start = startAngleRad + (cumulative * circ);
                 if (!ignoreHiddenPoint || point.visible) {
@@ -771,6 +777,26 @@ seriesType(
                     start: Math.round(start * precision) / precision,
                     end: Math.round(end * precision) / precision
                 };
+
+                // Used for distance calculation for specific point.
+                point.labelDistance = pick(
+                    (
+                        point.options.dataLabels &&
+                        point.options.dataLabels.distance
+                    ),
+                    labelDistance
+                );
+
+                // Compute point.labelDistance if it's defined as percentage
+                // of slice radius (#8854)
+                point.labelDistance =
+                  H.relativeLength(point.labelDistance, point.shapeArgs.r);
+
+                // Saved for later dataLabels distance calculation.
+                series.maxLabelDistance = Math.max(
+                    series.maxLabelDistance || 0,
+                    point.labelDistance
+                );
 
                 // The angle must stay within -90 and 270 (#2645)
                 angle = (end + start) / 2;
@@ -929,7 +955,7 @@ seriesType(
                                 .shadow(shadow, shadowGroup);
                         }
 
-                        point.delayRendering = false;
+                        point.delayedRendering = false;
                     }
 
                     graphic.attr({
@@ -1360,27 +1386,17 @@ seriesType(
  */
 
 /**
+ * @type      {Highcharts.SeriesPieDataLabelsOptionsObject|Array<Highcharts.SeriesPieDataLabelsOptionsObject>}
+ * @product   highcharts
+ * @apioption series.pie.data.dataLabels
+ */
+
+/**
  * The sequential index of the data point in the legend.
  *
  * @type      {number}
  * @product   highcharts
  * @apioption series.pie.data.legendIndex
- */
-
-/**
- * Fires when the legend item belonging to the pie point (slice) is
- * clicked. The `this` keyword refers to the point itself. One parameter,
- * `event`, is passed to the function, containing common event information. The
- * default action is to toggle the visibility of the point. This can be
- * prevented by calling `event.preventDefault()`.
- *
- * @sample {highcharts} highcharts/plotoptions/pie-point-events-legenditemclick/
- *         Confirm toggle visibility
- *
- * @type      {Highcharts.PointLegendItemClickCallbackFunction}
- * @since     1.2.0
- * @product   highcharts
- * @apioption plotOptions.pie.point.events.legendItemClick
  */
 
 /**
@@ -1396,5 +1412,6 @@ seriesType(
 
 /**
  * @excluding legendItemClick
+ * @product   highcharts
  * @apioption series.pie.events
  */

@@ -9,9 +9,9 @@
 /**
  * Formatter callback function.
  *
- * @callback Highcharts.PlotPackedBubbleDataLabelsFormatterCallbackFunction
+ * @callback Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction
  *
- * @param {Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject|Highcharts.DataLabelsFormatterContextObject} this
+ * @param {Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject|Highcharts.DataLabelsFormatterContextObject} this
  *        Data label context to format
  *
  * @return {string}
@@ -21,24 +21,24 @@
 /**
  * Context for the formatter function.
  *
- * @interface Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject
+ * @interface Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject
  * @extends Highcharts.DataLabelsFormatterContextObject
  * @since 7.0.0
  *//**
  * The color of the node.
- * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#color
+ * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#color
  * @type {Highcharts.ColorString}
  * @since 7.0.0
  *//**
  * The point (node) object. The node name, if defined, is available through
  * `this.point.name`. Arrays: `this.point.linksFrom` and `this.point.linksTo`
  * contains all nodes connected to this point.
- * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#point
+ * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#point
  * @type {Highcharts.Point}
  * @since 7.0.0
  *//**
  * The ID of the node.
- * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#key
+ * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#key
  * @type {string}
  * @since 7.0.0
  */
@@ -46,7 +46,7 @@
 /**
  * Data labels options
  *
- * @interface Highcharts.PlotPackedBubbleDataLabelsOptionsObject
+ * @interface Highcharts.SeriesPackedBubbleDataLabelsOptionsObject
  * @extends Highcharts.DataLabelsOptionsObject
  * @since 7.0.0
  *//**
@@ -54,54 +54,54 @@
  * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
  * specifying what to show for _node_ in the networkgraph. In v7.0 defaults to
  * `{key}`, since v7.1 defaults to `undefined` and `formatter` is used instead.
- * @name Highcharts.PlotPackedBubbleDataLabelsOptionsObject#format
+ * @name Highcharts.SeriesPackedBubbleDataLabelsOptionsObject#format
  * @type {string}
  * @since 7.0.0
  *//**
  * Callback JavaScript function to format the data label for a node. Note that
  * if a `format` is defined, the format takes precedence and the formatter is
  * ignored.
- * @name Highcharts.PlotPackedBubbleDataLabelsOptionsObject#formatter
- * @type {Highcharts.PlotPackedBubbleDataLabelsFormatterCallbackFunction|undefined}
+ * @name Highcharts.SeriesPackedBubbleDataLabelsOptionsObject#formatter
+ * @type {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction|undefined}
  * @since 7.0.0
  *//**
  * Callback to format data labels for _parentNodes_. The `parentNodeFormat`
  * option takes precedence over the `parentNodeFormatter`.
- * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#parentNodeFormatter
+ * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#parentNodeFormatter
  * @type {Highcharts.FormatterCallbackFunction<Highcharts.DataLabelsFormatterContextObject>}
  * @since 7.1.0
  *//**
  * Options for a _parentNode_ label text.
  * @sample highcharts/series-packedbubble/packed-dashboard
  *         Dashboard with dataLabels on parentNodes
- * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#parentNodeTextPath
- * @type {Highcharts.PlotPackedBubbleDataLabelsTextPath}
+ * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#parentNodeTextPath
+ * @type {Highcharts.SeriesPackedBubbleDataLabelsTextPath}
  * @since 7.1.0
 *//**
  * Options for a _node_ label text which should follow marker's shape.
  * **Note:** Only SVG-based renderer supports this option.
- * @see {@link Highcharts.PlotPackedBubbleDataLabelsTextPath#linkTextPath}
- * @name Highcharts.PlotPackedBubbleDataLabelsOptionsObject#textPath
- * @type {Highcharts.PlotPackedBubbleDataLabelsTextPath}
+ * @see {@link Highcharts.SeriesPackedBubbleDataLabelsTextPath#linkTextPath}
+ * @name Highcharts.SeriesPackedBubbleDataLabelsOptionsObject#textPath
+ * @type {Highcharts.SeriesPackedBubbleDataLabelsTextPath}
  * @since 7.1.0
  */
 
 /**
  * **Note:** Only SVG-based renderer supports this option.
  *
- * @see {@link Highcharts.PlotNetworkDataLabelsTextPath#linkTextPath}
- * @see {@link Highcharts.PlotNetworkDataLabelsTextPath#textPath}
+ * @see {@link Highcharts.SeriesNetworkDataLabelsTextPath#linkTextPath}
+ * @see {@link Highcharts.SeriesNetworkDataLabelsTextPath#textPath}
  *
- * @interface Highcharts.PlotPackedBubbleDataLabelsTextPath
+ * @interface Highcharts.SeriesPackedBubbleDataLabelsTextPath
  * @since 7.1.0
  *//**
  * Presentation attributes for the text path.
- * @name Highcharts.PlotPackedBubbleDataLabelsTextPath#attributes
+ * @name Highcharts.SeriesPackedBubbleDataLabelsTextPath#attributes
  * @type {Highcharts.SVGAttributes}
  * @since 7.1.0
  *//**
  * Enable or disable `textPath` option for link's or marker's data labels.
- * @name Highcharts.PlotPackedBubbleDataLabelsTextPath#enabled
+ * @name Highcharts.SeriesPackedBubbleDataLabelsTextPath#enabled
  * @type {boolean|undefined}
  * @since 7.1.0
  */
@@ -188,8 +188,7 @@ H.layouts.packedbubble = H.extendClass(
             if (this.options.marker) {
                 this.series.forEach(function (series) {
                     if (series) {
-                        series.translate();
-                        series.drawPoints();
+                        series.calculateParentRadius();
                     }
                 });
             }
@@ -325,7 +324,10 @@ H.layouts.packedbubble = H.extendClass(
             (
                 // In first iteration system does not move:
                 this.systemTemperature > 0 &&
-                this.systemTemperature / this.nodes.length < 0.01
+                (
+                    this.systemTemperature / this.nodes.length < 0.02 &&
+                    this.enableSimulation
+                ) // Use only when simulation is enabled
             );
         }
     }
@@ -422,7 +424,8 @@ seriesType(
          */
         useSimulation: true,
         /**
-         * @type {Highcharts.PlotPackedBubbleDataLabelsOptionsObject}
+         * @type    {Highcharts.SeriesPackedBubbleDataLabelsOptionsObject|Array<Highcharts.SeriesPackedBubbleDataLabelsOptionsObject>}
+         * @default {"formatter": function () { return this.point.value; }, "parentNodeFormatter": function () { return this.name; }, "parentNodeTextPath": {"enabled: true}, "padding": 0}
          *
          * @private
          */
@@ -519,7 +522,7 @@ seriesType(
                  * @sample highcharts/series-packedbubble/parentnode-style/
                  *         Bubble size
                  *
-                 * @extends   plotOptions.line.marker
+                 * @extends   plotOptions.series.marker
                  * @excluding states
                  */
                 marker: {
@@ -646,14 +649,18 @@ seriesType(
             var series = this,
                 dataLabels = [];
             Series.prototype.render.apply(this, arguments);
-            series.data.forEach(function (point) {
-                if (H.isArray(point.dataLabels)) {
-                    point.dataLabels.forEach(function (dataLabel) {
-                        dataLabels.push(dataLabel);
-                    });
-                }
-            });
-            series.chart.hideOverlappingLabels(dataLabels);
+            // #10823 - dataLabels should stay visible
+            // when enabled allowOverlap.
+            if (!series.options.dataLabels.allowOverlap) {
+                series.data.forEach(function (point) {
+                    if (H.isArray(point.dataLabels)) {
+                        point.dataLabels.forEach(function (dataLabel) {
+                            dataLabels.push(dataLabel);
+                        });
+                    }
+                });
+                series.chart.hideOverlappingLabels(dataLabels);
+            }
         },
         // Needed because of z-indexing issue if point is added in series.group
         setVisible: function () {
@@ -705,6 +712,38 @@ seriesType(
             }
         },
         /**
+         * The function responsible for calculating series bubble' s bBox.
+         * Needed because of exporting failure when useSimulation
+         * is set to false
+         * @private
+         */
+        seriesBox: function () {
+            var series = this,
+                chart = series.chart,
+                data = series.data,
+                max = Math.max,
+                min = Math.min,
+                radius,
+                // bBox = [xMin, xMax, yMin, yMax]
+                bBox = [
+                    chart.plotLeft,
+                    chart.plotLeft + chart.plotWidth,
+                    chart.plotTop,
+                    chart.plotTop + chart.plotHeight
+                ];
+
+            data.forEach(function (p) {
+                if (defined(p.plotX) && defined(p.plotY) && p.marker.radius) {
+                    radius = p.marker.radius;
+                    bBox[0] = min(bBox[0], p.plotX - radius);
+                    bBox[1] = max(bBox[1], p.plotX + radius);
+                    bBox[2] = min(bBox[2], p.plotY - radius);
+                    bBox[3] = max(bBox[3], p.plotY + radius);
+                }
+            });
+            return H.isNumber(bBox.width / bBox.height) ? bBox : null;
+        },
+        /**
          * The function responsible for calculating the parent node radius
          * based on the total surface of iniside-bubbles and the group BBox
          * @private
@@ -715,10 +754,7 @@ seriesType(
                 parentPadding = 20,
                 minParentRadius = 20;
 
-            if (series.group) {
-                bBox = series.group.element.getBBox();
-            }
-
+            bBox = series.seriesBox();
             series.parentNodeRadius =
                 Math.min(
                     Math.max(
@@ -1122,16 +1158,7 @@ seriesType(
                 return b[2] - a[2];
             });
 
-            if (sortedArr.length === 1) {
-                // if length is 1,return only one bubble
-                arr = [
-                    0, 0,
-                    sortedArr[0][0],
-                    sortedArr[0][1],
-                    sortedArr[0][2]
-                ];
-            } else if (sortedArr.length) {
-
+            if (sortedArr.length) {
                 // create first bubble in the middle of the chart
                 bubblePos.push([
                     [
@@ -1142,74 +1169,78 @@ seriesType(
                         sortedArr[0][4]
                     ] // point index
                 ]); // 0 level bubble
+                if (sortedArr.length > 1) {
 
-                bubblePos.push([
-                    [
-                        0,
-                        0 - sortedArr[1][2] - sortedArr[0][2],
-                        // move bubble above first one
-                        sortedArr[1][2],
-                        sortedArr[1][3],
-                        sortedArr[1][4]
-                    ]
-                ]); // 1 level 1st bubble
+                    bubblePos.push([
+                        [
+                            0,
+                            0 - sortedArr[1][2] - sortedArr[0][2],
+                            // move bubble above first one
+                            sortedArr[1][2],
+                            sortedArr[1][3],
+                            sortedArr[1][4]
+                        ]
+                    ]); // 1 level 1st bubble
 
-                // first two already positioned so starting from 2
-                for (i = 2; i < sortedArr.length; i++) {
-                    sortedArr[i][2] = sortedArr[i][2] || 1;
-                    // in case if radius is calculated as 0.
-                    calculatedBubble = positionBubble(
-                        bubblePos[stage][j],
-                        bubblePos[stage - 1][k],
-                        sortedArr[i]
-                    ); // calculate initial bubble position
+                    // first two already positioned so starting from 2
+                    for (i = 2; i < sortedArr.length; i++) {
+                        sortedArr[i][2] = sortedArr[i][2] || 1;
+                        // in case if radius is calculated as 0.
+                        calculatedBubble = positionBubble(
+                            bubblePos[stage][j],
+                            bubblePos[stage - 1][k],
+                            sortedArr[i]
+                        ); // calculate initial bubble position
 
-                    if (checkOverlap(calculatedBubble, bubblePos[stage][0])) {
-                        /* if new bubble is overlapping with first bubble
-                         * in current level (stage)
-                         */
+                        if (
+                            checkOverlap(calculatedBubble, bubblePos[stage][0])
+                        ) {
+                            /* if new bubble is overlapping with first bubble
+                             * in current level (stage)
+                             */
 
-                        bubblePos.push([]);
-                        k = 0;
-                        /* reset index of bubble, used for
-                         * positioning the bubbles
-                         * around it, we are starting from first bubble in next
-                         * stage because we are changing level to higher
-                         */
-                        bubblePos[stage + 1].push(
-                            positionBubble(
-                                bubblePos[stage][j],
-                                bubblePos[stage][0],
-                                sortedArr[i]
+                            bubblePos.push([]);
+                            k = 0;
+                            /* reset index of bubble, used for
+                             * positioning the bubbles around it,
+                             * we are starting from first bubble in next
+                             * stage because we are changing level to higher
+                             */
+                            bubblePos[stage + 1].push(
+                                positionBubble(
+                                    bubblePos[stage][j],
+                                    bubblePos[stage][0],
+                                    sortedArr[i]
+                                )
+                            );
+                            // (last bubble, 1. from curr stage, new bubble)
+                            stage++; // the new level is created, above current
+                            j = 0; // set the index of bubble in curr level to 0
+                        } else if (
+                            stage > 1 && bubblePos[stage - 1][k + 1] &&
+                            checkOverlap(
+                                calculatedBubble, bubblePos[stage - 1][k + 1]
                             )
-                        );
-                        // (last added bubble, 1. from curr stage, new bubble)
-                        stage++; // the new level is created, above current one
-                        j = 0; // set the index of bubble in current level to 0
-                    } else if (
-                        stage > 1 && bubblePos[stage - 1][k + 1] &&
-                        checkOverlap(
-                            calculatedBubble, bubblePos[stage - 1][k + 1]
-                        )
-                    ) {
-                        /* if new bubble is overlapping with one of the previous
-                         * stage bubbles, it means that - bubble, used for
-                         * positioning the bubbles around it has changed
-                         * so we need to recalculate it
-                         */
-                        k++;
-                        bubblePos[stage].push(
-                            positionBubble(
-                                bubblePos[stage][j],
-                                bubblePos[stage - 1][k],
-                                sortedArr[i]
-                            )
-                        );
-                        // (last added bubble, prev stage bubble, new bubble)
-                        j++;
-                    } else { // simply add calculated bubble
-                        j++;
-                        bubblePos[stage].push(calculatedBubble);
+                        ) {
+                            /* if new bubble is overlapping with one of the prev
+                             * stage bubbles, it means that - bubble, used for
+                             * positioning the bubbles around it has changed
+                             * so we need to recalculate it
+                             */
+                            k++;
+                            bubblePos[stage].push(
+                                positionBubble(
+                                    bubblePos[stage][j],
+                                    bubblePos[stage - 1][k],
+                                    sortedArr[i]
+                                )
+                            );
+                            // (last bubble, prev stage bubble, new bubble)
+                            j++;
+                        } else { // simply add calculated bubble
+                            j++;
+                            bubblePos[stage].push(calculatedBubble);
+                        }
                     }
                 }
                 series.chart.stages = bubblePos;
@@ -1221,7 +1252,6 @@ seriesType(
 
                 series.resizeRadius();
                 arr = series.chart.rawPositions;
-
             }
             return arr;
         },
@@ -1528,6 +1558,13 @@ addEvent(Chart, 'beforeRedraw', function () {
  */
 
 /**
+ * @type      {Highcharts.SeriesPackedBubbleDataLabelsOptionsObject|Array<Highcharts.SeriesPackedBubbleDataLabelsOptionsObject>}
+ * @product   highcharts
+ * @apioption series.packedbubble.data.dataLabels
+ */
+
+/**
  * @excluding enabled,enabledThreshold,height,radius,width
+ * @product   highcharts
  * @apioption series.packedbubble.marker
  */

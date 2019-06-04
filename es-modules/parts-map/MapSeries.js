@@ -349,6 +349,24 @@ seriesType(
         preserveAspectRatio: true,
         pointArrayMap: ['value'],
 
+        // Extend setOptions by picking up the joinBy option and applying it
+        // to a series property
+        setOptions: function (itemOptions) {
+            var options = Series.prototype.setOptions.call(this, itemOptions),
+                joinBy = options.joinBy,
+                joinByNull = joinBy === null;
+
+            if (joinByNull) {
+                joinBy = '_i';
+            }
+            joinBy = this.joinBy = splat(joinBy);
+            if (!joinBy[1]) {
+                joinBy[1] = joinBy[0];
+            }
+
+            return options;
+        },
+
         // Get the bounding box of all paths in the map combined.
         getBox: function (paths) {
             var MAX_VALUE = Number.MAX_VALUE,
@@ -522,8 +540,7 @@ seriesType(
                 chartOptions = this.chart.options.chart,
                 globalMapData = chartOptions && chartOptions.map,
                 mapData = options.mapData,
-                joinBy = options.joinBy,
-                joinByNull = joinBy === null,
+                joinBy = this.joinBy,
                 pointArrayMap = options.keys || this.pointArrayMap,
                 dataUsed = [],
                 mapMap = {},
@@ -537,14 +554,6 @@ seriesType(
                 mapData = typeof globalMapData === 'string' ?
                     H.maps[globalMapData] :
                     globalMapData;
-            }
-
-            if (joinByNull) {
-                joinBy = '_i';
-            }
-            joinBy = this.joinBy = splat(joinBy);
-            if (!joinBy[1]) {
-                joinBy[1] = joinBy[0];
             }
 
             // Pick up numeric values, add index
@@ -583,7 +592,7 @@ seriesType(
                             }
                         }
                     }
-                    if (joinByNull) {
+                    if (joinBy && joinBy[0] === '_i') {
                         data[i]._i = i;
                     }
                 });
@@ -812,17 +821,19 @@ seriesType(
                 // Add class names
                 series.points.forEach(function (point) {
                     if (point.graphic) {
+                        var className = '';
                         if (point.name) {
-                            point.graphic.addClass(
+                            className +=
                                 'highcharts-name-' +
-                                point.name.replace(/ /g, '-').toLowerCase()
-                            );
+                                point.name.replace(/ /g, '-').toLowerCase();
                         }
                         if (point.properties && point.properties['hc-key']) {
-                            point.graphic.addClass(
-                                'highcharts-key-' +
-                                point.properties['hc-key'].toLowerCase()
-                            );
+                            className +=
+                                ' highcharts-key-' +
+                                point.properties['hc-key'].toLowerCase();
+                        }
+                        if (className) {
+                            point.graphic.addClass(className);
                         }
 
                         // In styled mode, apply point colors by CSS

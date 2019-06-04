@@ -79,7 +79,7 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/series-datalabels|Highcharts-Demo:}
  *      Style mode example
  *
- * @interface Highcharts.PlotSankeyDataLabelsOptionsObject
+ * @interface Highcharts.SeriesSankeyDataLabelsOptionsObject
  * @extends Highcharts.DataLabelsOptionsObject
  *//**
  * The
@@ -90,13 +90,13 @@
  * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-link-datalabels|Highcharts-Demo:}
  *      Node and link data labels
  *
- * @name Highcharts.PlotSankeyDataLabelsOptionsObject#nodeFormat
+ * @name Highcharts.SeriesSankeyDataLabelsOptionsObject#nodeFormat
  * @type {string|undefined}
  *//**
  * Callback to format data labels for _nodes_ in the sankey diagram. The
  * `nodeFormat` option takes precedence over the `nodeFormatter`.
  *
- * @name Highcharts.PlotSankeyDataLabelsOptionsObject#nodeFormatter
+ * @name Highcharts.SeriesSankeyDataLabelsOptionsObject#nodeFormatter
  * @type {Highcharts.FormatterCallbackFunction<Highcharts.SankeyNodeObject>|undefined}
  * @default function () { return this.point.name; }
  * @since 6.0.2
@@ -144,8 +144,7 @@ var getDLOptions = function getDLOptions(params) {
  *
  * @augments Highcharts.Series
  */
-seriesType('sankey', 'column'
-
+seriesType('sankey', 'column',
     /**
      * A sankey diagram is a type of flow diagram, in which the width of the
      * link between two nodes is shown proportionally to the flow quantity.
@@ -169,7 +168,7 @@ seriesType('sankey', 'column'
      *               stacking, threshold, zoneAxis, zones
      * @optionparent plotOptions.sankey
      */
-    , {
+    {
         borderWidth: 0,
         colorByPoint: true,
         /**
@@ -187,7 +186,8 @@ seriesType('sankey', 'column'
          * `nodeFormat`, and the `format` that applies to links and is an empty
          * string by default.
          *
-         * @type {Highcharts.DataLabelsOptionsObject|Highcharts.PlotSankeyDataLabelsOptionsObject}
+         * @type    {Highcharts.SeriesSankeyDataLabelsOptionsObject|Array<Highcharts.SeriesSankeyDataLabelsOptionsObject>}
+         * @default {"enabled": true, "backgroundColor": "none", "crop": false, "nodeFormatter": function () { return this.point.name; }, "inside": true}
          *
          * @private
          */
@@ -216,7 +216,11 @@ seriesType('sankey', 'column'
             inside: true
         },
 
-        /** @ignore-option */
+        /**
+         * @ignore-option
+         *
+         * @private
+         */
         inactiveOtherPoints: true,
 
         /**
@@ -502,9 +506,11 @@ seriesType('sankey', 'column'
         pointAttribs: function (point, state) {
             var series = this,
                 level = point.isNode ? point.level : point.fromNode.level,
-                levelOptions = series.mapOptionsToLevel[level || 0],
+                levelOptions = series.mapOptionsToLevel[level || 0] || {},
                 options = point.options,
-                stateOptions = levelOptions.states[state] || {},
+                stateOptions = (
+                    levelOptions.states && levelOptions.states[state]
+                ) || {},
                 values = [
                     'colorByPoint', 'borderColor', 'borderWidth', 'linkOpacity'
                 ].reduce(function (obj, key) {
@@ -1026,6 +1032,12 @@ seriesType('sankey', 'column'
  * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
  * @product   highcharts
  * @apioption series.sankey.data.color
+ */
+
+/**
+ * @type      {Highcharts.SeriesSankeyDataLabelsOptionsObject|Array<Highcharts.SeriesSankeyDataLabelsOptionsObject>}
+ * @product   highcharts
+ * @apioption series.sankey.data.dataLabels
  */
 
 /**

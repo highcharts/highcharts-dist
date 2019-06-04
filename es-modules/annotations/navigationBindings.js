@@ -1,8 +1,10 @@
-/**
- * (c) 2009-2017 Highsoft, Black Label
+/* *
  *
- * License: www.highcharts.com/license
- */
+ *  (c) 2009-2017 Highsoft, Black Label
+ *
+ *  License: www.highcharts.com/license
+ *
+ * */
 'use strict';
 import H from '../parts/Globals.js';
 import chartNavigationMixin from '../mixins/navigation.js';
@@ -218,13 +220,15 @@ extend(H.NavigationBindings.prototype, {
         });
 
         objectEach(options.events || {}, function (callback, eventName) {
-            navigation.eventsToUnbind.push(
-                addEvent(
-                    navigation,
-                    eventName,
-                    callback
-                )
-            );
+            if (H.isFunction(callback)) {
+                navigation.eventsToUnbind.push(
+                    addEvent(
+                        navigation,
+                        eventName,
+                        callback
+                    )
+                );
+            }
         });
 
         navigation.eventsToUnbind.push(

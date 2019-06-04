@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.1 (2019-04-09)
+ * @license Highcharts JS v7.1.2 (2019-06-04)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -740,8 +740,8 @@
 
                 // Polygonal plot bands
                 if (this.options.gridLineInterpolation === 'polygon') {
-                    ret = this.getPlotLinePath(from).concat(
-                        this.getPlotLinePath(to, true)
+                    ret = this.getPlotLinePath({ value: from }).concat(
+                        this.getPlotLinePath({ value: to, reverse: true })
                     );
 
                 // Circular grid bands
@@ -826,10 +826,12 @@
             /* *
              * Find the path for plot lines perpendicular to the radial axis.
              */
-            getPlotLinePath: function (value, reverse) {
+            getPlotLinePath: function (options) {
                 var axis = this,
                     center = axis.center,
                     chart = axis.chart,
+                    value = options.value,
+                    reverse = options.reverse,
                     end = axis.getPosition(value),
                     xAxis,
                     xy,
@@ -880,6 +882,7 @@
                     });
 
                 }
+
                 return ret;
             },
 
@@ -1023,6 +1026,7 @@
         addEvent(Tick, 'afterGetLabelPosition', function (e) {
             var axis = this.axis,
                 label = this.label,
+                labelBBox = label.getBBox(),
                 labelOptions = axis.options.labels,
                 optionsY = labelOptions.y,
                 ret,
@@ -1031,11 +1035,27 @@
                 angle = (
                     (axis.translate(this.pos) + axis.startAngleRad + Math.PI / 2) /
                     Math.PI * 180
-                ) % 360;
+                ) % 360,
+                correctAngle = Math.round(angle),
+                labelDir = 'end', // Direction of the label 'start' or 'end'
+                reducedAngle1 = correctAngle < 0 ?
+                    correctAngle + 360 : correctAngle,
+                reducedAngle2 = reducedAngle1,
+                translateY = 0,
+                translateX = 0,
+                labelYPosCorrection =
+                    labelOptions.y === null ? -labelBBox.height * 0.3 : 0;
 
             if (axis.isRadial) { // Both X and Y axes in a polar chart
-                ret = axis.getPosition(this.pos, (axis.center[2] / 2) +
-                    pick(labelOptions.distance, -25));
+                ret = axis.getPosition(
+                    this.pos,
+                    (axis.center[2] / 2) +
+                        H.relativeLength(
+                            pick(labelOptions.distance, -25),
+                            axis.center[2] / 2,
+                            -axis.center[2] / 2
+                        )
+                );
 
                 // Automatically rotated
                 if (labelOptions.rotation === 'auto') {
@@ -1048,7 +1068,7 @@
                     optionsY = (
                         axis.chart.renderer
                             .fontMetrics(label.styles && label.styles.fontSize).b -
-                        label.getBBox().height / 2
+                            labelBBox.height / 2
                     );
                 }
 
@@ -1056,7 +1076,7 @@
                 if (align === null) {
                     if (axis.isCircular) { // Y axis
                         if (
-                            this.label.getBBox().width >
+                            labelBBox.width >
                             axis.len * axis.tickInterval / (axis.max - axis.min)
                         ) { // #3506
                             centerSlot = 0;
@@ -1077,6 +1097,80 @@
                     label.attr({
                         align: align
                     });
+                }
+
+                // Auto alignment for solid-gauges with two labels (#10635)
+                if (
+                    align === 'auto' &&
+                    axis.tickPositions.length === 2 &&
+                    axis.isCircular
+                ) {
+                    // Angles reduced to 0 - 90 or 180 - 270
+                    if (reducedAngle1 > 90 && reducedAngle1 < 180) {
+                        reducedAngle1 = 180 - reducedAngle1;
+                    } else if (reducedAngle1 > 270 && reducedAngle1 <= 360) {
+                        reducedAngle1 = 540 - reducedAngle1;
+                    }
+
+                    // Angles reduced to 0 - 180
+                    if (reducedAngle2 > 180 && reducedAngle2 <= 360) {
+                        reducedAngle2 = 360 - reducedAngle2;
+                    }
+
+                    if (
+                        (axis.pane.options.startAngle === correctAngle) ||
+                        (axis.pane.options.startAngle === correctAngle + 360) ||
+                        (axis.pane.options.startAngle === correctAngle - 360)
+                    ) {
+                        labelDir = 'start';
+                    }
+
+                    if (
+                        (correctAngle >= -90 && correctAngle <= 90) ||
+                        (correctAngle >= -360 && correctAngle <= -270) ||
+                        (correctAngle >= 270 && correctAngle <= 360)
+                    ) {
+                        align = (labelDir === 'start') ? 'right' : 'left';
+                    } else {
+                        align = (labelDir === 'start') ? 'left' : 'right';
+                    }
+
+                    // For angles beetwen (90 + n * 180) +- 20
+                    if (reducedAngle2 > 70 && reducedAngle2 < 110) {
+                        align = 'center';
+                    }
+
+                    // auto Y translation
+                    if (
+                        reducedAngle1 < 15 ||
+                        (reducedAngle1 >= 180 && reducedAngle1 < 195)
+                    ) {
+                        translateY = labelBBox.height * 0.3;
+                    } else if (reducedAngle1 >= 15 && reducedAngle1 <= 35) {
+                        translateY = labelDir === 'start' ?
+                            0 : labelBBox.height * 0.75;
+                    } else if (reducedAngle1 >= 195 && reducedAngle1 <= 215) {
+                        translateY = labelDir === 'start' ?
+                            labelBBox.height * 0.75 : 0;
+                    } else if (reducedAngle1 > 35 && reducedAngle1 <= 90) {
+                        translateY = labelDir === 'start' ?
+                            -labelBBox.height * 0.25 : labelBBox.height;
+                    } else if (reducedAngle1 > 215 && reducedAngle1 <= 270) {
+                        translateY = labelDir === 'start' ?
+                            labelBBox.height : -labelBBox.height * 0.25;
+                    }
+
+                    // auto X translation
+                    if (reducedAngle2 < 15) {
+                        translateX = labelDir === 'start' ?
+                            -labelBBox.height * 0.15 : labelBBox.height * 0.15;
+                    } else if (reducedAngle2 > 165 && reducedAngle2 <= 180) {
+                        translateX = labelDir === 'start' ?
+                            labelBBox.height * 0.15 : -labelBBox.height * 0.15;
+                    }
+
+                    label.attr({ align: align });
+                    label.translate(translateX, translateY + labelYPosCorrection);
                 }
 
                 e.pos.x = ret.x + labelOptions.x;
@@ -1141,7 +1235,7 @@
          * `x` and `y` options. Instead, they have `xLow`, `xHigh`, `yLow` and `yHigh`
          * options to allow the higher and lower data label sets individually.
          *
-         * @interface Highcharts.PlotAreaRangeDataLabelsOptionsObject
+         * @interface Highcharts.SeriesAreaRangeDataLabelsOptionsObject
          * @extends Highcharts.DataLabelsOptionsObject
          * @since 2.3.0
          * @product highcharts highstock
@@ -1153,7 +1247,7 @@
          * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/arearange-datalabels/|Highcharts-Demo:}
          *      Data labels on range series
          *
-         * @name Highcharts.PlotAreaRangeDataLabelsOptionsObject#xLow
+         * @name Highcharts.SeriesAreaRangeDataLabelsOptionsObject#xLow
          * @type {number|undefined}
          * @default 0
          * @since 2.3.0
@@ -1164,7 +1258,7 @@
          * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/arearange-datalabels/|Highcharts-Demo:}
          *      Data labels on range series
          *
-         * @name Highcharts.PlotAreaRangeDataLabelsOptionsObject#xHigh
+         * @name Highcharts.SeriesAreaRangeDataLabelsOptionsObject#xHigh
          * @type {number|undefined}
          * @default 0
          * @since 2.3.0
@@ -1175,7 +1269,7 @@
          * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/arearange-datalabels/|Highcharts-Demo:}
          *      Data labels on range series
          *
-         * @name Highcharts.PlotAreaRangeDataLabelsOptionsObject#yLow
+         * @name Highcharts.SeriesAreaRangeDataLabelsOptionsObject#yLow
          * @type {number|undefined}
          * @default 0
          * @since 2.3.0
@@ -1186,7 +1280,7 @@
          * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/arearange-datalabels/|Highcharts-Demo:}
          *      Data labels on range series
          *
-         * @name Highcharts.PlotAreaRangeDataLabelsOptionsObject#yHigh
+         * @name Highcharts.SeriesAreaRangeDataLabelsOptionsObject#yHigh
          * @type {number|undefined}
          * @default 0
          * @since 2.3.0
@@ -1261,7 +1355,8 @@
             trackByArea: true,
 
             /**
-             * @type {Highcharts.DataLabelsOptionsObject|Highcharts.PlotAreaRangeDataLabelsOptionsObject}
+             * @type    {Highcharts.SeriesAreaRangeDataLabelsOptionsObject|Array<Highcharts.SeriesAreaRangeDataLabelsOptionsObject>}
+             * @default {"xLow": 0, "xHigh": 0, "yLow": 0, "yHigh": 0}
              *
              * @private
              */
@@ -1841,6 +1936,12 @@
          */
 
         /**
+         * @type      {Highcharts.SeriesAreaRangeDataLabelsOptionsObject|Array<Highcharts.SeriesAreaRangeDataLabelsOptionsObject>}
+         * @product   highcharts highstock
+         * @apioption series.arearange.data.dataLabels
+         */
+
+        /**
          * The high or maximum value for each data point.
          *
          * @type      {number}
@@ -1854,12 +1955,6 @@
          * @type      {number}
          * @product   highcharts highstock
          * @apioption series.arearange.data.low
-         */
-
-        /**
-         * @excluding x, y
-         * @product   highcharts highstock
-         * @apioption series.arearange.dataLabels
          */
 
     });
@@ -2000,9 +2095,9 @@
              * `yLow` and `yHigh` options to allow the higher and lower data label
              * sets individually.
              *
-             * @extends   plotOptions.arearange.dataLabels
+             * @type      {Highcharts.SeriesAreaRangeDataLabelsOptionsObject|Array<Highcharts.SeriesAreaRangeDataLabelsOptionsObject>}
+             * @default   {"xLow": 0, "xHigh": 0, "yLow": 0, "yHigh": 0}
              * @since     2.3.0
-             * @excluding x, y
              * @product   highcharts highstock
              * @apioption plotOptions.columnrange.dataLabels
              */
@@ -2223,6 +2318,12 @@
          * @excluding marker
          * @product   highcharts highstock
          * @apioption series.columnrange.data
+         */
+
+        /**
+         * @type      {Highcharts.SeriesAreaRangeDataLabelsOptionsObject|Array<Highcharts.SeriesAreaRangeDataLabelsOptionsObject>}
+         * @product   highcharts highstock
+         * @apioption series.columnrange.data.dataLabels
          */
 
         /**
@@ -2939,16 +3040,16 @@
                             })
                             .addClass('highcharts-dial')
                             .add(series.group);
+                    }
 
-                        // Presentational attributes
-                        if (!chart.styledMode) {
-                            point.graphic.attr({
-                                stroke: dialOptions.borderColor || 'none',
-                                'stroke-width': dialOptions.borderWidth || 0,
-                                fill: dialOptions.backgroundColor ||
-                                    '#000000'
-                            });
-                        }
+                    // Presentational attributes
+                    if (!chart.styledMode) {
+                        point.graphic[graphic ? 'animate' : 'attr']({
+                            stroke: dialOptions.borderColor || 'none',
+                            'stroke-width': dialOptions.borderWidth || 0,
+                            fill: dialOptions.backgroundColor ||
+                                '#000000'
+                        });
                     }
                 });
 
@@ -3908,12 +4009,15 @@
             Chart = H.Chart,
             Point = H.Point,
             Series = H.Series,
+            StackItem = H.StackItem,
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
 
         addEvent(Axis, 'afterInit', function () {
             if (!this.isXAxis) {
-                this.waterfallStacks = {};
+                this.waterfallStacks = {
+                    changed: false
+                };
             }
         });
 
@@ -3926,13 +4030,60 @@
                 if (series[i].options.stacking) {
                     axes.forEach(function (axis) {
                         if (!axis.isXAxis) {
-                            axis.waterfallStacks = {};
+                            axis.waterfallStacks.changed = true;
                         }
                     });
                     i = 0;
                 }
             }
         });
+
+        addEvent(Axis, 'afterRender', function () {
+            var stackLabelOptions = this.options.stackLabels;
+
+            if (stackLabelOptions && stackLabelOptions.enabled &&
+                this.waterfallStacks) {
+                this.renderWaterfallStackTotals();
+            }
+        });
+
+        /**
+         * Calls StackItem.prototype.render function that creates and renders stack
+         * total label for each waterfall stack item.
+         *
+         * @private
+         * @function Highcharts.Axis#renderWaterfallStackTotals
+         */
+        Axis.prototype.renderWaterfallStackTotals = function () {
+            var yAxis = this,
+                waterfallStacks = yAxis.waterfallStacks,
+                stackTotalGroup = yAxis.stackTotalGroup,
+                dummyStackItem = new StackItem(
+                    yAxis,
+                    yAxis.options.stackLabels,
+                    false,
+                    0,
+                    undefined
+                );
+
+            yAxis.dummyStackItem = dummyStackItem;
+
+            // Render each waterfall stack total
+            objectEach(waterfallStacks, function (type) {
+                objectEach(type, function (stackItem) {
+                    dummyStackItem.total = stackItem.stackTotal;
+
+                    if (stackItem.label) {
+                        dummyStackItem.label = stackItem.label;
+                    }
+
+                    StackItem.prototype.render.call(dummyStackItem, stackTotalGroup);
+                    stackItem.label = dummyStackItem.label;
+                    delete dummyStackItem.label;
+                });
+            });
+            dummyStackItem.total = null;
+        };
 
         /**
          * A waterfall chart displays sequentially introduced positive or negative
@@ -4079,6 +4230,7 @@
                     tooltipY,
                     actualStack = yAxis.waterfallStacks[series.stackKey],
                     actualStackX,
+                    dummyStackItem,
                     total,
                     pointY,
                     yPos,
@@ -4106,10 +4258,17 @@
                             actualStackX = actualStack[i];
 
                             if (stacking === 'overlap') {
-                                total = actualStackX.threshold + actualStackX.total;
-                                actualStackX.total -= pointY;
+                                total =
+                                    actualStackX.stackState[actualStackX.stateIndex--];
 
                                 y = pointY >= 0 ? total : total - pointY;
+                                if (actualStackX.hasOwnProperty('absolutePos')) {
+                                    delete actualStackX.absolutePos;
+                                }
+
+                                if (actualStackX.hasOwnProperty('absoluteNeg')) {
+                                    delete actualStackX.absoluteNeg;
+                                }
                             } else {
                                 if (pointY >= 0) {
                                     total = actualStackX.threshold +
@@ -4123,6 +4282,22 @@
 
                                     actualStackX.negTotal -= pointY;
                                     y = total - pointY;
+                                }
+
+                                if (!actualStackX.posTotal) {
+                                    if (actualStackX.hasOwnProperty('absolutePos')) {
+                                        actualStackX.posTotal =
+                                            actualStackX.absolutePos;
+                                        delete actualStackX.absolutePos;
+                                    }
+                                }
+
+                                if (!actualStackX.negTotal) {
+                                    if (actualStackX.hasOwnProperty('absoluteNeg')) {
+                                        actualStackX.negTotal =
+                                            actualStackX.absoluteNeg;
+                                        delete actualStackX.absoluteNeg;
+                                    }
                                 }
                             }
 
@@ -4147,6 +4322,18 @@
                             shapeArgs.y = yAxis.translate(yPos, 0, 1, 0, 1);
                             shapeArgs.height = Math.abs(shapeArgs.y -
                                 yAxis.translate(hPos, 0, 1, 0, 1));
+                        }
+
+                        dummyStackItem = yAxis.dummyStackItem;
+                        if (dummyStackItem) {
+                            dummyStackItem.x = i;
+                            dummyStackItem.label = actualStack[i].label;
+                            dummyStackItem.setOffset(
+                                series.pointXOffset || 0,
+                                series.barW || 0,
+                                series.stackedYNeg[i],
+                                series.stackedYPos[i]
+                            );
                         }
                     } else {
                         // up points
@@ -4414,17 +4601,45 @@
                     waterfallStacks = series.yAxis.waterfallStacks,
                     seriesThreshold = options.threshold,
                     stackThreshold = seriesThreshold || 0,
-                    interSum = seriesThreshold || 0,
+                    interSum = stackThreshold,
                     stackKey = series.stackKey,
                     xData = series.xData,
                     xLength = xData.length,
                     actualStack,
                     actualStackX,
+                    totalYVal,
+                    actualSum,
+                    prevSum,
+                    statesLen,
                     posTotal,
                     negTotal,
                     xPoint,
                     yVal,
                     x;
+
+                // function responsible for calculating correct values for stackState
+                // array of each stack item. The arguments are: firstS - the value for
+                // the first state, nextS - the difference between the previous and the
+                // newest state, sInx - counter used in the for that updates each state
+                // when necessary, sOff - offset that must be added to each state when
+                // they need to be updated (if point isn't a total sum)
+                function calculateStackState(firstS, nextS, sInx, sOff) {
+                    if (!statesLen) {
+                        actualStackX.stackState[0] = firstS;
+                        statesLen = actualStackX.stackState.length;
+                    } else {
+                        for (sInx; sInx < statesLen; sInx++) {
+                            actualStackX.stackState[sInx] += sOff;
+                        }
+                    }
+
+                    actualStackX.stackState.push(
+                        actualStackX.stackState[statesLen - 1] + nextS
+                    );
+                }
+
+                series.yAxis.usePercentage = false;
+                totalYVal = actualSum = prevSum = stackThreshold;
 
                 // code responsible for creating stacks for waterfall series
                 if (series.visible || !series.chart.options.chart.ignoreHiddenSeries) {
@@ -4433,18 +4648,18 @@
                     }
 
                     actualStack = waterfallStacks[stackKey];
-
                     for (var i = 0; i < xLength; i++) {
                         x = xData[i];
-
-                        if (!actualStack[x]) {
+                        if (!actualStack[x] || waterfallStacks.changed) {
                             actualStack[x] = {
                                 negTotal: 0,
                                 posTotal: 0,
-                                total: 0,
                                 stackTotal: 0,
                                 threshold: 0,
-                                stackState: [stackThreshold]
+                                stateIndex: 0,
+                                stackState: [],
+                                label: (waterfallStacks.changed && actualStack[x]) ?
+                                    actualStack[x].label : undefined
                             };
                         }
 
@@ -4459,27 +4674,40 @@
 
                         // points do not exist yet, so raw data is used
                         xPoint = options.data[i];
-                        posTotal = actualStackX.posTotal;
-                        negTotal = actualStackX.negTotal;
+
+                        posTotal = actualStackX.absolutePos = actualStackX.posTotal;
+                        negTotal = actualStackX.absoluteNeg = actualStackX.negTotal;
+                        actualStackX.stackTotal = posTotal + negTotal;
+                        statesLen = actualStackX.stackState.length;
 
                         if (xPoint && xPoint.isIntermediateSum) {
+                            calculateStackState(prevSum, actualSum, 0, prevSum);
+
+                            prevSum = actualSum;
+                            actualSum = seriesThreshold;
+
                             // swapping values
                             stackThreshold ^= interSum;
                             interSum ^= stackThreshold;
                             stackThreshold ^= interSum;
                         } else if (xPoint && xPoint.isSum) {
+                            calculateStackState(seriesThreshold, totalYVal, statesLen);
+
                             stackThreshold = seriesThreshold;
+                        } else {
+                            calculateStackState(stackThreshold, yVal, 0, totalYVal);
+
+                            if (xPoint) {
+                                totalYVal += yVal;
+                                actualSum += yVal;
+                            }
                         }
 
-                        actualStackX.stackTotal = posTotal + negTotal;
-                        actualStackX.total = actualStackX.stackTotal;
+                        actualStackX.stateIndex++;
                         actualStackX.threshold = stackThreshold;
-
-                        actualStackX.stackState[0] = stackThreshold;
-                        actualStackX.stackState.push(actualStackX.stackTotal);
-
                         stackThreshold += actualStackX.stackTotal;
                     }
+                    waterfallStacks.changed = false;
                 }
             },
 
@@ -4490,9 +4718,7 @@
                     yAxis,
                     waterfallStacks,
                     stackedYNeg,
-                    stackedYPos,
-                    states,
-                    firstState;
+                    stackedYPos;
 
                 if (stacking) {
                     yAxis = this.yAxis;
@@ -4504,20 +4730,8 @@
                     // overlap and different when it's set to normal
                     if (stacking === 'overlap') {
                         objectEach(waterfallStacks[this.stackKey], function (stackX) {
-
-                            states = [];
-                            stackX.stackState.forEach(function (state, stateIndex) {
-                                firstState = stackX.stackState[0];
-
-                                if (stateIndex) {
-                                    states.push(state + firstState);
-                                } else {
-                                    states.push(firstState);
-                                }
-                            });
-
-                            stackedYNeg.push(arrayMin(states));
-                            stackedYPos.push(arrayMax(states));
+                            stackedYNeg.push(arrayMin(stackX.stackState));
+                            stackedYPos.push(arrayMax(stackX.stackState));
                         });
                     } else {
                         objectEach(waterfallStacks[this.stackKey], function (stackX) {
@@ -7911,16 +8125,20 @@
                                 ) {
                                     distanceXY = layout.getDistXY(node, repNode);
                                     distanceR = layout.vectorLength(distanceXY);
+                                    if (distanceR !== 0) {
+                                        force = layout.repulsiveForce(
+                                            distanceR,
+                                            layout.k
+                                        );
 
-                                    force = layout.repulsiveForce(distanceR, layout.k);
-
-                                    layout.force(
-                                        'repulsive',
-                                        node,
-                                        force * repNode.mass,
-                                        distanceXY,
-                                        distanceR
-                                    );
+                                        layout.force(
+                                            'repulsive',
+                                            node,
+                                            force * repNode.mass,
+                                            distanceXY,
+                                            distanceR
+                                        );
+                                    }
                                 }
                             });
                         });
@@ -8085,9 +8303,9 @@
             }
         );
 
-        /*
+        /* ************************************************************************** *
          * Multiple series support:
-         */
+         * ************************************************************************** */
         // Clear previous layouts
         addEvent(Chart, 'predraw', function () {
             if (this.graphLayoutsLookup) {
@@ -8352,9 +8570,9 @@
         /**
          * Formatter callback function.
          *
-         * @callback Highcharts.PlotPackedBubbleDataLabelsFormatterCallbackFunction
+         * @callback Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction
          *
-         * @param {Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject|Highcharts.DataLabelsFormatterContextObject} this
+         * @param {Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject|Highcharts.DataLabelsFormatterContextObject} this
          *        Data label context to format
          *
          * @return {string}
@@ -8364,24 +8582,24 @@
         /**
          * Context for the formatter function.
          *
-         * @interface Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject
+         * @interface Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject
          * @extends Highcharts.DataLabelsFormatterContextObject
          * @since 7.0.0
          *//**
          * The color of the node.
-         * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#color
+         * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#color
          * @type {Highcharts.ColorString}
          * @since 7.0.0
          *//**
          * The point (node) object. The node name, if defined, is available through
          * `this.point.name`. Arrays: `this.point.linksFrom` and `this.point.linksTo`
          * contains all nodes connected to this point.
-         * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#point
+         * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#point
          * @type {Highcharts.Point}
          * @since 7.0.0
          *//**
          * The ID of the node.
-         * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#key
+         * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#key
          * @type {string}
          * @since 7.0.0
          */
@@ -8389,7 +8607,7 @@
         /**
          * Data labels options
          *
-         * @interface Highcharts.PlotPackedBubbleDataLabelsOptionsObject
+         * @interface Highcharts.SeriesPackedBubbleDataLabelsOptionsObject
          * @extends Highcharts.DataLabelsOptionsObject
          * @since 7.0.0
          *//**
@@ -8397,54 +8615,54 @@
          * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
          * specifying what to show for _node_ in the networkgraph. In v7.0 defaults to
          * `{key}`, since v7.1 defaults to `undefined` and `formatter` is used instead.
-         * @name Highcharts.PlotPackedBubbleDataLabelsOptionsObject#format
+         * @name Highcharts.SeriesPackedBubbleDataLabelsOptionsObject#format
          * @type {string}
          * @since 7.0.0
          *//**
          * Callback JavaScript function to format the data label for a node. Note that
          * if a `format` is defined, the format takes precedence and the formatter is
          * ignored.
-         * @name Highcharts.PlotPackedBubbleDataLabelsOptionsObject#formatter
-         * @type {Highcharts.PlotPackedBubbleDataLabelsFormatterCallbackFunction|undefined}
+         * @name Highcharts.SeriesPackedBubbleDataLabelsOptionsObject#formatter
+         * @type {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction|undefined}
          * @since 7.0.0
          *//**
          * Callback to format data labels for _parentNodes_. The `parentNodeFormat`
          * option takes precedence over the `parentNodeFormatter`.
-         * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#parentNodeFormatter
+         * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#parentNodeFormatter
          * @type {Highcharts.FormatterCallbackFunction<Highcharts.DataLabelsFormatterContextObject>}
          * @since 7.1.0
          *//**
          * Options for a _parentNode_ label text.
          * @sample highcharts/series-packedbubble/packed-dashboard
          *         Dashboard with dataLabels on parentNodes
-         * @name Highcharts.PlotPackedBubbleDataLabelsFormatterContextObject#parentNodeTextPath
-         * @type {Highcharts.PlotPackedBubbleDataLabelsTextPath}
+         * @name Highcharts.SeriesPackedBubbleDataLabelsFormatterContextObject#parentNodeTextPath
+         * @type {Highcharts.SeriesPackedBubbleDataLabelsTextPath}
          * @since 7.1.0
         *//**
          * Options for a _node_ label text which should follow marker's shape.
          * **Note:** Only SVG-based renderer supports this option.
-         * @see {@link Highcharts.PlotPackedBubbleDataLabelsTextPath#linkTextPath}
-         * @name Highcharts.PlotPackedBubbleDataLabelsOptionsObject#textPath
-         * @type {Highcharts.PlotPackedBubbleDataLabelsTextPath}
+         * @see {@link Highcharts.SeriesPackedBubbleDataLabelsTextPath#linkTextPath}
+         * @name Highcharts.SeriesPackedBubbleDataLabelsOptionsObject#textPath
+         * @type {Highcharts.SeriesPackedBubbleDataLabelsTextPath}
          * @since 7.1.0
          */
 
         /**
          * **Note:** Only SVG-based renderer supports this option.
          *
-         * @see {@link Highcharts.PlotNetworkDataLabelsTextPath#linkTextPath}
-         * @see {@link Highcharts.PlotNetworkDataLabelsTextPath#textPath}
+         * @see {@link Highcharts.SeriesNetworkDataLabelsTextPath#linkTextPath}
+         * @see {@link Highcharts.SeriesNetworkDataLabelsTextPath#textPath}
          *
-         * @interface Highcharts.PlotPackedBubbleDataLabelsTextPath
+         * @interface Highcharts.SeriesPackedBubbleDataLabelsTextPath
          * @since 7.1.0
          *//**
          * Presentation attributes for the text path.
-         * @name Highcharts.PlotPackedBubbleDataLabelsTextPath#attributes
+         * @name Highcharts.SeriesPackedBubbleDataLabelsTextPath#attributes
          * @type {Highcharts.SVGAttributes}
          * @since 7.1.0
          *//**
          * Enable or disable `textPath` option for link's or marker's data labels.
-         * @name Highcharts.PlotPackedBubbleDataLabelsTextPath#enabled
+         * @name Highcharts.SeriesPackedBubbleDataLabelsTextPath#enabled
          * @type {boolean|undefined}
          * @since 7.1.0
          */
@@ -8522,8 +8740,7 @@
                     if (this.options.marker) {
                         this.series.forEach(function (series) {
                             if (series) {
-                                series.translate();
-                                series.drawPoints();
+                                series.calculateParentRadius();
                             }
                         });
                     }
@@ -8659,7 +8876,10 @@
                     (
                         // In first iteration system does not move:
                         this.systemTemperature > 0 &&
-                        this.systemTemperature / this.nodes.length < 0.01
+                        (
+                            this.systemTemperature / this.nodes.length < 0.02 &&
+                            this.enableSimulation
+                        ) // Use only when simulation is enabled
                     );
                 }
             }
@@ -8756,7 +8976,8 @@
                  */
                 useSimulation: true,
                 /**
-                 * @type {Highcharts.PlotPackedBubbleDataLabelsOptionsObject}
+                 * @type    {Highcharts.SeriesPackedBubbleDataLabelsOptionsObject|Array<Highcharts.SeriesPackedBubbleDataLabelsOptionsObject>}
+                 * @default {"formatter": function () { return this.point.value; }, "parentNodeFormatter": function () { return this.name; }, "parentNodeTextPath": {"enabled: true}, "padding": 0}
                  *
                  * @private
                  */
@@ -8853,7 +9074,7 @@
                          * @sample highcharts/series-packedbubble/parentnode-style/
                          *         Bubble size
                          *
-                         * @extends   plotOptions.line.marker
+                         * @extends   plotOptions.series.marker
                          * @excluding states
                          */
                         marker: {
@@ -8980,14 +9201,18 @@
                     var series = this,
                         dataLabels = [];
                     Series.prototype.render.apply(this, arguments);
-                    series.data.forEach(function (point) {
-                        if (H.isArray(point.dataLabels)) {
-                            point.dataLabels.forEach(function (dataLabel) {
-                                dataLabels.push(dataLabel);
-                            });
-                        }
-                    });
-                    series.chart.hideOverlappingLabels(dataLabels);
+                    // #10823 - dataLabels should stay visible
+                    // when enabled allowOverlap.
+                    if (!series.options.dataLabels.allowOverlap) {
+                        series.data.forEach(function (point) {
+                            if (H.isArray(point.dataLabels)) {
+                                point.dataLabels.forEach(function (dataLabel) {
+                                    dataLabels.push(dataLabel);
+                                });
+                            }
+                        });
+                        series.chart.hideOverlappingLabels(dataLabels);
+                    }
                 },
                 // Needed because of z-indexing issue if point is added in series.group
                 setVisible: function () {
@@ -9039,6 +9264,38 @@
                     }
                 },
                 /**
+                 * The function responsible for calculating series bubble' s bBox.
+                 * Needed because of exporting failure when useSimulation
+                 * is set to false
+                 * @private
+                 */
+                seriesBox: function () {
+                    var series = this,
+                        chart = series.chart,
+                        data = series.data,
+                        max = Math.max,
+                        min = Math.min,
+                        radius,
+                        // bBox = [xMin, xMax, yMin, yMax]
+                        bBox = [
+                            chart.plotLeft,
+                            chart.plotLeft + chart.plotWidth,
+                            chart.plotTop,
+                            chart.plotTop + chart.plotHeight
+                        ];
+
+                    data.forEach(function (p) {
+                        if (defined(p.plotX) && defined(p.plotY) && p.marker.radius) {
+                            radius = p.marker.radius;
+                            bBox[0] = min(bBox[0], p.plotX - radius);
+                            bBox[1] = max(bBox[1], p.plotX + radius);
+                            bBox[2] = min(bBox[2], p.plotY - radius);
+                            bBox[3] = max(bBox[3], p.plotY + radius);
+                        }
+                    });
+                    return H.isNumber(bBox.width / bBox.height) ? bBox : null;
+                },
+                /**
                  * The function responsible for calculating the parent node radius
                  * based on the total surface of iniside-bubbles and the group BBox
                  * @private
@@ -9049,10 +9306,7 @@
                         parentPadding = 20,
                         minParentRadius = 20;
 
-                    if (series.group) {
-                        bBox = series.group.element.getBBox();
-                    }
-
+                    bBox = series.seriesBox();
                     series.parentNodeRadius =
                         Math.min(
                             Math.max(
@@ -9456,16 +9710,7 @@
                         return b[2] - a[2];
                     });
 
-                    if (sortedArr.length === 1) {
-                        // if length is 1,return only one bubble
-                        arr = [
-                            0, 0,
-                            sortedArr[0][0],
-                            sortedArr[0][1],
-                            sortedArr[0][2]
-                        ];
-                    } else if (sortedArr.length) {
-
+                    if (sortedArr.length) {
                         // create first bubble in the middle of the chart
                         bubblePos.push([
                             [
@@ -9476,74 +9721,78 @@
                                 sortedArr[0][4]
                             ] // point index
                         ]); // 0 level bubble
+                        if (sortedArr.length > 1) {
 
-                        bubblePos.push([
-                            [
-                                0,
-                                0 - sortedArr[1][2] - sortedArr[0][2],
-                                // move bubble above first one
-                                sortedArr[1][2],
-                                sortedArr[1][3],
-                                sortedArr[1][4]
-                            ]
-                        ]); // 1 level 1st bubble
+                            bubblePos.push([
+                                [
+                                    0,
+                                    0 - sortedArr[1][2] - sortedArr[0][2],
+                                    // move bubble above first one
+                                    sortedArr[1][2],
+                                    sortedArr[1][3],
+                                    sortedArr[1][4]
+                                ]
+                            ]); // 1 level 1st bubble
 
-                        // first two already positioned so starting from 2
-                        for (i = 2; i < sortedArr.length; i++) {
-                            sortedArr[i][2] = sortedArr[i][2] || 1;
-                            // in case if radius is calculated as 0.
-                            calculatedBubble = positionBubble(
-                                bubblePos[stage][j],
-                                bubblePos[stage - 1][k],
-                                sortedArr[i]
-                            ); // calculate initial bubble position
+                            // first two already positioned so starting from 2
+                            for (i = 2; i < sortedArr.length; i++) {
+                                sortedArr[i][2] = sortedArr[i][2] || 1;
+                                // in case if radius is calculated as 0.
+                                calculatedBubble = positionBubble(
+                                    bubblePos[stage][j],
+                                    bubblePos[stage - 1][k],
+                                    sortedArr[i]
+                                ); // calculate initial bubble position
 
-                            if (checkOverlap(calculatedBubble, bubblePos[stage][0])) {
-                                /* if new bubble is overlapping with first bubble
-                                 * in current level (stage)
-                                 */
+                                if (
+                                    checkOverlap(calculatedBubble, bubblePos[stage][0])
+                                ) {
+                                    /* if new bubble is overlapping with first bubble
+                                     * in current level (stage)
+                                     */
 
-                                bubblePos.push([]);
-                                k = 0;
-                                /* reset index of bubble, used for
-                                 * positioning the bubbles
-                                 * around it, we are starting from first bubble in next
-                                 * stage because we are changing level to higher
-                                 */
-                                bubblePos[stage + 1].push(
-                                    positionBubble(
-                                        bubblePos[stage][j],
-                                        bubblePos[stage][0],
-                                        sortedArr[i]
+                                    bubblePos.push([]);
+                                    k = 0;
+                                    /* reset index of bubble, used for
+                                     * positioning the bubbles around it,
+                                     * we are starting from first bubble in next
+                                     * stage because we are changing level to higher
+                                     */
+                                    bubblePos[stage + 1].push(
+                                        positionBubble(
+                                            bubblePos[stage][j],
+                                            bubblePos[stage][0],
+                                            sortedArr[i]
+                                        )
+                                    );
+                                    // (last bubble, 1. from curr stage, new bubble)
+                                    stage++; // the new level is created, above current
+                                    j = 0; // set the index of bubble in curr level to 0
+                                } else if (
+                                    stage > 1 && bubblePos[stage - 1][k + 1] &&
+                                    checkOverlap(
+                                        calculatedBubble, bubblePos[stage - 1][k + 1]
                                     )
-                                );
-                                // (last added bubble, 1. from curr stage, new bubble)
-                                stage++; // the new level is created, above current one
-                                j = 0; // set the index of bubble in current level to 0
-                            } else if (
-                                stage > 1 && bubblePos[stage - 1][k + 1] &&
-                                checkOverlap(
-                                    calculatedBubble, bubblePos[stage - 1][k + 1]
-                                )
-                            ) {
-                                /* if new bubble is overlapping with one of the previous
-                                 * stage bubbles, it means that - bubble, used for
-                                 * positioning the bubbles around it has changed
-                                 * so we need to recalculate it
-                                 */
-                                k++;
-                                bubblePos[stage].push(
-                                    positionBubble(
-                                        bubblePos[stage][j],
-                                        bubblePos[stage - 1][k],
-                                        sortedArr[i]
-                                    )
-                                );
-                                // (last added bubble, prev stage bubble, new bubble)
-                                j++;
-                            } else { // simply add calculated bubble
-                                j++;
-                                bubblePos[stage].push(calculatedBubble);
+                                ) {
+                                    /* if new bubble is overlapping with one of the prev
+                                     * stage bubbles, it means that - bubble, used for
+                                     * positioning the bubbles around it has changed
+                                     * so we need to recalculate it
+                                     */
+                                    k++;
+                                    bubblePos[stage].push(
+                                        positionBubble(
+                                            bubblePos[stage][j],
+                                            bubblePos[stage - 1][k],
+                                            sortedArr[i]
+                                        )
+                                    );
+                                    // (last bubble, prev stage bubble, new bubble)
+                                    j++;
+                                } else { // simply add calculated bubble
+                                    j++;
+                                    bubblePos[stage].push(calculatedBubble);
+                                }
                             }
                         }
                         series.chart.stages = bubblePos;
@@ -9555,7 +9804,6 @@
 
                         series.resizeRadius();
                         arr = series.chart.rawPositions;
-
                     }
                     return arr;
                 },
@@ -9862,7 +10110,14 @@
          */
 
         /**
+         * @type      {Highcharts.SeriesPackedBubbleDataLabelsOptionsObject|Array<Highcharts.SeriesPackedBubbleDataLabelsOptionsObject>}
+         * @product   highcharts
+         * @apioption series.packedbubble.data.dataLabels
+         */
+
+        /**
          * @excluding enabled,enabledThreshold,height,radius,width
+         * @product   highcharts
          * @apioption series.packedbubble.marker
          */
 

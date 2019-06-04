@@ -1,4 +1,4 @@
-/**
+/* *
  * Data module
  *
  * (c) 2012-2019 Torstein Honsi
@@ -108,7 +108,7 @@ var addEvent = Highcharts.addEvent,
  * It requires the `modules/data.js` file to be loaded.
  *
  * Please note that the default way of adding data in Highcharts, without
- * the need of a module, is through the [series.data](#series.data)
+ * the need of a module, is through the [series._type_.data](#series.line.data)
  * option.
  *
  * @sample {highcharts} highcharts/demo/column-parsed/
@@ -1045,12 +1045,14 @@ Highcharts.extend(Data.prototype, {
             return guessed;
         }
 
-        /* Tries to guess the date format
+        /**
+         * Tries to guess the date format
          *  - Check if either month candidate exceeds 12
          *  - Check if year is missing (use current year)
          *  - Check if a shortened year format is used (e.g. 1/1/99)
          *  - If no guess can be made, the user must be prompted
          * data is the data to deduce a format based on
+         * @private
          */
         function deduceDateFormat(data, limit) {
             var format = 'YYYY/mm/dd',
@@ -1168,10 +1170,12 @@ Highcharts.extend(Data.prototype, {
             return format;
         }
 
-        /* Figure out the best axis types for the data
+        /**
+         * Figure out the best axis types for the data
          * - If the first column is a number, we're good
          * - If the first column is a date, set to date/time
          * - If the first column is a string, set to categories
+         * @private
          */
         function deduceAxisTypes() {
 
@@ -1471,7 +1475,7 @@ Highcharts.extend(Data.prototype, {
                     if (options.enablePolling) {
                         setTimeout(function () {
                             fetchSheet(fn);
-                        }, options.dataRefreshRate);
+                        }, (options.dataRefreshRate || 2) * 1000);
                     }
                 },
                 error: function (xhr, text) {

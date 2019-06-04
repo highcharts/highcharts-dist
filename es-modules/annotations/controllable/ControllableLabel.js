@@ -5,15 +5,50 @@ import './../../parts/SvgRenderer.js';
 import controllableMixin from './controllableMixin.js';
 import MockPoint from './../MockPoint.js';
 
+
+/**
+ * @private
+ * @interface Highcharts.AnnotationAnchorObject
+ *//**
+ * Relative to the plot area position
+ * @name Highcharts.AnnotationAnchorObject#relativePosition
+ * @type {Highcharts.AnnotationAnchorPositionObject}
+ *//**
+ * Absolute position
+ * @name Highcharts.AnnotationAnchorObject#absolutePosition
+ * @type {Highcharts.AnnotationAnchorPositionObject}
+ */
+
+/**
+ * An object which denotes an anchor position
+ *
+ * @private
+ * @interface Highcharts.AnnotationAnchorPositionObject
+ *//**
+ * @name Highcharts.AnnotationAnchorPositionObject#x
+ * @property {number}
+ *//**
+ * @name Highcharts.AnnotationAnchorPositionObject#y
+ * @property {number}
+ *//**
+ * @name Highcharts.AnnotationAnchorPositionObject#height
+ * @property {number}
+ *//**
+ * @name Highcharts.AnnotationAnchorPositionObject#width
+ * @property {number}
+ */
+
 /**
  * A controllable label class.
  *
+ * @private
  * @class
+ * @name Annotation.ControllableLabel
+ *
  * @mixes Annotation.controllableMixin
- * @memberOf Annotation
  *
  * @param {Highcharts.Annotation} annotation an annotation instance
- * @param {Object} options a label's options
+ * @param {object} options a label's options
  * @param {number} index of the label
  **/
 function ControllableLabel(annotation, options, index) {
@@ -25,7 +60,7 @@ function ControllableLabel(annotation, options, index) {
  * Shapes which do not have background - the object is used for proper
  * setting of the contrast color.
  *
- * @type {Array<String>}
+ * @type {Array<string>}
  */
 ControllableLabel.shapesWithoutBackground = ['connector'];
 
@@ -195,16 +230,24 @@ H.merge(
          * @param {number} dy translation for y coordinate
          **/
         translate: function (dx, dy) {
-            var annotationOptions = this.annotation.userOptions,
-                labelOptions = annotationOptions[this.collection][this.index];
+            var chart = this.annotation.chart,
+                // Annotation.options
+                labelOptions = this.annotation.userOptions,
+                // Chart.options.annotations
+                annotationIndex = chart.annotations.indexOf(this.annotation),
+                chartAnnotations = chart.options.annotations,
+                chartOptions = chartAnnotations[annotationIndex];
 
             // Local options:
             this.options.x += dx;
             this.options.y += dy;
 
             // Options stored in chart:
-            labelOptions.x = this.options.x;
-            labelOptions.y = this.options.y;
+            chartOptions[this.collection][this.index].x = this.options.x;
+            chartOptions[this.collection][this.index].y = this.options.y;
+
+            labelOptions[this.collection][this.index].x = this.options.x;
+            labelOptions[this.collection][this.index].y = this.options.y;
         },
 
         render: function (parent) {
@@ -312,8 +355,9 @@ H.merge(
         /**
          * Returns the label position relative to its anchor.
          *
-         * @param {Annotation.controllableMixin.Anchor} anchor
-         * @return {Annotation.controllableMixin.Position|null} position
+         * @param {Highcharts.AnnotationAnchorObject} anchor
+         *
+         * @return {Highcharts.AnnotationAnchorPositionObject|null} position
          */
         position: function (anchor) {
             var item = this.graphic,
@@ -407,6 +451,7 @@ H.merge(
 
 /**
  * General symbol definition for labels with connector
+ * @private
  */
 H.SVGRenderer.prototype.symbols.connector = function (x, y, w, h, options) {
     var anchorX = options && options.anchorX,

@@ -157,7 +157,11 @@ H.PlotLineOrBand.prototype = {
 
         // Set the path or return
         if (isLine) {
-            path = axis.getPlotLinePath(value, svgElem.strokeWidth());
+            path = axis.getPlotLinePath({
+                value: value,
+                lineWidth: svgElem.strokeWidth(),
+                acrossPanes: options.acrossPanes
+            });
         } else if (isBand) { // plot band
             path = axis.getPlotBandPath(from, to, options);
         } else {
@@ -323,6 +327,16 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @type      {Array<*>}
      * @product   highcharts highstock gantt
      * @apioption xAxis.plotBands
+     */
+
+    /**
+     * Flag to decide if plotBand should be rendered across all panes.
+     *
+     * @since     7.1.2
+     * @product   highstock
+     * @type      {boolean}
+     * @default   true
+     * @apioption xAxis.plotBands.acrossPanes
      */
 
     /**
@@ -564,6 +578,19 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @type      {Array<*>}
      * @product   highcharts highstock gantt
      * @apioption xAxis.plotLines
+     */
+
+    /**
+     * Flag to decide if plotLine should be rendered across all panes.
+     *
+     * @sample {highstock} stock/xaxis/plotlines-acrosspanes/
+     *         Plot lines on different panes
+     *
+     * @since     7.1.2
+     * @product   highstock
+     * @type      {boolean}
+     * @default   true
+     * @apioption xAxis.plotLines.acrossPanes
      */
 
     /**
@@ -864,8 +891,16 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      *         The SVG path definition in array form.
      */
     getPlotBandPath: function (from, to) {
-        var toPath = this.getPlotLinePath(to, null, null, true),
-            path = this.getPlotLinePath(from, null, null, true),
+        var toPath = this.getPlotLinePath({
+                value: to,
+                force: true,
+                acrossPanes: this.options.acrossPanes
+            }),
+            path = this.getPlotLinePath({
+                value: from,
+                force: true,
+                acrossPanes: this.options.acrossPanes
+            }),
             result = [],
             i,
             // #4964 check if chart is inverted or plotband is on yAxis

@@ -9,9 +9,9 @@
 /**
  * Formatter callback function.
  *
- * @callback Highcharts.PlotNetworkDataLabelsFormatterCallbackFunction
+ * @callback Highcharts.SeriesNetworkDataLabelsFormatterCallbackFunction
  *
- * @param {Highcharts.PlotNetworkDataLabelsFormatterContextObject|Highcharts.DataLabelsFormatterContextObject} this
+ * @param {Highcharts.SeriesNetworkDataLabelsFormatterContextObject|Highcharts.DataLabelsFormatterContextObject} this
  *        Data label context to format
  *
  * @return {string}
@@ -21,24 +21,24 @@
 /**
  * Context for the formatter function.
  *
- * @interface Highcharts.PlotNetworkDataLabelsFormatterContextObject
+ * @interface Highcharts.SeriesNetworkDataLabelsFormatterContextObject
  * @extends Highcharts.DataLabelsFormatterContextObject
  * @since 7.0.0
  *//**
  * The color of the node.
- * @name Highcharts.PlotNetworkDataLabelsFormatterContextObject#color
+ * @name Highcharts.SeriesNetworkDataLabelsFormatterContextObject#color
  * @type {Highcharts.ColorString}
  * @since 7.0.0
  *//**
  * The point (node) object. The node name, if defined, is available through
  * `this.point.name`. Arrays: `this.point.linksFrom` and `this.point.linksTo`
  * contains all nodes connected to this point.
- * @name Highcharts.PlotNetworkDataLabelsFormatterContextObject#point
+ * @name Highcharts.SeriesNetworkDataLabelsFormatterContextObject#point
  * @type {Highcharts.Point}
  * @since 7.0.0
  *//**
  * The ID of the node.
- * @name Highcharts.PlotNetworkDataLabelsFormatterContextObject#key
+ * @name Highcharts.SeriesNetworkDataLabelsFormatterContextObject#key
  * @type {string}
  * @since 7.0.0
  */
@@ -46,7 +46,7 @@
 /**
  * Data labels options
  *
- * @interface Highcharts.PlotNetworkDataLabelsOptionsObject
+ * @interface Highcharts.SeriesNetworkDataLabelsOptionsObject
  * @extends Highcharts.DataLabelsOptionsObject
  * @since 7.0.0
  *//**
@@ -54,63 +54,38 @@
  * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
  * specifying what to show for _node_ in the networkgraph. In v7.0 defaults to
  * `{key}`, since v7.1 defaults to `undefined` and `formatter` is used instead.
- * @name Highcharts.PlotNetworkDataLabelsOptionsObject#format
+ * @name Highcharts.SeriesNetworkDataLabelsOptionsObject#format
  * @type {string}
  * @since 7.0.0
  *//**
  * Callback JavaScript function to format the data label for a node. Note that
  * if a `format` is defined, the format takes precedence and the formatter is
  * ignored.
- * @name Highcharts.PlotNetworkDataLabelsOptionsObject#formatter
- * @type {Highcharts.PlotNetworkDataLabelsFormatterCallbackFunction|undefined}
+ * @name Highcharts.SeriesNetworkDataLabelsOptionsObject#formatter
+ * @type {Highcharts.SeriesNetworkDataLabelsFormatterCallbackFunction|undefined}
  * @since 7.0.0
  *//**
  * The
  * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
  * specifying what to show for _links_ in the networkgraph. (Default:
  * `undefined`)
- * @name Highcharts.PlotNetworkDataLabelsOptionsObject#linkFormat
+ * @name Highcharts.SeriesNetworkDataLabelsOptionsObject#linkFormat
  * @type {string}
  * @since 7.1.0
  *//**
  * Callback to format data labels for _links_ in the sankey diagram. The
  * `linkFormat` option takes precedence over the `linkFormatter`.
- * @name Highcharts.PlotNetworkDataLabelsOptionsObject#linkFormatter
- * @type {Highcharts.PlotNetworkDataLabelsFormatterCallbackFunction|undefined}
+ * @name Highcharts.SeriesNetworkDataLabelsOptionsObject#linkFormatter
+ * @type {Highcharts.SeriesNetworkDataLabelsFormatterCallbackFunction|undefined}
  * @since 7.1.0
  *//**
- * Options for a _link_ label text which should follow link connection.
- * **Note:** Only SVG-based renderer supports this option.
- * @see {@link Highcharts.PlotNetworkDataLabelsTextPath#textPath}
- * @name Highcharts.PlotNetworkDataLabelsOptionsObject#linkTextPath
- * @type {Highcharts.PlotNetworkDataLabelsTextPath}
- * @since 7.1.0
- *//**
- * Options for a _node_ label text which should follow marker's shape.
- * **Note:** Only SVG-based renderer supports this option.
- * @see {@link Highcharts.PlotNetworkDataLabelsTextPath#linkTextPath}
- * @name Highcharts.PlotNetworkDataLabelsOptionsObject#textPath
- * @type {Highcharts.PlotNetworkDataLabelsTextPath}
- * @since 7.1.0
- */
-
-/**
- * **Note:** Only SVG-based renderer supports this option.
- *
- * @see {@link Highcharts.PlotNetworkDataLabelsTextPath#linkTextPath}
- * @see {@link Highcharts.PlotNetworkDataLabelsTextPath#textPath}
- *
- * @interface Highcharts.PlotNetworkDataLabelsTextPath
- * @since 7.1.0
- *//**
- * Presentation attributes for the text path.
- * @name Highcharts.PlotNetworkDataLabelsTextPath#attributes
- * @type {Highcharts.SVGAttributes}
- * @since 7.1.0
- *//**
- * Enable or disable `textPath` option for link's or marker's data labels.
- * @name Highcharts.PlotNetworkDataLabelsTextPath#enabled
- * @type {boolean|undefined}
+ * Options for a _link_ label text which should follow link connection. Border
+ * and background are disabled for a label that follows a path.
+ * **Note:** Only SVG-based renderer supports this option. Setting `useHTML` to
+ * true will disable this option.
+ * @see {@link Highcharts.SeriesNetworkDataLabelsTextPath#textPath}
+ * @name Highcharts.SeriesNetworkDataLabelsOptionsObject#linkTextPath
+ * @type {Highcharts.DataLabelsTextPath|undefined}
  * @since 7.1.0
  */
 
@@ -163,7 +138,10 @@ seriesType(
     {
         stickyTracking: false,
 
-        /** @ignore-option */
+        /**
+         * @ignore-option
+         * @private
+         */
         inactiveOtherPoints: true,
 
         marker: {
@@ -224,7 +202,9 @@ seriesType(
          * @sample highcharts/series-networkgraph/link-datalabels
          *         Data labels moved under the links
          *
-         * @type {Highcharts.PlotNetworkDataLabelsOptionsObject}
+         * @type    {Highcharts.SeriesNetworkDataLabelsOptionsObject|Array<Highcharts.SeriesNetworkDataLabelsOptionsObject>}
+         * @default {"formatter": function () { return this.key; }, "linkFormatter": function () { return this.point.fromNode.name + "<br>" + this.point.toNode.name; }, "linkTextPath": {"enabled": true}, "textPath": {"enabled": false}}
+         *
          * @private
          */
         dataLabels: {
@@ -328,7 +308,7 @@ seriesType(
              *         Numerical values
              *
              * @type      {number}
-             * @apioption series.networkgraph.layoutAlgorithm.linkLength
+             * @apioption plotOptions.networkgraph.layoutAlgorithm.linkLength
              */
 
             /**
@@ -485,7 +465,6 @@ seriesType(
          * @private
          */
         createNode: H.NodesMixin.createNode,
-        setData: H.NodesMixin.setData,
         destroy: H.NodesMixin.destroy,
 
         /**
@@ -512,6 +491,9 @@ seriesType(
          * @private
          */
         generatePoints: function () {
+            var node,
+                i;
+
             H.NodesMixin.generatePoints.apply(this, arguments);
 
             // In networkgraph, it's fine to define stanalone nodes, create
@@ -528,9 +510,19 @@ seriesType(
                 );
             }
 
-            this.nodes.forEach(function (node) {
+            for (i = this.nodes.length - 1; i >= 0; i--) {
+                node = this.nodes[i];
+
                 node.degree = node.getDegree();
-            });
+
+                // If node exists, but it's not available in nodeLookup,
+                // then it's leftover from previous runs (e.g. setData)
+                if (!this.nodeLookup[node.id]) {
+                    node.remove();
+                }
+            }
+
+
             this.data.forEach(function (link) {
                 link.formatPrefix = 'link';
             });
@@ -948,6 +940,105 @@ seriesType(
         },
 
         /**
+         * Common method for removing points and nodes in networkgraph. To
+         * remove `link`, use `series.data[index].remove()`. To remove `node`
+         * with all connections, use `series.nodes[index].remove()`.
+         * @private
+         * @param {boolean} [redraw=true]
+         *        Whether to redraw the chart or wait for an explicit call. When
+         *        doing more operations on the chart, for example running
+         *        `point.remove()` in a loop, it is best practice to set
+         *        `redraw` to false and call `chart.redraw()` after.
+         * @param {boolean|Highcharts.AnimationOptionsObject} [animation=false]
+         *        Whether to apply animation, and optionally animation
+         *        configuration.
+         * @return {void}
+         */
+        remove: function (redraw, animation) {
+            var point = this,
+                series = point.series,
+                nodesOptions = series.options.nodes || [],
+                index,
+                i = nodesOptions.length;
+
+            // For nodes, remove all connected links:
+            if (point.isNode) {
+                // Temporary disable series.points array, because
+                // Series.removePoint() modifies it
+                series.points = [];
+
+                // Remove link from all nodes collections:
+                [].concat(point.linksFrom)
+                    .concat(point.linksTo)
+                    .forEach(
+                        function (linkFromTo) {
+                            // Incoming links
+                            index = linkFromTo.fromNode.linksFrom.indexOf(
+                                linkFromTo
+                            );
+                            if (index > -1) {
+                                linkFromTo.fromNode.linksFrom.splice(
+                                    index,
+                                    1
+                                );
+                            }
+
+                            // Outcoming links
+                            index = linkFromTo.toNode.linksTo.indexOf(
+                                linkFromTo
+                            );
+                            if (index > -1) {
+                                linkFromTo.toNode.linksTo.splice(
+                                    index,
+                                    1
+                                );
+                            }
+
+                            // Remove link from data/points collections
+                            Series.prototype.removePoint.call(
+                                series,
+                                series.data.indexOf(linkFromTo),
+                                false,
+                                false
+                            );
+                        }
+                    );
+
+                // Restore points array, after links are removed
+                series.points = series.data.slice();
+
+                // Proceed with removing node. It's similar to
+                // Series.removePoint() method, but doesn't modify other arrays
+                series.nodes.splice(series.nodes.indexOf(point), 1);
+
+                // Remove node options from config
+                while (i--) {
+                    if (nodesOptions[i].id === point.options.id) {
+                        series.options.nodes.splice(i, 1);
+                        break;
+                    }
+                }
+
+                if (point) {
+                    point.destroy();
+                }
+
+                // Run redraw if requested
+                series.isDirty = true;
+                series.isDirtyData = true;
+                if (redraw) {
+                    series.chart.redraw(redraw);
+                }
+            } else {
+                series.removePoint(
+                    series.data.indexOf(point),
+                    redraw,
+                    animation
+                );
+            }
+        },
+
+        /**
          * Destroy point. If it's a node, remove all links coming out of this
          * node. Then remove point from the layout.
          * @private
@@ -1021,6 +1112,11 @@ seriesType(
  * @apioption series.networkgraph.data
  */
 
+/**
+ * @type      {Highcharts.SeriesNetworkDataLabelsOptionsObject|Array<Highcharts.SeriesNetworkDataLabelsOptionsObject>}
+ * @product   highcharts
+ * @apioption series.networkgraph.data.dataLabels
+ */
 
 /**
  * The node that the link runs from.

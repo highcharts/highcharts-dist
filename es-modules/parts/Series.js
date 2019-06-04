@@ -519,6 +519,8 @@ H.Series = H.seriesType(
      *
      * @sample {highcharts} highcharts/series/type/
      *         Line and column in the same chart
+     * @sample highcharts/series/type-dynamic/
+     *         Dynamic types with button selector
      * @sample {highmaps} maps/demo/mapline-mappoint/
      *         Multiple types in the same map
      *
@@ -1857,7 +1859,8 @@ H.Series = H.seriesType(
          * @sample highcharts/plotoptions/series-datalabels-multiple
          *         Multiple data labels on a bar series
          *
-         * @type {Highcharts.DataLabelsOptionsObject}
+         * @type    {Highcharts.DataLabelsOptionsObject|Array<Highcharts.DataLabelsOptionsObject>}
+         * @default {"align": "center", "formatter": function () { return H.numberFormat(this.y, -1); }, "padding": 5, "style": {"fontSize": "11px", "fontWeight": "bold", "color": "contrast", "textOutline": "1px contrast"}, "verticalAlign": "bottom", "x":0, "y": 0}
          *
          * @private
          */
@@ -1882,8 +1885,8 @@ H.Series = H.seriesType(
                 textOutline: '1px contrast'
             },
             /**
-             * @ignore-option
              * above singular point
+             * @ignore-option
              */
             verticalAlign: 'bottom',
             /** @ignore-option */
@@ -2130,18 +2133,26 @@ H.Series = H.seriesType(
             /**
              * The opposite state of a hover for series.
              *
-             * @sample {highcharts} highcharts/demo/windbarb-series/
-             *         Disabled inactive state
+             * @sample highcharts/plotoptions/series-states-inactive-opacity
+             *         Disabled inactive state by setting opacity
              */
             inactive: {
+                /**
+                 * The animation for entering the inactive state.
+                 *
+                 * @type    {boolean|Highcharts.AnimationOptionsObject}
+                 */
                 animation: {
                     duration: 50
                 },
                 /**
-                 * Opacity of series elements (dataLabels, line, area).
+                 * Opacity of series elements (dataLabels, line, area). Set to 1
+                 * to disable inactive state.
                  *
                  * @apioption plotOptions.series.states.inactive.opacity
                  * @type {number}
+                 * @sample highcharts/plotoptions/series-states-inactive-opacity
+                 *         Disabled inactive state
                  */
                 opacity: 0.2
             }
@@ -2390,11 +2401,16 @@ H.Series = H.seriesType(
 
             objectEach(events, function (event, eventType) {
                 if (
-                    // In case we're doing Series.update(), first check if the
-                    // event already exists.
-                    !series.hcEvents ||
-                    !series.hcEvents[eventType] ||
-                    series.hcEvents[eventType].indexOf(event) === -1
+                    H.isFunction(event) &&
+                    (
+                        // In case we're doing Series.update(), first check if
+                        // the event already exists.
+                        !series.hcEvents ||
+                        !series.hcEvents[eventType] ||
+                        !series.hcEvents[eventType].some(function (obj) {
+                            return obj.fn === event;
+                        })
+                    )
                 ) {
                     addEvent(series, eventType, event);
                 }
@@ -2679,14 +2695,11 @@ H.Series = H.seriesType(
          * Set the series options by merging from the options tree. Called
          * internally on initializing and updating series. This function will
          * not redraw the series. For API usage, use {@link Series#update}.
-         *
+         * @private
          * @function Highcharts.Series#setOptions
-         *
-         * @param {Highcharts.SeriesOptionsType} itemOptions
-         *        The series options.
-         *
+         * @param {Highcharts.SeriesOptionsType} itemOptions - The series
+         * options.
          * @return {Highcharts.SeriesOptionsType}
-         *
          * @fires Highcharts.Series#event:afterSetOptions
          */
         setOptions: function (itemOptions) {
@@ -2694,27 +2707,31 @@ H.Series = H.seriesType(
                 chartOptions = chart.options,
                 plotOptions = chartOptions.plotOptions,
                 userOptions = chart.userOptions || {},
-                userPlotOptions = userOptions.plotOptions || {},
-                typeOptions = plotOptions[this.type],
                 seriesUserOptions = merge(itemOptions),
                 options,
                 zones,
                 zone,
-                styledMode = chart.styledMode;
+                styledMode = chart.styledMode,
+                e = {
+                    plotOptions: plotOptions,
+                    userOptions: seriesUserOptions
+                };
 
-            fireEvent(this, 'setOptions', { userOptions: seriesUserOptions });
+            fireEvent(this, 'setOptions', e);
+
+            // These may be modified by the event
+            var userPlotOptions = userOptions.plotOptions || {},
+                typeOptions = e.plotOptions[this.type];
 
             // use copy to prevent undetected changes (#9762)
-            this.userOptions = seriesUserOptions;
+            this.userOptions = e.userOptions;
 
-            // General series options take precedence over type options because
-            // otherwise, default type options like column.animation would be
-            // overwritten by the general option. But issues have been raised
-            // here (#3881), and the solution may be to distinguish between
-            // default option and userOptions like in the tooltip below.
             options = merge(
                 typeOptions,
                 plotOptions.series,
+                // #3881, chart instance plotOptions[type] should trump
+                // plotOptions.series
+                userOptions.plotOptions && userOptions.plotOptions[this.type],
                 seriesUserOptions
             );
 
@@ -3964,6 +3981,59 @@ H.Series = H.seriesType(
         },
 
         /**
+         * Get the clipping for the series. Could be called for a series to
+         * initiate animating the clip or to set the final clip (only width
+         * and x).
+         *
+         * @private
+         * @function Highcharts.Series#getClip
+         *
+         * @param  {boolean} [animation]
+         *         Initialize the animation.
+         * @param  {boolean} [finalBox]
+         *         Final size for the clip - end state for the animation.
+         * @return {*}
+         */
+        getClipBox: function (animation, finalBox) {
+            var series = this,
+                options = series.options,
+                chart = series.chart,
+                inverted = chart.inverted,
+                xAxis = series.xAxis,
+                yAxis = xAxis && series.yAxis,
+                clipBox;
+
+            if (animation && options.clip === false && yAxis) {
+                // support for not clipped series animation (#10450)
+                clipBox = inverted ? {
+                    y: -chart.chartWidth + yAxis.len + yAxis.pos,
+                    height: chart.chartWidth,
+                    width: chart.chartHeight,
+                    x: -chart.chartHeight + xAxis.len + xAxis.pos
+                } : {
+                    y: -yAxis.pos,
+                    height: chart.chartHeight,
+                    width: chart.chartWidth,
+                    x: -xAxis.pos
+                };
+                // x and width will be changed later when setting for animation
+                // initial state in Series.setClip
+            } else {
+                clipBox = series.clipBox || chart.clipBox;
+
+                if (finalBox) {
+                    clipBox.width = chart.plotSizeX;
+                    clipBox.x = 0;
+                }
+            }
+
+            return !finalBox ? clipBox : {
+                width: clipBox.width,
+                x: clipBox.x
+            };
+        },
+
+        /**
          * Set the clipping for the series. For animated series it is called
          * twice, first to initiate animating the clip then the second time
          * without the animation to set the final clip.
@@ -3979,7 +4049,7 @@ H.Series = H.seriesType(
                 renderer = chart.renderer,
                 inverted = chart.inverted,
                 seriesClipBox = this.clipBox,
-                clipBox = seriesClipBox || chart.clipBox,
+                clipBox = this.getClipBox(animation),
                 sharedClipKey =
                     this.sharedClipKey ||
                     [
@@ -4001,7 +4071,8 @@ H.Series = H.seriesType(
                 if (animation) {
                     clipBox.width = 0;
                     if (inverted) {
-                        clipBox.x = chart.plotSizeX;
+                        clipBox.x = chart.plotSizeX +
+                            (options.clip !== false ? 0 : chart.plotTop);
                     }
 
                     chart[sharedClipKey + 'm'] = markerClipRect = renderer
@@ -4025,7 +4096,7 @@ H.Series = H.seriesType(
                 }
             }
 
-            if (options.clip !== false) {
+            if (options.clip !== false || animation) {
                 this.group.clip(
                     animation || seriesClipBox ? clipRect : chart.clipRect
                 );
@@ -4071,9 +4142,10 @@ H.Series = H.seriesType(
         animate: function (init) {
             var series = this,
                 chart = series.chart,
-                clipRect,
                 animation = animObject(series.options.animation),
-                sharedClipKey;
+                clipRect,
+                sharedClipKey,
+                finalBox;
 
             // Initialize the animation. Set up the clipping rectangle.
             if (init) {
@@ -4084,22 +4156,21 @@ H.Series = H.seriesType(
             } else {
                 sharedClipKey = this.sharedClipKey;
                 clipRect = chart[sharedClipKey];
+
+                finalBox = series.getClipBox(animation, true);
+
                 if (clipRect) {
-                    clipRect.animate({
-                        width: chart.plotSizeX,
-                        x: 0
-                    }, animation);
+                    clipRect.animate(finalBox, animation);
                 }
                 if (chart[sharedClipKey + 'm']) {
                     chart[sharedClipKey + 'm'].animate({
-                        width: chart.plotSizeX + 99,
-                        x: chart.inverted ? 0 : -99
+                        width: finalBox.width + 99,
+                        x: finalBox.x - (chart.inverted ? 0 : 99)
                     }, animation);
                 }
 
                 // Delete this function to allow it only once
                 series.animate = null;
-
             }
         },
 
@@ -4322,8 +4393,8 @@ H.Series = H.seriesType(
          *        The point instance to inspect.
          *
          * @param {string} [state]
-         *        The point state, can be either `hover`, `select` or undefined
-         *        for normal state.
+         *        The point state, can be either `hover`, `select` or 'normal'.
+         *        If undefined, normal state is assumed.
          *
          * @return {Highcharts.SVGAttributes}
          *         The presentational attributes to be set on the point.
@@ -4367,6 +4438,7 @@ H.Series = H.seriesType(
             );
 
             // Handle hover and select states
+            state = state || 'normal';
             if (state) {
                 seriesStateOptions = seriesMarkerOptions.states[state];
                 pointStateOptions = (
@@ -4672,6 +4744,26 @@ H.Series = H.seriesType(
 
                 } else if (graphPath.length) { // #1487
 
+                    /**
+                     * SVG element of area-based charts. Can be used for styling
+                     * purposes. If zones are configured, this element will be
+                     * hidden and replaced by multiple zone areas, accessible
+                     * via `series['zone-area-x']` (where x is a number,
+                     * starting with 0).
+                     *
+                     * @name Highcharts.Series#area
+                     * @type {Highcharts.SVGElement|undefined}
+                     */
+                    /**
+                     * SVG element of line-based charts. Can be used for styling
+                     * purposes. If zones are configured, this element will be
+                     * hidden and replaced by multiple zone lines, accessible
+                     * via `series['zone-graph-x']` (where x is a number,
+                     * starting with 0).
+                     *
+                     * @name Highcharts.Series#graph
+                     * @type {Highcharts.SVGElement|undefined}
+                     */
                     series[graphKey] = graph = series.chart.renderer
                         .path(graphPath)
                         .addClass(prop[1])
@@ -4871,15 +4963,19 @@ H.Series = H.seriesType(
                         clips[i].animate(clipAttr);
                     } else {
                         clips[i] = renderer.clipRect(clipAttr);
-
-                        if (graph) {
-                            series['zone-graph-' + i].clip(clips[i]);
-                        }
-
-                        if (area) {
-                            series['zone-area-' + i].clip(clips[i]);
-                        }
                     }
+
+                    // when no data, graph zone is not applied and after setData
+                    // clip was ignored. As a result, it should be applied each
+                    // time.
+                    if (graph) {
+                        series['zone-graph-' + i].clip(clips[i]);
+                    }
+
+                    if (area) {
+                        series['zone-area-' + i].clip(clips[i]);
+                    }
+
                     // if this zone extends out of the axis, ignore the others
                     ignoreZones = threshold.value > extremes.max;
 
@@ -4889,6 +4985,14 @@ H.Series = H.seriesType(
                     }
                 });
                 this.clips = clips;
+            } else if (series.visible) {
+                // If zones were removed, restore graph and area
+                if (graph) {
+                    graph.show(true);
+                }
+                if (area) {
+                    area.show(true);
+                }
             }
         },
 
@@ -5556,7 +5660,7 @@ H.Series = H.seriesType(
  * @sample highcharts/point/datalabels/
  *         Show a label for the last value
  *
- * @type      {Highcharts.DataLabelsOptionsObject}
+ * @type      {Highcharts.DataLabelsOptionsObject|Array<Highcharts.DataLabelsOptionsObject>}
  * @product   highcharts highstock gantt
  * @apioption series.line.data.dataLabels
  */

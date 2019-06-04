@@ -449,6 +449,7 @@ var cbSetTreeValuesBefore = function before(node, options) {
  *               navigatorOptions, pointRange
  * @product      highcharts
  * @optionparent plotOptions.sunburst
+ * @private
  */
 var sunburstOptions = {
 
@@ -584,7 +585,8 @@ var sunburstOptions = {
      */
     opacity: 1,
     /**
-     * @type {Highcharts.SeriesSunburstDataLabelsOptionsObject|Highcharts.DataLabelsOptionsObject}
+     * @type    {Highcharts.SeriesSunburstDataLabelsOptionsObject|Array<Highcharts.SeriesSunburstDataLabelsOptionsObject>}
+     * @default {"allowOverlap": true, "defer": true, "rotationMode": "auto", "style": {"textOverflow": "ellipsis"}}
      */
     dataLabels: {
         /** @ignore-option */
@@ -884,7 +886,8 @@ var sunburstSeries = {
             nodeRoot = mapIdToNode && mapIdToNode[rootId],
             nodeTop,
             tree,
-            values;
+            values,
+            nodeIds = {};
 
         series.shapeRoot = nodeRoot && nodeRoot.shapeArgs;
         // Call prototype function
@@ -939,6 +942,18 @@ var sunburstSeries = {
         this.setShapeArgs(nodeTop, values, mapOptionsToLevel);
         // Set mapOptionsToLevel on series for use in drawPoints.
         series.mapOptionsToLevel = mapOptionsToLevel;
+
+        // #10669 - verify if all nodes have unique ids
+        series.data.forEach(function (child) {
+            if (nodeIds[child.id]) {
+                H.error(31, false, series.chart);
+            }
+            // map
+            nodeIds[child.id] = true;
+        });
+
+        // reset object
+        nodeIds = {};
     },
 
     // Animate the slices in. Similar to the animation of polar charts.
@@ -1017,6 +1032,12 @@ var sunburstPoint = {
  * @excluding x, y
  * @product   highcharts
  * @apioption series.sunburst.data
+ */
+
+/**
+ * @type      {Highcharts.SeriesSunburstDataLabelsOptionsObject|Array<Highcharts.SeriesSunburstDataLabelsOptionsObject>}
+ * @product   highcharts
+ * @apioption series.sunburst.data.dataLabels
  */
 
 /**

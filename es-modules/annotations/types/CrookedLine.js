@@ -84,13 +84,24 @@ H.extendAnnotation(
     /**
      * A crooked line annotation.
      *
-     * @excluding labels, shapes
      * @sample highcharts/annotations-advanced/crooked-line/
      *         Crooked line
-     * @product highstock
+     *
+     * @product      highstock
      * @optionparent annotations.crookedLine
      */
     {
+
+        /**
+         * @extends   annotations.labelOptions
+         * @apioption annotations.crookedLine.labelOptions
+         */
+
+        /**
+         * @extends   annotations.shapeOptions
+         * @apioption annotations.crookedLine.shapeOptions
+         */
+
         /**
          * Additional options for an annotation with the type.
          */
@@ -109,24 +120,26 @@ H.extendAnnotation(
             yAxis: 0,
 
             /**
-             * @type {Array<Object>}
+             * @type      {Array<*>}
              * @apioption annotations.crookedLine.typeOptions.points
              */
 
             /**
              * The x position of the point.
-             * @type {number}
+             *
+             * @type      {number}
              * @apioption annotations.crookedLine.typeOptions.points.x
              */
 
             /**
              * The y position of the point.
-             * @type {number}
+             *
+             * @type      {number}
              * @apioption annotations.crookedLine.typeOptions.points.y
              */
 
             /**
-             * @type {number}
+             * @type      {number}
              * @excluding positioner, events
              * @apioption annotations.crookedLine.typeOptions.points.controlPoint
              */
@@ -134,7 +147,6 @@ H.extendAnnotation(
             /**
              * Line options.
              *
-             * @type {Object}
              * @excluding height, point, points, r, type, width
              */
             line: {

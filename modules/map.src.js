@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.1 (2019-04-09)
+ * @license Highcharts JS v7.1.2 (2019-06-04)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *
@@ -640,15 +640,11 @@
                 this.coll = 'colorAxis';
 
                 // Build the options
-                options = merge(this.defaultColorAxisOptions, {
-                    side: horiz ? 2 : 1,
-                    reversed: !horiz
-                }, userOptions, {
-                    opposite: !horiz,
-                    showEmpty: false,
-                    title: null,
-                    visible: chart.options.legend.enabled
-                });
+                options = this.buildOptions.call(
+                    chart,
+                    this.defaultColorAxisOptions,
+                    userOptions
+                );
 
                 Axis.prototype.init.call(this, chart, options);
 
@@ -740,7 +736,29 @@
                     stop.color = color(stop[1]);
                 });
             },
+            /**
+             * Build options to keep layout params on init and update.
+             *
+             * @private
+             *
+             * @param {Object} options
+             * @param {Object} userOptions
+             *
+             */
+            buildOptions: function (options, userOptions) {
+                var legend = this.options.legend,
+                    horiz = legend.layout !== 'vertical';
 
+                return merge(options, {
+                    side: horiz ? 2 : 1,
+                    reversed: !horiz
+                }, userOptions, {
+                    opposite: !horiz,
+                    showEmpty: false,
+                    title: null,
+                    visible: legend.enabled
+                });
+            },
             /**
              * Extend the setOptions method to process extreme colors and color
              * stops.
@@ -1038,7 +1056,9 @@
                 }
             },
 
-            getPlotLinePath: function (a, b, c, d, pos) {
+            getPlotLinePath: function (options) {
+                var pos = options.translatedValue;
+
                 // crosshairs only
                 return isNumber(pos) ? // pos can be 0 (#3969)
                     (
@@ -1058,12 +1078,13 @@
                             'Z'
                         ]
                     ) :
-                    Axis.prototype.getPlotLinePath.call(this, a, b, c, d);
+                    Axis.prototype.getPlotLinePath.apply(this, arguments);
             },
 
             update: function (newOptions, redraw) {
                 var chart = this.chart,
-                    legend = chart.legend;
+                    legend = chart.legend,
+                    updatedOptions = this.buildOptions.call(chart, {}, newOptions);
 
                 this.series.forEach(function (series) {
                     // Needed for Axis.update when choropleth colors change
@@ -1083,9 +1104,9 @@
 
                 // Keep the options structure updated for export. Unlike xAxis and
                 // yAxis, the colorAxis is not an array. (#3207)
-                chart.options[this.coll] = merge(this.userOptions, newOptions);
+                chart.options[this.coll] = merge(this.userOptions, updatedOptions);
 
-                Axis.prototype.update.call(this, newOptions, redraw);
+                Axis.prototype.update.call(this, updatedOptions, redraw);
                 if (this.legendItem) {
                     this.setLegendColor();
                     legend.colorizeItem(this, true);
@@ -2236,6 +2257,24 @@
                 preserveAspectRatio: true,
                 pointArrayMap: ['value'],
 
+                // Extend setOptions by picking up the joinBy option and applying it
+                // to a series property
+                setOptions: function (itemOptions) {
+                    var options = Series.prototype.setOptions.call(this, itemOptions),
+                        joinBy = options.joinBy,
+                        joinByNull = joinBy === null;
+
+                    if (joinByNull) {
+                        joinBy = '_i';
+                    }
+                    joinBy = this.joinBy = splat(joinBy);
+                    if (!joinBy[1]) {
+                        joinBy[1] = joinBy[0];
+                    }
+
+                    return options;
+                },
+
                 // Get the bounding box of all paths in the map combined.
                 getBox: function (paths) {
                     var MAX_VALUE = Number.MAX_VALUE,
@@ -2409,8 +2448,7 @@
                         chartOptions = this.chart.options.chart,
                         globalMapData = chartOptions && chartOptions.map,
                         mapData = options.mapData,
-                        joinBy = options.joinBy,
-                        joinByNull = joinBy === null,
+                        joinBy = this.joinBy,
                         pointArrayMap = options.keys || this.pointArrayMap,
                         dataUsed = [],
                         mapMap = {},
@@ -2424,14 +2462,6 @@
                         mapData = typeof globalMapData === 'string' ?
                             H.maps[globalMapData] :
                             globalMapData;
-                    }
-
-                    if (joinByNull) {
-                        joinBy = '_i';
-                    }
-                    joinBy = this.joinBy = splat(joinBy);
-                    if (!joinBy[1]) {
-                        joinBy[1] = joinBy[0];
                     }
 
                     // Pick up numeric values, add index
@@ -2470,7 +2500,7 @@
                                     }
                                 }
                             }
-                            if (joinByNull) {
+                            if (joinBy && joinBy[0] === '_i') {
                                 data[i]._i = i;
                             }
                         });
@@ -2699,17 +2729,19 @@
                         // Add class names
                         series.points.forEach(function (point) {
                             if (point.graphic) {
+                                var className = '';
                                 if (point.name) {
-                                    point.graphic.addClass(
+                                    className +=
                                         'highcharts-name-' +
-                                        point.name.replace(/ /g, '-').toLowerCase()
-                                    );
+                                        point.name.replace(/ /g, '-').toLowerCase();
                                 }
                                 if (point.properties && point.properties['hc-key']) {
-                                    point.graphic.addClass(
-                                        'highcharts-key-' +
-                                        point.properties['hc-key'].toLowerCase()
-                                    );
+                                    className +=
+                                        ' highcharts-key-' +
+                                        point.properties['hc-key'].toLowerCase();
+                                }
+                                if (className) {
+                                    point.graphic.addClass(className);
                                 }
 
                                 // In styled mode, apply point colors by CSS
@@ -5571,7 +5603,8 @@
                     // Return the map area identified by the dataJoinBy option
                     getMapData: seriesTypes.map.prototype.getMapData,
                     getBox: seriesTypes.map.prototype.getBox,
-                    setData: seriesTypes.map.prototype.setData
+                    setData: seriesTypes.map.prototype.setData,
+                    setOptions: seriesTypes.map.prototype.setOptions
 
                     // Point class
                 }, {

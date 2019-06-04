@@ -44,14 +44,18 @@ H.cleanRecursively = function (newer, older) {
     objectEach(newer, function (val, key) {
         var ob;
 
-        // Dive into objects
-        if (isObject(newer[key], true) && older[key]) {
+        // Dive into objects (except DOM nodes)
+        if (
+            isObject(newer[key], true) &&
+            !newer.nodeType && // #10044
+            older[key]
+        ) {
             ob = H.cleanRecursively(newer[key], older[key]);
             if (Object.keys(ob).length) {
                 result[key] = ob;
             }
 
-        // Arrays or primitives are copied directly
+        // Arrays, primitives and DOM nodes are copied directly
         } else if (isObject(newer[key]) || newer[key] !== older[key]) {
             result[key] = newer[key];
         }
@@ -382,16 +386,16 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
      *        Whether to redraw the chart.
      *
      * @param {boolean} [oneToOne=false]
-     *        When `true`, the `series`, `xAxis` and `yAxis` collections will
-     *        be updated one to one, and items will be either added or removed
-     *        to match the new updated options. For example, if the chart has
-     *        two series and we call `chart.update` with a configuration
-     *        containing three series, one will be added. If we call
-     *        `chart.update` with one series, one will be removed. Setting an
-     *        empty `series` array will remove all series, but leaving out the
-     *        `series` property will leave all series untouched. If the series
-     *        have id's, the new series options will be matched by id, and the
-     *        remaining ones removed.
+     *        When `true`, the `series`, `xAxis`, `yAxis` and `annotations`
+     *        collections will be updated one to one, and items will be either
+     *        added or removed to match the new updated options. For example,
+     *        if the chart has two series and we call `chart.update` with a
+     *        configuration containing three series, one will be added. If we
+     *        call `chart.update` with one series, one will be removed. Setting
+     *        an empty `series` array will remove all series, but leaving out
+     *        the`series` property will leave all series untouched. If the
+     *        series have id's, the new series options will be matched by id,
+     *        and the remaining ones removed.
      *
      * @param {boolean|Highcharts.AnimationOptionsObject} [animation=true]
      *        Whether to apply animation, and optionally animation
@@ -425,6 +429,8 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
         }
 
         options = H.cleanRecursively(options, chart.options);
+
+        merge(true, chart.userOptions, options);
 
         // If the top-level chart option is present, some special updates are
         // required
@@ -487,6 +493,13 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
 
         if (options.plotOptions) {
             merge(true, this.options.plotOptions, options.plotOptions);
+        }
+
+        // Maintaining legacy global time. If the chart is instanciated first
+        // with global time, then updated with time options, we need to create a
+        // new Time instance to avoid mutating the global time (#10536).
+        if (options.time && this.time === H.time) {
+            this.time = new H.Time(options.time);
         }
 
         // Some option stuctures correspond one-to-one to chart objects that
@@ -555,14 +568,19 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
                     }
 
                     // If oneToOne and no matching item is found, add one
-                    if (!item && oneToOne) {
-                        if (coll === 'series') {
-                            chart.addSeries(newOptions, false)
-                                .touched = true;
-                        } else if (coll === 'xAxis' || coll === 'yAxis') {
-                            chart.addAxis(newOptions, coll === 'xAxis', false)
-                                .touched = true;
-                        }
+                    if (!item && oneToOne && chart.collectionsWithInit[coll]) {
+                        chart.collectionsWithInit[coll][0].apply(
+                            chart,
+                            // [newOptions, ...extraArguments, redraw=false]
+                            [
+                                newOptions
+                            ].concat(
+                                // Not all initializers require extra args
+                                chart.collectionsWithInit[coll][1] || []
+                            ).concat([
+                                false
+                            ])
+                        ).touched = true;
                     }
 
                 });
@@ -656,6 +674,21 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
 
 
 });
+
+/**
+ * These collections (arrays) implement `Chart.addSomethig` method used in
+ * chart.update() to create new object in the collection. Equivalent for
+ * deleting is resolved by simple `Somethig.remove()`.
+ *
+ * Note: We need to define these references after initializers are bound to
+ * chart's prototype.
+ */
+Chart.prototype.collectionsWithInit = {
+    // collectionName: [ initializingMethod, [extraArguments] ]
+    xAxis: [Chart.prototype.addAxis, [true]],
+    yAxis: [Chart.prototype.addAxis, [false]],
+    series: [Chart.prototype.addSeries]
+};
 
 // extend the Point prototype for dynamic methods
 extend(Point.prototype, /** @lends Highcharts.Point.prototype */ {
@@ -856,8 +889,8 @@ extend(Series.prototype, /** @lends Series.prototype */ {
             names = xAxis && xAxis.hasNames && xAxis.names,
             dataOptions = seriesOptions.data,
             point,
-            isInTheMiddle,
             xData = series.xData,
+            isInTheMiddle,
             i,
             x;
 
@@ -1109,7 +1142,8 @@ extend(Series.prototype, /** @lends Series.prototype */ {
             groups = [
                 'group',
                 'markerGroup',
-                'dataLabelsGroup'
+                'dataLabelsGroup',
+                'transformGroup'
             ],
             preserve = [
                 'navigatorSeries',
@@ -1130,7 +1164,18 @@ extend(Series.prototype, /** @lends Series.prototype */ {
                 'points',
                 'processedXData',
                 'processedYData',
-                'xIncrement'
+                'xIncrement',
+                '_hasPointMarkers',
+                '_hasPointLabels',
+
+                // Map specific, consider moving it to series-specific preserve-
+                // properties (#10617)
+                'mapMap',
+                'mapData',
+                'minY',
+                'maxY',
+                'minX',
+                'maxX'
             );
             if (options.visible !== false) {
                 preserve.push('area', 'graph');
@@ -1197,13 +1242,15 @@ extend(Series.prototype, /** @lends Series.prototype */ {
             } else {
                 if (
                     seriesOptions.marker &&
-                    seriesOptions.marker.enabled === false
+                    seriesOptions.marker.enabled === false &&
+                    !series._hasPointMarkers
                 ) {
                     kinds.graphic = 1;
                 }
                 if (
                     seriesOptions.dataLabels &&
-                    seriesOptions.dataLabels.enabled === false
+                    seriesOptions.dataLabels.enabled === false &&
+                    !series._hasPointLabels
                 ) {
                     kinds.dataLabel = 1;
                 }

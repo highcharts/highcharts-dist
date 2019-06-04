@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.1 (2019-04-09)
+ * @license Highcharts JS v7.1.2 (2019-06-04)
  *
  * 3D features for Highcharts JS
  *
@@ -3214,8 +3214,8 @@
                 from = args[1],
                 to = args[2],
                 path = [],
-                fromPath = this.getPlotLinePath(from),
-                toPath = this.getPlotLinePath(to);
+                fromPath = this.getPlotLinePath({ value: from }),
+                toPath = this.getPlotLinePath({ value: to });
 
             if (fromPath && toPath) {
                 for (var i = 0; i < fromPath.length; i += 6) {
@@ -3958,14 +3958,23 @@
             seriesTypes.column.prototype,
             'plotGroup',
             function (proceed, prop, name, visibility, zIndex, parent) {
-                if (this.chart.is3d() && parent && !this[prop]) {
-                    if (!this.chart.columnGroup) {
-                        this.chart.columnGroup =
-                            this.chart.renderer.g('columnGroup').add(parent);
+                if (this.chart.is3d()) {
+                    if (this[prop]) {
+                        delete this[prop];
                     }
-                    this[prop] = this.chart.columnGroup;
-                    this.chart.columnGroup.attr(this.getPlotBox());
-                    this[prop].survive = true;
+                    if (parent) {
+                        if (!this.chart.columnGroup) {
+                            this.chart.columnGroup =
+                                this.chart.renderer.g('columnGroup').add(parent);
+                        }
+                        this[prop] = this.chart.columnGroup;
+                        this.chart.columnGroup.attr(this.getPlotBox());
+                        this[prop].survive = true;
+                        if (prop === 'group' || prop === 'markerGroup') {
+                            arguments[3] = 'visible';
+                            // For 3D column group and markerGroup should be visible
+                        }
+                    }
                 }
                 return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
             }
@@ -3983,7 +3992,8 @@
                 if (series.chart.is3d()) {
                     series.data.forEach(function (point) {
                         point.visible = point.options.visible = vis =
-                            vis === undefined ? !point.visible : vis;
+                            vis === undefined ?
+                                !pick(series.visible, point.visible) : vis;
                         pointVis = vis ? 'visible' : 'hidden';
                         series.options.data[series.data.indexOf(point)] =
                             point.options;

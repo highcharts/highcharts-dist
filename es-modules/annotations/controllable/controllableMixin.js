@@ -9,6 +9,7 @@ import MockPoint from './../MockPoint.js';
  * It provides methods for handling points, control points
  * and points transformations.
  *
+ * @private
  * @mixin
  * @memberOf Annotation
  */
@@ -142,10 +143,13 @@ var controllableMixin = {
     /**
      * Map point's options to a point-like object.
      *
-     * @param {Annotation.MockPoint.Options} pointOptions point's options
-     * @param {Annotation.PointLike} point a point like instance
-     * @return {Annotation.PointLike|null} if the point is
-     *         found/set returns this point, otherwise null
+     * @param {Highcharts.MockPointOptionsObject} pointOptions
+     *        point's options
+     * @param {Highcharts.PointLike} point
+     *        a point like instance
+     *
+     * @return {Highcharts.PointLike|null}
+     *         if the point is found/set returns this point, otherwise null
      */
     point: function (pointOptions, point) {
         if (pointOptions && pointOptions.series) {
@@ -329,6 +333,30 @@ var controllableMixin = {
      **/
     translatePoint: function (dx, dy, i) {
         this.transformPoint('translate', null, null, dx, dy, i);
+    },
+
+    /**
+     * Translate shape within controllable item.
+     * Replaces `controllable.translate` method.
+     *
+     * @param {number} dx translation for x coordinate
+     * @param {number} dy translation for y coordinate
+     */
+    translateShape: function (dx, dy) {
+        var chart = this.annotation.chart,
+            // Annotation.options
+            shapeOptions = this.annotation.userOptions,
+            // Chart.options.annotations
+            annotationIndex = chart.annotations.indexOf(this.annotation),
+            chartOptions = chart.options.annotations[annotationIndex];
+
+        this.translatePoint(dx, dy, 0);
+
+        // Options stored in:
+        // - chart (for exporting)
+        // - current config (for redraws)
+        chartOptions[this.collection][this.index].point = this.options.point;
+        shapeOptions[this.collection][this.index].point = this.options.point;
     },
 
     /**

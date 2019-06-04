@@ -228,8 +228,13 @@ H.Tooltip.prototype = {
          * Split tooltip does not support outside in the first iteration. Should
          * not be too complicated to implement.
          */
-        this.outside = options.outside && !this.split;
-
+        this.outside = (
+            pick(
+                options.outside,
+                Boolean(chart.scrollablePixelsX || chart.scrollablePixelsY)
+            ) &&
+            !this.split
+        );
     },
 
     /**
@@ -331,7 +336,8 @@ H.Tooltip.prototype = {
                 H.css(container, {
                     position: 'absolute',
                     top: '1px',
-                    pointerEvents: options.style && options.style.pointerEvents
+                    pointerEvents: options.style && options.style.pointerEvents,
+                    zIndex: 3
                 });
                 H.doc.body.appendChild(container);
 
@@ -530,6 +536,8 @@ H.Tooltip.prototype = {
      * @param {Array<Highchart.Points>} points
      *
      * @param {global.Event} [mouseEvent]
+     *
+     * @return {Array<number,number>}
      */
     getAnchor: function (points, mouseEvent) {
         var ret,
@@ -990,12 +998,6 @@ H.Tooltip.prototype = {
 
                     if (!chart.styledMode) {
                         attribs.fill = options.backgroundColor;
-                        attribs.stroke = (
-                            options.borderColor ||
-                            point.color ||
-                            series.color ||
-                            '#333333'
-                        );
                         attribs['stroke-width'] = options.borderWidth;
                     }
 
@@ -1023,7 +1025,15 @@ H.Tooltip.prototype = {
                 });
                 if (!chart.styledMode) {
                     tt.css(options.style)
-                        .shadow(options.shadow);
+                        .shadow(options.shadow)
+                        .attr({
+                            stroke: (
+                                options.borderColor ||
+                                point.color ||
+                                series.color ||
+                                '#333333'
+                            )
+                        });
                 }
 
                 // Get X position now, so we can move all to the other side in
@@ -1044,8 +1054,9 @@ H.Tooltip.prototype = {
                             chart.chartWidth +
                             (
                                 // Scrollable plot area
-                                chart.scrollablePixels ?
-                                    chart.scrollablePixels - chart.marginRight :
+                                chart.scrollablePixelsX ?
+                                    chart.scrollablePixelsX -
+                                        chart.marginRight :
                                     0
                             ) -
                             boxWidth
