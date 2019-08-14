@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/series-label.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/series-label.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * (c) 2009-2019 Torstein Honsi
          *
@@ -67,10 +67,12 @@
 
 
 
+        var isNumber = U.isNumber;
+
+
         var labelDistance = 3,
             addEvent = H.addEvent,
             extend = H.extend,
-            isNumber = H.isNumber,
             pick = H.pick,
             Series = H.Series,
             SVGRenderer = H.SVGRenderer,
@@ -736,7 +738,11 @@
                     maxFontSize = labelOptions.maxFontSize,
                     dataExtremes,
                     areaMin,
-                    areaMax;
+                    areaMax,
+                    colorClass = 'highcharts-color-' + pick(
+                        series.colorIndex,
+                        'none'
+                    );
 
                 // Stay within the area data bounds (#10038)
                 if (onArea && !inverted) {
@@ -777,13 +783,17 @@
                             .addClass(
                                 'highcharts-series-label ' +
                                 'highcharts-series-label-' + series.index + ' ' +
-                                (series.options.className || '')
-                            )
-                            .css(extend({
+                                (series.options.className || '') +
+                                colorClass
+                            );
+
+                        if (!chart.renderer.styledMode) {
+                            label.css(extend({
                                 color: onArea ?
                                     chart.renderer.getContrast(series.color) :
                                     series.color
                             }, series.options.label.style));
+                        }
 
                         // Adapt label sizes to the sum of the data
                         if (minFontSize && maxFontSize) {

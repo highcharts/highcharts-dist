@@ -1013,11 +1013,10 @@ H.defaultOptions = {
              *         Theming the button
              *
              * @type {Highcharts.SVGAttributes}
-             * @default {"zIndex":6}
              * @since 2.2
              */
             theme: {
-                /** @ignore-option */
+                /** @internal */
                 zIndex: 6
             },
             /**
@@ -1157,7 +1156,7 @@ H.defaultOptions = {
          * @see In styled mode, the selection marker fill is set with the
          *      `.highcharts-selection-marker` class.
          *
-         * @type      {Highcharts.ColorString}
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @default   rgba(51,92,173,0.25)
          * @since     2.1.7
          * @apioption chart.selectionMarkerFill
@@ -1387,7 +1386,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/border/
          *         Border options
          *
-         * @type {Highcharts.ColorString}
+         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
         borderColor: '#335cad',
         /**
@@ -1483,7 +1482,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/chart/plotborder/
          *         Plot border options
          *
-         * @type {Highcharts.ColorString}
+         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
         plotBorderColor: '#cccccc'
     },
@@ -1861,7 +1860,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/border-background/
          *         Border and background options
          *
-         * @type      {Highcharts.ColorString}
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @apioption legend.backgroundColor
          */
         /**
@@ -2046,7 +2045,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/labelformatter/
          *         Data classes with label formatter
          *
-         * @context {Highcharts.Series|Highcharts.Point}
+         * @type {Highcharts.FormatterCallbackFunction<Point|Series>}
          */
         labelFormatter: function () {
             /** eslint-enable valid-jsdoc */
@@ -2105,7 +2104,7 @@ H.defaultOptions = {
          * @sample {highmaps} maps/legend/border-background/
          *         Border and background options
          *
-         * @type {Highcharts.ColorString}
+         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
         borderColor: '#999999',
         /**
@@ -2198,7 +2197,7 @@ H.defaultOptions = {
              * @sample  {highstock} highcharts/legend/navigation/
              *          Legend page navigation demonstrated
              *
-             * @type  {Highcharts.ColorString}
+             * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @since 2.2.4
              */
             activeColor: '#003399',
@@ -2214,7 +2213,7 @@ H.defaultOptions = {
              * @sample {highstock} highcharts/legend/navigation/
              *         Legend page navigation demonstrated
              *
-             * @type  {Highcharts.ColorString}
+             * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @since 2.2.4
              */
             inactiveColor: '#cccccc'
@@ -2685,8 +2684,15 @@ H.defaultOptions = {
          * @sample {highmaps} maps/tooltip/background-border/
          *         Background and border demo
          *
-         * @type      {Highcharts.ColorString}
+         * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @apioption tooltip.borderColor
+         */
+        /**
+         * A CSS class name to apply to the tooltip's container div,
+         * allowing unique CSS styling for each chart.
+         *
+         * @type      {string}
+         * @apioption tooltip.className
          */
         /**
          * Since 4.1, the crosshair definitions are moved to the Axis object
@@ -3258,6 +3264,8 @@ H.defaultOptions = {
          *         False
          * @sample {highmaps} maps/tooltip/positioner/
          *         Fixed tooltip position, border and shadow disabled
+         *
+         * @type {boolean|Highcharts.ShadowOptionsObject}
          */
         shadow: true,
         /**
@@ -3363,17 +3371,16 @@ H.defaultOptions = {
          *         Left aligned
          *
          * @type    {Highcharts.AlignObject}
-         * @default {"align": "right", "verticalAlign": "bottom", "x": -10, "y": -5}
          * @since   2.1
          */
         position: {
-            /** @ignore-option */
+            /** @internal */
             align: 'right',
-            /** @ignore-option */
+            /** @internal */
             x: -10,
-            /** @ignore-option */
+            /** @internal */
             verticalAlign: 'bottom',
-            /** @ignore-option */
+            /** @internal */
             y: -5
         },
         /**

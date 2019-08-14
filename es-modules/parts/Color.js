@@ -19,18 +19,23 @@ import H from './Globals.js';
  * @typedef {string} Highcharts.ColorString
  */
 /**
+ * A valid color type than can be parsed and handled by Highcharts. It can be a
+ * color string, a gradient object, or a pattern object.
+ *
+ * @typedef {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject} Highcharts.ColorType
+ */
+/**
  * Gradient options instead of a solid color.
  *
  * @example
  * // Linear gradient used as a color option
  * color: {
  *     linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
- *         stops: [
- *             [0, '#003399'], // start
- *             [0.5, '#ffffff'], // middle
- *             [1, '#3366AA'] // end
- *         ]
- *     }
+ *     stops: [
+ *         [0, '#003399'], // start
+ *         [0.5, '#ffffff'], // middle
+ *         [1, '#3366AA'] // end
+ *     ]
  * }
  *
  * @interface Highcharts.GradientColorObject
@@ -49,7 +54,23 @@ import H from './Globals.js';
 * applied. The second item is the color for each stop. This color can also be
 * given in the rgba format.
 * @name Highcharts.GradientColorObject#stops
-* @type {Array<Array<number,Highcharts.ColorString>>|undefined}
+* @type {Array<Highcharts.GradientColorStopObject>}
+*/
+/**
+ * Color stop tuple.
+ *
+ * @see Highcharts.GradientColorObject
+ *
+ * @interface Highcharts.GradientColorStopObject
+ */ /**
+* @name Highcharts.GradientColorStopObject#0
+* @type {number}
+*/ /**
+* @name Highcharts.GradientColorStopObject#1
+* @type {Highcharts.ColorString}
+*/ /**
+* @name Highcharts.GradoentColorStopObject#color
+* @type {Highcharts.Color|undefined}
 */
 /**
  * Defines the start position and the end position for a gradient relative
@@ -91,8 +112,9 @@ import H from './Globals.js';
 * @name Highcharts.RadialGradientColorObject#r
 * @type {number}
 */
-import './Utilities.js';
-var isNumber = H.isNumber, merge = H.merge, pInt = H.pInt;
+import U from './Utilities.js';
+var isNumber = U.isNumber, pInt = U.pInt;
+var merge = H.merge;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * Handle color operations. Some object methods are chainable.
@@ -100,7 +122,7 @@ var isNumber = H.isNumber, merge = H.merge, pInt = H.pInt;
  * @class
  * @name Highcharts.Color
  *
- * @param {Highcharts.ColorString|Highcharts.GradientColorObject} input
+ * @param {Highcharts.ColorType} input
  *        The input color in either rbga or hex format
  */
 H.Color = function (input) {
@@ -116,6 +138,7 @@ H.Color.prototype = {
     // parsers to Highcharts.Color.prototype.parsers.
     parsers: [{
             // RGBA color
+            // eslint-disable-next-line max-len
             regex: /rgba\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]?(?:\.[0-9]+)?)\s*\)/,
             parse: function (result) {
                 return [
@@ -144,7 +167,7 @@ H.Color.prototype = {
      * @private
      * @function Highcharts.Color#init
      *
-     * @param {Highcharts.ColorString|Highcharts.GradientColorObject} input
+     * @param {Highcharts.ColorType} input
      *        The input color in either rbga or hex format
      *
      * @return {void}
@@ -213,7 +236,7 @@ H.Color.prototype = {
      * @param {string} [format]
      *        Possible values are 'a', 'rgb', 'rgba' (default).
      *
-     * @return {Highcharts.ColorString|Highcharts.GradientColorObject}
+     * @return {Highcharts.ColorType}
      *         This color as a string or gradient stops.
      */
     get: function (format) {
@@ -337,7 +360,7 @@ H.Color.prototype = {
  *
  * @function Highcharts.color
  *
- * @param {Highcharts.ColorString} input
+ * @param {Highcharts.ColorType} input
  *        The input color in either rbga or hex format
  *
  * @return {Highcharts.Color}

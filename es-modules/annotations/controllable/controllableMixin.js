@@ -1,6 +1,11 @@
 'use strict';
 import H from './../../parts/Globals.js';
-import './../../parts/Utilities.js';
+
+import U from './../../parts/Utilities.js';
+var isObject = U.isObject,
+    isString = U.isString,
+    splat = U.splat;
+
 import './../../parts/Tooltip.js';
 import ControlPoint from './../ControlPoint.js';
 import MockPoint from './../MockPoint.js';
@@ -50,7 +55,7 @@ var controllableMixin = {
     getPointsOptions: function () {
         var options = this.options;
 
-        return options.points || (options.point && H.splat(options.point));
+        return options.points || (options.point && splat(options.point));
     },
 
     /**
@@ -157,13 +162,13 @@ var controllableMixin = {
         }
 
         if (!point || point.series === null) {
-            if (H.isObject(pointOptions)) {
+            if (isObject(pointOptions)) {
                 point = new MockPoint(
                     this.chart,
                     this,
                     pointOptions
                 );
-            } else if (H.isString(pointOptions)) {
+            } else if (isString(pointOptions)) {
                 point = this.chart.get(pointOptions) || null;
             } else if (typeof pointOptions === 'function') {
                 var pointConfig = pointOptions.call(point, this);

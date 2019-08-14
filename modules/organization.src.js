@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  * Organization chart series type
  *
  * (c) 2019-2019 Torstein Honsi
@@ -62,7 +62,7 @@
          *         Modify the default label format output
          *
          * @name Highcharts.SeriesOrganizationDataLabelsOptionsObject#nodeFormatter
-         * @type {Highcharts.FormatterCallbackFunction<Highcharts.SankeyNodeObject>|undefined}
+         * @type {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction|undefined}
          * @default function () { return this.point.name; }
          * @since 6.0.2
          */
@@ -540,6 +540,15 @@
          * @type      {Array<*>}
          * @product   highcharts
          * @apioption series.organization.nodes
+         */
+
+        /**
+         * Individual data label for each node. The options are the same as
+         * the ones for [series.organization.dataLabels](#series.organization.dataLabels).
+         *
+         * @type    {Highcharts.SeriesOrganizationDataLabelsOptionsObject|Array<Highcharts.SeriesOrganizationDataLabelsOptionsObject>}
+         *
+         * @apioption series.organization.nodes.dataLabels
          */
 
         /**

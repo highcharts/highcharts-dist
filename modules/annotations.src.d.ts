@@ -29,7 +29,7 @@ declare module "../highcharts.src" {
          * @param idOrAnnotation
          *        The annotation's id or direct annotation object.
          */
-        removeAnnotation(idOrAnnotation: (string|Annotation)): void;
+        removeAnnotation(idOrAnnotation: (number|string|Annotation)): void;
     }
 }
 export default factory;

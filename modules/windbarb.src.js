@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Wind barb series module
  *
@@ -28,115 +28,82 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/on-series.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'mixins/on-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
-         * (c) 2010-2019 Torstein Honsi
          *
-         * License: www.highcharts.com/license
-         */
-
-
-
-        var defined = H.defined,
-            seriesTypes = H.seriesTypes,
-            stableSort = H.stableSort;
-
+         *  (c) 2010-2019 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var defined = U.defined;
+        var seriesTypes = H.seriesTypes, stableSort = H.stableSort;
         /**
          * @private
          * @mixin onSeriesMixin
          */
         var onSeriesMixin = {
-
+            /* eslint-disable valid-jsdoc */
             /**
              * Override getPlotBox. If the onSeries option is valid, return the plot box
              * of the onSeries, otherwise proceed as usual.
              *
              * @private
              * @function onSeriesMixin.getPlotBox
-             *
              * @return {Highcharts.SeriesPlotBoxObject}
              */
             getPlotBox: function () {
-                return H.Series.prototype.getPlotBox.call(
-                    (
-                        this.options.onSeries &&
-                        this.chart.get(this.options.onSeries)
-                    ) || this
-                );
+                return H.Series.prototype.getPlotBox.call((this.options.onSeries &&
+                    this.chart.get(this.options.onSeries)) || this);
             },
-
             /**
              * Extend the translate method by placing the point on the related series
              *
              * @private
              * @function onSeriesMixin.translate
+             * @return {void}
              */
             translate: function () {
-
                 seriesTypes.column.prototype.translate.apply(this);
-
-                var series = this,
-                    options = series.options,
-                    chart = series.chart,
-                    points = series.points,
-                    cursor = points.length - 1,
-                    point,
-                    lastPoint,
-                    optionsOnSeries = options.onSeries,
-                    onSeries = optionsOnSeries && chart.get(optionsOnSeries),
-                    onKey = options.onKey || 'y',
-                    step = onSeries && onSeries.options.step,
-                    onData = onSeries && onSeries.points,
-                    i = onData && onData.length,
-                    inverted = chart.inverted,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    xOffset = 0,
-                    leftPoint,
-                    lastX,
-                    rightPoint,
-                    currentDataGrouping,
-                    distanceRatio;
-
+                var series = this, options = series.options, chart = series.chart, points = series.points, cursor = points.length - 1, point, lastPoint, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
+                    chart.get(optionsOnSeries)), onKey = options.onKey || 'y', step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), i = onData && onData.length, inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
                 // relate to a master series
                 if (onSeries && onSeries.visible && i) {
                     xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
                     currentDataGrouping = onSeries.currentDataGrouping;
-                    lastX = (
-                        onData[i - 1].x +
-                        (currentDataGrouping ? currentDataGrouping.totalRange : 0)
-                    ); // #2374
-
+                    lastX = (onData[i - 1].x +
+                        (currentDataGrouping ? currentDataGrouping.totalRange : 0)); // #2374
                     // sort the data points
                     stableSort(points, function (a, b) {
                         return (a.x - b.x);
                     });
-
                     onKey = 'plot' + onKey[0].toUpperCase() + onKey.substr(1);
                     while (i-- && points[cursor]) {
                         leftPoint = onData[i];
                         point = points[cursor];
                         point.y = leftPoint.y;
-
-                        if (leftPoint.x <= point.x && leftPoint[onKey] !== undefined) {
+                        if (leftPoint.x <= point.x &&
+                            leftPoint[onKey] !== undefined) {
                             if (point.x <= lastX) { // #803
-
                                 point.plotY = leftPoint[onKey];
-
                                 // interpolate between points, #666
-                                if (leftPoint.x < point.x && !step) {
+                                if (leftPoint.x < point.x &&
+                                    !step) {
                                     rightPoint = onData[i + 1];
                                     if (rightPoint && rightPoint[onKey] !== undefined) {
                                         // the distance ratio, between 0 and 1
-                                        distanceRatio = (point.x - leftPoint.x) /
-                                            (rightPoint.x - leftPoint.x);
+                                        distanceRatio =
+                                            (point.x - leftPoint.x) /
+                                                (rightPoint.x - leftPoint.x);
                                         point.plotY +=
                                             distanceRatio *
-                                            // the plotY distance
-                                            (rightPoint[onKey] - leftPoint[onKey]);
+                                                // the plotY distance
+                                                (rightPoint[onKey] - leftPoint[onKey]);
                                         point.y +=
                                             distanceRatio *
-                                            (rightPoint.y - leftPoint.y);
+                                                (rightPoint.y - leftPoint.y);
                                     }
                                 }
                             }
@@ -148,14 +115,10 @@
                         }
                     }
                 }
-
                 // Add plotY position and handle stacking
                 points.forEach(function (point, i) {
-
                     var stackIndex;
-
                     point.plotX += xOffset; // #2049
-
                     // Undefined plotY means the point is either on axis, outside series
                     // range or hidden series. If the series is outside the range of the
                     // x axis it should fall through with an undefined plotY, but then
@@ -163,21 +126,24 @@
                     // to calculate position anyway, because series.invertGroups is not
                     // defined
                     if (point.plotY === undefined || inverted) {
-                        if (point.plotX >= 0 && point.plotX <= xAxis.len) {
+                        if (point.plotX >= 0 &&
+                            point.plotX <= xAxis.len) {
                             // We're inside xAxis range
                             if (inverted) {
                                 point.plotY = xAxis.translate(point.x, 0, 1, 0, 1);
                                 point.plotX = defined(point.y) ?
-                                    yAxis.translate(point.y, 0, 0, 0, 1) : 0;
-                            } else {
+                                    yAxis.translate(point.y, 0, 0, 0, 1) :
+                                    0;
+                            }
+                            else {
                                 point.plotY = (xAxis.opposite ? 0 : series.yAxis.len) +
                                     xAxis.offset; // For the windbarb demo
                             }
-                        } else {
+                        }
+                        else {
                             point.shapeArgs = {}; // 847
                         }
                     }
-
                     // if multiple flags appear at the same x, order them into a stack
                     lastPoint = points[i - 1];
                     if (lastPoint && lastPoint.plotX === point.plotX) {
@@ -188,15 +154,14 @@
                     }
                     point.stackIndex = stackIndex; // #3639
                 });
-
                 this.onSeries = onSeries;
             }
+            /* eslint-enable valid-jsdoc */
         };
-
 
         return onSeriesMixin;
     });
-    _registerModule(_modules, 'modules/windbarb.src.js', [_modules['parts/Globals.js'], _modules['mixins/on-series.js']], function (H, onSeriesMixin) {
+    _registerModule(_modules, 'modules/windbarb.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/on-series.js']], function (H, U, onSeriesMixin) {
         /* *
          * Wind barb series module
          *
@@ -207,7 +172,11 @@
 
 
 
+        var isNumber = U.isNumber;
+
+
         var noop = H.noop,
+            pick = H.pick,
             seriesType = H.seriesType;
 
         // Once off, register the windbarb approximation for data grouping.This can be
@@ -522,12 +491,16 @@
                             this.options.clip === false ||
                             chart.isInsidePlot(plotX, 0, false)
                         ) {
-
                             // Create the graphic the first time
                             if (!point.graphic) {
                                 point.graphic = this.chart.renderer
                                     .path()
-                                    .add(this.markerGroup);
+                                    .add(this.markerGroup)
+                                    .addClass(
+                                        'highcharts-point ' +
+                                        'highcharts-color-' +
+                                        pick(point.colorIndex, point.series.colorIndex)
+                                    );
                             }
 
                             // Position the graphic
@@ -537,8 +510,12 @@
                                     translateX: plotX + this.options.xOffset,
                                     translateY: plotY + this.options.yOffset,
                                     rotation: point.direction
-                                })
-                                .attr(this.pointAttribs(point));
+                                });
+
+                            if (!this.chart.styledMode) {
+                                point.graphic
+                                    .attr(this.pointAttribs(point));
+                            }
 
                         } else if (point.graphic) {
                             point.graphic = point.graphic.destroy();
@@ -576,7 +553,7 @@
                 getExtremes: noop
             }, {
                 isValid: function () {
-                    return H.isNumber(this.value) && this.value >= 0;
+                    return isNumber(this.value) && this.value >= 0;
                 }
             });
 

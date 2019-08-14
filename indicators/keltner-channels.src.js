@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -28,23 +28,18 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/multipe-lines.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'mixins/multipe-lines.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /**
          *
          *  (c) 2010-2019 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
-
-
-
-        var each = H.each,
-            merge = H.merge,
-            error = H.error,
-            defined = H.defined,
-            SMA = H.seriesTypes.sma;
-
+        var defined = U.defined;
+        var each = H.each, merge = H.merge, error = H.error, SMA = H.seriesTypes.sma;
         /**
          * Mixin useful for all indicators that have more than one line.
          * Merge it with your implementation where you will provide
@@ -56,6 +51,7 @@
          * @mixin multipleLinesMixin
          */
         var multipleLinesMixin = {
+            /* eslint-disable valid-jsdoc */
             /**
              * Lines ids. Required to plot appropriate amount of lines.
              * Notice that pointArrayMap should have more elements than
@@ -68,7 +64,6 @@
              * @type {Array<string>}
              */
             pointArrayMap: ['top', 'bottom'],
-
             /**
              * Main line id.
              *
@@ -77,7 +72,6 @@
              * @type {string}
              */
             pointValKey: 'top',
-
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -89,46 +83,37 @@
              * @type {Array<string>}
              */
             linesApiNames: ['bottomLine'],
-
             /**
              * Create translatedLines Collection based on pointArrayMap.
              *
              * @private
              * @function multipleLinesMixin.getTranslatedLinesNames
-             *
-             * @param {string} excludedValue
-             *        pointValKey - main line id
-             *
+             * @param {string} [excludedValue]
+             *        Main line id
              * @return {Array<string>}
              *         Returns translated lines names without excluded value.
              */
             getTranslatedLinesNames: function (excludedValue) {
                 var translatedLines = [];
-
                 each(this.pointArrayMap, function (propertyName) {
                     if (propertyName !== excludedValue) {
-                        translatedLines.push(
-                            'plot' +
+                        translatedLines.push('plot' +
                             propertyName.charAt(0).toUpperCase() +
-                            propertyName.slice(1)
-                        );
+                            propertyName.slice(1));
                     }
                 });
-
                 return translatedLines;
             },
             /**
              * @private
              * @function multipleLinesMixin.toYData
-             *
-             * @param {string} point
-             *
+             * @param {Highcharts.Point} point
+             *        Indicator point
              * @return {Array<number>}
              *         Returns point Y value for all lines
              */
             toYData: function (point) {
                 var pointColl = [];
-
                 each(this.pointArrayMap, function (propertyName) {
                     pointColl.push(point[propertyName]);
                 });
@@ -139,26 +124,17 @@
              *
              * @private
              * @function multipleLinesMixin.translate
+             * @return {void}
              */
             translate: function () {
-                var indicator = this,
-                    pointArrayMap = indicator.pointArrayMap,
-                    LinesNames = [],
-                    value;
-
+                var indicator = this, pointArrayMap = indicator.pointArrayMap, LinesNames = [], value;
                 LinesNames = indicator.getTranslatedLinesNames();
-
                 SMA.prototype.translate.apply(indicator, arguments);
-
                 each(indicator.points, function (point) {
                     each(pointArrayMap, function (propertyName, i) {
                         value = point[propertyName];
-
                         if (value !== null) {
-                            point[LinesNames[i]] = indicator.yAxis.toPixels(
-                                value,
-                                true
-                            );
+                            point[LinesNames[i]] = indicator.yAxis.toPixels(value, true);
                         }
                     });
                 });
@@ -168,33 +144,20 @@
              *
              * @private
              * @function multipleLinesMixin.drawGraph
+             * @return {void}
              */
             drawGraph: function () {
-                var indicator = this,
-                    pointValKey = indicator.pointValKey,
-                    linesApiNames = indicator.linesApiNames,
-                    mainLinePoints = indicator.points,
-                    pointsLength = mainLinePoints.length,
-                    mainLineOptions = indicator.options,
-                    mainLinePath = indicator.graph,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    },
-                    secondaryLines = [], // additional lines point place holders
-                    secondaryLinesNames = indicator.getTranslatedLinesNames(
-                        pointValKey
-                    ),
-                    point;
-
-
+                var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, 
+                // additional lines point place holders:
+                secondaryLines = [], secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey), point;
                 // Generate points for additional lines:
                 each(secondaryLinesNames, function (plotLine, index) {
-
                     // create additional lines point place holders
                     secondaryLines[index] = [];
-
                     while (pointsLength--) {
                         point = mainLinePoints[pointsLength];
                         secondaryLines[index].push({
@@ -204,42 +167,32 @@
                             isNull: !defined(point[plotLine])
                         });
                     }
-
                     pointsLength = mainLinePoints.length;
                 });
-
                 // Modify options and generate additional lines:
                 each(linesApiNames, function (lineName, i) {
                     if (secondaryLines[i]) {
                         indicator.points = secondaryLines[i];
                         if (mainLineOptions[lineName]) {
-                            indicator.options = merge(
-                                mainLineOptions[lineName].styles,
-                                gappedExtend
-                            );
-                        } else {
-                            error(
-                                'Error: "There is no ' + lineName +
+                            indicator.options = merge(mainLineOptions[lineName].styles, gappedExtend);
+                        }
+                        else {
+                            error('Error: "There is no ' + lineName +
                                 ' in DOCS options declared. Check if linesApiNames' +
                                 ' are consistent with your DOCS line names."' +
-                                ' at mixin/multiple-line.js:34'
-                            );
+                                ' at mixin/multiple-line.js:34');
                         }
-
                         indicator.graph = indicator['graph' + lineName];
                         SMA.prototype.drawGraph.call(indicator);
-
                         // Now save lines:
                         indicator['graph' + lineName] = indicator.graph;
-                    } else {
-                        error(
-                            'Error: "' + lineName + ' doesn\'t have equivalent ' +
+                    }
+                    else {
+                        error('Error: "' + lineName + ' doesn\'t have equivalent ' +
                             'in pointArrayMap. To many elements in linesApiNames ' +
-                            'relative to pointArrayMap."'
-                        );
+                            'relative to pointArrayMap."');
                     }
                 });
-
                 // Restore options and draw a main line:
                 indicator.points = mainLinePoints;
                 indicator.options = mainLineOptions;
@@ -247,7 +200,6 @@
                 SMA.prototype.drawGraph.call(indicator);
             }
         };
-
 
         return multipleLinesMixin;
     });

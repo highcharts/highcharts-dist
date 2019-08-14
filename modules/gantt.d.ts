@@ -13,20 +13,18 @@ import * as _Highcharts from "../highcharts";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
-    /**
-     * Factory function for Gantt charts.
-     *
-     * @param options
-     *        The chart options structure.
-     *
-     * @param callback
-     *        Function to run when the chart has loaded and and all external
-     *        images are loaded. Defining a chart.events.load handler is
-     *        equivalent.
-     *
-     * @return Returns the Chart object.
-     */
-    function ganttChart(options: Options, callback?: ChartCallbackFunction): Chart;
+    interface Point {
+        /**
+         * The ending X value of the range point.
+         */
+        x2?: number;
+    }
+    interface PointOptionsObject {
+        /**
+         * The ending X value of the range point.
+         */
+        x2?: number;
+    }
     /**
      * Factory function for Gantt charts.
      *
@@ -53,8 +51,10 @@ declare module "../highcharts" {
      *
      * @param vertical
      *        If vertical scrollbar, swap x-y values.
+     *
+     * @return Rotated path.
      */
-    function swapXY(path: Array<(number|string)>, vertical: boolean): Array<(number|string)>;
+    function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
     /**
      * Returns the first break found where the x is larger then break.from and
      * smaller then break.to.
@@ -68,7 +68,7 @@ declare module "../highcharts" {
      * @return Returns the first break found that matches, returns false if no
      *         break is found.
      */
-    function findBreakAt(x: number, breaks: any[]): (boolean|object);
+    function findBreakAt(x: number, breaks: Array<XAxisBreaksOptions>): (XAxisBreaksOptions|undefined);
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

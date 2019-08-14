@@ -11,7 +11,15 @@
 import H from '../parts/Globals.js';
 import mixinTreeSeries from '../mixins/tree-series.js';
 import drawPoint from '../mixins/draw-point.js';
-import '../parts/Utilities.js';
+
+import U from '../parts/Utilities.js';
+var defined = U.defined,
+    isArray = U.isArray,
+    isNumber = U.isNumber,
+    isObject = U.isObject,
+    isString = U.isString,
+    objectEach = U.objectEach;
+
 import '../parts/Options.js';
 import '../parts/Series.js';
 import '../parts/Color.js';
@@ -22,25 +30,20 @@ var seriesType = H.seriesType,
     merge = H.merge,
     extend = H.extend,
     error = H.error,
-    defined = H.defined,
     noop = H.noop,
     fireEvent = H.fireEvent,
     getColor = mixinTreeSeries.getColor,
     getLevelOptions = mixinTreeSeries.getLevelOptions,
-    isArray = H.isArray,
     isBoolean = function (x) {
         return typeof x === 'boolean';
     },
-    isNumber = H.isNumber,
-    isObject = H.isObject,
-    isString = H.isString,
     pick = H.pick,
     Series = H.Series,
     stableSort = H.stableSort,
     color = H.Color,
     eachObject = function (list, func, context) {
         context = context || this;
-        H.objectEach(list, function (val, key) {
+        objectEach(list, function (val, key) {
             func.call(context, val, key, list);
         });
     },
@@ -1317,7 +1320,7 @@ seriesType(
             // The issue was happening when datalabel's text contained a
             // long sequence of characters without a whitespace.
             if (
-                !H.defined(style.textOverflow) &&
+                !defined(style.textOverflow) &&
                 dataLabel.text &&
                 dataLabel.getBBox().width > dataLabel.text.textWidth
             ) {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -110,6 +110,7 @@
                 }
             },
             legend: {
+                backgroundColor: 'rgba(48, 48, 48, 0.8)',
                 itemStyle: {
                     color: '#CCC'
                 },
@@ -118,6 +119,11 @@
                 },
                 itemHiddenStyle: {
                     color: '#333'
+                },
+                title: {
+                    style: {
+                        color: '#E0E0E0'
+                    }
                 }
             },
             labels: {
@@ -142,6 +148,9 @@
 
             plotOptions: {
                 series: {
+                    dataLabels: {
+                        color: '#444'
+                    },
                     nullColor: '#444444'
                 },
                 line: {
@@ -283,14 +292,7 @@
                     ]
                 },
                 trackBorderColor: '#666'
-            },
-
-            // special colors for some of the demo examples
-            legendBackgroundColor: 'rgba(48, 48, 48, 0.8)',
-            background2: 'rgb(70, 70, 70)',
-            dataLabelsColor: '#444',
-            textColor: '#E0E0E0',
-            maskColor: 'rgba(255,255,255,0.3)'
+            }
         };
 
         // Apply the theme

@@ -9,12 +9,15 @@
 
 'use strict';
 import H from '../parts/Globals.js';
+
+import U from '../parts/Utilities.js';
+var isNumber = U.isNumber,
+    objectEach = U.objectEach;
+
 import derivedSeriesMixin from '../mixins/derived-series.js';
 
-var objectEach = H.objectEach,
-    seriesType = H.seriesType,
+var seriesType = H.seriesType,
     correctFloat = H.correctFloat,
-    isNumber = H.isNumber,
     arrayMax = H.arrayMax,
     arrayMin = H.arrayMin,
     merge = H.merge;
@@ -122,8 +125,14 @@ seriesType(
     },
     merge(derivedSeriesMixin, {
         setDerivedData: function () {
+            var yData = this.baseSeries.yData;
+
+            if (!yData.length) {
+                return;
+            }
+
             var data = this.derivedData(
-                this.baseSeries.yData,
+                yData,
                 this.binsNumber(),
                 this.options.binWidth
             );

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Arrow Symbols
  *
@@ -30,14 +30,15 @@
     }
     _registerModule(_modules, 'parts-gantt/ArrowSymbols.js', [_modules['parts/Globals.js']], function (H) {
         /* *
-         * (c) 2017 Highsoft AS
-         * Authors: Lars A. V. Cabrera
          *
-         * License: www.highcharts.com/license
-         */
-
-
-
+         *  (c) 2017 Highsoft AS
+         *  Authors: Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         /**
          * Creates an arrow symbol. Like a triangle, except not filled.
          * ```
@@ -76,7 +77,6 @@
                 'L', x + w, y + h
             ];
         };
-
         /**
          * Creates a half-width arrow symbol. Like a triangle, except not filled.
          * ```
@@ -108,7 +108,6 @@
         H.SVGRenderer.prototype.symbols['arrow-half'] = function (x, y, w, h) {
             return H.SVGRenderer.prototype.symbols.arrow(x, y, w / 2, h);
         };
-
         /**
          * Creates a left-oriented triangle.
          * ```
@@ -145,7 +144,6 @@
                 'Z'
             ];
         };
-
         /**
          * Alias function for triangle-left.
          *
@@ -168,8 +166,7 @@
          *         Path array
          */
         H.SVGRenderer.prototype.symbols['arrow-filled'] =
-                H.SVGRenderer.prototype.symbols['triangle-left'];
-
+            H.SVGRenderer.prototype.symbols['triangle-left'];
         /**
          * Creates a half-width, left-oriented triangle.
          * ```
@@ -201,7 +198,6 @@
         H.SVGRenderer.prototype.symbols['triangle-left-half'] = function (x, y, w, h) {
             return H.SVGRenderer.prototype.symbols['triangle-left'](x, y, w / 2, h);
         };
-
         /**
          * Alias function for triangle-left-half.
          *
@@ -224,7 +220,7 @@
          *         Path array
          */
         H.SVGRenderer.prototype.symbols['arrow-filled-half'] =
-                H.SVGRenderer.prototype.symbols['triangle-left-half'];
+            H.SVGRenderer.prototype.symbols['triangle-left-half'];
 
     });
     _registerModule(_modules, 'masters/modules/arrow-symbols.src.js', [], function () {

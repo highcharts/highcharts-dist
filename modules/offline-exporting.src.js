@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Client side exporting module
  *
@@ -30,77 +30,65 @@
     }
     _registerModule(_modules, 'mixins/download-url.js', [_modules['parts/Globals.js']], function (Highcharts) {
         /* *
-         * Mixin for downloading content in the browser
          *
-         * (c) 2015-2019 Oystein Moseng
+         *  (c) 2015-2019 Oystein Moseng
          *
-         * License: www.highcharts.com/license
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         *  Mixin for downloading content in the browser
+         *
+         * */
+        var win = Highcharts.win, nav = win.navigator, doc = win.document, domurl = win.URL || win.webkitURL || win, isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
+        /**
+         * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
+         * @private
+         * @function Highcharts.dataURLtoBlob
+         * @param {string} dataURL
+         *        URL to convert
+         * @return {string|undefined}
+         *         Blob
          */
-
-
-
-        var win = Highcharts.win,
-            nav = win.navigator,
-            doc = win.document,
-            domurl = win.URL || win.webkitURL || win,
-            isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
-
-        // Convert base64 dataURL to Blob if supported, otherwise returns undefined
         Highcharts.dataURLtoBlob = function (dataURL) {
             var parts = dataURL.match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
-
-            if (
-                parts &&
+            if (parts &&
                 parts.length > 3 &&
                 win.atob &&
                 win.ArrayBuffer &&
                 win.Uint8Array &&
                 win.Blob &&
-                domurl.createObjectURL
-            ) {
+                domurl.createObjectURL) {
                 // Try to convert data URL to Blob
-                var binStr = win.atob(parts[3]),
-                    buf = new win.ArrayBuffer(binStr.length),
-                    binary = new win.Uint8Array(buf),
-                    blob;
-
+                var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf), blob;
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
-
                 blob = new win.Blob([binary], { 'type': parts[1] });
                 return domurl.createObjectURL(blob);
             }
         };
-
-
         /**
          * Download a data URL in the browser. Can also take a blob as first param.
          *
          * @private
          * @function Highcharts.downloadURL
-         *
-         * @param {string|object} dataURL
+         * @param {string|global.URL} dataURL
          *        The dataURL/Blob to download
-         *
          * @param {string} filename
          *        The name of the resulting file (w/extension)
+         * @return {void}
          */
         Highcharts.downloadURL = function (dataURL, filename) {
-            var a = doc.createElement('a'),
-                windowRef;
-
+            var a = doc.createElement('a'), windowRef;
             // IE specific blob implementation
             // Don't use for normal dataURLs
-            if (
-                typeof dataURL !== 'string' &&
+            if (typeof dataURL !== 'string' &&
                 !(dataURL instanceof String) &&
-                nav.msSaveOrOpenBlob
-            ) {
+                nav.msSaveOrOpenBlob) {
                 nav.msSaveOrOpenBlob(dataURL, filename);
                 return;
             }
-
             // Some browsers have limitations for data URL lengths. Try to convert to
             // Blob or fall back. Edge always needs that blob.
             if (isEdgeBrowser || dataURL.length > 2000000) {
@@ -109,7 +97,6 @@
                     throw new Error('Failed to convert to blob');
                 }
             }
-
             // Try HTML5 download attr if supported
             if (a.download !== undefined) {
                 a.href = dataURL;
@@ -117,14 +104,16 @@
                 doc.body.appendChild(a);
                 a.click();
                 doc.body.removeChild(a);
-            } else {
+            }
+            else {
                 // No download attr, just opening data URI
                 try {
                     windowRef = win.open(dataURL, 'chart');
                     if (windowRef === undefined || windowRef === null) {
                         throw new Error('Failed to open window');
                     }
-                } catch (e) {
+                }
+                catch (e) {
                     // window.open failed, trying location.href
                     win.location.href = dataURL;
                 }
@@ -827,7 +816,7 @@
 
         // Extend the default options to use the local exporter logic
         merge(true, Highcharts.getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/7.1.2/lib/',
+            libURL: 'https://code.highcharts.com/7.1.3/lib/',
 
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.

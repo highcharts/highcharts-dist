@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Sonification module
  *
@@ -1512,7 +1512,7 @@
 
         return pointSonifyFunctions;
     });
-    _registerModule(_modules, 'modules/sonification/chartSonify.js', [_modules['parts/Globals.js'], _modules['modules/sonification/utilities.js']], function (H, utilities) {
+    _registerModule(_modules, 'modules/sonification/chartSonify.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/sonification/utilities.js']], function (H, U, utilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -1608,6 +1608,10 @@
          * @type {Function|undefined}
          */
 
+
+
+        var isArray = U.isArray,
+            splat = U.splat;
 
 
 
@@ -1912,7 +1916,7 @@
                     earcons: chartSonifyOptions.earcons
                 },
                 // Merge in the specific series options by ID
-                H.isArray(seriesOptions) ? (
+                isArray(seriesOptions) ? (
                     H.find(seriesOptions, function (optEntry) {
                         return optEntry.id === H.pick(series.id, series.options.id);
                     }) || {}
@@ -1965,7 +1969,7 @@
                 // earcons or silent waits.
                 order = orderOptions.reduce(function (orderList, orderDef) {
                     // Return set of items to play simultaneously. Could be only one.
-                    var simulItems = H.splat(orderDef).reduce(function (items, item) {
+                    var simulItems = splat(orderDef).reduce(function (items, item) {
                         var itemObject;
 
                         // Is this item a series ID?
@@ -2028,7 +2032,7 @@
             }
 
             return order.reduce(function (newOrder, orderDef, i) {
-                var simultaneousPaths = H.splat(orderDef);
+                var simultaneousPaths = splat(orderDef);
 
                 newOrder.push(simultaneousPaths);
 
@@ -2060,7 +2064,7 @@
          */
         function getWaitTime(order) {
             return order.reduce(function (waitTime, orderDef) {
-                var def = H.splat(orderDef);
+                var def = splat(orderDef);
 
                 return waitTime + (
                     def.length === 1 && def[0].options && def[0].options.silentWait || 0
@@ -2125,7 +2129,7 @@
          */
         function getSimulPathDurationTotal(order) {
             return order.reduce(function (durationTotal, orderDef) {
-                return durationTotal + H.splat(orderDef).reduce(
+                return durationTotal + splat(orderDef).reduce(
                     function (maxPathDuration, item) {
                         var timeExtremes = item.series && item.seriesOptions &&
                                 item.seriesOptions.timeExtremes;
@@ -2186,7 +2190,7 @@
 
             // Go through the order list and convert the items
             return order.reduce(function (allPaths, orderDef) {
-                var simultaneousPaths = H.splat(orderDef).reduce(
+                var simultaneousPaths = splat(orderDef).reduce(
                     function (simulPaths, item) {
                         if (item instanceof H.sonification.TimelinePath) {
                             // This item is already a path object
@@ -2411,7 +2415,7 @@
             var timeline = this.sonification.timeline;
 
             if (timeline) {
-                H.splat(points).forEach(function (point) {
+                splat(points).forEach(function (point) {
                     // We created the events with the ID of the points, which makes
                     // this easy. Just call setCursor for each ID.
                     timeline.setCursor(point.id);
@@ -2538,7 +2542,7 @@
 
         return chartSonifyFunctions;
     });
-    _registerModule(_modules, 'modules/sonification/Timeline.js', [_modules['parts/Globals.js'], _modules['modules/sonification/utilities.js']], function (H, utilities) {
+    _registerModule(_modules, 'modules/sonification/Timeline.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/sonification/utilities.js']], function (H, U, utilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -2584,6 +2588,9 @@
          */
 
 
+
+
+        var splat = U.splat;
 
 
 
@@ -3063,7 +3070,7 @@
          * backwards.
          */
         Timeline.prototype.playPaths = function (direction) {
-            var curPaths = H.splat(this.paths[this.cursor]),
+            var curPaths = splat(this.paths[this.cursor]),
                 nextPaths = this.paths[this.cursor + direction],
                 timeline = this,
                 signalHandler = this.signalHandler,
@@ -3095,7 +3102,7 @@
                                 // We have more paths, move cursor along
                                 timeline.cursor += direction;
                                 // Reset upcoming path cursors before playing
-                                H.splat(nextPaths).forEach(function (nextPath) {
+                                splat(nextPaths).forEach(function (nextPath) {
                                     nextPath[
                                         direction > 0 ? 'resetCursor' : 'resetCursorEnd'
                                     ]();
@@ -3152,7 +3159,7 @@
          */
         Timeline.prototype.resetCursor = function () {
             this.paths.forEach(function (paths) {
-                H.splat(paths).forEach(function (path) {
+                splat(paths).forEach(function (path) {
                     path.resetCursor();
                 });
             });
@@ -3166,7 +3173,7 @@
          */
         Timeline.prototype.resetCursorEnd = function () {
             this.paths.forEach(function (paths) {
-                H.splat(paths).forEach(function (path) {
+                splat(paths).forEach(function (path) {
                     path.resetCursorEnd();
                 });
             });
@@ -3185,7 +3192,7 @@
          */
         Timeline.prototype.setCursor = function (eventId) {
             return this.paths.some(function (paths) {
-                return H.splat(paths).some(function (path) {
+                return splat(paths).some(function (path) {
                     return path.setCursor(eventId);
                 });
             });
@@ -3226,7 +3233,7 @@
          * played.
          */
         Timeline.prototype.getCurrentPlayingPaths = function () {
-            return H.splat(this.paths[this.cursor]);
+            return splat(this.paths[this.cursor]);
         };
 
 

@@ -1,5 +1,5 @@
 /**
- * @license  @product.name@ JS v@product.version@ (@product.date@)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -50,3 +50,4 @@ import '../../indicators/wma.src.js';
 import '../../indicators/zigzag.src.js';
 import '../../indicators/regressions.src.js';
 import '../../indicators/acceleration-bands.src.js';
+import '../../indicators/trendline.src.js';

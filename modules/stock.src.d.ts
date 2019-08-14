@@ -19,14 +19,14 @@ declare module "../highcharts.src" {
          * axis after render time.
          *
          * @param compare
-         *        The compare mode. Can be one of `null`, `"value"` or
+         *        The compare mode. Can be one of `null` (default), `"value"` or
          *        `"percent"`.
          *
          * @param redraw
          *        Whether to redraw the chart or to wait for a later call to
          *        Chart#redraw.
          */
-        setCompare(compare: string, redraw?: boolean): void;
+        setCompare(compare?: string, redraw?: boolean): void;
         /**
          * (Highstock) Highstock only. Force data grouping on all the axis'
          * series.
@@ -48,9 +48,9 @@ declare module "../highcharts.src" {
          * to update all its series.
          *
          * @param compare
-         *        Can be one of `null`, `"percent"` or `"value"`.
+         *        Can be one of `null` (default), `"percent"` or `"value"`.
          */
-        setCompare(compare: string): void;
+        setCompare(compare?: string): void;
     }
     /**
      * Factory function for creating new stock charts. Creates a new Chart
@@ -104,8 +104,10 @@ declare module "../highcharts.src" {
      *
      * @param vertical
      *        If vertical scrollbar, swap x-y values.
+     *
+     * @return Rotated path.
      */
-    function swapXY(path: Array<(number|string)>, vertical: boolean): Array<(number|string)>;
+    function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
     /**
      * Returns the first break found where the x is larger then break.from and
      * smaller then break.to.
@@ -119,7 +121,7 @@ declare module "../highcharts.src" {
      * @return Returns the first break found that matches, returns false if no
      *         break is found.
      */
-    function findBreakAt(x: number, breaks: any[]): (boolean|object);
+    function findBreakAt(x: number, breaks: Array<XAxisBreaksOptions>): (XAxisBreaksOptions|undefined);
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

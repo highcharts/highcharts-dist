@@ -1,5 +1,5 @@
 /**
- * @license @product.name@ JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  * @module highcharts/highcharts
  *
  * (c) 2009-2018 Torstein Honsi
@@ -8,6 +8,10 @@
  */
 'use strict';
 import Highcharts from '../parts/Globals.js';
+var extend = Highcharts.extend;
+
+import U from '../parts/Utilities.js';
+
 import '../parts/SvgRenderer.js';
 import '../parts/Html.js';
 import '../parts/Axis.js';
@@ -34,4 +38,19 @@ import '../parts/DataLabels.js';
 import '../modules/overlapping-datalabels.src.js';
 import '../parts/Interaction.js';
 import '../parts/Responsive.js';
+
+extend(Highcharts, {
+    defined: U.defined,
+    erase: U.erase,
+    isArray: U.isArray,
+    isClass: U.isClass,
+    isDOMElement: U.isDOMElement,
+    isNumber: U.isNumber,
+    isObject: U.isObject,
+    isString: U.isString,
+    objectEach: U.objectEach,
+    pInt: U.pInt,
+    splat: U.splat
+});
+
 export default Highcharts;

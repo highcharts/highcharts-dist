@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -30,20 +30,22 @@
     }
     _registerModule(_modules, 'mixins/reduce-array.js', [_modules['parts/Globals.js']], function (H) {
         /**
-         * (c) 2010-2019 Pawel Fus & Daniel Studencki
          *
-         * License: www.highcharts.com/license
-         */
-
-
+         *  (c) 2010-2019 Pawel Fus & Daniel Studencki
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         var reduce = H.reduce;
-
         var reduceArrayMixin = {
             /**
              * Get min value of array filled by OHLC data.
-             * @param {array} arr Array of OHLC points (arrays).
+             * @privagte
+             * @param {Array<Highcharts.OHLCPoint>} arr Array of OHLC points (arrays).
              * @param {string} index Index of "low" value in point array.
-             * @returns {number} Returns min value.
+             * @return {number} Returns min value.
              */
             minInArray: function (arr, index) {
                 return reduce(arr, function (min, target) {
@@ -52,21 +54,23 @@
             },
             /**
              * Get max value of array filled by OHLC data.
-             * @param {array} arr Array of OHLC points (arrays).
+             * @private
+             * @param {Array<Highcharts.OHLCPoint>} arr Array of OHLC points (arrays).
              * @param {string} index Index of "high" value in point array.
-             * @returns {number} Returns max value.
+             * @return {number} Returns max value.
              */
             maxInArray: function (arr, index) {
-                return reduce(arr, function (min, target) {
-                    return Math.max(min, target[index]);
+                return reduce(arr, function (max, target) {
+                    return Math.max(max, target[index]);
                 }, -Number.MAX_VALUE);
             },
             /**
              * Get extremes of array filled by OHLC data.
-             * @param {array} arr Array of OHLC points (arrays).
+             * @private
+             * @param {Array<Highcharts.OHLCPoint>} arr Array of OHLC points (arrays).
              * @param {string} minIndex Index of "low" value in point array.
              * @param {string} maxIndex Index of "high" value in point array.
-             * @returns {array} Returns array with min and max value.
+             * @return {Array<number,number>} Returns array with min and max value.
              */
             getArrayExtremes: function (arr, minIndex, maxIndex) {
                 return reduce(arr, function (prev, target) {
@@ -78,10 +82,9 @@
             }
         };
 
-
         return reduceArrayMixin;
     });
-    _registerModule(_modules, 'indicators/williams-r.src.js', [_modules['parts/Globals.js'], _modules['mixins/reduce-array.js']], function (H, reduceArrayMixin) {
+    _registerModule(_modules, 'indicators/williams-r.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/reduce-array.js']], function (H, U, reduceArrayMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -90,8 +93,10 @@
 
 
 
-        var isArray = H.isArray,
-            getArrayExtremes = reduceArrayMixin.getArrayExtremes;
+        var isArray = U.isArray;
+
+
+        var getArrayExtremes = reduceArrayMixin.getArrayExtremes;
 
         /**
          * The Williams %R series type.

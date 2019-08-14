@@ -12,6 +12,29 @@ import * as _Highcharts from "../highcharts";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts" {}
+declare module "../highcharts" {
+    interface Point {
+        /**
+         * Heatmap series only. Padding between the points in the heatmap.
+         */
+        pointPadding?: number;
+        /**
+         * Heatmap series only. The value of the point, resulting in a color
+         * controled by options as set in the colorAxis configuration.
+         */
+        value?: (number|null);
+    }
+    interface PointOptionsObject {
+        /**
+         * Heatmap series only. Point padding for a single point.
+         */
+        pointPadding?: number;
+        /**
+         * Heatmap series only. The value of the point, resulting in a color
+         * controled by options as set in the colorAxis configuration.
+         */
+        value?: (number|null);
+    }
+}
 export default factory;
 export let Highcharts: typeof _Highcharts;

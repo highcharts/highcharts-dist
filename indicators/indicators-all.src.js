@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * All technical indicators for Highstock
  *
@@ -30,41 +30,50 @@
     }
     _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Globals.js']], function (H) {
         /**
-         * (c) 2010-2019 Daniel Studencki
          *
-         * License: www.highcharts.com/license
-         */
-
-
+         *  (c) 2010-2019 Daniel Studencki
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         var error = H.error;
-
+        /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
             /**
              * Check whether given indicator is loaded, else throw error.
-             * @param {function} indicator Indicator constructor function.
-             * @param {string} requiredIndicator required indicator type.
-             * @param {string} type Type of indicator where function was called (parent).
-             * @param {function} callback Callback which is triggered if the given
-             *                            indicator is loaded. Takes indicator as
-             *                            an argument.
-             * @param {string} errMessage Error message that will be logged in console.
-             * @returns {boolean} Returns false when there is no required indicator loaded.
+             * @private
+             * @param {Highcharts.Indicator} indicator
+             *        Indicator constructor function.
+             * @param {string} requiredIndicator
+             *        Required indicator type.
+             * @param {string} type
+             *        Type of indicator where function was called (parent).
+             * @param {Highcharts.IndicatorConstructorFunction} callback
+             *        Callback which is triggered if the given indicator is loaded.
+             *        Takes indicator as an argument.
+             * @param {string} errMessage
+             *        Error message that will be logged in console.
+             * @return {boolean}
+             *         Returns false when there is no required indicator loaded.
              */
-            isParentLoaded: function (
-                indicator,
-                requiredIndicator,
-                type,
-                callback,
-                errMessage
-            ) {
+            isParentLoaded: function (indicator, requiredIndicator, type, callback, errMessage) {
                 if (indicator) {
                     return callback ? callback(indicator) : true;
                 }
-                error(
-                    errMessage || this.generateMessage(type, requiredIndicator)
-                );
+                error(errMessage || this.generateMessage(type, requiredIndicator));
                 return false;
             },
+            /**
+             * @private
+             * @param {string} indicatorType
+             *        Indicator type
+             * @param {string} required
+             *        Required indicator
+             * @return {string}
+             *         Error message
+             */
             generateMessage: function (indicatorType, required) {
                 return 'Error: "' + indicatorType +
                     '" indicator type requires "' + required +
@@ -74,10 +83,9 @@
             }
         };
 
-
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'indicators/indicators.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicatorMixin) {
+    _registerModule(_modules, 'indicators/indicators.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -86,10 +94,13 @@
 
 
 
+        var isArray = U.isArray,
+            splat = U.splat;
+
+
         var pick = H.pick,
             error = H.error,
             Series = H.Series,
-            isArray = H.isArray,
             addEvent = H.addEvent,
             seriesType = H.seriesType,
             seriesTypes = H.seriesTypes,
@@ -330,7 +341,7 @@
                                     croppedDataValues.push([
                                         croppedData.xData[i]
                                     ].concat(
-                                        H.splat(croppedData.yData[i])
+                                        splat(croppedData.yData[i])
                                     ));
                                 }
 
@@ -634,7 +645,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/ao.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/ao.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -643,8 +654,9 @@
 
 
 
+        var isArray = U.isArray;
+
         var correctFloat = H.correctFloat,
-            isArray = H.isArray,
             noop = H.noop;
 
         /**
@@ -840,23 +852,18 @@
          */
 
     });
-    _registerModule(_modules, 'mixins/multipe-lines.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'mixins/multipe-lines.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /**
          *
          *  (c) 2010-2019 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
-
-
-
-        var each = H.each,
-            merge = H.merge,
-            error = H.error,
-            defined = H.defined,
-            SMA = H.seriesTypes.sma;
-
+        var defined = U.defined;
+        var each = H.each, merge = H.merge, error = H.error, SMA = H.seriesTypes.sma;
         /**
          * Mixin useful for all indicators that have more than one line.
          * Merge it with your implementation where you will provide
@@ -868,6 +875,7 @@
          * @mixin multipleLinesMixin
          */
         var multipleLinesMixin = {
+            /* eslint-disable valid-jsdoc */
             /**
              * Lines ids. Required to plot appropriate amount of lines.
              * Notice that pointArrayMap should have more elements than
@@ -880,7 +888,6 @@
              * @type {Array<string>}
              */
             pointArrayMap: ['top', 'bottom'],
-
             /**
              * Main line id.
              *
@@ -889,7 +896,6 @@
              * @type {string}
              */
             pointValKey: 'top',
-
             /**
              * Additional lines DOCS names. Elements of linesApiNames array should
              * be consistent with DOCS line names defined in your implementation.
@@ -901,46 +907,37 @@
              * @type {Array<string>}
              */
             linesApiNames: ['bottomLine'],
-
             /**
              * Create translatedLines Collection based on pointArrayMap.
              *
              * @private
              * @function multipleLinesMixin.getTranslatedLinesNames
-             *
-             * @param {string} excludedValue
-             *        pointValKey - main line id
-             *
+             * @param {string} [excludedValue]
+             *        Main line id
              * @return {Array<string>}
              *         Returns translated lines names without excluded value.
              */
             getTranslatedLinesNames: function (excludedValue) {
                 var translatedLines = [];
-
                 each(this.pointArrayMap, function (propertyName) {
                     if (propertyName !== excludedValue) {
-                        translatedLines.push(
-                            'plot' +
+                        translatedLines.push('plot' +
                             propertyName.charAt(0).toUpperCase() +
-                            propertyName.slice(1)
-                        );
+                            propertyName.slice(1));
                     }
                 });
-
                 return translatedLines;
             },
             /**
              * @private
              * @function multipleLinesMixin.toYData
-             *
-             * @param {string} point
-             *
+             * @param {Highcharts.Point} point
+             *        Indicator point
              * @return {Array<number>}
              *         Returns point Y value for all lines
              */
             toYData: function (point) {
                 var pointColl = [];
-
                 each(this.pointArrayMap, function (propertyName) {
                     pointColl.push(point[propertyName]);
                 });
@@ -951,26 +948,17 @@
              *
              * @private
              * @function multipleLinesMixin.translate
+             * @return {void}
              */
             translate: function () {
-                var indicator = this,
-                    pointArrayMap = indicator.pointArrayMap,
-                    LinesNames = [],
-                    value;
-
+                var indicator = this, pointArrayMap = indicator.pointArrayMap, LinesNames = [], value;
                 LinesNames = indicator.getTranslatedLinesNames();
-
                 SMA.prototype.translate.apply(indicator, arguments);
-
                 each(indicator.points, function (point) {
                     each(pointArrayMap, function (propertyName, i) {
                         value = point[propertyName];
-
                         if (value !== null) {
-                            point[LinesNames[i]] = indicator.yAxis.toPixels(
-                                value,
-                                true
-                            );
+                            point[LinesNames[i]] = indicator.yAxis.toPixels(value, true);
                         }
                     });
                 });
@@ -980,33 +968,20 @@
              *
              * @private
              * @function multipleLinesMixin.drawGraph
+             * @return {void}
              */
             drawGraph: function () {
-                var indicator = this,
-                    pointValKey = indicator.pointValKey,
-                    linesApiNames = indicator.linesApiNames,
-                    mainLinePoints = indicator.points,
-                    pointsLength = mainLinePoints.length,
-                    mainLineOptions = indicator.options,
-                    mainLinePath = indicator.graph,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    },
-                    secondaryLines = [], // additional lines point place holders
-                    secondaryLinesNames = indicator.getTranslatedLinesNames(
-                        pointValKey
-                    ),
-                    point;
-
-
+                var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, 
+                // additional lines point place holders:
+                secondaryLines = [], secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey), point;
                 // Generate points for additional lines:
                 each(secondaryLinesNames, function (plotLine, index) {
-
                     // create additional lines point place holders
                     secondaryLines[index] = [];
-
                     while (pointsLength--) {
                         point = mainLinePoints[pointsLength];
                         secondaryLines[index].push({
@@ -1016,42 +991,32 @@
                             isNull: !defined(point[plotLine])
                         });
                     }
-
                     pointsLength = mainLinePoints.length;
                 });
-
                 // Modify options and generate additional lines:
                 each(linesApiNames, function (lineName, i) {
                     if (secondaryLines[i]) {
                         indicator.points = secondaryLines[i];
                         if (mainLineOptions[lineName]) {
-                            indicator.options = merge(
-                                mainLineOptions[lineName].styles,
-                                gappedExtend
-                            );
-                        } else {
-                            error(
-                                'Error: "There is no ' + lineName +
+                            indicator.options = merge(mainLineOptions[lineName].styles, gappedExtend);
+                        }
+                        else {
+                            error('Error: "There is no ' + lineName +
                                 ' in DOCS options declared. Check if linesApiNames' +
                                 ' are consistent with your DOCS line names."' +
-                                ' at mixin/multiple-line.js:34'
-                            );
+                                ' at mixin/multiple-line.js:34');
                         }
-
                         indicator.graph = indicator['graph' + lineName];
                         SMA.prototype.drawGraph.call(indicator);
-
                         // Now save lines:
                         indicator['graph' + lineName] = indicator.graph;
-                    } else {
-                        error(
-                            'Error: "' + lineName + ' doesn\'t have equivalent ' +
+                    }
+                    else {
+                        error('Error: "' + lineName + ' doesn\'t have equivalent ' +
                             'in pointArrayMap. To many elements in linesApiNames ' +
-                            'relative to pointArrayMap."'
-                        );
+                            'relative to pointArrayMap."');
                     }
                 });
-
                 // Restore options and draw a main line:
                 indicator.points = mainLinePoints;
                 indicator.options = mainLineOptions;
@@ -1059,7 +1024,6 @@
                 SMA.prototype.drawGraph.call(indicator);
             }
         };
-
 
         return multipleLinesMixin;
     });
@@ -1363,7 +1327,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/atr.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/atr.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1372,8 +1336,9 @@
 
 
 
-        var isArray = H.isArray,
-            seriesType = H.seriesType,
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType,
             UNDEFINED;
 
         // Utils:
@@ -1514,7 +1479,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/bollinger-bands.src.js', [_modules['parts/Globals.js'], _modules['mixins/multipe-lines.js']], function (H, multipleLinesMixin) {
+    _registerModule(_modules, 'indicators/bollinger-bands.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/multipe-lines.js']], function (H, U, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1523,8 +1488,10 @@
 
 
 
+        var isArray = U.isArray;
+
+
         var merge = H.merge,
-            isArray = H.isArray,
             SMA = H.seriesTypes.sma;
 
         // Utils:
@@ -1722,7 +1689,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/cci.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/cci.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1731,8 +1698,9 @@
 
 
 
-        var isArray = H.isArray,
-            seriesType = H.seriesType;
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
 
         // Utils:
         function sumArray(array) {
@@ -2239,7 +2207,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/ema.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/ema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2248,8 +2216,9 @@
 
 
 
-        var isArray = H.isArray,
-            seriesType = H.seriesType,
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType,
             correctFloat = H.correctFloat;
 
         /**
@@ -2570,7 +2539,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/dema.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicatorMixin) {
+    _registerModule(_modules, 'indicators/dema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2579,8 +2548,10 @@
 
 
 
-        var isArray = H.isArray,
-            EMAindicator = H.seriesTypes.ema,
+        var isArray = U.isArray;
+
+
+        var EMAindicator = H.seriesTypes.ema,
             requiredIndicator = requiredIndicatorMixin,
             correctFloat = H.correctFloat;
 
@@ -2597,7 +2568,7 @@
             'dema',
             'ema',
             /**
-             * Normalized average true range indicator (NATR). This series requires
+             * Double exponential moving average (DEMA) indicator. This series requires
              * `linkedTo` option to be set and should be loaded after the
              * `stock/indicators/indicators.js` and `stock/indicators/ema.js`.
              *
@@ -2760,7 +2731,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/tema.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicatorMixin) {
+    _registerModule(_modules, 'indicators/tema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2769,8 +2740,10 @@
 
 
 
-        var isArray = H.isArray,
-            EMAindicator = H.seriesTypes.ema,
+        var isArray = U.isArray;
+
+
+        var EMAindicator = H.seriesTypes.ema,
             requiredIndicator = requiredIndicatorMixin,
             correctFloat = H.correctFloat;
 
@@ -2787,7 +2760,7 @@
             'tema',
             'ema',
             /**
-             * Normalized average true range indicator (NATR). This series requires
+             * Triple exponential moving average (TEMA) indicator. This series requires
              * `linkedTo` option to be set and should be loaded after the
              * `stock/indicators/indicators.js` and `stock/indicators/ema.js`.
              *
@@ -2841,7 +2814,7 @@
                         SMA
                     );
                 },
-                getPoint: function (
+                getTemaPoint: function (
                     xVal,
                     tripledPeriod,
                     EMAlevels,
@@ -2966,7 +2939,7 @@
                                     EMAlevels.prevLevel3,
                                     SMA
                                 )[1];
-                                TEMAPoint = this.getPoint(
+                                TEMAPoint = this.getTemaPoint(
                                     xVal,
                                     tripledPeriod,
                                     EMAlevels,
@@ -3031,7 +3004,7 @@
             'trix',
             'tema',
             /**
-             * Normalized average true range indicator (NATR). This series requires
+             * Triple exponential average (TRIX) oscillator. This series requires
              * `linkedTo` option to be set.
              *
              * Requires https://code.highcharts.com/stock/indicators/ema.js
@@ -3067,7 +3040,8 @@
                         }
                     );
                 },
-                getPoint: function (
+                // TRIX is calculated using TEMA so we just extend getTemaPoint method.
+                getTemaPoint: function (
                     xVal,
                     tripledPeriod,
                     EMAlevels,
@@ -3248,7 +3222,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/ichimoku-kinko-hyo.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/ichimoku-kinko-hyo.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -3257,12 +3231,14 @@
 
 
 
+        var defined = U.defined,
+            isArray = U.isArray,
+            objectEach = U.objectEach;
+
         var UNDEFINED,
             seriesType = H.seriesType,
             merge = H.merge,
             color = H.color,
-            isArray = H.isArray,
-            defined = H.defined,
             SMA = H.seriesTypes.sma;
 
         // Utils:
@@ -3744,7 +3720,7 @@
                     }
 
                     // Modify options and generate lines:
-                    H.objectEach(ikhMap, function (values, lineName) {
+                    objectEach(ikhMap, function (values, lineName) {
                         if (mainLineOptions[lineName] && lineName !== 'senkouSpan') {
                             // First line is rendered by default option
                             indicator.points = allIchimokuPoints[lineIndex];
@@ -4290,7 +4266,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/macd.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/macd.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4299,11 +4275,12 @@
 
 
 
+        var defined = U.defined;
+
 
         var seriesType = H.seriesType,
             noop = H.noop,
             merge = H.merge,
-            defined = H.defined,
             SMA = H.seriesTypes.sma,
             EMA = H.seriesTypes.ema,
             correctFloat = H.correctFloat;
@@ -4707,7 +4684,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/mfi.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/mfi.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  Money Flow Index indicator for Highstock
@@ -4720,7 +4697,7 @@
 
 
 
-        var isArray = H.isArray;
+        var isArray = U.isArray;
 
         // Utils:
         function sumArray(array) {
@@ -4905,7 +4882,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/momentum.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/momentum.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4914,8 +4891,9 @@
 
 
 
-        var isArray = H.isArray,
-            seriesType = H.seriesType;
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
 
         function populateAverage(points, xVal, yVal, i, period) {
             var mmY = yVal[i - 1][3] - yVal[i - period - 1][3],
@@ -5098,7 +5076,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/pivot-points.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/pivot-points.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -5107,9 +5085,10 @@
 
 
 
-        var defined = H.defined,
-            isArray = H.isArray,
-            SMA = H.seriesTypes.sma;
+        var defined = U.defined,
+            isArray = U.isArray;
+
+        var SMA = H.seriesTypes.sma;
 
         function destroyExtraLabels(point, functionName) {
             var props = point.series.pointArrayMap,
@@ -5613,20 +5592,22 @@
     });
     _registerModule(_modules, 'mixins/reduce-array.js', [_modules['parts/Globals.js']], function (H) {
         /**
-         * (c) 2010-2019 Pawel Fus & Daniel Studencki
          *
-         * License: www.highcharts.com/license
-         */
-
-
+         *  (c) 2010-2019 Pawel Fus & Daniel Studencki
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         var reduce = H.reduce;
-
         var reduceArrayMixin = {
             /**
              * Get min value of array filled by OHLC data.
-             * @param {array} arr Array of OHLC points (arrays).
+             * @privagte
+             * @param {Array<Highcharts.OHLCPoint>} arr Array of OHLC points (arrays).
              * @param {string} index Index of "low" value in point array.
-             * @returns {number} Returns min value.
+             * @return {number} Returns min value.
              */
             minInArray: function (arr, index) {
                 return reduce(arr, function (min, target) {
@@ -5635,21 +5616,23 @@
             },
             /**
              * Get max value of array filled by OHLC data.
-             * @param {array} arr Array of OHLC points (arrays).
+             * @private
+             * @param {Array<Highcharts.OHLCPoint>} arr Array of OHLC points (arrays).
              * @param {string} index Index of "high" value in point array.
-             * @returns {number} Returns max value.
+             * @return {number} Returns max value.
              */
             maxInArray: function (arr, index) {
-                return reduce(arr, function (min, target) {
-                    return Math.max(min, target[index]);
+                return reduce(arr, function (max, target) {
+                    return Math.max(max, target[index]);
                 }, -Number.MAX_VALUE);
             },
             /**
              * Get extremes of array filled by OHLC data.
-             * @param {array} arr Array of OHLC points (arrays).
+             * @private
+             * @param {Array<Highcharts.OHLCPoint>} arr Array of OHLC points (arrays).
              * @param {string} minIndex Index of "low" value in point array.
              * @param {string} maxIndex Index of "high" value in point array.
-             * @returns {array} Returns array with min and max value.
+             * @return {Array<number,number>} Returns array with min and max value.
              */
             getArrayExtremes: function (arr, minIndex, maxIndex) {
                 return reduce(arr, function (prev, target) {
@@ -5660,7 +5643,6 @@
                 }, [Number.MAX_VALUE, -Number.MAX_VALUE]);
             }
         };
-
 
         return reduceArrayMixin;
     });
@@ -5811,7 +5793,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/price-envelopes.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/price-envelopes.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -5820,8 +5802,9 @@
 
 
 
+        var isArray = U.isArray;
+
         var merge = H.merge,
-            isArray = H.isArray,
             SMA = H.seriesTypes.sma;
 
         /**
@@ -6369,7 +6352,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/roc.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/roc.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Kacper Madej
@@ -6380,8 +6363,9 @@
 
 
 
-        var seriesType = H.seriesType,
-            isArray = H.isArray;
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
 
         // Utils:
         function populateAverage(xVal, yVal, i, period, index) {
@@ -6518,7 +6502,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/rsi.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/rsi.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -6527,7 +6511,7 @@
 
 
 
-        var isArray = H.isArray;
+        var isArray = U.isArray;
 
         // Utils:
         function toFixed(a, n) {
@@ -6681,7 +6665,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/stochastic.src.js', [_modules['parts/Globals.js'], _modules['mixins/reduce-array.js'], _modules['mixins/multipe-lines.js']], function (H, reduceArrayMixin, multipleLinesMixin) {
+    _registerModule(_modules, 'indicators/stochastic.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/reduce-array.js'], _modules['mixins/multipe-lines.js']], function (H, U, reduceArrayMixin, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -6690,8 +6674,10 @@
 
 
 
+        var isArray = U.isArray;
+
+
         var merge = H.merge,
-            isArray = H.isArray,
             SMA = H.seriesTypes.sma,
             getArrayExtremes = reduceArrayMixin.getArrayExtremes;
 
@@ -6872,7 +6858,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/supertrend.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/supertrend.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -6881,9 +6867,11 @@
 
 
 
+        var isArray = U.isArray,
+            objectEach = U.objectEach;
+
         var ATR = H.seriesTypes.atr,
             SMA = H.seriesTypes.sma,
-            isArray = H.isArray,
             merge = H.merge,
             correctFloat = H.correctFloat;
 
@@ -7247,7 +7235,7 @@
                     }
 
                     // Generate lines:
-                    H.objectEach(groupedPoitns, function (values, lineName) {
+                    objectEach(groupedPoitns, function (values, lineName) {
                         indicator.points = values;
                         indicator.options = merge(
                             supertrendLineOptions[lineName].styles,
@@ -7416,7 +7404,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/volume-by-price.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/volume-by-price.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Paweł Dalek
@@ -7428,6 +7416,8 @@
          * */
 
 
+
+        var isArray = U.isArray;
 
         // Utils
         function arrayExtremesOHLC(data) {
@@ -7849,7 +7839,7 @@
                     }
 
                     // Checks if series data fits the OHLC format
-                    isOHLC = H.isArray(yValues[0]);
+                    isOHLC = isArray(yValues[0]);
 
                     if (isOHLC && yValues[0].length !== 4) {
                         return H.error(
@@ -8093,7 +8083,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/vwap.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/vwap.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Paweł Dalek
@@ -8106,8 +8096,9 @@
 
 
 
-        var isArray = H.isArray,
-            seriesType = H.seriesType;
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
 
         /**
          * The Volume Weighted Average Price (VWAP) series type.
@@ -8282,7 +8273,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/williams-r.src.js', [_modules['parts/Globals.js'], _modules['mixins/reduce-array.js']], function (H, reduceArrayMixin) {
+    _registerModule(_modules, 'indicators/williams-r.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/reduce-array.js']], function (H, U, reduceArrayMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -8291,8 +8282,10 @@
 
 
 
-        var isArray = H.isArray,
-            getArrayExtremes = reduceArrayMixin.getArrayExtremes;
+        var isArray = U.isArray;
+
+
+        var getArrayExtremes = reduceArrayMixin.getArrayExtremes;
 
         /**
          * The Williams %R series type.
@@ -8409,7 +8402,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/wma.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/wma.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Kacper Madej
@@ -8420,8 +8413,9 @@
 
 
 
-        var isArray = H.isArray,
-            seriesType = H.seriesType;
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
 
         // Utils:
         function accumulateAverage(points, xVal, yVal, i, index) {
@@ -8776,7 +8770,7 @@
          */
 
     });
-    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Kamil Kulig
@@ -8787,8 +8781,9 @@
 
 
 
-        var seriesType = H.seriesType,
-            isArray = H.isArray;
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
 
         /**
          * Linear regression series type.
@@ -9398,6 +9393,131 @@
          *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
          *               stacking, showInNavigator,
          * @optionparent series.abands
+         */
+
+    });
+    _registerModule(_modules, 'indicators/trendline.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  License: www.highcharts.com/license
+         *
+         * */
+
+
+
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
+
+        /**
+         * The Trend line series type.
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.trendline
+         *
+         * @augments Highcharts.Series
+         */
+        seriesType(
+            'trendline',
+            'sma',
+            /**
+             * Trendline (linear regression) fits a straight line to the selected data
+             * using a method called the Sum Of Least Squares. This series requires the
+             * `linkedTo` option to be set.
+             *
+             * @sample stock/indicators/trendline
+             *         Trendline indicator
+             *
+             * @extends      plotOptions.sma
+             * @since        7.1.3
+             * @product      highstock
+             * @optionparent plotOptions.trendline
+             */
+            {
+                /**
+                 * @excluding period
+                 */
+                params: {
+                    /**
+                     * The point index which indicator calculations will base. For
+                     * example using OHLC data, index=2 means the indicator will be
+                     * calculated using Low values.
+                     *
+                     * @default 3
+                     */
+                    index: 3
+                }
+            },
+            /**
+             * @lends Highcharts.Series#
+             */
+            {
+                nameBase: 'Trendline',
+                nameComponents: false,
+                getValues: function (series, params) {
+                    var xVal = series.xData,
+                        yVal = series.yData,
+                        LR = [],
+                        xData = [],
+                        yData = [],
+                        sumX = 0,
+                        sumY = 0,
+                        sumXY = 0,
+                        sumX2 = 0,
+                        xValLength = xVal.length,
+                        index = params.index,
+                        alpha, beta, i, x, y;
+
+                    // Get sums:
+                    for (i = 0; i < xValLength; i++) {
+                        x = xVal[i];
+                        y = isArray(yVal[i]) ? yVal[i][index] : yVal[i];
+                        sumX += x;
+                        sumY += y;
+                        sumXY += x * y;
+                        sumX2 += x * x;
+                    }
+
+                    // Get slope and offset:
+                    alpha = (xValLength * sumXY - sumX * sumY) /
+                        (xValLength * sumX2 - sumX * sumX);
+
+                    if (isNaN(alpha)) {
+                        alpha = 0;
+                    }
+
+                    beta = (sumY - alpha * sumX) / xValLength;
+
+                    // Calculate linear regression:
+                    for (i = 0; i < xValLength; i++) {
+                        x = xVal[i];
+                        y = alpha * x + beta;
+
+                        // Prepare arrays required for getValues() method
+                        LR[i] = [x, y];
+                        xData[i] = x;
+                        yData[i] = y;
+                    }
+
+                    return {
+                        xData: xData,
+                        yData: yData,
+                        values: LR
+                    };
+                }
+            }
+        );
+
+        /**
+         * A `TrendLine` series. If the [type](#series.trendline.type) option is not
+         * specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @extends   series,plotOptions.trendline
+         * @since     7.1.3
+         * @product   highstock
+         * @excluding dataParser, dataURL
+         * @apioption series.trendline
          */
 
     });

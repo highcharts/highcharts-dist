@@ -1,5 +1,5 @@
 /**
- * @license @product.name@ JS v@product.version@ (@product.date@)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  * @module highcharts/modules/boost-canvas
  * @requires highcharts
  *

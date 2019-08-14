@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/pivot-points.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/pivot-points.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -37,9 +37,10 @@
 
 
 
-        var defined = H.defined,
-            isArray = H.isArray,
-            SMA = H.seriesTypes.sma;
+        var defined = U.defined,
+            isArray = U.isArray;
+
+        var SMA = H.seriesTypes.sma;
 
         function destroyExtraLabels(point, functionName) {
             var props = point.series.pointArrayMap,

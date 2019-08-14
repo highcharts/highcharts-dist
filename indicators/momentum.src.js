@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/momentum.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/momentum.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -37,8 +37,9 @@
 
 
 
-        var isArray = H.isArray,
-            seriesType = H.seriesType;
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
 
         function populateAverage(points, xVal, yVal, i, period) {
             var mmY = yVal[i - 1][3] - yVal[i - period - 1][3],

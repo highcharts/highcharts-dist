@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/ichimoku-kinko-hyo.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/ichimoku-kinko-hyo.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -37,12 +37,14 @@
 
 
 
+        var defined = U.defined,
+            isArray = U.isArray,
+            objectEach = U.objectEach;
+
         var UNDEFINED,
             seriesType = H.seriesType,
             merge = H.merge,
             color = H.color,
-            isArray = H.isArray,
-            defined = H.defined,
             SMA = H.seriesTypes.sma;
 
         // Utils:
@@ -524,7 +526,7 @@
                     }
 
                     // Modify options and generate lines:
-                    H.objectEach(ikhMap, function (values, lineName) {
+                    objectEach(ikhMap, function (values, lineName) {
                         if (mainLineOptions[lineName] && lineName !== 'senkouSpan') {
                             // First line is rendered by default option
                             indicator.points = allIchimokuPoints[lineIndex];

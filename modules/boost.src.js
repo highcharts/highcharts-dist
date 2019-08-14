@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Boost module
  *
@@ -7,6 +7,67 @@
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
+ *
+ * This is a Highcharts module that draws long data series on a canvas in order
+ * to increase performance of the initial load time and tooltip responsiveness.
+ *
+ * Compatible with WebGL compatible browsers (not IE < 11).
+ *
+ * If this module is taken in as part of the core
+ * - All the loading logic should be merged with core. Update styles in the
+ *   core.
+ * - Most of the method wraps should probably be added directly in parent
+ *   methods.
+ *
+ * Notes for boost mode
+ * - Area lines are not drawn
+ * - Lines are not drawn on scatter charts
+ * - Zones and negativeColor don't work
+ * - Dash styles are not rendered on lines.
+ * - Columns are always one pixel wide. Don't set the threshold too low.
+ * - Disable animations
+ * - Marker shapes are not supported: markers will always be circles
+ *
+ * Optimizing tips for users
+ * - Set extremes (min, max) explicitly on the axes in order for Highcharts to
+ *   avoid computing extremes.
+ * - Set enableMouseTracking to false on the series to improve total rendering
+ *      time.
+ * - The default threshold is set based on one series. If you have multiple,
+ *   dense series, the combined number of points drawn gets higher, and you may
+ *   want to set the threshold lower in order to use optimizations.
+ * - If drawing large scatter charts, it's beneficial to set the marker radius
+ *   to a value less than 1. This is to add additional spacing to make the chart
+ *   more readable.
+ * - If the value increments on both the X and Y axis aren't small, consider
+ *   setting useGPUTranslations to true on the boost settings object. If you do
+ *   this and the increments are small (e.g. datetime axis with small time
+ *   increments) it may cause rendering issues due to floating point rounding
+ *   errors, so your millage may vary.
+ *
+ * Settings
+ *    There are two ways of setting the boost threshold:
+ *    - Per series: boost based on number of points in individual series
+ *    - Per chart: boost based on the number of series
+ *
+ *  To set the series boost threshold, set seriesBoostThreshold on the chart
+ *  object.
+ *  To set the series-specific threshold, set boostThreshold on the series
+ *  object.
+ *
+ *  In addition, the following can be set in the boost object:
+ *  {
+ *      //Wether or not to use alpha blending
+ *      useAlpha: boolean - default: true
+ *      //Set to true to perform translations on the GPU.
+ *      //Much faster, but may cause rendering issues
+ *      //when using values far from 0 due to floating point
+ *      //rounding issues
+ *      useGPUTranslations: boolean - default: false
+ *      //Use pre-allocated buffers, much faster,
+ *      //but may cause rendering issues with some data sets
+ *      usePreallocated: boolean - default: false
+ *  }
  */
 'use strict';
 (function (factory) {
@@ -830,7 +891,7 @@
 
         return GLVertexBuffer;
     });
-    _registerModule(_modules, 'modules/boost/wgl-renderer.js', [_modules['modules/boost/wgl-shader.js'], _modules['modules/boost/wgl-vbuffer.js'], _modules['parts/Globals.js']], function (GLShader, GLVertexBuffer, H) {
+    _registerModule(_modules, 'modules/boost/wgl-renderer.js', [_modules['modules/boost/wgl-shader.js'], _modules['modules/boost/wgl-vbuffer.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (GLShader, GLVertexBuffer, H, U) {
         /**
          *
          * Copyright (c) 2019-2019 Highsoft AS
@@ -844,11 +905,13 @@
 
 
 
+        var isNumber = U.isNumber;
+
+
         var win = H.win,
             doc = win.document,
             merge = H.merge,
             objEach = H.objEach,
-            isNumber = H.isNumber,
             some = H.some,
             Color = H.Color,
             pick = H.pick;
@@ -1099,10 +1162,16 @@
                     firstPoint = true,
                     zones = options.zones || false,
                     zoneDefColor = false,
-                    threshold = options.threshold;
+                    threshold = options.threshold,
+                    gapSize = false;
 
                 if (options.boostData && options.boostData.length > 0) {
                     return;
+                }
+
+                if (options.gapSize) {
+                    gapSize = options.gapUnit !== 'value' ?
+                        options.gapSize * series.closestPointRange : options.gapSize;
                 }
 
                 if (zones) {
@@ -1450,6 +1519,10 @@
 
                     if (!isXInside && !nextInside && !prevInside) {
                         continue;
+                    }
+
+                    if (gapSize && x - px > gapSize) {
+                        beginSegment();
                     }
 
                     // Note: Boost requires that zones are sorted!
@@ -3178,7 +3251,7 @@
 
         return init;
     });
-    _registerModule(_modules, 'modules/boost/boost-overrides.js', [_modules['parts/Globals.js'], _modules['modules/boost/boost-utils.js'], _modules['modules/boost/boostables.js'], _modules['modules/boost/boostable-map.js']], function (H, butils, boostable, boostableMap) {
+    _registerModule(_modules, 'modules/boost/boost-overrides.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/boost/boost-utils.js'], _modules['modules/boost/boostables.js'], _modules['modules/boost/boostable-map.js']], function (H, U, butils, boostable, boostableMap) {
         /* *
          *
          *  Copyright (c) 2019-2019 Highsoft AS
@@ -3191,6 +3264,9 @@
 
 
 
+        var isNumber = U.isNumber;
+
+
 
         var boostEnabled = butils.boostEnabled,
             shouldForceChartSeriesBoosting = butils.shouldForceChartSeriesBoosting,
@@ -3199,7 +3275,6 @@
             Point = H.Point,
             seriesTypes = H.seriesTypes,
             addEvent = H.addEvent,
-            isNumber = H.isNumber,
             pick = H.pick,
             wrap = H.wrap,
             plotOptions = H.getOptions().plotOptions;
@@ -3833,6 +3908,52 @@
 
     });
     _registerModule(_modules, 'masters/modules/boost.src.js', [], function () {
+
+
+        /* *
+         * Options for the Boost module. The Boost module allows certain series types
+         * to be rendered by WebGL instead of the default SVG. This allows hundreds of
+         * thousands of data points to be rendered in milliseconds. In addition to the
+         * WebGL rendering it saves time by skipping processing and inspection of the
+         * data wherever possible. This introduces some limitations to what features are
+         * available in boost mode. See [the docs](
+         * https://www.highcharts.com/docs/advanced-chart-features/boost-module) for
+         * details.
+         *
+         * In addition to the global `boost` option, each series has a
+         * [boostThreshold](#plotOptions.series.boostThreshold) that defines when the
+         * boost should kick in.
+         *
+         * Requires the `modules/boost.js` module.
+         *
+         * @sample {highstock} highcharts/boost/line-series-heavy-stock
+         *         Stock chart
+         * @sample {highstock} highcharts/boost/line-series-heavy-dynamic
+         *         Dynamic stock chart
+         * @sample highcharts/boost/line
+         *         Line chart
+         * @sample highcharts/boost/line-series-heavy
+         *         Line chart with hundreds of series
+         * @sample highcharts/boost/scatter
+         *         Scatter chart
+         * @sample highcharts/boost/area
+         *         Area chart
+         * @sample highcharts/boost/arearange
+         *         Area range chart
+         * @sample highcharts/boost/column
+         *         Column chart
+         * @sample highcharts/boost/columnrange
+         *         Column range chart
+         * @sample highcharts/boost/bubble
+         *         Bubble chart
+         * @sample highcharts/boost/heatmap
+         *         Heat map
+         * @sample highcharts/boost/treemap
+         *         Tree map
+         *
+         * @product   highcharts highstock
+         * @apioption boost
+         * */
 
 
     });

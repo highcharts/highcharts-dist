@@ -9,19 +9,21 @@
  * */
 'use strict';
 import Highcharts from './Globals.js';
+import U from './Utilities.js';
+var defined = U.defined, isObject = U.isObject, objectEach = U.objectEach, splat = U.splat;
 /**
  * Normalized interval.
  *
- * @interface Highcharts.NormalizedIntervalObject
+ * @interface Highcharts.TimeNormalizedObject
  */ /**
 * The count.
 *
-* @name Highcharts.NormalizedIntervalObject#count
+* @name Highcharts.TimeNormalizedObject#count
 * @type {number}
 */ /**
 * The interval in axis values (ms).
 *
-* @name Highcharts.NormalizedIntervalObject#unitRange
+* @name Highcharts.TimeNormalizedObject#unitRange
 * @type {number}
 */
 /**
@@ -39,7 +41,7 @@ import Highcharts from './Globals.js';
  * Additonal time tick information.
  *
  * @interface Highcharts.TimeTicksInfoObject
- * @augments Highcharts.NormalizedIntervalObject
+ * @augments Highcharts.TimeNormalizedObject
  */ /**
 * @name Highcharts.TimeTicksInfoObject#higherRanks
 * @type {Array<string>}
@@ -50,13 +52,12 @@ import Highcharts from './Globals.js';
 /**
  * Time ticks.
  *
- * @interface Highcharts.TimeTicksObject
- * @augments Array<number>
+ * @interface Highcharts.AxisTickPositionsArray
  */ /**
-* @name Highcharts.TimeTicksObject#info
+* @name Highcharts.AxisTickPositionsArray#info
 * @type {Highcharts.TimeTicksInfoObject}
 */
-var H = Highcharts, defined = H.defined, extend = H.extend, merge = H.merge, pick = H.pick, timeUnits = H.timeUnits, win = H.win;
+var H = Highcharts, extend = H.extend, merge = H.merge, pick = H.pick, timeUnits = H.timeUnits, win = H.win;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * The Time class. Time settings are applied in general for each page using
@@ -446,7 +447,7 @@ Highcharts.Time.prototype = {
      *         The formatted date.
      */
     dateFormat: function (format, timestamp, capitalize) {
-        if (!H.defined(timestamp) || isNaN(timestamp)) {
+        if (!defined(timestamp) || isNaN(timestamp)) {
             return H.defaultOptions.lang.invalidDate || '';
         }
         format = H.pick(format, '%Y-%m-%d %H:%M:%S');
@@ -505,7 +506,7 @@ Highcharts.Time.prototype = {
             L: pad(Math.floor(timestamp % 1000), 3)
         }, H.dateFormats);
         // Do the replaces
-        H.objectEach(replacements, function (val, key) {
+        objectEach(replacements, function (val, key) {
             // Regex would do it in one line, but this is faster
             while (format.indexOf('%' + key) !== -1) {
                 format = format.replace('%' + key, typeof val === 'function' ? val.call(time, timestamp) : val);
@@ -521,12 +522,12 @@ Highcharts.Time.prototype = {
      * Resolve legacy formats of dateTimeLabelFormats (strings and arrays) into
      * an object.
      * @private
-     * @param  {object|string} f - General format description
-     * @return {object} - The object definition
+     * @param {string|Array<T>|Highcharts.Dictionary<T>} f - General format description
+     * @return {Highcharts.Dictionary<T>} - The object definition
      */
     resolveDTLFormat: function (f) {
-        if (!H.isObject(f, true)) {
-            f = H.splat(f);
+        if (!isObject(f, true)) { // check for string or array
+            f = splat(f);
             return {
                 main: f[0],
                 from: f[1],
@@ -542,7 +543,7 @@ Highcharts.Time.prototype = {
      *
      * @function Highcharts.Time#getTimeTicks
      *
-     * @param {Highcharts.NormalizedIntervalObject} normalizedInterval
+     * @param {Highcharts.TimeNormalizedObject} normalizedInterval
      *        The interval in axis values (ms) and the count
      *
      * @param {number} [min]
@@ -553,7 +554,7 @@ Highcharts.Time.prototype = {
      *
      * @param {number} [startOfWeek=1]
      *
-     * @return {Highcharts.TimeTicksObject}
+     * @return {Highcharts.AxisTickPositionsArray}
      */
     getTimeTicks: function (normalizedInterval, min, max, startOfWeek) {
         var time = this, Date = time.Date, tickPositions = [], i, higherRanks = {}, minYear, // used in months and years as a basis for Date.UTC()

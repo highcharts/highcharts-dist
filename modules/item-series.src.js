@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Item series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/item-series.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/item-series.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2019 Torstein Honsi
@@ -39,6 +39,11 @@
          *
          * */
 
+
+
+        var defined = U.defined,
+            isNumber = U.isNumber,
+            objectEach = U.objectEach;
 
 
         var extend = H.extend,
@@ -123,7 +128,7 @@
                  */
                 layout: 'vertical',
                 /**
-                 * @extends   plotOptions.line.marker
+                 * @extends plotOptions.series.marker
                  */
                 marker: merge(
                     H.defaultOptions.plotOptions.line.marker,
@@ -158,8 +163,8 @@
                         this.slots = [];
                     }
                     if (
-                        H.isNumber(this.options.startAngle) &&
-                        H.isNumber(this.options.endAngle)
+                        isNumber(this.options.startAngle) &&
+                        isNumber(this.options.endAngle)
                     ) {
                         H.seriesTypes.pie.prototype.translate.call(this);
                         this.slots = this.getSlots();
@@ -378,7 +383,7 @@
                                 pointMarkerOptions.radius,
                                 seriesMarkerOptions.radius
                             ),
-                            size = H.defined(r) ? 2 * r : itemSize,
+                            size = defined(r) ? 2 * r : itemSize,
                             padding = size * options.itemPadding,
                             x,
                             y,
@@ -461,7 +466,7 @@
                                 i++;
                             }
                         }
-                        H.objectEach(graphics, function (graphic, key) {
+                        objectEach(graphics, function (graphic, key) {
                             if (!graphic.isActive) {
                                 graphic.destroy();
                                 delete graphics[key];

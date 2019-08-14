@@ -10,14 +10,17 @@
 'use strict';
 import H from '../parts/Globals.js';
 
+import U from '../parts/Utilities.js';
+var defined = U.defined,
+    isArray = U.isArray,
+    isObject = U.isObject,
+    isString = U.isString,
+    objectEach = U.objectEach;
+
 var addEvent = H.addEvent,
     createElement = H.createElement,
-    objectEach = H.objectEach,
     pick = H.pick,
     wrap = H.wrap,
-    isString = H.isString,
-    isObject = H.isObject,
-    isArray = H.isArray,
     indexFilter = /\d/g,
     PREFIX = 'highcharts-',
     DIV = 'div',
@@ -46,8 +49,8 @@ wrap(H.Pointer.prototype, 'onContainerMouseDown', function (proceed, e) {
     }
 });
 
-H.Popup = function (parentDiv) {
-    this.init(parentDiv);
+H.Popup = function (parentDiv, iconsURL) {
+    this.init(parentDiv, iconsURL);
 };
 
 H.Popup.prototype = {
@@ -55,9 +58,10 @@ H.Popup.prototype = {
      * Initialize the popup. Create base div and add close button.
      * @private
      * @param {HTMLDOMElement} - container where popup should be placed
+     * @param {Object} - user options
      * @return {HTMLDOMElement} - return created popup's div
      */
-    init: function (parentDiv) {
+    init: function (parentDiv, iconsURL) {
 
         // create popup div
         this.container = createElement(DIV, {
@@ -65,6 +69,7 @@ H.Popup.prototype = {
         }, null, parentDiv);
 
         this.lang = this.getLangpack();
+        this.iconsURL = iconsURL;
 
         // add close button
         this.addCloseBtn();
@@ -81,6 +86,9 @@ H.Popup.prototype = {
         closeBtn = createElement(DIV, {
             className: PREFIX + 'popup-close'
         }, null, this.container);
+
+        closeBtn.style['background-image'] = 'url(' +
+                this.iconsURL + 'close.svg)';
 
         ['click', 'touchstart'].forEach(function (eventName) {
             addEvent(closeBtn, eventName, function () {
@@ -360,6 +368,8 @@ H.Popup.prototype = {
             );
 
             button.className += ' ' + PREFIX + 'annotation-remove-button';
+            button.style['background-image'] = 'url(' +
+                this.iconsURL + 'destroy.svg)';
 
             button = this.addButton(
                 popupDiv,
@@ -378,6 +388,9 @@ H.Popup.prototype = {
             );
 
             button.className += ' ' + PREFIX + 'annotation-edit-button';
+            button.style['background-image'] = 'url(' +
+                this.iconsURL + 'edit.svg)';
+
         },
         /**
          * Create annotation simple form.
@@ -701,8 +714,16 @@ H.Popup.prototype = {
          * @param {String} - type of select i.e series or volume.
          * @param {Chart} - chart
          * @param {HTMLDOMElement} - element where created HTML list is added
+         * @param {String} selectedOption
+         *         optional param for default value in dropdown
          */
-        listAllSeries: function (type, optionName, chart, parentDiv) {
+        listAllSeries: function (
+            type,
+            optionName,
+            chart,
+            parentDiv,
+            selectedOption
+        ) {
             var selectName = PREFIX + optionName + '-type-' + type,
                 lang = this.lang,
                 selectBox,
@@ -751,6 +772,10 @@ H.Popup.prototype = {
                     );
                 }
             });
+
+            if (defined(selectedOption)) {
+                selectBox.value = selectedOption;
+            }
         },
         /**
          * Create typical inputs for chosen indicator. Fields are extracted from
@@ -800,7 +825,8 @@ H.Popup.prototype = {
                 seriesType,
                 'series',
                 chart,
-                rhsColWrapper
+                rhsColWrapper,
+                series.linkedParent && fields.volumeSeriesID
             );
 
             if (fields.volumeSeriesID) {
@@ -809,7 +835,8 @@ H.Popup.prototype = {
                     seriesType,
                     'volume',
                     chart,
-                    rhsColWrapper
+                    rhsColWrapper,
+                    series.linkedParent && series.linkedParent.options.id
                 );
             }
 
@@ -1028,7 +1055,16 @@ H.Popup.prototype = {
 addEvent(H.NavigationBindings, 'showPopup', function (config) {
     if (!this.popup) {
         // Add popup to main container
-        this.popup = new H.Popup(this.chart.container);
+        this.popup = new H.Popup(
+            this.chart.container, (
+                this.chart.options.navigation.iconsURL ||
+                (
+                    this.chart.options.stockTools &&
+                    this.chart.options.stockTools.gui.iconsURL
+                ) ||
+                'https://code.highcharts.com/7.1.3/gfx/stock-icons/'
+            )
+        );
     }
 
     this.popup.showForm(

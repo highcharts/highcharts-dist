@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts Gantt JS v7.1.3 (2019-08-14)
  *
  * StaticScale
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/static-scale.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/static-scale.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * (c) 2016-2019 Torstein Honsi, Lars Cabrera
          *
@@ -36,6 +36,9 @@
          */
 
 
+
+        var defined = U.defined,
+            isNumber = U.isNumber;
 
         var Chart = H.Chart,
             pick = H.pick;
@@ -61,7 +64,7 @@
             var chartOptions = this.chart.options && this.chart.options.chart;
             if (
                 !this.horiz &&
-                H.isNumber(this.options.staticScale) &&
+                isNumber(this.options.staticScale) &&
                 (
                     !chartOptions.height ||
                     (
@@ -83,7 +86,7 @@
                         height,
                         diff;
 
-                    if (axis.staticScale && H.defined(axis.min)) {
+                    if (axis.staticScale && defined(axis.min)) {
                         height = pick(
                             axis.unitLength,
                             axis.max + axis.tickInterval - axis.min

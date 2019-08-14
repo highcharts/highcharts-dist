@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Exporting module
  *
@@ -28,203 +28,212 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/ajax.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'mixins/ajax.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
-         * (c) 2010-2017 Christer Vasseng, Torstein Honsi
          *
-         * License: www.highcharts.com/license
-         */
-
-
-
+         *  (c) 2010-2017 Christer Vasseng, Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var objectEach = U.objectEach;
         /**
-         * @interface Highcharts.AjaxSettings
-         *//**
-         * The URL to call.
-         *
-         * @name Highcharts.AjaxSettings#url
-         * @type {string}
-         *//**
-         * The verb to use.
-         *
-         * @name Highcharts.AjaxSettings#type
-         * @type {"get"|"post"|"update"|"delete"}
-         *//**
-         * The data type expected.
-         *
-         * @name Highcharts.AjaxSettings#dataType
-         * @type {"json"|"xml"|"text"|"octet"}
-         *//**
-         * Function to call on success.
-         *
-         * @name Highcharts.AjaxSettings#success
-         * @type {Function}
-         *//**
-         * Function to call on error.
-         *
-         * @name Highcharts.AjaxSettings#error
-         * @type {Function}
-         *//**
-         * The payload to send.
-         *
-         * @name Highcharts.AjaxSettings#data
-         * @type {object}
-         *//**
-         * The headers; keyed on header name.
-         *
-         * @name Highcharts.AjaxSettings#headers
-         * @type {object}
-         */
-
+         * @interface Highcharts.AjaxSettingsObject
+         */ /**
+        * The payload to send.
+        *
+        * @name Highcharts.AjaxSettingsObject#data
+        * @type {string|Highcharts.Dictionary<any>}
+        */ /**
+        * The data type expected.
+        * @name Highcharts.AjaxSettingsObject#dataType
+        * @type {"json"|"xml"|"text"|"octet"}
+        */ /**
+        * Function to call on error.
+        * @name Highcharts.AjaxSettingsObject#error
+        * @type {Function}
+        */ /**
+        * The headers; keyed on header name.
+        * @name Highcharts.AjaxSettingsObject#headers
+        * @type {Highcharts.Dictionary<string>}
+        */ /**
+        * Function to call on success.
+        * @name Highcharts.AjaxSettingsObject#success
+        * @type {Function}
+        */ /**
+        * The verb to use.
+        * @name Highcharts.AjaxSettingsObject#type
+        * @type {"GET"|"POST"|"UPDATE"|"DELETE"}
+        */ /**
+        * The URL to call.
+        * @name Highcharts.AjaxSettingsObject#url
+        * @type {string}
+        */
         /**
          * Perform an Ajax call.
          *
          * @function Highcharts.ajax
          *
-         * @param {Highcharts.AjaxSettings} attr
+         * @param {Partial<Highcharts.AjaxSettingsObject>} attr
          *        The Ajax settings to use.
+         *
+         * @return {false|undefined}
+         *         Returns false, if error occured.
          */
         H.ajax = function (attr) {
             var options = H.merge(true, {
-                    url: false,
-                    type: 'GET',
-                    dataType: 'json',
-                    success: false,
-                    error: false,
-                    data: false,
-                    headers: {}
-                }, attr),
-                headers = {
-                    json: 'application/json',
-                    xml: 'application/xml',
-                    text: 'text/plain',
-                    octet: 'application/octet-stream'
-                },
-                r = new XMLHttpRequest();
-
+                url: false,
+                type: 'get',
+                dataType: 'json',
+                success: false,
+                error: false,
+                data: false,
+                headers: {}
+            }, attr), headers = {
+                json: 'application/json',
+                xml: 'application/xml',
+                text: 'text/plain',
+                octet: 'application/octet-stream'
+            }, r = new XMLHttpRequest();
+            /**
+             * @private
+             * @param {XMLHttpRequest} xhr - Internal request object.
+             * @param {string|Error} err - Occured error.
+             * @return {void}
+             */
             function handleError(xhr, err) {
                 if (options.error) {
                     options.error(xhr, err);
-                } else {
-                    // Maybe emit a highcharts error event here
+                }
+                else {
+                    // @todo Maybe emit a highcharts error event here
                 }
             }
-
             if (!options.url) {
                 return false;
             }
-
             r.open(options.type.toUpperCase(), options.url, true);
-            r.setRequestHeader(
-                'Content-Type',
-                headers[options.dataType] || headers.text
-            );
-
-            H.objectEach(options.headers, function (val, key) {
+            if (!options.headers['Content-Type']) {
+                r.setRequestHeader('Content-Type', headers[options.dataType] || headers.text);
+            }
+            objectEach(options.headers, function (val, key) {
                 r.setRequestHeader(key, val);
             });
-
+            // @todo lacking timeout handling
             r.onreadystatechange = function () {
                 var res;
-
                 if (r.readyState === 4) {
                     if (r.status === 200) {
                         res = r.responseText;
                         if (options.dataType === 'json') {
                             try {
                                 res = JSON.parse(res);
-                            } catch (e) {
+                            }
+                            catch (e) {
                                 return handleError(r, e);
                             }
                         }
                         return options.success && options.success(res);
                     }
-
                     handleError(r, r.responseText);
                 }
             };
-
             try {
                 options.data = JSON.stringify(options.data);
-            } catch (e) {}
-
+            }
+            catch (e) {
+                // empty
+            }
             r.send(options.data || true);
+        };
+        /**
+         * Get a JSON resource over XHR, also supporting CORS without preflight.
+         *
+         * @function Highcharts.getJSON
+         * @param {string} url
+         *        The URL to load.
+         * @param {Function} success
+         *        The success callback. For error handling, use the `Highcharts.ajax`
+         *        function instead.
+         * @return {void}
+         */
+        H.getJSON = function (url, success) {
+            H.ajax({
+                url: url,
+                success: success,
+                dataType: 'json',
+                headers: {
+                    // Override the Content-Type to avoid preflight problems with CORS
+                    // in the Highcharts demos
+                    'Content-Type': 'text/plain'
+                }
+            });
         };
 
     });
     _registerModule(_modules, 'mixins/download-url.js', [_modules['parts/Globals.js']], function (Highcharts) {
         /* *
-         * Mixin for downloading content in the browser
          *
-         * (c) 2015-2019 Oystein Moseng
+         *  (c) 2015-2019 Oystein Moseng
          *
-         * License: www.highcharts.com/license
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         *  Mixin for downloading content in the browser
+         *
+         * */
+        var win = Highcharts.win, nav = win.navigator, doc = win.document, domurl = win.URL || win.webkitURL || win, isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
+        /**
+         * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
+         * @private
+         * @function Highcharts.dataURLtoBlob
+         * @param {string} dataURL
+         *        URL to convert
+         * @return {string|undefined}
+         *         Blob
          */
-
-
-
-        var win = Highcharts.win,
-            nav = win.navigator,
-            doc = win.document,
-            domurl = win.URL || win.webkitURL || win,
-            isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
-
-        // Convert base64 dataURL to Blob if supported, otherwise returns undefined
         Highcharts.dataURLtoBlob = function (dataURL) {
             var parts = dataURL.match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
-
-            if (
-                parts &&
+            if (parts &&
                 parts.length > 3 &&
                 win.atob &&
                 win.ArrayBuffer &&
                 win.Uint8Array &&
                 win.Blob &&
-                domurl.createObjectURL
-            ) {
+                domurl.createObjectURL) {
                 // Try to convert data URL to Blob
-                var binStr = win.atob(parts[3]),
-                    buf = new win.ArrayBuffer(binStr.length),
-                    binary = new win.Uint8Array(buf),
-                    blob;
-
+                var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf), blob;
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
-
                 blob = new win.Blob([binary], { 'type': parts[1] });
                 return domurl.createObjectURL(blob);
             }
         };
-
-
         /**
          * Download a data URL in the browser. Can also take a blob as first param.
          *
          * @private
          * @function Highcharts.downloadURL
-         *
-         * @param {string|object} dataURL
+         * @param {string|global.URL} dataURL
          *        The dataURL/Blob to download
-         *
          * @param {string} filename
          *        The name of the resulting file (w/extension)
+         * @return {void}
          */
         Highcharts.downloadURL = function (dataURL, filename) {
-            var a = doc.createElement('a'),
-                windowRef;
-
+            var a = doc.createElement('a'), windowRef;
             // IE specific blob implementation
             // Don't use for normal dataURLs
-            if (
-                typeof dataURL !== 'string' &&
+            if (typeof dataURL !== 'string' &&
                 !(dataURL instanceof String) &&
-                nav.msSaveOrOpenBlob
-            ) {
+                nav.msSaveOrOpenBlob) {
                 nav.msSaveOrOpenBlob(dataURL, filename);
                 return;
             }
-
             // Some browsers have limitations for data URL lengths. Try to convert to
             // Blob or fall back. Edge always needs that blob.
             if (isEdgeBrowser || dataURL.length > 2000000) {
@@ -233,7 +242,6 @@
                     throw new Error('Failed to convert to blob');
                 }
             }
-
             // Try HTML5 download attr if supported
             if (a.download !== undefined) {
                 a.href = dataURL;
@@ -241,14 +249,16 @@
                 doc.body.appendChild(a);
                 a.click();
                 doc.body.removeChild(a);
-            } else {
+            }
+            else {
                 // No download attr, just opening data URI
                 try {
                     windowRef = win.open(dataURL, 'chart');
                     if (windowRef === undefined || windowRef === null) {
                         throw new Error('Failed to open window');
                     }
-                } catch (e) {
+                }
+                catch (e) {
                     // window.open failed, trying location.href
                     win.location.href = dataURL;
                 }
@@ -256,7 +266,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/export-data.src.js', [_modules['parts/Globals.js']], function (Highcharts) {
+    _registerModule(_modules, 'modules/export-data.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
         /* *
          * Experimental data export module for Highcharts
          *
@@ -271,8 +281,11 @@
 
 
 
-        var defined = Highcharts.defined,
-            pick = Highcharts.pick,
+        var defined = U.defined,
+            isObject = U.isObject;
+
+
+        var pick = Highcharts.pick,
             win = Highcharts.win,
             doc = win.document,
             seriesTypes = Highcharts.seriesTypes,
@@ -494,7 +507,8 @@
             if (
                 this.options &&
                 this.options.exporting &&
-                this.options.exporting.showTable
+                this.options.exporting.showTable &&
+                !this.options.chart.forExport
             ) {
                 this.viewData();
             }
@@ -1050,11 +1064,31 @@
          * @return {object} The blob object, or undefined if not supported.
          */
         function getBlobFromContent(content, type) {
-            if (win.Blob && win.navigator.msSaveOrOpenBlob) {
-                return new win.Blob(
-                    ['\uFEFF' + content], // #7084
-                    { type: type }
-                );
+            var nav = win.navigator,
+                webKit = (
+                    nav.userAgent.indexOf('WebKit') > -1 &&
+                    nav.userAgent.indexOf('Chrome') < 0
+                ),
+                domurl = win.URL || win.webkitURL || win;
+
+            try {
+                // MS specific
+                if (nav.msSaveOrOpenBlob && win.MSBlobBuilder) {
+                    var blob = new win.MSBlobBuilder();
+                    blob.append(content);
+                    return blob.getBlob('image/svg+xml');
+                }
+
+                // Safari requires data URI since it doesn't allow navigation to blob
+                // URLs.
+                if (!webKit) {
+                    return domurl.createObjectURL(new win.Blob(
+                        ['\uFEFF' + content], // #7084
+                        { type: type }
+                    ));
+                }
+            } catch (e) {
+                // Ignore
             }
         }
 
@@ -1160,7 +1194,7 @@
                     if (typeof ob[key] === 'function') {
                         delete ob[key];
                     }
-                    if (Highcharts.isObject(ob[key])) { // object and not an array
+                    if (isObject(ob[key])) { // object and not an array
                         removeFunctions(ob[key]);
                     }
                 });

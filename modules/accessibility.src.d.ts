@@ -27,6 +27,20 @@ declare module "../highcharts.src" {
          */
         langFormat(langKey: string, context: Dictionary<any>): string;
     }
+    interface PointAccessibilityOptionsObject {
+        /**
+         * Provide a description of the data point, announced to screen readers.
+         */
+        description?: string;
+    }
+    interface PointOptionsObject {
+        accessibility?: PointAccessibilityOptionsObject;
+        /**
+         * A description of the point to add to the screen reader information
+         * about the point. Requires the Accessibility module.
+         */
+        description?: string;
+    }
     /**
      * The AccessibilityComponent base class, representing a part of the chart
      * that has accessibility logic connected to it. This class can be inherited

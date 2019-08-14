@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/parallel-coordinates.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/parallel-coordinates.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * Parallel coordinates module
          *
@@ -37,6 +37,11 @@
          * License: www.highcharts.com/license
          */
 
+
+
+        var defined = U.defined,
+            erase = U.erase,
+            splat = U.splat;
 
 
         // Extensions for parallel coordinates plot.
@@ -49,10 +54,7 @@
             pick = H.pick,
             wrap = H.wrap,
             merge = H.merge,
-            erase = H.erase,
-            splat = H.splat,
             extend = H.extend,
-            defined = H.defined,
             arrayMin = H.arrayMin,
             arrayMax = H.arrayMax;
 

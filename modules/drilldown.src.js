@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Highcharts Drilldown module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/drilldown.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/drilldown.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * Highcharts Drilldown module
          *
@@ -158,13 +158,15 @@
 
 
 
+        var objectEach = U.objectEach;
+
+
         var animObject = H.animObject,
             noop = H.noop,
             color = H.color,
             defaultOptions = H.defaultOptions,
             extend = H.extend,
             format = H.format,
-            objectEach = H.objectEach,
             pick = H.pick,
             Chart = H.Chart,
             seriesTypes = H.seriesTypes,
@@ -559,7 +561,15 @@
                         levelSeriesOptions = last.levelSeriesOptions;
                     } else {
                         levelSeries.push(series);
-                        levelSeriesOptions.push(series.options);
+
+                        // (#10597)
+                        series.purgedOptions = H.merge({
+                            _ddSeriesId: series.options._ddSeriesId,
+                            _levelNumber: series.options._levelNumber,
+                            selected: series.options.selected
+                        }, series.userOptions);
+
+                        levelSeriesOptions.push(series.purgedOptions);
                     }
                 }
             });
@@ -568,6 +578,7 @@
             level = extend({
                 levelNumber: levelNumber,
                 seriesOptions: oldSeries.options,
+                seriesPurgedOptions: oldSeries.purgedOptions,
                 levelSeriesOptions: levelSeriesOptions,
                 levelSeries: levelSeries,
                 shapeArgs: point.shapeArgs,
@@ -735,7 +746,8 @@
                     ) {
                         addedSeries.animate = addedSeries.animateDrillupTo;
                     }
-                    if (seriesOptions === level.seriesOptions) {
+
+                    if (seriesOptions === level.seriesPurgedOptions) {
                         newSeries = addedSeries;
                     }
                 };

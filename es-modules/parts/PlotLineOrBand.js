@@ -1,47 +1,39 @@
 /* *
- * (c) 2010-2019 Torstein Honsi
  *
- * License: www.highcharts.com/license
- */
-
+ *  (c) 2010-2019 Torstein Honsi
+ *
+ *  License: www.highcharts.com/license
+ *
+ *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+ *
+ * */
+'use strict';
+import H from './Globals.js';
+import Axis from './Axis.js';
 /**
  * Options for plot bands on axes.
  *
  * @typedef {Highcharts.XAxisPlotBandsOptions|Highcharts.YAxisPlotBandsOptions|Highcharts.ZAxisPlotBandsOptions} Highcharts.AxisPlotBandsOptions
  */
-
 /**
  * Options for plot band labels on axes.
  *
  * @typedef {Highcharts.XAxisPlotBandsLabelOptions|Highcharts.YAxisPlotBandsLabelOptions|Highcharts.ZAxisPlotBandsLabelOptions} Highcharts.AxisPlotBandsLabelOptions
  */
-
 /**
  * Options for plot lines on axes.
  *
  * @typedef {Highcharts.XAxisPlotLinesOptions|Highcharts.YAxisPlotLinesOptions|Highcharts.ZAxisPlotLinesOptions} Highcharts.AxisPlotLinesOptions
  */
-
 /**
  * Options for plot line labels on axes.
  *
  * @typedef {Highcharts.XAxisPlotLinesLabelOptions|Highcharts.YAxisPlotLinesLabelOptions|Highcharts.ZAxisPlotLinesLabelOptions} Highcharts.AxisPlotLinesLabelOptions
  */
-
-'use strict';
-
-import H from './Globals.js';
-import Axis from './Axis.js';
-import './Utilities.js';
-
-var arrayMax = H.arrayMax,
-    arrayMin = H.arrayMin,
-    defined = H.defined,
-    destroyObjectProperties = H.destroyObjectProperties,
-    erase = H.erase,
-    merge = H.merge,
-    pick = H.pick;
-
+import U from './Utilities.js';
+var defined = U.defined, erase = U.erase, objectEach = U.objectEach;
+var arrayMax = H.arrayMax, arrayMin = H.arrayMin, destroyObjectProperties = H.destroyObjectProperties, merge = H.merge, pick = H.pick;
+/* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * The object wrapper for plot lines and plot bands
  *
@@ -50,96 +42,63 @@ var arrayMax = H.arrayMax,
  *
  * @param {Highcharts.Axis} axis
  *
- * @param {Highcharts.AxisPlotLinesOptions|Highcharts.AxisPlotBandsOptions} options
+ * @param {Highcharts.AxisPlotLinesOptions|Highcharts.AxisPlotBandsOptions} [options]
  */
 H.PlotLineOrBand = function (axis, options) {
     this.axis = axis;
-
     if (options) {
         this.options = options;
         this.id = options.id;
     }
 };
-
 H.PlotLineOrBand.prototype = {
-
     /**
      * Render the plot line or plot band. If it is already existing,
      * move it.
      *
      * @private
      * @function Highcharts.PlotLineOrBand#render
-     *
      * @return {Highcharts.PlotLineOrBand|undefined}
      */
     render: function () {
-
         H.fireEvent(this, 'render');
-
-        var plotLine = this,
-            axis = plotLine.axis,
-            horiz = axis.horiz,
-            options = plotLine.options,
-            optionsLabel = options.label,
-            label = plotLine.label,
-            to = options.to,
-            from = options.from,
-            value = options.value,
-            isBand = defined(from) && defined(to),
-            isLine = defined(value),
-            svgElem = plotLine.svgElem,
-            isNew = !svgElem,
-            path = [],
-            color = options.color,
-            zIndex = pick(options.zIndex, 0),
-            events = options.events,
-            attribs = {
-                'class': 'highcharts-plot-' + (isBand ? 'band ' : 'line ') +
-                    (options.className || '')
-            },
-            groupAttribs = {},
-            renderer = axis.chart.renderer,
-            groupName = isBand ? 'bands' : 'lines',
-            group;
-
+        var plotLine = this, axis = plotLine.axis, horiz = axis.horiz, options = plotLine.options, optionsLabel = options.label, label = plotLine.label, to = options.to, from = options.from, value = options.value, isBand = defined(from) && defined(to), isLine = defined(value), svgElem = plotLine.svgElem, isNew = !svgElem, path = [], color = options.color, zIndex = pick(options.zIndex, 0), events = options.events, attribs = {
+            'class': 'highcharts-plot-' + (isBand ? 'band ' : 'line ') +
+                (options.className || '')
+        }, groupAttribs = {}, renderer = axis.chart.renderer, groupName = isBand ? 'bands' : 'lines', group;
         // logarithmic conversion
         if (axis.isLog) {
             from = axis.log2lin(from);
             to = axis.log2lin(to);
             value = axis.log2lin(value);
         }
-
         // Set the presentational attributes
         if (!axis.chart.styledMode) {
             if (isLine) {
-                attribs.stroke = color;
-                attribs['stroke-width'] = options.width;
+                attribs.stroke = color || '#999999';
+                attribs['stroke-width'] = pick(options.width, 1);
                 if (options.dashStyle) {
-                    attribs.dashstyle = options.dashStyle;
+                    attribs.dashstyle =
+                        options.dashStyle;
                 }
-
-            } else if (isBand) { // plot band
-                if (color) {
-                    attribs.fill = color;
-                }
+            }
+            else if (isBand) { // plot band
+                attribs.fill = color || '#e6ebf5';
                 if (options.borderWidth) {
                     attribs.stroke = options.borderColor;
                     attribs['stroke-width'] = options.borderWidth;
                 }
             }
         }
-
         // Grouping and zIndex
         groupAttribs.zIndex = zIndex;
         groupName += '-' + zIndex;
-
         group = axis.plotLinesAndBandsGroups[groupName];
         if (!group) {
             axis.plotLinesAndBandsGroups[groupName] = group =
                 renderer.g('plot-' + groupName)
                     .attr(groupAttribs).add();
         }
-
         // Create the path
         if (isNew) {
             /**
@@ -148,13 +107,11 @@ H.PlotLineOrBand.prototype = {
              * @name Highcharts.PlotLineOrBand#svgElement
              * @type {Highcharts.SVGElement}
              */
-            plotLine.svgElem = svgElem =
-                renderer
-                    .path()
-                    .attr(attribs).add(group);
+            plotLine.svgElem = svgElem = renderer
+                .path()
+                .attr(attribs)
+                .add(group);
         }
-
-
         // Set the path or return
         if (isLine) {
             path = axis.getPlotLinePath({
@@ -162,47 +119,45 @@ H.PlotLineOrBand.prototype = {
                 lineWidth: svgElem.strokeWidth(),
                 acrossPanes: options.acrossPanes
             });
-        } else if (isBand) { // plot band
+        }
+        else if (isBand) { // plot band
             path = axis.getPlotBandPath(from, to, options);
-        } else {
+        }
+        else {
             return;
         }
-
-
         // common for lines and bands
         if ((isNew || !svgElem.d) && path && path.length) {
             svgElem.attr({ d: path });
-
             // events
             if (events) {
-                H.objectEach(events, function (event, eventType) {
+                objectEach(events, function (event, eventType) {
                     svgElem.on(eventType, function (e) {
                         events[eventType].apply(plotLine, [e]);
                     });
                 });
             }
-        } else if (svgElem) {
+        }
+        else if (svgElem) {
             if (path) {
                 svgElem.show(true);
                 svgElem.animate({ d: path });
-            } else if (svgElem.d) {
+            }
+            else if (svgElem.d) {
                 svgElem.hide();
                 if (label) {
                     plotLine.label = label = label.destroy();
                 }
             }
         }
-
         // the plot band/line label
-        if (
-            optionsLabel &&
-            defined(optionsLabel.text) &&
+        if (optionsLabel &&
+            (defined(optionsLabel.text) || defined(optionsLabel.formatter)) &&
             path &&
             path.length &&
             axis.width > 0 &&
             axis.height > 0 &&
-            !path.isFlat
-        ) {
+            !path.isFlat) {
             // apply defaults
             optionsLabel = merge({
                 align: horiz && isBand && 'center',
@@ -211,41 +166,27 @@ H.PlotLineOrBand.prototype = {
                 y: horiz ? isBand ? 16 : 10 : isBand ? 6 : -4,
                 rotation: horiz && !isBand && 90
             }, optionsLabel);
-
             this.renderLabel(optionsLabel, path, isBand, zIndex);
-
-        } else if (label) { // move out of sight
+        }
+        else if (label) { // move out of sight
             label.hide();
         }
-
         // chainable
         return plotLine;
     },
-
     /**
      * Render and align label for plot line or band.
      *
      * @private
      * @function Highcharts.PlotLineOrBand#renderLabel
-     *
      * @param {Highcharts.AxisPlotLinesLabelOptions|Highcharts.AxisPlotBandsLabelOptions} optionsLabel
-     *
      * @param {Highcharts.SVGPathArray} path
-     *
      * @param {boolean} [isBand]
-     *
      * @param {number} [zIndex]
+     * @return {void}
      */
     renderLabel: function (optionsLabel, path, isBand, zIndex) {
-        var plotLine = this,
-            label = plotLine.label,
-            renderer = plotLine.axis.chart.renderer,
-            attribs,
-            xBounds,
-            yBounds,
-            x,
-            y;
-
+        var plotLine = this, label = plotLine.label, renderer = plotLine.axis.chart.renderer, attribs, xBounds, yBounds, x, y, labelText;
         // add the SVG element
         if (!label) {
             attribs = {
@@ -254,39 +195,30 @@ H.PlotLineOrBand.prototype = {
                 'class': 'highcharts-plot-' + (isBand ? 'band' : 'line') +
                     '-label ' + (optionsLabel.className || '')
             };
-
             attribs.zIndex = zIndex;
-
+            labelText = this.getLabelText(optionsLabel);
             /**
              * SVG element of the label.
              *
              * @name Highcharts.PlotLineOrBand#label
              * @type {Highcharts.SVGElement}
              */
-            plotLine.label = label = renderer.text(
-                optionsLabel.text,
-                0,
-                0,
-                optionsLabel.useHTML
-            )
+            plotLine.label = label = renderer
+                .text(labelText, 0, 0, optionsLabel.useHTML)
                 .attr(attribs)
                 .add();
-
             if (!this.axis.chart.styledMode) {
                 label.css(optionsLabel.style);
             }
         }
-
         // get the bounding box and align the label
         // #3000 changed to better handle choice between plotband or plotline
         xBounds = path.xBounds ||
             [path[1], path[4], (isBand ? path[6] : path[1])];
         yBounds = path.yBounds ||
             [path[2], path[5], (isBand ? path[7] : path[2])];
-
         x = arrayMin(xBounds);
         y = arrayMin(yBounds);
-
         label.align(optionsLabel, false, {
             x: x,
             y: y,
@@ -295,24 +227,36 @@ H.PlotLineOrBand.prototype = {
         });
         label.show(true);
     },
-
+    /**
+     * Get label's text content.
+     *
+     * @private
+     * @function Highcharts.PlotLineOrBand#getLabelText
+     * @param {Highcharts.AxisPlotLinesLabelOptions|Highcharts.AxisPlotBandsLabelOptions} optionsLabel
+     * @return {string}
+     */
+    getLabelText: function (optionsLabel) {
+        return defined(optionsLabel.formatter) ?
+            optionsLabel.formatter
+                .call(this) :
+            optionsLabel.text;
+    },
     /**
      * Remove the plot line or band.
      *
      * @function Highcharts.PlotLineOrBand#destroy
+     * @return {void}
      */
     destroy: function () {
         // remove it from the lookup
         erase(this.axis.plotLinesAndBands, this);
-
         delete this.axis;
         destroyObjectProperties(this);
     }
 };
-
+/* eslint-enable no-invalid-this, valid-jsdoc */
 // Object with members for extending the Axis prototype
 H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
-
     /**
      * An array of colored bands stretching across the plot area marking an
      * interval on the axis.
@@ -328,7 +272,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @product   highcharts highstock gantt
      * @apioption xAxis.plotBands
      */
-
     /**
      * Flag to decide if plotBand should be rendered across all panes.
      *
@@ -338,14 +281,12 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @default   true
      * @apioption xAxis.plotBands.acrossPanes
      */
-
     /**
      * Border color for the plot band. Also requires `borderWidth` to be set.
      *
      * @type      {Highcharts.ColorString}
      * @apioption xAxis.plotBands.borderColor
      */
-
     /**
      * Border width for the plot band. Also requires `borderColor` to be set.
      *
@@ -353,7 +294,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @default   0
      * @apioption xAxis.plotBands.borderWidth
      */
-
     /**
      * A custom class name, in addition to the default `highcharts-plot-band`,
      * to apply to each individual band.
@@ -362,7 +302,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     5.0.0
      * @apioption xAxis.plotBands.className
      */
-
     /**
      * The color of the plot band.
      *
@@ -372,9 +311,9 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      *         Plot band on Y axis
      *
      * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+     * @default   #e6ebf5
      * @apioption xAxis.plotBands.color
      */
-
     /**
      * An object defining mouse events for the plot band. Supported properties
      * are `click`, `mouseover`, `mouseout`, `mousemove`.
@@ -383,10 +322,32 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      *         Mouse events demonstrated
      *
      * @since     1.2
-     * @context   PlotLineOrBand
      * @apioption xAxis.plotBands.events
      */
-
+    /**
+     * Click event on a plot band.
+     *
+     * @type      {Highcharts.EventCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotBands.events.click
+     */
+    /**
+     * Mouse move event on a plot band.
+     *
+     * @type      {Highcharts.EventCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotBands.events.mousemove
+     */
+    /**
+     * Mouse out event on the corner of a plot band.
+     *
+     * @type      {Highcharts.EventCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotBands.events.mouseout
+     */
+    /**
+     * Mouse over event on a plot band.
+     *
+     * @type      {Highcharts.EventCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotBands.events.mouseover
+     */
     /**
      * The start position of the plot band in axis units.
      *
@@ -400,7 +361,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @type      {number}
      * @apioption xAxis.plotBands.from
      */
-
     /**
      * An id used for identifying the plot band in Axis.removePlotBand.
      *
@@ -412,7 +372,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @type      {string}
      * @apioption xAxis.plotBands.id
      */
-
     /**
      * The end position of the plot band in axis units.
      *
@@ -426,7 +385,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @type      {number}
      * @apioption xAxis.plotBands.to
      */
-
     /**
      * The z index of the plot band within the chart, relative to other
      * elements. Using the same z index as another element may give
@@ -444,14 +402,12 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     1.2
      * @apioption xAxis.plotBands.zIndex
      */
-
     /**
      * Text labels for the plot bands
      *
      * @product   highcharts highstock gantt
      * @apioption xAxis.plotBands.label
      */
-
     /**
      * Horizontal alignment of the label. Can be one of "left", "center" or
      * "right".
@@ -466,7 +422,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotBands.label.align
      */
-
     /**
      * Rotation of the text label in degrees .
      *
@@ -478,7 +433,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotBands.label.rotation
      */
-
     /**
      * CSS styles for the text label.
      *
@@ -492,7 +446,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotBands.label.style
      */
-
     /**
      * The string text itself. A subset of HTML is supported.
      *
@@ -500,7 +453,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotBands.label.text
      */
-
     /**
      * The text alignment for the label. While `align` determines where the
      * texts anchor point is placed within the plot band, `textAlign` determines
@@ -514,7 +466,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since      2.1
      * @apioption  xAxis.plotBands.label.textAlign
      */
-
     /**
      * Whether to [use HTML](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting#html)
      * to render the labels.
@@ -524,7 +475,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     3.0.3
      * @apioption xAxis.plotBands.label.useHTML
      */
-
     /**
      * Vertical alignment of the label relative to the plot band. Can be one of
      * "top", "middle" or "bottom".
@@ -539,7 +489,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since      2.1
      * @apioption  xAxis.plotBands.label.verticalAlign
      */
-
     /**
      * Horizontal position relative the alignment. Default varies by
      * orientation.
@@ -553,7 +502,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotBands.label.x
      */
-
     /**
      * Vertical position of the text baseline relative to the alignment. Default
      * varies by orientation.
@@ -567,7 +515,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotBands.label.y
      */
-
     /**
      * An array of lines stretching across the plot area, marking a specific
      * value on one of the axes.
@@ -579,7 +526,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @product   highcharts highstock gantt
      * @apioption xAxis.plotLines
      */
-
     /**
      * Flag to decide if plotLine should be rendered across all panes.
      *
@@ -592,7 +538,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @default   true
      * @apioption xAxis.plotLines.acrossPanes
      */
-
     /**
      * A custom class name, in addition to the default `highcharts-plot-line`,
      * to apply to each individual line.
@@ -601,7 +546,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     5.0.0
      * @apioption xAxis.plotLines.className
      */
-
     /**
      * The color of the line.
      *
@@ -611,9 +555,9 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      *         Plot line on Y axis
      *
      * @type      {Highcharts.ColorString}
+     * @default   #999999
      * @apioption xAxis.plotLines.color
      */
-
     /**
      * The dashing or dot style for the plot line. For possible values see
      * [this overview](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-dashstyle-all/).
@@ -628,7 +572,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     1.2
      * @apioption xAxis.plotLines.dashStyle
      */
-
     /**
      * An object defining mouse events for the plot line. Supported
      * properties are `click`, `mouseover`, `mouseout`, `mousemove`.
@@ -636,12 +579,33 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @sample {highcharts} highcharts/xaxis/plotlines-events/
      *         Mouse events demonstrated
      *
-     * @type      {*}
      * @since     1.2
-     * @context   PlotLineOrBand
      * @apioption xAxis.plotLines.events
      */
-
+    /**
+     * Click event on a plot band.
+     *
+     * @type      {Highcharts.EventCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotLines.events.click
+     */
+    /**
+     * Mouse move event on a plot band.
+     *
+     * @type      {Highcharts.EventCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotLines.events.mousemove
+     */
+    /**
+     * Mouse out event on the corner of a plot band.
+     *
+     * @type      {Highcharts.EventCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotLines.events.mouseout
+     */
+    /**
+     * Mouse over event on a plot band.
+     *
+     * @type      {Highcharts.EventCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotLines.events.mouseover
+     */
     /**
      * An id used for identifying the plot line in Axis.removePlotLine.
      *
@@ -651,7 +615,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @type      {string}
      * @apioption xAxis.plotLines.id
      */
-
     /**
      * The position of the line in axis units.
      *
@@ -663,7 +626,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @type      {number}
      * @apioption xAxis.plotLines.value
      */
-
     /**
      * The width or thickness of the plot line.
      *
@@ -673,9 +635,9 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      *         Plot line on Y axis
      *
      * @type      {number}
+     * @default   2
      * @apioption xAxis.plotLines.width
      */
-
     /**
      * The z index of the plot line within the chart.
      *
@@ -690,13 +652,11 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     1.2
      * @apioption xAxis.plotLines.zIndex
      */
-
     /**
      * Text labels for the plot bands
      *
      * @apioption xAxis.plotLines.label
      */
-
     /**
      * Horizontal alignment of the label. Can be one of "left", "center" or
      * "right".
@@ -711,7 +671,16 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since      2.1
      * @apioption  xAxis.plotLines.label.align
      */
-
+    /**
+     * Callback JavaScript function to format the label. Useful properties like
+     * the value of plot line or the range of plot band (`from` & `to`
+     * properties) can be found in `this.options` object.
+     *
+     * @sample {highcharts} highcharts/xaxis/plotlines-plotbands-label-formatter
+     *         Label formatters for plot line and plot band.
+     * @type      {Highcharts.FormatterCallbackFunction<Highcharts.PlotLineOrBand>}
+     * @apioption xAxis.plotLines.label.formatter
+     */
     /**
      * Rotation of the text label in degrees. Defaults to 0 for horizontal plot
      * lines and 90 for vertical lines.
@@ -723,7 +692,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotLines.label.rotation
      */
-
     /**
      * CSS styles for the text label.
      *
@@ -737,7 +705,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotLines.label.style
      */
-
     /**
      * The text itself. A subset of HTML is supported.
      *
@@ -745,7 +712,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotLines.label.text
      */
-
     /**
      * The text alignment for the label. While `align` determines where the
      * texts anchor point is placed within the plot band, `textAlign` determines
@@ -759,7 +725,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotLines.label.textAlign
      */
-
     /**
      * Whether to [use HTML](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting#html)
      * to render the labels.
@@ -769,7 +734,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     3.0.3
      * @apioption xAxis.plotLines.label.useHTML
      */
-
     /**
      * Vertical alignment of the label relative to the plot line. Can be
      * one of "top", "middle" or "bottom".
@@ -783,7 +747,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since      2.1
      * @apioption  xAxis.plotLines.label.verticalAlign
      */
-
     /**
      * Horizontal position relative the alignment. Default varies by
      * orientation.
@@ -797,7 +760,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotLines.label.x
      */
-
     /**
      * Vertical position of the text baseline relative to the alignment. Default
      * varies by orientation.
@@ -811,7 +773,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @since     2.1
      * @apioption xAxis.plotLines.label.y
      */
-
     /**
      * An array of objects defining plot bands on the Y axis.
      *
@@ -819,7 +780,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @extends   xAxis.plotBands
      * @apioption yAxis.plotBands
      */
-
     /**
      * In a gauge chart, this option determines the inner radius of the
      * plot band that stretches along the perimeter. It can be given as
@@ -835,7 +795,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @product   highcharts
      * @apioption yAxis.plotBands.innerRadius
      */
-
     /**
      * In a gauge chart, this option determines the outer radius of the
      * plot band that stretches along the perimeter. It can be given as
@@ -850,7 +809,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @product   highcharts
      * @apioption yAxis.plotBands.outerRadius
      */
-
     /**
      * In a gauge chart, this option sets the width of the plot band
      * stretching along the perimeter. It can be given as a percentage
@@ -867,7 +825,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @product   highcharts
      * @apioption yAxis.plotBands.thickness
      */
-
     /**
      * An array of objects representing plot lines on the X axis
      *
@@ -875,7 +832,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @extends   xAxis.plotLines
      * @apioption yAxis.plotLines
      */
-
+    /* eslint-disable no-invalid-this, valid-jsdoc */
     /**
      * Internal function to create the SVG path definition for a plot band.
      *
@@ -892,68 +849,43 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      */
     getPlotBandPath: function (from, to) {
         var toPath = this.getPlotLinePath({
-                value: to,
-                force: true,
-                acrossPanes: this.options.acrossPanes
-            }),
-            path = this.getPlotLinePath({
-                value: from,
-                force: true,
-                acrossPanes: this.options.acrossPanes
-            }),
-            result = [],
-            i,
-            // #4964 check if chart is inverted or plotband is on yAxis
-            horiz = this.horiz,
-            plus = 1,
-            isFlat,
-            outside =
-                (from < this.min && to < this.min) ||
-                (from > this.max && to > this.max);
-
+            value: to,
+            force: true,
+            acrossPanes: this.options.acrossPanes
+        }), path = this.getPlotLinePath({
+            value: from,
+            force: true,
+            acrossPanes: this.options.acrossPanes
+        }), result = [], i, 
+        // #4964 check if chart is inverted or plotband is on yAxis
+        horiz = this.horiz, plus = 1, isFlat, outside = (from < this.min && to < this.min) ||
+            (from > this.max && to > this.max);
         if (path && toPath) {
-
             // Flat paths don't need labels (#3836)
             if (outside) {
                 isFlat = path.toString() === toPath.toString();
                 plus = 0;
             }
-
             // Go over each subpath - for panes in Highstock
             for (i = 0; i < path.length; i += 6) {
-
                 // Add 1 pixel when coordinates are the same
                 if (horiz && toPath[i + 1] === path[i + 1]) {
                     toPath[i + 1] += plus;
                     toPath[i + 4] += plus;
-                } else if (!horiz && toPath[i + 2] === path[i + 2]) {
+                }
+                else if (!horiz && toPath[i + 2] === path[i + 2]) {
                     toPath[i + 2] += plus;
                     toPath[i + 5] += plus;
                 }
-
-                result.push(
-                    'M',
-                    path[i + 1],
-                    path[i + 2],
-                    'L',
-                    path[i + 4],
-                    path[i + 5],
-                    toPath[i + 4],
-                    toPath[i + 5],
-                    toPath[i + 1],
-                    toPath[i + 2],
-                    'z'
-                );
+                result.push('M', path[i + 1], path[i + 2], 'L', path[i + 4], path[i + 5], toPath[i + 4], toPath[i + 5], toPath[i + 1], toPath[i + 2], 'z');
                 result.isFlat = isFlat;
             }
-
-        } else { // outside the axis area
+        }
+        else { // outside the axis area
             path = null;
         }
-
         return result;
     },
-
     /**
      * Add a plot band after render time.
      *
@@ -972,7 +904,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
     addPlotBand: function (options) {
         return this.addPlotBandOrLine(options, 'plotBands');
     },
-
     /**
      * Add a plot line after render time.
      *
@@ -991,7 +922,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
     addPlotLine: function (options) {
         return this.addPlotBandOrLine(options, 'plotLines');
     },
-
     /**
      * Add a plot band or plot line after render time. Called from addPlotBand
      * and addPlotLine internally.
@@ -1007,9 +937,7 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @return {Highcharts.PlotLineOrBand|undefined}
      */
     addPlotBandOrLine: function (options, coll) {
-        var obj = new H.PlotLineOrBand(this, options).render(),
-            userOptions = this.userOptions;
-
+        var obj = new H.PlotLineOrBand(this, options).render(), userOptions = this.userOptions;
         if (obj) { // #2189
             // Add it to the user options for exporting and Axis.update
             if (coll) {
@@ -1018,25 +946,19 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
             }
             this.plotLinesAndBands.push(obj);
         }
-
         return obj;
     },
-
     /**
      * Remove a plot band or plot line from the chart by id. Called internally
      * from `removePlotBand` and `removePlotLine`.
      *
      * @private
      * @function Highcharts.Axis#removePlotBandOrLine
-     *
      * @param {string} id
+     * @return {void}
      */
     removePlotBandOrLine: function (id) {
-        var plotLinesAndBands = this.plotLinesAndBands,
-            options = this.options,
-            userOptions = this.userOptions,
-            i = plotLinesAndBands.length;
-
+        var plotLinesAndBands = this.plotLinesAndBands, options = this.options, userOptions = this.userOptions, i = plotLinesAndBands.length;
         while (i--) {
             if (plotLinesAndBands[i].id === id) {
                 plotLinesAndBands[i].destroy();
@@ -1056,7 +978,6 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
             }
         });
     },
-
     /**
      * Remove a plot band by its id.
      *
@@ -1070,11 +991,12 @@ H.extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
      * @param {string} id
      *        The plot band's `id` as given in the original configuration
      *        object or in the `addPlotBand` option.
+     *
+     * @return {void}
      */
     removePlotBand: function (id) {
         this.removePlotBandOrLine(id);
     },
-
     /**
      * Remove a plot line by its id.
      *

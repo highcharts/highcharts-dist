@@ -10,12 +10,14 @@
 'use strict';
 
 import H from '../parts/Globals.js';
-import '../parts/Utilities.js';
+
+import U from '../parts/Utilities.js';
+var isArray = U.isArray,
+    objectEach = U.objectEach;
+
 import '../parts/Chart.js';
 
 var Chart = H.Chart,
-    isArray = H.isArray,
-    objectEach = H.objectEach,
     pick = H.pick,
     addEvent = H.addEvent,
     fireEvent = H.fireEvent;
@@ -99,15 +101,14 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
         j,
         label1,
         label2,
-        isIntersecting,
         box1,
         box2,
-        intersectRect = function (x1, y1, w1, h1, x2, y2, w2, h2) {
+        isIntersectRect = function (box1, box2) {
             return !(
-                x2 > x1 + w1 ||
-                x2 + w2 < x1 ||
-                y2 > y1 + h1 ||
-                y2 + h2 < y1
+                box2.x > box1.x + box1.width ||
+                box2.x + box2.width < box1.x ||
+                box2.y > box1.y + box1.height ||
+                box2.y + box2.height < box1.y
             );
         },
 
@@ -188,19 +189,8 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
                 label1.newOpacity !== 0 &&
                 label2.newOpacity !== 0
             ) {
-                isIntersecting = intersectRect(
-                    box1.x,
-                    box1.y,
-                    box1.width,
-                    box1.height,
-                    box2.x,
-                    box2.y,
-                    box2.width,
-                    box2.height
-                );
 
-
-                if (isIntersecting) {
+                if (isIntersectRect(box1, box2)) {
                     (label1.labelrank < label2.labelrank ? label1 : label2)
                         .newOpacity = 0;
                 }
@@ -225,7 +215,8 @@ Chart.prototype.hideOverlappingLabels = function (labels) {
                         label.show(true);
                     } else {
                         complete = function () {
-                            label.hide();
+                            label.hide(true);
+                            label.placed = false; // avoid animation from top
                         };
                     }
 

@@ -128,7 +128,10 @@
 'use strict';
 
 import H from '../parts/Globals.js';
-import '../parts/Utilities.js';
+
+import U from '../parts/Utilities.js';
+var objectEach = U.objectEach;
+
 import '../parts/Options.js';
 import '../parts/Chart.js';
 import '../parts/Series.js';
@@ -141,7 +144,6 @@ var animObject = H.animObject,
     defaultOptions = H.defaultOptions,
     extend = H.extend,
     format = H.format,
-    objectEach = H.objectEach,
     pick = H.pick,
     Chart = H.Chart,
     seriesTypes = H.seriesTypes,
@@ -536,7 +538,15 @@ Chart.prototype.addSingleSeriesAsDrilldown = function (point, ddOptions) {
                 levelSeriesOptions = last.levelSeriesOptions;
             } else {
                 levelSeries.push(series);
-                levelSeriesOptions.push(series.options);
+
+                // (#10597)
+                series.purgedOptions = H.merge({
+                    _ddSeriesId: series.options._ddSeriesId,
+                    _levelNumber: series.options._levelNumber,
+                    selected: series.options.selected
+                }, series.userOptions);
+
+                levelSeriesOptions.push(series.purgedOptions);
             }
         }
     });
@@ -545,6 +555,7 @@ Chart.prototype.addSingleSeriesAsDrilldown = function (point, ddOptions) {
     level = extend({
         levelNumber: levelNumber,
         seriesOptions: oldSeries.options,
+        seriesPurgedOptions: oldSeries.purgedOptions,
         levelSeriesOptions: levelSeriesOptions,
         levelSeries: levelSeries,
         shapeArgs: point.shapeArgs,
@@ -712,7 +723,8 @@ Chart.prototype.drillUp = function () {
             ) {
                 addedSeries.animate = addedSeries.animateDrillupTo;
             }
-            if (seriesOptions === level.seriesOptions) {
+
+            if (seriesOptions === level.seriesPurgedOptions) {
                 newSeries = addedSeries;
             }
         };

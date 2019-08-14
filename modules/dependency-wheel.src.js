@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Dependency wheel module
  *
@@ -376,8 +376,15 @@
          * @type      {Array<*>}
          * @extends   series.sankey.data
          * @product   highcharts
-         * @excluding outgoing
+         * @excluding outgoing, dataLabels
          * @apioption series.dependencywheel.data
+         */
+
+        /**
+         * Individual data label for each node. The options are the same as
+         * the ones for [series.dependencywheel.dataLabels](#series.dependencywheel.dataLabels).
+         *
+         * @apioption series.dependencywheel.nodes.dataLabels
          */
 
     });

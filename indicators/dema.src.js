@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -30,41 +30,50 @@
     }
     _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Globals.js']], function (H) {
         /**
-         * (c) 2010-2019 Daniel Studencki
          *
-         * License: www.highcharts.com/license
-         */
-
-
+         *  (c) 2010-2019 Daniel Studencki
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         var error = H.error;
-
+        /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
             /**
              * Check whether given indicator is loaded, else throw error.
-             * @param {function} indicator Indicator constructor function.
-             * @param {string} requiredIndicator required indicator type.
-             * @param {string} type Type of indicator where function was called (parent).
-             * @param {function} callback Callback which is triggered if the given
-             *                            indicator is loaded. Takes indicator as
-             *                            an argument.
-             * @param {string} errMessage Error message that will be logged in console.
-             * @returns {boolean} Returns false when there is no required indicator loaded.
+             * @private
+             * @param {Highcharts.Indicator} indicator
+             *        Indicator constructor function.
+             * @param {string} requiredIndicator
+             *        Required indicator type.
+             * @param {string} type
+             *        Type of indicator where function was called (parent).
+             * @param {Highcharts.IndicatorConstructorFunction} callback
+             *        Callback which is triggered if the given indicator is loaded.
+             *        Takes indicator as an argument.
+             * @param {string} errMessage
+             *        Error message that will be logged in console.
+             * @return {boolean}
+             *         Returns false when there is no required indicator loaded.
              */
-            isParentLoaded: function (
-                indicator,
-                requiredIndicator,
-                type,
-                callback,
-                errMessage
-            ) {
+            isParentLoaded: function (indicator, requiredIndicator, type, callback, errMessage) {
                 if (indicator) {
                     return callback ? callback(indicator) : true;
                 }
-                error(
-                    errMessage || this.generateMessage(type, requiredIndicator)
-                );
+                error(errMessage || this.generateMessage(type, requiredIndicator));
                 return false;
             },
+            /**
+             * @private
+             * @param {string} indicatorType
+             *        Indicator type
+             * @param {string} required
+             *        Required indicator
+             * @return {string}
+             *         Error message
+             */
             generateMessage: function (indicatorType, required) {
                 return 'Error: "' + indicatorType +
                     '" indicator type requires "' + required +
@@ -74,10 +83,9 @@
             }
         };
 
-
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'indicators/dema.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicatorMixin) {
+    _registerModule(_modules, 'indicators/dema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -86,8 +94,10 @@
 
 
 
-        var isArray = H.isArray,
-            EMAindicator = H.seriesTypes.ema,
+        var isArray = U.isArray;
+
+
+        var EMAindicator = H.seriesTypes.ema,
             requiredIndicator = requiredIndicatorMixin,
             correctFloat = H.correctFloat;
 
@@ -104,7 +114,7 @@
             'dema',
             'ema',
             /**
-             * Normalized average true range indicator (NATR). This series requires
+             * Double exponential moving average (DEMA) indicator. This series requires
              * `linkedTo` option to be set and should be loaded after the
              * `stock/indicators/indicators.js` and `stock/indicators/ema.js`.
              *

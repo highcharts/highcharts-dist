@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Exporting module
  *
@@ -30,40 +30,58 @@
     }
     _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Globals.js']], function (H) {
         /* *
-         * (c) 2009-2019 Sebastian Bochann
          *
-         * Full screen for Highcharts
+         *  (c) 2009-2019 Sebastian Bochann
          *
-         * License: www.highcharts.com/license
-         */
-
-
-        H.FullScreen = function (container) {
-            this.init(container.parentNode); // main div of the chart
-        };
-
+         *  Full screen for Highcharts
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
+         * The FullScreen class.
          * The module allows user to enable full screen mode in StockTools.
          * Based on default solutions in browsers.
          *
+         * @private
+         * @class
+         * @name Highcharts.FullScreen
+         *
+         * @param {Highcharts.HTMLDOMElement} container
+         *        Chart container
          */
-
-        H.FullScreen.prototype = {
+        var FullScreen = H.FullScreen = function (container) {
+            this.init(container.parentNode);
+        };
+        FullScreen.prototype = {
             /**
              * Init function
-             *
-             * @param {HTMLDOMElement} - chart div
-             *
+             * @private
+             * @param {Highcharts.HTMLDOMElement} container
+             *        Chart container's parent
+             * @return {void}
              */
             init: function (container) {
+                var promise;
                 if (container.requestFullscreen) {
-                    container.requestFullscreen();
-                } else if (container.mozRequestFullScreen) {
-                    container.mozRequestFullScreen();
-                } else if (container.webkitRequestFullscreen) {
-                    container.webkitRequestFullscreen();
-                } else if (container.msRequestFullscreen) {
-                    container.msRequestFullscreen();
+                    promise = container.requestFullscreen();
+                }
+                else if (container.mozRequestFullScreen) {
+                    promise = container.mozRequestFullScreen();
+                }
+                else if (container.webkitRequestFullscreen) {
+                    promise = container.webkitRequestFullscreen();
+                }
+                else if (container.msRequestFullscreen) {
+                    promise = container.msRequestFullscreen();
+                }
+                if (promise) {
+                    promise['catch'](function () {
+                        alert('Full screen is not supported inside a frame'); // eslint-disable-line no-alert
+                    });
                 }
             }
         };
@@ -71,21 +89,23 @@
     });
     _registerModule(_modules, 'mixins/navigation.js', [], function () {
         /**
-         * (c) 2010-2018 Paweł Fus
          *
-         * License: www.highcharts.com/license
-         */
-
-
+         *  (c) 2010-2018 Paweł Fus
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         var chartNavigation = {
             /**
              * Initializes `chart.navigation` object which delegates `update()` methods
              * to all other common classes (used in exporting and navigationBindings).
              *
              * @private
-             *
              * @param {Highcharts.Chart} chart
              *        The chart instance.
+             * @return {void}
              */
             initUpdate: function (chart) {
                 if (!chart.navigation) {
@@ -93,11 +113,7 @@
                         updates: [],
                         update: function (options, redraw) {
                             this.updates.forEach(function (updateConfig) {
-                                updateConfig.update.call(
-                                    updateConfig.context,
-                                    options,
-                                    redraw
-                                );
+                                updateConfig.update.call(updateConfig.context, options, redraw);
                             });
                         }
                     };
@@ -107,19 +123,17 @@
              * Registers an `update()` method in the `chart.navigation` object.
              *
              * @private
-             *
-             * @param {function} update
+             * @param {Highcharts.ChartNavigationUpdateFunction} update
              *        The `update()` method that will be called in `chart.update()`.
-             *
              * @param {Highcharts.Chart} chart
              *        The chart instance. `update()` will use that as a context
              *        (`this`).
+             * @return {void}
              */
             addUpdate: function (update, chart) {
                 if (!chart.navigation) {
                     this.initUpdate(chart);
                 }
-
                 chart.navigation.updates.push({
                     update: update,
                     context: chart
@@ -127,10 +141,9 @@
             }
         };
 
-
         return chartNavigation;
     });
-    _registerModule(_modules, 'modules/exporting.src.js', [_modules['parts/Globals.js'], _modules['mixins/navigation.js']], function (H, chartNavigationMixin) {
+    _registerModule(_modules, 'modules/exporting.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/navigation.js']], function (H, U, chartNavigationMixin) {
         /* *
          * Exporting module
          *
@@ -212,6 +225,10 @@
 
 
 
+        var isObject = U.isObject,
+            objectEach = U.objectEach;
+
+
         // create shortcuts
         var defaultOptions = H.defaultOptions,
             doc = H.doc,
@@ -224,7 +241,6 @@
             css = H.css,
             merge = H.merge,
             pick = H.pick,
-            objectEach = H.objectEach,
             extend = H.extend,
             isTouchDevice = H.isTouchDevice,
             win = H.win,
@@ -1185,7 +1201,7 @@
                     .replace(/zIndex="[^"]+"/g, '')
                     .replace(/symbolName="[^"]+"/g, '')
                     .replace(/jQuery[0-9]+="[^"]+"/g, '')
-                    .replace(/url\(("|&quot;)(\S+)("|&quot;)\)/g, 'url($2)')
+                    .replace(/url\(("|&quot;)(.*?)("|&quot;)\;?\)/g, 'url($2)')
                     .replace(/url\([^#]+#/g, 'url(#')
                     .replace(
                         /<svg /,
@@ -1687,7 +1703,7 @@
                             item = chart.options.exporting.menuItemDefinitions[item];
                         }
 
-                        if (H.isObject(item, true)) {
+                        if (isObject(item, true)) {
                             var element;
 
                             if (item.separator) {

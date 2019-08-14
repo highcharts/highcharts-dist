@@ -35,7 +35,7 @@ declare module "../highcharts.src" {
          *
          * @return An object with `lat` and `lon` properties.
          */
-        fromPointToLatLon(point: (MapCoordinateObject|Point)): MapLatLonObject;
+        fromPointToLatLon(point: (MapCoordinateObject|Point)): (MapLatLonObject|undefined);
         /**
          * Highmaps only. Zoom in or out of the map. See also Point#zoomTo. See
          * Chart#fromLatLonToPoint for how to get the `centerX` and `centerY`
@@ -74,7 +74,7 @@ declare module "../highcharts.src" {
          *
          * @return An object with `x` and `y` properties.
          */
-        transformFromLatLon(latLon: MapLatLonObject, transform: object): MapCoordinateObject;
+        transformFromLatLon(latLon: MapLatLonObject, transform: any): MapCoordinateObject;
         /**
          * Highmaps only. Get latLon from point using specified transform
          * definition. The method returns an object with the numeric properties
@@ -90,7 +90,7 @@ declare module "../highcharts.src" {
          *
          * @return An object with `lat` and `lon` properties.
          */
-        transformToLatLon(point: (MapCoordinateObject|Point), transform: object): MapLatLonObject;
+        transformToLatLon(point: (MapCoordinateObject|Point), transform: any): (MapLatLonObject|undefined);
     }
     /**
      * Result object of a map transformation.
@@ -103,7 +103,7 @@ declare module "../highcharts.src" {
         /**
          * Y coordinate on the map.
          */
-        y: number;
+        y: (number|null);
     }
     /**
      * A latitude/longitude object.
@@ -119,20 +119,26 @@ declare module "../highcharts.src" {
         lon: number;
     }
     interface Point {
+        pointPadding?: number;
         /**
          * In Highmaps, when data is loaded from GeoJSON, the GeoJSON item's
          * properies are copied over here.
          */
         properties: any;
+        value?: (number|null);
         /**
          * Highmaps only. Zoom in on the point using the global animation.
          */
         zoomTo(): void;
     }
+    interface PointOptionsObject {
+        pointPadding?: number;
+        value?: (number|null);
+    }
     /**
      * Contains all loaded map data for Highmaps.
      */
-    let maps: Dictionary<MapDataObject>;
+    let maps: Dictionary<any>;
     /**
      * Highmaps only. Restructure a GeoJSON object in preparation to be read
      * directly by the series.mapData option. The GeoJSON will be broken down to
@@ -152,7 +158,7 @@ declare module "../highcharts.src" {
      *
      * @return An object ready for the `mapData` option.
      */
-    function geojson(geojson: object, hType?: string): Array<object>;
+    function geojson(geojson: any, hType?: string): Array<any>;
     /**
      * The factory function for creating new map charts. Creates a new Chart
      * object with different default options than the basic Chart.

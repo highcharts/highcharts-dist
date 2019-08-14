@@ -8,10 +8,12 @@
 'use strict';
 import H from '../parts/Globals.js';
 
+import U from '../parts/Utilities.js';
+var isArray = U.isArray;
+
 var addEvent = H.addEvent,
     createElement = H.createElement,
     pick = H.pick,
-    isArray = H.isArray,
     fireEvent = H.fireEvent,
     getStyle = H.getStyle,
     merge = H.merge,
@@ -180,6 +182,17 @@ H.setOptions({
          */
         gui: {
             /**
+             * Path where Highcharts will look for icons. Change this to use
+             * icons from a different server.
+             *
+             * Since 7.1.3 use [iconsURL](#navigation.iconsURL) for popup and
+             * stock tools.
+             *
+             * @deprecated
+             * @apioption stockTools.gui.iconsURL
+             *
+             */
+            /**
              * Enable or disable the stockTools gui.
              *
              * @type      {boolean}
@@ -204,11 +217,6 @@ H.setOptions({
              *
              */
             toolbarClassName: 'stocktools-toolbar',
-            /**
-             * Path where Highcharts will look for icons. Change this to use
-             * icons from a different server.
-             */
-            iconsURL: 'https://code.highcharts.com/@product.version@/gfx/stock-icons/',
             /**
              * A collection of strings pointing to config options for the
              * toolbar items. Each name refers to unique key from definitions
@@ -818,7 +826,8 @@ H.Toolbar = function (options, langOptions, chart) {
     this.chart = chart;
     this.options = options;
     this.lang = langOptions;
-
+    // set url for icons.
+    this.iconsURL = this.getIconsURL();
     this.guiEnabled = options.enabled;
     this.visible = pick(options.visible, true);
     this.placed = pick(options.placed, false);
@@ -1055,8 +1064,7 @@ H.Toolbar.prototype = {
      * @return {Object} - references to all created HTML elements
      */
     addButton: function (target, options, btnName, lang) {
-        var guiOptions = this.options,
-            btnOptions = options[btnName],
+        var btnOptions = options[btnName],
             items = btnOptions.items,
             classMapping = H.Toolbar.prototype.classMapping,
             userClassName = btnOptions.className || '',
@@ -1077,16 +1085,19 @@ H.Toolbar.prototype = {
 
 
         // submenu
-        if (items && items.length > 1) {
+        if (items && items.length) {
 
             // arrow is a hook to show / hide submenu
             submenuArrow = createElement(SPAN, {
                 className: PREFIX + 'submenu-item-arrow ' +
                     PREFIX + 'arrow-right'
             }, null, buttonWrapper);
+
+            submenuArrow.style['background-image'] = 'url(' +
+                this.iconsURL + 'arrow-bottom.svg)';
         } else {
             mainButton.style['background-image'] = 'url(' +
-                guiOptions.iconsURL + btnOptions.symbol + ')';
+                this.iconsURL + btnOptions.symbol + ')';
         }
 
         return {
@@ -1112,9 +1123,15 @@ H.Toolbar.prototype = {
             className: PREFIX + 'arrow-up'
         }, null, stockToolbar.arrowWrapper);
 
+        stockToolbar.arrowUp.style['background-image'] =
+            'url(' + this.iconsURL + 'arrow-right.svg)';
+
         stockToolbar.arrowDown = createElement(DIV, {
             className: PREFIX + 'arrow-down'
         }, null, stockToolbar.arrowWrapper);
+
+        stockToolbar.arrowDown.style['background-image'] =
+            'url(' + this.iconsURL + 'arrow-right.svg)';
 
         wrapper.insertBefore(
             stockToolbar.arrowWrapper,
@@ -1234,6 +1251,9 @@ H.Toolbar.prototype = {
             className: PREFIX + 'toggle-toolbar ' + PREFIX + 'arrow-left'
         }, null, wrapper);
 
+        showhideBtn.style['background-image'] =
+            'url(' + this.iconsURL + 'arrow-right.svg)';
+
         if (!visible) {
             // hide
             if (submenu) {
@@ -1241,7 +1261,6 @@ H.Toolbar.prototype = {
             }
             showhideBtn.style.left = '0px';
             stockToolbar.visible = visible = false;
-
             toolbar.classList.add(PREFIX + 'hide');
             showhideBtn.classList.toggle(PREFIX + 'arrow-right');
             wrapper.style.height = showhideBtn.offsetHeight + 'px';
@@ -1379,6 +1398,12 @@ H.Toolbar.prototype = {
      */
     redraw: function () {
         this.showHideNavigatorion();
+    },
+
+    getIconsURL: function () {
+        return this.chart.options.navigation.iconsURL ||
+            this.options.iconsURL ||
+            'https://code.highcharts.com/7.1.3/gfx/stock-icons/';
     },
     /*
      * Mapping JSON fields to CSS classes.

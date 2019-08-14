@@ -7,11 +7,12 @@
 'use strict';
 
 import H from '../parts/Globals.js';
-import '../parts/Utilities.js';
 
-var defined = H.defined,
-    isArray = H.isArray,
-    SMA = H.seriesTypes.sma;
+import U from '../parts/Utilities.js';
+var defined = U.defined,
+    isArray = U.isArray;
+
+var SMA = H.seriesTypes.sma;
 
 function destroyExtraLabels(point, functionName) {
     var props = point.series.pointArrayMap,

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Highcharts funnel module
  *
@@ -64,7 +64,7 @@
          *         Funnel demo
          *
          * @extends      plotOptions.pie
-         * @excluding    size
+         * @excluding    innerSize,size
          * @product      highcharts
          * @optionparent plotOptions.funnel
          */
@@ -494,7 +494,7 @@
                 );
 
                 // If label was justified and we have contrast, set it:
-                if (point.isLabelJustified && point.contrastColor) {
+                if (options.inside && point.contrastColor) {
                     dataLabel.css({
                         color: point.contrastColor
                     });

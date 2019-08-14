@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/volume-by-price.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/volume-by-price.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Paweł Dalek
@@ -40,6 +40,8 @@
          * */
 
 
+
+        var isArray = U.isArray;
 
         // Utils
         function arrayExtremesOHLC(data) {
@@ -461,7 +463,7 @@
                     }
 
                     // Checks if series data fits the OHLC format
-                    isOHLC = H.isArray(yValues[0]);
+                    isOHLC = isArray(yValues[0]);
 
                     if (isOHLC && yValues[0].length !== 4) {
                         return H.error(

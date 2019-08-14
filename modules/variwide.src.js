@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Highcharts variwide module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/variwide.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/variwide.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * Highcharts variwide module
          *
@@ -37,6 +37,9 @@
          * License: www.highcharts.com/license
          */
 
+
+
+        var isNumber = U.isNumber;
 
 
         var addEvent = H.addEvent,
@@ -221,7 +224,7 @@
                 // Point functions
             }, {
                 isValid: function () {
-                    return H.isNumber(this.y, true) && H.isNumber(this.z, true);
+                    return isNumber(this.y) && isNumber(this.z);
                 }
             });
 

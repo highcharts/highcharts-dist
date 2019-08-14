@@ -16,12 +16,12 @@ declare module "../highcharts.src" {
     /**
      * Callback function that returns the correspondig Date object to a match.
      */
-    type DataDateFormatCallbackFunction = (match: Array<number>) => Date;
-    interface AjaxSettings {
+    type DataDateFormatCallbackFunction = (match: Array<number>) => number;
+    interface AjaxSettingsObject {
         /**
          * The payload to send.
          */
-        data: object;
+        data: (string|Dictionary<any>);
         /**
          * The data type expected.
          */
@@ -33,7 +33,7 @@ declare module "../highcharts.src" {
         /**
          * The headers; keyed on header name.
          */
-        headers: object;
+        headers: Dictionary<string>;
         /**
          * Function to call on success.
          */
@@ -41,7 +41,7 @@ declare module "../highcharts.src" {
         /**
          * The verb to use.
          */
-        type: ("delete"|"get"|"post"|"update");
+        type: ("DELETE"|"GET"|"POST"|"UPDATE");
         /**
          * The URL to call.
          */
@@ -82,9 +82,9 @@ declare module "../highcharts.src" {
         /**
          * Fetch or refetch live data
          *
-         * @return The first URL that was tried.
+         * @return The URLs that were tried can be found in the options
          */
-        fetchLiveData(): string;
+        fetchLiveData(): boolean;
         /**
          * Get the column distribution. For example, a line series takes a
          * single column for Y values. A range series takes two columns for low
@@ -98,7 +98,7 @@ declare module "../highcharts.src" {
          *
          * @return Data rows
          */
-        getData(): Array<Array<any>>;
+        getData(): (Array<Array<(number|string)>>|undefined);
         /**
          * Parse a single column. Set properties like .isDatetime and
          * .isNumeric.
@@ -109,20 +109,20 @@ declare module "../highcharts.src" {
          * @param col
          *        Column index
          */
-        parseColumn(column: Array<any>, col: number): void;
+        parseColumn(column: Array<DataValueType>, col: number): void;
         /**
          * Parse a CSV input string
          */
-        parseCSV(inOptions: DataOptions): Array<Array<any>>;
+        parseCSV(inOptions?: DataOptions): Array<Array<DataValueType>>;
         /**
          * A hook for working directly on the parsed columns
          */
-        parsed(): any;
+        parsed(): (boolean|undefined);
         /**
          * Parse a date and return it as a number. Overridable through
          * `options.parseDate`.
          */
-        parseDate(val: string): Date;
+        parseDate(val: string): number;
         /**
          * Parse a Google spreadsheet.
          *
@@ -132,7 +132,7 @@ declare module "../highcharts.src" {
         /**
          * Parse a HTML table
          */
-        parseTable(): Array<Array<any>>;
+        parseTable(): (Array<Array<DataValueType>>|undefined);
         /**
          * Parse numeric cells in to number types and date types in to true
          * dates.
@@ -141,7 +141,7 @@ declare module "../highcharts.src" {
         /**
          * Reorganize rows into columns.
          */
-        rowsToColumns(rows: Array<Array<any>>): Array<Array<any>>;
+        rowsToColumns(rows: Array<Array<(number|string)>>): Array<Array<(number|string)>>;
         /**
          * Trim a string from whitespaces.
          *
@@ -164,12 +164,25 @@ declare module "../highcharts.src" {
      *
      * @param attr
      *        The Ajax settings to use.
+     *
+     * @return Returns false, if error occured.
      */
-    function ajax(attr: AjaxSettings): void;
+    function ajax(attr: Partial<AjaxSettingsObject>): (false|undefined);
     /**
      * Creates a data object to parse data for a chart.
      */
     function data(dataOptions: DataOptions, chartOptions?: Options, chart?: Chart): Data;
+    /**
+     * Get a JSON resource over XHR, also supporting CORS without preflight.
+     *
+     * @param url
+     *        The URL to load.
+     *
+     * @param success
+     *        The success callback. For error handling, use the
+     *        `Highcharts.ajax` function instead.
+     */
+    function getJSON(url: string, success: Function): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

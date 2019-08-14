@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Kamil Kulig
@@ -39,8 +39,9 @@
 
 
 
-        var seriesType = H.seriesType,
-            isArray = H.isArray;
+        var isArray = U.isArray;
+
+        var seriesType = H.seriesType;
 
         /**
          * Linear regression series type.

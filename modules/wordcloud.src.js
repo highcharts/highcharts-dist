@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * (c) 2016-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -28,10 +28,15 @@
         }
     }
     _registerModule(_modules, 'mixins/draw-point.js', [], function () {
+        /* *
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         var isFn = function (x) {
             return typeof x === 'function';
         };
-
+        /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Handles the drawing of a component.
          * Can be used for any type of component that reserves the graphic property, and
@@ -39,298 +44,257 @@
          *
          * @private
          * @function draw
-         *
-         * @param {object} params
+         * @param {DrawPointParams} params
          *        Parameters.
          *
-         * TODO: add type checking.
-         * TODO: export this function to enable usage
+         * @todo add type checking.
+         * @todo export this function to enable usage
          */
         var draw = function draw(params) {
-            var component = this,
-                graphic = component.graphic,
-                animatableAttribs = params.animatableAttribs,
-                onComplete = params.onComplete,
-                css = params.css,
-                renderer = params.renderer;
-
+            var component = this, graphic = component.graphic, animatableAttribs = params.animatableAttribs, onComplete = params.onComplete, css = params.css, renderer = params.renderer;
             if (component.shouldDraw()) {
                 if (!graphic) {
                     component.graphic = graphic =
-                        renderer[params.shapeType](params.shapeArgs).add(params.group);
+                        renderer[params.shapeType](params.shapeArgs)
+                            .add(params.group);
                 }
                 graphic
                     .css(css)
                     .attr(params.attribs)
-                    .animate(
-                        animatableAttribs,
-                        params.isNew ? false : undefined,
-                        onComplete
-                    );
-            } else if (graphic) {
+                    .animate(animatableAttribs, params.isNew ? false : undefined, onComplete);
+            }
+            else if (graphic) {
                 var destroy = function () {
                     component.graphic = graphic = graphic.destroy();
                     if (isFn(onComplete)) {
                         onComplete();
                     }
                 };
-
                 // animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, undefined, function () {
                         destroy();
                     });
-                } else {
+                }
+                else {
                     destroy();
                 }
             }
         };
-
         /**
          * An extended version of draw customized for points.
          * It calls additional methods that is expected when rendering a point.
          *
-         * @param {object} params Parameters
+         * @param {Highcharts.Dictionary<any>} params Parameters
          */
         var drawPoint = function drawPoint(params) {
-            var point = this,
-                attribs = params.attribs = params.attribs || {};
-
+            var point = this, attribs = params.attribs = params.attribs || {};
             // Assigning class in dot notation does go well in IE8
             // eslint-disable-next-line dot-notation
             attribs['class'] = point.getClassName();
-
             // Call draw to render component
             draw.call(point, params);
         };
 
-
         return drawPoint;
     });
-    _registerModule(_modules, 'mixins/polygon.js', [_modules['parts/Globals.js']], function (H) {
-
-        var deg2rad = H.deg2rad,
-            find = H.find,
-            isArray = H.isArray,
-            isNumber = H.isNumber;
-
+    _registerModule(_modules, 'mixins/polygon.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /**
+         * @private
+         * @interface Highcharts.PolygonPointObject
+         */ /**
+        * @name Highcharts.PolygonPointObject#0
+        * @type {number}
+        */ /**
+        * @name Highcharts.PolygonPointObject#1
+        * @type {number}
+        */
+        /**
+         * @private
+         * @interface Highcharts.PolygonObject
+         * @extends Array<Highcharts.PolygonPointObject>
+         */ /**
+        * @name Highcharts.PolygonObject#axes
+        * @type {Array<PolygonPointObject>}
+        */
+        var isArray = U.isArray, isNumber = U.isNumber;
+        var deg2rad = H.deg2rad, find = H.find;
+        /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Alternative solution to correctFloat.
          * E.g H.correctFloat(123, 2) returns 120, when it should be 123.
          *
          * @private
          * @function correctFloat
-         *
          * @param {number} number
-         *
-         * @param {number} precision
-         *
+         * @param {number} [precision]
          * @return {number}
          */
         var correctFloat = function (number, precision) {
-            var p = isNumber(precision) ? precision : 14,
-                magnitude = Math.pow(10, p);
-
+            var p = isNumber(precision) ? precision : 14, magnitude = Math.pow(10, p);
             return Math.round(number * magnitude) / magnitude;
         };
-
         /**
          * Calculates the normals to a line between two points.
          *
          * @private
          * @function getNormals
-         *
-         * @param {Array<number,number>} p1
+         * @param {Highcharts.PolygonPointObject} p1
          *        Start point for the line. Array of x and y value.
-         *
-         * @param {Array<number,number>} p2
+         * @param {Highcharts.PolygonPointObject} p2
          *        End point for the line. Array of x and y value.
-         *
-         * @return {Array<Array<number,number>>}
+         * @return {Highcharts.PolygonObject}
          *         Returns the two normals in an array.
          */
         var getNormals = function getNormal(p1, p2) {
             var dx = p2[0] - p1[0], // x2 - x1
-                dy = p2[1] - p1[1]; // y2 - y1
-
+            dy = p2[1] - p1[1]; // y2 - y1
             return [
                 [-dy, dx],
                 [dy, -dx]
             ];
         };
-
         /**
          * Calculates the dot product of two coordinates. The result is a scalar value.
          *
          * @private
          * @function dotProduct
-         *
-         * @param {Array<number,number>} a
+         * @param {Highcharts.PolygonPointObject} a
          *        The x and y coordinates of the first point.
          *
-         * @param {Array<number,number>} b
+         * @param {Highcharts.PolygonPointObject} b
          *        The x and y coordinates of the second point.
          *
          * @return {number}
          *         Returns the dot product of a and b.
          */
         var dotProduct = function dotProduct(a, b) {
-            var ax = a[0],
-                ay = a[1],
-                bx = b[0],
-                by = b[1];
-
+            var ax = a[0], ay = a[1], bx = b[0], by = b[1];
             return ax * bx + ay * by;
         };
-
         /**
          * Projects a polygon onto a coordinate.
          *
          * @private
          * @function project
-         *
-         * @param {Array<Array<number,number>>} polygon
+         * @param {Highcharts.PolygonObject} polygon
          *        Array of points in a polygon.
-         *
-         * @param {Array<number,number>} target
+         * @param {Highcharts.PolygonPointObject} target
          *        The coordinate of pr
-         *
-         * @return {object}
+         * @return {Highcharts.RangeObject}
          */
         var project = function project(polygon, target) {
             var products = polygon.map(function (point) {
                 return dotProduct(point, target);
             });
-
             return {
                 min: Math.min.apply(this, products),
                 max: Math.max.apply(this, products)
             };
         };
-
         /**
          * Rotates a point clockwise around the origin.
          *
          * @private
          * @function rotate2DToOrigin
-         *
-         * @param {Array<number,number>} point
+         * @param {Highcharts.PolygonPointObject} point
          *        The x and y coordinates for the point.
-         *
          * @param {number} angle
          *        The angle of rotation.
-         *
-         * @return {Array<number,number>}
+         * @return {Highcharts.PolygonPointObject}
          *         The x and y coordinate for the rotated point.
          */
         var rotate2DToOrigin = function (point, angle) {
-            var x = point[0],
-                y = point[1],
-                rad = deg2rad * -angle,
-                cosAngle = Math.cos(rad),
-                sinAngle = Math.sin(rad);
-
+            var x = point[0], y = point[1], rad = deg2rad * -angle, cosAngle = Math.cos(rad), sinAngle = Math.sin(rad);
             return [
                 correctFloat(x * cosAngle - y * sinAngle),
                 correctFloat(x * sinAngle + y * cosAngle)
             ];
         };
-
         /**
          * Rotate a point clockwise around another point.
          *
          * @private
          * @function rotate2DToPoint
-         *
-         * @param {Array<number,number>} point
+         * @param {Highcharts.PolygonPointObject} point
          *        The x and y coordinates for the point.
-         *
-         * @param {Array<number,numbner>} origin
+         * @param {Highcharts.PolygonPointObject} origin
          *        The point to rotate around.
-         *
          * @param {number} angle
          *        The angle of rotation.
-         *
-         * @return {Array<number,number>}
+         * @return {Highcharts.PolygonPointObject}
          *         The x and y coordinate for the rotated point.
          */
         var rotate2DToPoint = function (point, origin, angle) {
-            var x = point[0] - origin[0],
-                y = point[1] - origin[1],
-                rotated = rotate2DToOrigin([x, y], angle);
-
+            var x = point[0] - origin[0], y = point[1] - origin[1], rotated = rotate2DToOrigin([x, y], angle);
             return [
                 rotated[0] + origin[0],
                 rotated[1] + origin[1]
             ];
         };
-
+        /**
+         * @private
+         */
         var isAxesEqual = function (axis1, axis2) {
-            return (
-                axis1[0] === axis2[0] &&
-                axis1[1] === axis2[1]
-            );
+            return (axis1[0] === axis2[0] &&
+                axis1[1] === axis2[1]);
         };
-
+        /**
+         * @private
+         */
         var getAxesFromPolygon = function (polygon) {
-            var points,
-                axes = polygon.axes;
-
+            var points, axes = polygon.axes;
             if (!isArray(axes)) {
                 axes = [];
                 points = points = polygon.concat([polygon[0]]);
-                points.reduce(
-                    function findAxis(p1, p2) {
-                        var normals = getNormals(p1, p2),
-                            axis = normals[0]; // Use the left normal as axis.
-
-                        // Check that the axis is unique.
-                        if (!find(axes, function (existing) {
-                            return isAxesEqual(existing, axis);
-                        })) {
-                            axes.push(axis);
-                        }
-
-                        // Return p2 to be used as p1 in next iteration.
-                        return p2;
+                points.reduce(function findAxis(p1, p2) {
+                    var normals = getNormals(p1, p2), axis = normals[0]; // Use the left normal as axis.
+                    // Check that the axis is unique.
+                    if (!find(axes, function (existing) {
+                        return isAxesEqual(existing, axis);
+                    })) {
+                        axes.push(axis);
                     }
-                );
+                    // Return p2 to be used as p1 in next iteration.
+                    return p2;
+                });
                 polygon.axes = axes;
             }
             return axes;
         };
-
+        /**
+         * @private
+         */
         var getAxes = function (polygon1, polygon2) {
             // Get the axis from both polygons.
-            var axes1 = getAxesFromPolygon(polygon1),
-                axes2 = getAxesFromPolygon(polygon2);
-
+            var axes1 = getAxesFromPolygon(polygon1), axes2 = getAxesFromPolygon(polygon2);
             return axes1.concat(axes2);
         };
-
+        /**
+         * @private
+         */
         var getPolygon = function (x, y, width, height, rotation) {
-            var origin = [x, y],
-                left = x - (width / 2),
-                right = x + (width / 2),
-                top = y - (height / 2),
-                bottom = y + (height / 2),
-                polygon = [
-                    [left, top],
-                    [right, top],
-                    [right, bottom],
-                    [left, bottom]
-                ];
-
+            var origin = [x, y], left = x - (width / 2), right = x + (width / 2), top = y - (height / 2), bottom = y + (height / 2), polygon = [
+                [left, top],
+                [right, top],
+                [right, bottom],
+                [left, bottom]
+            ];
             return polygon.map(function (point) {
                 return rotate2DToPoint(point, origin, -rotation);
             });
         };
-
+        /**
+         * @private
+         */
         var getBoundingBoxFromPolygon = function (points) {
             return points.reduce(function (obj, point) {
-                var x = point[0],
-                    y = point[1];
-
+                var x = point[0], y = point[1];
                 obj.left = Math.min(x, obj.left);
                 obj.right = Math.max(x, obj.right);
                 obj.bottom = Math.max(y, obj.bottom);
@@ -343,43 +307,38 @@
                 top: Number.MAX_VALUE
             });
         };
-
+        /**
+         * @private
+         */
         var isPolygonsOverlappingOnAxis = function (axis, polygon1, polygon2) {
-            var projection1 = project(polygon1, axis),
-                projection2 = project(polygon2, axis),
-                isOverlapping = !(
-                    projection2.min > projection1.max ||
-                    projection2.max < projection1.min
-                );
-
+            var projection1 = project(polygon1, axis), projection2 = project(polygon2, axis), isOverlapping = !(projection2.min > projection1.max ||
+                projection2.max < projection1.min);
             return !isOverlapping;
         };
-
         /**
          * Checks wether two convex polygons are colliding by using the Separating Axis
          * Theorem.
          *
          * @private
          * @function isPolygonsColliding
-         *
-         * @param {Array<Array<number,number>>} polygon1
+         * @param {Highcharts.PolygonObject} polygon1
          *        First polygon.
          *
-         * @param {Array<Array<number,number>>} polygon2
+         * @param {Highcharts.PolygonObject} polygon2
          *        Second polygon.
          *
          * @return {boolean}
          *         Returns true if they are colliding, otherwise false.
          */
         var isPolygonsColliding = function isPolygonsColliding(polygon1, polygon2) {
-            var axes = getAxes(polygon1, polygon2),
-                overlappingOnAllAxes = !find(axes, function (axis) {
-                    return isPolygonsOverlappingOnAxis(axis, polygon1, polygon2);
-                });
-
+            var axes = getAxes(polygon1, polygon2), overlappingOnAllAxes = !find(axes, function (axis) {
+                return isPolygonsOverlappingOnAxis(axis, polygon1, polygon2);
+            });
             return overlappingOnAllAxes;
         };
-
+        /**
+         * @private
+         */
         var movePolygon = function (deltaX, deltaY, polygon) {
             return polygon.map(function (point) {
                 return [
@@ -388,7 +347,6 @@
                 ];
             });
         };
-
         var collision = {
             getBoundingBoxFromPolygon: getBoundingBoxFromPolygon,
             getPolygon: getPolygon,
@@ -398,10 +356,9 @@
             rotate2DToPoint: rotate2DToPoint
         };
 
-
         return collision;
     });
-    _registerModule(_modules, 'modules/wordcloud.src.js', [_modules['parts/Globals.js'], _modules['mixins/draw-point.js'], _modules['mixins/polygon.js']], function (H, drawPoint, polygon) {
+    _registerModule(_modules, 'modules/wordcloud.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/draw-point.js'], _modules['mixins/polygon.js']], function (H, U, drawPoint, polygon) {
         /* *
          * Experimental Highcharts module which enables visualization of a word cloud.
          *
@@ -414,10 +371,12 @@
 
 
 
+        var isArray = U.isArray,
+            isNumber = U.isNumber,
+            isObject = U.isObject;
+
+
         var extend = H.extend,
-            isArray = H.isArray,
-            isNumber = H.isNumber,
-            isObject = H.isObject,
             merge = H.merge,
             noop = H.noop,
             find = H.find,
@@ -779,12 +738,12 @@
                 isNumber(index) &&
                 isNumber(from) &&
                 isNumber(to) &&
-                orientations > -1 &&
+                orientations > 0 &&
                 index > -1 &&
                 to > from
             ) {
                 range = to - from;
-                intervals = range / (orientations - 1);
+                intervals = range / (orientations - 1 || 1);
                 orientation = index % orientations;
                 result = from + (orientation * intervals);
             }
@@ -1066,7 +1025,7 @@
                 from: 0,
                 /**
                  * The number of possible orientations for a word, within the range of
-                 * `rotation.from` and `rotation.to`.
+                 * `rotation.from` and `rotation.to`. Must be a number larger than 0.
                  */
                 orientations: 2,
                 /**
@@ -1095,7 +1054,9 @@
                 /** @ignore-option */
                 fontFamily: 'sans-serif',
                 /** @ignore-option */
-                fontWeight: '900'
+                fontWeight: '900',
+                /** @ignore-option */
+                whiteSpace: 'nowrap'
             },
             tooltip: {
                 followPointer: true,

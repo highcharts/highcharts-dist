@@ -14,12 +14,15 @@
 
 import H from '../parts/Globals.js';
 
+import U from '../parts/Utilities.js';
+var defined = U.defined,
+    isNumber = U.isNumber,
+    objectEach = U.objectEach;
+
 var addEvent = H.addEvent,
-    defined = H.defined,
     LegendSymbolMixin = H.LegendSymbolMixin,
     TrackerMixin = H.TrackerMixin,
     merge = H.merge,
-    isNumber = H.isNumber,
     pick = H.pick,
     Point = H.Point,
     Series = H.Series,
@@ -194,10 +197,10 @@ seriesType('timeline', 'line',
                     closestPointRangePx = Number.MAX_VALUE;
 
                 series.points.forEach(function (point) {
-                    // Set the isInside parameter basing on the real point
+                    // Set the isInside parameter basing also on the real point
                     // visibility, in order to avoid showing hidden points
                     // in drawPoints method.
-                    point.isInside = point.visible;
+                    point.isInside = point.isInside && point.visible;
 
                     // New way of calculating closestPointRangePx value, which
                     // respects the real point visibility is needed.
@@ -254,6 +257,17 @@ seriesType('timeline', 'line',
                         }
 
                         return point.drawConnector();
+                    }
+                });
+            });
+            addEvent(series.chart, 'afterHideOverlappingLabels', function () {
+                series.points.forEach(function (p) {
+                    if (
+                        p.connector &&
+                        p.dataLabel &&
+                        p.dataLabel.oldOpacity !== p.dataLabel.newOpacity
+                    ) {
+                        p.alignConnector();
                     }
                 });
             });
@@ -544,7 +558,7 @@ seriesType('timeline', 'line',
             }
 
             // Change coordinates so that they will be relative to data label.
-            H.objectEach(coords, function (_coord, i) {
+            objectEach(coords, function (_coord, i) {
                 coords[i] -= (dl.alignAttr || dl)[i[0]];
             });
 
@@ -615,7 +629,9 @@ seriesType('timeline', 'line',
                 connector.attr({
                     stroke: dlOptions.connectorColor || point.color,
                     'stroke-width': dlOptions.connectorWidth,
-                    opacity: point.dataLabel.opacity
+                    opacity: dl[
+                        defined(dl.newOpacity) ? 'newOpacity' : 'opacity'
+                    ]
                 });
             }
         }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -79,7 +79,13 @@
             tooltip: {
                 borderWidth: 0
             },
+            labels: {
+                style: {
+                    color: '#6e6e70'
+                }
+            },
             legend: {
+                backgroundColor: '#E0E0E8',
                 itemStyle: {
                     fontWeight: 'bold',
                     fontSize: '13px'
@@ -131,10 +137,7 @@
             },
             scrollbar: {
                 trackBorderColor: '#C0C0C8'
-            },
-
-            // General
-            background2: '#E0E0E8'
+            }
 
         };
 

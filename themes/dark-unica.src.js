@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -120,7 +120,10 @@
             plotOptions: {
                 series: {
                     dataLabels: {
-                        color: '#B0B0B3'
+                        color: '#F0F0F3',
+                        style: {
+                            fontSize: '13px'
+                        }
                     },
                     marker: {
                         lineColor: '#333'
@@ -137,6 +140,7 @@
                 }
             },
             legend: {
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
                 itemStyle: {
                     color: '#E0E0E3'
                 },
@@ -145,6 +149,11 @@
                 },
                 itemHiddenStyle: {
                     color: '#606063'
+                },
+                title: {
+                    style: {
+                        color: '#C0C0C0'
+                    }
                 }
             },
             credits: {
@@ -236,15 +245,7 @@
                 rifleColor: '#FFF',
                 trackBackgroundColor: '#404043',
                 trackBorderColor: '#404043'
-            },
-
-            // special colors for some of the
-            legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
-            background2: '#505053',
-            dataLabelsColor: '#B0B0B3',
-            textColor: '#C0C0C0',
-            contrastTextColor: '#F0F0F3',
-            maskColor: 'rgba(255,255,255,0.3)'
+            }
         };
 
         // Apply the theme

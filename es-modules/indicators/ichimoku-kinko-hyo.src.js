@@ -7,14 +7,16 @@
 'use strict';
 
 import H from '../parts/Globals.js';
-import '../parts/Utilities.js';
+
+import U from '../parts/Utilities.js';
+var defined = U.defined,
+    isArray = U.isArray,
+    objectEach = U.objectEach;
 
 var UNDEFINED,
     seriesType = H.seriesType,
     merge = H.merge,
     color = H.color,
-    isArray = H.isArray,
-    defined = H.defined,
     SMA = H.seriesTypes.sma;
 
 // Utils:
@@ -496,7 +498,7 @@ seriesType(
             }
 
             // Modify options and generate lines:
-            H.objectEach(ikhMap, function (values, lineName) {
+            objectEach(ikhMap, function (values, lineName) {
                 if (mainLineOptions[lineName] && lineName !== 'senkouSpan') {
                     // First line is rendered by default option
                     indicator.points = allIchimokuPoints[lineIndex];

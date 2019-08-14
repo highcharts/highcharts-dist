@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Advanced Highstock tools
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/stock-tools-bindings.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/stock-tools-bindings.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /**
          *
          *  Events generator for Stock tools
@@ -69,12 +69,13 @@
 
 
 
+        var defined = U.defined,
+            isNumber = U.isNumber;
+
         var fireEvent = H.fireEvent,
-            defined = H.defined,
             pick = H.pick,
             extend = H.extend,
             merge = H.merge,
-            isNumber = H.isNumber,
             correctFloat = H.correctFloat,
             bindingsUtils = H.NavigationBindings.prototype.utils,
             PREFIX = 'highcharts-';
@@ -319,7 +320,7 @@
         bindingsUtils.updateHeight = function (e, annotation) {
             annotation.update({
                 typeOptions: {
-                    height: this.chart.yAxis[0].toValue(e.chartY) -
+                    height: this.chart.pointer.getCoordinates(e).yAxis[0].value -
                         annotation.options.typeOptions.points[1].y
                 }
             });
@@ -328,8 +329,9 @@
         // @todo
         // Consider using getHoverData(), but always kdTree (columns?)
         bindingsUtils.attractToPoint = function (e, chart) {
-            var x = chart.xAxis[0].toValue(e.chartX),
-                y = chart.yAxis[0].toValue(e.chartY),
+            var coords = chart.pointer.getCoordinates(e),
+                x = coords.xAxis[0].value,
+                y = coords.yAxis[0].value,
                 distX = Number.MAX_VALUE,
                 closestPoint;
 
@@ -386,8 +388,9 @@
         bindingsUtils.updateNthPoint = function (startIndex) {
             return function (e, annotation) {
                 var options = annotation.options.typeOptions,
-                    x = this.chart.xAxis[0].toValue(e.chartX),
-                    y = this.chart.yAxis[0].toValue(e.chartY);
+                    coords = this.chart.pointer.getCoordinates(e),
+                    x = coords.xAxis[0].value,
+                    y = coords.yAxis[0].value;
 
                 options.points.forEach(function (point, index) {
                     if (index >= startIndex) {
@@ -667,33 +670,32 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-segment", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-segment", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             segment: {
                 /** @ignore */
                 className: 'highcharts-segment',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'crookedLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'segment',
-                            type: type,
-                            typeOptions: {
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'segment',
+                                type: 'crookedLine',
+                                typeOptions: {
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.segment.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -708,36 +710,35 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-arrow-segment", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-arrow-segment", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             arrowSegment: {
                 /** @ignore */
                 className: 'highcharts-arrow-segment',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'crookedLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'arrowSegment',
-                            type: type,
-                            typeOptions: {
-                                line: {
-                                    markerEnd: 'arrow'
-                                },
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'arrowSegment',
+                                type: 'crookedLine',
+                                typeOptions: {
+                                    line: {
+                                        markerEnd: 'arrow'
+                                    },
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.arrowSegment.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -752,34 +753,33 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-ray", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-ray", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             ray: {
                 /** @ignore */
                 className: 'highcharts-ray',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'crookedLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'ray',
-                            type: type,
-                            typeOptions: {
-                                type: 'ray',
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'ray',
+                                type: 'crookedLine',
+                                typeOptions: {
+                                    type: 'ray',
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.ray.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -794,37 +794,36 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-arrow-ray", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-arrow-ray", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             arrowRay: {
                 /** @ignore */
                 className: 'highcharts-arrow-ray',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'infinityLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'arrowRay',
-                            type: type,
-                            typeOptions: {
-                                type: 'ray',
-                                line: {
-                                    markerEnd: 'arrow'
-                                },
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'arrowRay',
+                                type: 'infinityLine',
+                                typeOptions: {
+                                    type: 'ray',
+                                    line: {
+                                        markerEnd: 'arrow'
+                                    },
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.arrowRay.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -838,34 +837,33 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-infinity-line", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-infinity-line", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             infinityLine: {
                 /** @ignore */
                 className: 'highcharts-infinity-line',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'infinityLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'infinityLine',
-                            type: type,
-                            typeOptions: {
-                                type: 'line',
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'infinityLine',
+                                type: 'infinityLine',
+                                typeOptions: {
+                                    type: 'line',
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.infinityLine.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -880,37 +878,36 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-arrow-infinity-line", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-arrow-infinity-line", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             arrowInfinityLine: {
                 /** @ignore */
                 className: 'highcharts-arrow-infinity-line',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'infinityLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'arrowInfinityLine',
-                            type: type,
-                            typeOptions: {
-                                type: 'line',
-                                line: {
-                                    markerEnd: 'arrow'
-                                },
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'arrowInfinityLine',
+                                type: 'infinityLine',
+                                typeOptions: {
+                                    type: 'line',
+                                    line: {
+                                        markerEnd: 'arrow'
+                                    },
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.arrowInfinityLine.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -924,31 +921,31 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-horizontal-line", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-horizontal-line", "start": function() {}, "annotationsOptions": {}}
              */
             horizontalLine: {
                 /** @ignore */
                 className: 'highcharts-horizontal-line',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'infinityLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'horizontalLine',
-                            type: type,
-                            typeOptions: {
-                                type: 'horizontalLine',
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'horizontalLine',
+                                type: 'infinityLine',
+                                draggable: 'y',
+                                typeOptions: {
+                                    type: 'horizontalLine',
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.horizontalLine.annotationsOptions
+                        );
 
                     this.chart.addAnnotation(options);
                 }
@@ -958,31 +955,31 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-vertical-line", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-vertical-line", "start": function() {}, "annotationsOptions": {}}
              */
             verticalLine: {
                 /** @ignore */
                 className: 'highcharts-vertical-line',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'infinityLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'verticalLine',
-                            type: type,
-                            typeOptions: {
-                                type: 'verticalLine',
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'verticalLine',
+                                type: 'infinityLine',
+                                draggable: 'x',
+                                typeOptions: {
+                                    type: 'verticalLine',
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.verticalLine.annotationsOptions
+                        );
 
                     this.chart.addAnnotation(options);
                 }
@@ -993,7 +990,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-crooked3", "start": function() {}, "steps": [function() {}, function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-crooked3", "start": function() {}, "steps": [function() {}, function() {}], "annotationsOptions": {}}
              */
             // Crooked Line type annotations:
             crooked3: {
@@ -1001,29 +998,28 @@
                 className: 'highcharts-crooked3',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'crookedLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'crooked3',
-                            type: type,
-                            typeOptions: {
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'crooked3',
+                                type: 'crookedLine',
+                                typeOptions: {
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.crooked3.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1039,42 +1035,41 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-crooked3", "start": function() {}, "steps": [function() {}, function() {}, function() {}, function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-crooked3", "start": function() {}, "steps": [function() {}, function() {}, function() {}, function() {}], "annotationsOptions": {}}
              */
             crooked5: {
                 /** @ignore */
                 className: 'highcharts-crooked5',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'crookedLine',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'crookedLine',
-                            type: type,
-                            typeOptions: {
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'crookedLine',
+                                type: 'crookedLine',
+                                typeOptions: {
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.crooked5.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1092,44 +1087,43 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-elliott3", "start": function() {}, "steps": [function() {}, function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-elliott3", "start": function() {}, "steps": [function() {}, function() {}], "annotationsOptions": {}}
              */
             elliott3: {
                 /** @ignore */
                 className: 'highcharts-elliott3',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'elliottWave',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'elliott3',
-                            type: type,
-                            typeOptions: {
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            },
-                            labelOptions: {
-                                style: {
-                                    color: '#666666'
+                        options = merge(
+                            {
+                                langKey: 'elliott3',
+                                type: 'elliottWave',
+                                typeOptions: {
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                },
+                                labelOptions: {
+                                    style: {
+                                        color: '#666666'
+                                    }
                                 }
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.elliott3.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1146,50 +1140,49 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-elliott3", "start": function() {}, "steps": [function() {}, function() {}, function() {}, function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-elliott3", "start": function() {}, "steps": [function() {}, function() {}, function() {}, function() {}], "annotationsOptions": {}}
              */
             elliott5: {
                 /** @ignore */
                 className: 'highcharts-elliott5',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'elliottWave',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'elliott5',
-                            type: type,
-                            typeOptions: {
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            },
-                            labelOptions: {
-                                style: {
-                                    color: '#666666'
+                        options = merge(
+                            {
+                                langKey: 'elliott5',
+                                type: 'elliottWave',
+                                typeOptions: {
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                },
+                                labelOptions: {
+                                    style: {
+                                        color: '#666666'
+                                    }
                                 }
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.elliott5.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1208,54 +1201,52 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-measure-x", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-measure-x", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             measureX: {
                 /** @ignore */
                 className: 'highcharts-measure-x',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'measure',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'measure',
-                            type: type,
-                            typeOptions: {
-                                selectType: 'x',
-                                point: {
-                                    x: x,
-                                    y: y,
-                                    xAxis: 0,
-                                    yAxis: 0
+                        options = merge(
+                            {
+                                langKey: 'measure',
+                                type: 'measure',
+                                typeOptions: {
+                                    selectType: 'x',
+                                    point: {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value,
+                                        xAxis: 0,
+                                        yAxis: 0
+                                    },
+                                    crosshairX: {
+                                        strokeWidth: 1,
+                                        stroke: '#000000'
+                                    },
+                                    crosshairY: {
+                                        enabled: false,
+                                        strokeWidth: 0,
+                                        stroke: '#000000'
+                                    },
+                                    background: {
+                                        width: 0,
+                                        height: 0,
+                                        strokeWidth: 0,
+                                        stroke: '#ffffff'
+                                    }
                                 },
-                                crosshairX: {
-                                    strokeWidth: 1,
-                                    stroke: '#000000'
-                                },
-                                crosshairY: {
-                                    enabled: false,
-                                    strokeWidth: 0,
-                                    stroke: '#000000'
-                                },
-                                background: {
-                                    width: 0,
-                                    height: 0,
-                                    strokeWidth: 0,
-                                    stroke: '#ffffff',
-                                    fill: 'red'
+                                labelOptions: {
+                                    style: {
+                                        color: '#666666'
+                                    }
                                 }
                             },
-                            labelOptions: {
-                                style: {
-                                    color: '#666666'
-                                }
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                            navigation.annotationsOptions,
+                            navigation.bindings.measureX.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1270,53 +1261,52 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-measure-y", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-measure-y", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             measureY: {
                 /** @ignore */
                 className: 'highcharts-measure-y',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'measure',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'measure',
-                            type: type,
-                            typeOptions: {
-                                selectType: 'y',
-                                point: {
-                                    x: x,
-                                    y: y,
-                                    xAxis: 0,
-                                    yAxis: 0
+                        options = merge(
+                            {
+                                langKey: 'measure',
+                                type: 'measure',
+                                typeOptions: {
+                                    selectType: 'y',
+                                    point: {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value,
+                                        xAxis: 0,
+                                        yAxis: 0
+                                    },
+                                    crosshairX: {
+                                        enabled: false,
+                                        strokeWidth: 0,
+                                        stroke: '#000000'
+                                    },
+                                    crosshairY: {
+                                        strokeWidth: 1,
+                                        stroke: '#000000'
+                                    },
+                                    background: {
+                                        width: 0,
+                                        height: 0,
+                                        strokeWidth: 0,
+                                        stroke: '#ffffff'
+                                    }
                                 },
-                                crosshairX: {
-                                    enabled: false,
-                                    strokeWidth: 0,
-                                    stroke: '#000000'
-                                },
-                                crosshairY: {
-                                    strokeWidth: 1,
-                                    stroke: '#000000'
-                                },
-                                background: {
-                                    width: 0,
-                                    height: 0,
-                                    strokeWidth: 0,
-                                    stroke: '#ffffff'
+                                labelOptions: {
+                                    style: {
+                                        color: '#666666'
+                                    }
                                 }
                             },
-                            labelOptions: {
-                                style: {
-                                    color: '#666666'
-                                }
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                            navigation.annotationsOptions,
+                            navigation.bindings.measureY.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1331,51 +1321,50 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-measure-xy", "start": function() {}, "steps": [function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-measure-xy", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
              */
             measureXY: {
                 /** @ignore */
                 className: 'highcharts-measure-xy',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'measure',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'measure',
-                            type: 'measure',
-                            typeOptions: {
-                                selectType: 'xy',
-                                point: {
-                                    x: x,
-                                    y: y,
-                                    xAxis: 0,
-                                    yAxis: 0
+                        options = merge(
+                            {
+                                langKey: 'measure',
+                                type: 'measure',
+                                typeOptions: {
+                                    selectType: 'xy',
+                                    point: {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value,
+                                        xAxis: 0,
+                                        yAxis: 0
+                                    },
+                                    background: {
+                                        width: 0,
+                                        height: 0,
+                                        strokeWidth: 10
+                                    },
+                                    crosshairX: {
+                                        strokeWidth: 1,
+                                        stroke: '#000000'
+                                    },
+                                    crosshairY: {
+                                        strokeWidth: 1,
+                                        stroke: '#000000'
+                                    }
                                 },
-                                background: {
-                                    width: 0,
-                                    height: 0,
-                                    strokeWidth: 10
-                                },
-                                crosshairX: {
-                                    strokeWidth: 1,
-                                    stroke: '#000000'
-                                },
-                                crosshairY: {
-                                    strokeWidth: 1,
-                                    stroke: '#000000'
+                                labelOptions: {
+                                    style: {
+                                        color: '#666666'
+                                    }
                                 }
                             },
-                            labelOptions: {
-                                style: {
-                                    color: '#666666'
-                                }
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                            navigation.annotationsOptions,
+                            navigation.bindings.measureXY.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1391,38 +1380,37 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-fibonacci", "start": function() {}, "steps": [function() {}, function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-fibonacci", "start": function() {}, "steps": [function() {}, function() {}], "annotationsOptions": {}}
              */
             fibonacci: {
                 /** @ignore */
                 className: 'highcharts-fibonacci',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'fibonacci',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'fibonacci',
-                            type: type,
-                            typeOptions: {
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            },
-                            labelOptions: {
-                                style: {
-                                    color: '#666666'
+                        options = merge(
+                            {
+                                langKey: 'fibonacci',
+                                type: 'fibonacci',
+                                typeOptions: {
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                },
+                                labelOptions: {
+                                    style: {
+                                        color: '#666666'
+                                    }
                                 }
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.fibonacci.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1438,33 +1426,32 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-parallel-channel", "start": function() {}, "steps": [function() {}, function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-parallel-channel", "start": function() {}, "steps": [function() {}, function() {}], "annotationsOptions": {}}
              */
             parallelChannel: {
                 /** @ignore */
                 className: 'highcharts-parallel-channel',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'tunnel',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'parallelChannel',
-                            type: type,
-                            typeOptions: {
-                                points: [{
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }]
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                        options = merge(
+                            {
+                                langKey: 'parallelChannel',
+                                type: 'tunnel',
+                                typeOptions: {
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }]
+                                }
+                            },
+                            navigation.annotationsOptions,
+                            navigation.bindings.parallelChannel.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1480,47 +1467,46 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-pitchfork", "start": function() {}, "steps": [function() {}, function() {}], "annotationOptions": {}}
+             * @default {"className": "highcharts-pitchfork", "start": function() {}, "steps": [function() {}, function() {}], "annotationsOptions": {}}
              */
             pitchfork: {
                 /** @ignore */
                 className: 'highcharts-pitchfork',
                 /** @ignore */
                 start: function (e) {
-                    var x = this.chart.xAxis[0].toValue(e.chartX),
-                        y = this.chart.yAxis[0].toValue(e.chartY),
-                        type = 'pitchfork',
+                    var coords = this.chart.pointer.getCoordinates(e),
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'pitchfork',
-                            type: type,
-                            typeOptions: {
-                                points: [{
-                                    x: x,
-                                    y: y,
-                                    controlPoint: {
-                                        style: {
-                                            fill: 'red'
+                        options = merge(
+                            {
+                                langKey: 'pitchfork',
+                                type: 'pitchfork',
+                                typeOptions: {
+                                    points: [{
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value,
+                                        controlPoint: {
+                                            style: {
+                                                fill: 'red'
+                                            }
                                         }
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }, {
+                                        x: coords.xAxis[0].value,
+                                        y: coords.yAxis[0].value
+                                    }],
+                                    innerBackground: {
+                                        fill: 'rgba(100, 170, 255, 0.8)'
                                     }
-                                }, {
-                                    x: x,
-                                    y: y
-                                }, {
-                                    x: x,
-                                    y: y
-                                }],
-                                innerBackground: {
-                                    fill: 'rgba(100, 170, 255, 0.8)'
+                                },
+                                shapeOptions: {
+                                    strokeWidth: 2
                                 }
                             },
-                            shapeOptions: {
-                                strokeWidth: 2
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions);
+                            navigation.annotationsOptions,
+                            navigation.bindings.pitchfork.annotationsOptions
+                        );
 
                     return this.chart.addAnnotation(options);
                 },
@@ -1538,7 +1524,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-vertical-counter", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-vertical-counter", "start": function() {}, "annotationsOptions": {}}
              */
             verticalCounter: {
                 /** @ignore */
@@ -1546,39 +1532,39 @@
                 /** @ignore */
                 start: function (e) {
                     var closestPoint = bindingsUtils.attractToPoint(e, this.chart),
-                        type = 'verticalLine',
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
                         verticalCounter = !defined(this.verticalCounter) ? 0 :
                             this.verticalCounter,
-                        options = merge({
-                            langKey: 'verticalCounter',
-                            type: type,
-                            typeOptions: {
-                                point: {
-                                    x: closestPoint.x,
-                                    y: closestPoint.y,
-                                    xAxis: closestPoint.xAxis,
-                                    yAxis: closestPoint.yAxis
+                        options = merge(
+                            {
+                                langKey: 'verticalCounter',
+                                type: 'verticalLine',
+                                typeOptions: {
+                                    point: {
+                                        x: closestPoint.x,
+                                        y: closestPoint.y,
+                                        xAxis: closestPoint.xAxis,
+                                        yAxis: closestPoint.yAxis
+                                    },
+                                    label: {
+                                        offset: closestPoint.below ? 40 : -40,
+                                        text: verticalCounter.toString()
+                                    }
                                 },
-                                label: {
-                                    offset: closestPoint.below ? 40 : -40,
-                                    text: verticalCounter.toString()
+                                labelOptions: {
+                                    style: {
+                                        color: '#666666',
+                                        fontSize: '11px'
+                                    }
+                                },
+                                shapeOptions: {
+                                    stroke: 'rgba(0, 0, 0, 0.75)',
+                                    strokeWidth: 1
                                 }
                             },
-                            labelOptions: {
-                                style: {
-                                    color: '#666666',
-                                    fontSize: '11px'
-                                }
-                            },
-                            shapeOptions: {
-                                stroke: 'rgba(0, 0, 0, 0.75)',
-                                strokeWidth: 1
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions),
+                            navigation.annotationsOptions,
+                            navigation.bindings.verticalCounter.annotationsOptions
+                        ),
                         annotation;
 
                     annotation = this.chart.addAnnotation(options);
@@ -1595,7 +1581,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-vertical-label", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-vertical-label", "start": function() {}, "annotationsOptions": {}}
              */
             verticalLabel: {
                 /** @ignore */
@@ -1603,36 +1589,36 @@
                 /** @ignore */
                 start: function (e) {
                     var closestPoint = bindingsUtils.attractToPoint(e, this.chart),
-                        type = 'verticalLine',
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'verticalLabel',
-                            type: type,
-                            typeOptions: {
-                                point: {
-                                    x: closestPoint.x,
-                                    y: closestPoint.y,
-                                    xAxis: closestPoint.xAxis,
-                                    yAxis: closestPoint.yAxis
+                        options = merge(
+                            {
+                                langKey: 'verticalLabel',
+                                type: 'verticalLine',
+                                typeOptions: {
+                                    point: {
+                                        x: closestPoint.x,
+                                        y: closestPoint.y,
+                                        xAxis: closestPoint.xAxis,
+                                        yAxis: closestPoint.yAxis
+                                    },
+                                    label: {
+                                        offset: closestPoint.below ? 40 : -40
+                                    }
                                 },
-                                label: {
-                                    offset: closestPoint.below ? 40 : -40
+                                labelOptions: {
+                                    style: {
+                                        color: '#666666',
+                                        fontSize: '11px'
+                                    }
+                                },
+                                shapeOptions: {
+                                    stroke: 'rgba(0, 0, 0, 0.75)',
+                                    strokeWidth: 1
                                 }
                             },
-                            labelOptions: {
-                                style: {
-                                    color: '#666666',
-                                    fontSize: '11px'
-                                }
-                            },
-                            shapeOptions: {
-                                stroke: 'rgba(0, 0, 0, 0.75)',
-                                strokeWidth: 1
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions),
+                            navigation.annotationsOptions,
+                            navigation.bindings.verticalLabel.annotationsOptions
+                        ),
                         annotation;
 
                     annotation = this.chart.addAnnotation(options);
@@ -1647,7 +1633,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-vertical-arrow", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-vertical-arrow", "start": function() {}, "annotationsOptions": {}}
              */
             verticalArrow: {
                 /** @ignore */
@@ -1655,35 +1641,35 @@
                 /** @ignore */
                 start: function (e) {
                     var closestPoint = bindingsUtils.attractToPoint(e, this.chart),
-                        type = 'verticalLine',
                         navigation = this.chart.options.navigation,
-                        bindings = navigation && navigation.bindings,
-                        options = merge({
-                            langKey: 'verticalArrow',
-                            type: type,
-                            typeOptions: {
-                                point: {
-                                    x: closestPoint.x,
-                                    y: closestPoint.y,
-                                    xAxis: closestPoint.xAxis,
-                                    yAxis: closestPoint.yAxis
+                        options = merge(
+                            {
+                                langKey: 'verticalArrow',
+                                type: 'verticalLine',
+                                typeOptions: {
+                                    point: {
+                                        x: closestPoint.x,
+                                        y: closestPoint.y,
+                                        xAxis: closestPoint.xAxis,
+                                        yAxis: closestPoint.yAxis
+                                    },
+                                    label: {
+                                        offset: closestPoint.below ? 40 : -40,
+                                        format: ' '
+                                    },
+                                    connector: {
+                                        fill: 'none',
+                                        stroke: closestPoint.below ? 'red' : 'green'
+                                    }
                                 },
-                                label: {
-                                    offset: closestPoint.below ? 40 : -40,
-                                    format: ' '
-                                },
-                                connector: {
-                                    fill: 'none',
-                                    stroke: closestPoint.below ? 'red' : 'green'
+                                shapeOptions: {
+                                    stroke: 'rgba(0, 0, 0, 0.75)',
+                                    strokeWidth: 1
                                 }
                             },
-                            shapeOptions: {
-                                stroke: 'rgba(0, 0, 0, 0.75)',
-                                strokeWidth: 1
-                            }
-                        },
-                        navigation.annotationsOptions,
-                        bindings[type] && bindings[type].annotationsOptions),
+                            navigation.annotationsOptions,
+                            navigation.bindings.verticalArrow.annotationsOptions
+                        ),
                         annotation;
 
                     annotation = this.chart.addAnnotation(options);
@@ -1698,7 +1684,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-flag-circlepin", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-flag-circlepin", "start": function() {}}
              */
             flagCirclepin: {
                 /** @ignore */
@@ -1713,7 +1699,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-flag-diamondpin", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-flag-diamondpin", "start": function() {}}
              */
             flagDiamondpin: {
                 /** @ignore */
@@ -1729,7 +1715,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-flag-squarepin", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-flag-squarepin", "start": function() {}}
              */
             flagSquarepin: {
                 /** @ignore */
@@ -1745,7 +1731,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-flag-simplepin", "start": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-flag-simplepin", "start": function() {}}
              */
             flagSimplepin: {
                 /** @ignore */
@@ -1761,7 +1747,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-zoom-x", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-zoom-x", "init": function() {}}
              */
             zoomX: {
                 /** @ignore */
@@ -1787,7 +1773,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-zoom-y", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-zoom-y", "init": function() {}}
              */
             zoomY: {
                 /** @ignore */
@@ -1812,7 +1798,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-zoom-xy", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-zoom-xy", "init": function() {}}
              */
             zoomXY: {
                 /** @ignore */
@@ -1837,7 +1823,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-series-type-line", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-series-type-line", "init": function() {}}
              */
             seriesTypeLine: {
                 /** @ignore */
@@ -1861,7 +1847,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-series-type-ohlc", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-series-type-ohlc", "init": function() {}}
              */
             seriesTypeOhlc: {
                 /** @ignore */
@@ -1884,7 +1870,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-series-type-candlestick", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-series-type-candlestick", "init": function() {}}
              */
             seriesTypeCandlestick: {
                 /** @ignore */
@@ -1907,7 +1893,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-full-screen", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-full-screen", "init": function() {}}
              */
             fullScreen: {
                 /** @ignore */
@@ -1932,28 +1918,30 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-current-price-indicator", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-current-price-indicator", "init": function() {}}
              */
             currentPriceIndicator: {
                 /** @ignore */
                 className: 'highcharts-current-price-indicator',
                 /** @ignore */
                 init: function (button) {
-                    var series = this.chart.series[0],
+                    var chart = this.chart,
+                        series = chart.series[0],
                         options = series.options,
                         lastVisiblePrice = options.lastVisiblePrice &&
                                         options.lastVisiblePrice.enabled,
                         lastPrice = options.lastPrice && options.lastPrice.enabled,
-                        gui = this.chart.stockTools;
+                        gui = chart.stockTools,
+                        iconsURL = gui.getIconsURL();
 
                     if (gui && gui.guiEnabled) {
                         if (lastPrice) {
                             button.firstChild.style['background-image'] =
-                                'url("' + gui.options.iconsURL +
+                                'url("' + iconsURL +
                                 'current-price-show.svg")';
                         } else {
                             button.firstChild.style['background-image'] =
-                                'url("' + gui.options.iconsURL +
+                                'url("' + iconsURL +
                                 'current-price-hide.svg")';
                         }
                     }
@@ -1983,9 +1971,14 @@
             /**
              * Indicators bindings. Includes `init` event to show a popup.
              *
+             * Note: In order to show base series from the chart in the popup's
+             * dropdown each series requires
+             * [series.id](https://api.highcharts.com/highstock/series.line.id) to be
+             * defined.
+             *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-indicators", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-indicators", "init": function() {}}
              */
             indicators: {
                 /** @ignore */
@@ -2016,29 +2009,31 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-toggle-annotations", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-toggle-annotations", "init": function() {}}
              */
             toggleAnnotations: {
                 /** @ignore */
                 className: 'highcharts-toggle-annotations',
                 /** @ignore */
                 init: function (button) {
-                    var gui = this.chart.stockTools;
+                    var chart = this.chart,
+                        gui = chart.stockTools,
+                        iconsURL = gui.getIconsURL();
 
                     this.toggledAnnotations = !this.toggledAnnotations;
 
-                    (this.chart.annotations || []).forEach(function (annotation) {
+                    (chart.annotations || []).forEach(function (annotation) {
                         annotation.setVisibility(!this.toggledAnnotations);
                     }, this);
 
                     if (gui && gui.guiEnabled) {
                         if (this.toggledAnnotations) {
                             button.firstChild.style['background-image'] =
-                                'url("' + gui.options.iconsURL +
+                                'url("' + iconsURL +
                                     'annotations-hidden.svg")';
                         } else {
                             button.firstChild.style['background-image'] =
-                                'url("' + gui.options.iconsURL +
+                                'url("' + iconsURL +
                                     'annotations-visible.svg")';
                         }
                     }
@@ -2059,7 +2054,7 @@
              *
              * @type    {Highcharts.StockToolsBindingsObject}
              * @product highstock
-             * @default {"className": "highcharts-save-chart", "init": function() {}, "annotationOptions": {}}
+             * @default {"className": "highcharts-save-chart", "init": function() {}}
              */
             saveChart: {
                 /** @ignore */
@@ -2117,7 +2112,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/stock-tools-gui.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/stock-tools-gui.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * GUI generator for Stock tools
          *
@@ -2126,10 +2121,11 @@
          * License: www.highcharts.com/license
          */
 
+        var isArray = U.isArray;
+
         var addEvent = H.addEvent,
             createElement = H.createElement,
             pick = H.pick,
-            isArray = H.isArray,
             fireEvent = H.fireEvent,
             getStyle = H.getStyle,
             merge = H.merge,
@@ -2298,6 +2294,17 @@
                  */
                 gui: {
                     /**
+                     * Path where Highcharts will look for icons. Change this to use
+                     * icons from a different server.
+                     *
+                     * Since 7.1.3 use [iconsURL](#navigation.iconsURL) for popup and
+                     * stock tools.
+                     *
+                     * @deprecated
+                     * @apioption stockTools.gui.iconsURL
+                     *
+                     */
+                    /**
                      * Enable or disable the stockTools gui.
                      *
                      * @type      {boolean}
@@ -2322,11 +2329,6 @@
                      *
                      */
                     toolbarClassName: 'stocktools-toolbar',
-                    /**
-                     * Path where Highcharts will look for icons. Change this to use
-                     * icons from a different server.
-                     */
-                    iconsURL: 'https://code.highcharts.com/7.1.2/gfx/stock-icons/',
                     /**
                      * A collection of strings pointing to config options for the
                      * toolbar items. Each name refers to unique key from definitions
@@ -2936,7 +2938,8 @@
             this.chart = chart;
             this.options = options;
             this.lang = langOptions;
-
+            // set url for icons.
+            this.iconsURL = this.getIconsURL();
             this.guiEnabled = options.enabled;
             this.visible = pick(options.visible, true);
             this.placed = pick(options.placed, false);
@@ -3173,8 +3176,7 @@
              * @return {Object} - references to all created HTML elements
              */
             addButton: function (target, options, btnName, lang) {
-                var guiOptions = this.options,
-                    btnOptions = options[btnName],
+                var btnOptions = options[btnName],
                     items = btnOptions.items,
                     classMapping = H.Toolbar.prototype.classMapping,
                     userClassName = btnOptions.className || '',
@@ -3195,16 +3197,19 @@
 
 
                 // submenu
-                if (items && items.length > 1) {
+                if (items && items.length) {
 
                     // arrow is a hook to show / hide submenu
                     submenuArrow = createElement(SPAN, {
                         className: PREFIX + 'submenu-item-arrow ' +
                             PREFIX + 'arrow-right'
                     }, null, buttonWrapper);
+
+                    submenuArrow.style['background-image'] = 'url(' +
+                        this.iconsURL + 'arrow-bottom.svg)';
                 } else {
                     mainButton.style['background-image'] = 'url(' +
-                        guiOptions.iconsURL + btnOptions.symbol + ')';
+                        this.iconsURL + btnOptions.symbol + ')';
                 }
 
                 return {
@@ -3230,9 +3235,15 @@
                     className: PREFIX + 'arrow-up'
                 }, null, stockToolbar.arrowWrapper);
 
+                stockToolbar.arrowUp.style['background-image'] =
+                    'url(' + this.iconsURL + 'arrow-right.svg)';
+
                 stockToolbar.arrowDown = createElement(DIV, {
                     className: PREFIX + 'arrow-down'
                 }, null, stockToolbar.arrowWrapper);
+
+                stockToolbar.arrowDown.style['background-image'] =
+                    'url(' + this.iconsURL + 'arrow-right.svg)';
 
                 wrapper.insertBefore(
                     stockToolbar.arrowWrapper,
@@ -3352,6 +3363,9 @@
                     className: PREFIX + 'toggle-toolbar ' + PREFIX + 'arrow-left'
                 }, null, wrapper);
 
+                showhideBtn.style['background-image'] =
+                    'url(' + this.iconsURL + 'arrow-right.svg)';
+
                 if (!visible) {
                     // hide
                     if (submenu) {
@@ -3359,7 +3373,6 @@
                     }
                     showhideBtn.style.left = '0px';
                     stockToolbar.visible = visible = false;
-
                     toolbar.classList.add(PREFIX + 'hide');
                     showhideBtn.classList.toggle(PREFIX + 'arrow-right');
                     wrapper.style.height = showhideBtn.offsetHeight + 'px';
@@ -3497,6 +3510,12 @@
              */
             redraw: function () {
                 this.showHideNavigatorion();
+            },
+
+            getIconsURL: function () {
+                return this.chart.options.navigation.iconsURL ||
+                    this.options.iconsURL ||
+                    'https://code.highcharts.com/7.1.3/gfx/stock-icons/';
             },
             /*
              * Mapping JSON fields to CSS classes.

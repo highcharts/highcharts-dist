@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -70,6 +70,7 @@
                 shadow: false
             },
             legend: {
+                backgroundColor: '#F0F0EA',
                 itemStyle: {
                     fontWeight: 'bold',
                     fontSize: '13px'
@@ -100,11 +101,7 @@
                 candlestick: {
                     lineColor: '#404048'
                 }
-            },
-
-
-            // General
-            background2: '#F0F0EA'
+            }
 
         };
 

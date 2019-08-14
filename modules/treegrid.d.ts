@@ -26,7 +26,7 @@ declare module "../highcharts" {
      * @return Returns the first break found that matches, returns false if no
      *         break is found.
      */
-    function findBreakAt(x: number, breaks: any[]): (boolean|object);
+    function findBreakAt(x: number, breaks: Array<XAxisBreaksOptions>): (XAxisBreaksOptions|undefined);
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

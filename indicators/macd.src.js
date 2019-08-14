@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highstock JS v7.1.3 (2019-08-14)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/macd.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/macd.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -37,11 +37,12 @@
 
 
 
+        var defined = U.defined;
+
 
         var seriesType = H.seriesType,
             noop = H.noop,
             merge = H.merge,
-            defined = H.defined,
             SMA = H.seriesTypes.sma,
             EMA = H.seriesTypes.ema,
             correctFloat = H.correctFloat;

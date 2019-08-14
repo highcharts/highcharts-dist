@@ -20,7 +20,7 @@ declare module "../highcharts" {
      * @param params
      *        Parameters
      */
-    function drawPoint(params: object): void;
+    function drawPoint(params: Dictionary<any>): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

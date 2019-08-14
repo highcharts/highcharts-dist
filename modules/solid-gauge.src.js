@@ -1,5 +1,5 @@
 /**
- * @license  Highcharts JS v7.1.2 (2019-06-04)
+ * @license Highcharts JS v7.1.3 (2019-08-14)
  *
  * Solid angular gauge module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/solid-gauge.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/solid-gauge.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * Solid angular gauge module
          *
@@ -49,9 +49,11 @@
 
 
 
-        var pInt = H.pInt,
-            pick = H.pick,
-            isNumber = H.isNumber,
+        var isNumber = U.isNumber,
+            pInt = U.pInt;
+
+
+        var pick = H.pick,
             wrap = H.wrap,
             Renderer = H.Renderer,
             colorAxisMethods;
@@ -307,6 +309,7 @@
             colorByPoint: true,
 
             dataLabels: {
+                /** @ignore-option */
                 y: 0
             }
 

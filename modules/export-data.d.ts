@@ -13,13 +13,13 @@ import * as _Highcharts from "../highcharts";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
-    interface AjaxSettings {
-        data: object;
+    interface AjaxSettingsObject {
+        data: (string|Dictionary<any>);
         dataType: ("json"|"octet"|"text"|"xml");
         error: Function;
-        headers: object;
+        headers: Dictionary<string>;
         success: Function;
-        type: ("delete"|"get"|"post"|"update");
+        type: ("DELETE"|"GET"|"POST"|"UPDATE");
         url: string;
     }
     interface Chart {
@@ -80,8 +80,21 @@ declare module "../highcharts" {
      *
      * @param attr
      *        The Ajax settings to use.
+     *
+     * @return Returns false, if error occured.
      */
-    function ajax(attr: AjaxSettings): void;
+    function ajax(attr: Partial<AjaxSettingsObject>): (false|undefined);
+    /**
+     * Get a JSON resource over XHR, also supporting CORS without preflight.
+     *
+     * @param url
+     *        The URL to load.
+     *
+     * @param success
+     *        The success callback. For error handling, use the
+     *        `Highcharts.ajax` function instead.
+     */
+    function getJSON(url: string, success: Function): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;
