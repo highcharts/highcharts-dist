@@ -1,5 +1,5 @@
 /*
- Highmaps JS v7.1.3 (2019-08-14)
+ Highmaps JS v7.2.0 (2019-09-03)
 
  Tilemap module
 

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Force directed graph module
  *
@@ -1047,35 +1047,17 @@
                 // available space around the node:
                 this.k = this.options.linkLength || this.integration.getK(this);
             },
-            addNodes: function (nodes) {
-                nodes.forEach(function (node) {
-                    if (this.nodes.indexOf(node) === -1) {
-                        this.nodes.push(node);
+            addElementsToCollection: function (elements, collection) {
+                elements.forEach(function (elem) {
+                    if (collection.indexOf(elem) === -1) {
+                        collection.push(elem);
                     }
-                }, this);
+                });
             },
-            removeNode: function (node) {
-                var index = this.nodes.indexOf(node);
+            removeElementFromCollection: function (element, collection) {
+                var index = collection.indexOf(element);
                 if (index !== -1) {
-                    this.nodes.splice(index, 1);
-                }
-            },
-            removeLink: function (link) {
-                var index = this.links.indexOf(link);
-                if (index !== -1) {
-                    this.links.splice(index, 1);
-                }
-            },
-            addLinks: function (links) {
-                links.forEach(function (link) {
-                    if (this.links.indexOf(link) === -1) {
-                        this.links.push(link);
-                    }
-                }, this);
-            },
-            addSeries: function (series) {
-                if (this.series.indexOf(series) === -1) {
-                    this.series.push(series);
+                    collection.splice(index, 1);
                 }
             },
             clear: function () {
@@ -1711,10 +1693,11 @@
          *               Networkgraph
          * @since        7.0.0
          * @excluding    boostThreshold, animation, animationLimit, connectEnds,
-         *               connectNulls, dragDrop, getExtremesFromAll, label, linecap,
-         *               negativeColor, pointInterval, pointIntervalUnit,
-         *               pointPlacement, pointStart, softThreshold, stack, stacking,
-         *               step, threshold, xAxis, yAxis, zoneAxis
+         *               colorAxis, colorKey, connectNulls, dragDrop,
+         *               getExtremesFromAll, label, linecap, negativeColor,
+         *               pointInterval, pointIntervalUnit, pointPlacement,
+         *               pointStart, softThreshold, stack, stacking, step,
+         *               threshold, xAxis, yAxis, zoneAxis
          * @optionparent plotOptions.networkgraph
          */
         {
@@ -2043,7 +2026,10 @@
              * @private
              */
             createNode: H.NodesMixin.createNode,
-            destroy: H.NodesMixin.destroy,
+            destroy: function () {
+                this.layout.removeElementFromCollection(this, this.layout.series);
+                H.NodesMixin.destroy.call(this);
+            },
             /* eslint-disable no-invalid-this, valid-jsdoc */
             /**
              * Extend init with base event, which should stop simulation during
@@ -2171,9 +2157,9 @@
                 }
                 this.layout = layout;
                 layout.setArea(0, 0, this.chart.plotWidth, this.chart.plotHeight);
-                layout.addSeries(this);
-                layout.addNodes(this.nodes);
-                layout.addLinks(this.points);
+                layout.addElementsToCollection([this], layout.series);
+                layout.addElementsToCollection(this.nodes, layout.nodes);
+                layout.addElementsToCollection(this.points, layout.links);
             },
             /**
              * Extend the render function to also render this.nodes together with
@@ -2517,11 +2503,8 @@
                             link.destroyElements();
                         }
                     });
-                    this.series.layout.removeNode(this);
                 }
-                else {
-                    this.series.layout.removeLink(this);
-                }
+                this.series.layout.removeElementFromCollection(this, this.series.layout[this.isNode ? 'nodes' : 'links']);
                 return Point.prototype.destroy.apply(this, arguments);
             }
         });

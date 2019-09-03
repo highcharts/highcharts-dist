@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * (c) 2016-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -961,13 +961,13 @@
          * @extends      plotOptions.column
          * @excluding    allAreas, boostThreshold, clip, colorAxis, compare,
          *               compareBase, crisp, cropTreshold, dataGrouping, dataLabels,
-         *               depth, edgeColor, findNearestPointBy, getExtremesFromAll,
-         *               grouping, groupPadding, groupZPadding, joinBy, maxPointWidth,
-         *               minPointLength, navigatorOptions, negativeColor, pointInterval,
-         *               pointIntervalUnit, pointPadding, pointPlacement, pointRange,
-         *               pointStart, pointWidth, pointStart, pointWidth, shadow,
-         *               showCheckbox, showInNavigator, softThreshold, stacking,
-         *               threshold, zoneAxis, zones
+         *               depth, dragDrop, edgeColor, findNearestPointBy,
+         *               getExtremesFromAll, grouping, groupPadding, groupZPadding,
+         *               joinBy, maxPointWidth, minPointLength, navigatorOptions,
+         *               negativeColor, pointInterval, pointIntervalUnit, pointPadding,
+         *               pointPlacement, pointRange, pointStart, pointWidth, pointStart,
+         *               pointWidth, shadow, showCheckbox, showInNavigator,
+         *               softThreshold, stacking, threshold, zoneAxis, zones
          * @product      highcharts
          * @since        6.0.0
          * @optionparent plotOptions.wordcloud

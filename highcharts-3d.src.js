@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * 3D features for Highcharts JS
  *
@@ -3673,6 +3673,7 @@
          *         Draggable 3d scatter
          *
          * @extends      plotOptions.scatter
+         * @excluding    dragDrop
          * @product      highcharts
          * @optionparent plotOptions.scatter3d
          */

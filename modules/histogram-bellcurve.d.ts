@@ -18,13 +18,6 @@ declare module "../highcharts" {
      * base series
      */
     let binsNumberFormulas: any;
-    /**
-     * Returns a function for mapping number to the closed (right opened) bins
-     *
-     * @param binWidth
-     *        width of the bin
-     */
-    function fitToBinLeftClosed(binWidth: number): Function;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

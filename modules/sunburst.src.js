@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * (c) 2016-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -358,7 +358,7 @@
              *         Treemap
              *
              * @extends      plotOptions.scatter
-             * @excluding    marker, jitter
+             * @excluding    dragDrop, marker, jitter
              * @product      highcharts
              * @optionparent plotOptions.treemap
              */
@@ -815,6 +815,8 @@
                  */
                 borderWidth: 1,
 
+                colorKey: 'colorValue',
+
                 /**
                  * The opacity of a point in treemap. When a point has children, the
                  * visibility of the children is determined by the opacity.
@@ -941,13 +943,11 @@
                 },
                 init: function (chart, options) {
                     var series = this,
-                        colorSeriesMixin = H.colorSeriesMixin;
+                        colorMapSeriesMixin = H.colorMapSeriesMixin;
 
                     // If color series logic is loaded, add some properties
-                    if (H.colorSeriesMixin) {
-                        this.translateColors = colorSeriesMixin.translateColors;
-                        this.colorAttribs = colorSeriesMixin.colorAttribs;
-                        this.axisTypes = colorSeriesMixin.axisTypes;
+                    if (colorMapSeriesMixin) {
+                        this.colorAttribs = colorMapSeriesMixin.colorAttribs;
                     }
 
                     // Handle deprecated options.
@@ -1516,9 +1516,7 @@
                     series.calculateChildrenAreas(tree, seriesArea);
 
                     // Logic for point colors
-                    if (series.colorAxis) {
-                        series.translateColors();
-                    } else if (!options.colorByPoint) {
+                    if (!series.colorAxis && !options.colorByPoint) {
                         series.setColorRecursive(series.tree);
                     }
 
@@ -2590,10 +2588,10 @@
          *         Sunburst chart
          *
          * @extends      plotOptions.pie
-         * @excluding    allAreas, clip, colorAxis, compare, compareBase, dataGrouping,
-         *               depth, endAngle, gapSize, gapUnit, ignoreHiddenPoint,
-         *               innerSize, joinBy, legendType, linecap, minSize,
-         *               navigatorOptions, pointRange
+         * @excluding    allAreas, clip, colorAxis, colorKey, compare, compareBase,
+         *               dataGrouping, depth, dragDrop, endAngle, gapSize, gapUnit,
+         *               ignoreHiddenPoint, innerSize, joinBy, legendType, linecap,
+         *               minSize, navigatorOptions, pointRange
          * @product      highcharts
          * @optionparent plotOptions.sunburst
          * @private

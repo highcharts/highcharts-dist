@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Annotations module
  *
@@ -6105,7 +6105,8 @@
          *
          * */
 
-        var isArray = U.isArray,
+        var attr = U.attr,
+            isArray = U.isArray,
             isNumber = U.isNumber,
             isObject = U.isObject,
             objectEach = U.objectEach;
@@ -6784,7 +6785,7 @@
                     elemClassName;
 
                 while (element) {
-                    elemClassName = H.attr(element, 'class');
+                    elemClassName = attr(element, 'class');
                     if (elemClassName) {
                         classNames = classNames.concat(
                             elemClassName.split(' ').map(
@@ -7423,8 +7424,8 @@
                  * icons from a different server.
                  *
                  * @since     7.1.3
+                 * @default   https://code.highcharts.com/7.2.0/gfx/stock-icons/
                  * @apioption navigation.iconsURL
-                 * @default   https://code.highcharts.com/7.1.3/gfx/stock-icons/
                  */
 
                 /**
@@ -8552,7 +8553,7 @@
                             this.chart.options.stockTools &&
                             this.chart.options.stockTools.gui.iconsURL
                         ) ||
-                        'https://code.highcharts.com/7.1.3/gfx/stock-icons/'
+                        'https://code.highcharts.com/7.2.0/gfx/stock-icons/'
                     )
                 );
             }

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.1.3 (2019-08-14)
+ * @license Highmaps JS v7.2.0 (2019-09-03)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -9,5 +9,5 @@
  */
 'use strict';
 import '../../parts-map/ColorAxis.js';
-import '../../parts-map/ColorSeriesMixin.js';
+import '../../parts-map/ColorMapSeriesMixin.js';
 import '../../parts-map/HeatmapSeries.js';

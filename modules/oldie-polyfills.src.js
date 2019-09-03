@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Old IE (v6, v7, v8) array polyfills for Highcharts v7+.
  *
@@ -117,9 +117,9 @@
         }
         if (!Object.keys) {
             Object.keys = function (obj) {
-                var result = [], hasOwnProperty = Object.prototype.hasOwnProperty, prop;
+                var result = [], prop;
                 for (prop in obj) {
-                    if (hasOwnProperty.call(obj, prop)) {
+                    if (Object.hasOwnProperty.call(obj, prop)) {
                         result.push(prop);
                     }
                 }

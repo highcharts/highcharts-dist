@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Highcharts variwide module
  *
@@ -86,6 +86,7 @@
                  */
                 groupPadding: 0
             }, {
+                irregularWidths: true,
                 pointArrayMap: ['y', 'z'],
                 parallelArrays: ['x', 'y', 'z'],
                 processData: function (force) {
@@ -219,6 +220,42 @@
                             xAxis.len - point.shapeArgs.x - point.shapeArgs.width / 2;
                         }
                     }, this);
+
+                    if (this.options.stacking) {
+                        this.correctStackLabels();
+                    }
+                },
+
+                // Function that corrects stack labels positions
+                correctStackLabels: function () {
+                    var series = this,
+                        options = series.options,
+                        yAxis = series.yAxis,
+                        pointStack,
+                        pointWidth,
+                        stack,
+                        xValue;
+
+                    series.points.forEach(function (point) {
+                        xValue = point.x;
+                        pointWidth = point.shapeArgs.width;
+                        stack = yAxis.stacks[(series.negStacks &&
+                            point.y <
+                                (options.startFromThreshold ? 0 : options.threshold) ?
+                            '-' :
+                            '') + series.stackKey];
+                        pointStack = stack[xValue];
+
+                        if (stack && pointStack && !point.isNull) {
+                            pointStack.setOffset(
+                                -(pointWidth / 2) || 0,
+                                pointWidth || 0,
+                                undefined,
+                                undefined,
+                                point.plotX
+                            );
+                        }
+                    });
                 }
 
                 // Point functions

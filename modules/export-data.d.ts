@@ -34,7 +34,7 @@ declare module "../highcharts" {
          *
          * @return CSV representation of the data
          */
-        getCSV(useLocalDecimalPoint: boolean): string;
+        getCSV(useLocalDecimalPoint?: boolean): string;
         /**
          * Export-data module required. Returns a two-dimensional array
          * containing the current chart data.
@@ -45,8 +45,10 @@ declare module "../highcharts" {
          *        is defined, this can override the behavior.
          *
          * @return The current chart data
+         *
+         * @fires Highcharts.Chart#exportData
          */
-        getDataRows(multiLevelHeaders: boolean): Array<Array<(number|string)>>;
+        getDataRows(multiLevelHeaders?: boolean): Array<Array<(number|string)>>;
         /**
          * Export-data module required. Build a HTML table with the chart's
          * current data.
@@ -57,8 +59,10 @@ declare module "../highcharts" {
          *        same locale as the user is.
          *
          * @return HTML representation of the data.
+         *
+         * @fires Highcharts.Chart#afterGetTable
          */
-        getTable(useLocalDecimalPoint: boolean): string;
+        getTable(useLocalDecimalPoint?: boolean): string;
         /**
          * Experimental function to send a chart's config to the Cloud for
          * editing.
@@ -72,6 +76,8 @@ declare module "../highcharts" {
         /**
          * Export-data module required. View the data in a table below the
          * chart.
+         *
+         * @fires Highcharts.Chart#afterViewData
          */
         viewData(): void;
     }

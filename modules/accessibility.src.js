@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Accessibility module
  *
@@ -501,35 +501,6 @@
             },
 
 
-            /**
-             * Utility function to strip tags from a string. Used for aria-label
-             * attributes, painting on a canvas will fail if the text contains tags.
-             * @private
-             * @param {string} s The string to strip tags from
-             * @return {string} The new string.
-             */
-            stripTags: function (s) {
-                return typeof s === 'string' ? s.replace(/<\/?[^>]+(>|$)/g, '') : s;
-            },
-
-
-            /**
-             * HTML encode some characters vulnerable for XSS.
-             * @private
-             * @param {string} html The input string.
-             * @return {string} The escaped string.
-             */
-            htmlencode: function (html) {
-                return html
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#x27;')
-                    .replace(/\//g, '&#x2F;');
-            },
-
-
             // Functions to be overridden by derived classes
 
             /**
@@ -943,7 +914,67 @@
 
         return KeyboardNavigation;
     });
-    _registerModule(_modules, 'modules/accessibility/components/LegendComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js']], function (H, AccessibilityComponent, KeyboardNavigationHandler) {
+    _registerModule(_modules, 'modules/accessibility/utilities.js', [], function () {
+        /* *
+         *
+         *  (c) 2009-2019 Øystein Moseng
+         *
+         *  Utility functions for accessibility module.
+         *
+         *  License: www.highcharts.com/license
+         *
+         * */
+
+
+        /**
+         * @private
+         * @param {string} str
+         * @return {string}
+         */
+        function escapeStringForHTML(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#x27;')
+                .replace(/\//g, '&#x2F;');
+        }
+
+        var Utilities = {
+
+            /**
+             * Used for aria-label attributes, painting on a canvas will fail if the
+             * text contains tags.
+             * @private
+             * @param {string} str
+             * @return {string}
+             */
+            stripHTMLTagsFromString: function (str) {
+                return typeof str === 'string' ?
+                    str.replace(/<\/?[^>]+(>|$)/g, '') : str;
+            },
+
+
+            /**
+             * @private
+             * @param {string} tag
+             * @param {string} text
+             * @return {string}
+             */
+            makeHTMLTagFromText: function (tag, text) {
+                return '<' + tag + '>' + escapeStringForHTML(text) + '</' + tag + '>';
+            },
+
+
+            escapeStringForHTML: escapeStringForHTML
+
+        };
+
+
+        return Utilities;
+    });
+    _registerModule(_modules, 'modules/accessibility/components/LegendComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js'], _modules['modules/accessibility/utilities.js']], function (H, AccessibilityComponent, KeyboardNavigationHandler, A11yUtilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -955,6 +986,8 @@
          * */
 
 
+
+        var stripHTMLTags = A11yUtilities.stripHTMLTagsFromString;
 
 
         /**
@@ -1073,7 +1106,7 @@
                                     'accessibility.legendItem',
                                     {
                                         chart: chart,
-                                        itemName: component.stripTags(item.name)
+                                        itemName: stripHTMLTags(item.name)
                                     }
                                 )
                             },
@@ -1530,7 +1563,7 @@
 
         return MenuComponent;
     });
-    _registerModule(_modules, 'modules/accessibility/components/SeriesComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler) {
+    _registerModule(_modules, 'modules/accessibility/components/SeriesComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js'], _modules['modules/accessibility/utilities.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler, A11yUtilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -1547,7 +1580,8 @@
 
 
         var merge = H.merge,
-            pick = H.pick;
+            pick = H.pick,
+            stripHTMLTags = A11yUtilities.stripHTMLTagsFromString;
 
 
         /*
@@ -2521,7 +2555,7 @@
                         newPoint ? 'newPointAnnounce' + multiple : 'newDataAnnounce';
                 return chart.langFormat(
                     'accessibility.announceNewData.' + langKey, {
-                        chartTitle: this.stripTags(
+                        chartTitle: stripHTMLTags(
                             chart.options.title.text || chart.langFormat(
                                 'accessibility.defaultChartTitle', { chart: chart }
                             )
@@ -2643,7 +2677,7 @@
                                     // Set screen reader specific props
                                     pointEl.setAttribute('role', 'img');
                                     pointEl.setAttribute('aria-label',
-                                        component.stripTags(
+                                        stripHTMLTags(
                                             seriesA11yOptions
                                                 .pointDescriptionFormatter &&
                                             seriesA11yOptions
@@ -2673,7 +2707,7 @@
                         seriesEl.setAttribute('tabindex', '-1');
                         seriesEl.setAttribute(
                             'aria-label',
-                            component.stripTags(
+                            stripHTMLTags(
                                 a11yOptions.seriesDescriptionFormatter &&
                                 a11yOptions.seriesDescriptionFormatter(series) ||
                                 component.defaultSeriesDescriptionFormatter(series)
@@ -3413,7 +3447,7 @@
 
         return RangeSelectorComponent;
     });
-    _registerModule(_modules, 'modules/accessibility/components/InfoRegionComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js']], function (H, AccessibilityComponent) {
+    _registerModule(_modules, 'modules/accessibility/components/InfoRegionComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/utilities.js']], function (H, AccessibilityComponent, A11yUtilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -3427,7 +3461,8 @@
 
 
         var merge = H.merge,
-            pick = H.pick;
+            pick = H.pick,
+            makeHTMLTagFromText = A11yUtilities.makeHTMLTagFromText;
 
 
         /**
@@ -3616,29 +3651,68 @@
             /**
              * The default formatter for the screen reader section.
              * @private
+             * @return {string}
              */
             defaultScreenReaderSectionFormatter: function () {
-                var chart = this.chart,
-                    options = chart.options,
-                    chartTypes = chart.types,
-                    axesDesc = this.getAxesDescription();
+                var options = this.chart.options;
+                return this.defaultTypeDescriptionHTML(this.chart) +
+                    this.defaultSubtitleHTML(options) +
+                    this.defaultCaptionHTML(options) +
+                    this.defaultAxisDescriptionHTML('xAxis') +
+                    this.defaultAxisDescriptionHTML('yAxis');
+            },
 
-                return '<h5>' +
-                (
-                    options.accessibility.typeDescription ||
-                    chart.getTypeDescription(chartTypes)
-                ) + '</h5>' + (
-                    options.subtitle && options.subtitle.text ?
-                        '<div>' + this.htmlencode(options.subtitle.text) + '</div>' : ''
-                ) + (
-                    options.accessibility.description ?
-                        '<div>' + options.accessibility.description + '</div>' : ''
-                ) + (axesDesc.xAxis ? (
-                    '<div>' + axesDesc.xAxis + '</div>'
-                ) : '') +
-                (axesDesc.yAxis ? (
-                    '<div>' + axesDesc.yAxis + '</div>'
-                ) : '');
+
+            /**
+             * @private
+             * @param {Highcharts.Options} chartOptions
+             * @return {string}
+             */
+            defaultCaptionHTML: function (chartOptions) {
+                var captionOptions = chartOptions.caption,
+                    captionText = captionOptions && captionOptions.text,
+                    descriptionText = chartOptions.accessibility.description ||
+                        captionText;
+                return descriptionText ?
+                    makeHTMLTagFromText('div', descriptionText) : '';
+            },
+
+
+            /**
+             * @private
+             * @param {string} axisCollection
+             * @return {string}
+             */
+            defaultAxisDescriptionHTML: function (axisCollection) {
+                var axisDesc = this.getAxesDescription()[axisCollection];
+                return axisDesc ? makeHTMLTagFromText('div', axisDesc) : '';
+            },
+
+
+            /**
+             * @private
+             * @param {Highcharts.Chart} chart
+             * @returns {string}
+             */
+            defaultTypeDescriptionHTML: function (chart) {
+                return chart.types ?
+                    makeHTMLTagFromText(
+                        'h5',
+                        chart.options.accessibility.typeDescription ||
+                            chart.getTypeDescription(chart.types)
+                    ) : '';
+            },
+
+
+            /**
+             * @private
+             * @param {Highcharts.Options} chartOptions
+             * @return {string}
+             */
+            defaultSubtitleHTML: function (options) {
+                var subtitle = options.subtitle,
+                    text = subtitle && subtitle.text;
+                return text ? makeHTMLTagFromText('div', text) : '';
             },
 
 
@@ -3792,7 +3866,7 @@
 
         return InfoRegionComponent;
     });
-    _registerModule(_modules, 'modules/accessibility/components/ContainerComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js']], function (H, AccessibilityComponent) {
+    _registerModule(_modules, 'modules/accessibility/components/ContainerComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/utilities.js']], function (H, AccessibilityComponent, A11yUtilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -3805,7 +3879,8 @@
 
 
 
-        var doc = H.win.document;
+        var doc = H.win.document,
+            stripHTMLTags = A11yUtilities.stripHTMLTagsFromString;
 
 
         /**
@@ -3834,12 +3909,12 @@
                     chartTitle = chart.options.title.text || chart.langFormat(
                         'accessibility.defaultChartTitle', { chart: chart }
                     ),
-                    svgContainerTitle = this.stripTags(chart.langFormat(
+                    svgContainerTitle = stripHTMLTags(chart.langFormat(
                         'accessibility.svgContainerTitle', {
                             chartTitle: chartTitle
                         }
                     )),
-                    svgContainerLabel = this.stripTags(chart.langFormat(
+                    svgContainerLabel = stripHTMLTags(chart.langFormat(
                         'accessibility.svgContainerLabel', {
                             chartTitle: chartTitle
                         }
@@ -3875,7 +3950,7 @@
                     chart.langFormat(
                         'accessibility.chartContainerLabel',
                         {
-                            title: this.stripTags(chartTitle),
+                            title: stripHTMLTags(chartTitle),
                             chart: chart
                         }
                     )
@@ -3886,7 +3961,7 @@
                 if (creditsEl) {
                     if (chart.credits.textStr) {
                         creditsEl.setAttribute(
-                            'aria-label', this.stripTags(
+                            'aria-label', stripHTMLTags(
                                 chart.langFormat(
                                     'accessibility.credits', {
                                         creditsStr: chart.credits.textStr
@@ -4372,14 +4447,18 @@
                 /**
                  * A text description of the chart.
                  *
-                 * If the Accessibility module is loaded, this is included by default
-                 * as a long description of the chart in the hidden screen reader
-                 * information region.
+                 * **Note: Prefer using [caption](#caption.text) instead.**
                  *
-                 * Note: It is considered a best practice to make the description of the
-                 * chart visible to all users, so consider if this can be placed in text
-                 * around the chart instead.
+                 * If the Accessibility module is loaded, this option is included by
+                 * default as a long description of the chart in the hidden screen
+                 * reader information region.
                  *
+                 * Note: Since Highcharts now supports captions, it is preferred to
+                 * define the description there, as the caption benefits all users. The
+                 * caption will be available to screen reader users. If this option is
+                 * defined instead, the caption is hidden from screen reader users.
+                 *
+                 * @see [caption](#caption)
                  * @see [typeDescription](#accessibility.typeDescription)
                  *
                  * @type      {string}
@@ -5467,8 +5546,8 @@
          * @since 7.1.0
          */
 
-        /**
-         * @interface Highcharts.PointOptionsObject
+        /* *
+         * @interface Highcharts.PointOptionsObject in parts/Point.ts
          *//**
          * @name Highcharts.PointOptionsObject#accessibility
          * @type {Highcharts.PointAccessibilityOptionsObject|undefined}

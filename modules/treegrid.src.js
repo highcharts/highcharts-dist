@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v7.1.3 (2019-08-14)
+ * @license Highcharts Gantt JS v7.2.0 (2019-09-03)
  *
  * Tree Grid
  *
@@ -1506,7 +1506,7 @@
         var override = function (obj, methods) {
             var method, func;
             for (method in methods) {
-                if (Object.prototype.hasOwnProperty.call(methods, method)) {
+                if (Object.hasOwnProperty.call(methods, method)) {
                     func = methods[method];
                     wrap(obj, method, func);
                 }

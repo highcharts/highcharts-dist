@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Data module
  *
@@ -2017,7 +2017,7 @@
                     afterComplete: function (dataOptions) {
                         var i, series;
                         // Merge series configs
-                        if (Object.prototype.hasOwnProperty.call(userOptions, 'series')) {
+                        if (Object.hasOwnProperty.call(userOptions, 'series')) {
                             if (typeof userOptions.series === 'object') {
                                 i = Math.max(userOptions.series.length, dataOptions && dataOptions.series ?
                                     dataOptions.series.length :

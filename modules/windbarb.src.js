@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Wind barb series module
  *
@@ -308,6 +308,10 @@
                  * Pixel length of the stems.
                  */
                 vectorLength: 20,
+                /**
+                 * @default   value
+                 */
+                colorKey: 'value',
                 /**
                  * Vertical offset from the cartesian position, in pixels. The default
                  * value makes sure the symbols don't overlap the X axis when `onSeries`

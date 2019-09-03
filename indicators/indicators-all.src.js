@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.1.3 (2019-08-14)
+ * @license Highstock JS v7.2.0 (2019-09-03)
  *
  * All technical indicators for Highstock
  *
@@ -170,10 +170,10 @@
              *
              * @extends      plotOptions.line
              * @since        6.0.0
-             * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
-             *               pointInterval, pointIntervalUnit, pointPlacement,
-             *               pointRange, pointStart, showInNavigator, stacking,
-             *               useOhlcData
+             * @excluding    allAreas, colorAxis, dragDrop, joinBy, keys,
+             *               navigatorOptions, pointInterval, pointIntervalUnit,
+             *               pointPlacement, pointRange, pointStart, showInNavigator,
+             *               stacking, useOhlcData
              * @product      highstock
              * @optionparent plotOptions.sma
              */

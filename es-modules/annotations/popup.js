@@ -1062,7 +1062,7 @@ addEvent(H.NavigationBindings, 'showPopup', function (config) {
                     this.chart.options.stockTools &&
                     this.chart.options.stockTools.gui.iconsURL
                 ) ||
-                'https://code.highcharts.com/7.1.3/gfx/stock-icons/'
+                'https://code.highcharts.com/7.2.0/gfx/stock-icons/'
             )
         );
     }

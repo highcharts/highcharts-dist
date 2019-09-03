@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.1.3 (2019-08-14)
+ * @license Highstock JS v7.2.0 (2019-09-03)
  *
  * Highstock as a plugin for Highcharts
  *
@@ -2778,7 +2778,8 @@
                                     !legendOptions.floating) ?
                                     legend.legendHeight +
                                         pick(legendOptions.margin, 10) :
-                                    0);
+                                    0) -
+                                (this.titleOffset ? this.titleOffset[2] : 0);
                     }
                     if (xAxis && yAxis) { // false if navigator is disabled (#904)
                         if (this.inverted) {
@@ -4954,6 +4955,10 @@
              * @validvalue ["open", "high", "low", "close"]
              * @product    highstock
              * @apioption  plotOptions.ohlc.pointValKey
+             */
+            /**
+             * @default   close
+             * @apioption plotOptions.ohlc.colorKey
              */
             /**
              * Line color for up points.
@@ -7505,6 +7510,7 @@
                     translateY = (alignTranslateY -
                         groupHeight -
                         (floating ? 0 : options.y) -
+                        (chart.titleOffset ? chart.titleOffset[2] : 0) -
                         10 // 10 spacing
                     );
                 }
@@ -7513,8 +7519,7 @@
                         translateY = 0;
                     }
                     if (chart.titleOffset && chart.titleOffset[0]) {
-                        translateY =
-                            chart.titleOffset[0] + chart.options.title.margin;
+                        translateY = chart.titleOffset[0];
                     }
                     translateY += ((chart.margin[0] - chart.spacing[0]) || 0);
                 }

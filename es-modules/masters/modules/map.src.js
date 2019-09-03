@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.1.3 (2019-08-14)
+ * @license Highmaps JS v7.2.0 (2019-09-03)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -12,7 +12,7 @@
 'use strict';
 import '../../parts-map/MapAxis.js';
 import '../../parts-map/ColorAxis.js';
-import '../../parts-map/ColorSeriesMixin.js';
+import '../../parts-map/ColorMapSeriesMixin.js';
 import '../../parts-map/MapNavigation.js';
 import '../../parts-map/MapPointer.js';
 import '../../parts-map/MapSeries.js';

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * (c) 2017-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -1352,9 +1352,9 @@
          *         Euler diagram
          *
          * @extends      plotOptions.scatter
-         * @excluding    connectEnds, connectNulls, cropThreshold, findNearestPointBy,
-         *               getExtremesFromAll, jitter, label, linecap, lineWidth,
-         *               linkedTo, marker, negativeColor, pointInterval,
+         * @excluding    connectEnds, connectNulls, cropThreshold, dragDrop,
+         *               findNearestPointBy, getExtremesFromAll, jitter, label, linecap,
+         *               lineWidth, linkedTo, marker, negativeColor, pointInterval,
          *               pointIntervalUnit, pointPlacement, pointStart, softThreshold,
          *               stacking, steps, threshold, xAxis, yAxis, zoneAxis, zones
          * @product      highcharts

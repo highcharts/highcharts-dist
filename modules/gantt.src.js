@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v7.1.3 (2019-08-14)
+ * @license Highcharts Gantt JS v7.2.0 (2019-09-03)
  *
  * Gantt series
  *
@@ -1691,7 +1691,7 @@
         var override = function (obj, methods) {
             var method, func;
             for (method in methods) {
-                if (Object.prototype.hasOwnProperty.call(methods, method)) {
+                if (Object.hasOwnProperty.call(methods, method)) {
                     func = methods[method];
                     wrap(obj, method, func);
                 }
@@ -4357,8 +4357,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /**
-         * @interface Highcharts.PointOptionsObject
+        /* *
+         * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
         * The ending X value of the range point.
         * @name Highcharts.PointOptionsObject#x2
@@ -7612,6 +7612,7 @@
                     translateY = (alignTranslateY -
                         groupHeight -
                         (floating ? 0 : options.y) -
+                        (chart.titleOffset ? chart.titleOffset[2] : 0) -
                         10 // 10 spacing
                     );
                 }
@@ -7620,8 +7621,7 @@
                         translateY = 0;
                     }
                     if (chart.titleOffset && chart.titleOffset[0]) {
-                        translateY =
-                            chart.titleOffset[0] + chart.options.title.margin;
+                        translateY = chart.titleOffset[0];
                     }
                     translateY += ((chart.margin[0] - chart.spacing[0]) || 0);
                 }
@@ -9786,7 +9786,8 @@
                                     !legendOptions.floating) ?
                                     legend.legendHeight +
                                         pick(legendOptions.margin, 10) :
-                                    0);
+                                    0) -
+                                (this.titleOffset ? this.titleOffset[2] : 0);
                     }
                     if (xAxis && yAxis) { // false if navigator is disabled (#904)
                         if (this.inverted) {

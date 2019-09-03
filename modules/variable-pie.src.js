@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Variable Pie module for Highcharts
  *
@@ -44,6 +44,7 @@
 
 
         var pick = H.pick,
+            fireEvent = H.fireEvent,
             arrayMin = H.arrayMin,
             arrayMax = H.arrayMax,
             seriesType = H.seriesType,
@@ -71,6 +72,7 @@
              *         Variable-radius pie chart
              *
              * @extends      plotOptions.pie
+             * @excluding    dragDrop
              * @since        6.0.0
              * @product      highcharts
              * @optionparent plotOptions.variablepie
@@ -426,6 +428,8 @@
                         };
 
                     }
+
+                    fireEvent(series, 'afterTranslate');
                 }
             }
         );

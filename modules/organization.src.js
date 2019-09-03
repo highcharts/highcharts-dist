@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  * Organization chart series type
  *
  * (c) 2019-2019 Torstein Honsi
@@ -259,13 +259,18 @@
                     var series = this,
                         attribs = base.pointAttribs.call(series, point, state),
                         level = point.isNode ? point.level : point.fromNode.level,
-                        levelOptions = series.mapOptionsToLevel[level],
+                        levelOptions = series.mapOptionsToLevel[level || 0] || {},
                         options = point.options,
-                        stateOptions = levelOptions.states[state] || {},
+                        stateOptions = (
+                            levelOptions.states && levelOptions.states[state]
+                        ) || {},
                         values = ['borderRadius', 'linkColor', 'linkLineWidth']
                             .reduce(function (obj, key) {
                                 obj[key] = pick(
-                                    stateOptions[key], options[key], levelOptions[key]
+                                    stateOptions[key],
+                                    options[key],
+                                    levelOptions[key],
+                                    series.options[key]
                                 );
                                 return obj;
                             }, {});

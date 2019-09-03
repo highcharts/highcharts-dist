@@ -23,26 +23,25 @@ declare module "../highcharts" {
          * `e.newPointId`. The this context is the point being dragged. To stop
          * the default drag action, return `false`.
          */
-        drag: PointDragCallbackFunction;
+        drag?: PointDragCallbackFunction;
         /**
          * Point specific options for the draggable-points module.
          */
-        dragDrop: (SeriesLineDataDragDropOptions|SeriesXrangeDataDragDropOptions);
+        dragDrop?: (SeriesLineDataDragDropOptions|SeriesXrangeDataDragDropOptions);
         /**
          * Callback that fires when starting to drag a point. The mouse event
          * object is passed in as an argument. If a drag handle is used,
          * `e.updateProp` is set to the data property being dragged. The `this`
          * context is the point.
          */
-        dragStart: PointDragStartCallbackFunction;
+        dragStart?: PointDragStartCallbackFunction;
         /**
          * Callback that fires when the point is dropped. The parameters passed
          * are the same as for drag. To stop the default drop action, return
          * `false`.
          */
-        drop: PointDropCallbackFunction;
+        drop?: PointDropCallbackFunction;
     }
-    interface PointOptionsObject {}
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -379,6 +379,9 @@
             render: function () {
                 this.isDirty = false; // prevent setting Y axis dirty
             },
+            createLabelCollector: function () {
+                return false;
+            },
             setScale: noop,
             setCategories: noop,
             setTitle: noop
@@ -729,14 +732,40 @@
                             center[2]) +
                         (titleOptions.y || 0))
                 };
+            },
+            /* *
+             * Attach and return collecting function for labels in radial axis for
+             * anti-collision.
+             */
+            createLabelCollector: function () {
+                var axis = this;
+                return function () {
+                    if (axis.isRadial &&
+                        axis.tickPositions &&
+                        // undocumented option for now, but working
+                        axis.options.labels.allowOverlap !== true) {
+                        return axis.tickPositions
+                            .map(function (pos) {
+                            return axis.ticks[pos] && axis.ticks[pos].label;
+                        })
+                            .filter(function (label) {
+                            return Boolean(label);
+                        });
+                    }
+                };
             }
             /* eslint-enable valid-jsdoc */
         };
         /* eslint-disable no-invalid-this */
         // Actions before axis init.
         addEvent(Axis, 'init', function (e) {
-            var axis = this, chart = this.chart, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, isHidden = angular && isX, isCircular, chartOptions = chart.options, paneIndex = e.userOptions.pane || 0, pane = this.pane =
+            var chart = this.chart, angular = chart.angular, polar = chart.polar, isX = this.isXAxis, isHidden = angular && isX, isCircular, chartOptions = chart.options, paneIndex = e.userOptions.pane || 0, pane = this.pane =
                 chart.pane && chart.pane[paneIndex];
+            // Prevent changes for colorAxis
+            if (this.coll === 'colorAxis') {
+                this.isRadial = false;
+                return;
+            }
             // Before prototype.init
             if (angular) {
                 extend(this, isHidden ? hiddenAxisMixin : radialAxisMixin);
@@ -758,21 +787,13 @@
                 this.isRadial = true;
                 chart.inverted = false;
                 chartOptions.chart.zoomType = null;
-                // Prevent overlapping axis labels (#9761)
-                chart.labelCollectors.push(function () {
-                    if (axis.isRadial &&
-                        axis.tickPositions &&
-                        // undocumented option for now, but working
-                        axis.options.labels.allowOverlap !== true) {
-                        return axis.tickPositions
-                            .map(function (pos) {
-                            return axis.ticks[pos] && axis.ticks[pos].label;
-                        })
-                            .filter(function (label) {
-                            return Boolean(label);
-                        });
-                    }
-                });
+                if (!this.labelCollector) {
+                    this.labelCollector = this.createLabelCollector();
+                }
+                if (this.labelCollector) {
+                    // Prevent overlapping axis labels (#9761)
+                    chart.labelCollectors.push(this.labelCollector);
+                }
             }
             else {
                 this.isRadial = false;
@@ -804,6 +825,15 @@
             if (this.isRadial) {
                 e.align = undefined;
                 e.preventDefault();
+            }
+        });
+        // Remove label collector function on axis remove/update
+        addEvent(Axis, 'destroy', function () {
+            if (this.chart && this.chart.labelCollectors) {
+                var index = this.chart.labelCollectors.indexOf(this.labelCollector);
+                if (index >= 0) {
+                    this.chart.labelCollectors.splice(index, 1);
+                }
             }
         });
         // Add special cases within the Tick class' methods for radial axes.
@@ -959,8 +989,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /**
-         * @interface Highcharts.PointOptionsObject
+        /* *
+         * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
         * Range series only. The high or maximum value for each data point.
         * @name Highcharts.PointOptionsObject#high
@@ -1052,6 +1082,10 @@
              * @type      {boolean|Highcharts.ShadowOptionsObject}
              * @product   highcharts
              * @apioption plotOptions.arearange.shadow
+             */
+            /**
+             * @default   low
+             * @apioption plotOptions.arearange.colorKey
              */
             /**
              * Pixel width of the arearange graph line.
@@ -2208,11 +2242,11 @@
          *         Gauge chart
          *
          * @extends      plotOptions.line
-         * @excluding    animationLimit, boostThreshold, connectEnds, connectNulls,
-         *               cropThreshold, dashStyle, findNearestPointBy,
-         *               getExtremesFromAll, marker, negativeColor, pointPlacement,
-         *               shadow, softThreshold, stacking, states, step, threshold,
-         *               turboThreshold, xAxis, zoneAxis, zones
+         * @excluding    animationLimit, boostThreshold, colorAxis, colorKey,
+         *               connectEnds, connectNulls, cropThreshold, dashStyle, dragDrop,
+         *               findNearestPointBy, getExtremesFromAll, marker, negativeColor,
+         *               pointPlacement, shadow, softThreshold, stacking, states, step,
+         *               threshold, turboThreshold, xAxis, zoneAxis, zones
          * @product      highcharts
          * @optionparent plotOptions.gauge
          */
@@ -2266,7 +2300,7 @@
              * @sample {highcharts} highcharts/css/gauge/
              *         Styled mode
              *
-             * @type    {Highcharts.CSSObject}
+             * @type    {*}
              * @since   2.3.0
              * @product highcharts
              */
@@ -2400,7 +2434,7 @@
              * @sample {highcharts} highcharts/css/gauge/
              *         Styled mode
              *
-             * @type    {Highcharts.CSSObject}
+             * @type    {*}
              * @since   2.3.0
              * @product highcharts
              */
@@ -2486,10 +2520,10 @@
                 var series = this, yAxis = series.yAxis, options = series.options, center = yAxis.center;
                 series.generatePoints();
                 series.points.forEach(function (point) {
-                    var dialOptions = merge(options.dial, point.dial), radius = (pInt(pick(dialOptions.radius, 80)) * center[2]) /
-                        200, baseLength = (pInt(pick(dialOptions.baseLength, 70)) * radius) /
-                        100, rearLength = (pInt(pick(dialOptions.rearLength, 10)) * radius) /
-                        100, baseWidth = dialOptions.baseWidth || 3, topWidth = dialOptions.topWidth || 1, overshoot = options.overshoot, rotation = yAxis.startAngleRad + yAxis.translate(point.y, null, null, null, true);
+                    var dialOptions = merge(options.dial, point.dial), radius = ((pInt(pick(dialOptions.radius, '80%')) * center[2]) /
+                        200), baseLength = ((pInt(pick(dialOptions.baseLength, '70%')) * radius) /
+                        100), rearLength = ((pInt(pick(dialOptions.rearLength, '10%')) * radius) /
+                        100), baseWidth = dialOptions.baseWidth || 3, topWidth = dialOptions.topWidth || 1, overshoot = options.overshoot, rotation = yAxis.startAngleRad + yAxis.translate(point.y, null, null, null, true);
                     // Handle the wrap and overshoot options
                     if (isNumber(overshoot)) {
                         overshoot = overshoot / 180 * Math.PI;
@@ -2894,6 +2928,10 @@
              * @since     3.0
              * @product   highcharts
              * @apioption plotOptions.boxplot.stemWidth
+             */
+            /**
+             * @default   high
+             * @apioption plotOptions.boxplot.colorKey
              */
             /**
              * The color of the whiskers, the horizontal lines marking low and high
@@ -3409,7 +3447,7 @@
          * @return {boolean} - Whether it is a direct property
          */
         function ownProp(obj, key) {
-            return Object.prototype.hasOwnProperty.call(obj, key);
+            return Object.hasOwnProperty.call(obj, key);
         }
         /* eslint-disable no-invalid-this */
         addEvent(Axis, 'afterInit', function () {
@@ -5073,7 +5111,9 @@
                 legend.render();
                 chart.getMargins();
                 chart.axes.forEach(function (axis) {
-                    axis.render();
+                    if (axis.visible) { // #11448
+                        axis.render();
+                    }
                     if (!bubbleLegendOptions.placed) {
                         axis.setScale();
                         axis.updateNames();
@@ -5320,6 +5360,10 @@
              * @apioption plotOptions.bubble.zMax
              */
             /**
+             * @default   z
+             * @apioption plotOptions.bubble.colorKey
+             */
+            /**
              * The minimum for the Z value range. Defaults to the lowest Z value
              * in the data.
              *
@@ -5555,7 +5599,7 @@
                         if (isNumber(data[i]) &&
                             axis.dataMin <= data[i] &&
                             data[i] <= axis.dataMax) {
-                            radius = series.radii[i];
+                            radius = series.radii ? series.radii[i] : 0;
                             pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
                             pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
                         }
@@ -6499,35 +6543,17 @@
                 // available space around the node:
                 this.k = this.options.linkLength || this.integration.getK(this);
             },
-            addNodes: function (nodes) {
-                nodes.forEach(function (node) {
-                    if (this.nodes.indexOf(node) === -1) {
-                        this.nodes.push(node);
+            addElementsToCollection: function (elements, collection) {
+                elements.forEach(function (elem) {
+                    if (collection.indexOf(elem) === -1) {
+                        collection.push(elem);
                     }
-                }, this);
+                });
             },
-            removeNode: function (node) {
-                var index = this.nodes.indexOf(node);
+            removeElementFromCollection: function (element, collection) {
+                var index = collection.indexOf(element);
                 if (index !== -1) {
-                    this.nodes.splice(index, 1);
-                }
-            },
-            removeLink: function (link) {
-                var index = this.links.indexOf(link);
-                if (index !== -1) {
-                    this.links.splice(index, 1);
-                }
-            },
-            addLinks: function (links) {
-                links.forEach(function (link) {
-                    if (this.links.indexOf(link) === -1) {
-                        this.links.push(link);
-                    }
-                }, this);
-            },
-            addSeries: function (series) {
-                if (this.series.indexOf(series) === -1) {
-                    this.series.push(series);
+                    collection.splice(index, 1);
                 }
             },
             clear: function () {
@@ -7162,7 +7188,7 @@
         * @since 7.1.0
         */
         var defined = U.defined, isArray = U.isArray, isNumber = U.isNumber;
-        var seriesType = H.seriesType, Series = H.Series, Point = H.Point, pick = H.pick, addEvent = H.addEvent, Chart = H.Chart, color = H.Color, Reingold = H.layouts['reingold-fruchterman'], NetworkPoint = H.seriesTypes.bubble.prototype.pointClass, dragNodesMixin = H.dragNodesMixin;
+        var seriesType = H.seriesType, Series = H.Series, Point = H.Point, pick = H.pick, addEvent = H.addEvent, fireEvent = H.fireEvent, Chart = H.Chart, color = H.Color, Reingold = H.layouts['reingold-fruchterman'], NetworkPoint = H.seriesTypes.bubble.prototype.pointClass, dragNodesMixin = H.dragNodesMixin;
         H.networkgraphIntegrations.packedbubble = {
             repulsiveForceFunction: function (d, k, node, repNode) {
                 return Math.min(d, (node.marker.radius + repNode.marker.radius) / 2);
@@ -7319,8 +7345,9 @@
          *         Split packed bubble chart
 
          * @extends      plotOptions.bubble
-         * @excluding    connectEnds, connectNulls, jitter, keys, pointPlacement,
-         *               sizeByAbsoluteValue, step, xAxis, yAxis, zMax, zMin
+         * @excluding    connectEnds, connectNulls, dragDrop, jitter, keys,
+         *               pointPlacement, sizeByAbsoluteValue, step, xAxis, yAxis,
+         *               zMax, zMin
          * @product      highcharts
          * @since        7.0.0
          * @optionparent plotOptions.packedbubble
@@ -7631,7 +7658,7 @@
                     else {
                         series.graph.hide();
                         series.parentNodeLayout
-                            .removeNode(series.parentNode);
+                            .removeElementFromCollection(series.parentNode, series.parentNodeLayout.nodes);
                         if (series.parentNode.dataLabel) {
                             series.parentNode.dataLabel.hide();
                         }
@@ -7639,11 +7666,11 @@
                 }
                 else if (series.layout) {
                     if (series.visible) {
-                        series.layout.addNodes(series.points);
+                        series.layout.addElementsToCollection(series.points, series.layout.nodes);
                     }
                     else {
                         series.points.forEach(function (node) {
-                            series.layout.removeNode(node);
+                            series.layout.removeElementFromCollection(node, series.layout.nodes);
                         });
                     }
                 }
@@ -7743,15 +7770,12 @@
                     width: series.parentNodeRadius * 2,
                     height: series.parentNodeRadius * 2
                 }, parentOptions);
-                if (!series.graph) {
+                if (!series.parentNode.graphic) {
                     series.graph = series.parentNode.graphic =
                         chart.renderer.symbol(parentOptions.symbol)
-                            .attr(parentAttribs)
                             .add(series.parentNodesGroup);
                 }
-                else {
-                    series.graph.attr(parentAttribs);
-                }
+                series.parentNode.graphic.attr(parentAttribs);
             },
             /**
              * Creating parent nodes for split series, in which all the bubbles
@@ -7793,8 +7817,8 @@
                         parentNode.plotY = series.parentNode.plotY;
                     }
                     series.parentNode = parentNode;
-                    parentNodeLayout.addSeries(series);
-                    parentNodeLayout.addNodes([parentNode]);
+                    parentNodeLayout.addElementsToCollection([series], parentNodeLayout.series);
+                    parentNodeLayout.addElementsToCollection([parentNode], parentNodeLayout.nodes);
                 }
             },
             /**
@@ -7844,8 +7868,8 @@
                     node.collisionNmb = 1;
                 });
                 layout.setArea(0, 0, series.chart.plotWidth, series.chart.plotHeight);
-                layout.addSeries(series);
-                layout.addNodes(series.points);
+                layout.addElementsToCollection([series], layout.series);
+                layout.addElementsToCollection(series.points, layout.nodes);
             },
             /**
              * Function responsible for adding all the layouts to the chart.
@@ -7910,6 +7934,7 @@
                 if (useSimulation) {
                     series.deferLayout();
                 }
+                fireEvent(series, 'afterTranslate');
             },
             /**
              * Check if two bubbles overlaps.
@@ -8207,7 +8232,7 @@
                                         plotX: point.plotX,
                                         plotY: point.plotY
                                     }), false);
-                                    layout.removeNode(point);
+                                    layout.removeElementFromCollection(point, layout.nodes);
                                     point.remove();
                                 }
                             }
@@ -8217,8 +8242,14 @@
                 }
             },
             destroy: function () {
+                // Remove the series from all layouts series collections #11469
+                if (this.chart.graphLayoutsLookup) {
+                    this.chart.graphLayoutsLookup.forEach(function (layout) {
+                        layout.removeElementFromCollection(this, layout.series);
+                    }, this);
+                }
                 if (this.parentNode) {
-                    this.parentNodeLayout.removeNode(this.parentNode);
+                    this.parentNodeLayout.removeElementFromCollection(this.parentNode, this.parentNodeLayout.nodes);
                     if (this.parentNode.dataLabel) {
                         this.parentNode.dataLabel =
                             this.parentNode.dataLabel.destroy();
@@ -8236,7 +8267,7 @@
              */
             destroy: function () {
                 if (this.series.layout) {
-                    this.series.layout.removeNode(this);
+                    this.series.layout.removeElementFromCollection(this, this.series.layout.nodes);
                 }
                 return Point.prototype.destroy.apply(this, arguments);
             }
@@ -8712,7 +8743,13 @@
             };
             if (chart.polar) {
                 chart.axes.forEach(function (axis) {
-                    var isXAxis = axis.isXAxis, center = axis.center, x = e.chartX - center[0] - chart.plotLeft, y = e.chartY - center[1] - chart.plotTop;
+                    var isXAxis = axis.isXAxis, center = axis.center, x, y;
+                    // Skip colorAxis
+                    if (axis.coll === 'colorAxis') {
+                        return;
+                    }
+                    x = e.chartX - center[0] - chart.plotLeft;
+                    y = e.chartY - center[1] - chart.plotTop;
                     ret[isXAxis ? 'xAxis' : 'yAxis'].push({
                         axis: axis,
                         value: axis.translate(isXAxis ?

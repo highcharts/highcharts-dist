@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Sankey diagram module
  *
@@ -560,12 +560,13 @@
          * @since        6.0.0
          * @product      highcharts
          * @excluding    animationLimit, boostThreshold, borderRadius,
-         *               crisp, cropThreshold, depth, edgeColor, edgeWidth,
-         *               findNearestPointBy, grouping, groupPadding, groupZPadding,
-         *               maxPointWidth, negativeColor, pointInterval,
-         *               pointIntervalUnit, pointPadding, pointPlacement,
-         *               pointRange, pointStart, pointWidth, shadow, softThreshold,
-         *               stacking, threshold, zoneAxis, zones, minPointLength
+         *               crisp, cropThreshold, colorAxis, colorKey, depth, dragDrop,
+         *               edgeColor, edgeWidth, findNearestPointBy, grouping,
+         *               groupPadding, groupZPadding, maxPointWidth, negativeColor,
+         *               pointInterval, pointIntervalUnit, pointPadding,
+         *               pointPlacement, pointRange, pointStart, pointWidth,
+         *               shadow, softThreshold, stacking, threshold, zoneAxis,
+         *               zones, minPointLength
          * @optionparent plotOptions.sankey
          */
         {
@@ -703,6 +704,8 @@
              * @since     7.1.3
              * @default   0
              * @apioption plotOptions.sankey.minLinkWidth
+             *
+             * @private
              */
             minLinkWidth: 0,
             /**
@@ -862,7 +865,8 @@
                             }
                             node.column = fromColumn + 1;
                             // Hanging layout for organization chart
-                            if (fromNode.options.layout === 'hanging') {
+                            if (fromNode &&
+                                fromNode.options.layout === 'hanging') {
                                 node.hangsFrom = fromNode;
                                 i = -1; // Reuse existing variable i
                                 find(fromNode.linksFrom, function (link, index) {
@@ -906,7 +910,7 @@
                 var series = this, level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states && levelOptions.states[state]) || {}, values = [
                     'colorByPoint', 'borderColor', 'borderWidth', 'linkOpacity'
                 ].reduce(function (obj, key) {
-                    obj[key] = pick(stateOptions[key], options[key], levelOptions[key]);
+                    obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
                     return obj;
                 }, {}), color = pick(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
                 // Node attributes
@@ -1112,7 +1116,7 @@
                 }, Infinity);
                 this.colDistance =
                     (chart.plotSizeX - nodeWidth -
-                        options.borderWidth) / (nodeColumns.length - 1);
+                        options.borderWidth) / Math.max(1, nodeColumns.length - 1);
                 // Calculate level options used in sankey and organization
                 series.mapOptionsToLevel = getLevelOptions({
                     // NOTE: if support for allowTraversingTree is added, then from

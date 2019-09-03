@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Boost module
  *
@@ -3599,7 +3599,7 @@
                 this.alteredByBoost.push({
                     prop: prop,
                     val: this[prop],
-                    own: this.hasOwnProperty(prop)
+                    own: Object.hasOwnProperty.call(this, prop)
                 });
             }, this);
 

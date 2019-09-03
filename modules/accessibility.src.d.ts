@@ -33,14 +33,6 @@ declare module "../highcharts.src" {
          */
         description?: string;
     }
-    interface PointOptionsObject {
-        accessibility?: PointAccessibilityOptionsObject;
-        /**
-         * A description of the point to add to the screen reader information
-         * about the point. Requires the Accessibility module.
-         */
-        description?: string;
-    }
     /**
      * The AccessibilityComponent base class, representing a part of the chart
      * that has accessibility logic connected to it. This class can be inherited

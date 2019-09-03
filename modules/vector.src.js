@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  *
  * Vector plot series module
  *
@@ -63,8 +63,8 @@
              * @since        6.0.0
              * @extends      plotOptions.scatter
              * @excluding    boostThreshold, marker, connectEnds, connectNulls,
-             *               cropThreshold, dashStyle, gapSize, gapUnit, dataGrouping,
-             *               linecap, shadow, stacking, step, jitter
+             *               cropThreshold, dashStyle, dragDrop, gapSize, gapUnit,
+             *               dataGrouping, linecap, shadow, stacking, step, jitter
              * @product      highcharts highstock
              * @optionparent plotOptions.vector
              */

@@ -38,8 +38,11 @@ declare module "../highcharts.src" {
     interface SVGElement {
         /**
          * A general fadeIn method.
+         *
+         * @param animation
+         *        The animation options for the element fade.
          */
-        fadeIn(animation?: AnimationOptionsObject): void;
+        fadeIn(animation?: (boolean|AnimationOptionsObject)): void;
     }
 }
 export default factory;

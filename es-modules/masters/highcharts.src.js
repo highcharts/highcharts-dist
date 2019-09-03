@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.1.3 (2019-08-14)
+ * @license Highcharts JS v7.2.0 (2019-09-03)
  * @module highcharts/highcharts
  *
  * (c) 2009-2018 Torstein Honsi
@@ -40,6 +40,7 @@ import '../parts/Interaction.js';
 import '../parts/Responsive.js';
 
 extend(Highcharts, {
+    attr: U.attr,
     defined: U.defined,
     erase: U.erase,
     isArray: U.isArray,
