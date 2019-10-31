@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/funnel3d.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/funnel3d.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  Highcharts funnel3d series module
@@ -42,7 +42,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var charts = H.charts, color = H.color, error = H.error, extend = H.extend, merge = H.merge, pick = H.pick, seriesType = H.seriesType, seriesTypes = H.seriesTypes, relativeLength = H.relativeLength, 
+        var extend = U.extend, pick = U.pick;
+        var charts = H.charts, color = H.color, error = H.error, merge = H.merge, seriesType = H.seriesType, seriesTypes = H.seriesTypes, relativeLength = H.relativeLength, 
         // Use H.Renderer instead of H.SVGRenderer for VML support.
         RendererProto = H.Renderer.prototype, 
         //
@@ -50,10 +51,11 @@
         /**
          * The funnel3d series type.
          *
-         * Requires `highcharts-3d.js`, `cylinder.js` and `funnel3d.js` module.
-         *
          * @constructor seriesTypes.funnel3d
          * @augments seriesTypes.column
+         * @requires highcharts-3d
+         * @requires modules/cylinder
+         * @requires modules/funnel3d
          */
         seriesType('funnel3d', 'column', 
         /**
@@ -71,6 +73,9 @@
          * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase
          * @product      highcharts
          * @since        7.1.0
+         * @requires     highcharts-3d
+         * @requires     modules/cylinder
+         * @requires     modules/funnel3d
          * @optionparent plotOptions.funnel3d
          */
         {
@@ -329,17 +334,26 @@
                 seriesTypes.column.prototype.alignDataLabel.apply(series, arguments);
             }
         }, /** @lends seriesTypes.funnel3d.prototype.pointClass.prototype */ {
-            shapeType: 'funnel3d'
+            shapeType: 'funnel3d',
+            hasNewShapeType: H
+                .seriesTypes.column.prototype
+                .pointClass.prototype
+                .hasNewShapeType
         });
         /**
          * A `funnel3d` series. If the [type](#series.funnel3d.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
          *
+         * @sample {highcharts} highcharts/demo/funnel3d/
+         *         Funnel3d demo
+         *
          * @since     7.1.0
          * @extends   series,plotOptions.funnel3d
          * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase
          * @product   highcharts
-         * @sample    {highcharts} highcharts/demo/funnel3d/ Funnel3d demo
+         * @requires  highcharts-3d
+         * @requires  modules/cylinder
+         * @requires  modules/funnel3d
          * @apioption series.funnel3d
          */
         /**

@@ -11,13 +11,13 @@
 'use strict';
 import H from '../parts/Globals.js';
 import U from '../parts/Utilities.js';
-var defined = U.defined, erase = U.erase, isArray = U.isArray, isNumber = U.isNumber;
+var defined = U.defined, erase = U.erase, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick;
 var addEvent = H.addEvent, argsToArray = function (args) {
     return Array.prototype.slice.call(args, 1);
 }, dateFormat = H.dateFormat, isObject = function (x) {
     // Always use strict mode
     return U.isObject(x, true);
-}, merge = H.merge, pick = H.pick, wrap = H.wrap, Chart = H.Chart, Axis = H.Axis, Tick = H.Tick;
+}, merge = H.merge, wrap = H.wrap, Chart = H.Chart, Axis = H.Axis, Tick = H.Tick;
 var applyGridOptions = function applyGridOptions(axis) {
     var options = axis.options, gridOptions = options && isObject(options.grid) ? options.grid : {}, 
     // TODO: Consider using cell margins defined in % of font size?
@@ -167,7 +167,10 @@ Axis.prototype.getMaxLabelDimensions = function (ticks, tickPositions) {
             if (label.textStr && !isNumber(label.textPxLength)) {
                 label.textPxLength = label.getBBox().width;
             }
-            tickWidth = isNumber(label.textPxLength) ? label.textPxLength : 0;
+            tickWidth = isNumber(label.textPxLength) ?
+                // Math.round ensures crisp lines
+                Math.round(label.textPxLength) :
+                0;
             // Update the result if width and/or height are larger
             dimensions.height = Math.max(tickHeight, dimensions.height);
             dimensions.width = Math.max(tickWidth, dimensions.width);
@@ -546,20 +549,14 @@ addEvent(Axis, 'afterRender',
  *        the original function
  */
 function () {
-    var axis = this, options = axis.options, gridOptions = ((options && isObject(options.grid)) ? options.grid : {}), labelPadding, distance, lineWidth, linePath, yStartIndex, yEndIndex, xStartIndex, xEndIndex, renderer = axis.chart.renderer, horiz = axis.horiz, axisGroupBox;
+    var axis = this, options = axis.options, gridOptions = ((options && isObject(options.grid)) ? options.grid : {}), yStartIndex, yEndIndex, xStartIndex, xEndIndex, renderer = axis.chart.renderer;
     if (gridOptions.enabled === true) {
         // @todo acutual label padding (top, bottom, left, right)
-        // Label padding is needed to figure out where to draw the outer
-        // line.
-        labelPadding = (Math.abs(axis.defaultLeftAxisOptions.labels.x) * 2);
         axis.maxLabelDimensions = axis.getMaxLabelDimensions(axis.ticks, axis.tickPositions);
-        distance = axis.maxLabelDimensions.width + labelPadding;
-        lineWidth = options.lineWidth;
         // Remove right wall before rendering if updating
         if (axis.rightWall) {
             axis.rightWall.destroy();
         }
-        axisGroupBox = axis.axisGroup.getBBox();
         /*
            Draw an extra axis line on outer axes
                        >
@@ -569,23 +566,19 @@ function () {
            Into this:    |______|______|______|__|
                                                    */
         if (axis.isOuterAxis() && axis.axisLine) {
-            if (horiz) {
-                // -1 to avoid adding distance each time the chart updates
-                distance = axisGroupBox.height - 1;
-            }
+            var lineWidth = options.lineWidth;
             if (lineWidth) {
-                linePath = axis.getLinePath(lineWidth);
+                var linePath = axis.getLinePath(lineWidth);
                 xStartIndex = linePath.indexOf('M') + 1;
                 xEndIndex = linePath.indexOf('L') + 1;
                 yStartIndex = linePath.indexOf('M') + 2;
                 yEndIndex = linePath.indexOf('L') + 2;
                 // Negate distance if top or left axis
-                if (axis.side === axisSide.top ||
-                    axis.side === axisSide.left) {
-                    distance = -distance;
-                }
+                // Subtract 1px to draw the line at the end of the tick
+                var distance = (axis.tickSize('tick')[0] - 1) * ((axis.side === axisSide.top ||
+                    axis.side === axisSide.left) ? -1 : 1);
                 // If axis is horizontal, reposition line path vertically
-                if (horiz) {
+                if (axis.horiz) {
                     linePath[yStartIndex] =
                         linePath[yStartIndex] + distance;
                     linePath[yEndIndex] =
@@ -603,16 +596,16 @@ function () {
                     axis.axisLineExtra = renderer
                         .path(linePath)
                         .attr({
-                        /* eslint-disable spaced-comment */
-                        
-                        stroke: options.lineColor,
-                        'stroke-width': lineWidth,
-                        
-                        /* eslint-enable spaced-comment */
                         zIndex: 7
                     })
                         .addClass('highcharts-axis-line')
                         .add(axis.axisGroup);
+                    if (!renderer.styledMode) {
+                        axis.axisLineExtra.attr({
+                            stroke: options.lineColor,
+                            'stroke-width': lineWidth
+                        });
+                    }
                 }
                 else {
                     axis.axisLineExtra.animate({

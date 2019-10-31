@@ -12,14 +12,14 @@
 'use strict';
 import H from '../parts/Globals.js';
 import U from '../parts/Utilities.js';
-var isNumber = U.isNumber, splat = U.splat;
-import 'CurrentDateIndicator.js';
-import 'GridAxis.js';
+var isNumber = U.isNumber, pick = U.pick, splat = U.splat;
+import './CurrentDateIndicator.js';
+import './GridAxis.js';
 import '../modules/static-scale.src.js';
-import 'TreeGrid.js';
-import 'Pathfinder.js';
+import './TreeGrid.js';
+import './Pathfinder.js';
 import '../modules/xrange.src.js';
-var dateFormat = H.dateFormat, merge = H.merge, pick = H.pick, seriesType = H.seriesType, seriesTypes = H.seriesTypes, Series = H.Series, parent = seriesTypes.xrange;
+var dateFormat = H.dateFormat, merge = H.merge, seriesType = H.seriesType, seriesTypes = H.seriesTypes, Series = H.Series, parent = seriesTypes.xrange;
 /**
  * @private
  * @class
@@ -34,6 +34,7 @@ seriesType('gantt', 'xrange'
  *
  * @extends      plotOptions.xrange
  * @product      gantt
+ * @requires     highcharts-gantt
  * @optionparent plotOptions.gantt
  */
 , {
@@ -113,7 +114,7 @@ seriesType('gantt', 'xrange'
      * This override draws the point as a diamond if point.options.milestone
      * is true, and uses the original drawPoint() if it is false or not set.
      *
-     * @requires module:highcharts-gantt
+     * @requires highcharts-gantt
      *
      * @private
      * @function Highcharts.seriesTypes.gantt#drawPoint
@@ -219,6 +220,7 @@ seriesType('gantt', 'xrange'
  *            getExtremesFromAll, marker, negativeColor, pointInterval,
  *            pointIntervalUnit, pointPlacement, pointStart
  * @product   gantt
+ * @requires  highcharts-gantt
  * @apioption series.gantt
  */
 /**

@@ -110,14 +110,14 @@ import H from '../parts/Globals.js';
 * @since 7.1.0
 */
 import U from '../parts/Utilities.js';
-var defined = U.defined, isArray = U.isArray, isNumber = U.isNumber;
+var defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick;
 import '../parts/Axis.js';
 import '../parts/Color.js';
 import '../parts/Point.js';
 import '../parts/Series.js';
 import '../modules/networkgraph/layouts.js';
 import '../modules/networkgraph/draggable-nodes.js';
-var seriesType = H.seriesType, Series = H.Series, Point = H.Point, pick = H.pick, addEvent = H.addEvent, fireEvent = H.fireEvent, Chart = H.Chart, color = H.Color, Reingold = H.layouts['reingold-fruchterman'], NetworkPoint = H.seriesTypes.bubble.prototype.pointClass, dragNodesMixin = H.dragNodesMixin;
+var seriesType = H.seriesType, Series = H.Series, Point = H.Point, addEvent = H.addEvent, fireEvent = H.fireEvent, Chart = H.Chart, color = H.Color, Reingold = H.layouts['reingold-fruchterman'], NetworkPoint = H.seriesTypes.bubble.prototype.pointClass, dragNodesMixin = H.dragNodesMixin;
 H.networkgraphIntegrations.packedbubble = {
     repulsiveForceFunction: function (d, k, node, repNode) {
         return Math.min(d, (node.marker.radius + repNode.marker.radius) / 2);
@@ -266,7 +266,6 @@ seriesType('packedbubble', 'bubble',
  * renders a value in X, Y position. Each point is drawn as a bubble
  * where the bubbles don't overlap with each other and the radius
  * of the bubble relates to the value.
- * Requires `highcharts-more.js`.
  *
  * @sample highcharts/demo/packed-bubble/
  *         Packed bubble chart
@@ -279,6 +278,7 @@ seriesType('packedbubble', 'bubble',
  *               zMax, zMin
  * @product      highcharts
  * @since        7.0.0
+ * @requires     highcharts-more
  * @optionparent plotOptions.packedbubble
  */
 {
@@ -852,7 +852,7 @@ seriesType('packedbubble', 'bubble',
                     point.plotY = (positions[i][1] - chart.plotTop +
                         chart.diffY);
                 }
-                point.marker = H.extend(point.marker, {
+                point.marker = extend(point.marker, {
                     radius: radius,
                     width: 2 * radius,
                     height: 2 * radius
@@ -1217,6 +1217,7 @@ addEvent(Chart, 'beforeRedraw', function () {
  * @extends   series,plotOptions.packedbubble
  * @excluding dataParser,dataURL,stack
  * @product   highcharts highstock
+ * @requires  highcharts-more
  * @apioption series.packedbubble
  */
 /**

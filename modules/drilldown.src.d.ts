@@ -30,8 +30,7 @@ declare module "../highcharts.src" {
         addSeriesAsDrilldown(point: Point, options: SeriesOptionsType): void;
         /**
          * When the chart is drilled down to a child series, calling
-         * `chart.drillUp()` will drill up to the parent series. Requires the
-         * drilldown module.
+         * `chart.drillUp()` will drill up to the parent series.
          */
         drillUp(): void;
     }

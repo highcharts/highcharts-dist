@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Highcharts Drilldown module
  *
@@ -153,8 +153,8 @@
         * @name Highcharts.DrillupEventObject#type
         * @type {"drillup"}
         */
-        var objectEach = U.objectEach;
-        var animObject = H.animObject, noop = H.noop, color = H.color, defaultOptions = H.defaultOptions, extend = H.extend, format = H.format, pick = H.pick, Chart = H.Chart, seriesTypes = H.seriesTypes, PieSeries = seriesTypes.pie, ColumnSeries = seriesTypes.column, Tick = H.Tick, fireEvent = H.fireEvent, ddSeriesId = 1;
+        var extend = U.extend, objectEach = U.objectEach, pick = U.pick, syncTimeout = U.syncTimeout;
+        var animObject = H.animObject, noop = H.noop, color = H.color, defaultOptions = H.defaultOptions, format = H.format, Chart = H.Chart, seriesTypes = H.seriesTypes, PieSeries = seriesTypes.pie, ColumnSeries = seriesTypes.column, Tick = H.Tick, fireEvent = H.fireEvent, ddSeriesId = 1;
         // Add language
         extend(defaultOptions.lang, 
         /**
@@ -166,8 +166,9 @@
              * to the parent series. The parent series' name is inserted for
              * `{series.name}`.
              *
-             * @since   3.0.8
-             * @product highcharts highmaps
+             * @since    3.0.8
+             * @product  highcharts highmaps
+             * @requires modules/drilldown
              *
              * @private
              */
@@ -183,6 +184,7 @@
          * ](code.highcharts.com/modules/drilldown.js).
          *
          * @product      highcharts highmaps
+         * @requires     modules/drilldown
          * @optionparent drilldown
          */
         defaultOptions.drilldown = {
@@ -392,6 +394,7 @@
          * @since     3.0.8
          * @product   highcharts highmaps
          * @context   Highcharts.Chart
+         * @requires  modules/drilldown
          * @apioption chart.events.drilldown
          */
         /**
@@ -401,6 +404,7 @@
          * @since     3.0.8
          * @product   highcharts highmaps
          * @context   Highcharts.Chart
+         * @requires  modules/drilldown
          * @apioption chart.events.drillup
          */
         /**
@@ -411,6 +415,7 @@
          * @since     4.2.4
          * @product   highcharts highmaps
          * @context   Highcharts.Chart
+         * @requires  modules/drilldown
          * @apioption chart.events.drillupall
          */
         /**
@@ -423,6 +428,7 @@
          * @type      {string}
          * @since     3.0.8
          * @product   highcharts
+         * @requires  modules/drilldown
          * @apioption series.line.data.drilldown
          */
         /**
@@ -526,7 +532,9 @@
                 shapeArgs: point.shapeArgs,
                 // no graphic in line series with markers disabled
                 bBox: point.graphic ? point.graphic.getBBox() : {},
-                color: point.isNull ? new H.Color(color).setOpacity(0).get() : color,
+                color: point.isNull ?
+                    new H.Color(color).setOpacity(0).get() :
+                    color,
                 lowerSeriesOptions: ddOptions,
                 pointOptions: oldSeries.options.data[pointIndex],
                 pointIndex: pointIndex,
@@ -618,11 +626,13 @@
         };
         /**
          * When the chart is drilled down to a child series, calling `chart.drillUp()`
-         * will drill up to the parent series. Requires the drilldown module.
+         * will drill up to the parent series.
          *
          * @function Highcharts.Chart#drillUp
          *
          * @return {void}
+         *
+         * @requires  modules/drilldown
          */
         Chart.prototype.drillUp = function () {
             if (!this.drilldownLevels || this.drilldownLevels.length === 0) {
@@ -781,7 +791,7 @@
                     }
                 });
                 // Do dummy animation on first point to get to complete
-                H.syncTimeout(function () {
+                syncTimeout(function () {
                     if (newSeries.points) { // May be destroyed in the meantime, #3389
                         newSeries.points.forEach(function (point, i) {
                             // Fade in other points
@@ -815,7 +825,7 @@
                         }
                     }
                 });
-                animateFrom.x += (pick(xAxis.oldPos, xAxis.pos) - xAxis.pos);
+                animateFrom.x += pick(xAxis.oldPos, xAxis.pos) - xAxis.pos;
                 this.points.forEach(function (point) {
                     var animateTo = point.shapeArgs;
                     if (!styledMode) {

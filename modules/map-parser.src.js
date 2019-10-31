@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.2.0 (2019-09-03)
+ * @license Highmaps JS v7.2.1 (2019-10-31)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/map-parser.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/map-parser.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2009-2019 Torstein Honsi
@@ -39,6 +39,7 @@
          *
          * */
         /* global document, jQuery, $ */
+        var extend = U.extend;
         /* eslint-disable no-invalid-this */
         H.wrap(H.Data.prototype, 'init', function (proceed, options) {
             proceed.call(this, options);
@@ -47,7 +48,7 @@
             }
         });
         /* eslint-enable no-invalid-this */
-        H.extend(H.Data.prototype, {
+        extend(H.Data.prototype, {
             // Parse an SVG path into a simplified array that Highcharts can read
             pathToArray: function (path, matrix) {
                 var i = 0, position = 0, point, positions, fixedPoint = [0, 0], startPoint = [0, 0], isRelative, isString, operator, matrixTransform = function (p, m) {

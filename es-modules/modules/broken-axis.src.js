@@ -10,10 +10,10 @@
 'use strict';
 import H from '../parts/Globals.js';
 import U from '../parts/Utilities.js';
-var isArray = U.isArray;
+var extend = U.extend, isArray = U.isArray, pick = U.pick;
 import '../parts/Axis.js';
 import '../parts/Series.js';
-var addEvent = H.addEvent, pick = H.pick, extend = H.extend, find = H.find, fireEvent = H.fireEvent, Axis = H.Axis, Series = H.Series;
+var addEvent = H.addEvent, find = H.find, fireEvent = H.fireEvent, Axis = H.Axis, Series = H.Series;
 /**
  * Returns the first break found where the x is larger then break.from and
  * smaller then break.to.
@@ -368,6 +368,7 @@ H.Series.prototype.gappedPath = function () {
      * @type      {number}
      * @default   0
      * @product   highstock
+     * @requires  modules/broken-axis
      * @apioption plotOptions.series.gapSize
      */
     /**
@@ -389,6 +390,7 @@ H.Series.prototype.gappedPath = function () {
      * @since      5.0.13
      * @product    highstock
      * @validvalue ["relative", "value"]
+     * @requires   modules/broken-axis
      * @apioption  plotOptions.series.gapUnit
      */
     if (gapSize && i > 0) { // #5008

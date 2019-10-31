@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -155,8 +155,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber, objectEach = U.objectEach;
-        var seriesType = H.seriesType, correctFloat = H.correctFloat, arrayMax = H.arrayMax, arrayMin = H.arrayMin, merge = H.merge;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, objectEach = U.objectEach;
+        var seriesType = H.seriesType, correctFloat = H.correctFloat, merge = H.merge;
         /* ************************************************************************** *
          *  HISTOGRAM
          * ************************************************************************** */
@@ -211,6 +211,7 @@
          *               stacking
          * @product      highcharts
          * @since        6.0.0
+         * @requires     modules/histogram
          * @optionparent plotOptions.histogram
          */
         {
@@ -317,6 +318,7 @@
          * @excluding data, dataParser, dataURL
          * @product   highcharts
          * @since     6.0.0
+         * @requires  modules/histogram
          * @apioption series.histogram
          */
         /**
@@ -401,6 +403,7 @@
          * @product      highcharts
          * @excluding    boostThreshold, connectNulls, dragDrop, stacking,
          *               pointInterval, pointIntervalUnit
+         * @requires     modules/bellcurve
          * @optionparent plotOptions.bellcurve
          */
         , {
@@ -460,6 +463,7 @@
          * @since     6.0.0
          * @product   highcharts
          * @excluding dataParser, dataURL, data
+         * @requires  modules/bellcurve
          * @apioption series.bellcurve
          */
         /**

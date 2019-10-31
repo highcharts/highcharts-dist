@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.2.0 (2019-09-03)
+ * @license Highmaps JS v7.2.1 (2019-10-31)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-map/MapAxis.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/MapAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -38,7 +38,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = H.addEvent, Axis = H.Axis, pick = H.pick;
+        var pick = U.pick;
+        var addEvent = H.addEvent, Axis = H.Axis;
         /* eslint-disable no-invalid-this */
         // Override to use the extreme coordinates from the SVG shape, not the data
         // values
@@ -206,8 +207,8 @@
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        var erase = U.erase, isNumber = U.isNumber, splat = U.splat;
-        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Series = H.Series, Point = H.Point, color = H.color, ColorAxis, extend = H.extend, Legend = H.Legend, LegendSymbolMixin = H.LegendSymbolMixin, colorPointMixin = H.colorPointMixin, colorSeriesMixin = H.colorSeriesMixin, noop = H.noop, merge = H.merge, pick = H.pick;
+        var erase = U.erase, extend = U.extend, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
+        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Series = H.Series, Point = H.Point, color = H.color, ColorAxis, Legend = H.Legend, LegendSymbolMixin = H.LegendSymbolMixin, colorPointMixin = H.colorPointMixin, colorSeriesMixin = H.colorSeriesMixin, noop = H.noop, merge = H.merge;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -264,11 +265,21 @@
              * See [the Axis object](/class-reference/Highcharts.Axis) for
              * programmatic access to the axis.
              *
+             * @sample       {highcharts} highcharts/coloraxis/custom-color-key
+             *               Column chart with color axis
+             * @sample       {highcharts} highcharts/coloraxis/horizontal-layout
+             *               Horizontal layout
+             * @sample       {highmaps} maps/coloraxis/dataclasscolor
+             *               With data classes
+             * @sample       {highmaps} maps/coloraxis/mincolor-maxcolor
+             *               Min color and max color
+             *
              * @extends      xAxis
-             * @excluding    allowDecimals, alternateGridColor, breaks, categories,
-             *               crosshair, dateTimeLabelFormats, lineWidth, linkedTo,
-             *               maxZoom, minRange, minTickInterval, offset, opposite,
-             *               plotBands, plotLines, showEmpty, title
+             * @excluding    alignTicks, allowDecimals, alternateGridColor, breaks,
+             *               categories, crosshair, dateTimeLabelFormats, lineWidth,
+             *               linkedTo, maxZoom, minRange, minTickInterval, offset,
+             *               opposite, pane, plotBands, plotLines, reversedStacks,
+             *               showEmpty, title, zoomEnabled
              * @product      highcharts highstock highmaps
              * @type         {*|Array<*>}
              * @optionparent colorAxis
@@ -987,7 +998,7 @@
                             Math.max(this.dataMax, cSeries.maxColorValue);
                     }
                     if (!calculatedExtremes) {
-                        Highcharts.Series.prototype.getExtremes.call(cSeries);
+                        Series.prototype.getExtremes.call(cSeries);
                     }
                 }
             },
@@ -1384,8 +1395,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var objectEach = U.objectEach;
-        var addEvent = H.addEvent, Chart = H.Chart, doc = H.doc, extend = H.extend, merge = H.merge, pick = H.pick;
+        var extend = U.extend, objectEach = U.objectEach, pick = U.pick;
+        var addEvent = H.addEvent, Chart = H.Chart, doc = H.doc, merge = H.merge;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * @private
@@ -1668,7 +1679,7 @@
         H.MapNavigation = MapNavigation;
 
     });
-    _registerModule(_modules, 'parts-map/MapPointer.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/MapPointer.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -1678,7 +1689,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = H.extend, pick = H.pick, Pointer = H.Pointer, wrap = H.wrap;
+        var extend = U.extend, pick = U.pick;
+        var Pointer = H.Pointer, wrap = H.wrap;
         /* eslint-disable no-invalid-this */
         // Extend the Pointer
         extend(Pointer.prototype, {
@@ -1738,8 +1750,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray, isNumber = U.isNumber, objectEach = U.objectEach, splat = U.splat;
-        var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, extend = H.extend, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, pick = H.pick, fireEvent = H.fireEvent, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
+        var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, fireEvent = H.fireEvent, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * @private
          * @class
@@ -2583,7 +2595,7 @@
              * @sample maps/members/point-zoomto/
              *         Zoom to points from butons
              *
-             * @requires module:modules/map
+             * @requires modules/map
              *
              * @function Highcharts.Point#zoomTo
              */
@@ -3095,8 +3107,8 @@
         * @name Highcharts.BubbleLegendFormatterContextObject#value
         * @type {number}
         */
-        var isNumber = U.isNumber, objectEach = U.objectEach;
-        var Series = H.Series, Legend = H.Legend, Chart = H.Chart, addEvent = H.addEvent, wrap = H.wrap, color = H.color, numberFormat = H.numberFormat, merge = H.merge, noop = H.noop, pick = H.pick, stableSort = H.stableSort, setOptions = H.setOptions, arrayMin = H.arrayMin, arrayMax = H.arrayMax;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
+        var Series = H.Series, Legend = H.Legend, Chart = H.Chart, addEvent = H.addEvent, wrap = H.wrap, color = H.color, numberFormat = H.numberFormat, merge = H.merge, noop = H.noop, stableSort = H.stableSort, setOptions = H.setOptions;
         setOptions({
             legend: {
                 /**
@@ -3105,10 +3117,10 @@
                  * can be defined by user or calculated from series. In the case of
                  * automatically calculated ranges, a 1px margin of error is
                  * permitted.
-                 * Requires `highcharts-more.js`.
                  *
                  * @since        7.0.0
                  * @product      highcharts highstock highmaps
+                 * @requires     highcharts-more
                  * @optionparent legend.bubbleLegend
                  */
                 bubbleLegend: {
@@ -3295,6 +3307,7 @@
                     ranges: {
                         /**
                          * Range size value, similar to bubble Z data.
+                         * @type {number}
                          */
                         value: undefined,
                         /**
@@ -3967,19 +3980,20 @@
         /**
          * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
          */
-        var isNumber = U.isNumber, pInt = U.pInt;
-        var arrayMax = H.arrayMax, arrayMin = H.arrayMin, Axis = H.Axis, color = H.color, noop = H.noop, pick = H.pick, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, extend = U.extend, isNumber = U.isNumber, pick = U.pick, pInt = U.pInt;
+        var Axis = H.Axis, color = H.color, noop = H.noop, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * A bubble series is a three dimensional series type where each point renders
          * an X, Y and Z value. Each points is drawn as a bubble where the position
          * along the X and Y axes mark the X and Y values, and the size of the bubble
-         * relates to the Z value. Requires `highcharts-more.js`.
+         * relates to the Z value.
          *
          * @sample {highcharts} highcharts/demo/bubble/
          *         Bubble chart
          *
          * @extends      plotOptions.scatter
          * @product      highcharts highstock
+         * @requires     highcharts-more
          * @optionparent plotOptions.bubble
          */
         seriesType('bubble', 'scatter', {
@@ -4327,7 +4341,7 @@
                     radius = radii ? radii[i] : 0; // #1737
                     if (isNumber(radius) && radius >= this.minPxSize / 2) {
                         // Shape arguments
-                        point.marker = H.extend(point.marker, {
+                        point.marker = extend(point.marker, {
                             radius: radius,
                             width: 2 * radius,
                             height: 2 * radius
@@ -4439,6 +4453,7 @@
          * @extends   series,plotOptions.bubble
          * @excluding dataParser, dataURL, stack
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption series.bubble
          */
         /**
@@ -4492,9 +4507,14 @@
          *
          * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
          * @extends   series.line.data
-         * @excluding marker
          * @product   highcharts
          * @apioption series.bubble.data
+         */
+        /**
+         * @extends     series.line.data.marker
+         * @excluding   enabledThreshold, height, radius, width
+         * @product     highcharts
+         * @apioption   series.bubble.data.marker
          */
         /**
          * The size value for each bubble. The bubbles' diameters are computed
@@ -4752,7 +4772,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -4774,7 +4794,8 @@
         * @name Highcharts.PointOptionsObject#value
         * @type {number|null|undefined}
         */
-        var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, pick = H.pick, fireEvent = H.fireEvent, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var extend = U.extend, pick = U.pick;
+        var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, fireEvent = H.fireEvent, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * @private
          * @class
@@ -4786,6 +4807,9 @@
         /**
          * A heatmap is a graphical representation of data where the individual
          * values contained in a matrix are represented as colors.
+         *
+         * @productdesc {highcharts}
+         * Requires `modules/heatmap`.
          *
          * @sample highcharts/demo/heatmap/
          *         Simple heatmap
@@ -5017,7 +5041,7 @@
                 Series.prototype.getExtremes.call(this);
             }
             /* eslint-enable valid-jsdoc */
-        }), H.extend({
+        }), extend({
             /**
              * Heatmap series only. Padding between the points in the heatmap.
              * @name Highcharts.Point#pointPadding
@@ -5060,6 +5084,9 @@
         /**
          * A `heatmap` series. If the [type](#series.heatmap.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @productdesc {highcharts}
+         * Requires `modules/heatmap`.
          *
          * @extends   series,plotOptions.heatmap
          * @excluding dataParser, dataURL, marker, pointRange, stack
@@ -5169,7 +5196,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/GeoJSON.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/GeoJSON.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -5205,7 +5232,8 @@
         * @name Highcharts.MapLatLonObject#lon
         * @type {number}
         */
-        var Chart = H.Chart, extend = H.extend, format = H.format, merge = H.merge, win = H.win, wrap = H.wrap;
+        var extend = U.extend;
+        var Chart = H.Chart, format = H.format, merge = H.merge, win = H.win, wrap = H.wrap;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Test for point in polygon. Polygon defined as array of [x,y] points.
@@ -5230,7 +5258,7 @@
          * Highmaps only. Get point from latitude and longitude using specified
          * transform definition.
          *
-         * @requires module:modules/map
+         * @requires modules/map
          *
          * @sample maps/series/latlon-transform/
          *         Use specific transformation for lat/lon
@@ -5274,7 +5302,7 @@
          * Highmaps only. Get latLon from point using specified transform definition.
          * The method returns an object with the numeric properties `lat` and `lon`.
          *
-         * @requires module:modules/map
+         * @requires modules/map
          *
          * @sample maps/series/latlon-transform/
          *         Use specific transformation for lat/lon
@@ -5319,7 +5347,7 @@
          * Highmaps only. Calculate latitude/longitude values for a point. Returns an
          * object with the numeric properties `lat` and `lon`.
          *
-         * @requires module:modules/map
+         * @requires modules/map
          *
          * @sample maps/demo/latlon-advanced/
          *         Advanced lat/lon demo
@@ -5353,7 +5381,7 @@
          * Highmaps only. Get chart coordinates from latitude/longitude. Returns an
          * object with x and y values corresponding to the `xAxis` and `yAxis`.
          *
-         * @requires module:modules/map
+         * @requires modules/map
          *
          * @sample maps/series/latlon-to-point/
          *         Find a point from lat/lon
@@ -5395,7 +5423,7 @@
          * either `map`, `mapline` or `mappoint`. Meta data in GeoJSON's properties
          * object will be copied directly over to {@link Point.properties} in Highmaps.
          *
-         * @requires module:modules/map
+         * @requires modules/map
          *
          * @sample maps/demo/geojson/
          *         Simple areas
@@ -5473,7 +5501,7 @@
                          * In Highmaps, when data is loaded from GeoJSON, the GeoJSON
                          * item's properies are copied over here.
                          *
-                         * @requires module:modules/map
+                         * @requires modules/map
                          * @name Highcharts.Point#properties
                          * @type {*}
                          */
@@ -5507,7 +5535,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-map/Map.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/Map.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -5517,7 +5545,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var Chart = H.Chart, defaultOptions = H.defaultOptions, extend = H.extend, merge = H.merge, pick = H.pick, Renderer = H.Renderer, SVGRenderer = H.SVGRenderer, VMLRenderer = H.VMLRenderer;
+        var extend = U.extend, pick = U.pick;
+        var Chart = H.Chart, defaultOptions = H.defaultOptions, merge = H.merge, Renderer = H.Renderer, SVGRenderer = H.SVGRenderer, VMLRenderer = H.VMLRenderer;
         // Add language
         extend(defaultOptions.lang, {
             zoomIn: 'Zoom in',
@@ -5753,7 +5782,7 @@
         /**
          * Utility for reading SVG paths directly.
          *
-         * @requires module:modules/map
+         * @requires modules/map
          *
          * @function Highcharts.splitPath
          *
@@ -5781,7 +5810,7 @@
         /**
          * Contains all loaded map data for Highmaps.
          *
-         * @requires module:modules/map
+         * @requires modules/map
          *
          * @name Highcharts.maps
          * @type {Highcharts.Dictionary<*>}
@@ -5841,7 +5870,7 @@
          * Highcharts.Chart|Chart} object with different default options than the basic
          * Chart.
          *
-         * @requires module:modules/map
+         * @requires modules/map
          *
          * @function Highcharts.mapChart
          *

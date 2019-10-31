@@ -35,16 +35,10 @@ declare module "../highcharts.src" {
      *
      * @param maxIterations
      *        The maximum iterations allowed.
-     */
-    function bisect(f: Function, a: number, b: number, tolerance?: number, maxIterations?: number): void;
-    /**
-     * An extended version of draw customized for points. It calls additional
-     * methods that is expected when rendering a point.
      *
-     * @param params
-     *        Parameters
+     * @return Root number.
      */
-    function drawPoint(params: Dictionary<any>): void;
+    function bisect(f: Function, a: number, b: number, tolerance?: number, maxIterations?: number): number;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

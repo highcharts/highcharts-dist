@@ -20,8 +20,8 @@ import H from '../parts/Globals.js';
 * @requires modules/xrange
 */
 import U from '../parts/Utilities.js';
-var defined = U.defined, isNumber = U.isNumber, isObject = U.isObject;
-var addEvent = H.addEvent, color = H.color, columnType = H.seriesTypes.column, correctFloat = H.correctFloat, merge = H.merge, pick = H.pick, seriesType = H.seriesType, seriesTypes = H.seriesTypes, Axis = H.Axis, Point = H.Point, Series = H.Series;
+var defined = U.defined, isNumber = U.isNumber, isObject = U.isObject, pick = U.pick;
+var addEvent = H.addEvent, color = H.color, columnType = H.seriesTypes.column, correctFloat = H.correctFloat, merge = H.merge, seriesType = H.seriesType, seriesTypes = H.seriesTypes, Axis = H.Axis, Point = H.Point, Series = H.Series;
 /**
  * Return color of a point based on its category.
  *
@@ -73,6 +73,7 @@ seriesType('xrange', 'column'
  *               negativeColor, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointRange, pointStart, softThreshold,
  *               stacking, threshold, data
+ * @requires     modules/xrange
  * @optionparent plotOptions.xrange
  */
 , {
@@ -572,6 +573,7 @@ addEvent(Axis, 'afterGetSeriesExtremes', function () {
  *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
  *            pointStart, softThreshold, stacking, threshold
  * @product   highcharts highstock gantt
+ * @requires  modules/xrange
  * @apioption series.xrange
  */
 /**

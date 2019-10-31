@@ -27,8 +27,8 @@ import H from '../parts/Globals.js';
 * @type {number}
 */
 import U from '../parts/Utilities.js';
-var isNumber = U.isNumber, objectEach = U.objectEach;
-var Series = H.Series, Legend = H.Legend, Chart = H.Chart, addEvent = H.addEvent, wrap = H.wrap, color = H.color, numberFormat = H.numberFormat, merge = H.merge, noop = H.noop, pick = H.pick, stableSort = H.stableSort, setOptions = H.setOptions, arrayMin = H.arrayMin, arrayMax = H.arrayMax;
+var arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
+var Series = H.Series, Legend = H.Legend, Chart = H.Chart, addEvent = H.addEvent, wrap = H.wrap, color = H.color, numberFormat = H.numberFormat, merge = H.merge, noop = H.noop, stableSort = H.stableSort, setOptions = H.setOptions;
 setOptions({
     legend: {
         /**
@@ -37,10 +37,10 @@ setOptions({
          * can be defined by user or calculated from series. In the case of
          * automatically calculated ranges, a 1px margin of error is
          * permitted.
-         * Requires `highcharts-more.js`.
          *
          * @since        7.0.0
          * @product      highcharts highstock highmaps
+         * @requires     highcharts-more
          * @optionparent legend.bubbleLegend
          */
         bubbleLegend: {
@@ -227,6 +227,7 @@ setOptions({
             ranges: {
                 /**
                  * Range size value, similar to bubble Z data.
+                 * @type {number}
                  */
                 value: undefined,
                 /**

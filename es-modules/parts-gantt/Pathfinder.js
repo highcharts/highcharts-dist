@@ -34,10 +34,10 @@ import H from '../parts/Globals.js';
  */
 import '../parts/Point.js';
 import U from '../parts/Utilities.js';
-var defined = U.defined, objectEach = U.objectEach, splat = U.splat;
-import pathfinderAlgorithms from 'PathfinderAlgorithms.js';
-import 'ArrowSymbols.js';
-var deg2rad = H.deg2rad, extend = H.extend, addEvent = H.addEvent, merge = H.merge, pick = H.pick, max = Math.max, min = Math.min;
+var defined = U.defined, extend = U.extend, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
+import pathfinderAlgorithms from './PathfinderAlgorithms.js';
+import './ArrowSymbols.js';
+var deg2rad = H.deg2rad, addEvent = H.addEvent, merge = H.merge, max = Math.max, min = Math.min;
 /*
  @todo:
      - Document how to write your own algorithms
@@ -260,10 +260,9 @@ extend(H.defaultOptions, {
  * @apioption plotOptions.series.connectors
  */
 /**
- * Connect to a point. Requires Highcharts Gantt to be loaded. This option can
- * be either a string, referring to the ID of another point, or an object, or an
- * array of either. If the option is an array, each element defines a
- * connection.
+ * Connect to a point. This option can be either a string, referring to the ID
+ * of another point, or an object, or an array of either. If the option is an
+ * array, each element defines a connection.
  *
  * @sample gantt/pathfinder/demo
  *         Different connection types
@@ -273,6 +272,7 @@ extend(H.defaultOptions, {
  * @since     6.2.0
  * @excluding enabled
  * @product   gantt
+ * @requires  highcharts-gantt
  * @apioption series.xrange.data.connect
  */
 /**

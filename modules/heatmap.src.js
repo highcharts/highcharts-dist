@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.2.0 (2019-09-03)
+ * @license Highmaps JS v7.2.1 (2019-10-31)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -112,8 +112,8 @@
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        var erase = U.erase, isNumber = U.isNumber, splat = U.splat;
-        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Series = H.Series, Point = H.Point, color = H.color, ColorAxis, extend = H.extend, Legend = H.Legend, LegendSymbolMixin = H.LegendSymbolMixin, colorPointMixin = H.colorPointMixin, colorSeriesMixin = H.colorSeriesMixin, noop = H.noop, merge = H.merge, pick = H.pick;
+        var erase = U.erase, extend = U.extend, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
+        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Series = H.Series, Point = H.Point, color = H.color, ColorAxis, Legend = H.Legend, LegendSymbolMixin = H.LegendSymbolMixin, colorPointMixin = H.colorPointMixin, colorSeriesMixin = H.colorSeriesMixin, noop = H.noop, merge = H.merge;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -170,11 +170,21 @@
              * See [the Axis object](/class-reference/Highcharts.Axis) for
              * programmatic access to the axis.
              *
+             * @sample       {highcharts} highcharts/coloraxis/custom-color-key
+             *               Column chart with color axis
+             * @sample       {highcharts} highcharts/coloraxis/horizontal-layout
+             *               Horizontal layout
+             * @sample       {highmaps} maps/coloraxis/dataclasscolor
+             *               With data classes
+             * @sample       {highmaps} maps/coloraxis/mincolor-maxcolor
+             *               Min color and max color
+             *
              * @extends      xAxis
-             * @excluding    allowDecimals, alternateGridColor, breaks, categories,
-             *               crosshair, dateTimeLabelFormats, lineWidth, linkedTo,
-             *               maxZoom, minRange, minTickInterval, offset, opposite,
-             *               plotBands, plotLines, showEmpty, title
+             * @excluding    alignTicks, allowDecimals, alternateGridColor, breaks,
+             *               categories, crosshair, dateTimeLabelFormats, lineWidth,
+             *               linkedTo, maxZoom, minRange, minTickInterval, offset,
+             *               opposite, pane, plotBands, plotLines, reversedStacks,
+             *               showEmpty, title, zoomEnabled
              * @product      highcharts highstock highmaps
              * @type         {*|Array<*>}
              * @optionparent colorAxis
@@ -893,7 +903,7 @@
                             Math.max(this.dataMax, cSeries.maxColorValue);
                     }
                     if (!calculatedExtremes) {
-                        Highcharts.Series.prototype.getExtremes.call(cSeries);
+                        Series.prototype.getExtremes.call(cSeries);
                     }
                 }
             },
@@ -1280,7 +1290,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -1302,7 +1312,8 @@
         * @name Highcharts.PointOptionsObject#value
         * @type {number|null|undefined}
         */
-        var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, pick = H.pick, fireEvent = H.fireEvent, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var extend = U.extend, pick = U.pick;
+        var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, fireEvent = H.fireEvent, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * @private
          * @class
@@ -1314,6 +1325,9 @@
         /**
          * A heatmap is a graphical representation of data where the individual
          * values contained in a matrix are represented as colors.
+         *
+         * @productdesc {highcharts}
+         * Requires `modules/heatmap`.
          *
          * @sample highcharts/demo/heatmap/
          *         Simple heatmap
@@ -1545,7 +1559,7 @@
                 Series.prototype.getExtremes.call(this);
             }
             /* eslint-enable valid-jsdoc */
-        }), H.extend({
+        }), extend({
             /**
              * Heatmap series only. Padding between the points in the heatmap.
              * @name Highcharts.Point#pointPadding
@@ -1588,6 +1602,9 @@
         /**
          * A `heatmap` series. If the [type](#series.heatmap.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @productdesc {highcharts}
+         * Requires `modules/heatmap`.
          *
          * @extends   series,plotOptions.heatmap
          * @excluding dataParser, dataURL, marker, pointRange, stack

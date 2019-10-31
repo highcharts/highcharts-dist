@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Globals.js']], function (Highcharts) {
+    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -41,8 +41,9 @@
          *
          * */
         /* eslint indent: 0 */
+        var pick = U.pick;
         // create shortcuts
-        var seriesType = Highcharts.seriesType, seriesTypes = Highcharts.seriesTypes, fireEvent = Highcharts.fireEvent, noop = Highcharts.noop, pick = Highcharts.pick;
+        var seriesType = Highcharts.seriesType, seriesTypes = Highcharts.seriesTypes, fireEvent = Highcharts.fireEvent, noop = Highcharts.noop;
         /**
          * @private
          * @class
@@ -62,6 +63,7 @@
          * @extends      plotOptions.pie
          * @excluding    innerSize,size
          * @product      highcharts
+         * @requires     modules/funnel
          * @optionparent plotOptions.funnel
          */
         {
@@ -404,6 +406,7 @@
          * @extends   series,plotOptions.funnel
          * @excluding dataParser, dataURL, stack, xAxis, yAxis
          * @product   highcharts
+         * @requires  modules/funnel
          * @apioption series.funnel
          */
         /**
@@ -463,13 +466,14 @@
         seriesType('pyramid', 'funnel', 
         /**
          * A pyramid series is a special type of funnel, without neck and reversed
-         * by default. Requires the funnel module.
+         * by default.
          *
          * @sample highcharts/demo/pyramid/
          *         Pyramid chart
          *
          * @extends      plotOptions.funnel
          * @product      highcharts
+         * @requires     modules/funnel
          * @optionparent plotOptions.pyramid
          */
         {
@@ -502,6 +506,7 @@
          * @extends   series,plotOptions.pyramid
          * @excluding dataParser, dataURL, stack, xAxis, yAxis
          * @product   highcharts
+         * @requires  modules/funnel
          * @apioption series.pyramid
          */
         /**

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.0 (2019-09-03)
+ * @license Highstock JS v7.2.1 (2019-10-31)
  *
  * Highstock as a plugin for Highcharts
  *
@@ -38,8 +38,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
-        var addEvent = H.addEvent, Axis = H.Axis, correctFloat = H.correctFloat, defaultOptions = H.defaultOptions, destroyObjectProperties = H.destroyObjectProperties, fireEvent = H.fireEvent, hasTouch = H.hasTouch, isTouchDevice = H.isTouchDevice, merge = H.merge, pick = H.pick, removeEvent = H.removeEvent, swapXY;
+        var defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, pick = U.pick;
+        var addEvent = H.addEvent, Axis = H.Axis, correctFloat = H.correctFloat, defaultOptions = H.defaultOptions, fireEvent = H.fireEvent, hasTouch = H.hasTouch, isTouchDevice = H.isTouchDevice, merge = H.merge, removeEvent = H.removeEvent, swapXY;
         /**
          *
          * The scrollbar is a means of panning over the X axis of a stock chart.
@@ -918,8 +918,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined, erase = U.erase, isArray = U.isArray, isNumber = U.isNumber, splat = U.splat;
-        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, color = H.color, defaultOptions = H.defaultOptions, destroyObjectProperties = H.destroyObjectProperties, extend = H.extend, hasTouch = H.hasTouch, isTouchDevice = H.isTouchDevice, merge = H.merge, pick = H.pick, removeEvent = H.removeEvent, Scrollbar = H.Scrollbar, Series = H.Series, seriesTypes = H.seriesTypes, defaultSeriesType, 
+        var defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
+        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, color = H.color, defaultOptions = H.defaultOptions, hasTouch = H.hasTouch, isTouchDevice = H.isTouchDevice, merge = H.merge, removeEvent = H.removeEvent, Scrollbar = H.Scrollbar, Series = H.Series, seriesTypes = H.seriesTypes, defaultSeriesType, 
         // Finding the min or max of a set of variables where we don't know if they
         // are defined, is a pattern that is repeated several places in Highcharts.
         // Consider making this a global utility method.
@@ -1175,12 +1175,19 @@
                  * @sample {highstock} stock/navigator/series/
                  *         A green navigator series
                  *
-                 * @type {*|Highcharts.SeriesOptionsType}
+                 * @type {*|Array<*>|Highcharts.SeriesOptionsType|Array<Highcharts.SeriesOptionsType>}
                  */
                 series: {
                     /**
                      * The type of the navigator series. Defaults to `areaspline` if
                      * defined, otherwise `line`.
+                     *
+                     * Heads up:
+                     * In column-type navigator, zooming is limited to at least one
+                     * point with its `pointRange`.
+                     *
+                     * @sample {highstock} stock/navigator/column/
+                     *         Column type navigator
                      *
                      * @type    {string}
                      * @default areaspline
@@ -1258,7 +1265,17 @@
                     marker: {
                         enabled: false
                     },
-                    pointRange: 0,
+                    /**
+                     * Since Highstock v8, default value is the same as default
+                     * `pointRange` defined for a specific type (e.g. `null` for
+                     * column type).
+                     *
+                     * In Highstock version < 8, defaults to 0.
+                     *
+                     * @extends plotOptions.series.pointRange
+                     * @type {number|null}
+                     * @apioption navigator.series.pointRange
+                     */
                     /**
                      * The threshold option. Setting it to 0 will make the default
                      * navigator area series draw its area from the 0 value and up.
@@ -1412,7 +1429,14 @@
          * @return {*}
          */
         Axis.prototype.toFixedRange = function (pxMin, pxMax, fixedMin, fixedMax) {
-            var fixedRange = this.chart && this.chart.fixedRange, newMin = pick(fixedMin, this.translate(pxMin, true, !this.horiz)), newMax = pick(fixedMax, this.translate(pxMax, true, !this.horiz)), changeRatio = fixedRange && (newMax - newMin) / fixedRange;
+            var fixedRange = this.chart && this.chart.fixedRange, halfPointRange = (this.pointRange || 0) / 2, newMin = pick(fixedMin, this.translate(pxMin, true, !this.horiz)), newMax = pick(fixedMax, this.translate(pxMax, true, !this.horiz)), changeRatio = fixedRange && (newMax - newMin) / fixedRange;
+            // Add/remove half point range to/from the extremes (#1172)
+            if (!defined(fixedMin)) {
+                newMin = H.correctFloat(newMin + halfPointRange);
+            }
+            if (!defined(fixedMax)) {
+                newMax = H.correctFloat(newMax - halfPointRange);
+            }
             // If the difference between the fixed range and the actual requested range
             // is too great, the user is dragging across an ordinal gap, and we need to
             // release the range selector button.
@@ -1734,11 +1758,13 @@
              * @return {void}
              */
             render: function (min, max, pxMin, pxMax) {
-                var navigator = this, chart = navigator.chart, navigatorWidth, scrollbarLeft, scrollbarTop, scrollbarHeight = navigator.scrollbarHeight, navigatorSize, xAxis = navigator.xAxis, scrollbarXAxis = xAxis.fake ? chart.xAxis[0] : xAxis, navigatorEnabled = navigator.navigatorEnabled, zoomedMin, zoomedMax, rendered = navigator.rendered, inverted = chart.inverted, verb, newMin, newMax, currentRange, minRange = chart.xAxis[0].minRange, maxRange = chart.xAxis[0].options.maxRange;
+                var navigator = this, chart = navigator.chart, navigatorWidth, scrollbarLeft, scrollbarTop, scrollbarHeight = navigator.scrollbarHeight, navigatorSize, xAxis = navigator.xAxis, pointRange = xAxis.pointRange || 0, scrollbarXAxis = xAxis.fake ? chart.xAxis[0] : xAxis, navigatorEnabled = navigator.navigatorEnabled, zoomedMin, zoomedMax, rendered = navigator.rendered, inverted = chart.inverted, verb, newMin, newMax, currentRange, minRange = chart.xAxis[0].minRange, maxRange = chart.xAxis[0].options.maxRange;
                 // Don't redraw while moving the handles (#4703).
                 if (this.hasDragged && !defined(pxMin)) {
                     return;
                 }
+                min = H.correctFloat(min - pointRange / 2);
+                max = H.correctFloat(max + pointRange / 2);
                 // Don't render the navigator until we have data (#486, #4202, #5172).
                 if (!isNumber(min) || !isNumber(max)) {
                     // However, if navigator was already rendered, we may need to resize
@@ -1775,20 +1801,21 @@
                 newMin = xAxis.toValue(pxMin, true);
                 newMax = xAxis.toValue(pxMax, true);
                 currentRange = Math.abs(H.correctFloat(newMax - newMin));
-                if (currentRange < minRange) {
+                if (H.correctFloat(currentRange - pointRange) < minRange) {
                     if (this.grabbedLeft) {
-                        pxMin = xAxis.toPixels(newMax - minRange, true);
+                        pxMin = xAxis.toPixels(newMax - minRange - pointRange, true);
                     }
                     else if (this.grabbedRight) {
-                        pxMax = xAxis.toPixels(newMin + minRange, true);
+                        pxMax = xAxis.toPixels(newMin + minRange + pointRange, true);
                     }
                 }
-                else if (defined(maxRange) && currentRange > maxRange) {
+                else if (defined(maxRange) &&
+                    H.correctFloat(currentRange - pointRange) > maxRange) {
                     if (this.grabbedLeft) {
-                        pxMin = xAxis.toPixels(newMax - maxRange, true);
+                        pxMin = xAxis.toPixels(newMax - maxRange - pointRange, true);
                     }
                     else if (this.grabbedRight) {
-                        pxMax = xAxis.toPixels(newMin + maxRange, true);
+                        pxMax = xAxis.toPixels(newMin + maxRange + pointRange, true);
                     }
                 }
                 // Handles are allowed to cross, but never exceed the plot area
@@ -1862,10 +1889,10 @@
                 // Add mouse move and mouseup events. These are bind to doc/container,
                 // because Navigator.grabbedSomething flags are stored in mousedown
                 // events
-                eventsToUnbind.push(addEvent(container, 'mousemove', mouseMoveHandler), addEvent(container.ownerDocument, 'mouseup', mouseUpHandler));
+                eventsToUnbind.push(addEvent(chart.renderTo, 'mousemove', mouseMoveHandler), addEvent(container.ownerDocument, 'mouseup', mouseUpHandler));
                 // Touch events
                 if (hasTouch) {
-                    eventsToUnbind.push(addEvent(container, 'touchmove', mouseMoveHandler), addEvent(container.ownerDocument, 'touchend', mouseUpHandler));
+                    eventsToUnbind.push(addEvent(chart.renderTo, 'touchmove', mouseMoveHandler), addEvent(container.ownerDocument, 'touchend', mouseUpHandler));
                     eventsToUnbind.concat(navigator.getPartsEvents('touchstart'));
                 }
                 navigator.eventsToUnbind = eventsToUnbind;
@@ -2097,7 +2124,8 @@
                         });
                     }
                 }
-                if (e.DOMType !== 'mousemove') {
+                if (e.DOMType !== 'mousemove' &&
+                    e.DOMType !== 'touchmove') {
                     navigator.grabbedLeft = navigator.grabbedRight =
                         navigator.grabbedCenter = navigator.fixedWidth =
                             navigator.fixedExtreme = navigator.otherHandlePos =
@@ -2164,7 +2192,7 @@
                 this.navigatorOptions = navigatorOptions;
                 this.scrollbarOptions = scrollbarOptions;
                 this.outlineHeight = height + scrollbarHeight;
-                this.opposite = pick(navigatorOptions.opposite, !navigatorEnabled && chart.inverted); // #6262
+                this.opposite = pick(navigatorOptions.opposite, Boolean(!navigatorEnabled && chart.inverted)); // #6262
                 var navigator = this, baseSeries = navigator.baseSeries, xAxisIndex = chart.xAxis.length, yAxisIndex = chart.yAxis.length, baseXaxis = baseSeries && baseSeries[0] && baseSeries[0].xAxis ||
                     chart.xAxis[0] || { options: {} };
                 chart.isDirtyBox = true;
@@ -2404,6 +2432,12 @@
                         baseOptions = base.options || {};
                         baseNavigatorOptions = baseOptions.navigatorOptions || {};
                         mergedNavSeriesOptions = merge(baseOptions, navSeriesMixin, userNavOptions, baseNavigatorOptions);
+                        // Once nav series type is resolved, pick correct pointRange
+                        mergedNavSeriesOptions.pointRange = pick(
+                        // Stricte set pointRange in options
+                        userNavOptions.pointRange, baseNavigatorOptions.pointRange, 
+                        // Fallback to default values, e.g. `null` for column
+                        defaultOptions.plotOptions[mergedNavSeriesOptions.type || 'line'].pointRange);
                         // Merge data separately. Do a slice to avoid mutating the
                         // navigator options from base series (#4923).
                         var navigatorSeriesData = baseNavigatorOptions.data || userNavOptions.data;
@@ -2531,7 +2565,7 @@
              */
             modifyNavigatorAxisExtremes: function () {
                 var xAxis = this.xAxis, unionExtremes;
-                if (xAxis.getExtremes) {
+                if (typeof xAxis.getExtremes !== 'undefined') {
                     unionExtremes = this.getUnionExtremes(true);
                     if (unionExtremes &&
                         (unionExtremes.dataMin !== xAxis.min ||
@@ -2849,9 +2883,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
+        var defined = U.defined, extend = U.extend, pick = U.pick;
         // Has a dependency on Navigator due to the use of Axis.toFixedRange
-        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, css = H.css, extend = H.extend, noop = H.noop, pick = H.pick, Series = H.Series, timeUnits = H.timeUnits;
+        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, css = H.css, noop = H.noop, Series = H.Series, timeUnits = H.timeUnits;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /* ************************************************************************** *
          * Start ordinal axis logic                                                   *
@@ -3553,8 +3587,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var addEvent = H.addEvent, pick = H.pick, extend = H.extend, find = H.find, fireEvent = H.fireEvent, Axis = H.Axis, Series = H.Series;
+        var extend = U.extend, isArray = U.isArray, pick = U.pick;
+        var addEvent = H.addEvent, find = H.find, fireEvent = H.fireEvent, Axis = H.Axis, Series = H.Series;
         /**
          * Returns the first break found where the x is larger then break.from and
          * smaller then break.to.
@@ -3909,6 +3943,7 @@
              * @type      {number}
              * @default   0
              * @product   highstock
+             * @requires  modules/broken-axis
              * @apioption plotOptions.series.gapSize
              */
             /**
@@ -3930,6 +3965,7 @@
              * @since      5.0.13
              * @product    highstock
              * @validvalue ["relative", "value"]
+             * @requires   modules/broken-axis
              * @apioption  plotOptions.series.gapUnit
              */
             if (gapSize && i > 0) { // #5008
@@ -3998,8 +4034,8 @@
         * @name Highcharts.DataGroupingInfoObject#start
         * @type {number}
         */
-        var defined = U.defined, isNumber = U.isNumber;
-        var addEvent = H.addEvent, arrayMax = H.arrayMax, arrayMin = H.arrayMin, Axis = H.Axis, correctFloat = H.correctFloat, defaultPlotOptions = H.defaultPlotOptions, extend = H.extend, format = H.format, merge = H.merge, pick = H.pick, Point = H.Point, Series = H.Series, Tooltip = H.Tooltip;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, extend = U.extend, isNumber = U.isNumber, pick = U.pick;
+        var addEvent = H.addEvent, Axis = H.Axis, correctFloat = H.correctFloat, defaultPlotOptions = H.defaultPlotOptions, format = H.format, merge = H.merge, Point = H.Point, Series = H.Series, Tooltip = H.Tooltip;
         /* ************************************************************************** *
          *  Start data grouping module                                                *
          * ************************************************************************** */
@@ -4226,9 +4262,7 @@
         // -----------------------------------------------------------------------------
         // The following code applies to implementation of data grouping on a Series
         var seriesProto = Series.prototype, baseProcessData = seriesProto.processData, baseGeneratePoints = seriesProto.generatePoints, 
-        /**
-         * @ignore
-         */
+        /** @ignore */
         commonOptions = {
             // enabled: null, // (true for stock charts, false for basic),
             // forced: undefined,
@@ -4284,6 +4318,7 @@
             spline: {},
             area: {},
             areaspline: {},
+            arearange: {},
             column: {
                 groupPixelWidth: 10
             },
@@ -4349,7 +4384,7 @@
          *
          * @param {Array<number>} xData
          *
-         * @param {Array<number>} yData
+         * @param {Array<number>|Array<Array<number>>} yData
          *
          * @param {boolean} groupPositions
          *
@@ -4438,7 +4473,7 @@
                         if ((!defined(xAxis.options.min) &&
                             xAxis.min <= xAxis.dataMin) ||
                             xAxis.min === xAxis.dataMin) {
-                            xAxis.min = groupedXData[0];
+                            xAxis.min = Math.min(groupedXData[0], xAxis.min);
                         }
                         xAxis.dataMin = groupedXData[0];
                     }
@@ -4466,14 +4501,20 @@
         };
         // Destroy the grouped data points. #622, #740
         seriesProto.destroyGroupedData = function () {
-            var groupedData = this.groupedData;
-            // clear previous groups
-            (groupedData || []).forEach(function (point, i) {
-                if (point) {
-                    groupedData[i] = point.destroy ? point.destroy() : null;
-                }
-            });
-            this.groupedData = null;
+            // Clear previous groups
+            if (this.groupedData) {
+                this.groupedData.forEach(function (point, i) {
+                    if (point) {
+                        this.groupedData[i] = point.destroy ?
+                            point.destroy() : null;
+                    }
+                }, this);
+                // Clears all:
+                // - `this.groupedData`
+                // - `this.points`
+                // - `preserve` object in series.update()
+                this.groupedData.length = 0;
+            }
         };
         // Override the generatePoints method by adding a reference to grouped data
         seriesProto.generatePoints = function () {
@@ -4555,8 +4596,8 @@
                     defaultOptions = merge(commonOptions, specificOptions[type]);
                 }
                 options.dataGrouping = merge(baseOptions, defaultOptions, plotOptions.series && plotOptions.series.dataGrouping, // #1228
-                plotOptions[type].dataGrouping, // Set by the StockChart constructor
-                this.userOptions.dataGrouping);
+                // Set by the StockChart constructor:
+                plotOptions[type].dataGrouping, this.userOptions.dataGrouping);
             }
         });
         // When resetting the scale reset the hasProccessed flag to avoid taking
@@ -4665,6 +4706,7 @@
          * altered through a custom `approximation` callback function.
          *
          * @product   highstock
+         * @requires  modules/datagrouping
          * @apioption plotOptions.series.dataGrouping
          */
         /**
@@ -6277,8 +6319,8 @@
          * @return {number}
          *         Parsed JavaScript time value.
          */
-        var defined = U.defined, isNumber = U.isNumber, objectEach = U.objectEach, pInt = U.pInt, splat = U.splat;
-        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, css = H.css, createElement = H.createElement, defaultOptions = H.defaultOptions, destroyObjectProperties = H.destroyObjectProperties, discardElement = H.discardElement, extend = H.extend, fireEvent = H.fireEvent, merge = H.merge, pick = H.pick;
+        var defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, discardElement = U.discardElement, extend = U.extend, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, splat = U.splat;
+        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, css = H.css, createElement = H.createElement, defaultOptions = H.defaultOptions, fireEvent = H.fireEvent, merge = H.merge;
         /* ************************************************************************** *
          * Start Range Selector code                                                  *
          * ************************************************************************** */
@@ -7824,14 +7866,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined, isNumber = U.isNumber, isString = U.isString, splat = U.splat;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, extend = U.extend, isNumber = U.isNumber, isString = U.isString, pick = U.pick, splat = U.splat;
         // Has a dependency on Navigator due to the use of
         // defaultOptions.navigator
         // Has a dependency on Scrollbar due to the use of
         // defaultOptions.scrollbar
         // Has a dependency on RangeSelector due to the use of
         // defaultOptions.rangeSelector
-        var addEvent = H.addEvent, arrayMax = H.arrayMax, arrayMin = H.arrayMin, Axis = H.Axis, Chart = H.Chart, extend = H.extend, format = H.format, merge = H.merge, pick = H.pick, Point = H.Point, Renderer = H.Renderer, Series = H.Series, SVGRenderer = H.SVGRenderer, VMLRenderer = H.VMLRenderer, seriesProto = Series.prototype, seriesInit = seriesProto.init, seriesProcessData = seriesProto.processData, pointTooltipFormatter = Point.prototype.tooltipFormatter;
+        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, format = H.format, merge = H.merge, Point = H.Point, Renderer = H.Renderer, Series = H.Series, SVGRenderer = H.SVGRenderer, VMLRenderer = H.VMLRenderer, seriesProto = Series.prototype, seriesInit = seriesProto.init, seriesProcessData = seriesProto.processData, pointTooltipFormatter = Point.prototype.tooltipFormatter;
         /**
          * Compare the values of the series against the first non-null, non-
          * zero value in the visible range. The y axis will show percentage
@@ -8408,6 +8450,7 @@
                         }
                         return value;
                     }
+                    return 0;
                 } :
                 null;
             // Survive to export, #5485

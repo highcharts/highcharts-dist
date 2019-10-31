@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * (c) 2009-2019 Highsoft AS
  *
@@ -38,12 +38,11 @@
          *  Accessible high-contrast dark theme for Highcharts. Specifically tailored
          *  towards 3:1 contrast against black/off-black backgrounds. Neighboring
          *  colors are tested for color blindness.
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
-
-
-
         var textBright = '#F0F0F3';
-
         Highcharts.theme = {
             colors: [
                 '#a6f0ff',
@@ -57,24 +56,20 @@
                 '#dadfe1',
                 '#a0618b'
             ],
-
             chart: {
                 backgroundColor: '#1f1f20',
                 plotBorderColor: '#606063'
             },
-
             title: {
                 style: {
                     color: textBright
                 }
             },
-
             subtitle: {
                 style: {
                     color: textBright
                 }
             },
-
             xAxis: {
                 gridLineColor: '#707073',
                 labels: {
@@ -88,11 +83,9 @@
                 title: {
                     style: {
                         color: textBright
-
                     }
                 }
             },
-
             yAxis: {
                 gridLineColor: '#707073',
                 labels: {
@@ -109,14 +102,12 @@
                     }
                 }
             },
-
             tooltip: {
                 backgroundColor: 'rgba(0, 0, 0, 0.85)',
                 style: {
                     color: textBright
                 }
             },
-
             plotOptions: {
                 series: {
                     dataLabels: {
@@ -139,7 +130,6 @@
                     nullColor: '#353535'
                 }
             },
-
             legend: {
                 backgroundColor: 'transparent',
                 itemStyle: {
@@ -157,19 +147,16 @@
                     }
                 }
             },
-
             credits: {
                 style: {
                     color: textBright
                 }
             },
-
             labels: {
                 style: {
                     color: '#707073'
                 }
             },
-
             drilldown: {
                 activeAxisLabelStyle: {
                     color: textBright
@@ -178,7 +165,6 @@
                     color: textBright
                 }
             },
-
             navigation: {
                 buttonOptions: {
                     symbolStroke: '#DDDDDD',
@@ -187,7 +173,6 @@
                     }
                 }
             },
-
             rangeSelector: {
                 buttonTheme: {
                     fill: '#505053',
@@ -221,7 +206,6 @@
                     color: textBright
                 }
             },
-
             navigator: {
                 handles: {
                     backgroundColor: '#666',
@@ -237,7 +221,6 @@
                     gridLineColor: '#505053'
                 }
             },
-
             scrollbar: {
                 barBackgroundColor: '#808083',
                 barBorderColor: '#808083',
@@ -249,7 +232,6 @@
                 trackBorderColor: '#404043'
             }
         };
-
         // Apply the theme
         Highcharts.setOptions(Highcharts.theme);
 

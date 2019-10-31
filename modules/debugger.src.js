@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Debugger module
  *
@@ -54,7 +54,7 @@
             },
             "12": {
                 "title": "Highcharts expects point configuration to be numbers or arrays in turbo mode",
-                "text": "<h1>Highcharts expects point configuration to be numbers or arrays in turbo mode</h1><p>This error occurs if the series.data option contains object configurations and the number of points exceeds the turboThreshold. It can be fixed by either setting <code>turboThreshold</code> to a higher value, or changing the point configurations to numbers or arrays.</p><p>See <a href=\"https://api.highcharts.com/highcharts#plotOptions.series.turboThreshold\">plotOptions.series.turboThreshold</a></p>"
+                "text": "<h1>Highcharts expects point configuration to be numbers or arrays in turbo mode</h1><p>This error occurs if the <code>series.data</code> option contains object configurations and the number of points exceeds the turboThreshold. It can be fixed by either setting <code>turboThreshold</code> to a higher value, or changing the point configurations to numbers or arrays.</p><p>In boost mode, turbo mode is always on, which means only array of numbers or two dimensional arrays are allowed.</p><p>See <a href=\"https://api.highcharts.com/highcharts#plotOptions.series.turboThreshold\">plotOptions.series.turboThreshold</a></p>"
             },
             "13": {
                 "title": "Rendering div not found",
@@ -183,12 +183,11 @@
                  * Whether to display errors on the chart. When `false`, the errors will
                  * be shown only in the console.
                  *
-                 * Requires `debugger.js` module.
-                 *
                  * @sample highcharts/chart/display-errors/
                  *         Show errors on chart
                  *
-                 * @since 7.0.0
+                 * @since    7.0.0
+                 * @requires modules/debugger
                  */
                 displayErrors: true
             }
@@ -203,28 +202,31 @@
                     }
                 });
             }
-            if (options && options.displayErrors) {
+            if (options && options.displayErrors && renderer) {
                 chart.errorElements = [];
                 msg = isNumber(code) ?
                     ('Highcharts error #' + code + ': ' +
-                        H.errorMessages[code].title +
                         H.errorMessages[code].text) :
                     code;
                 chartWidth = chart.chartWidth;
                 chartHeight = chart.chartHeight;
+                // Format msg so SVGRenderer can handle it
+                msg = msg
+                    .replace(/<h1>(.*)<\/h1>/g, '<br><span style="font-size: 24px">$1</span><br>')
+                    .replace(/<\/p>/g, '</p><br>');
                 // Render red chart frame.
                 chart.errorElements[0] = renderer.rect(2, 2, chartWidth - 4, chartHeight - 4).attr({
                     'stroke-width': 4,
                     stroke: '#ff0000',
                     zIndex: 3
                 }).add();
-                // Render error message.
-                chart.errorElements[1] = renderer.label(msg, 0, 0, 'rect', null, null, true).css({
+                // Render error message
+                chart.errorElements[1] = renderer.label(msg, 0, 0, 'rect', undefined, undefined, undefined, undefined, 'debugger').css({
                     color: '#ffffff',
                     width: chartWidth - 16,
                     padding: 0
                 }).attr({
-                    fill: '#ff0000',
+                    fill: 'rgba(255, 0, 0, 0.9)',
                     width: chartWidth,
                     padding: 8,
                     zIndex: 10

@@ -203,14 +203,14 @@ import H from './Globals.js';
  *        Event that occured.
  */
 import U from './Utilities.js';
-var defined = U.defined, erase = U.erase, isArray = U.isArray, isNumber = U.isNumber, isString = U.isString, objectEach = U.objectEach, splat = U.splat;
+var arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isString = U.isString, objectEach = U.objectEach, pick = U.pick, splat = U.splat, syncTimeout = U.syncTimeout;
 import './Options.js';
 import './Legend.js';
 import './Point.js';
 import './SvgRenderer.js';
-var addEvent = H.addEvent, animObject = H.animObject, arrayMax = H.arrayMax, arrayMin = H.arrayMin, correctFloat = H.correctFloat, defaultOptions = H.defaultOptions, defaultPlotOptions = H.defaultPlotOptions, extend = H.extend, fireEvent = H.fireEvent, LegendSymbolMixin = H.LegendSymbolMixin, // @todo add as a requirement
-merge = H.merge, pick = H.pick, Point = H.Point, // @todo  add as a requirement
-removeEvent = H.removeEvent, SVGElement = H.SVGElement, syncTimeout = H.syncTimeout, win = H.win;
+var addEvent = H.addEvent, animObject = H.animObject, correctFloat = H.correctFloat, defaultOptions = H.defaultOptions, defaultPlotOptions = H.defaultPlotOptions, fireEvent = H.fireEvent, LegendSymbolMixin = H.LegendSymbolMixin, // @todo add as a requirement
+merge = H.merge, Point = H.Point, // @todo  add as a requirement
+removeEvent = H.removeEvent, SVGElement = H.SVGElement, win = H.win;
 /**
  * This is the base series prototype that all other series types inherit from.
  * A new series is initialized either through the
@@ -671,13 +671,12 @@ null,
      * @apioption plotOptions.series.dashStyle
      */
     /**
-     * Requires the Accessibility module.
-     *
      * A description of the series to add to the screen reader information
      * about the series.
      *
      * @type      {string}
      * @since     5.0.0
+     * @requires  modules/accessibility
      * @apioption plotOptions.series.description
      */
     /**
@@ -1880,6 +1879,9 @@ null,
      * will be hidden when moving the mouse between series. Defaults to true
      * for line and area type series, but to false for columns, pies etc.
      *
+     * **Note:** The boost module will force this option because of
+     * technical limitations.
+     *
      * @sample {highcharts} highcharts/plotoptions/series-stickytracking-true/
      *         True by default
      * @sample {highcharts} highcharts/plotoptions/series-stickytracking-false/
@@ -1901,8 +1903,9 @@ null,
      * @since     2.3
      * @extends   tooltip
      * @excluding animation, backgroundColor, borderColor, borderRadius,
-     *            borderWidth, crosshairs, enabled, formatter, positioner,
-     *            shadow, shape, shared, snap, style, useHTML
+     *            borderWidth, className, crosshairs, enabled, formatter,
+     *            headerShape, hideDelay, outside, padding, positioner,
+     *            shadow, shape, shared, snap, split, style, useHTML
      * @apioption plotOptions.series.tooltip
      */
     /**
@@ -1911,6 +1914,10 @@ null,
      * x and y values are allowed. Also, only the first point is tested,
      * and the rest are assumed to be the same format. This saves expensive
      * data checking and indexing in long series. Set it to `0` disable.
+     *
+     * Note:
+     * In boost mode turbo threshold is forced. Only array of numbers or
+     * two dimensional arrays are allowed.
      *
      * @since   2.2
      * @product highcharts highstock gantt
@@ -1964,7 +1971,7 @@ null,
     /**
      * A name for the dash style to use for the graph.
      *
-     * @see [series.dashStyle](#plotOptions.series.dashStyle)
+     * @see [plotOptions.series.dashStyle](#plotOptions.series.dashStyle)
      *
      * @sample {highcharts|highstock} highcharts/series/color-zones-dashstyle-dot/
      *         Dashed line indicates prognosis
@@ -2737,12 +2744,7 @@ null,
             // loops are similar, they are repeated inside each if-else
             // conditional for max performance.
             if (turboThreshold && dataLength > turboThreshold) {
-                // find the first non-null point
-                i = 0;
-                while (firstPoint === null && i < dataLength) {
-                    firstPoint = data[i];
-                    i++;
-                }
+                firstPoint = series.getFirstValidPoint(data);
                 if (isNumber(firstPoint)) { // assume all points are numbers
                     for (i = 0; i < dataLength; i++) {
                         xData[i] = this.autoIncrement();
@@ -3133,6 +3135,24 @@ null,
         fireEvent(this, 'afterGetExtremes');
     },
     /**
+     * Find and return the first non null point in the data
+     *
+     * @private
+     * @function Highcharts.Series.getFirstValidPoint
+     * @param {Array<Highcharts.PointOptionsType>} data
+     *        Array of options for points
+     *
+     * @return {Highcharts.PointOptionsType}
+     */
+    getFirstValidPoint: function (data) {
+        var firstPoint = null, dataLength = data.length, i = 0;
+        while (firstPoint === null && i < dataLength) {
+            firstPoint = data[i];
+            i++;
+        }
+        return firstPoint;
+    },
+    /**
      * Translate data points from raw data values to chart specific
      * positioning data needed later in the `drawPoints` and `drawGraph`
      * functions. This function can be overridden in plugins and custom
@@ -3194,7 +3214,7 @@ null,
                 if (yBottom === stackThreshold &&
                     stackIndicator.key ===
                         stack[xValue].base) {
-                    yBottom = (pick((isNumber(threshold) && threshold), yAxis.min));
+                    yBottom = pick((isNumber(threshold) && threshold), yAxis.min);
                 }
                 // #1200, #1232
                 if (yAxis.positiveValuesOnly && yBottom <= 0) {
@@ -3465,7 +3485,7 @@ null,
      * @function Highcharts.Series#drawPoints
      */
     drawPoints: function () {
-        var series = this, points = series.points, chart = series.chart, i, point, symbol, graphic, verb, options = series.options, seriesMarkerOptions = options.marker, pointMarkerOptions, hasPointMarker, enabled, isInside, markerGroup = (series[series.specialGroup] ||
+        var series = this, points = series.points, chart = series.chart, i, point, graphic, verb, options = series.options, seriesMarkerOptions = options.marker, pointMarkerOptions, hasPointMarker, enabled, isInside, markerGroup = (series[series.specialGroup] ||
             series.markerGroup), xAxis = series.xAxis, markerAttribs, globallyEnabled = pick(seriesMarkerOptions.enabled, !xAxis || xAxis.isRadial ? true : null, 
         // Use larger or equal as radius is null in bubbles (#6321)
         series.closestPointRangePx >= (seriesMarkerOptions.enabledThreshold *
@@ -3484,7 +3504,7 @@ null,
                 // only draw the point if y is defined
                 if (enabled && !point.isNull) {
                     // Shortcuts
-                    symbol = pick(pointMarkerOptions.symbol, series.symbol);
+                    var symbol = pick(pointMarkerOptions.symbol, series.symbol);
                     markerAttribs = series.markerAttribs(point, (point.selected && 'select'));
                     if (graphic) { // update
                         // Since the marker group isn't clipped, each
@@ -3580,7 +3600,7 @@ null,
      * @private
      * @function Highcharts.Series#pointAttribs
      *
-     * @param {Highcharts.Point} point
+     * @param {Highcharts.Point} [point]
      *        The point instance to inspect.
      *
      * @param {string} [state]
@@ -4213,7 +4233,7 @@ null,
         if (!hasRendered) {
             series.animationTimeout = syncTimeout(function () {
                 series.afterAnimate();
-            }, animDuration);
+            }, animDuration || 0);
         }
         // Means data is in accordance with what you see
         series.isDirty = false;
@@ -4399,14 +4419,14 @@ null,
      * @return {number}
      */
     pointPlacementToXValue: function () {
-        var series = this, pointPlacement = series.options.pointPlacement;
+        var series = this, axis = series.xAxis, pointPlacement = series.options.pointPlacement;
         // Point placement is relative to each series pointRange (#5889)
         if (pointPlacement === 'between') {
-            pointPlacement = 0.5;
+            pointPlacement = axis.reversed ? -0.5 : 0.5; // #11955
         }
         if (isNumber(pointPlacement)) {
             pointPlacement *=
-                pick(series.options.pointRange || series.xAxis.pointRange);
+                pick(series.options.pointRange || axis.pointRange);
         }
         return pointPlacement;
     }
@@ -4549,10 +4569,11 @@ null,
  */
 /**
  * A description of the point to add to the screen reader information
- * about the point. Requires the Accessibility module.
+ * about the point.
  *
  * @type      {string}
  * @since     5.0.0
+ * @requires  modules/accessibility
  * @apioption series.line.data.description
  */
 /**

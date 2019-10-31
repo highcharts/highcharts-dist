@@ -13,25 +13,26 @@ import H from '../parts/Globals.js';
  * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
  */
 import U from '../parts/Utilities.js';
-var isNumber = U.isNumber, pInt = U.pInt;
+var arrayMax = U.arrayMax, arrayMin = U.arrayMin, extend = U.extend, isNumber = U.isNumber, pick = U.pick, pInt = U.pInt;
 import '../parts/Axis.js';
 import '../parts/Color.js';
 import '../parts/Point.js';
 import '../parts/Series.js';
 import '../parts/ScatterSeries.js';
 import './BubbleLegend.js';
-var arrayMax = H.arrayMax, arrayMin = H.arrayMin, Axis = H.Axis, color = H.color, noop = H.noop, pick = H.pick, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+var Axis = H.Axis, color = H.color, noop = H.noop, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
 /**
  * A bubble series is a three dimensional series type where each point renders
  * an X, Y and Z value. Each points is drawn as a bubble where the position
  * along the X and Y axes mark the X and Y values, and the size of the bubble
- * relates to the Z value. Requires `highcharts-more.js`.
+ * relates to the Z value.
  *
  * @sample {highcharts} highcharts/demo/bubble/
  *         Bubble chart
  *
  * @extends      plotOptions.scatter
  * @product      highcharts highstock
+ * @requires     highcharts-more
  * @optionparent plotOptions.bubble
  */
 seriesType('bubble', 'scatter', {
@@ -379,7 +380,7 @@ seriesType('bubble', 'scatter', {
             radius = radii ? radii[i] : 0; // #1737
             if (isNumber(radius) && radius >= this.minPxSize / 2) {
                 // Shape arguments
-                point.marker = H.extend(point.marker, {
+                point.marker = extend(point.marker, {
                     radius: radius,
                     width: 2 * radius,
                     height: 2 * radius
@@ -491,6 +492,7 @@ Axis.prototype.beforePadding = function () {
  * @extends   series,plotOptions.bubble
  * @excluding dataParser, dataURL, stack
  * @product   highcharts highstock
+ * @requires  highcharts-more
  * @apioption series.bubble
  */
 /**
@@ -544,9 +546,14 @@ Axis.prototype.beforePadding = function () {
  *
  * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
  * @extends   series.line.data
- * @excluding marker
  * @product   highcharts
  * @apioption series.bubble.data
+ */
+/**
+ * @extends     series.line.data.marker
+ * @excluding   enabledThreshold, height, radius, width
+ * @product     highcharts
+ * @apioption   series.bubble.data.marker
  */
 /**
  * The size value for each bubble. The bubbles' diameters are computed

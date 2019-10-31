@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.0 (2019-09-03)
+ * @license Highstock JS v7.2.1 (2019-10-31)
  *
  * Indicator series type for Highstock
  *
@@ -50,7 +50,7 @@
              *        Required indicator type.
              * @param {string} type
              *        Type of indicator where function was called (parent).
-             * @param {Highcharts.IndicatorConstructorFunction} callback
+             * @param {Highcharts.IndicatorCallbackFunction} callback
              *        Callback which is triggered if the given indicator is loaded.
              *        Takes indicator as an argument.
              * @param {string} errMessage
@@ -90,13 +90,10 @@
          *
          *  License: www.highcharts.com/license
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
-
-
-
-        var correctFloat = H.correctFloat,
-            TEMA = H.seriesTypes.tema;
-
+        var correctFloat = H.correctFloat, TEMA = H.seriesTypes.tema;
         /**
          * The TRIX series type.
          *
@@ -106,67 +103,51 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType(
-            'trix',
-            'tema',
-            /**
-             * Triple exponential average (TRIX) oscillator. This series requires
-             * `linkedTo` option to be set.
-             *
-             * Requires https://code.highcharts.com/stock/indicators/ema.js
-             * and https://code.highcharts.com/stock/indicators/tema.js.
-             *
-             * @sample {highstock} stock/indicators/trix
-             *         TRIX indicator
-             *
-             * @extends      plotOptions.tema
-             * @since        7.0.0
-             * @product      highstock
-             * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
-             *               navigatorOptions, pointInterval, pointIntervalUnit,
-             *               pointPlacement, pointRange, pointStart, showInNavigator,
-             *               stacking
-             * @optionparent plotOptions.trix
-             */
-            {},
-            /**
-             * @lends Highcharts.Series#
-             */
-            {
-                init: function () {
-                    var args = arguments,
-                        ctx = this;
-
-                    requiredIndicator.isParentLoaded(
-                        TEMA,
-                        'tema',
-                        ctx.type,
-                        function (indicator) {
-                            indicator.prototype.init.apply(ctx, args);
-                        }
-                    );
-                },
-                // TRIX is calculated using TEMA so we just extend getTemaPoint method.
-                getTemaPoint: function (
-                    xVal,
-                    tripledPeriod,
-                    EMAlevels,
-                    i
-                ) {
-                    if (i > tripledPeriod) {
-                        var TRIXPoint = [
-                            xVal[i - 3],
-                            EMAlevels.prevLevel3 !== 0 ?
-                                correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
-                              EMAlevels.prevLevel3 * 100 : null
-                        ];
-                    }
-
-                    return TRIXPoint;
+        H.seriesType('trix', 'tema', 
+        /**
+         * Triple exponential average (TRIX) oscillator. This series requires
+         * `linkedTo` option to be set.
+         *
+         * Requires https://code.highcharts.com/stock/indicators/ema.js
+         * and https://code.highcharts.com/stock/indicators/tema.js.
+         *
+         * @sample {highstock} stock/indicators/trix
+         *         TRIX indicator
+         *
+         * @extends      plotOptions.tema
+         * @since        7.0.0
+         * @product      highstock
+         * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
+         *               navigatorOptions, pointInterval, pointIntervalUnit,
+         *               pointPlacement, pointRange, pointStart, showInNavigator,
+         *               stacking
+         * @optionparent plotOptions.trix
+         */
+        {}, 
+        /**
+         * @lends Highcharts.Series#
+         */
+        {
+            init: function () {
+                var args = arguments, ctx = this;
+                requiredIndicator.isParentLoaded(TEMA, 'tema', ctx.type, function (indicator) {
+                    indicator.prototype.init.apply(ctx, args);
+                    return;
+                });
+            },
+            // TRIX is calculated using TEMA so we just extend getTemaPoint method.
+            getTemaPoint: function (xVal, tripledPeriod, EMAlevels, i) {
+                if (i > tripledPeriod) {
+                    var TRIXPoint = [
+                        xVal[i - 3],
+                        EMAlevels.prevLevel3 !== 0 ?
+                            correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
+                                EMAlevels.prevLevel3 * 100 : null
+                    ];
                 }
+                return TRIXPoint;
             }
-        );
-
+        });
         /**
          * A `TRIX` series. If the [type](#series.tema.type) option is not specified, it
          * is inherited from [chart.type](#chart.type).
@@ -179,6 +160,7 @@
          *            pointPlacement, pointRange, pointStart, showInNavigator, stacking
          * @apioption series.trix
          */
+        ''; // to include the above in the js output
 
     });
     _registerModule(_modules, 'masters/indicators/trix.src.js', [], function () {

@@ -25,11 +25,11 @@ import H from './Globals.js';
 * @type {number}
 */
 import U from './Utilities.js';
-var defined = U.defined, isNumber = U.isNumber;
+var arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, extend = U.extend, isNumber = U.isNumber, pick = U.pick;
 import './Axis.js';
 import './Series.js';
 import './Tooltip.js';
-var addEvent = H.addEvent, arrayMax = H.arrayMax, arrayMin = H.arrayMin, Axis = H.Axis, correctFloat = H.correctFloat, defaultPlotOptions = H.defaultPlotOptions, extend = H.extend, format = H.format, merge = H.merge, pick = H.pick, Point = H.Point, Series = H.Series, Tooltip = H.Tooltip;
+var addEvent = H.addEvent, Axis = H.Axis, correctFloat = H.correctFloat, defaultPlotOptions = H.defaultPlotOptions, format = H.format, merge = H.merge, Point = H.Point, Series = H.Series, Tooltip = H.Tooltip;
 /* ************************************************************************** *
  *  Start data grouping module                                                *
  * ************************************************************************** */
@@ -256,9 +256,7 @@ var dataGrouping = {
 // -----------------------------------------------------------------------------
 // The following code applies to implementation of data grouping on a Series
 var seriesProto = Series.prototype, baseProcessData = seriesProto.processData, baseGeneratePoints = seriesProto.generatePoints, 
-/**
- * @ignore
- */
+/** @ignore */
 commonOptions = {
     // enabled: null, // (true for stock charts, false for basic),
     // forced: undefined,
@@ -314,6 +312,7 @@ commonOptions = {
     spline: {},
     area: {},
     areaspline: {},
+    arearange: {},
     column: {
         groupPixelWidth: 10
     },
@@ -379,7 +378,7 @@ seriesProto.getDGApproximation = function () {
  *
  * @param {Array<number>} xData
  *
- * @param {Array<number>} yData
+ * @param {Array<number>|Array<Array<number>>} yData
  *
  * @param {boolean} groupPositions
  *
@@ -468,7 +467,7 @@ seriesProto.processData = function () {
                 if ((!defined(xAxis.options.min) &&
                     xAxis.min <= xAxis.dataMin) ||
                     xAxis.min === xAxis.dataMin) {
-                    xAxis.min = groupedXData[0];
+                    xAxis.min = Math.min(groupedXData[0], xAxis.min);
                 }
                 xAxis.dataMin = groupedXData[0];
             }
@@ -496,14 +495,20 @@ seriesProto.processData = function () {
 };
 // Destroy the grouped data points. #622, #740
 seriesProto.destroyGroupedData = function () {
-    var groupedData = this.groupedData;
-    // clear previous groups
-    (groupedData || []).forEach(function (point, i) {
-        if (point) {
-            groupedData[i] = point.destroy ? point.destroy() : null;
-        }
-    });
-    this.groupedData = null;
+    // Clear previous groups
+    if (this.groupedData) {
+        this.groupedData.forEach(function (point, i) {
+            if (point) {
+                this.groupedData[i] = point.destroy ?
+                    point.destroy() : null;
+            }
+        }, this);
+        // Clears all:
+        // - `this.groupedData`
+        // - `this.points`
+        // - `preserve` object in series.update()
+        this.groupedData.length = 0;
+    }
 };
 // Override the generatePoints method by adding a reference to grouped data
 seriesProto.generatePoints = function () {
@@ -585,8 +590,8 @@ addEvent(Series, 'afterSetOptions', function (e) {
             defaultOptions = merge(commonOptions, specificOptions[type]);
         }
         options.dataGrouping = merge(baseOptions, defaultOptions, plotOptions.series && plotOptions.series.dataGrouping, // #1228
-        plotOptions[type].dataGrouping, // Set by the StockChart constructor
-        this.userOptions.dataGrouping);
+        // Set by the StockChart constructor:
+        plotOptions[type].dataGrouping, this.userOptions.dataGrouping);
     }
 });
 // When resetting the scale reset the hasProccessed flag to avoid taking
@@ -696,6 +701,7 @@ export default dataGrouping;
  * altered through a custom `approximation` callback function.
  *
  * @product   highstock
+ * @requires  modules/datagrouping
  * @apioption plotOptions.series.dataGrouping
  */
 /**

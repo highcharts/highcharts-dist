@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Exporting module
  *
@@ -221,9 +221,9 @@
          *
          * @typedef {"image/png"|"image/jpeg"|"application/pdf"|"image/svg+xml"} Highcharts.ExportingMimeTypeValue
          */
-        var isObject = U.isObject, objectEach = U.objectEach;
+        var discardElement = U.discardElement, extend = U.extend, isObject = U.isObject, objectEach = U.objectEach, pick = U.pick;
         // create shortcuts
-        var defaultOptions = H.defaultOptions, doc = H.doc, Chart = H.Chart, addEvent = H.addEvent, removeEvent = H.removeEvent, fireEvent = H.fireEvent, createElement = H.createElement, discardElement = H.discardElement, css = H.css, merge = H.merge, pick = H.pick, extend = H.extend, isTouchDevice = H.isTouchDevice, win = H.win, userAgent = win.navigator.userAgent, SVGRenderer = H.SVGRenderer, symbols = H.Renderer.prototype.symbols, isMSBrowser = /Edge\/|Trident\/|MSIE /.test(userAgent), isFirefoxBrowser = /firefox/i.test(userAgent);
+        var defaultOptions = H.defaultOptions, doc = H.doc, Chart = H.Chart, addEvent = H.addEvent, removeEvent = H.removeEvent, fireEvent = H.fireEvent, createElement = H.createElement, css = H.css, merge = H.merge, isTouchDevice = H.isTouchDevice, win = H.win, userAgent = win.navigator.userAgent, SVGRenderer = H.SVGRenderer, symbols = H.Renderer.prototype.symbols, isMSBrowser = /Edge\/|Trident\/|MSIE /.test(userAgent), isFirefoxBrowser = /firefox/i.test(userAgent);
         // Add language
         extend(defaultOptions.lang
         /**
@@ -233,7 +233,8 @@
             /**
              * Exporting module only. View the chart in full screen.
              *
-             * @since 7.1.0
+             * @since    7.1.0
+             * @requires modules/exporting
              *
              * @private
              */
@@ -241,7 +242,8 @@
             /**
              * Exporting module only. The text for the menu item to print the chart.
              *
-             * @since 3.0.1
+             * @since    3.0.1
+             * @requires modules/exporting
              *
              * @private
              */
@@ -249,7 +251,8 @@
             /**
              * Exporting module only. The text for the PNG download menu item.
              *
-             * @since 2.0
+             * @since    2.0
+             * @requires modules/exporting
              *
              * @private
              */
@@ -257,7 +260,8 @@
             /**
              * Exporting module only. The text for the JPEG download menu item.
              *
-             * @since 2.0
+             * @since    2.0
+             * @requires modules/exporting
              *
              * @private
              */
@@ -265,7 +269,8 @@
             /**
              * Exporting module only. The text for the PDF download menu item.
              *
-             * @since 2.0
+             * @since    2.0
+             * @requires modules/exporting
              *
              * @private
              */
@@ -273,7 +278,8 @@
             /**
              * Exporting module only. The text for the SVG download menu item.
              *
-             * @since 2.0
+             * @since    2.0
+             * @requires modules/exporting
              *
              * @private
              */
@@ -282,7 +288,8 @@
              * Exporting module menu. The tooltip title for the context menu holding
              * print and export menu items.
              *
-             * @since 3.0
+             * @since    3.0
+             * @requires modules/exporting
              *
              * @private
              */
@@ -296,11 +303,15 @@
              * A collection of options for buttons and menus appearing in the exporting
              * module.
              *
+             * @requires     modules/exporting
              * @optionparent navigation
              */
             defaultOptions.navigation = {};
         }
         merge(true, defaultOptions.navigation, {
+            /**
+             * @optionparent navigation.buttonOptions
+             */
             buttonOptions: {
                 theme: {},
                 /**
@@ -506,6 +517,8 @@
              * In styled mode, the buttons are styled with the
              * `.highcharts-contextbutton` and `.highcharts-button-symbol` classes.
              *
+             * @requires modules/exporting
+             *
              * @private
              */
             buttonOptions: {
@@ -547,6 +560,8 @@
                  * @sample highcharts/navigation/buttonoptions-theme/
                  *         Theming the buttons
                  *
+                 * @requires modules/exporting
+                 *
                  * @since 3.0
                  */
                 theme: {
@@ -575,6 +590,7 @@
          * Options for the exporting module. For an overview on the matter, see
          * [the docs](https://www.highcharts.com/docs/export-module/export-module-overview).
          *
+         * @requires     modules/exporting
          * @optionparent exporting
          */
         defaultOptions.exporting = {
@@ -637,6 +653,8 @@
              *
              * @type      {Highcharts.ExportingErrorCallbackFunction}
              * @since     5.0.0
+             * @requires  modules/exporting
+             * @requires  modules/offline-exporting
              * @apioption exporting.error
              */
             /**
@@ -653,6 +671,8 @@
              * @type      {boolean}
              * @default   true
              * @since     4.1.8
+             * @requires  modules/exporting
+             * @requires  modules/offline-exporting
              * @apioption exporting.fallbackToExportServer
              */
             /**
@@ -782,7 +802,8 @@
              * See [navigation.buttonOptions](#navigation.buttonOptions) for general
              * options.
              *
-             * @type {Highcharts.Dictionary<Highcharts.ExportingButtonsContextButtonOptions>}
+             * @type     {Highcharts.Dictionary<Highcharts.ExportingButtonsContextButtonOptions>}
+             * @requires modules/exporting
              */
             buttons: {
                 /**
@@ -791,7 +812,8 @@
                  * In styled mode, export button styles can be applied with the
                  * `.highcharts-contextbutton` class.
                  *
-                 * @extends navigation.buttonOptions
+                 * @extends  navigation.buttonOptions
+                 * @requires modules/exporting
                  */
                 contextButton: {
                     /**
@@ -989,7 +1011,7 @@
         };
         /**
          * Fires after a chart is printed through the context menu item or the
-         * `Chart.print` method. Requires the exporting module.
+         * `Chart.print` method.
          *
          * @sample highcharts/chart/events-beforeprint-afterprint/
          *         Rescale the chart to print
@@ -997,11 +1019,12 @@
          * @type      {Highcharts.ExportingAfterPrintCallbackFunction}
          * @since     4.1.0
          * @context   Highcharts.Chart
+         * @requires  modules/exporting
          * @apioption chart.events.afterPrint
          */
         /**
          * Fires before a chart is printed through the context menu item or
-         * the `Chart.print` method. Requires the exporting module.
+         * the `Chart.print` method.
          *
          * @sample highcharts/chart/events-beforeprint-afterprint/
          *         Rescale the chart to print
@@ -1009,6 +1032,7 @@
          * @type      {Highcharts.ExportingBeforePrintCallbackFunction}
          * @since     4.1.0
          * @context   Highcharts.Chart
+         * @requires  modules/exporting
          * @apioption chart.events.beforePrint
          */
         /**
@@ -1061,6 +1085,7 @@
              *        Chart options to apply
              * @return {string}
              *         Sanitized SVG code
+             * @requires modules/exporting
              */
             sanitizeSVG: function (svg, options) {
                 var split = svg.indexOf('</svg>') + 6, html = svg.substr(split);
@@ -1110,6 +1135,8 @@
              *
              * @returns {string}
              *          The unfiltered SVG of the chart.
+             *
+             * @requires modules/exporting
              */
             getChartHTML: function () {
                 if (this.styledMode) {
@@ -1135,6 +1162,8 @@
              *         The SVG representation of the rendered chart.
              *
              * @fires Highcharts.Chart#event:getSVG
+             *
+             * @requires modules/exporting
              */
             getSVG: function (chartOptions) {
                 var chart = this, chartCopy, sandbox, svg, seriesOptions, sourceWidth, sourceHeight, cssWidth, cssHeight, 
@@ -1142,6 +1171,9 @@
                 options = merge(chart.options, chartOptions);
                 // Use userOptions to make the options chain in series right (#3881)
                 options.plotOptions = merge(chart.userOptions.plotOptions, chartOptions && chartOptions.plotOptions);
+                // ... and likewise with time, avoid that undefined time properties are
+                // merged over legacy global time options
+                options.time = merge(chart.userOptions.time, chartOptions && chartOptions.time);
                 // create a sandbox where a new chart will be generated
                 sandbox = createElement('div', null, {
                     position: 'absolute',
@@ -1228,12 +1260,10 @@
             /**
              * @private
              * @function Highcharts.Chart#getSVGForExport
-             *
              * @param {Highcharts.ExportingOptions} options
-             *
              * @param {Highcharts.Options} chartOptions
-             *
              * @return {string}
+             * @requires modules/exporting
              */
             getSVGForExport: function (options, chartOptions) {
                 var chartExportingOptions = this.options.exporting;
@@ -1253,6 +1283,8 @@
              * @function Highcharts.Chart#getFilename
              *
              * @return {string} A file name without extension.
+             *
+             * @requires modules/exporting
              */
             getFilename: function () {
                 var s = this.userOptions.title && this.userOptions.title.text, filename = this.options.exporting.filename;
@@ -1300,6 +1332,8 @@
              *        export only.
              *
              * @return {void}
+             *
+             * @requires modules/exporting
              */
             exportChart: function (exportingOptions, chartOptions) {
                 var svg = this.getSVGForExport(exportingOptions, chartOptions);
@@ -1330,6 +1364,8 @@
              *
              * @fires Highcharts.Chart#event:beforePrint
              * @fires Highcharts.Chart#event:afterPrint
+             *
+             * @requires modules/exporting
              */
             print: function () {
                 var chart = this, origDisplay = [], body = doc.body, childNodes = body.childNodes, printMaxWidth = chart.options.exporting.printMaxWidth, resetParams, handleMaxWidth;
@@ -1384,7 +1420,7 @@
                         // restore all body content
                         [].forEach.call(childNodes, function (node, i) {
                             if (node.nodeType === 1) {
-                                node.style.display = origDisplay[i];
+                                node.style.display = (origDisplay[i] || '');
                             }
                         });
                         chart.isPrinting = false;
@@ -1414,6 +1450,7 @@
              * @param {number} height
              *        The height of the opener button
              * @return {void}
+             * @requires modules/exporting
              */
             contextMenu: function (className, items, x, y, width, height, button) {
                 var chart = this, navOptions = chart.options.navigation, chartWidth = chart.chartWidth, chartHeight = chart.chartHeight, cacheName = 'cache-' + className, menu = chart[cacheName], menuPadding = Math.max(width, height), // for mouse leave detection
@@ -1535,6 +1572,7 @@
                 css(menu, menuStyle);
                 css(chart.renderTo, { overflow: '' }); // #10361
                 chart.openMenu = true;
+                fireEvent(chart, 'exportMenuShown');
             },
             /**
              * Add the export button to the chart, with options.
@@ -1543,6 +1581,7 @@
              * @function Highcharts.Chart#addButton
              * @param {Highcharts.NavigationButtonOptions} options
              * @return {void}
+             * @requires modules/exporting
              */
             addButton: function (options) {
                 var chart = this, renderer = chart.renderer, btnOptions = merge(chart.options.navigation.buttonOptions, options), onclick = btnOptions.onclick, menuItems = btnOptions.menuItems, symbol, button, symbolSize = btnOptions.symbolSize || 12;
@@ -1637,11 +1676,11 @@
             },
             /**
              * Destroy the export buttons.
-             *
              * @private
              * @function Highcharts.Chart#destroyExport
-             *
              * @param {global.Event} [e]
+             * @return {void}
+             * @requires modules/exporting
              */
             destroyExport: function (e) {
                 var chart = e ? e.target : this, exportSVGElements = chart.exportSVGElements, exportDivElements = chart.exportDivElements, exportEvents = chart.exportEvents, cacheName;
@@ -1729,6 +1768,8 @@
          * @todo: What are the border styles for text about? In general, text has a lot
          * of properties.
          * @todo: Make it work with IE9 and IE10.
+         *
+         * @requires modules/exporting
          */
         Chart.prototype.inlineStyles = function () {
             var renderer = this.renderer, inlineToAttributes = renderer.inlineToAttributes, blacklist = renderer.inlineBlacklist, whitelist = renderer.inlineWhitelist, // For IE
@@ -1898,10 +1939,10 @@
         };
         /**
          * Add the buttons on chart load
-         *
          * @private
          * @function Highcharts.Chart#renderExporting
          * @return {void}
+         * @requires modules/exporting
          */
         Chart.prototype.renderExporting = function () {
             var chart = this, exportingOptions = chart.options.exporting, buttons = exportingOptions.buttons, isDirty = chart.isDirtyExporting || !chart.exportSVGElements;

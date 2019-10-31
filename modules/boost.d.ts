@@ -48,7 +48,7 @@ declare module "../highcharts" {
          * @return A Point object as per
          *         http://api.highcharts.com/highcharts#Point
          */
-        getPoint(boostPoint: (object|Point)): object;
+        getPoint(boostPoint: (object|Point)): Point;
     }
 }
 export default factory;

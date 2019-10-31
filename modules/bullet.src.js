@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Bullet graph series type for Highcharts
  *
@@ -38,8 +38,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber;
-        var pick = H.pick, relativeLength = H.relativeLength, seriesType = H.seriesType, columnProto = H.seriesTypes.column.prototype;
+        var isNumber = U.isNumber, pick = U.pick;
+        var relativeLength = H.relativeLength, seriesType = H.seriesType, columnProto = H.seriesTypes.column.prototype;
         /**
          * The bullet series type.
          *
@@ -63,6 +63,7 @@
          * @since        6.0.0
          * @product      highcharts
          * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase
+         * @requires     modules/bullet
          * @optionparent plotOptions.bullet
          */
         , {
@@ -253,6 +254,7 @@
          * @since     6.0.0
          * @product   highcharts
          * @excluding dataParser, dataURL, marker
+         * @requires  modules/bullet
          * @apioption series.bullet
          */
         /**

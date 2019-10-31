@@ -1,5 +1,5 @@
 /*
- Highstock JS v7.2.0 (2019-09-03)
+ Highstock JS v7.2.1 (2019-10-31)
 
  Indicator series type for Highstock
 
@@ -12,6 +12,6 @@ c.defined,f=a.each,q=a.merge,h=a.error,r=a.seriesTypes.sma;return{pointArrayMap:
 f(b.points,function(c){f(a,function(a,f){h=c[a];null!==h&&(c[e[f]]=b.yAxis.toPixels(h,!0))})})},drawGraph:function(){var b=this,a=b.linesApiNames,e=b.points,c=e.length,l=b.options,w=b.graph,u={options:{gapSize:l.gapSize}},m=[],v=b.getTranslatedLinesNames(b.pointValKey),d;f(v,function(a,b){for(m[b]=[];c--;)d=e[c],m[b].push({x:d.x,plotX:d.plotX,plotY:d[a],isNull:!k(d[a])});c=e.length});f(a,function(a,d){m[d]?(b.points=m[d],l[a]?b.options=q(l[a].styles,u):h('Error: "There is no '+a+' in DOCS options declared. Check if linesApiNames are consistent with your DOCS line names." at mixin/multiple-line.js:34'),
 b.graph=b["graph"+a],r.prototype.drawGraph.call(b),b["graph"+a]=b.graph):h('Error: "'+a+" doesn't have equivalent in pointArrayMap. To many elements in linesApiNames relative to pointArrayMap.\"")});b.points=e;b.options=l;b.graph=w;r.prototype.drawGraph.call(b)}}});c(a,"indicators/acceleration-bands.src.js",[a["parts/Globals.js"],a["mixins/multipe-lines.js"]],function(a,c){var k=a.seriesTypes.sma,f=a.merge,q=a.correctFloat;a.seriesType("abands","sma",{params:{period:20,factor:.001,index:3},lineWidth:1,
 topLine:{styles:{lineWidth:1}},bottomLine:{styles:{lineWidth:1}},dataGrouping:{approximation:"averages"}},f(c,{pointArrayMap:["top","middle","bottom"],pointValKey:"middle",nameBase:"Acceleration Bands",nameComponents:["period","factor"],linesApiNames:["topLine","bottomLine"],getValues:function(a,c){var b=c.period,f=c.factor;c=c.index;var e=a.xData,h=(a=a.yData)?a.length:0,l=[],r=[],u=[],m=[],v=[],d;if(h<b)return!1;for(d=0;d<=h;d++){if(d<h){var g=a[d][2];var n=a[d][1];var t=f;g=q(n-g)/(q(n+g)/2)*1E3*
-t;l.push(a[d][1]*q(1+2*g));r.push(a[d][2]*q(1-2*g))}if(d>=b){g=e.slice(d-b,d);var p=a.slice(d-b,d);t=k.prototype.getValues.call(this,{xData:g,yData:l.slice(d-b,d)},{period:b});n=k.prototype.getValues.call(this,{xData:g,yData:r.slice(d-b,d)},{period:b});p=k.prototype.getValues.call(this,{xData:g,yData:p},{period:b,index:c});g=p.xData[0];t=t.yData[0];n=n.yData[0];p=p.yData[0];u.push([g,t,p,n]);m.push(g);v.push([t,p,n])}}return{values:u,xData:m,yData:v}}}))});c(a,"masters/indicators/acceleration-bands.src.js",
+t;l.push(a[d][1]*q(1+2*g));r.push(a[d][2]*q(1-2*g))}if(d>=b){g=e.slice(d-b,d);var p=a.slice(d-b,d);t=k.prototype.getValues.call(this,{xData:g,yData:l.slice(d-b,d)},{period:b});n=k.prototype.getValues.call(this,{xData:g,yData:r.slice(d-b,d)},{period:b});p=k.prototype.getValues.call(this,{xData:g,yData:p},{period:b,index:c});g=p.xData[0];t=t.yData[0];n=n.yData[0];p=p.yData[0];u.push([g,t,p,n]);m.push(g);v.push([t,p,n])}}return{values:u,xData:m,yData:v}}}));""});c(a,"masters/indicators/acceleration-bands.src.js",
 [],function(){})});
 //# sourceMappingURL=acceleration-bands.js.map

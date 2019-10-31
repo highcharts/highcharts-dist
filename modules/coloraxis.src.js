@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * ColorAxis module
  *
@@ -114,8 +114,8 @@
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        var erase = U.erase, isNumber = U.isNumber, splat = U.splat;
-        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Series = H.Series, Point = H.Point, color = H.color, ColorAxis, extend = H.extend, Legend = H.Legend, LegendSymbolMixin = H.LegendSymbolMixin, colorPointMixin = H.colorPointMixin, colorSeriesMixin = H.colorSeriesMixin, noop = H.noop, merge = H.merge, pick = H.pick;
+        var erase = U.erase, extend = U.extend, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
+        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Series = H.Series, Point = H.Point, color = H.color, ColorAxis, Legend = H.Legend, LegendSymbolMixin = H.LegendSymbolMixin, colorPointMixin = H.colorPointMixin, colorSeriesMixin = H.colorSeriesMixin, noop = H.noop, merge = H.merge;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -172,11 +172,21 @@
              * See [the Axis object](/class-reference/Highcharts.Axis) for
              * programmatic access to the axis.
              *
+             * @sample       {highcharts} highcharts/coloraxis/custom-color-key
+             *               Column chart with color axis
+             * @sample       {highcharts} highcharts/coloraxis/horizontal-layout
+             *               Horizontal layout
+             * @sample       {highmaps} maps/coloraxis/dataclasscolor
+             *               With data classes
+             * @sample       {highmaps} maps/coloraxis/mincolor-maxcolor
+             *               Min color and max color
+             *
              * @extends      xAxis
-             * @excluding    allowDecimals, alternateGridColor, breaks, categories,
-             *               crosshair, dateTimeLabelFormats, lineWidth, linkedTo,
-             *               maxZoom, minRange, minTickInterval, offset, opposite,
-             *               plotBands, plotLines, showEmpty, title
+             * @excluding    alignTicks, allowDecimals, alternateGridColor, breaks,
+             *               categories, crosshair, dateTimeLabelFormats, lineWidth,
+             *               linkedTo, maxZoom, minRange, minTickInterval, offset,
+             *               opposite, pane, plotBands, plotLines, reversedStacks,
+             *               showEmpty, title, zoomEnabled
              * @product      highcharts highstock highmaps
              * @type         {*|Array<*>}
              * @optionparent colorAxis
@@ -895,7 +905,7 @@
                             Math.max(this.dataMax, cSeries.maxColorValue);
                     }
                     if (!calculatedExtremes) {
-                        Highcharts.Series.prototype.getExtremes.call(cSeries);
+                        Series.prototype.getExtremes.call(cSeries);
                     }
                 }
             },

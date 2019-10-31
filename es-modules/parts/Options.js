@@ -1087,8 +1087,7 @@ H.defaultOptions = {
         /**
          * When true, cartesian charts like line, spline, area and column are
          * transformed into the polar coordinate system. This produces _polar
-         * charts_, also known as _radar charts_. Requires
-         * `highcharts-more.js`.
+         * charts_, also known as _radar charts_.
          *
          * @sample {highcharts} highcharts/demo/polar/
          *         Polar chart
@@ -1103,6 +1102,7 @@ H.defaultOptions = {
          * @default   false
          * @since     2.3.0
          * @product   highcharts
+         * @requires  highcharts-more
          * @apioption chart.polar
          */
         /**
@@ -2135,9 +2135,9 @@ H.defaultOptions = {
         },
         /**
          * Line height for the legend items. Deprecated as of 2.1\. Instead,
-         * the line height for each item can be set using itemStyle.lineHeight,
-         * and the padding between items using `itemMarginTop` and
-         * `itemMarginBottom`.
+         * the line height for each item can be set using
+         * `itemStyle.lineHeight`, and the padding between items using
+         * `itemMarginTop` and `itemMarginBottom`.
          *
          * @sample {highcharts} highcharts/legend/lineheight/
          *         Setting padding
@@ -2789,6 +2789,13 @@ H.defaultOptions = {
          * @type      {*}
          * @default   true
          * @apioption tooltip.crosshairs
+         */
+        /**
+         * Distance from point to tooltip in pixels.
+         *
+         * @type      {number}
+         * @default   16
+         * @apioption tooltip.distance
          */
         /**
          * Whether the tooltip should follow the mouse as it moves across
@@ -3523,7 +3530,9 @@ H.setOptions = function (options) {
     // Copy in the default options
     H.defaultOptions = merge(true, H.defaultOptions, options);
     // Update the time object
-    H.time.update(merge(H.defaultOptions.global, H.defaultOptions.time), false);
+    if (options.time || options.global) {
+        H.time.update(merge(H.defaultOptions.global, H.defaultOptions.time, options.global, options.time));
+    }
     return H.defaultOptions;
 };
 /**

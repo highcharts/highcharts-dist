@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Streamgraph module
  *
@@ -30,17 +30,17 @@
     }
     _registerModule(_modules, 'modules/streamgraph.src.js', [_modules['parts/Globals.js']], function (H) {
         /* *
-         * Streamgraph module
          *
-         * (c) 2010-2019 Torstein Honsi
+         *  Streamgraph module
          *
-         * License: www.highcharts.com/license
-         */
-
-
-
+         *  (c) 2010-2019 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
         var seriesType = H.seriesType;
-
         /**
          * @private
          * @class
@@ -49,44 +49,40 @@
          * @augments Highcharts.Series
          */
         seriesType('streamgraph', 'areaspline'
-
-            /**
-             * A streamgraph is a type of stacked area graph which is displaced around a
-             * central axis, resulting in a flowing, organic shape.
-             *
-             * @sample {highcharts|highstock} highcharts/demo/streamgraph/
-             *         Streamgraph
-             *
-             * @extends      plotOptions.areaspline
-             * @since        6.0.0
-             * @product      highcharts highstock
-             * @optionparent plotOptions.streamgraph
-             */
-            , {
-                fillOpacity: 1,
-                lineWidth: 0,
-                marker: {
-                    enabled: false
-                },
-                stacking: 'stream'
-                // Prototype functions
-            }, {
-                negStacks: false,
-
-                // Modifier function for stream stacks. It simply moves the point up or
-                // down in order to center the full stack vertically.
-                streamStacker: function (pointExtremes, stack, i) {
+        /**
+         * A streamgraph is a type of stacked area graph which is displaced around a
+         * central axis, resulting in a flowing, organic shape.
+         *
+         * @sample {highcharts|highstock} highcharts/demo/streamgraph/
+         *         Streamgraph
+         *
+         * @extends      plotOptions.areaspline
+         * @since        6.0.0
+         * @product      highcharts highstock
+         * @requires     modules/streamgraph
+         * @optionparent plotOptions.streamgraph
+         */
+        , {
+            fillOpacity: 1,
+            lineWidth: 0,
+            marker: {
+                enabled: false
+            },
+            stacking: 'stream'
+            // Prototype functions
+        }, {
+            negStacks: false,
+            // Modifier function for stream stacks. It simply moves the point up or
+            // down in order to center the full stack vertically.
+            streamStacker: function (pointExtremes, stack, i) {
                 // Y bottom value
-                    pointExtremes[0] -= stack.total / 2;
-                    // Y value
-                    pointExtremes[1] -= stack.total / 2;
-
-                    // Record the Y data for use when getting axis extremes
-                    this.stackedYData[i] = pointExtremes;
-                }
-            });
-
-
+                pointExtremes[0] -= stack.total / 2;
+                // Y value
+                pointExtremes[1] -= stack.total / 2;
+                // Record the Y data for use when getting axis extremes
+                this.stackedYData[i] = pointExtremes;
+            }
+        });
         /**
          * A `streamgraph` series. If the [type](#series.streamgraph.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -94,9 +90,9 @@
          * @extends   series,plotOptions.streamgraph
          * @excluding dataParser, dataURL
          * @product   highcharts highstock
+         * @requires  modules/streamgraph
          * @apioption series.streamgraph
          */
-
         /**
          * An array of data points for the series. For the `streamgraph` series type,
          * points can be given in the following ways:
@@ -156,6 +152,7 @@
          * @product   highcharts highstock
          * @apioption series.streamgraph.data
          */
+        ''; // adds doclets above to transpiled file
 
     });
     _registerModule(_modules, 'masters/modules/streamgraph.src.js', [], function () {

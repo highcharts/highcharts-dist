@@ -38,20 +38,13 @@ declare module "../highcharts" {
      * that has accessibility logic connected to it. This class can be inherited
      * from to create a custom accessibility component for a chart.
      *
-     * A component:
-     *
-     * - Must call initBase after inheriting.
-     *
-     * - Can override any of the following functions: init(), destroy(),
-     * getKeyboardNavigation(), onChartUpdate().
-     *
-     * - Should take care to destroy added elements and unregister event
-     * handlers on destroy.
+     * Components should take care to destroy added elements and unregister
+     * event handlers on destroy. This is handled automatically if using
+     * this.addEvent and this.createElement.
      */
     class AccessibilityComponent {
         /**
-         * Called when accessibility is disabled or chart is destroyed. Should
-         * call destroyBase to make sure events/elements added are removed.
+         * Called when accessibility is disabled or chart is destroyed.
          */
         static destroy(): void;
         /**
@@ -59,7 +52,7 @@ declare module "../highcharts" {
          */
         static getKeyboardNavigation(): KeyboardNavigationHandler;
         /**
-         * Initialize component.
+         * Called on component initialization.
          */
         static init(): void;
         /**

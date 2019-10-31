@@ -1,5 +1,5 @@
 /*
- Highstock JS v7.2.0 (2019-09-03)
+ Highstock JS v7.2.1 (2019-10-31)
 
  Indicator series type for Highstock
 
@@ -13,5 +13,5 @@ this.options;c.cropThreshold=this.linkedParent.options.cropThreshold-(c.params.p
 b,k,e,f,g,m,n,p;q--;)b=u[q],k=u[q-1],e=h[q-1+r],f=h[q-2+r],g=h[q+r],m=h[q+r+1],n=b.options.color,p={x:b.x,plotX:b.plotX,plotY:b.plotY,isNull:!1},!f&&e&&a.yData[e.index-1]&&(f=t(a,e.index-1,3)),!m&&g&&a.yData[g.index+1]&&(m=t(a,g.index+1,3)),!e&&f&&a.yData[f.index+1]?e=t(a,f.index+1,3):!e&&g&&a.yData[g.index-1]&&(e=t(a,g.index-1,3)),b&&e&&g&&f&&b.x!==e.x&&(b.x===g.x?(f=e,e=g):b.x===f.x?(e=f,f={close:a.yData[e.index-1][3],x:a.xData[e.index-1]}):m&&b.x===m.x&&(e=m,f=g)),k&&f&&e?(g={x:k.x,plotX:k.plotX,
 plotY:k.plotY,isNull:!1},b.y>=e.close&&k.y>=f.close?(b.color=n||d.fallingTrendColor,l.top.push(p)):b.y<e.close&&k.y<f.close?(b.color=n||d.risingTrendColor,l.bottom.push(p)):(l.intersect.push(p),l.intersect.push(g),l.intersect.push(x(g,{isNull:!0})),b.y>=e.close&&k.y<f.close?(b.color=n||d.fallingTrendColor,k.color=n||d.risingTrendColor,l.top.push(p),l.top.push(x(g,{isNull:!0}))):b.y<e.close&&k.y>=f.close&&(b.color=n||d.risingTrendColor,k.color=n||d.fallingTrendColor,l.bottom.push(p),l.bottom.push(x(g,
 {isNull:!0}))))):e&&(b.y>=e.close?(b.color=n||d.fallingTrendColor,l.top.push(p)):(b.color=n||d.risingTrendColor,l.bottom.push(p)));B(l,function(b,a){c.points=b;c.options=x(v[a].styles,w);c.graph=c["graph"+a+"Line"];z.prototype.drawGraph.call(c);c["graph"+a+"Line"]=c.graph});c.points=u;c.options=d;c.graph=D},getValues:function(a,d){var c=d.period;d=d.multiplier;var h=a.xData,u=a.yData,t=[],q=[],r=[],w=0===c?0:c-1,l=[],v=[],b;if(h.length<=c||!y(u[0])||4!==u[0].length||0>c)return!1;a=C.prototype.getValues.call(this,
-a,{period:c}).yData;for(b=0;b<a.length;b++){var k=u[w+b];var e=u[w+b-1]||[];var f=l[b-1];var g=v[b-1];var m=r[b-1];0===b&&(f=g=m=0);c=A((k[1]+k[2])/2+d*a[b]);var n=A((k[1]+k[2])/2-d*a[b]);l[b]=c<f||e[3]>f?c:f;v[b]=n>g||e[3]<g?n:g;if(m===f&&k[3]<l[b]||m===g&&k[3]<v[b])var p=l[b];else if(m===f&&k[3]>l[b]||m===g&&k[3]>v[b])p=v[b];t.push([h[w+b],p]);q.push(h[w+b]);r.push(p)}return{values:t,xData:q,yData:r}}})});h(a,"masters/indicators/supertrend.src.js",[],function(){})});
+a,{period:c}).yData;for(b=0;b<a.length;b++){var k=u[w+b];var e=u[w+b-1]||[];var f=l[b-1];var g=v[b-1];var m=r[b-1];0===b&&(f=g=m=0);c=A((k[1]+k[2])/2+d*a[b]);var n=A((k[1]+k[2])/2-d*a[b]);l[b]=c<f||e[3]>f?c:f;v[b]=n>g||e[3]<g?n:g;if(m===f&&k[3]<l[b]||m===g&&k[3]<v[b])var p=l[b];else if(m===f&&k[3]>l[b]||m===g&&k[3]>v[b])p=v[b];t.push([h[w+b],p]);q.push(h[w+b]);r.push(p)}return{values:t,xData:q,yData:r}}});""});h(a,"masters/indicators/supertrend.src.js",[],function(){})});
 //# sourceMappingURL=supertrend.js.map

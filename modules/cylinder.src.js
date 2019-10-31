@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Highcharts cylinder module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/cylinder.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/cylinder.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  Highcharts cylinder - a 3D series
@@ -42,7 +42,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var charts = H.charts, color = H.color, deg2rad = H.deg2rad, perspective = H.perspective, pick = H.pick, seriesType = H.seriesType, 
+        var pick = U.pick;
+        var charts = H.charts, color = H.color, deg2rad = H.deg2rad, perspective = H.perspective, seriesType = H.seriesType, 
         // Work on H.Renderer instead of H.SVGRenderer for VML support.
         RendererProto = H.Renderer.prototype, cuboidPath = RendererProto.cuboidPath, cylinderMethods;
         /**
@@ -70,12 +71,17 @@
          * @product      highcharts
          * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
          *               dragDrop
+         * @requires     modules/cylinder
          * @optionparent plotOptions.cylinder
          */
         {}, {}, 
         /** @lends Highcharts.seriesTypes.cylinder#pointClass# */
         {
-            shapeType: 'cylinder'
+            shapeType: 'cylinder',
+            hasNewShapeType: H
+                .seriesTypes.column.prototype
+                .pointClass.prototype
+                .hasNewShapeType
         });
         /**
          * A `cylinder` series. If the [type](#series.cylinder.type) option is not
@@ -85,6 +91,7 @@
          * @since     7.0.0
          * @product   highcharts
          * @excluding allAreas, boostThreshold, colorAxis, compare, compareBase
+         * @requires  modules/cylinder
          * @apioption series.cylinder
          */
         /**

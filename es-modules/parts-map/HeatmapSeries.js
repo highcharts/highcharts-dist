@@ -21,13 +21,14 @@ import H from '../parts/Globals.js';
 * @name Highcharts.PointOptionsObject#value
 * @type {number|null|undefined}
 */
-import '../parts/Utilities.js';
+import U from '../parts/Utilities.js';
+var extend = U.extend, pick = U.pick;
 import '../parts/Options.js';
 import '../parts/Point.js';
 import '../parts/Series.js';
 import '../parts/Legend.js';
 import './ColorMapSeriesMixin.js';
-var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, pick = H.pick, fireEvent = H.fireEvent, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, fireEvent = H.fireEvent, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
 /**
  * @private
  * @class
@@ -39,6 +40,9 @@ seriesType('heatmap', 'scatter',
 /**
  * A heatmap is a graphical representation of data where the individual
  * values contained in a matrix are represented as colors.
+ *
+ * @productdesc {highcharts}
+ * Requires `modules/heatmap`.
  *
  * @sample highcharts/demo/heatmap/
  *         Simple heatmap
@@ -270,7 +274,7 @@ seriesType('heatmap', 'scatter',
         Series.prototype.getExtremes.call(this);
     }
     /* eslint-enable valid-jsdoc */
-}), H.extend({
+}), extend({
     /**
      * Heatmap series only. Padding between the points in the heatmap.
      * @name Highcharts.Point#pointPadding
@@ -313,6 +317,9 @@ seriesType('heatmap', 'scatter',
 /**
  * A `heatmap` series. If the [type](#series.heatmap.type) option is
  * not specified, it is inherited from [chart.type](#chart.type).
+ *
+ * @productdesc {highcharts}
+ * Requires `modules/heatmap`.
  *
  * @extends   series,plotOptions.heatmap
  * @excluding dataParser, dataURL, marker, pointRange, stack

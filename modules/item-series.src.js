@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Item series type for Highcharts
  *
@@ -40,8 +40,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined, isNumber = U.isNumber, objectEach = U.objectEach;
-        var extend = H.extend, fireEvent = H.fireEvent, merge = H.merge, piePoint = H.seriesTypes.pie.prototype.pointClass.prototype;
+        var defined = U.defined, extend = U.extend, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
+        var fireEvent = H.fireEvent, merge = H.merge, piePoint = H.seriesTypes.pie.prototype.pointClass.prototype;
         /**
          * The item series type.
          *
@@ -80,6 +80,7 @@
          * @product      highcharts
          * @excluding    borderColor, borderWidth, depth, linecap, shadow,
          *               slicedOffset
+         * @requires     modules/item-series
          * @optionparent plotOptions.item
          */
         {
@@ -306,7 +307,7 @@
                 //*/
                 this.points.forEach(function (point) {
                     var attr, graphics, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                        seriesMarkerOptions.symbol), r = H.pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size = defined(r) ? 2 * r : itemSize, padding = size * options.itemPadding, x, y, width, height;
+                        seriesMarkerOptions.symbol), r = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size = defined(r) ? 2 * r : itemSize, padding = size * options.itemPadding, x, y, width, height;
                     point.graphics = graphics = point.graphics || {};
                     if (!series.chart.styledMode) {
                         pointAttr = series.pointAttribs(point, point.selected && 'select');
@@ -416,6 +417,7 @@
          * @extends   series,plotOptions.item
          * @excluding dataParser, dataURL, stack, xAxis, yAxis
          * @product   highcharts
+         * @requires  modules/item-series
          * @apioption series.item
          */
         /**

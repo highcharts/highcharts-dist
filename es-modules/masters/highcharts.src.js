@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  * @module highcharts/highcharts
  *
  * (c) 2009-2018 Torstein Honsi
@@ -8,9 +8,8 @@
  */
 'use strict';
 import Highcharts from '../parts/Globals.js';
-var extend = Highcharts.extend;
-
 import U from '../parts/Utilities.js';
+var extend = U.extend;
 
 import '../parts/SvgRenderer.js';
 import '../parts/Html.js';
@@ -40,9 +39,12 @@ import '../parts/Interaction.js';
 import '../parts/Responsive.js';
 
 extend(Highcharts, {
+    arrayMax: U.arrayMax,
+    arrayMin: U.arrayMin,
     attr: U.attr,
     defined: U.defined,
     erase: U.erase,
+    extend: U.extend,
     isArray: U.isArray,
     isClass: U.isClass,
     isDOMElement: U.isDOMElement,
@@ -50,8 +52,11 @@ extend(Highcharts, {
     isObject: U.isObject,
     isString: U.isString,
     objectEach: U.objectEach,
+    pick: U.pick,
     pInt: U.pInt,
-    splat: U.splat
+    setAnimation: U.setAnimation,
+    splat: U.splat,
+    syncTimeout: U.syncTimeout
 });
 
 export default Highcharts;

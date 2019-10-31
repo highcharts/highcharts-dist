@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.0 (2019-09-03)
+ * @license Highstock JS v7.2.1 (2019-10-31)
  *
  * Advanced Highstock tools
  *
@@ -70,11 +70,11 @@
 
 
         var defined = U.defined,
-            isNumber = U.isNumber;
+            extend = U.extend,
+            isNumber = U.isNumber,
+            pick = U.pick;
 
         var fireEvent = H.fireEvent,
-            pick = H.pick,
-            extend = H.extend,
             merge = H.merge,
             correctFloat = H.correctFloat,
             bindingsUtils = H.NavigationBindings.prototype.utils,
@@ -212,7 +212,6 @@
                     'mfi',
                     'roc',
                     'rsi',
-                    'vwap',
                     'ao',
                     'aroon',
                     'aroonoscillator',
@@ -2121,11 +2120,12 @@
          * License: www.highcharts.com/license
          */
 
-        var isArray = U.isArray;
+        var extend = U.extend,
+            isArray = U.isArray,
+            pick = U.pick;
 
         var addEvent = H.addEvent,
             createElement = H.createElement,
-            pick = H.pick,
             fireEvent = H.fireEvent,
             getStyle = H.getStyle,
             merge = H.merge,
@@ -2958,7 +2958,7 @@
             fireEvent(this, 'afterInit');
         };
 
-        H.extend(H.Chart.prototype, {
+        extend(H.Chart.prototype, {
             /*
              * Verify if Toolbar should be added.
              *
@@ -3515,7 +3515,7 @@
             getIconsURL: function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/7.2.0/gfx/stock-icons/';
+                    'https://code.highcharts.com/7.2.1/gfx/stock-icons/';
             },
             /*
              * Mapping JSON fields to CSS classes.

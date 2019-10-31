@@ -9,11 +9,12 @@
 import H from '../parts/Globals.js';
 
 import U from '../parts/Utilities.js';
-var isArray = U.isArray;
+var extend = U.extend,
+    isArray = U.isArray,
+    pick = U.pick;
 
 var addEvent = H.addEvent,
     createElement = H.createElement,
-    pick = H.pick,
     fireEvent = H.fireEvent,
     getStyle = H.getStyle,
     merge = H.merge,
@@ -846,7 +847,7 @@ H.Toolbar = function (options, langOptions, chart) {
     fireEvent(this, 'afterInit');
 };
 
-H.extend(H.Chart.prototype, {
+extend(H.Chart.prototype, {
     /*
      * Verify if Toolbar should be added.
      *
@@ -1403,7 +1404,7 @@ H.Toolbar.prototype = {
     getIconsURL: function () {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/7.2.0/gfx/stock-icons/';
+            'https://code.highcharts.com/7.2.1/gfx/stock-icons/';
     },
     /*
      * Mapping JSON fields to CSS classes.

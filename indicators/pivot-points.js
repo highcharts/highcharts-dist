@@ -1,5 +1,5 @@
 /*
- Highstock JS v7.2.0 (2019-09-03)
+ Highstock JS v7.2.1 (2019-10-31)
 
  Indicator series type for Highstock
 
@@ -13,5 +13,5 @@ pointValKey:"P",toYData:function(a){return[a.P]},translate:function(){var a=this
 h],isNull:!1},{plotX:e,plotY:g["plot"+h],isNull:!1},{plotX:e,plotY:null,isNull:!0});e=g.plotX}d.forEach(function(a){c=c.concat(n.prototype.getGraphPath.call(b,a))});return c},drawDataLabels:function(){var a=this,b=a.pointArrayMap,f,d,c;if(a.options.dataLabels.enabled){var e=a.points.length;b.concat([!1]).forEach(function(k,h){for(c=e;c--;)d=a.points[c],k?(d.y=d[k],d.pivotLine=k,d.plotY=d["plot"+k],f=d["dataLabel"+k],h&&(d["dataLabel"+b[h-1]]=d.dataLabel),d.dataLabels||(d.dataLabels=[]),d.dataLabels[0]=
 d.dataLabel=f=f&&f.element?f:null):d["dataLabel"+b[h-1]]=d.dataLabel;n.prototype.drawDataLabels.apply(a,arguments)})}},getValues:function(a,b){var c=b.period,d=a.xData,e=(a=a.yData)?a.length:0;b=this[b.algorithm+"Placement"];var m=[],k=[],h=[],g;if(d.length<c||!r(a[0])||4!==a[0].length)return!1;for(g=c+1;g<=e+c;g+=c){var l=d.slice(g-c-1,g);var q=a.slice(g-c-1,g);var p=l.length;var n=l[p-1];q=this.getPivotAndHLC(q);q=b(q);q=m.push([n].concat(q));k.push(n);h.push(m[q-1].slice(1))}this.endPoint=l[0]+
 (n-l[0])/p*c;return{values:m,xData:k,yData:h}},getPivotAndHLC:function(a){var b=-Infinity,c=Infinity,d=a[a.length-1][3];a.forEach(function(a){b=Math.max(b,a[1]);c=Math.min(c,a[2])});return[(b+c+d)/3,b,c,d]},standardPlacement:function(a){var b=a[1]-a[2];return[null,null,a[0]+b,2*a[0]-a[2],a[0],2*a[0]-a[1],a[0]-b,null,null]},camarillaPlacement:function(a){var b=a[1]-a[2];return[a[3]+1.5*b,a[3]+1.25*b,a[3]+1.1666*b,a[3]+1.0833*b,a[0],a[3]-1.0833*b,a[3]-1.1666*b,a[3]-1.25*b,a[3]-1.5*b]},fibonacciPlacement:function(a){var b=
-a[1]-a[2];return[null,a[0]+b,a[0]+.618*b,a[0]+.382*b,a[0],a[0]-.382*b,a[0]-.618*b,a[0]-b,null]}},{destroyElements:function(){m(this,"destroyElements")},destroy:function(){m(this,"destroyElements")}})});e(c,"masters/indicators/pivot-points.src.js",[],function(){})});
+a[1]-a[2];return[null,a[0]+b,a[0]+.618*b,a[0]+.382*b,a[0],a[0]-.382*b,a[0]-.618*b,a[0]-b,null]}},{destroyElements:function(){m(this,"destroyElements")},destroy:function(){m(this,"destroyElements")}});""});e(c,"masters/indicators/pivot-points.src.js",[],function(){})});
 //# sourceMappingURL=pivot-points.js.map

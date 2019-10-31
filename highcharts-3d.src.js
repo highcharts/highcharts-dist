@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * 3D features for Highcharts JS
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-3d/Math.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-3d/Math.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -36,8 +36,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var pick = U.pick;
         // Mathematical Functionility
-        var deg2rad = H.deg2rad, pick = H.pick;
+        var deg2rad = H.deg2rad;
         /* eslint-disable max-len */
         /**
          * Apply 3-D rotation
@@ -94,14 +95,20 @@
          * needed also outside of perspective() function (#8042).
          * @private
          * @function Highcharts.perspective3D
+         *
          * @param {Highcharts.Position3dObject} coordinate
-         *        3D position
+         * 3D position
+         *
          * @param {Highcharts.Position3dObject} origin
-         *        3D root position
+         * 3D root position
+         *
          * @param {number} distance
-         *        Perspective distance
+         * Perspective distance
+         *
          * @return {Highcharts.PositionObject}
-         *         Perspective 3D Position
+         * Perspective 3D Position
+         *
+         * @requires highcharts-3d
          */
         H.perspective3D = function (coordinate, origin, distance) {
             var projection = ((distance > 0) && (distance < Number.POSITIVE_INFINITY)) ?
@@ -117,14 +124,20 @@
          *
          * @private
          * @function Highcharts.perspective
+         *
          * @param {Array<Highcharts.Position3dObject>} points
-         *        The array of points
+         * The array of points
+         *
          * @param {Highcharts.Chart} chart
-         *        The chart
+         * The chart
+         *
          * @param {boolean} [insidePlotArea]
-         *        Wether to verifiy the points are inside the plotArea
+         * Wether to verifiy the points are inside the plotArea
+         *
          * @return {Array<Highcharts.Position3dObject>}
-         *         An array of transformed points
+         * An array of transformed points
+         *
+         * @requires highcharts-3d
          */
         H.perspective = function (points, chart, insidePlotArea) {
             var options3d = chart.options.chart.options3d, inverted = insidePlotArea ? chart.inverted : false, origin = {
@@ -164,12 +177,17 @@
          *
          * @private
          * @function Highcharts.pointCameraDistance
+         *
          * @param {Highcharts.Dictionary<number>} coordinates
-         *        Coordinates of the specific point
+         * Coordinates of the specific point
+         *
          * @param {Highcharts.Chart} chart
-         *        Related chart
+         * Related chart
+         *
          * @return {number}
-         *         Distance from camera to point
+         * Distance from camera to point
+         *
+         * @requires highcharts-3d
          */
         H.pointCameraDistance = function (coordinates, chart) {
             var options3d = chart.options.chart.options3d, cameraPosition = {
@@ -188,10 +206,14 @@
          *
          * @private
          * @function Highcharts.shapeArea
+         *
          * @param {Array<Highcharts.PositionObject>} vertexes
-         *        2D Polygon
+         * 2D Polygon
+         *
          * @return {number}
-         *         Calculated area
+         * Calculated area
+         *
+         * @requires highcharts-3d
          */
         H.shapeArea = function (vertexes) {
             var area = 0, i, j;
@@ -206,14 +228,20 @@
          *
          * @private
          * @function Highcharts.shapeArea3d
+         *
          * @param {Array<Highcharts.Position3dObject>} vertexes
-         *        3D Polygon
+         * 3D Polygon
+         *
          * @param {Highcharts.Chart} chart
-         *        Related chart
+         * Related chart
+         *
          * @param {boolean} [insidePlotArea]
-         *        Wether to verifiy the points are inside the plotArea
+         * Wether to verifiy the points are inside the plotArea
+         *
          * @return {number}
-         *         Calculated area
+         * Calculated area
+         *
+         * @requires highcharts-3d
          */
         H.shapeArea3d = function (vertexes, chart, insidePlotArea) {
             return H.shapeArea(H.perspective(vertexes, chart, insidePlotArea));
@@ -232,9 +260,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined, objectEach = U.objectEach;
+        var defined = U.defined, extend = U.extend, objectEach = U.objectEach, pick = U.pick;
         var cos = Math.cos, PI = Math.PI, sin = Math.sin;
-        var animObject = H.animObject, charts = H.charts, color = H.color, deg2rad = H.deg2rad, extend = H.extend, merge = H.merge, perspective = H.perspective, pick = H.pick, SVGElement = H.SVGElement, SVGRenderer = H.SVGRenderer, 
+        var animObject = H.animObject, charts = H.charts, color = H.color, deg2rad = H.deg2rad, merge = H.merge, perspective = H.perspective, SVGElement = H.SVGElement, SVGRenderer = H.SVGRenderer, 
         // internal:
         dFactor, element3dMethods, cuboidMethods;
         /*
@@ -449,7 +477,7 @@
                 elem3d.parts.forEach(function (part) {
                     // if different props for different parts
                     if (partsProps) {
-                        props = H.pick(partsProps[part], false);
+                        props = pick(partsProps[part], false);
                     }
                     // only if something to set, but allow undefined
                     if (props !== false) {
@@ -515,12 +543,13 @@
         /**
          * return result, generalization
          * @private
+         * @requires highcharts-3d
          */
         SVGRenderer.prototype.element3d = function (type, shapeArgs) {
             // base
             var ret = this.g();
             // extend
-            H.extend(ret, this.elements3d[type]);
+            extend(ret, this.elements3d[type]);
             // init
             ret.initArgs(shapeArgs);
             // return
@@ -1013,8 +1042,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var addEvent = H.addEvent, Chart = H.Chart, merge = H.merge, perspective = H.perspective, pick = H.pick, wrap = H.wrap;
+        var isArray = U.isArray, pick = U.pick;
+        var addEvent = H.addEvent, Chart = H.Chart, merge = H.merge, perspective = H.perspective, wrap = H.wrap;
         /**
          * Shorthand to check the is3d flag.
          * @private
@@ -1063,13 +1092,15 @@
          * @function getScale
          *
          * @param {Highcharts.Chart} chart
-         *        Chart object
+         * Chart object
          *
          * @param {number} depth
-         *        The depth of the chart
+         * The depth of the chart
          *
          * @return {number}
-         *         The scale to fit the 3D chart into the plotting area.
+         * The scale to fit the 3D chart into the plotting area.
+         *
+         * @requires highcharts-3d
          */
         function getScale(chart, depth) {
             var plotLeft = chart.plotLeft, plotRight = chart.plotWidth + plotLeft, plotTop = chart.plotTop, plotBottom = chart.plotHeight + plotTop, originX = plotLeft + chart.plotWidth / 2, originY = plotTop + chart.plotHeight / 2, bbox3d = {
@@ -1150,8 +1181,9 @@
                  * `highcharts-3d.js`, found in the download package or online at
                  * [code.highcharts.com/highcharts-3d.js](http://code.highcharts.com/highcharts-3d.js).
                  *
-                 * @since   4.0
-                 * @product highcharts
+                 * @since    4.0
+                 * @product  highcharts
+                 * @requires highcharts-3d
                  */
                 options3d: {
                     /**
@@ -1213,8 +1245,9 @@
                      * Provides the option to draw a frame around the charts by defining
                      * a bottom, front and back panel.
                      *
-                     * @since   4.0
-                     * @product highcharts
+                     * @since    4.0
+                     * @product  highcharts
+                     * @requires highcharts-3d
                      */
                     frame: {
                         /**
@@ -1228,8 +1261,9 @@
                         /**
                          * The bottom of the frame around a 3D chart.
                          *
-                         * @since   4.0
-                         * @product highcharts
+                         * @since    4.0
+                         * @product  highcharts
+                         * @requires highcharts-3d
                          */
                         /**
                          * The color of the panel.
@@ -2536,6 +2570,7 @@
          * @deprecated
          * @since     4.0
          * @product   highcharts
+         * @requires  highcharts-3d
          * @apioption chart.options3d.frame.side
          */
         /**
@@ -2573,8 +2608,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var splat = U.splat;
-        var ZAxis, addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, deg2rad = H.deg2rad, extend = H.extend, merge = H.merge, perspective = H.perspective, perspective3D = H.perspective3D, pick = H.pick, shapeArea = H.shapeArea, Tick = H.Tick, wrap = H.wrap;
+        var extend = U.extend, pick = U.pick, splat = U.splat;
+        var ZAxis, addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, deg2rad = H.deg2rad, merge = H.merge, perspective = H.perspective, perspective3D = H.perspective3D, shapeArea = H.shapeArea, Tick = H.Tick, wrap = H.wrap;
         /**
          * @optionparent xAxis
          */
@@ -2607,6 +2642,7 @@
                  * @since      5.0.15
                  * @validvalue ['offset', 'chart', 'flap', 'ortho']
                  * @product    highcharts
+                 * @requires   highcharts-3d
                  */
                 position3d: 'offset',
                 /**
@@ -2620,8 +2656,9 @@
                  * @sample highcharts/3d/skewed-labels/
                  *         Skewed labels
                  *
-                 * @since   5.0.15
-                 * @product highcharts
+                 * @since    5.0.15
+                 * @product  highcharts
+                 * @requires highcharts-3d
                  */
                 skew3d: false
             },
@@ -2651,9 +2688,10 @@
                  * @sample highcharts/3d/skewed-labels/
                  *         Skewed labels
                  *
-                 * @type       {"offset"|"chart"|"flap"|"ortho"|null}
-                 * @since      5.0.15
-                 * @product    highcharts
+                 * @type     {"offset"|"chart"|"flap"|"ortho"|null}
+                 * @since    5.0.15
+                 * @product  highcharts
+                 * @requires highcharts-3d
                  */
                 position3d: null,
                 /**
@@ -2669,9 +2707,10 @@
                  * @sample highcharts/3d/skewed-labels/
                  *         Skewed labels
                  *
-                 * @type    {boolean|null}
-                 * @since   5.0.15
-                 * @product highcharts
+                 * @type     {boolean|null}
+                 * @since    5.0.15
+                 * @product  highcharts
+                 * @requires highcharts-3d
                  */
                 skew3d: null
             }
@@ -3112,7 +3151,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-3d/Series.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-3d/Series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -3124,7 +3163,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = H.addEvent, perspective = H.perspective, pick = H.pick;
+        var pick = U.pick;
+        var addEvent = H.addEvent, perspective = H.perspective;
         /* eslint-disable no-invalid-this */
         // Wrap the translate method to post-translate points into 3D perspective
         addEvent(H.Series, 'afterTranslate', function () {
@@ -3170,7 +3210,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-3d/Column.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-3d/Column.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -3180,22 +3220,25 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = H.addEvent, perspective = H.perspective, pick = H.pick, Series = H.Series, seriesTypes = H.seriesTypes, svg = H.svg, wrap = H.wrap;
+        var pick = U.pick;
+        var addEvent = H.addEvent, perspective = H.perspective, Series = H.Series, seriesTypes = H.seriesTypes, svg = H.svg, wrap = H.wrap;
         /**
-         * Depth of the columns in a 3D column chart. Requires `highcharts-3d.js`.
+         * Depth of the columns in a 3D column chart.
          *
          * @type      {number}
          * @default   25
          * @since     4.0
          * @product   highcharts
+         * @requires  highcharts-3d
          * @apioption plotOptions.column.depth
          */
         /**
-         * 3D columns only. The color of the edges. Similar to `borderColor`,
-         *  except it defaults to the same color as the column.
+         * 3D columns only. The color of the edges. Similar to `borderColor`, except it
+         * defaults to the same color as the column.
          *
          * @type      {Highcharts.ColorString}
          * @product   highcharts
+         * @requires  highcharts-3d
          * @apioption plotOptions.column.edgeColor
          */
         /**
@@ -3204,16 +3247,17 @@
          * @type      {number}
          * @default   1
          * @product   highcharts
+         * @requires  highcharts-3d
          * @apioption plotOptions.column.edgeWidth
          */
         /**
-         * The spacing between columns on the Z Axis in a 3D chart. Requires
-         * `highcharts-3d.js`.
+         * The spacing between columns on the Z Axis in a 3D chart.
          *
          * @type      {number}
          * @default   1
          * @since     4.0
          * @product   highcharts
+         * @requires  highcharts-3d
          * @apioption plotOptions.column.groupZPadding
          */
         /* eslint-disable no-invalid-this */
@@ -3365,21 +3409,23 @@
         // series group - if series is added to a group all columns will have the same
         // zIndex in comparison with different series.
         wrap(seriesTypes.column.prototype, 'plotGroup', function (proceed, prop, name, visibility, zIndex, parent) {
-            if (this.chart.is3d()) {
-                if (this[prop]) {
-                    delete this[prop];
-                }
-                if (parent) {
-                    if (!this.chart.columnGroup) {
-                        this.chart.columnGroup =
-                            this.chart.renderer.g('columnGroup').add(parent);
+            if (prop !== 'dataLabelsGroup') {
+                if (this.chart.is3d()) {
+                    if (this[prop]) {
+                        delete this[prop];
                     }
-                    this[prop] = this.chart.columnGroup;
-                    this.chart.columnGroup.attr(this.getPlotBox());
-                    this[prop].survive = true;
-                    if (prop === 'group' || prop === 'markerGroup') {
-                        arguments[3] = 'visible';
-                        // For 3D column group and markerGroup should be visible
+                    if (parent) {
+                        if (!this.chart.columnGroup) {
+                            this.chart.columnGroup =
+                                this.chart.renderer.g('columnGroup').add(parent);
+                        }
+                        this[prop] = this.chart.columnGroup;
+                        this.chart.columnGroup.attr(this.getPlotBox());
+                        this[prop].survive = true;
+                        if (prop === 'group' || prop === 'markerGroup') {
+                            arguments[3] = 'visible';
+                            // For 3D column group and markerGroup should be visible
+                        }
                     }
                 }
             }
@@ -3459,11 +3505,28 @@
                 this.options.inactiveOtherPoints = false;
             }
         }
+        // eslint-disable-next-line valid-jsdoc
+        /**
+         * In 3D mode, simple checking for a new shape to animate is not enough.
+         * Additionally check if graphic is a group of elements
+         * @private
+         */
+        function hasNewShapeType(proceed) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            return this.series.chart.is3d() ?
+                this.graphic && this.graphic.element.nodeName !== 'g' :
+                proceed.apply(this, args);
+        }
         wrap(seriesTypes.column.prototype, 'pointAttribs', pointAttribs);
         wrap(seriesTypes.column.prototype, 'setState', setState);
+        wrap(seriesTypes.column.prototype.pointClass.prototype, 'hasNewShapeType', hasNewShapeType);
         if (seriesTypes.columnrange) {
             wrap(seriesTypes.columnrange.prototype, 'pointAttribs', pointAttribs);
             wrap(seriesTypes.columnrange.prototype, 'setState', setState);
+            wrap(seriesTypes.columnrange.prototype.pointClass.prototype, 'hasNewShapeType', hasNewShapeType);
             seriesTypes.columnrange.prototype.plotGroup =
                 seriesTypes.column.prototype.plotGroup;
             seriesTypes.columnrange.prototype.setVisible =
@@ -3501,7 +3564,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-3d/Pie.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-3d/Pie.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -3513,14 +3576,16 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var deg2rad = H.deg2rad, pick = H.pick, seriesTypes = H.seriesTypes, svg = H.svg, wrap = H.wrap;
+        var pick = U.pick;
+        var deg2rad = H.deg2rad, seriesTypes = H.seriesTypes, svg = H.svg, wrap = H.wrap;
         /**
-         * The thickness of a 3D pie. Requires `highcharts-3d.js`
+         * The thickness of a 3D pie.
          *
          * @type      {number}
          * @default   0
          * @since     4.0
          * @product   highcharts
+         * @requires  highcharts-3d
          * @apioption plotOptions.pie.depth
          */
         /* eslint-disable no-invalid-this */
@@ -3675,6 +3740,7 @@
          * @extends      plotOptions.scatter
          * @excluding    dragDrop
          * @product      highcharts
+         * @requires     highcharts-3d
          * @optionparent plotOptions.scatter3d
          */
         {
@@ -3717,6 +3783,7 @@
          *
          * @extends   series,plotOptions.scatter3d
          * @product   highcharts
+         * @requires  highcharts-3d
          * @apioption series.scatter3d
          */
         /**

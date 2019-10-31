@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Dot plot series type for Highcharts
  *
@@ -47,8 +47,8 @@
          * - Custom icons like persons, carts etc. Either as images, font icons or
          *   Highcharts symbols.
          */
-        var objectEach = U.objectEach;
-        var extend = H.extend, pick = H.pick, seriesType = H.seriesType;
+        var extend = U.extend, objectEach = U.objectEach, pick = U.pick;
+        var seriesType = H.seriesType;
         /**
          * @private
          * @class

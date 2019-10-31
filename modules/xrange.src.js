@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * X-range series
  *
@@ -48,8 +48,8 @@
         * @type {number|undefined}
         * @requires modules/xrange
         */
-        var defined = U.defined, isNumber = U.isNumber, isObject = U.isObject;
-        var addEvent = H.addEvent, color = H.color, columnType = H.seriesTypes.column, correctFloat = H.correctFloat, merge = H.merge, pick = H.pick, seriesType = H.seriesType, seriesTypes = H.seriesTypes, Axis = H.Axis, Point = H.Point, Series = H.Series;
+        var defined = U.defined, isNumber = U.isNumber, isObject = U.isObject, pick = U.pick;
+        var addEvent = H.addEvent, color = H.color, columnType = H.seriesTypes.column, correctFloat = H.correctFloat, merge = H.merge, seriesType = H.seriesType, seriesTypes = H.seriesTypes, Axis = H.Axis, Point = H.Point, Series = H.Series;
         /**
          * Return color of a point based on its category.
          *
@@ -101,6 +101,7 @@
          *               negativeColor, pointInterval, pointIntervalUnit,
          *               pointPlacement, pointRange, pointStart, softThreshold,
          *               stacking, threshold, data
+         * @requires     modules/xrange
          * @optionparent plotOptions.xrange
          */
         , {
@@ -600,6 +601,7 @@
          *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
          *            pointStart, softThreshold, stacking, threshold
          * @product   highcharts highstock gantt
+         * @requires  modules/xrange
          * @apioption series.xrange
          */
         /**

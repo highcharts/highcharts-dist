@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Sonification module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/sonification/Instrument.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/sonification/Instrument.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -140,6 +140,7 @@
 
 
 
+        var pick = U.pick;
 
         // Default options for Instrument constructor
         var defaultOptions = {
@@ -333,8 +334,8 @@
          */
         Instrument.prototype.getValidFrequency = function (frequency, min, max) {
             var validFrequencies = this.options.allowedFrequencies,
-                maximum = H.pick(max, Infinity),
-                minimum = H.pick(min, -Infinity);
+                maximum = pick(max, Infinity),
+                minimum = pick(min, -Infinity);
 
             return !validFrequencies || !validFrequencies.length ?
                 // No valid frequencies for this instrument, return the target
@@ -530,8 +531,8 @@
                 });
 
                 // Set the volume and panning
-                setOrStartTimer(H.pick(options.volume, 1), 'setGain', 4); // Slight ramp
-                setOrStartTimer(H.pick(options.pan, 0), 'setPan');
+                setOrStartTimer(pick(options.volume, 1), 'setGain', 4); // Slight ramp
+                setOrStartTimer(pick(options.pan, 0), 'setPan');
             } else {
                 // No note duration, so just stop immediately
                 onStop();
@@ -942,7 +943,7 @@
 
         return instruments;
     });
-    _registerModule(_modules, 'modules/sonification/Earcon.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/sonification/Earcon.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -954,6 +955,7 @@
          * */
 
 
+        var pick = U.pick;
 
         /**
          * Define an Instrument and the options for playing it.
@@ -1047,7 +1049,7 @@
             var playOptions = H.merge(this.options, options);
 
             // Find master volume/pan settings
-            var masterVolume = H.pick(playOptions.volume, 1),
+            var masterVolume = pick(playOptions.volume, 1),
                 masterPan = playOptions.pan,
                 earcon = this,
                 playOnEnd = options && options.onEnd,
@@ -1066,10 +1068,10 @@
                     if (opts.playOptions) {
                         // Handle master pan/volume
                         if (typeof opts.playOptions.volume !== 'function') {
-                            instrumentOpts.volume = H.pick(masterVolume, 1) *
-                                H.pick(opts.playOptions.volume, 1);
+                            instrumentOpts.volume = pick(masterVolume, 1) *
+                                pick(opts.playOptions.volume, 1);
                         }
-                        instrumentOpts.pan = H.pick(masterPan, instrumentOpts.pan);
+                        instrumentOpts.pan = pick(masterPan, instrumentOpts.pan);
 
                         // Handle onEnd
                         instrOnEnd = instrumentOpts.onEnd;
@@ -1127,7 +1129,7 @@
 
         return Earcon;
     });
-    _registerModule(_modules, 'modules/sonification/pointSonify.js', [_modules['parts/Globals.js'], _modules['modules/sonification/utilities.js']], function (H, utilities) {
+    _registerModule(_modules, 'modules/sonification/pointSonify.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/sonification/utilities.js']], function (H, U, utilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -1310,6 +1312,8 @@
 
 
 
+        var pick = U.pick;
+
 
         // Defaults for the instrument options
         // NOTE: Also change defaults in Highcharts.PointInstrumentOptionsObject if
@@ -1372,7 +1376,7 @@
                             );
                         // Find the value
                         return utilities.virtualAxisTranslate(
-                            H.pick(point[value], point.options[value]),
+                            pick(point[value], point.options[value]),
                             dataExtremes[value],
                             allowedExtremes,
                             allowedValues
@@ -1611,6 +1615,7 @@
 
 
         var isArray = U.isArray,
+            pick = U.pick,
             splat = U.splat;
 
 
@@ -1626,7 +1631,7 @@
         function getPointTimeValue(point, timeProp) {
             return typeof timeProp === 'function' ?
                 timeProp(point) :
-                H.pick(point[timeProp], point.options[timeProp]);
+                pick(point[timeProp], point.options[timeProp]);
         }
 
 
@@ -1918,7 +1923,7 @@
                 // Merge in the specific series options by ID
                 isArray(seriesOptions) ? (
                     H.find(seriesOptions, function (optEntry) {
-                        return optEntry.id === H.pick(series.id, series.options.id);
+                        return optEntry.id === pick(series.id, series.options.id);
                     }) || {}
                 ) : seriesOptions,
                 {
@@ -2436,7 +2441,7 @@
          */
         function pause(fadeOut) {
             if (this.sonification.timeline) {
-                this.sonification.timeline.pause(H.pick(fadeOut, true));
+                this.sonification.timeline.pause(pick(fadeOut, true));
             } else if (this.sonification.currentlyPlayingPoint) {
                 this.sonification.currentlyPlayingPoint.cancelSonify(fadeOut);
             }
@@ -3247,7 +3252,7 @@
 
         return timelineClasses;
     });
-    _registerModule(_modules, 'modules/sonification/sonification.js', [_modules['parts/Globals.js'], _modules['modules/sonification/Instrument.js'], _modules['modules/sonification/instrumentDefinitions.js'], _modules['modules/sonification/Earcon.js'], _modules['modules/sonification/pointSonify.js'], _modules['modules/sonification/chartSonify.js'], _modules['modules/sonification/utilities.js'], _modules['modules/sonification/Timeline.js']], function (H, Instrument, instruments, Earcon, pointSonifyFunctions, chartSonifyFunctions, utilities, TimelineClasses) {
+    _registerModule(_modules, 'modules/sonification/sonification.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/sonification/Instrument.js'], _modules['modules/sonification/instrumentDefinitions.js'], _modules['modules/sonification/Earcon.js'], _modules['modules/sonification/pointSonify.js'], _modules['modules/sonification/chartSonify.js'], _modules['modules/sonification/utilities.js'], _modules['modules/sonification/Timeline.js']], function (H, U, Instrument, instruments, Earcon, pointSonifyFunctions, chartSonifyFunctions, utilities, TimelineClasses) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -3258,6 +3263,8 @@
          *
          * */
 
+
+        var extend = U.extend;
 
 
         // Expose on the Highcharts object
@@ -3334,7 +3341,7 @@
         H.Point.prototype.sonify = pointSonifyFunctions.pointSonify;
         H.Point.prototype.cancelSonify = pointSonifyFunctions.pointCancelSonify;
         H.Series.prototype.sonify = chartSonifyFunctions.seriesSonify;
-        H.extend(H.Chart.prototype, {
+        extend(H.Chart.prototype, {
             sonify: chartSonifyFunctions.chartSonify,
             pauseSonify: chartSonifyFunctions.pause,
             resumeSonify: chartSonifyFunctions.resume,

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Accessibility module
  *
@@ -128,7 +128,7 @@
 
         return KeyboardNavigationHandler;
     });
-    _registerModule(_modules, 'modules/accessibility/AccessibilityComponent.js', [_modules['parts/Globals.js']], function (Highcharts) {
+    _registerModule(_modules, 'modules/accessibility/AccessibilityComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -139,6 +139,8 @@
          *
          * */
 
+        var extend = U.extend,
+            pick = U.pick;
 
         var win = Highcharts.win,
             doc = win.document,
@@ -146,17 +148,45 @@
             addEvent = Highcharts.addEvent;
 
 
+        /** @lends Highcharts.AccessibilityComponent */
+        var functionsToOverrideByDerivedClasses = {
+            /**
+             * Called on component initialization.
+             */
+            init: function () {},
+
+            /**
+             * Get keyboard navigation handler for this component.
+             * @return {Highcharts.KeyboardNavigationHandler}
+             */
+            getKeyboardNavigation: function () {},
+
+            /**
+             * Called on updates to the chart, including options changes.
+             * Note that this is also called on first render of chart.
+             */
+            onChartUpdate: function () {},
+
+            /**
+             * Called on every chart render.
+             */
+            onChartRender: function () {},
+
+            /**
+             * Called when accessibility is disabled or chart is destroyed.
+             */
+            destroy: function () {}
+        };
+
+
         /**
          * The AccessibilityComponent base class, representing a part of the chart that
          * has accessibility logic connected to it. This class can be inherited from to
          * create a custom accessibility component for a chart.
          *
-         * A component:
-         *  - Must call initBase after inheriting.
-         *  - Can override any of the following functions: init(), destroy(),
-         *      getKeyboardNavigation(), onChartUpdate().
-         *  - Should take care to destroy added elements and unregister event handlers
-         *      on destroy.
+         * Components should take care to destroy added elements and unregister event
+         * handlers on destroy. This is handled automatically if using this.addEvent and
+         * this.createElement.
          *
          * @sample highcharts/accessibility/custom-component
          *         Custom accessibility component
@@ -170,7 +200,6 @@
          * @lends Highcharts.AccessibilityComponent
          */
         AccessibilityComponent.prototype = {
-
             /**
              * Initialize the class
              * @private
@@ -230,6 +259,206 @@
 
 
             /**
+             * Utility function to attempt to fake a click event on an element.
+             * @private
+             * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} element
+             */
+            fakeClickEvent: function (element) {
+                if (element && element.onclick && doc.createEvent) {
+                    var fakeEvent = doc.createEvent('Event');
+                    fakeEvent.initEvent('click', true, false);
+                    element.onclick(fakeEvent);
+                }
+            },
+
+
+            /**
+             * Add a new proxy group to the proxy container. Creates the proxy container
+             * if it does not exist.
+             * @private
+             * @param {object} attrs The attributes to set on the new group div.
+             *
+             * @return {Highcharts.HTMLDOMElement} The new proxy group element.
+             */
+            addProxyGroup: function (attrs) {
+                this.createOrUpdateProxyContainer();
+
+                var groupDiv = this.createElement('div');
+
+                Object.keys(attrs || {}).forEach(function (prop) {
+                    if (attrs[prop] !== null) {
+                        groupDiv.setAttribute(prop, attrs[prop]);
+                    }
+                });
+                this.chart.a11yProxyContainer.appendChild(groupDiv);
+
+                return groupDiv;
+            },
+
+
+            /**
+             * Creates and updates DOM position of proxy container
+             * @private
+             */
+            createOrUpdateProxyContainer: function () {
+                var chart = this.chart,
+                    rendererSVGEl = chart.renderer.box;
+
+                chart.a11yProxyContainer = chart.a11yProxyContainer ||
+                    this.createProxyContainerElement();
+
+                if (rendererSVGEl.nextSibling !== chart.a11yProxyContainer) {
+                    chart.container.insertBefore(
+                        chart.a11yProxyContainer,
+                        rendererSVGEl.nextSibling
+                    );
+                }
+            },
+
+
+            /**
+             * @private
+             * @return {Highcharts.HTMLDOMElement} element
+             */
+            createProxyContainerElement: function () {
+                var pc = doc.createElement('div');
+                pc.className = 'highcharts-a11y-proxy-container';
+                return pc;
+            },
+
+
+            /**
+             * Create an invisible proxy HTML button in the same position as an SVG
+             * element
+             * @private
+             * @param {Highcharts.SVGElement} svgElement The wrapped svg el to proxy.
+             * @param {Highcharts.HTMLElement} parentGroup The proxy group element in
+             *          the proxy container to add this button to.
+             * @param {object} [attributes] Additional attributes to set.
+             * @param {Highcharts.SVGElement} [posElement] Element to use for
+             *          positioning instead of svgElement.
+             * @param {Function} [preClickEvent] Function to call before click event
+             *          fires.
+             *
+             * @return {Highcharts.HTMLElement} The proxy button.
+             */
+            createProxyButton: function (
+                svgElement, parentGroup, attributes, posElement, preClickEvent
+            ) {
+                var svgEl = svgElement.element,
+                    proxy = this.createElement('button'),
+                    attrs = merge({
+                        'aria-label': svgEl.getAttribute('aria-label')
+                    }, attributes),
+                    bBox = this.getElementPosition(posElement || svgElement);
+
+                Object.keys(attrs).forEach(function (prop) {
+                    if (attrs[prop] !== null) {
+                        proxy.setAttribute(prop, attrs[prop]);
+                    }
+                });
+
+                proxy.className = 'highcharts-a11y-proxy-button';
+
+                if (preClickEvent) {
+                    addEvent(proxy, 'click', preClickEvent);
+                }
+
+                this.setProxyButtonStyle(proxy, bBox);
+                this.proxyMouseEventsForButton(svgEl, proxy);
+
+                // Add to chart div and unhide from screen readers
+                parentGroup.appendChild(proxy);
+                if (!attrs['aria-hidden']) {
+                    this.unhideElementFromScreenReaders(proxy);
+                }
+                return proxy;
+            },
+
+
+            /**
+             * Get the position relative to chart container for a wrapped SVG element.
+             * @private
+             * @param {Highcharts.SVGElement} element The element to calculate position
+             *          for.
+             *
+             * @return {object} Object with x and y props for the position.
+             */
+            getElementPosition: function (element) {
+                var el = element.element,
+                    div = this.chart.renderTo;
+                if (div && el && el.getBoundingClientRect) {
+                    var rectEl = el.getBoundingClientRect(),
+                        rectDiv = div.getBoundingClientRect();
+                    return {
+                        x: rectEl.left - rectDiv.left,
+                        y: rectEl.top - rectDiv.top,
+                        width: rectEl.right - rectEl.left,
+                        height: rectEl.bottom - rectEl.top
+                    };
+                }
+                return { x: 0, y: 0, width: 1, height: 1 };
+            },
+
+
+            /**
+             * @private
+             * @param {Highcharts.HTMLElement} button
+             * @param {object} bBox
+             */
+            setProxyButtonStyle: function (button, bBox) {
+                merge(true, button.style, {
+                    'border-width': 0,
+                    'background-color': 'transparent',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    opacity: 0.001,
+                    filter: 'alpha(opacity=1)',
+                    '-ms-filter': 'progid:DXImageTransform.Microsoft.Alpha(Opacity=1)',
+                    zIndex: 999,
+                    overflow: 'hidden',
+                    padding: 0,
+                    margin: 0,
+                    display: 'block',
+                    position: 'absolute',
+                    width: (bBox.width || 1) + 'px',
+                    height: (bBox.height || 1) + 'px',
+                    left: pick(bBox.x, bBox.left) + 'px',
+                    top: pick(bBox.y, bBox.top) + 'px'
+                });
+            },
+
+
+            /**
+             * @private
+             * @param {Highcharts.HTMLElement} button
+             */
+            proxyMouseEventsForButton: function (source, button) {
+                var component = this;
+                [
+                    'click', 'mouseover', 'mouseenter', 'mouseleave', 'mouseout'
+                ].forEach(function (evtType) {
+                    addEvent(button, evtType, function (e) {
+                        var clonedEvent = component.cloneMouseEvent(e);
+                        if (source) {
+                            if (clonedEvent) {
+                                if (source.fireEvent) {
+                                    source.fireEvent(clonedEvent);
+                                } else if (source.dispatchEvent) {
+                                    source.dispatchEvent(clonedEvent);
+                                }
+                            } else if (source['on' + evtType]) {
+                                source['on' + evtType](e);
+                            }
+                        }
+                        e.stopPropagation();
+                        e.preventDefault();
+                    });
+                });
+            },
+
+
+            /**
              * Utility function to clone a mouse event for re-dispatching.
              * @private
              * @param {global.Event} e The event to clone.
@@ -270,173 +499,6 @@
                         return evt;
                     }
                 }
-            },
-
-
-            /**
-             * Utility function to attempt to fake a click event on an element.
-             * @private
-             * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} element
-             */
-            fakeClickEvent: function (element) {
-                if (element && element.onclick && doc.createEvent) {
-                    var fakeEvent = doc.createEvent('Event');
-                    fakeEvent.initEvent('click', true, false);
-                    element.onclick(fakeEvent);
-                }
-            },
-
-
-            /**
-             * Create an invisible proxy HTML button in the same position as an SVG
-             * element
-             * @private
-             * @param {Highcharts.SVGElement} svgElement The wrapped svg el to proxy.
-             * @param {Highcharts.HTMLElement} parentGroup The proxy group element in
-             *          the proxy container to add this button to.
-             * @param {object} [attributes] Additional attributes to set.
-             * @param {Highcharts.SVGElement} [posElement] Element to use for
-             *          positioning instead of svgElement.
-             * @param {Function} [preClickEvent] Function to call before click event
-             *          fires.
-             *
-             * @return {Highcharts.HTMLElement} The proxy button.
-             */
-            createProxyButton: function (
-                svgElement, parentGroup, attributes, posElement, preClickEvent
-            ) {
-                var svgEl = svgElement.element,
-                    component = this,
-                    proxy = this.createElement('button'),
-                    attrs = merge({
-                        'aria-label': svgEl.getAttribute('aria-label')
-                    }, attributes),
-                    positioningElement = posElement || svgElement,
-                    bBox = this.getElementPosition(positioningElement);
-
-                // If we don't support getBoundingClientRect, no button is made
-                if (!bBox) {
-                    return;
-                }
-
-                Object.keys(attrs).forEach(function (prop) {
-                    if (attrs[prop] !== null) {
-                        proxy.setAttribute(prop, attrs[prop]);
-                    }
-                });
-
-                merge(true, proxy.style, {
-                    'border-width': 0,
-                    'background-color': 'transparent',
-                    position: 'absolute',
-                    width: (bBox.width || 1) + 'px',
-                    height: (bBox.height || 1) + 'px',
-                    display: 'block',
-                    cursor: 'pointer',
-                    overflow: 'hidden',
-                    outline: 'none',
-                    opacity: 0.001,
-                    filter: 'alpha(opacity=1)',
-                    '-ms-filter': 'progid:DXImageTransform.Microsoft.Alpha(Opacity=1)',
-                    zIndex: 999,
-                    padding: 0,
-                    margin: 0,
-                    left: bBox.x + 'px',
-                    top: bBox.y - this.chart.chartHeight + 'px'
-                });
-
-                // Handle pre-click
-                if (preClickEvent) {
-                    addEvent(proxy, 'click', preClickEvent);
-                }
-
-                // Proxy mouse events
-                [
-                    'click', 'mouseover', 'mouseenter', 'mouseleave', 'mouseout'
-                ].forEach(function (evtType) {
-                    addEvent(proxy, evtType, function (e) {
-                        var clonedEvent = component.cloneMouseEvent(e);
-                        if (svgEl) {
-                            if (clonedEvent) {
-                                if (svgEl.fireEvent) {
-                                    svgEl.fireEvent(clonedEvent);
-                                } else if (svgEl.dispatchEvent) {
-                                    svgEl.dispatchEvent(clonedEvent);
-                                }
-                            } else if (svgEl['on' + evtType]) {
-                                svgEl['on' + evtType](e);
-                            }
-                        }
-                    });
-                });
-
-                // Add to chart div and unhide from screen readers
-                parentGroup.appendChild(proxy);
-                if (!attrs['aria-hidden']) {
-                    this.unhideElementFromScreenReaders(proxy);
-                }
-                return proxy;
-            },
-
-
-            /**
-             * Get the position relative to chart container for a wrapped SVG element.
-             * @private
-             * @param {Highcharts.SVGElement} element The element to calculate position
-             *          for.
-             *
-             * @return {object} Object with x and y props for the position.
-             */
-            getElementPosition: function (element) {
-                var el = element.element,
-                    div = this.chart.renderTo;
-                if (div && el && el.getBoundingClientRect) {
-                    var rectEl = el.getBoundingClientRect(),
-                        rectDiv = div.getBoundingClientRect();
-                    return {
-                        x: rectEl.left - rectDiv.left,
-                        y: rectEl.top - rectDiv.top,
-                        width: rectEl.right - rectEl.left,
-                        height: rectEl.bottom - rectEl.top
-                    };
-                }
-            },
-
-
-            /**
-             * Add a new proxy group to the proxy container. Creates the proxy container
-             * if it does not exist.
-             * @private
-             * @param {object} attrs The attributes to set on the new group div.
-             *
-             * @return {Highcharts.HTMLDOMElement} The new proxy group element.
-             */
-            addProxyGroup: function (attrs) {
-                var chart = this.chart,
-                    proxyContainer = chart.a11yProxyContainer;
-
-                // Add root proxy container if it does not exist
-                if (!proxyContainer) {
-                    chart.a11yProxyContainer = doc.createElement('div');
-                    chart.a11yProxyContainer.style.position = 'relative';
-                }
-                // Add it if it is new, else make sure we move it to the end
-                if (chart.container.nextSibling !== chart.a11yProxyContainer) {
-                    chart.renderTo.insertBefore(
-                        chart.a11yProxyContainer,
-                        chart.container.nextSibling
-                    );
-                }
-
-                // Create the group and add it
-                var groupDiv = this.createElement('div');
-                Object.keys(attrs || {}).forEach(function (prop) {
-                    if (attrs[prop] !== null) {
-                        groupDiv.setAttribute(prop, attrs[prop]);
-                    }
-                });
-                chart.a11yProxyContainer.appendChild(groupDiv);
-                return groupDiv;
             },
 
 
@@ -498,42 +560,10 @@
                 });
                 this.eventRemovers = [];
                 this.domElements = [];
-            },
-
-
-            // Functions to be overridden by derived classes
-
-            /**
-             * Initialize component.
-             */
-            init: function () {},
-
-            /**
-             * Get keyboard navigation handler for this component.
-             * @return {Highcharts.KeyboardNavigationHandler}
-             */
-            getKeyboardNavigation: function () {},
-
-            /**
-             * Called on updates to the chart, including options changes.
-             * Note that this is also called on first render of chart.
-             */
-            onChartUpdate: function () {},
-
-            /**
-             * Called on every chart render.
-             */
-            onChartRender: function () {},
-
-            /**
-             * Called when accessibility is disabled or chart is destroyed.
-             * Should call destroyBase to make sure events/elements added are removed.
-             */
-            destroy: function () {
-                this.destroyBase();
             }
-
         };
+
+        extend(AccessibilityComponent.prototype, functionsToOverrideByDerivedClasses);
 
 
         return AccessibilityComponent;
@@ -974,7 +1004,7 @@
 
         return Utilities;
     });
-    _registerModule(_modules, 'modules/accessibility/components/LegendComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js'], _modules['modules/accessibility/utilities.js']], function (H, AccessibilityComponent, KeyboardNavigationHandler, A11yUtilities) {
+    _registerModule(_modules, 'modules/accessibility/components/LegendComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js'], _modules['modules/accessibility/utilities.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler, A11yUtilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -985,6 +1015,8 @@
          *
          * */
 
+
+        var extend = U.extend;
 
 
         var stripHTMLTags = A11yUtilities.stripHTMLTagsFromString;
@@ -1045,14 +1077,10 @@
          * @private
          * @class
          * @name Highcharts.LegendComponent
-         * @param {Highcharts.Chart} chart
-         *        Chart object
          */
-        var LegendComponent = function (chart) {
-            this.initBase(chart);
-        };
+        var LegendComponent = function () {};
         LegendComponent.prototype = new AccessibilityComponent();
-        H.extend(LegendComponent.prototype, /** @lends Highcharts.LegendComponent */ {
+        extend(LegendComponent.prototype, /** @lends Highcharts.LegendComponent */ {
 
             /**
              * The legend needs updates on every render, in order to update positioning
@@ -1209,7 +1237,7 @@
 
         return LegendComponent;
     });
-    _registerModule(_modules, 'modules/accessibility/components/MenuComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js']], function (H, AccessibilityComponent, KeyboardNavigationHandler) {
+    _registerModule(_modules, 'modules/accessibility/components/MenuComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -1220,6 +1248,8 @@
          *
          * */
 
+
+        var extend = U.extend;
 
 
 
@@ -1238,8 +1268,6 @@
 
 
         /**
-         * Hide export menu.
-         *
          * @private
          * @function Highcharts.Chart#hideExportMenu
          */
@@ -1330,33 +1358,84 @@
 
 
         /**
+         * @private
+         * @param {Highcharts.Chart} chart
+         */
+        function exportingShouldHaveA11y(chart) {
+            var exportingOpts = chart.options.exporting;
+            return exportingOpts &&
+                exportingOpts.enabled !== false &&
+                exportingOpts.accessibility &&
+                exportingOpts.accessibility.enabled &&
+                chart.exportSVGElements &&
+                chart.exportSVGElements[0] &&
+                chart.exportSVGElements[0].element;
+        }
+
+
+        /**
          * The MenuComponent class
          *
          * @private
          * @class
          * @name Highcharts.MenuComponent
-         * @param {Highcharts.Chart} chart
-         *        Chart object
          */
-        var MenuComponent = function (chart) {
-            this.initBase(chart);
-            this.init();
-        };
+        var MenuComponent = function () {};
         MenuComponent.prototype = new AccessibilityComponent();
-        H.extend(MenuComponent.prototype, /** @lends Highcharts.MenuComponent */ {
+        extend(MenuComponent.prototype, /** @lends Highcharts.MenuComponent */ {
 
             /**
              * Init the component
              */
             init: function () {
-                var chart = this.chart;
-                // Hide the export menu from screen readers when it is hidden visually
-                this.addEvent(chart, 'exportMenuHidden', function () {
-                    var menu = this.exportContextMenu;
-                    if (menu) {
-                        menu.setAttribute('aria-hidden', true);
-                    }
+                var chart = this.chart,
+                    component = this;
+
+                this.addEvent(chart, 'exportMenuShown', function () {
+                    component.onMenuShown();
                 });
+
+                this.addEvent(chart, 'exportMenuHidden', function () {
+                    component.onMenuHidden();
+                });
+            },
+
+
+            /**
+             * @private
+             */
+            onMenuHidden: function () {
+                var menu = this.chart.exportContextMenu;
+                if (menu) {
+                    menu.setAttribute('aria-hidden', 'true');
+                }
+                this.setExportButtonExpandedState('false');
+            },
+
+
+            /**
+             * @private
+             */
+            onMenuShown: function () {
+                var menu = this.chart.exportContextMenu;
+                if (menu) {
+                    this.addAccessibleContextMenuAttribs();
+                    this.unhideElementFromScreenReaders(menu);
+                    this.chart.highlightExportItem(0);
+                }
+                this.setExportButtonExpandedState('true');
+            },
+
+
+            /**
+             * @private
+             * @param {string} stateStr
+             */
+            setExportButtonExpandedState: function (stateStr) {
+                var button = this.exportButtonProxy;
+                if (button) {
+                    button.setAttribute('aria-expanded', stateStr);
+                }
             },
 
 
@@ -1365,39 +1444,14 @@
              * proxy overlay.
              */
             onChartRender: function () {
-                var component = this,
-                    chart = this.chart,
+                var chart = this.chart,
                     a11yOptions = chart.options.accessibility;
 
                 // Always start with a clean slate
                 this.removeElement(this.exportProxyGroup);
 
                 // Set screen reader properties on export menu
-                if (
-                    chart.options.exporting &&
-                    chart.options.exporting.enabled !== false &&
-                    chart.options.exporting.accessibility &&
-                    chart.options.exporting.accessibility.enabled &&
-                    chart.exportSVGElements &&
-                    chart.exportSVGElements[0] &&
-                    chart.exportSVGElements[0].element
-                ) {
-                    // Set event handler on button if not already done
-                    var button = chart.exportSVGElements[0],
-                        buttonElement = button.element,
-                        oldExportCallback = buttonElement.onclick;
-                    if (this.wrappedButton !== buttonElement) {
-                        buttonElement.onclick = function () {
-                            oldExportCallback.apply(
-                                this,
-                                Array.prototype.slice.call(arguments)
-                            );
-                            component.addAccessibleContextMenuAttribs();
-                            chart.highlightExportItem(0);
-                        };
-                        this.wrappedButton = buttonElement;
-                    }
-
+                if (exportingShouldHaveA11y(chart)) {
                     // Proxy button and group
                     this.exportProxyGroup = this.addProxyGroup(
                         // Wrap in a region div if verbosity is high
@@ -1410,6 +1464,7 @@
                         } : null
                     );
 
+                    var button = this.chart.exportSVGElements[0];
                     this.exportButtonProxy = this.createProxyButton(
                         button,
                         this.exportProxyGroup,
@@ -1417,7 +1472,8 @@
                             'aria-label': chart.langFormat(
                                 'accessibility.exporting.menuButtonLabel',
                                 { chart: chart }
-                            )
+                            ),
+                            'aria-expanded': 'false'
                         }
                     );
                 }
@@ -1425,13 +1481,11 @@
 
 
             /**
-             * Add ARIA to context menu
              * @private
              */
             addAccessibleContextMenuAttribs: function () {
                 var chart = this.chart,
-                    exportList = chart.exportDivElements,
-                    contextMenu = chart.exportContextMenu;
+                    exportList = chart.exportDivElements;
 
                 if (exportList && exportList.length) {
                     // Set tabindex on the menu items to allow focusing by script
@@ -1439,21 +1493,23 @@
                     exportList.forEach(function (item) {
                         if (item.tagName === 'DIV' &&
                             !(item.children && item.children.length)) {
-                            item.setAttribute('role', 'menuitem');
-                            item.setAttribute('tabindex', -1);
+                            item.setAttribute('role', 'listitem');
+                            item.setAttribute('tabindex', 0);
+                        } else {
+                            item.setAttribute('aria-hidden', 'true');
                         }
                     });
+
                     // Set accessibility properties on parent div
-                    exportList[0].parentNode.setAttribute('role', 'menu');
-                    exportList[0].parentNode.setAttribute(
+                    var parentDiv = exportList[0].parentNode;
+                    parentDiv.setAttribute('role', 'list');
+                    parentDiv.removeAttribute('aria-hidden');
+                    parentDiv.setAttribute(
                         'aria-label',
                         chart.langFormat(
                             'accessibility.exporting.chartMenuLabel', { chart: chart }
                         )
                     );
-                }
-                if (contextMenu) {
-                    this.unhideElementFromScreenReaders(contextMenu);
                 }
             },
 
@@ -1465,69 +1521,27 @@
             getKeyboardNavigation: function () {
                 var keys = this.keyCodes,
                     chart = this.chart,
-                    a11yOptions = chart.options.accessibility,
                     component = this;
 
                 return new KeyboardNavigationHandler(chart, {
                     keyCodeMap: [
                         // Arrow prev handler
-                        [[
-                            keys.left, keys.up
-                        ], function () {
-                            var i = chart.highlightedExportItemIx || 0;
-
-                            // Try to highlight prev item in list. Highlighting e.g.
-                            // separators will fail.
-                            while (i--) {
-                                if (chart.highlightExportItem(i)) {
-                                    return this.response.success;
-                                }
-                            }
-
-                            // We failed, so wrap around or move to prev module
-                            if (a11yOptions.keyboardNavigation.wrapAround) {
-                                chart.highlightLastExportItem();
-                                return this.response.success;
-                            }
-                            return this.response.prev;
+                        [[keys.left, keys.up], function () {
+                            component.onKbdPrevious(this);
                         }],
 
                         // Arrow next handler
-                        [[
-                            keys.right, keys.down
-                        ], function () {
-                            var i = (chart.highlightedExportItemIx || 0) + 1;
-
-                            // Try to highlight next item in list. Highlighting e.g.
-                            // separators will fail.
-                            for (;i < chart.exportDivElements.length; ++i) {
-                                if (chart.highlightExportItem(i)) {
-                                    return this.response.success;
-                                }
-                            }
-
-                            // We failed, so wrap around or move to next module
-                            if (a11yOptions.keyboardNavigation.wrapAround) {
-                                chart.highlightExportItem(0);
-                                return this.response.success;
-                            }
-                            return this.response.next;
+                        [[keys.right, keys.down], function () {
+                            component.onKbdNext(this);
                         }],
 
                         // Click handler
-                        [[
-                            keys.enter, keys.space
-                        ], function () {
-                            component.fakeClickEvent(
-                                chart.exportDivElements[chart.highlightedExportItemIx]
-                            );
-                            return this.response.success;
+                        [[keys.enter, keys.space], function () {
+                            component.onKbdClick(this);
                         }],
 
                         // ESC handler
-                        [[
-                            keys.esc
-                        ], function () {
+                        [[keys.esc], function () {
                             return this.response.prev;
                         }]
                     ],
@@ -1556,6 +1570,76 @@
                         chart.hideExportMenu();
                     }
                 });
+            },
+
+
+            /**
+             * @private
+             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
+             * @return {number} Response code
+             */
+            onKbdPrevious: function (keyboardNavigationHandler) {
+                var chart = this.chart,
+                    a11yOptions = chart.options.accessibility,
+                    response = keyboardNavigationHandler.response,
+                    i = chart.highlightedExportItemIx || 0;
+
+                // Try to highlight prev item in list. Highlighting e.g.
+                // separators will fail.
+                while (i--) {
+                    if (chart.highlightExportItem(i)) {
+                        return response.success;
+                    }
+                }
+
+                // We failed, so wrap around or move to prev module
+                if (a11yOptions.keyboardNavigation.wrapAround) {
+                    chart.highlightLastExportItem();
+                    return response.success;
+                }
+                return response.prev;
+            },
+
+
+            /**
+             * @private
+             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
+             * @return {number} Response code
+             */
+            onKbdNext: function (keyboardNavigationHandler) {
+                var chart = this.chart,
+                    a11yOptions = chart.options.accessibility,
+                    response = keyboardNavigationHandler.response,
+                    i = (chart.highlightedExportItemIx || 0) + 1;
+
+                // Try to highlight next item in list. Highlighting e.g.
+                // separators will fail.
+                for (;i < chart.exportDivElements.length; ++i) {
+                    if (chart.highlightExportItem(i)) {
+                        return response.success;
+                    }
+                }
+
+                // We failed, so wrap around or move to next module
+                if (a11yOptions.keyboardNavigation.wrapAround) {
+                    chart.highlightExportItem(0);
+                    return response.success;
+                }
+                return response.next;
+            },
+
+
+            /**
+             * @private
+             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
+             * @return {number} Response code
+             */
+            onKbdClick: function (keyboardNavigationHandler) {
+                var chart = this.chart;
+                this.fakeClickEvent(
+                    chart.exportDivElements[chart.highlightedExportItemIx]
+                );
+                return keyboardNavigationHandler.response.success;
             }
 
         });
@@ -1576,11 +1660,12 @@
 
 
 
-        var isNumber = U.isNumber;
+        var extend = U.extend,
+            isNumber = U.isNumber,
+            pick = U.pick;
 
 
         var merge = H.merge,
-            pick = H.pick,
             stripHTMLTags = A11yUtilities.stripHTMLTagsFromString;
 
 
@@ -2119,15 +2204,10 @@
          * @private
          * @class
          * @name Highcharts.SeriesComponent
-         * @param {Highcharts.Chart} chart
-         *        Chart object
          */
-        var SeriesComponent = function (chart) {
-            this.initBase(chart);
-            this.init();
-        };
+        var SeriesComponent = function () {};
         SeriesComponent.prototype = new AccessibilityComponent();
-        H.extend(SeriesComponent.prototype, /** @lends Highcharts.SeriesComponent */ {
+        extend(SeriesComponent.prototype, /** @lends Highcharts.SeriesComponent */ {
 
             /**
              * Init the component.
@@ -2846,7 +2926,7 @@
 
         return SeriesComponent;
     });
-    _registerModule(_modules, 'modules/accessibility/components/ZoomComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js']], function (H, AccessibilityComponent, KeyboardNavigationHandler) {
+    _registerModule(_modules, 'modules/accessibility/components/ZoomComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -2857,6 +2937,8 @@
          *
          * */
 
+
+        var extend = U.extend;
 
 
 
@@ -2895,15 +2977,10 @@
          * @private
          * @class
          * @name Highcharts.ZoomComponent
-         * @param {Highcharts.Chart} chart
-         *        Chart object
          */
-        var ZoomComponent = function (chart) {
-            this.initBase(chart);
-            this.init();
-        };
+        var ZoomComponent = function () {};
         ZoomComponent.prototype = new AccessibilityComponent();
-        H.extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
+        extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
 
             /**
              * Initialize the component
@@ -3178,7 +3255,7 @@
 
         return ZoomComponent;
     });
-    _registerModule(_modules, 'modules/accessibility/components/RangeSelectorComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js']], function (H, AccessibilityComponent, KeyboardNavigationHandler) {
+    _registerModule(_modules, 'modules/accessibility/components/RangeSelectorComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -3189,6 +3266,8 @@
          *
          * */
 
+
+        var extend = U.extend;
 
 
 
@@ -3229,14 +3308,10 @@
          * @private
          * @class
          * @name Highcharts.RangeSelectorComponent
-         * @param {Highcharts.Chart} chart
-         *        Chart object
          */
-        var RangeSelectorComponent = function (chart) {
-            this.initBase(chart);
-        };
+        var RangeSelectorComponent = function () {};
         RangeSelectorComponent.prototype = new AccessibilityComponent();
-        H.extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComponent */ { // eslint-disable-line
+        extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComponent */ { // eslint-disable-line
 
             /**
              * Called on first render/updates to the chart, including options changes.
@@ -3447,7 +3522,7 @@
 
         return RangeSelectorComponent;
     });
-    _registerModule(_modules, 'modules/accessibility/components/InfoRegionComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/utilities.js']], function (H, AccessibilityComponent, A11yUtilities) {
+    _registerModule(_modules, 'modules/accessibility/components/InfoRegionComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/utilities.js']], function (H, U, AccessibilityComponent, A11yUtilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -3459,9 +3534,11 @@
          * */
 
 
+        var extend = U.extend,
+            pick = U.pick;
+
 
         var merge = H.merge,
-            pick = H.pick,
             makeHTMLTagFromText = A11yUtilities.makeHTMLTagFromText;
 
 
@@ -3536,15 +3613,10 @@
          * @private
          * @class
          * @name Highcharts.InfoRegionComponent
-         * @param {Highcharts.Chart} chart
-         *        Chart object
          */
-        var InfoRegionComponent = function (chart) {
-            this.initBase(chart);
-            this.init();
-        };
+        var InfoRegionComponent = function () {};
         InfoRegionComponent.prototype = new AccessibilityComponent();
-        H.extend(InfoRegionComponent.prototype, /** @lends Highcharts.InfoRegionComponent */ { // eslint-disable-line
+        extend(InfoRegionComponent.prototype, /** @lends Highcharts.InfoRegionComponent */ { // eslint-disable-line
 
             /**
              * Init the component
@@ -3866,7 +3938,7 @@
 
         return InfoRegionComponent;
     });
-    _registerModule(_modules, 'modules/accessibility/components/ContainerComponent.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/utilities.js']], function (H, AccessibilityComponent, A11yUtilities) {
+    _registerModule(_modules, 'modules/accessibility/components/ContainerComponent.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/utilities.js']], function (H, U, AccessibilityComponent, A11yUtilities) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -3877,6 +3949,8 @@
          *
          * */
 
+
+        var extend = U.extend;
 
 
         var doc = H.win.document,
@@ -3889,14 +3963,10 @@
          * @private
          * @class
          * @name Highcharts.ContainerComponent
-         * @param {Highcharts.Chart} chart
-         *        Chart object
          */
-        var ContainerComponent = function (chart) {
-            this.initBase(chart);
-        };
+        var ContainerComponent = function () {};
         ContainerComponent.prototype = new AccessibilityComponent();
-        H.extend(ContainerComponent.prototype, /** @lends Highcharts.ContainerComponent */ { // eslint-disable-line
+        extend(ContainerComponent.prototype, /** @lends Highcharts.ContainerComponent */ { // eslint-disable-line
 
             /**
              * Called on first render/updates to the chart, including options changes.
@@ -3980,7 +4050,6 @@
              */
             destroy: function () {
                 this.chart.renderTo.setAttribute('aria-hidden', true);
-                this.destroyBase();
             }
 
         });
@@ -4701,7 +4770,7 @@
                      * @since 7.1.0
                      * @type {Array<string>}
                      */
-                    order: ['series', 'zoom', 'rangeSelector', 'chartMenu', 'legend'],
+                    order: ['series', 'zoom', 'rangeSelector', 'legend', 'chartMenu'],
 
                     /**
                      * Whether or not to wrap around when reaching the end of arrow-key
@@ -4958,7 +5027,146 @@
 
         return options;
     });
-    _registerModule(_modules, 'modules/accessibility/a11y-i18n.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/accessibility/deprecatedOptions.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2009-2019 Øystein Moseng
+         *
+         *  Default options for accessibility.
+         *
+         *  License: www.highcharts.com/license
+         *
+         * */
+
+
+        var pick = U.pick;
+
+        var error = H.error;
+
+        // Warn user that a deprecated option was used
+        function warn(chart, oldOption, newOption) {
+            error(
+                'Highcharts: Deprecated option ' + oldOption +
+                ' used. Use ' + newOption + ' instead.', false, chart
+            );
+        }
+
+        // Set a new option on a root prop, where the option is defined as
+        // an array of suboptions.
+        function traverseSetOption(root, optionAsArray, val) {
+            var opt = root,
+                prop,
+                i = 0;
+            for (;i < optionAsArray.length - 1; ++i) {
+                prop = optionAsArray[i];
+                opt = opt[prop] = pick(opt[prop], {});
+            }
+            opt[optionAsArray[optionAsArray.length - 1]] = val;
+        }
+
+        function copyDeprecatedChartOptions(chart) {
+            var chartOptions = chart.options.chart || {},
+                a11yOptions = chart.options.accessibility || {};
+            ['description', 'typeDescription'].forEach(function (prop) {
+                if (chartOptions[prop]) {
+                    a11yOptions[prop] = chartOptions[prop];
+                    warn(chart, 'chart.' + prop, 'accessibility.' + prop);
+                }
+            });
+        }
+
+        function copyDeprecatedAxisOptions(chart) {
+            chart.axes.forEach(function (axis) {
+                var opts = axis.options;
+                if (opts && opts.description) {
+                    opts.accessibility = opts.accessibility || {};
+                    opts.accessibility.description = opts.description;
+                    warn(chart, 'axis.description', 'axis.accessibility.description');
+                }
+            });
+        }
+
+        function copyDeprecatedSeriesOptions(chart) {
+            // Map of deprecated series options. New options are defined as
+            // arrays of paths under series.options.
+            var oldToNewSeriesOptions = {
+                description: ['accessibility', 'description'],
+                exposeElementToA11y: ['accessibility', 'exposeAsGroupOnly'],
+                pointDescriptionFormatter: [
+                    'accessibility', 'pointDescriptionFormatter'
+                ],
+                skipKeyboardNavigation: [
+                    'accessibility', 'keyboardNavigation', 'enabled'
+                ]
+            };
+            chart.series.forEach(function (series) {
+                // Handle series wide options
+                Object.keys(oldToNewSeriesOptions).forEach(function (oldOption) {
+                    var optionVal = series.options[oldOption];
+                    if (optionVal !== undefined) {
+                        // Set the new option
+                        traverseSetOption(
+                            series.options,
+                            oldToNewSeriesOptions[oldOption],
+                            // Note that skipKeyboardNavigation has inverted option
+                            // value, since we set enabled rather than disabled
+                            oldOption === 'skipKeyboardNavigation' ?
+                                !optionVal : optionVal
+                        );
+                        warn(
+                            chart,
+                            'series.' + oldOption, 'series.' +
+                            oldToNewSeriesOptions[oldOption].join('.')
+                        );
+                    }
+                });
+
+                // Loop through the points and handle point.description
+                if (series.points) {
+                    series.points.forEach(function (point) {
+                        if (point.options && point.options.description) {
+                            point.options.accessibility =
+                                point.options.accessibility || {};
+                            point.options.accessibility.description =
+                                point.options.description;
+                            warn(chart, 'point.description',
+                                'point.accessibility.description');
+                        }
+                    });
+                }
+            });
+        }
+
+        /**
+         * Copy options that are deprecated over to new options. Logs warnings to
+         * console for deprecated options used. The following options are
+         * deprecated:
+         *
+         *  chart.description -> accessibility.description
+         *  chart.typeDescription -> accessibility.typeDescription
+         *  series.description -> series.accessibility.description
+         *  series.exposeElementToA11y -> series.accessibility.exposeAsGroupOnly
+         *  series.pointDescriptionFormatter ->
+         *      series.accessibility.pointDescriptionFormatter
+         *  series.skipKeyboardNavigation ->
+         *      series.accessibility.keyboardNavigation.enabled
+         *  point.description -> point.accessibility.description
+         *  axis.description -> axis.accessibility.description
+         *
+         * @private
+         */
+        function copyDeprecatedOptions(chart) {
+            copyDeprecatedChartOptions(chart);
+            copyDeprecatedAxisOptions(chart);
+            if (chart.series) {
+                copyDeprecatedSeriesOptions(chart);
+            }
+        }
+
+
+        return copyDeprecatedOptions;
+    });
+    _registerModule(_modules, 'modules/accessibility/a11y-i18n.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * Accessibility module - internationalization support
          *
@@ -4969,8 +5177,7 @@
          */
 
 
-
-        var pick = H.pick;
+        var pick = U.pick;
 
 
         /**
@@ -5438,9 +5645,9 @@
                      * @since 6.0.6
                      */
                     exporting: {
-                        chartMenuLabel: 'Chart export',
-                        menuButtonLabel: 'View export menu',
-                        exportRegionLabel: 'Chart export menu'
+                        chartMenuLabel: 'Chart menu',
+                        menuButtonLabel: 'View chart menu',
+                        exportRegionLabel: 'Chart menu'
                     },
 
                     /**
@@ -5525,7 +5732,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/accessibility/accessibility.js', [_modules['parts/Globals.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigation.js'], _modules['modules/accessibility/components/LegendComponent.js'], _modules['modules/accessibility/components/MenuComponent.js'], _modules['modules/accessibility/components/SeriesComponent.js'], _modules['modules/accessibility/components/ZoomComponent.js'], _modules['modules/accessibility/components/RangeSelectorComponent.js'], _modules['modules/accessibility/components/InfoRegionComponent.js'], _modules['modules/accessibility/components/ContainerComponent.js'], _modules['modules/accessibility/high-contrast-mode.js'], _modules['modules/accessibility/high-contrast-theme.js'], _modules['modules/accessibility/options.js']], function (H, KeyboardNavigationHandler, AccessibilityComponent, KeyboardNavigation, LegendComponent, MenuComponent, SeriesComponent, ZoomComponent, RangeSelectorComponent, InfoRegionComponent, ContainerComponent, whcm, highContrastTheme, defaultOptions) {
+    _registerModule(_modules, 'modules/accessibility/accessibility.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/KeyboardNavigationHandler.js'], _modules['modules/accessibility/AccessibilityComponent.js'], _modules['modules/accessibility/KeyboardNavigation.js'], _modules['modules/accessibility/components/LegendComponent.js'], _modules['modules/accessibility/components/MenuComponent.js'], _modules['modules/accessibility/components/SeriesComponent.js'], _modules['modules/accessibility/components/ZoomComponent.js'], _modules['modules/accessibility/components/RangeSelectorComponent.js'], _modules['modules/accessibility/components/InfoRegionComponent.js'], _modules['modules/accessibility/components/ContainerComponent.js'], _modules['modules/accessibility/high-contrast-mode.js'], _modules['modules/accessibility/high-contrast-theme.js'], _modules['modules/accessibility/options.js'], _modules['modules/accessibility/deprecatedOptions.js']], function (H, U, KeyboardNavigationHandler, AccessibilityComponent, KeyboardNavigation, LegendComponent, MenuComponent, SeriesComponent, ZoomComponent, RangeSelectorComponent, InfoRegionComponent, ContainerComponent, whcm, highContrastTheme, defaultOptions, copyDeprecatedOptions) {
         /* *
          *
          *  (c) 2009-2019 Øystein Moseng
@@ -5563,13 +5770,13 @@
          */
 
 
+        var extend = U.extend,
+            pick = U.pick;
+
 
         var addEvent = H.addEvent,
             doc = H.win.document,
-            pick = H.pick,
-            merge = H.merge,
-            extend = H.extend,
-            error = H.error;
+            merge = H.merge;
 
 
         // Add default options
@@ -5588,7 +5795,7 @@
          * Add focus border functionality to SVGElements. Draws a new rect on top of
          * element around its bounding box. This is used by multiple components.
          */
-        H.extend(H.SVGElement.prototype, {
+        extend(H.SVGElement.prototype, {
 
             /**
              * @private
@@ -5745,7 +5952,6 @@
              *        Chart object
              */
             init: function (chart) {
-                var a11yOptions = chart.options.accessibility;
                 this.chart = chart;
 
                 // Abort on old browsers
@@ -5756,24 +5962,42 @@
 
                 // Copy over any deprecated options that are used. We could do this on
                 // every update, but it is probably not needed.
-                this.copyDeprecatedOptions();
+                copyDeprecatedOptions(chart);
 
-                // Add the components
-                var components = this.components = {
-                    container: new ContainerComponent(chart),
-                    infoRegion: new InfoRegionComponent(chart),
-                    legend: new LegendComponent(chart),
-                    chartMenu: new MenuComponent(chart),
-                    rangeSelector: new RangeSelectorComponent(chart),
-                    series: new SeriesComponent(chart),
-                    zoom: new ZoomComponent(chart)
+                this.initComponents();
+                this.keyboardNavigation = new KeyboardNavigation(
+                    chart, this.components
+                );
+                this.update();
+            },
+
+
+            /**
+             * @private
+             */
+            initComponents: function () {
+                var chart = this.chart,
+                    a11yOptions = chart.options.accessibility;
+
+                this.components = {
+                    container: new ContainerComponent(),
+                    infoRegion: new InfoRegionComponent(),
+                    legend: new LegendComponent(),
+                    chartMenu: new MenuComponent(),
+                    rangeSelector: new RangeSelectorComponent(),
+                    series: new SeriesComponent(),
+                    zoom: new ZoomComponent()
                 };
                 if (a11yOptions.customComponents) {
                     extend(this.components, a11yOptions.customComponents);
                 }
 
-                this.keyboardNavigation = new KeyboardNavigation(chart, components);
-                this.update();
+                var components = this.components;
+                // Refactor to use Object.values if we polyfill
+                Object.keys(components).forEach(function (componentName) {
+                    components[componentName].initBase(chart);
+                    components[componentName].init();
+                });
             },
 
 
@@ -5818,6 +6042,7 @@
                 var components = this.components;
                 Object.keys(components).forEach(function (componentName) {
                     components[componentName].destroy();
+                    components[componentName].destroyBase();
                 });
 
                 // Kill keyboard nav
@@ -5847,150 +6072,43 @@
                     types[series.type] = 1;
                 });
                 return Object.keys(types);
-            },
-
-
-            /**
-             * Copy options that are deprecated over to new options. Logs warnings to
-             * console for deprecated options used. The following options are
-             * deprecated:
-             *
-             *  chart.description -> accessibility.description
-             *  chart.typeDescription -> accessibility.typeDescription
-             *  series.description -> series.accessibility.description
-             *  series.exposeElementToA11y -> series.accessibility.exposeAsGroupOnly
-             *  series.pointDescriptionFormatter ->
-             *      series.accessibility.pointDescriptionFormatter
-             *  series.skipKeyboardNavigation ->
-             *      series.accessibility.keyboardNavigation.enabled
-             *  point.description -> point.accessibility.description
-             *  axis.description -> axis.accessibility.description
-             *
-             * @private
-             */
-            copyDeprecatedOptions: function () {
-                var chart = this.chart,
-                    // Warn user that a deprecated option was used
-                    warn = function (oldOption, newOption) {
-                        error(
-                            'Highcharts: Deprecated option ' + oldOption +
-                            ' used. Use ' + newOption + ' instead.', false, chart
-                        );
-                    },
-                    // Set a new option on a root prop, where the option is defined as
-                    // an array of suboptions.
-                    traverseSetOption = function (val, optionAsArray, root) {
-                        var opt = root,
-                            prop,
-                            i = 0;
-                        for (;i < optionAsArray.length - 1; ++i) {
-                            prop = optionAsArray[i];
-                            opt = opt[prop] = pick(opt[prop], {});
-                        }
-                        opt[optionAsArray[optionAsArray.length - 1]] = val;
-                    },
-                    // Map of deprecated series options. New options are defined as
-                    // arrays of paths under series.options.
-                    oldToNewSeriesOptions = {
-                        description: ['accessibility', 'description'],
-                        exposeElementToA11y: ['accessibility', 'exposeAsGroupOnly'],
-                        pointDescriptionFormatter: [
-                            'accessibility', 'pointDescriptionFormatter'
-                        ],
-                        skipKeyboardNavigation: [
-                            'accessibility', 'keyboardNavigation', 'enabled'
-                        ]
-                    };
-
-                // Deal with chart wide options (description, typeDescription)
-                var chartOptions = chart.options.chart || {},
-                    a11yOptions = chart.options.accessibility || {};
-                ['description', 'typeDescription'].forEach(function (prop) {
-                    if (chartOptions[prop]) {
-                        a11yOptions[prop] = chartOptions[prop];
-                        warn('chart.' + prop, 'accessibility.' + prop);
-                    }
-                });
-
-                // Deal with axis description
-                chart.axes.forEach(function (axis) {
-                    var opts = axis.options;
-                    if (opts && opts.description) {
-                        opts.accessibility = opts.accessibility || {};
-                        opts.accessibility.description = opts.description;
-                        warn('axis.description', 'axis.accessibility.description');
-                    }
-                });
-
-                // Loop through all series and handle options
-                if (!chart.series) {
-                    return;
-                }
-                chart.series.forEach(function (series) {
-                    // Handle series wide options
-                    Object.keys(oldToNewSeriesOptions).forEach(function (oldOption) {
-                        var optionVal = series.options[oldOption];
-                        if (optionVal !== undefined) {
-                            // Set the new option
-                            traverseSetOption(
-                                // Note that skipKeyboardNavigation has inverted option
-                                // value, since we set enabled rather than disabled
-                                oldOption === 'skipKeyboardNavigation' ?
-                                    !optionVal : optionVal,
-                                oldToNewSeriesOptions[oldOption],
-                                series.options
-                            );
-                            warn(
-                                'series.' + oldOption, 'series.' +
-                                oldToNewSeriesOptions[oldOption].join('.')
-                            );
-                        }
-                    });
-
-                    // Loop through the points and handle point.description
-                    if (series.points) {
-                        series.points.forEach(function (point) {
-                            if (point.options && point.options.description) {
-                                point.options.accessibility =
-                                    point.options.accessibility || {};
-                                point.options.accessibility.description =
-                                    point.options.description;
-                                warn('point.description',
-                                    'point.accessibility.description');
-                            }
-                        });
-                    }
-                });
             }
-
         };
 
 
+        /**
+         * @private
+         */
+        H.Chart.prototype.updateA11yEnabled = function () {
+            var a11y = this.accessibility,
+                accessibilityOptions = this.options.accessibility;
+            if (accessibilityOptions && accessibilityOptions.enabled) {
+                if (a11y) {
+                    a11y.update();
+                } else {
+                    this.accessibility = a11y = new Accessibility(this);
+                }
+            } else if (a11y) {
+                // Destroy if after update we have a11y and it is disabled
+                if (a11y.destroy) {
+                    a11y.destroy();
+                }
+                delete this.accessibility;
+            } else {
+                // Just hide container
+                this.renderTo.setAttribute('aria-hidden', true);
+            }
+        };
+
         // Handle updates to the module and send render updates to components
         addEvent(H.Chart, 'render', function (e) {
-            var a11y = this.accessibility;
             // Update/destroy
             if (this.a11yDirty && this.renderTo) {
                 delete this.a11yDirty;
-                var accessibilityOptions = this.options.accessibility;
-                if (accessibilityOptions && accessibilityOptions.enabled) {
-                    if (a11y) {
-                        a11y.update();
-                    } else {
-                        this.accessibility = a11y = new Accessibility(this);
-                    }
-                } else if (a11y) {
-                    // Destroy if after update we have a11y and it is disabled
-                    if (a11y.destroy) {
-                        a11y.destroy();
-                    }
-                    delete this.accessibility;
-                } else {
-                    // Just hide container
-                    this.renderTo.setAttribute('aria-hidden', true);
-                }
+                this.updateA11yEnabled();
             }
-            // Update markup regardless
+
+            var a11y = this.accessibility;
             if (a11y) {
                 Object.keys(a11y.components).forEach(function (componentName) {
                     a11y.components[componentName].onChartRender(e);

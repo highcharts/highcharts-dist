@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Old IE (v6, v7, v8) array polyfills for Highcharts v7+.
  *
@@ -36,11 +36,11 @@
          *
          *  License: www.highcharts.com/license
          *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
          *  Simple polyfills for array functions in old IE browsers (6, 7 and 8) in
          *  Highcharts v7+. These polyfills are sufficient for Highcharts to work, but
          *  for fully compatible polyfills, see MDN.
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
         /* global document */

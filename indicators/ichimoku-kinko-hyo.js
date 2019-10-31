@@ -1,5 +1,5 @@
 /*
- Highstock JS v7.2.0 (2019-09-03)
+ Highstock JS v7.2.1 (2019-10-31)
 
  Indicator series type for Highstock
 
@@ -19,5 +19,5 @@ senkouSpanA:n[3],senkouSpanB:n[4],senkouSpan:n[5]},u=[],f=a.options.senkouSpan,v
 Math.floor(b.length/2))if(k=Math.floor(b.length/2),b[k].plotY===f[k].plotY){for(A=r=k=0;A<b.length;A++)k+=b[A].plotY,r+=f[A].plotY;k=k>r?0:1}else k=b[k].plotY>f[k].plotY?0:1;else k=b[0].plotY>f[0].plotY?0:1;q[k]=q[k].concat(b);x[k]=x[k].concat(f)}["graphsenkouSpanColor","graphsenkouSpanNegativeColor"].forEach(function(b,c){q[c].length&&x[c].length&&(z=0===c?v:p,D({indicator:a,points:q[c],nextPoints:x[c],color:z,options:d,gap:m,graph:a[b]}),a[b]=a.graph,a.graphCollection.push(b))})}else D({indicator:a,
 points:c.senkouSpanB,nextPoints:c.senkouSpanA,color:v,options:d,gap:m,graph:a.graphsenkouSpan}),a.graphsenkouSpan=a.graph;delete a.nextPoints;delete a.fillGraph;a.points=e;a.options=d;a.graph=l},getGraphPath:function(a){var e=[];a=a||this.points;if(this.fillGraph&&this.nextPoints){var b=w.prototype.getGraphPath.call(this,this.nextPoints);b[0]="L";var d=w.prototype.getGraphPath.call(this,a);b=b.slice(0,d.length);for(var l=b.length-1;0<l;l-=3)e.push(b[l-2],b[l-1],b[l]);d=d.concat(e)}else d=w.prototype.getGraphPath.apply(this,
 arguments);return d},getValues:function(a,d){var b=d.period,e=d.periodTenkan;d=d.periodSenkouSpanB;var l=a.xData,h=a.yData,m=h&&h.length||0;a=F(a.xAxis);var g=[],n=[],c;if(l.length<=b||!H(h[0])||4!==h[0].length)return!1;var u=l[0]-b*a;for(c=0;c<b;c++)n.push(u+c*a);for(c=0;c<m;c++){if(c>=e){var f=h.slice(c-e,c);f=z(f);f=(f.high+f.low)/2}if(c>=b){var v=h.slice(c-b,c);v=z(v);v=(v.high+v.low)/2;var w=(f+v)/2}if(c>=d){var q=h.slice(c-d,c);q=z(q);q=(q.high+q.low)/2}u=h[c][3];var x=l[c];g[c]===p&&(g[c]=
-[]);g[c+b]===p&&(g[c+b]=[]);g[c+b][0]=f;g[c+b][1]=v;g[c+b][2]=p;g[c][2]=u;c<=b&&(g[c+b][3]=p,g[c+b][4]=p);g[c+2*b]===p&&(g[c+2*b]=[]);g[c+2*b][3]=w;g[c+2*b][4]=q;n.push(x)}for(c=1;c<=b;c++)n.push(x+c*a);return{values:g,xData:n,yData:g}}})});l(d,"masters/indicators/ichimoku-kinko-hyo.src.js",[],function(){})});
+[]);g[c+b]===p&&(g[c+b]=[]);g[c+b][0]=f;g[c+b][1]=v;g[c+b][2]=p;g[c][2]=u;c<=b&&(g[c+b][3]=p,g[c+b][4]=p);g[c+2*b]===p&&(g[c+2*b]=[]);g[c+2*b][3]=w;g[c+2*b][4]=q;n.push(x)}for(c=1;c<=b;c++)n.push(x+c*a);return{values:g,xData:n,yData:g}}});""});l(d,"masters/indicators/ichimoku-kinko-hyo.src.js",[],function(){})});
 //# sourceMappingURL=ichimoku-kinko-hyo.js.map

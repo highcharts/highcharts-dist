@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -39,8 +39,8 @@
         /**
          * @typedef {"arc"|"circle"|"solid"} Highcharts.PaneBackgroundShapeValue
          */
-        var splat = U.splat;
-        var CenteredSeriesMixin = H.CenteredSeriesMixin, extend = H.extend, merge = H.merge;
+        var extend = U.extend, splat = U.splat;
+        var CenteredSeriesMixin = H.CenteredSeriesMixin, merge = H.merge;
         /* eslint-disable valid-jsdoc */
         /**
          * The Pane object allows options that are common to a set of X and Y axes.
@@ -155,6 +155,7 @@
              *
              * @since        2.3.0
              * @product      highcharts
+             * @requires     highcharts-more
              * @optionparent pane
              */
             defaultOptions: {
@@ -363,8 +364,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var pInt = U.pInt;
-        var addEvent = H.addEvent, Axis = H.Axis, extend = H.extend, merge = H.merge, noop = H.noop, pick = H.pick, Tick = H.Tick, wrap = H.wrap, correctFloat = H.correctFloat, 
+        var extend = U.extend, pick = U.pick, pInt = U.pInt;
+        var addEvent = H.addEvent, Axis = H.Axis, merge = H.merge, noop = H.noop, Tick = H.Tick, wrap = H.wrap, correctFloat = H.correctFloat, 
         // @todo Extract this to a new file:
         hiddenAxisMixin, 
         // @todo Extract this to a new file
@@ -670,16 +671,25 @@
              * Find the path for plot lines perpendicular to the radial axis.
              */
             getPlotLinePath: function (options) {
-                var axis = this, center = axis.center, chart = axis.chart, value = options.value, reverse = options.reverse, end = axis.getPosition(value), xAxis, xy, tickPositions, ret;
+                var axis = this, center = axis.center, chart = axis.chart, value = options.value, reverse = options.reverse, end = axis.getPosition(value), background = axis.pane.options.background ?
+                    (axis.pane.options.background[0] ||
+                        axis.pane.options.background) :
+                    {}, innerRadius = background.innerRadius || '0%', outerRadius = background.outerRadius || '100%', x1 = center[0] + chart.plotLeft, y1 = center[1] + chart.plotTop, x2 = end.x, y2 = end.y, a, b, xAxis, xy, tickPositions, ret;
                 // Spokes
                 if (axis.isCircular) {
+                    a = (typeof innerRadius === 'string') ?
+                        H.relativeLength(innerRadius, 1) : (innerRadius /
+                        Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
+                    b = (typeof outerRadius === 'string') ?
+                        H.relativeLength(outerRadius, 1) : (outerRadius /
+                        Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
                     ret = [
                         'M',
-                        center[0] + chart.plotLeft,
-                        center[1] + chart.plotTop,
+                        x1 + a * (x2 - x1),
+                        y1 - a * (y1 - y2),
                         'L',
-                        end.x,
-                        end.y
+                        x2 - (1 - b) * (x2 - x1),
+                        y2 + (1 - b) * (y1 - y2)
                     ];
                     // Concentric circles
                 }
@@ -1056,12 +1066,11 @@
         * @since 2.3.0
         * @product highcharts highstock
         */
-        var defined = U.defined, isArray = U.isArray, isNumber = U.isNumber;
-        var noop = H.noop, pick = H.pick, extend = H.extend, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes, seriesProto = Series.prototype, pointProto = H.Point.prototype;
+        var defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick;
+        var noop = H.noop, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes, seriesProto = Series.prototype, pointProto = H.Point.prototype;
         /**
          * The area range series is a carteseian series with higher and lower values for
          * each point along an X axis, where the area between the values is shaded.
-         * Requires `highcharts-more.js`.
          *
          * @sample {highcharts} highcharts/demo/arearange/
          *         Area range chart
@@ -1071,6 +1080,7 @@
          * @extends      plotOptions.area
          * @product      highcharts highstock
          * @excluding    stack, stacking
+         * @requires     highcharts-more
          * @optionparent plotOptions.arearange
          */
         seriesType('arearange', 'area', {
@@ -1453,7 +1463,7 @@
                     point = series.points[i];
                     point.upperGraphic = point.graphic;
                     point.graphic = point.lowerGraphic;
-                    H.extend(point, point.origProps);
+                    extend(point, point.origProps);
                     delete point.origProps;
                     i++;
                 }
@@ -1558,6 +1568,7 @@
          * @extends   series,plotOptions.arearange
          * @excluding dataParser, dataURL, stack, stacking
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption series.arearange
          */
         /**
@@ -1651,8 +1662,7 @@
         /**
          * The area spline range is a cartesian series type with higher and
          * lower Y values along an X axis. The area inside the range is colored, and
-         * the graph outlining the area is a smoothed spline. Requires
-         * `highcharts-more.js`.
+         * the graph outlining the area is a smoothed spline.
          *
          * @sample {highstock|highstock} stock/demo/areasplinerange/
          *         Area spline range
@@ -1661,6 +1671,7 @@
          * @since     2.3.0
          * @excluding step
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption plotOptions.areasplinerange
          */
         seriesType('areasplinerange', 'arearange', null, {
@@ -1673,6 +1684,7 @@
          * @extends   series,plotOptions.areasplinerange
          * @excluding dataParser, dataURL, stack
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption series.areasplinerange
          */
         /**
@@ -1732,7 +1744,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/ColumnRangeSeries.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-more/ColumnRangeSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -1742,12 +1754,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defaultPlotOptions = H.defaultPlotOptions, merge = H.merge, noop = H.noop, pick = H.pick, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var pick = U.pick;
+        var defaultPlotOptions = H.defaultPlotOptions, merge = H.merge, noop = H.noop, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         var colProto = seriesTypes.column.prototype;
         /**
          * The column range is a cartesian series type with higher and lower
-         * Y values along an X axis. Requires `highcharts-more.js`. To display
-         * horizontal bars, set [chart.inverted](#chart.inverted) to `true`.
+         * Y values along an X axis. To display horizontal bars, set
+         * [chart.inverted](#chart.inverted) to `true`.
          *
          * @sample {highcharts|highstock} highcharts/demo/columnrange/
          *         Inverted column range
@@ -1756,6 +1769,7 @@
          * @since        2.3.0
          * @excluding    negativeColor, stacking, softThreshold, threshold
          * @product      highcharts highstock
+         * @requires     highcharts-more
          * @optionparent plotOptions.columnrange
          */
         var columnRangeOptions = {
@@ -1895,6 +1909,7 @@
          * @extends   series,plotOptions.columnrange
          * @excluding dataParser, dataURL, stack, stacking
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption series.columnrange
          */
         /**
@@ -1970,7 +1985,7 @@
         ''; // adds doclets above into transpiled
 
     });
-    _registerModule(_modules, 'parts-more/ColumnPyramidSeries.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-more/ColumnPyramidSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Sebastian Bochan
@@ -1980,7 +1995,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var pick = H.pick, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var pick = U.pick;
+        var seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         var colProto = seriesTypes.column.prototype;
         /**
          * The ColumnPyramidSeries class
@@ -1994,8 +2010,8 @@
         seriesType('columnpyramid', 'column', 
         /**
          * Column pyramid series display one pyramid per value along an X axis.
-         * Requires `highcharts-more.js`. To display horizontal pyramids,
-         * set [chart.inverted](#chart.inverted) to `true`.
+         * To display horizontal pyramids, set [chart.inverted](#chart.inverted) to
+         * `true`.
          *
          * @sample {highcharts|highstock} highcharts/demo/column-pyramid/
          *         Column pyramid
@@ -2010,6 +2026,7 @@
          * @excluding    boostThreshold, borderRadius, crisp, depth, edgeColor,
          *               edgeWidth, groupZPadding, negativeColor, softThreshold,
          *               threshold, zoneAxis, zones
+         * @requires     highcharts-more
          * @optionparent plotOptions.columnpyramid
          */
         {
@@ -2148,6 +2165,7 @@
          * @excluding connectEnds, connectNulls, dashStyle, dataParser, dataURL,
          *            gapSize, gapUnit, linecap, lineWidth, marker, step
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption series.columnpyramid
          */
         /**
@@ -2232,8 +2250,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber, pInt = U.pInt;
-        var merge = H.merge, noop = H.noop, pick = H.pick, Series = H.Series, seriesType = H.seriesType, TrackerMixin = H.TrackerMixin;
+        var isNumber = U.isNumber, pick = U.pick, pInt = U.pInt;
+        var merge = H.merge, noop = H.noop, Series = H.Series, seriesType = H.seriesType, TrackerMixin = H.TrackerMixin;
         /**
          * Gauges are circular plots displaying one or more values with a dial pointing
          * to values along the perimeter.
@@ -2248,6 +2266,7 @@
          *               pointPlacement, shadow, softThreshold, stacking, states, step,
          *               threshold, turboThreshold, xAxis, zoneAxis, zones
          * @product      highcharts
+         * @requires     highcharts-more
          * @optionparent plotOptions.gauge
          */
         seriesType('gauge', 'line', {
@@ -2695,6 +2714,7 @@
          *            softThreshold, stack, stacking, states, step, threshold,
          *            turboThreshold, zoneAxis, zones
          * @product   highcharts
+         * @requires  highcharts-more
          * @apioption series.gauge
          */
         /**
@@ -2740,7 +2760,7 @@
         ''; // adds the doclets above in the transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/BoxPlotSeries.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-more/BoxPlotSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2019 Torstein Honsi
@@ -2750,7 +2770,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var noop = H.noop, pick = H.pick, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var pick = U.pick;
+        var noop = H.noop, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * The boxplot series type.
          *
@@ -2772,6 +2793,7 @@
          * @extends      plotOptions.column
          * @excluding    borderColor, borderRadius, borderWidth, groupZPadding, states
          * @product      highcharts
+         * @requires     highcharts-more
          * @optionparent plotOptions.boxplot
          */
         seriesType('boxplot', 'column', {
@@ -3161,6 +3183,7 @@
          * @extends   series,plotOptions.boxplot
          * @excluding dataParser, dataURL, marker, stack, stacking, states
          * @product   highcharts
+         * @requires  highcharts-more
          * @apioption series.boxplot
          */
         /**
@@ -3289,6 +3312,7 @@
          *
          * @extends      plotOptions.boxplot
          * @product      highcharts highstock
+         * @requires     highcharts-more
          * @optionparent plotOptions.errorbar
          */
         seriesType('errorbar', 'boxplot', {
@@ -3367,6 +3391,7 @@
          * @extends   series,plotOptions.errorbar
          * @excluding dataParser, dataURL, stack, stacking
          * @product   highcharts
+         * @requires  highcharts-more
          * @apioption series.errorbar
          */
         /**
@@ -3437,8 +3462,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber, objectEach = U.objectEach;
-        var correctFloat = H.correctFloat, pick = H.pick, arrayMin = H.arrayMin, arrayMax = H.arrayMax, addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Point = H.Point, Series = H.Series, StackItem = H.StackItem, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
+        var correctFloat = H.correctFloat, addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Point = H.Point, Series = H.Series, StackItem = H.StackItem, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * Returns true if the key is a direct property of the object.
          * @private
@@ -3515,6 +3540,7 @@
          *
          * @extends      plotOptions.column
          * @product      highcharts
+         * @requires     highcharts-more
          * @optionparent plotOptions.waterfall
          */
         seriesType('waterfall', 'column', {
@@ -3804,17 +3830,24 @@
                     series.dataMin = dataMin + threshold;
                     series.dataMax = dataMax;
                 }
+                return;
             },
             // Return y value or string if point is sum
             toYData: function (pt) {
                 if (pt.isSum) {
-                    // #3245 Error when first element is Sum or Intermediate Sum
-                    return (pt.x === 0 ? null : 'sum');
+                    return 'sum';
                 }
                 if (pt.isIntermediateSum) {
-                    return (pt.x === 0 ? null : 'intermediateSum'); // #3245
+                    return 'intermediateSum';
                 }
                 return pt.y;
+            },
+            updateParallelArrays: function (point, i) {
+                Series.prototype.updateParallelArrays.call(this, point, i);
+                // Prevent initial sums from triggering an error (#3245, #7559)
+                if (this.yData[0] === 'sum' || this.yData[0] === 'intermediateSum') {
+                    this.yData[0] = null;
+                }
             },
             // Postprocess mapping between options and SVG attributes
             pointAttribs: function (point, state) {
@@ -4032,6 +4065,7 @@
          * @extends   series,plotOptions.waterfall
          * @excluding dataParser, dataURL
          * @product   highcharts
+         * @requires  highcharts-more
          * @apioption series.waterfall
          */
         /**
@@ -4136,8 +4170,7 @@
         /**
          * A polygon series can be used to draw any freeform shape in the cartesian
          * coordinate system. A fill is applied with the `color` option, and
-         * stroke is applied through `lineWidth` and `lineColor` options. Requires
-         * the `highcharts-more.js` file.
+         * stroke is applied through `lineWidth` and `lineColor` options.
          *
          * @sample {highcharts} highcharts/demo/polygon/
          *         Polygon
@@ -4148,6 +4181,7 @@
          * @since        4.1.0
          * @excluding    jitter, softThreshold, threshold
          * @product      highcharts highstock
+         * @requires     highcharts-more
          * @optionparent plotOptions.polygon
          */
         seriesType('polygon', 'scatter', {
@@ -4195,6 +4229,7 @@
          * @extends   series,plotOptions.polygon
          * @excluding dataParser, dataURL, stack
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption series.polygon
          */
         /**
@@ -4286,8 +4321,8 @@
         * @name Highcharts.BubbleLegendFormatterContextObject#value
         * @type {number}
         */
-        var isNumber = U.isNumber, objectEach = U.objectEach;
-        var Series = H.Series, Legend = H.Legend, Chart = H.Chart, addEvent = H.addEvent, wrap = H.wrap, color = H.color, numberFormat = H.numberFormat, merge = H.merge, noop = H.noop, pick = H.pick, stableSort = H.stableSort, setOptions = H.setOptions, arrayMin = H.arrayMin, arrayMax = H.arrayMax;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
+        var Series = H.Series, Legend = H.Legend, Chart = H.Chart, addEvent = H.addEvent, wrap = H.wrap, color = H.color, numberFormat = H.numberFormat, merge = H.merge, noop = H.noop, stableSort = H.stableSort, setOptions = H.setOptions;
         setOptions({
             legend: {
                 /**
@@ -4296,10 +4331,10 @@
                  * can be defined by user or calculated from series. In the case of
                  * automatically calculated ranges, a 1px margin of error is
                  * permitted.
-                 * Requires `highcharts-more.js`.
                  *
                  * @since        7.0.0
                  * @product      highcharts highstock highmaps
+                 * @requires     highcharts-more
                  * @optionparent legend.bubbleLegend
                  */
                 bubbleLegend: {
@@ -4486,6 +4521,7 @@
                     ranges: {
                         /**
                          * Range size value, similar to bubble Z data.
+                         * @type {number}
                          */
                         value: undefined,
                         /**
@@ -5158,19 +5194,20 @@
         /**
          * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
          */
-        var isNumber = U.isNumber, pInt = U.pInt;
-        var arrayMax = H.arrayMax, arrayMin = H.arrayMin, Axis = H.Axis, color = H.color, noop = H.noop, pick = H.pick, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, extend = U.extend, isNumber = U.isNumber, pick = U.pick, pInt = U.pInt;
+        var Axis = H.Axis, color = H.color, noop = H.noop, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * A bubble series is a three dimensional series type where each point renders
          * an X, Y and Z value. Each points is drawn as a bubble where the position
          * along the X and Y axes mark the X and Y values, and the size of the bubble
-         * relates to the Z value. Requires `highcharts-more.js`.
+         * relates to the Z value.
          *
          * @sample {highcharts} highcharts/demo/bubble/
          *         Bubble chart
          *
          * @extends      plotOptions.scatter
          * @product      highcharts highstock
+         * @requires     highcharts-more
          * @optionparent plotOptions.bubble
          */
         seriesType('bubble', 'scatter', {
@@ -5518,7 +5555,7 @@
                     radius = radii ? radii[i] : 0; // #1737
                     if (isNumber(radius) && radius >= this.minPxSize / 2) {
                         // Shape arguments
-                        point.marker = H.extend(point.marker, {
+                        point.marker = extend(point.marker, {
                             radius: radius,
                             width: 2 * radius,
                             height: 2 * radius
@@ -5630,6 +5667,7 @@
          * @extends   series,plotOptions.bubble
          * @excluding dataParser, dataURL, stack
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption series.bubble
          */
         /**
@@ -5683,9 +5721,14 @@
          *
          * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
          * @extends   series.line.data
-         * @excluding marker
          * @product   highcharts
          * @apioption series.bubble.data
+         */
+        /**
+         * @extends     series.line.data.marker
+         * @excluding   enabledThreshold, height, radius, width
+         * @product     highcharts
+         * @apioption   series.bubble.data.marker
          */
         /**
          * The size value for each bubble. The bubbles' diameters are computed
@@ -6073,7 +6116,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/networkgraph/QuadTree.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/networkgraph/QuadTree.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  Networkgraph series
@@ -6085,6 +6128,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var extend = U.extend;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * The QuadTree node class. Used in Networkgraph chart as a base for Barnes-Hut
@@ -6145,7 +6189,7 @@
              */
             this.isEmpty = true;
         };
-        H.extend(QuadTreeNode.prototype, 
+        extend(QuadTreeNode.prototype, 
         /** @lends Highcharts.QuadTreeNode.prototype */
         {
             /**
@@ -6347,7 +6391,7 @@
             this.root.isRoot = true;
             this.root.divideBox();
         };
-        H.extend(QuadTree.prototype, 
+        extend(QuadTree.prototype, 
         /** @lends Highcharts.QuadTree.prototype */
         {
             /**
@@ -6436,15 +6480,17 @@
          *
          *  License: www.highcharts.com/license
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
-        var defined = U.defined;
-        var pick = H.pick, addEvent = H.addEvent, Chart = H.Chart;
+        var defined = U.defined, extend = U.extend, pick = U.pick, setAnimation = U.setAnimation;
+        var addEvent = H.addEvent, Chart = H.Chart;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         H.layouts = {
             'reingold-fruchterman': function () {
             }
         };
-        H.extend(
+        extend(
         /**
          * Reingold-Fruchterman algorithm from
          * "Graph Drawing by Force-directed Placement" paper.
@@ -6905,7 +6951,7 @@
                 }
             }
             if (this.graphLayoutsLookup) {
-                H.setAnimation(false, this);
+                setAnimation(false, this);
                 // Start simulation
                 this.graphLayoutsLookup.forEach(function (layout) {
                     layout.start();
@@ -7187,8 +7233,8 @@
         * @type {boolean|undefined}
         * @since 7.1.0
         */
-        var defined = U.defined, isArray = U.isArray, isNumber = U.isNumber;
-        var seriesType = H.seriesType, Series = H.Series, Point = H.Point, pick = H.pick, addEvent = H.addEvent, fireEvent = H.fireEvent, Chart = H.Chart, color = H.Color, Reingold = H.layouts['reingold-fruchterman'], NetworkPoint = H.seriesTypes.bubble.prototype.pointClass, dragNodesMixin = H.dragNodesMixin;
+        var defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick;
+        var seriesType = H.seriesType, Series = H.Series, Point = H.Point, addEvent = H.addEvent, fireEvent = H.fireEvent, Chart = H.Chart, color = H.Color, Reingold = H.layouts['reingold-fruchterman'], NetworkPoint = H.seriesTypes.bubble.prototype.pointClass, dragNodesMixin = H.dragNodesMixin;
         H.networkgraphIntegrations.packedbubble = {
             repulsiveForceFunction: function (d, k, node, repNode) {
                 return Math.min(d, (node.marker.radius + repNode.marker.radius) / 2);
@@ -7337,7 +7383,6 @@
          * renders a value in X, Y position. Each point is drawn as a bubble
          * where the bubbles don't overlap with each other and the radius
          * of the bubble relates to the value.
-         * Requires `highcharts-more.js`.
          *
          * @sample highcharts/demo/packed-bubble/
          *         Packed bubble chart
@@ -7350,6 +7395,7 @@
          *               zMax, zMin
          * @product      highcharts
          * @since        7.0.0
+         * @requires     highcharts-more
          * @optionparent plotOptions.packedbubble
          */
         {
@@ -7923,7 +7969,7 @@
                             point.plotY = (positions[i][1] - chart.plotTop +
                                 chart.diffY);
                         }
-                        point.marker = H.extend(point.marker, {
+                        point.marker = extend(point.marker, {
                             radius: radius,
                             width: 2 * radius,
                             height: 2 * radius
@@ -8288,6 +8334,7 @@
          * @extends   series,plotOptions.packedbubble
          * @excluding dataParser,dataURL,stack
          * @product   highcharts highstock
+         * @requires  highcharts-more
          * @apioption series.packedbubble
          */
         /**
@@ -8348,10 +8395,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var splat = U.splat;
+        var pick = U.pick, splat = U.splat;
         // Extensions for polar charts. Additionally, much of the geometry required for
         // polar charts is gathered in RadialAxes.js.
-        var pick = H.pick, Pointer = H.Pointer, Series = H.Series, seriesTypes = H.seriesTypes, wrap = H.wrap, seriesProto = Series.prototype, pointerProto = Pointer.prototype, colProto;
+        var Pointer = H.Pointer, Series = H.Series, seriesTypes = H.seriesTypes, wrap = H.wrap, seriesProto = Series.prototype, pointerProto = Pointer.prototype, colProto;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Search a k-d tree by the point angle, used for shared tooltips in polar
@@ -8509,7 +8556,7 @@
          */
         H.addEvent(Series, 'afterTranslate', function () {
             var chart = this.chart, points, i;
-            if (chart.polar) {
+            if (chart.polar && this.xAxis) {
                 // Prepare k-d-tree handling. It searches by angle (clientX) in
                 // case of shared tooltip, and by two dimensional distance in case
                 // of non-shared.

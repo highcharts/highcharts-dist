@@ -1,5 +1,5 @@
 /*
- Highstock JS v7.2.0 (2019-09-03)
+ Highstock JS v7.2.1 (2019-10-31)
 
  Indicator series type for Highstock
 
@@ -13,5 +13,5 @@ d(a.points,function(e){d(b,function(b,d){f=e[b];null!==f&&(e[c[d]]=a.yAxis.toPix
 a.graph=a["graph"+b],r.prototype.drawGraph.call(a),a["graph"+b]=a.graph):u('Error: "'+b+" doesn't have equivalent in pointArrayMap. To many elements in linesApiNames relative to pointArrayMap.\"")});a.points=c;a.options=t;a.graph=y;r.prototype.drawGraph.call(a)}}});b(a,"indicators/bollinger-bands.src.js",[a["parts/Globals.js"],a["parts/Utilities.js"],a["mixins/multipe-lines.js"]],function(a,b,h){var d=b.isArray,q=a.merge,u=a.seriesTypes.sma;a.seriesType("bb","sma",{params:{period:20,standardDeviation:2,
 index:3},bottomLine:{styles:{lineWidth:1,lineColor:void 0}},topLine:{styles:{lineWidth:1,lineColor:void 0}},tooltip:{pointFormat:'<span style="color:{point.color}">\u25cf</span><b> {series.name}</b><br/>Top: {point.top}<br/>Middle: {point.middle}<br/>Bottom: {point.bottom}<br/>'},marker:{enabled:!1},dataGrouping:{approximation:"averages"}},a.merge(h,{pointArrayMap:["top","middle","bottom"],pointValKey:"middle",nameComponents:["period","standardDeviation"],linesApiNames:["topLine","bottomLine"],init:function(){u.prototype.init.apply(this,
 arguments);this.options=q({topLine:{styles:{lineColor:this.color}},bottomLine:{styles:{lineColor:this.color}}},this.options)},getValues:function(a,b){var e=b.period,c=b.standardDeviation,f=a.xData,t=(a=a.yData)?a.length:0,h=[],v=[],m=[],g;if(f.length<e)return!1;var n=d(a[0]);for(g=e;g<=t;g++){var w=f.slice(g-e,g);var p=a.slice(g-e,g);var k=u.prototype.getValues.call(this,{xData:w,yData:p},b);w=k.xData[0];k=k.yData[0];for(var q=0,r=p.length,x=0;x<r;x++){var l=(n?p[x][b.index]:p[x])-k;q+=l*l}l=Math.sqrt(q/
-(r-1));p=k+c*l;l=k-c*l;h.push([w,p,k,l]);v.push(w);m.push([p,k,l])}return{values:h,xData:v,yData:m}}}))});b(a,"masters/indicators/bollinger-bands.src.js",[],function(){})});
+(r-1));p=k+c*l;l=k-c*l;h.push([w,p,k,l]);v.push(w);m.push([p,k,l])}return{values:h,xData:v,yData:m}}}));""});b(a,"masters/indicators/bollinger-bands.src.js",[],function(){})});
 //# sourceMappingURL=bollinger-bands.js.map

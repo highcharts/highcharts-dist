@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Sankey diagram module
  *
@@ -34,8 +34,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
-        var pick = H.pick, Point = H.Point;
+        var defined = U.defined, extend = U.extend, pick = U.pick;
+        var Point = H.Point;
         H.NodesMixin = {
             /* eslint-disable valid-jsdoc */
             /**
@@ -55,7 +55,7 @@
                 var node = findById(this.nodes, id), PointClass = this.pointClass, options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
-                    node = (new PointClass()).init(this, H.extend({
+                    node = (new PointClass()).init(this, extend({
                         className: 'highcharts-node',
                         isNode: true,
                         id: id,
@@ -213,12 +213,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject;
-        var extend = H.extend, isBoolean = function (x) {
+        var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, pick = U.pick;
+        var isBoolean = function (x) {
             return typeof x === 'boolean';
         }, isFn = function (x) {
             return typeof x === 'function';
-        }, merge = H.merge, pick = H.pick;
+        }, merge = H.merge;
         /* eslint-disable valid-jsdoc */
         /**
          * @todo Combine buildTree and buildNode with setTreeValues
@@ -402,6 +402,8 @@
          *
          *  License: www.highcharts.com/license
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
         /**
          * A node in a sankey diagram.
@@ -519,10 +521,9 @@
         * @default function () { return this.point.name; }
         * @since 6.0.2
         */
-        var defined = U.defined, isObject = U.isObject;
-        // Note: replace this with destructuring assignment in the future
+        var defined = U.defined, isObject = U.isObject, pick = U.pick;
         var getLevelOptions = mixinTreeSeries.getLevelOptions;
-        var find = H.find, merge = H.merge, seriesType = H.seriesType, pick = H.pick, Point = H.Point;
+        var find = H.find, merge = H.merge, seriesType = H.seriesType, Point = H.Point;
         // eslint-disable-next-line valid-jsdoc
         /**
          * @private
@@ -567,6 +568,7 @@
          *               pointPlacement, pointRange, pointStart, pointWidth,
          *               shadow, softThreshold, stacking, threshold, zoneAxis,
          *               zones, minPointLength
+         * @requires     modules/sankey
          * @optionparent plotOptions.sankey
          */
         {
@@ -1199,6 +1201,7 @@
          *            pointStart, pointWidth, shadow, softThreshold, stacking,
          *            threshold, zoneAxis, zones
          * @product   highcharts
+         * @requires  modules/sankey
          * @apioption series.sankey
          */
         /**

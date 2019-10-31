@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -36,8 +36,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var addEvent = H.addEvent, pick = H.pick, extend = H.extend, find = H.find, fireEvent = H.fireEvent, Axis = H.Axis, Series = H.Series;
+        var extend = U.extend, isArray = U.isArray, pick = U.pick;
+        var addEvent = H.addEvent, find = H.find, fireEvent = H.fireEvent, Axis = H.Axis, Series = H.Series;
         /**
          * Returns the first break found where the x is larger then break.from and
          * smaller then break.to.
@@ -392,6 +392,7 @@
              * @type      {number}
              * @default   0
              * @product   highstock
+             * @requires  modules/broken-axis
              * @apioption plotOptions.series.gapSize
              */
             /**
@@ -413,6 +414,7 @@
              * @since      5.0.13
              * @product    highstock
              * @validvalue ["relative", "value"]
+             * @requires   modules/broken-axis
              * @apioption  plotOptions.series.gapUnit
              */
             if (gapSize && i > 0) { // #5008

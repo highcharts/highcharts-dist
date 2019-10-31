@@ -12,11 +12,12 @@
 /* eslint indent: 0 */
 'use strict';
 import Highcharts from '../parts/Globals.js';
-import '../parts/Utilities.js';
+import U from '../parts/Utilities.js';
+var pick = U.pick;
 import '../parts/Options.js';
 import '../parts/Series.js';
 // create shortcuts
-var seriesType = Highcharts.seriesType, seriesTypes = Highcharts.seriesTypes, fireEvent = Highcharts.fireEvent, noop = Highcharts.noop, pick = Highcharts.pick;
+var seriesType = Highcharts.seriesType, seriesTypes = Highcharts.seriesTypes, fireEvent = Highcharts.fireEvent, noop = Highcharts.noop;
 /**
  * @private
  * @class
@@ -36,6 +37,7 @@ seriesType('funnel', 'pie',
  * @extends      plotOptions.pie
  * @excluding    innerSize,size
  * @product      highcharts
+ * @requires     modules/funnel
  * @optionparent plotOptions.funnel
  */
 {
@@ -378,6 +380,7 @@ seriesType('funnel', 'pie',
  * @extends   series,plotOptions.funnel
  * @excluding dataParser, dataURL, stack, xAxis, yAxis
  * @product   highcharts
+ * @requires  modules/funnel
  * @apioption series.funnel
  */
 /**
@@ -437,13 +440,14 @@ seriesType('funnel', 'pie',
 seriesType('pyramid', 'funnel', 
 /**
  * A pyramid series is a special type of funnel, without neck and reversed
- * by default. Requires the funnel module.
+ * by default.
  *
  * @sample highcharts/demo/pyramid/
  *         Pyramid chart
  *
  * @extends      plotOptions.funnel
  * @product      highcharts
+ * @requires     modules/funnel
  * @optionparent plotOptions.pyramid
  */
 {
@@ -476,6 +480,7 @@ seriesType('pyramid', 'funnel',
  * @extends   series,plotOptions.pyramid
  * @excluding dataParser, dataURL, stack, xAxis, yAxis
  * @product   highcharts
+ * @requires  modules/funnel
  * @apioption series.pyramid
  */
 /**

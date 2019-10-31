@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Force directed graph module
  *
@@ -34,8 +34,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
-        var pick = H.pick, Point = H.Point;
+        var defined = U.defined, extend = U.extend, pick = U.pick;
+        var Point = H.Point;
         H.NodesMixin = {
             /* eslint-disable valid-jsdoc */
             /**
@@ -55,7 +55,7 @@
                 var node = findById(this.nodes, id), PointClass = this.pointClass, options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
-                    node = (new PointClass()).init(this, H.extend({
+                    node = (new PointClass()).init(this, extend({
                         className: 'highcharts-node',
                         isNode: true,
                         id: id,
@@ -577,7 +577,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/networkgraph/QuadTree.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/networkgraph/QuadTree.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  Networkgraph series
@@ -589,6 +589,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var extend = U.extend;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * The QuadTree node class. Used in Networkgraph chart as a base for Barnes-Hut
@@ -649,7 +650,7 @@
              */
             this.isEmpty = true;
         };
-        H.extend(QuadTreeNode.prototype, 
+        extend(QuadTreeNode.prototype, 
         /** @lends Highcharts.QuadTreeNode.prototype */
         {
             /**
@@ -851,7 +852,7 @@
             this.root.isRoot = true;
             this.root.divideBox();
         };
-        H.extend(QuadTree.prototype, 
+        extend(QuadTree.prototype, 
         /** @lends Highcharts.QuadTree.prototype */
         {
             /**
@@ -940,15 +941,17 @@
          *
          *  License: www.highcharts.com/license
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
-        var defined = U.defined;
-        var pick = H.pick, addEvent = H.addEvent, Chart = H.Chart;
+        var defined = U.defined, extend = U.extend, pick = U.pick, setAnimation = U.setAnimation;
+        var addEvent = H.addEvent, Chart = H.Chart;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         H.layouts = {
             'reingold-fruchterman': function () {
             }
         };
-        H.extend(
+        extend(
         /**
          * Reingold-Fruchterman algorithm from
          * "Graph Drawing by Force-directed Placement" paper.
@@ -1409,7 +1412,7 @@
                 }
             }
             if (this.graphLayoutsLookup) {
-                H.setAnimation(false, this);
+                setAnimation(false, this);
                 // Start simulation
                 this.graphLayoutsLookup.forEach(function (layout) {
                     layout.start();
@@ -1673,8 +1676,8 @@
         * @type {Highcharts.DataLabelsTextPathOptionsObject|undefined}
         * @since 7.1.0
         */
-        var defined = U.defined;
-        var addEvent = H.addEvent, seriesType = H.seriesType, seriesTypes = H.seriesTypes, pick = H.pick, Point = H.Point, Series = H.Series, dragNodesMixin = H.dragNodesMixin;
+        var defined = U.defined, pick = U.pick;
+        var addEvent = H.addEvent, seriesType = H.seriesType, seriesTypes = H.seriesTypes, Point = H.Point, Series = H.Series, dragNodesMixin = H.dragNodesMixin;
         /**
          * @private
          * @class
@@ -1698,6 +1701,7 @@
          *               pointInterval, pointIntervalUnit, pointPlacement,
          *               pointStart, softThreshold, stack, stacking, step,
          *               threshold, xAxis, yAxis, zoneAxis
+         * @requires     modules/networkgraph
          * @optionparent plotOptions.networkgraph
          */
         {
@@ -2519,6 +2523,7 @@
          *            pointPlacement, pointStart, softThreshold, stack, stacking,
          *            step, threshold, xAxis, yAxis, zoneAxis
          * @product   highcharts
+         * @requires  modules/networkgraph
          * @apioption series.networkgraph
          */
         /**

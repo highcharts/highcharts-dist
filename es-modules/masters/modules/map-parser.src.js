@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.2.0 (2019-09-03)
+ * @license Highmaps JS v7.2.1 (2019-10-31)
  * @module highcharts/modules/map-parser
  * @requires highcharts
  * @requires highcharts/modules/data

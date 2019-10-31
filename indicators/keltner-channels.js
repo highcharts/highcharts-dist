@@ -1,5 +1,5 @@
 /*
- Highstock JS v7.2.0 (2019-09-03)
+ Highstock JS v7.2.1 (2019-10-31)
 
  Indicator series type for Highstock
 
@@ -13,5 +13,5 @@ d(e.points,function(f){d(a,function(a,d){b=f[a];null!==b&&(f[c[d]]=e.yAxis.toPix
 a.graph=a["graph"+b],n.prototype.drawGraph.call(a),a["graph"+b]=a.graph):g('Error: "'+b+" doesn't have equivalent in pointArrayMap. To many elements in linesApiNames relative to pointArrayMap.\"")});a.points=c;a.options=f;a.graph=k;n.prototype.drawGraph.call(a)}}});b(a,"indicators/keltner-channels.src.js",[a["parts/Globals.js"],a["mixins/multipe-lines.js"]],function(a,b){var m=a.seriesTypes.sma,d=a.seriesTypes.ema,u=a.seriesTypes.atr,g=a.merge,n=a.correctFloat;a.seriesType("keltnerchannels","sma",
 {params:{period:20,periodATR:10,multiplierATR:2},bottomLine:{styles:{lineWidth:1,lineColor:void 0}},topLine:{styles:{lineWidth:1,lineColor:void 0}},tooltip:{pointFormat:'<span style="color:{point.color}">\u25cf</span><b> {series.name}</b><br/>Upper Channel: {point.top}<br/>EMA({series.options.params.period}): {point.middle}<br/>Lower Channel: {point.bottom}<br/>'},marker:{enabled:!1},dataGrouping:{approximation:"averages"},lineWidth:1},g(b,{pointArrayMap:["top","middle","bottom"],pointValKey:"middle",
 nameBase:"Keltner Channels",nameComponents:["period","periodATR","multiplierATR"],linesApiNames:["topLine","bottomLine"],requiredIndicators:["ema","atr"],init:function(){m.prototype.init.apply(this,arguments);this.options=g({topLine:{styles:{lineColor:this.color}},bottomLine:{styles:{lineColor:this.color}}},this.options)},getValues:function(a,b){var c=b.period,e=b.periodATR,f=b.multiplierATR,k=a.yData;k=k?k.length:0;var g=[];b=d.prototype.getValues(a,{period:c,index:b.index});var p=u.prototype.getValues(a,
-{period:e}),t=[],h=[],q;if(k<c)return!1;for(q=c;q<=k;q++){var l=b.values[q-c];var r=p.values[q-e];var m=l[0];a=n(l[1]+f*r[1]);r=n(l[1]-f*r[1]);l=l[1];g.push([m,a,l,r]);t.push(m);h.push([a,l,r])}return{values:g,xData:t,yData:h}}}))});b(a,"masters/indicators/keltner-channels.src.js",[],function(){})});
+{period:e}),t=[],h=[],q;if(k<c)return!1;for(q=c;q<=k;q++){var l=b.values[q-c];var r=p.values[q-e];var m=l[0];a=n(l[1]+f*r[1]);r=n(l[1]-f*r[1]);l=l[1];g.push([m,a,l,r]);t.push(m);h.push([a,l,r])}return{values:g,xData:t,yData:h}}}));""});b(a,"masters/indicators/keltner-channels.src.js",[],function(){})});
 //# sourceMappingURL=keltner-channels.js.map

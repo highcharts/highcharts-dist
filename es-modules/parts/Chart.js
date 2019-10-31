@@ -77,15 +77,15 @@ import H from './Globals.js';
 *        and call {@link Chart#redraw} after.
 */
 import U from './Utilities.js';
-var attr = U.attr, defined = U.defined, erase = U.erase, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, objectEach = U.objectEach, pInt = U.pInt, splat = U.splat;
+var attr = U.attr, defined = U.defined, discardElement = U.discardElement, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, setAnimation = U.setAnimation, splat = U.splat, syncTimeout = U.syncTimeout;
 import './Axis.js';
 import './Legend.js';
 import './Options.js';
 import './Pointer.js';
 var addEvent = H.addEvent, animate = H.animate, animObject = H.animObject, doc = H.doc, Axis = H.Axis, // @todo add as requirement
-createElement = H.createElement, defaultOptions = H.defaultOptions, discardElement = H.discardElement, charts = H.charts, css = H.css, extend = H.extend, find = H.find, fireEvent = H.fireEvent, Legend = H.Legend, // @todo add as requirement
+createElement = H.createElement, defaultOptions = H.defaultOptions, charts = H.charts, css = H.css, find = H.find, fireEvent = H.fireEvent, Legend = H.Legend, // @todo add as requirement
 marginNames = H.marginNames, merge = H.merge, Pointer = H.Pointer, // @todo add as requirement
-pick = H.pick, removeEvent = H.removeEvent, seriesTypes = H.seriesTypes, syncTimeout = H.syncTimeout, win = H.win;
+removeEvent = H.removeEvent, seriesTypes = H.seriesTypes, win = H.win;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * The Chart class. The recommended constructor is {@link Highcharts#chart}.
@@ -210,9 +210,8 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
             // in chart.options.plotOptions (#6218)
             objectEach(options.plotOptions, function (typeOptions, type) {
                 if (isObject(typeOptions)) { // #8766
-                    typeOptions.tooltip = (userPlotOptions[type] &&
-                        merge(userPlotOptions[type].tooltip) // override by copy
-                    ) || undefined; // or clear
+                    typeOptions.tooltip = (userPlotOptions[type] && // override by copy:
+                        merge(userPlotOptions[type].tooltip)) || undefined; // or clear
                 }
             });
             // User options have higher priority than default options
@@ -348,7 +347,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
             optionsChart.defaultSeriesType), series, Constr = seriesTypes[type];
         // No such series type
         if (!Constr) {
-            H.error(17, true, chart);
+            H.error(17, true, chart, { missingModuleFor: type });
         }
         series = new Constr();
         series.init(this, options);
@@ -428,7 +427,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
         if (chart.setResponsive) {
             chart.setResponsive(false);
         }
-        H.setAnimation(animation, chart);
+        setAnimation(animation, chart);
         if (isHiddenChart) {
             chart.temporaryDisplay();
         }
@@ -777,6 +776,8 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
      * @param {boolean} [redraw=true]
      *
      * @return {void}
+     *
+     * @fires Highcharts.Chart#event:afterLayOutTitles
      */
     layOutTitles: function (redraw) {
         var titleOffset = [0, 0, 0], requiresDirtyBox, renderer = this.renderer, spacingBox = this.spacingBox;
@@ -795,8 +796,8 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
                     width: (titleOptions.width ||
                         spacingBox.width + (titleOptions.widthAdjust || 0)) + 'px'
                 });
-                // Skip the cache for HTML (#3481)
-                height = title.getBBox(titleOptions.useHTML).height;
+                // Skip the cache for HTML (#3481, #11666)
+                height = Math.round(title.getBBox(titleOptions.useHTML).height);
                 title.align(extend({
                     y: verticalAlign === 'bottom' ?
                         titleSize :
@@ -828,6 +829,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
             this.titleOffset.join(',') !== titleOffset.join(','));
         // Used in getMargins
         this.titleOffset = titleOffset;
+        fireEvent(this, 'afterLayOutTitles');
         if (!this.isDirtyBox && requiresDirtyBox) {
             this.isDirtyBox = this.isDirtyLegend = requiresDirtyBox;
             // Redraw if necessary (#2719, #2744)
@@ -1244,7 +1246,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
         // Handle the isResizing counter
         chart.isResizing += 1;
         // set the animation for the current process
-        H.setAnimation(animation, chart);
+        setAnimation(animation, chart);
         chart.oldChartHeight = chart.chartHeight;
         chart.oldChartWidth = chart.chartWidth;
         if (width !== undefined) {
@@ -1285,7 +1287,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
                     chart.isResizing -= 1;
                 });
             }
-        }, animObject(globalAnimation).duration);
+        }, animObject(globalAnimation).duration || 0);
     },
     /**
      * Set the public chart properties. This is done before and after the

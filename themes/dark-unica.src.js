@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -35,19 +35,16 @@
          *
          *  Dark theme for Highcharts JS
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
-
-
         /* global document */
-
         // Load the fonts
-
         Highcharts.createElement('link', {
             href: 'https://fonts.googleapis.com/css?family=Unica+One',
             rel: 'stylesheet',
             type: 'text/css'
         }, null, document.getElementsByTagName('head')[0]);
-
         Highcharts.theme = {
             colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066',
                 '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
@@ -90,7 +87,6 @@
                 title: {
                     style: {
                         color: '#A0A0A3'
-
                     }
                 }
             },
@@ -166,7 +162,6 @@
                     color: '#707073'
                 }
             },
-
             drilldown: {
                 activeAxisLabelStyle: {
                     color: '#F0F0F3'
@@ -175,7 +170,6 @@
                     color: '#F0F0F3'
                 }
             },
-
             navigation: {
                 buttonOptions: {
                     symbolStroke: '#DDDDDD',
@@ -184,7 +178,6 @@
                     }
                 }
             },
-
             // scroll charts
             rangeSelector: {
                 buttonTheme: {
@@ -219,7 +212,6 @@
                     color: 'silver'
                 }
             },
-
             navigator: {
                 handles: {
                     backgroundColor: '#666',
@@ -235,7 +227,6 @@
                     gridLineColor: '#505053'
                 }
             },
-
             scrollbar: {
                 barBackgroundColor: '#808083',
                 barBorderColor: '#808083',
@@ -247,7 +238,6 @@
                 trackBorderColor: '#404043'
             }
         };
-
         // Apply the theme
         Highcharts.setOptions(Highcharts.theme);
 

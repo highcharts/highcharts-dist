@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Data module
  *
@@ -257,9 +257,9 @@
          *         Return `false` to stop completion, or call `this.complete()` to
          *         continue async.
          */
-        var defined = U.defined, isNumber = U.isNumber, objectEach = U.objectEach, splat = U.splat;
+        var defined = U.defined, extend = U.extend, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
         // Utilities
-        var addEvent = Highcharts.addEvent, Chart = Highcharts.Chart, win = Highcharts.win, doc = win.document, pick = Highcharts.pick, merge = Highcharts.merge, fireEvent = Highcharts.fireEvent, SeriesBuilder;
+        var addEvent = Highcharts.addEvent, Chart = Highcharts.Chart, win = Highcharts.win, doc = win.document, merge = Highcharts.merge, fireEvent = Highcharts.fireEvent, SeriesBuilder;
         /**
          * The Data module provides a simplified interface for adding data to
          * a chart from sources like CVS, HTML tables or grid views. See also
@@ -278,6 +278,7 @@
          *         CSV
          *
          * @since     4.0
+         * @requires  modules/data
          * @apioption data
          */
         /**
@@ -642,7 +643,7 @@
             this.init(dataOptions, chartOptions, chart);
         };
         // Set the prototype properties
-        Highcharts.extend(Data.prototype, {
+        extend(Data.prototype, {
             /**
              * Initialize the Data object with the given options
              *
@@ -2013,7 +2014,7 @@
                  * @name Highcharts.Chart#data
                  * @type {Highcharts.Data|undefined}
                  */
-                chart.data = new Data(Highcharts.extend(userOptions.data, {
+                chart.data = new Data(extend(userOptions.data, {
                     afterComplete: function (dataOptions) {
                         var i, series;
                         // Merge series configs

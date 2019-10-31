@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -35,10 +35,9 @@
          *
          *  Skies theme for Highcharts JS
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
-
-
-
         Highcharts.theme = {
             colors: ['#514F78', '#42A07B', '#9B5E4A', '#72727F', '#1F949A',
                 '#82914E', '#86777F', '#42A07B'],
@@ -48,7 +47,7 @@
                 plotShadow: true,
                 plotBackgroundImage: 'https://www.highcharts.com/demo/gfx/skies.jpg',
                 plotBackgroundColor: {
-                    linearGradient: [0, 0, 250, 500],
+                    linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
                     stops: [
                         [0, 'rgba(255, 255, 255, 1)'],
                         [1, 'rgba(255, 255, 255, 0)']
@@ -84,7 +83,7 @@
                     style: {
                         color: '#666',
                         font: '12px Lucida Grande, Lucida Sans Unicode,' +
-                        ' Verdana, Arial, Helvetica, sans-serif'
+                            ' Verdana, Arial, Helvetica, sans-serif'
                     }
                 }
             },
@@ -103,7 +102,7 @@
                     style: {
                         color: '#666',
                         font: '12px Lucida Grande, Lucida Sans Unicode,' +
-                        ' Verdana, Arial, Helvetica, sans-serif'
+                            ' Verdana, Arial, Helvetica, sans-serif'
                     }
                 }
             },
@@ -125,7 +124,6 @@
                 }
             }
         };
-
         // Apply the theme
         Highcharts.setOptions(Highcharts.theme);
 

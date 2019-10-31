@@ -9,9 +9,10 @@
  * */
 'use strict';
 import H from '../parts/Globals.js';
-import '../parts/Utilities.js';
+import U from '../parts/Utilities.js';
+var pick = U.pick;
 import '../parts/Options.js';
-var noop = H.noop, pick = H.pick, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+var noop = H.noop, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
 /**
  * The boxplot series type.
  *
@@ -33,6 +34,7 @@ var noop = H.noop, pick = H.pick, seriesType = H.seriesType, seriesTypes = H.ser
  * @extends      plotOptions.column
  * @excluding    borderColor, borderRadius, borderWidth, groupZPadding, states
  * @product      highcharts
+ * @requires     highcharts-more
  * @optionparent plotOptions.boxplot
  */
 seriesType('boxplot', 'column', {
@@ -422,6 +424,7 @@ seriesType('boxplot', 'column', {
  * @extends   series,plotOptions.boxplot
  * @excluding dataParser, dataURL, marker, stack, stacking, states
  * @product   highcharts
+ * @requires  highcharts-more
  * @apioption series.boxplot
  */
 /**

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.0 (2019-09-03)
+ * @license Highcharts JS v7.2.1 (2019-10-31)
  *
  * Dependency wheel module
  *
@@ -37,6 +37,8 @@
          *
          *  License: www.highcharts.com/license
          *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
          * */
         var base = H.seriesTypes.sankey.prototype;
         /**
@@ -57,6 +59,7 @@
          * @extends      plotOptions.sankey
          * @since        7.1.0
          * @product      highcharts
+         * @requires     modules/dependencywheel
          * @optionparent plotOptions.dependencywheel
          */
         {
@@ -299,6 +302,7 @@
          *
          * @extends   series,plotOptions.dependencywheel
          * @product   highcharts
+         * @requires  modules/dependencywheel
          * @apioption series.dependencywheel
          */
         /**
