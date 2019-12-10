@@ -73,9 +73,9 @@ extend(defaultOptions, {
         /**
          * An array of configuration objects for the buttons.
          *
-         * Defaults to
-         *
-         * <pre>buttons: [{
+         * Defaults to:
+         * ```js
+         * buttons: [{
          *     type: 'month',
          *     count: 1,
          *     text: '1m'
@@ -97,7 +97,8 @@ extend(defaultOptions, {
          * }, {
          *     type: 'all',
          *     text: 'All'
-         * }]</pre>
+         * }]
+         * ```
          *
          * @sample {highstock} stock/rangeselector/datagrouping/
          *         Data grouping by buttons
@@ -118,11 +119,11 @@ extend(defaultOptions, {
          * event, is passed to the function, containing common event
          * information.
          *
-         * <pre>
+         * ```js
          * click: function(e) {
          *   console.log(this);
          * }
-         * </pre>
+         * ```
          *
          * Return false to stop default button's click action.
          *
@@ -288,7 +289,7 @@ extend(defaultOptions, {
          * @type  {number|undefined}
          * @since 2.1.9
          */
-        height: undefined,
+        height: void 0,
         /**
          * The border color of the date input boxes.
          *
@@ -473,7 +474,8 @@ defaultOptions.lang = merge(defaultOptions.lang,
  * on each chart initialization. Instead, use `Highcharts.setOptions` to
  * set it before any chart is initialized.
  *
- * <pre>Highcharts.setOptions({
+ * ```js
+ * Highcharts.setOptions({
  *     lang: {
  *         months: [
  *             'Janvier', 'Février', 'Mars', 'Avril',
@@ -485,7 +487,8 @@ defaultOptions.lang = merge(defaultOptions.lang,
  *             'Jeudi', 'Vendredi', 'Samedi'
  *         ]
  *     }
- * });</pre>
+ * });
+ * ```
  *
  * @optionparent lang
  */
@@ -585,7 +588,7 @@ RangeSelector.prototype = {
                 // event (below). When the series are initialized, but before
                 // the chart is rendered, we have access to the xData array
                 // (#942).
-                if (dataMax === undefined) {
+                if (typeof dataMax === 'undefined') {
                     dataMin = Number.MAX_VALUE;
                     dataMax = Number.MIN_VALUE;
                     chart.series.forEach(function (series) {
@@ -705,7 +708,8 @@ RangeSelector.prototype = {
         // Extend the buttonOptions with actual range
         buttonOptions.forEach(rangeSelector.computeButtonRange);
         // zoomed range based on a pre-selected button index
-        if (selectedOption !== undefined && buttonOptions[selectedOption]) {
+        if (typeof selectedOption !== 'undefined' &&
+            buttonOptions[selectedOption]) {
             this.clickButton(selectedOption, false);
         }
         addEvent(chart, 'load', function () {
@@ -920,7 +924,7 @@ RangeSelector.prototype = {
                     // max, use the actual data extreme (#2438).
                     if (isMin) {
                         if (value > rangeSelector.maxInput.HCTime) {
-                            value = undefined;
+                            value = void 0;
                         }
                         else if (value < dataMin) {
                             value = dataMin;
@@ -928,15 +932,15 @@ RangeSelector.prototype = {
                     }
                     else {
                         if (value < rangeSelector.minInput.HCTime) {
-                            value = undefined;
+                            value = void 0;
                         }
                         else if (value > dataMax) {
                             value = dataMax;
                         }
                     }
                     // Set the extremes
-                    if (value !== undefined) { // @todo typof undefined
-                        chartAxis.setExtremes(isMin ? value : chartAxis.min, isMin ? chartAxis.max : value, undefined, undefined, { trigger: 'rangeSelectorInput' });
+                    if (typeof value !== 'undefined') { // @todo typof undefined
+                        chartAxis.setExtremes(isMin ? value : chartAxis.min, isMin ? chartAxis.max : value, void 0, void 0, { trigger: 'rangeSelectorInput' });
                     }
                 }
             }
@@ -1450,13 +1454,13 @@ Axis.prototype.minFromRange = function () {
     }
     if (min <= dataMin) {
         min = dataMin;
-        if (range === undefined) { // #4501
+        if (typeof range === 'undefined') { // #4501
             range = getTrueRange(min, rangeOptions.count);
         }
         this.newMax = Math.min(min + range, this.dataMax);
     }
     if (!isNumber(max)) {
-        min = undefined;
+        min = void 0;
     }
     return min;
 };

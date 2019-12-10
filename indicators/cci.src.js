@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -51,7 +51,9 @@
          * @private
          */
         function meanDeviation(arr, sma) {
-            var len = arr.length, sum = 0, i;
+            var len = arr.length,
+                sum = 0,
+                i;
             for (i = 0; i < len; i++) {
                 sum += Math.abs(sma - (arr[i]));
             }
@@ -92,12 +94,28 @@
          */
         {
             getValues: function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, TP = [], periodTP = [], range = 1, CCI = [], xData = [], yData = [], CCIPoint, p, len, smaTP, TPtemp, meanDev, i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    TP = [],
+                    periodTP = [],
+                    range = 1,
+                    CCI = [],
+                    xData = [],
+                    yData = [],
+                    CCIPoint,
+                    p,
+                    len,
+                    smaTP,
+                    TPtemp,
+                    meanDev,
+                    i;
                 // CCI requires close value
                 if (xVal.length <= period ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return false;
+                    return;
                 }
                 // accumulate first N-points
                 while (range < period) {

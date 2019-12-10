@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * (c) 2016-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -34,7 +34,7 @@
          *
          * */
         var isFn = function (x) {
-            return typeof x === 'function';
+                return typeof x === 'function';
         };
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
@@ -51,7 +51,12 @@
          * @todo export this function to enable usage
          */
         var draw = function draw(params) {
-            var component = this, graphic = component.graphic, animatableAttribs = params.animatableAttribs, onComplete = params.onComplete, css = params.css, renderer = params.renderer;
+                var component = this,
+            graphic = component.graphic,
+            animatableAttribs = params.animatableAttribs,
+            onComplete = params.onComplete,
+            css = params.css,
+            renderer = params.renderer;
             if (component.shouldDraw()) {
                 if (!graphic) {
                     component.graphic = graphic =
@@ -61,18 +66,18 @@
                 graphic
                     .css(css)
                     .attr(params.attribs)
-                    .animate(animatableAttribs, params.isNew ? false : undefined, onComplete);
+                    .animate(animatableAttribs, params.isNew ? false : void 0, onComplete);
             }
             else if (graphic) {
                 var destroy = function () {
-                    component.graphic = graphic = graphic.destroy();
+                        component.graphic = graphic = graphic.destroy();
                     if (isFn(onComplete)) {
                         onComplete();
                     }
                 };
                 // animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
-                    graphic.animate(animatableAttribs, undefined, function () {
+                    graphic.animate(animatableAttribs, void 0, function () {
                         destroy();
                     });
                 }
@@ -88,7 +93,8 @@
          * @param {Highcharts.Dictionary<any>} params Parameters
          */
         var drawPoint = function drawPoint(params) {
-            var point = this, attribs = params.attribs = params.attribs || {};
+                var point = this,
+            attribs = params.attribs = params.attribs || {};
             // Assigning class in dot notation does go well in IE8
             // eslint-disable-next-line dot-notation
             attribs['class'] = point.getClassName();
@@ -122,12 +128,14 @@
         * @name Highcharts.PolygonObject#axes
         * @type {Array<PolygonPointObject>}
         */
-        var isArray = U.isArray, isNumber = U.isNumber;
-        var deg2rad = H.deg2rad, find = H.find;
+        var isArray = U.isArray,
+            isNumber = U.isNumber;
+        var deg2rad = H.deg2rad,
+            find = H.find;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Alternative solution to correctFloat.
-         * E.g H.correctFloat(123, 2) returns 120, when it should be 123.
+         * E.g Highcharts.correctFloat(123, 2) returns 120, when it should be 123.
          *
          * @private
          * @function correctFloat
@@ -135,8 +143,11 @@
          * @param {number} [precision]
          * @return {number}
          */
-        var correctFloat = function (number, precision) {
-            var p = isNumber(precision) ? precision : 14, magnitude = Math.pow(10, p);
+        var correctFloat = function (number,
+            precision) {
+                var p = isNumber(precision) ? precision : 14,
+            magnitude = Math.pow(10,
+            p);
             return Math.round(number * magnitude) / magnitude;
         };
         /**
@@ -151,13 +162,15 @@
          * @return {Highcharts.PolygonObject}
          *         Returns the two normals in an array.
          */
-        var getNormals = function getNormal(p1, p2) {
-            var dx = p2[0] - p1[0], // x2 - x1
-            dy = p2[1] - p1[1]; // y2 - y1
-            return [
-                [-dy, dx],
-                [dy, -dx]
-            ];
+        var getNormals = function getNormal(p1,
+            p2) {
+                var dx = p2[0] - p1[0], // x2 - x1
+                dy = p2[1] - p1[1]; // y2 - y1
+                return [
+                    [-dy,
+            dx],
+                    [dy, -dx]
+                ];
         };
         /**
          * Calculates the dot product of two coordinates. The result is a scalar value.
@@ -173,8 +186,12 @@
          * @return {number}
          *         Returns the dot product of a and b.
          */
-        var dotProduct = function dotProduct(a, b) {
-            var ax = a[0], ay = a[1], bx = b[0], by = b[1];
+        var dotProduct = function dotProduct(a,
+            b) {
+                var ax = a[0],
+            ay = a[1],
+            bx = b[0],
+            by = b[1];
             return ax * bx + ay * by;
         };
         /**
@@ -188,9 +205,11 @@
          *        The coordinate of pr
          * @return {Highcharts.RangeObject}
          */
-        var project = function project(polygon, target) {
-            var products = polygon.map(function (point) {
-                return dotProduct(point, target);
+        var project = function project(polygon,
+            target) {
+                var products = polygon.map(function (point) {
+                    return dotProduct(point,
+            target);
             });
             return {
                 min: Math.min.apply(this, products),
@@ -209,8 +228,13 @@
          * @return {Highcharts.PolygonPointObject}
          *         The x and y coordinate for the rotated point.
          */
-        var rotate2DToOrigin = function (point, angle) {
-            var x = point[0], y = point[1], rad = deg2rad * -angle, cosAngle = Math.cos(rad), sinAngle = Math.sin(rad);
+        var rotate2DToOrigin = function (point,
+            angle) {
+                var x = point[0],
+            y = point[1],
+            rad = deg2rad * -angle,
+            cosAngle = Math.cos(rad),
+            sinAngle = Math.sin(rad);
             return [
                 correctFloat(x * cosAngle - y * sinAngle),
                 correctFloat(x * sinAngle + y * cosAngle)
@@ -230,8 +254,14 @@
          * @return {Highcharts.PolygonPointObject}
          *         The x and y coordinate for the rotated point.
          */
-        var rotate2DToPoint = function (point, origin, angle) {
-            var x = point[0] - origin[0], y = point[1] - origin[1], rotated = rotate2DToOrigin([x, y], angle);
+        var rotate2DToPoint = function (point,
+            origin,
+            angle) {
+                var x = point[0] - origin[0],
+            y = point[1] - origin[1],
+            rotated = rotate2DToOrigin([x,
+            y],
+            angle);
             return [
                 rotated[0] + origin[0],
                 rotated[1] + origin[1]
@@ -240,23 +270,29 @@
         /**
          * @private
          */
-        var isAxesEqual = function (axis1, axis2) {
-            return (axis1[0] === axis2[0] &&
-                axis1[1] === axis2[1]);
+        var isAxesEqual = function (axis1,
+            axis2) {
+                return (axis1[0] === axis2[0] &&
+                    axis1[1] === axis2[1]);
         };
         /**
          * @private
          */
         var getAxesFromPolygon = function (polygon) {
-            var points, axes = polygon.axes;
+                var points,
+            axes = polygon.axes;
             if (!isArray(axes)) {
                 axes = [];
                 points = points = polygon.concat([polygon[0]]);
                 points.reduce(function findAxis(p1, p2) {
-                    var normals = getNormals(p1, p2), axis = normals[0]; // Use the left normal as axis.
-                    // Check that the axis is unique.
-                    if (!find(axes, function (existing) {
-                        return isAxesEqual(existing, axis);
+                    var normals = getNormals(p1,
+                        p2),
+                        axis = normals[0]; // Use the left normal as axis.
+                        // Check that the axis is unique.
+                        if (!find(axes,
+                        function (existing) {
+                            return isAxesEqual(existing,
+                        axis);
                     })) {
                         axes.push(axis);
                     }
@@ -270,21 +306,37 @@
         /**
          * @private
          */
-        var getAxes = function (polygon1, polygon2) {
-            // Get the axis from both polygons.
-            var axes1 = getAxesFromPolygon(polygon1), axes2 = getAxesFromPolygon(polygon2);
+        var getAxes = function (polygon1,
+            polygon2) {
+                // Get the axis from both polygons.
+                var axes1 = getAxesFromPolygon(polygon1),
+            axes2 = getAxesFromPolygon(polygon2);
             return axes1.concat(axes2);
         };
         /**
          * @private
          */
-        var getPolygon = function (x, y, width, height, rotation) {
-            var origin = [x, y], left = x - (width / 2), right = x + (width / 2), top = y - (height / 2), bottom = y + (height / 2), polygon = [
-                [left, top],
-                [right, top],
-                [right, bottom],
-                [left, bottom]
-            ];
+        var getPolygon = function (x,
+            y,
+            width,
+            height,
+            rotation) {
+                var origin = [x,
+            y],
+            left = x - (width / 2),
+            right = x + (width / 2),
+            top = y - (height / 2),
+            bottom = y + (height / 2),
+            polygon = [
+                    [left,
+            top],
+                    [right,
+            top],
+                    [right,
+            bottom],
+                    [left,
+            bottom]
+                ];
             return polygon.map(function (point) {
                 return rotate2DToPoint(point, origin, -rotation);
             });
@@ -293,8 +345,10 @@
          * @private
          */
         var getBoundingBoxFromPolygon = function (points) {
-            return points.reduce(function (obj, point) {
-                var x = point[0], y = point[1];
+                return points.reduce(function (obj,
+            point) {
+                    var x = point[0],
+            y = point[1];
                 obj.left = Math.min(x, obj.left);
                 obj.right = Math.max(x, obj.right);
                 obj.bottom = Math.max(y, obj.bottom);
@@ -310,9 +364,15 @@
         /**
          * @private
          */
-        var isPolygonsOverlappingOnAxis = function (axis, polygon1, polygon2) {
-            var projection1 = project(polygon1, axis), projection2 = project(polygon2, axis), isOverlapping = !(projection2.min > projection1.max ||
-                projection2.max < projection1.min);
+        var isPolygonsOverlappingOnAxis = function (axis,
+            polygon1,
+            polygon2) {
+                var projection1 = project(polygon1,
+            axis),
+            projection2 = project(polygon2,
+            axis),
+            isOverlapping = !(projection2.min > projection1.max ||
+                    projection2.max < projection1.min);
             return !isOverlapping;
         };
         /**
@@ -330,31 +390,39 @@
          * @return {boolean}
          *         Returns true if they are colliding, otherwise false.
          */
-        var isPolygonsColliding = function isPolygonsColliding(polygon1, polygon2) {
-            var axes = getAxes(polygon1, polygon2), overlappingOnAllAxes = !find(axes, function (axis) {
-                return isPolygonsOverlappingOnAxis(axis, polygon1, polygon2);
+        var isPolygonsColliding = function isPolygonsColliding(polygon1,
+            polygon2) {
+                var axes = getAxes(polygon1,
+            polygon2),
+            overlappingOnAllAxes = !find(axes,
+            function (axis) {
+                    return isPolygonsOverlappingOnAxis(axis,
+            polygon1,
+            polygon2);
             });
             return overlappingOnAllAxes;
         };
         /**
          * @private
          */
-        var movePolygon = function (deltaX, deltaY, polygon) {
-            return polygon.map(function (point) {
-                return [
-                    point[0] + deltaX,
-                    point[1] + deltaY
-                ];
+        var movePolygon = function (deltaX,
+            deltaY,
+            polygon) {
+                return polygon.map(function (point) {
+                    return [
+                        point[0] + deltaX,
+                        point[1] + deltaY
+                    ];
             });
         };
         var collision = {
-            getBoundingBoxFromPolygon: getBoundingBoxFromPolygon,
-            getPolygon: getPolygon,
-            isPolygonsColliding: isPolygonsColliding,
-            movePolygon: movePolygon,
-            rotate2DToOrigin: rotate2DToOrigin,
-            rotate2DToPoint: rotate2DToPoint
-        };
+                getBoundingBoxFromPolygon: getBoundingBoxFromPolygon,
+                getPolygon: getPolygon,
+                isPolygonsColliding: isPolygonsColliding,
+                movePolygon: movePolygon,
+                rotate2DToOrigin: rotate2DToOrigin,
+                rotate2DToPoint: rotate2DToPoint
+            };
 
         return collision;
     });
@@ -370,8 +438,18 @@
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
-        var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject;
-        var merge = H.merge, noop = H.noop, find = H.find, getBoundingBoxFromPolygon = polygon.getBoundingBoxFromPolygon, getPolygon = polygon.getPolygon, isPolygonsColliding = polygon.isPolygonsColliding, movePolygon = polygon.movePolygon, Series = H.Series;
+        var extend = U.extend,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            isObject = U.isObject;
+        var merge = H.merge,
+            noop = H.noop,
+            find = H.find,
+            getBoundingBoxFromPolygon = polygon.getBoundingBoxFromPolygon,
+            getPolygon = polygon.getPolygon,
+            isPolygonsColliding = polygon.isPolygonsColliding,
+            movePolygon = polygon.movePolygon,
+            Series = H.Series;
         /**
          * Detects if there is a collision between two rectangles.
          *
@@ -409,8 +487,13 @@
          * Returns true if there is collision.
          */
         function intersectsAnyWord(point, points) {
-            var intersects = false, rect = point.rect, polygon = point.polygon, lastCollidedWith = point.lastCollidedWith, isIntersecting = function (p) {
-                var result = isRectanglesIntersecting(rect, p.rect);
+            var intersects = false,
+                rect = point.rect,
+                polygon = point.polygon,
+                lastCollidedWith = point.lastCollidedWith,
+                isIntersecting = function (p) {
+                    var result = isRectanglesIntersecting(rect,
+                p.rect);
                 if (result &&
                     (point.rotation % 90 || p.rotation % 90)) {
                     result = isPolygonsColliding(polygon, p.polygon);
@@ -456,13 +539,16 @@
          * visualization.
          */
         function archimedeanSpiral(attempt, params) {
-            var field = params.field, result = false, maxDelta = (field.width * field.width) + (field.height * field.height), t = attempt * 0.8; // 0.2 * 4 = 0.8. Enlarging the spiral.
-            // Emergency brake. TODO make spiralling logic more foolproof.
-            if (attempt <= 10000) {
-                result = {
-                    x: t * Math.cos(t),
-                    y: t * Math.sin(t)
-                };
+            var field = params.field,
+                result = false,
+                maxDelta = (field.width * field.width) + (field.height * field.height),
+                t = attempt * 0.8; // 0.2 * 4 = 0.8. Enlarging the spiral.
+                // Emergency brake. TODO make spiralling logic more foolproof.
+                if (attempt <= 10000) {
+                    result = {
+                        x: t * Math.cos(t),
+                        y: t * Math.sin(t)
+                    };
                 if (!(Math.min(Math.abs(result.x), Math.abs(result.y)) < maxDelta)) {
                     result = false;
                 }
@@ -486,8 +572,12 @@
          * visualization.
          */
         function squareSpiral(attempt, params) {
-            var a = attempt * 4, k = Math.ceil((Math.sqrt(a) - 1) / 2), t = 2 * k + 1, m = Math.pow(t, 2), isBoolean = function (x) {
-                return typeof x === 'boolean';
+            var a = attempt * 4,
+                k = Math.ceil((Math.sqrt(a) - 1) / 2),
+                t = 2 * k + 1,
+                m = Math.pow(t, 2),
+                isBoolean = function (x) {
+                    return typeof x === 'boolean';
             }, result = false;
             t -= 1;
             if (attempt <= 10000) {
@@ -541,7 +631,9 @@
          * visualization.
          */
         function rectangularSpiral(attempt, params) {
-            var result = squareSpiral(attempt, params), field = params.field;
+            var result = squareSpiral(attempt,
+                params),
+                field = params.field;
             if (result) {
                 result.x *= field.ratioX;
                 result.y *= field.ratioY;
@@ -584,7 +676,12 @@
          * area.
          */
         function getScale(targetWidth, targetHeight, field) {
-            var height = Math.max(Math.abs(field.top), Math.abs(field.bottom)) * 2, width = Math.max(Math.abs(field.left), Math.abs(field.right)) * 2, scaleX = width > 0 ? 1 / width * targetWidth : 1, scaleY = height > 0 ? 1 / height * targetHeight : 1;
+            var height = Math.max(Math.abs(field.top),
+                Math.abs(field.bottom)) * 2,
+                width = Math.max(Math.abs(field.left),
+                Math.abs(field.right)) * 2,
+                scaleX = width > 0 ? 1 / width * targetWidth : 1,
+                scaleY = height > 0 ? 1 / height * targetHeight : 1;
             return Math.min(scaleX, scaleY);
         }
         /**
@@ -611,8 +708,11 @@
          * The width and height of the playing field.
          */
         function getPlayingField(targetWidth, targetHeight, data) {
-            var info = data.reduce(function (obj, point) {
-                var dimensions = point.dimensions, x = Math.max(dimensions.width, dimensions.height);
+            var info = data.reduce(function (obj,
+                point) {
+                    var dimensions = point.dimensions,
+                x = Math.max(dimensions.width,
+                dimensions.height);
                 // Find largest height.
                 obj.maxHeight = Math.max(obj.maxHeight, dimensions.height);
                 // Find largest width.
@@ -665,7 +765,9 @@
          */
         function getRotation(orientations, index, from, to) {
             var result = false, // Default to false
-            range, intervals, orientation;
+                range,
+                intervals,
+                orientation;
             // Check if we have valid input parameters.
             if (isNumber(orientations) &&
                 isNumber(index) &&
@@ -697,7 +799,9 @@
          * Function with access to spiral positions.
          */
         function getSpiral(fn, params) {
-            var length = 10000, i, arr = [];
+            var length = 10000,
+                i,
+                arr = [];
             for (i = 1; i < length; i++) {
                 arr.push(fn(i, params)); // @todo unnecessary amount of precaclulation
             }
@@ -722,11 +826,11 @@
          */
         function outsidePlayingField(rect, field) {
             var playingField = {
-                left: -(field.width / 2),
-                right: field.width / 2,
-                top: -(field.height / 2),
-                bottom: field.height / 2
-            };
+                    left: -(field.width / 2),
+                    right: field.width / 2,
+                    top: -(field.height / 2),
+                    bottom: field.height / 2
+                };
             return !(playingField.left < rect.left &&
                 playingField.right > rect.right &&
                 playingField.top < rect.top &&
@@ -751,12 +855,19 @@
          * the word should not be placed at all.
          */
         function intersectionTesting(point, options) {
-            var placed = options.placed, field = options.field, rectangle = options.rectangle, polygon = options.polygon, spiral = options.spiral, attempt = 1, delta = {
-                x: 0,
-                y: 0
-            }, 
-            // Make a copy to update values during intersection testing.
-            rect = point.rect = extend({}, rectangle);
+            var placed = options.placed,
+                field = options.field,
+                rectangle = options.rectangle,
+                polygon = options.polygon,
+                spiral = options.spiral,
+                attempt = 1,
+                delta = {
+                    x: 0,
+                    y: 0
+                }, 
+                // Make a copy to update values during intersection testing.
+                rect = point.rect = extend({},
+                rectangle);
             point.polygon = polygon;
             point.rotation = options.rotation;
             /* while w intersects any previously placed words:
@@ -796,7 +907,14 @@
          * Returns the extended playing field with updated height and width.
          */
         function extendPlayingField(field, rectangle) {
-            var height, width, ratioX, ratioY, x, extendWidth, extendHeight, result;
+            var height,
+                width,
+                ratioX,
+                ratioY,
+                x,
+                extendWidth,
+                extendHeight,
+                result;
             if (isObject(field) && isObject(rectangle)) {
                 height = (rectangle.bottom - rectangle.top);
                 width = (rectangle.right - rectangle.left);
@@ -877,119 +995,122 @@
          * @optionparent plotOptions.wordcloud
          */
         var wordCloudOptions = {
-            /**
-             * If there is no space for a word on the playing field, then this option
-             * will allow the playing field to be extended to fit the word. If false
-             * then the word will be dropped from the visualization.
-             *
-             * NB! This option is currently not decided to be published in the API, and
-             * is therefore marked as private.
-             *
-             * @private
-             */
-            allowExtendPlayingField: true,
-            animation: {
-                duration: 500
-            },
-            borderWidth: 0,
-            clip: false,
-            colorByPoint: true,
-            /**
-             * A threshold determining the minimum font size that can be applied to a
-             * word.
-             */
-            minFontSize: 1,
-            /**
-             * The word with the largest weight will have a font size equal to this
-             * value. The font size of a word is the ratio between its weight and the
-             * largest occuring weight, multiplied with the value of maxFontSize.
-             */
-            maxFontSize: 25,
-            /**
-             * This option decides which algorithm is used for placement, and rotation
-             * of a word. The choice of algorith is therefore a crucial part of the
-             * resulting layout of the wordcloud. It is possible for users to add their
-             * own custom placement strategies for use in word cloud. Read more about it
-             * in our
-             * [documentation](https://www.highcharts.com/docs/chart-and-series-types/word-cloud-series#custom-placement-strategies)
-             *
-             * @validvalue: ["center", "random"]
-             */
-            placementStrategy: 'center',
-            /**
-             * Rotation options for the words in the wordcloud.
-             *
-             * @sample highcharts/plotoptions/wordcloud-rotation
-             *         Word cloud with rotation
-             */
-            rotation: {
                 /**
-                 * The smallest degree of rotation for a word.
+                 * If there is no space for a word on the playing field, then this option
+                 * will allow the playing field to be extended to fit the word. If false
+                 * then the word will be dropped from the visualization.
+                 *
+                 * NB! This option is currently not decided to be published in the API, and
+                 * is therefore marked as private.
+                 *
+                 * @private
                  */
-                from: 0,
+                allowExtendPlayingField: true,
+                animation: {
+                    /** @internal */
+                    duration: 500
+                },
+                borderWidth: 0,
+                clip: false,
+                colorByPoint: true,
                 /**
-                 * The number of possible orientations for a word, within the range of
-                 * `rotation.from` and `rotation.to`. Must be a number larger than 0.
+                 * A threshold determining the minimum font size that can be applied to a
+                 * word.
                  */
-                orientations: 2,
+                minFontSize: 1,
                 /**
-                 * The largest degree of rotation for a word.
+                 * The word with the largest weight will have a font size equal to this
+                 * value. The font size of a word is the ratio between its weight and the
+                 * largest occuring weight, multiplied with the value of maxFontSize.
                  */
-                to: 90
-            },
-            showInLegend: false,
-            /**
-             * Spiral used for placing a word after the initial position experienced a
-             * collision with either another word or the borders.
-             * It is possible for users to add their own custom spiralling algorithms
-             * for use in word cloud. Read more about it in our
-             * [documentation](https://www.highcharts.com/docs/chart-and-series-types/word-cloud-series#custom-spiralling-algorithm)
-             *
-             * @validvalue: ["archimedean", "rectangular", "square"]
-             */
-            spiral: 'rectangular',
-            /**
-             * CSS styles for the words.
-             *
-             * @type    {Highcharts.CSSObject}
-             * @default {"fontFamily":"sans-serif", "fontWeight": "900"}
-             */
-            style: {
-                /** @ignore-option */
-                fontFamily: 'sans-serif',
-                /** @ignore-option */
-                fontWeight: '900',
-                /** @ignore-option */
-                whiteSpace: 'nowrap'
-            },
-            tooltip: {
-                followPointer: true,
-                pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.weight}</b><br/>'
-            }
-        };
+                maxFontSize: 25,
+                /**
+                 * This option decides which algorithm is used for placement, and rotation
+                 * of a word. The choice of algorith is therefore a crucial part of the
+                 * resulting layout of the wordcloud. It is possible for users to add their
+                 * own custom placement strategies for use in word cloud. Read more about it
+                 * in our
+                 * [documentation](https://www.highcharts.com/docs/chart-and-series-types/word-cloud-series#custom-placement-strategies)
+                 *
+                 * @validvalue: ["center", "random"]
+                 */
+                placementStrategy: 'center',
+                /**
+                 * Rotation options for the words in the wordcloud.
+                 *
+                 * @sample highcharts/plotoptions/wordcloud-rotation
+                 *         Word cloud with rotation
+                 */
+                rotation: {
+                    /**
+                     * The smallest degree of rotation for a word.
+                     */
+                    from: 0,
+                    /**
+                     * The number of possible orientations for a word, within the range of
+                     * `rotation.from` and `rotation.to`. Must be a number larger than 0.
+                     */
+                    orientations: 2,
+                    /**
+                     * The largest degree of rotation for a word.
+                     */
+                    to: 90
+                },
+                showInLegend: false,
+                /**
+                 * Spiral used for placing a word after the initial position experienced a
+                 * collision with either another word or the borders.
+                 * It is possible for users to add their own custom spiralling algorithms
+                 * for use in word cloud. Read more about it in our
+                 * [documentation](https://www.highcharts.com/docs/chart-and-series-types/word-cloud-series#custom-spiralling-algorithm)
+                 *
+                 * @validvalue: ["archimedean", "rectangular", "square"]
+                 */
+                spiral: 'rectangular',
+                /**
+                 * CSS styles for the words.
+                 *
+                 * @type    {Highcharts.CSSObject}
+                 * @default {"fontFamily":"sans-serif", "fontWeight": "900"}
+                 */
+                style: {
+                    /** @ignore-option */
+                    fontFamily: 'sans-serif',
+                    /** @ignore-option */
+                    fontWeight: '900',
+                    /** @ignore-option */
+                    whiteSpace: 'nowrap'
+                },
+                tooltip: {
+                    followPointer: true,
+                    pointFormat: '<span style="color:{point.color}">\u25CF</span> {series.name}: <b>{point.weight}</b><br/>'
+                }
+            };
         // Properties of the WordCloud series.
         var wordCloudSeries = {
-            animate: Series.prototype.animate,
-            animateDrilldown: noop,
-            animateDrillupFrom: noop,
-            setClip: noop,
-            bindAxes: function () {
-                var wordcloudAxis = {
-                    endOnTick: false,
-                    gridLineWidth: 0,
-                    lineWidth: 0,
-                    maxPadding: 0,
-                    startOnTick: false,
-                    title: null,
-                    tickPositions: []
-                };
+                animate: Series.prototype.animate,
+                animateDrilldown: noop,
+                animateDrillupFrom: noop,
+                setClip: noop,
+                bindAxes: function () {
+                    var wordcloudAxis = {
+                        endOnTick: false,
+                        gridLineWidth: 0,
+                        lineWidth: 0,
+                        maxPadding: 0,
+                        startOnTick: false,
+                        title: null,
+                        tickPositions: []
+                    };
                 Series.prototype.bindAxes.call(this);
                 extend(this.yAxis.options, wordcloudAxis);
                 extend(this.xAxis.options, wordcloudAxis);
             },
             pointAttribs: function (point, state) {
                 var attribs = H.seriesTypes.column.prototype
-                    .pointAttribs.call(this, point, state);
+                        .pointAttribs.call(this,
+                    point,
+                    state);
                 delete attribs.stroke;
                 delete attribs['stroke-width'];
                 return attribs;
@@ -1014,21 +1135,45 @@
              * maxFontSize the result will equal minFontSize.
              */
             deriveFontSize: function deriveFontSize(relativeWeight, maxFontSize, minFontSize) {
-                var weight = isNumber(relativeWeight) ? relativeWeight : 0, max = isNumber(maxFontSize) ? maxFontSize : 1, min = isNumber(minFontSize) ? minFontSize : 1;
+                var weight = isNumber(relativeWeight) ? relativeWeight : 0,
+                    max = isNumber(maxFontSize) ? maxFontSize : 1,
+                    min = isNumber(minFontSize) ? minFontSize : 1;
                 return Math.floor(Math.max(min, weight * max));
             },
             drawPoints: function () {
-                var series = this, hasRendered = series.hasRendered, xAxis = series.xAxis, yAxis = series.yAxis, chart = series.chart, group = series.group, options = series.options, animation = options.animation, allowExtendPlayingField = options.allowExtendPlayingField, renderer = chart.renderer, testElement = renderer.text().add(group), placed = [], placementStrategy = series.placementStrategy[options.placementStrategy], spiral, rotation = options.rotation, scale, weights = series.points.map(function (p) {
-                    return p.weight;
+                var series = this,
+                    hasRendered = series.hasRendered,
+                    xAxis = series.xAxis,
+                    yAxis = series.yAxis,
+                    chart = series.chart,
+                    group = series.group,
+                    options = series.options,
+                    animation = options.animation,
+                    allowExtendPlayingField = options.allowExtendPlayingField,
+                    renderer = chart.renderer,
+                    testElement = renderer.text().add(group),
+                    placed = [],
+                    placementStrategy = series.placementStrategy[options.placementStrategy],
+                    spiral,
+                    rotation = options.rotation,
+                    scale,
+                    weights = series.points.map(function (p) {
+                        return p.weight;
                 }), maxWeight = Math.max.apply(null, weights), data = series.points.sort(function (a, b) {
                     return b.weight - a.weight; // Sort descending
                 }), field;
                 // Get the dimensions for each word.
                 // Used in calculating the playing field.
                 data.forEach(function (point) {
-                    var relativeWeight = 1 / maxWeight * point.weight, fontSize = series.deriveFontSize(relativeWeight, options.maxFontSize, options.minFontSize), css = extend({
-                        fontSize: fontSize + 'px'
-                    }, options.style), bBox;
+                    var relativeWeight = 1 / maxWeight * point.weight,
+                        fontSize = series.deriveFontSize(relativeWeight,
+                        options.maxFontSize,
+                        options.minFontSize),
+                        css = extend({
+                            fontSize: fontSize + 'px'
+                        },
+                        options.style),
+                        bBox;
                     testElement.css(css).attr({
                         x: 0,
                         y: 0,
@@ -1047,28 +1192,43 @@
                 });
                 // Draw all the points.
                 data.forEach(function (point) {
-                    var relativeWeight = 1 / maxWeight * point.weight, fontSize = series.deriveFontSize(relativeWeight, options.maxFontSize, options.minFontSize), css = extend({
-                        fontSize: fontSize + 'px'
-                    }, options.style), placement = placementStrategy(point, {
-                        data: data,
-                        field: field,
-                        placed: placed,
-                        rotation: rotation
-                    }), attr = extend(series.pointAttribs(point, (point.selected && 'select')), {
-                        align: 'center',
-                        'alignment-baseline': 'middle',
-                        x: placement.x,
-                        y: placement.y,
-                        text: point.name,
-                        rotation: placement.rotation
-                    }), polygon = getPolygon(placement.x, placement.y, point.dimensions.width, point.dimensions.height, placement.rotation), rectangle = getBoundingBoxFromPolygon(polygon), delta = intersectionTesting(point, {
-                        rectangle: rectangle,
-                        polygon: polygon,
-                        field: field,
-                        placed: placed,
-                        spiral: spiral,
-                        rotation: placement.rotation
-                    }), animate;
+                    var relativeWeight = 1 / maxWeight * point.weight,
+                        fontSize = series.deriveFontSize(relativeWeight,
+                        options.maxFontSize,
+                        options.minFontSize),
+                        css = extend({
+                            fontSize: fontSize + 'px'
+                        },
+                        options.style),
+                        placement = placementStrategy(point, {
+                            data: data,
+                            field: field,
+                            placed: placed,
+                            rotation: rotation
+                        }),
+                        attr = extend(series.pointAttribs(point, (point.selected && 'select')), {
+                            align: 'center',
+                            'alignment-baseline': 'middle',
+                            x: placement.x,
+                            y: placement.y,
+                            text: point.name,
+                            rotation: placement.rotation
+                        }),
+                        polygon = getPolygon(placement.x,
+                        placement.y,
+                        point.dimensions.width,
+                        point.dimensions.height,
+                        placement.rotation),
+                        rectangle = getBoundingBoxFromPolygon(polygon),
+                        delta = intersectionTesting(point, {
+                            rectangle: rectangle,
+                            polygon: polygon,
+                            field: field,
+                            placed: placed,
+                            spiral: spiral,
+                            rotation: placement.rotation
+                        }),
+                        animate;
                     // If there is no space for the word, extend the playing field.
                     if (!delta && allowExtendPlayingField) {
                         // Extend the playing field to fit the word.
@@ -1122,7 +1282,7 @@
                         css: css,
                         group: group,
                         renderer: renderer,
-                        shapeArgs: undefined,
+                        shapeArgs: void 0,
                         shapeType: 'text'
                     });
                 });
@@ -1147,7 +1307,8 @@
             // example.
             placementStrategy: {
                 random: function (point, options) {
-                    var field = options.field, r = options.rotation;
+                    var field = options.field,
+                        r = options.rotation;
                     return {
                         x: getRandomPosition(field.width) - (field.width / 2),
                         y: getRandomPosition(field.height) - (field.height / 2),
@@ -1181,8 +1342,8 @@
             },
             getPlotBox: function () {
                 var series = this, chart = series.chart, inverted = chart.inverted, 
-                // Swap axes for inverted (#2339)
-                xAxis = series[(inverted ? 'yAxis' : 'xAxis')], yAxis = series[(inverted ? 'xAxis' : 'yAxis')], width = xAxis ? xAxis.len : chart.plotWidth, height = yAxis ? yAxis.len : chart.plotHeight, x = xAxis ? xAxis.left : chart.plotLeft, y = yAxis ? yAxis.top : chart.plotTop;
+                    // Swap axes for inverted (#2339)
+                    xAxis = series[(inverted ? 'yAxis' : 'xAxis')], yAxis = series[(inverted ? 'xAxis' : 'yAxis')], width = xAxis ? xAxis.len : chart.plotWidth, height = yAxis ? yAxis.len : chart.plotHeight, x = xAxis ? xAxis.left : chart.plotLeft, y = yAxis ? yAxis.top : chart.plotTop;
                 return {
                     translateX: x + (width / 2),
                     translateY: y + (height / 2),
@@ -1193,9 +1354,9 @@
         };
         // Properties of the Sunburst series.
         var wordCloudPoint = {
-            draw: drawPoint,
-            shouldDraw: function shouldDraw() {
-                var point = this;
+                draw: drawPoint,
+                shouldDraw: function shouldDraw() {
+                    var point = this;
                 return !point.isNull;
             },
             isValid: function isValid() {

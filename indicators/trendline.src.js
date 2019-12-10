@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -85,7 +85,22 @@
             nameBase: 'Trendline',
             nameComponents: false,
             getValues: function (series, params) {
-                var xVal = series.xData, yVal = series.yData, LR = [], xData = [], yData = [], sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, xValLength = xVal.length, index = params.index, alpha, beta, i, x, y;
+                var xVal = series.xData,
+                    yVal = series.yData,
+                    LR = [],
+                    xData = [],
+                    yData = [],
+                    sumX = 0,
+                    sumY = 0,
+                    sumXY = 0,
+                    sumX2 = 0,
+                    xValLength = xVal.length,
+                    index = params.index,
+                    alpha,
+                    beta,
+                    i,
+                    x,
+                    y;
                 // Get sums:
                 for (i = 0; i < xValLength; i++) {
                     x = xVal[i];

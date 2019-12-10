@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Highcharts funnel module
  *
@@ -42,12 +42,20 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend, pick = U.pick;
-        var charts = H.charts, color = H.color, error = H.error, merge = H.merge, seriesType = H.seriesType, seriesTypes = H.seriesTypes, relativeLength = H.relativeLength, 
-        // Use H.Renderer instead of H.SVGRenderer for VML support.
-        RendererProto = H.Renderer.prototype, 
-        //
-        cuboidPath = RendererProto.cuboidPath, funnel3dMethods;
+        var extend = U.extend,
+            pick = U.pick,
+            relativeLength = U.relativeLength;
+        var charts = H.charts,
+            color = H.color,
+            error = H.error,
+            merge = H.merge,
+            seriesType = H.seriesType,
+            seriesTypes = H.seriesTypes, 
+            // Use H.Renderer instead of H.SVGRenderer for VML support.
+            RendererProto = H.Renderer.prototype, 
+            //
+            cuboidPath = RendererProto.cuboidPath,
+            funnel3dMethods;
         /**
          * The funnel3d series type.
          *
@@ -138,17 +146,10 @@
             edgeWidth: 0,
             colorByPoint: true,
             showInLegend: false,
-            /**
-             * @default {"align": "right", "crop": false, "inside": false, "overflow": "allow"}
-             */
             dataLabels: {
-                /** @ignore-option */
                 align: 'right',
-                /** @ignore-option */
                 crop: false,
-                /** @ignore-option */
                 inside: false,
-                /** @ignore-option */
                 overflow: 'allow'
             }
         }, {
@@ -172,12 +173,41 @@
             translate3dShapes: H.noop,
             translate: function () {
                 H.Series.prototype.translate.apply(this, arguments);
-                var sum = 0, series = this, chart = series.chart, options = series.options, reversed = options.reversed, ignoreHiddenPoint = options.ignoreHiddenPoint, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, cumulative = 0, // start at top
-                center = options.center, centerX = relativeLength(center[0], plotWidth), centerY = relativeLength(center[1], plotHeight), width = relativeLength(options.width, plotWidth), tempWidth, getWidthAt, height = relativeLength(options.height, plotHeight), neckWidth = relativeLength(options.neckWidth, plotWidth), neckHeight = relativeLength(options.neckHeight, plotHeight), neckY = (centerY - height / 2) + height - neckHeight, data = series.data, fraction, tooltipPos, 
-                //
-                y1, y3, y5, 
-                //
-                h, shapeArgs;
+                var sum = 0,
+                    series = this,
+                    chart = series.chart,
+                    options = series.options,
+                    reversed = options.reversed,
+                    ignoreHiddenPoint = options.ignoreHiddenPoint,
+                    plotWidth = chart.plotWidth,
+                    plotHeight = chart.plotHeight,
+                    cumulative = 0, // start at top
+                    center = options.center,
+                    centerX = relativeLength(center[0],
+                    plotWidth),
+                    centerY = relativeLength(center[1],
+                    plotHeight),
+                    width = relativeLength(options.width,
+                    plotWidth),
+                    tempWidth,
+                    getWidthAt,
+                    height = relativeLength(options.height,
+                    plotHeight),
+                    neckWidth = relativeLength(options.neckWidth,
+                    plotWidth),
+                    neckHeight = relativeLength(options.neckHeight,
+                    plotHeight),
+                    neckY = (centerY - height / 2) + height - neckHeight,
+                    data = series.data,
+                    fraction,
+                    tooltipPos, 
+                    //
+                    y1,
+                    y3,
+                    y5, 
+                    //
+                    h,
+                    shapeArgs;
                 // Return the width at a specific y coordinate
                 series.getWidthAt = getWidthAt = function (y) {
                     var top = (centerY - height / 2);
@@ -298,11 +328,17 @@
                 });
             },
             alignDataLabel: function (point, dataLabel, options) {
-                var series = this, dlBoxRaw = point.dlBoxRaw, inverted = series.chart.inverted, below = point.plotY > pick(series.translatedThreshold, series.yAxis.len), inside = pick(options.inside, !!series.options.stacking), dlBox = {
-                    x: dlBoxRaw.x,
-                    y: dlBoxRaw.y,
-                    height: 0
-                };
+                var series = this,
+                    dlBoxRaw = point.dlBoxRaw,
+                    inverted = series.chart.inverted,
+                    below = point.plotY > pick(series.translatedThreshold,
+                    series.yAxis.len),
+                    inside = pick(options.inside, !!series.options.stacking),
+                    dlBox = {
+                        x: dlBoxRaw.x,
+                        y: dlBoxRaw.y,
+                        height: 0
+                    };
                 options.align = pick(options.align, !inverted || inside ? 'center' : below ? 'right' : 'left');
                 options.verticalAlign = pick(options.verticalAlign, inverted || inside ? 'middle' : below ? 'top' : 'bottom');
                 if (options.verticalAlign !== 'top') {
@@ -429,7 +465,10 @@
             pathType: 'funnel3d',
             // override opacity and color setters to control opacity
             opacitySetter: function (opacity) {
-                var funnel3d = this, parts = funnel3d.parts, chart = H.charts[funnel3d.renderer.chartIndex], filterId = 'group-opacity-' + opacity + '-' + chart.index;
+                var funnel3d = this,
+                    parts = funnel3d.parts,
+                    chart = H.charts[funnel3d.renderer.chartIndex],
+                    filterId = 'group-opacity-' + opacity + '-' + chart.index;
                 // use default for top and bottom
                 funnel3d.parts = funnel3d.mainParts;
                 funnel3d.singleSetterForParts('opacity', opacity);
@@ -469,11 +508,14 @@
             },
             fillSetter: function (fill) {
                 // extract alpha channel to use the opacitySetter
-                var funnel3d = this, fillColor = color(fill), alpha = fillColor.rgba[3], partsWithColor = {
-                    // standard color for top and bottom
-                    top: color(fill).brighten(0.1).get(),
-                    bottom: color(fill).brighten(-0.2).get()
-                };
+                var funnel3d = this,
+                    fillColor = color(fill),
+                    alpha = fillColor.rgba[3],
+                    partsWithColor = {
+                        // standard color for top and bottom
+                        top: color(fill).brighten(0.1).get(),
+                        bottom: color(fill).brighten(-0.2).get()
+                    };
                 if (alpha < 1) {
                     fillColor.rgba[3] = 1;
                     fillColor = fillColor.get('rgb');
@@ -503,14 +545,16 @@
                 if (fillColor.linearGradient) {
                     // color in steps, as each gradient will generate a key
                     funnel3d.sideGroups.forEach(function (sideGroupName) {
-                        var box = funnel3d[sideGroupName].gradientBox, gradient = fillColor.linearGradient, alteredGradient = merge(fillColor, {
-                            linearGradient: {
-                                x1: box.x + gradient.x1 * box.width,
-                                y1: box.y + gradient.y1 * box.height,
-                                x2: box.x + gradient.x2 * box.width,
-                                y2: box.y + gradient.y2 * box.height
-                            }
-                        });
+                        var box = funnel3d[sideGroupName].gradientBox,
+                            gradient = fillColor.linearGradient,
+                            alteredGradient = merge(fillColor, {
+                                linearGradient: {
+                                    x1: box.x + gradient.x1 * box.width,
+                                    y1: box.y + gradient.y1 * box.height,
+                                    x2: box.x + gradient.x2 * box.width,
+                                    y2: box.y + gradient.y2 * box.height
+                                }
+                            });
                         funnel3d.sideParts[sideGroupName].forEach(function (partName) {
                             partsWithColor[partName] = alteredGradient;
                         });
@@ -527,7 +571,11 @@
                     });
                     if (fillColor.radialGradient) {
                         funnel3d.sideGroups.forEach(function (sideGroupName) {
-                            var gradBox = funnel3d[sideGroupName].gradientBox, centerX = gradBox.x + gradBox.width / 2, centerY = gradBox.y + gradBox.height / 2, diameter = Math.min(gradBox.width, gradBox.height);
+                            var gradBox = funnel3d[sideGroupName].gradientBox,
+                                centerX = gradBox.x + gradBox.width / 2,
+                                centerY = gradBox.y + gradBox.height / 2,
+                                diameter = Math.min(gradBox.width,
+                                gradBox.height);
                             funnel3d.sideParts[sideGroupName].forEach(function (partName) {
                                 funnel3d[partName].setRadialReference([
                                     centerX, centerY, diameter
@@ -542,7 +590,8 @@
                 // change gradientUnits to userSpaceOnUse for linearGradient
                 if (fillColor.linearGradient) {
                     [funnel3d.frontLower, funnel3d.frontUpper].forEach(function (part) {
-                        var elem = part.element, grad = elem && funnel3d.renderer.gradients[elem.gradient];
+                        var elem = part.element,
+                            grad = elem && funnel3d.renderer.gradients[elem.gradient];
                         if (grad && grad.attr('gradientUnits') !== 'userSpaceOnUse') {
                             grad.attr({
                                 gradientUnits: 'userSpaceOnUse'
@@ -553,16 +602,18 @@
                 return funnel3d;
             },
             adjustForGradient: function () {
-                var funnel3d = this, bbox;
+                var funnel3d = this,
+                    bbox;
                 funnel3d.sideGroups.forEach(function (sideGroupName) {
                     // use common extremes for groups for matching gradients
                     var topLeftEdge = {
-                        x: Number.MAX_VALUE,
-                        y: Number.MAX_VALUE
-                    }, bottomRightEdge = {
-                        x: -Number.MAX_VALUE,
-                        y: -Number.MAX_VALUE
-                    };
+                            x: Number.MAX_VALUE,
+                            y: Number.MAX_VALUE
+                        },
+                        bottomRightEdge = {
+                            x: -Number.MAX_VALUE,
+                            y: -Number.MAX_VALUE
+                        };
                     // get extremes
                     funnel3d.sideParts[sideGroupName].forEach(function (partName) {
                         var part = funnel3d[partName];
@@ -601,12 +652,15 @@
         });
         RendererProto.elements3d.funnel3d = funnel3dMethods;
         RendererProto.funnel3d = function (shapeArgs) {
-            var renderer = this, funnel3d = renderer.element3d('funnel3d', shapeArgs), styledMode = renderer.styledMode, 
-            // hide stroke for Firefox
-            strokeAttrs = {
-                'stroke-width': 1,
-                stroke: 'none'
-            };
+            var renderer = this,
+                funnel3d = renderer.element3d('funnel3d',
+                shapeArgs),
+                styledMode = renderer.styledMode, 
+                // hide stroke for Firefox
+                strokeAttrs = {
+                    'stroke-width': 1,
+                    stroke: 'none'
+                };
             // create groups for sides for oppacity setter
             funnel3d.upperGroup = renderer.g('funnel3d-upper-group').attr({
                 zIndex: funnel3d.frontUpper.zIndex
@@ -648,31 +702,46 @@
             if (!this.getCylinderEnd) {
                 error('A required Highcharts module is missing: cylinder.js', true, charts[this.chartIndex]);
             }
-            var renderer = this, chart = charts[renderer.chartIndex], 
-            // adjust angles for visible edges
-            // based on alpha, selected through visual tests
-            alphaCorrection = shapeArgs.alphaCorrection = 90 -
-                Math.abs((chart.options.chart.options3d.alpha % 180) - 90), 
-            // set zIndexes of parts based on cubiod logic, for consistency
-            cuboidData = cuboidPath.call(renderer, H.merge(shapeArgs, {
-                depth: shapeArgs.width,
-                width: (shapeArgs.width + shapeArgs.bottom.width) / 2
-            })), isTopFirst = cuboidData.isTop, isFrontFirst = !cuboidData.isFront, hasMiddle = !!shapeArgs.middle, 
-            //
-            top = renderer.getCylinderEnd(chart, H.merge(shapeArgs, {
-                x: shapeArgs.x - shapeArgs.width / 2,
-                z: shapeArgs.z - shapeArgs.width / 2,
-                alphaCorrection: alphaCorrection
-            })), bottomWidth = shapeArgs.bottom.width, bottomArgs = H.merge(shapeArgs, {
-                width: bottomWidth,
-                x: shapeArgs.x - bottomWidth / 2,
-                z: shapeArgs.z - bottomWidth / 2,
-                alphaCorrection: alphaCorrection
-            }), bottom = renderer.getCylinderEnd(chart, bottomArgs, true), 
-            //
-            middleWidth = bottomWidth, middleTopArgs = bottomArgs, middleTop = bottom, middleBottom = bottom, ret, 
-            // masking for cylinders or a missing part of a side shape
-            useAlphaCorrection;
+            var renderer = this,
+                chart = charts[renderer.chartIndex], 
+                // adjust angles for visible edges
+                // based on alpha, selected through visual tests
+                alphaCorrection = shapeArgs.alphaCorrection = 90 -
+                    Math.abs((chart.options.chart.options3d.alpha % 180) - 90), 
+                // set zIndexes of parts based on cubiod logic, for consistency
+                cuboidData = cuboidPath.call(renderer,
+                H.merge(shapeArgs, {
+                    depth: shapeArgs.width,
+                    width: (shapeArgs.width + shapeArgs.bottom.width) / 2
+                })),
+                isTopFirst = cuboidData.isTop,
+                isFrontFirst = !cuboidData.isFront,
+                hasMiddle = !!shapeArgs.middle, 
+                //
+                top = renderer.getCylinderEnd(chart,
+                H.merge(shapeArgs, {
+                    x: shapeArgs.x - shapeArgs.width / 2,
+                    z: shapeArgs.z - shapeArgs.width / 2,
+                    alphaCorrection: alphaCorrection
+                })),
+                bottomWidth = shapeArgs.bottom.width,
+                bottomArgs = H.merge(shapeArgs, {
+                    width: bottomWidth,
+                    x: shapeArgs.x - bottomWidth / 2,
+                    z: shapeArgs.z - bottomWidth / 2,
+                    alphaCorrection: alphaCorrection
+                }),
+                bottom = renderer.getCylinderEnd(chart,
+                bottomArgs,
+                true), 
+                //
+                middleWidth = bottomWidth,
+                middleTopArgs = bottomArgs,
+                middleTop = bottom,
+                middleBottom = bottom,
+                ret, 
+                // masking for cylinders or a missing part of a side shape
+                useAlphaCorrection;
             if (hasMiddle) {
                 middleWidth = shapeArgs.middle.width;
                 middleTopArgs = H.merge(shapeArgs, {

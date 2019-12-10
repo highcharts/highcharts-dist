@@ -10,7 +10,7 @@
 'use strict';
 import H from './Globals.js';
 import U from './Utilities.js';
-var defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
+var clamp = U.clamp, correctFloat = U.correctFloat, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
 import './Color.js';
 import './Axis.js';
 import './Chart.js';
@@ -31,7 +31,7 @@ numExt = function (extreme) {
         return Math[extreme].apply(0, numbers);
     }
 };
-defaultSeriesType = seriesTypes.areaspline === undefined ?
+defaultSeriesType = typeof seriesTypes.areaspline === 'undefined' ?
     'line' :
     'areaspline';
 extend(defaultOptions, {
@@ -252,8 +252,8 @@ extend(defaultOptions, {
          * is borrowed from the first series in the chart.
          *
          * Default series options for the navigator series are:
-         *
-         * <pre>series: {
+         * ```js
+         * series: {
          *     type: 'areaspline',
          *     fillOpacity: 0.05,
          *     dataGrouping: {
@@ -263,7 +263,8 @@ extend(defaultOptions, {
          *     marker: {
          *         enabled: false
          *     }
-         * }</pre>
+         * }
+         * ```
          *
          * @see In styled mode, the navigator series is styled with the
          *      `.highcharts-navigator-series` class.
@@ -340,9 +341,7 @@ extend(defaultOptions, {
              * @extends plotOptions.series.dataLabels
              */
             dataLabels: {
-                /** @internal */
                 enabled: false,
-                /** @internal */
                 zIndex: 2 // #1839
             },
             id: 'highcharts-navigator-series',
@@ -383,10 +382,10 @@ extend(defaultOptions, {
             threshold: null
         },
         /**
-         * Options for the navigator X axis. Default series options
-         * for the navigator xAxis are:
-         *
-         * <pre>xAxis: {
+         * Options for the navigator X axis. Default series options for the
+         * navigator xAxis are:
+         * ```js
+         * xAxis: {
          *     tickWidth: 0,
          *     lineWidth: 0,
          *     gridLineWidth: 1,
@@ -399,7 +398,8 @@ extend(defaultOptions, {
          *         x: 3,
          *         y: -4
          *     }
-         * }</pre>
+         * }
+         * ```
          *
          * @extends   xAxis
          * @excluding linkedTo, maxZoom, minRange, opposite, range, scrollbar,
@@ -435,10 +435,10 @@ extend(defaultOptions, {
             crosshair: false
         },
         /**
-         * Options for the navigator Y axis. Default series options
-         * for the navigator yAxis are:
-         *
-         * <pre>yAxis: {
+         * Options for the navigator Y axis. Default series options for the
+         * navigator yAxis are:
+         * ```js
+         * yAxis: {
          *     gridLineWidth: 0,
          *     startOnTick: false,
          *     endOnTick: false,
@@ -451,7 +451,8 @@ extend(defaultOptions, {
          *         text: null
          *     },
          *     tickWidth: 0
-         * }</pre>
+         * }
+         * ```
          *
          * @extends   yAxis
          * @excluding height, linkedTo, maxZoom, minRange, ordinal, range,
@@ -530,10 +531,10 @@ Axis.prototype.toFixedRange = function (pxMin, pxMax, fixedMin, fixedMax) {
     var fixedRange = this.chart && this.chart.fixedRange, halfPointRange = (this.pointRange || 0) / 2, newMin = pick(fixedMin, this.translate(pxMin, true, !this.horiz)), newMax = pick(fixedMax, this.translate(pxMax, true, !this.horiz)), changeRatio = fixedRange && (newMax - newMin) / fixedRange;
     // Add/remove half point range to/from the extremes (#1172)
     if (!defined(fixedMin)) {
-        newMin = H.correctFloat(newMin + halfPointRange);
+        newMin = correctFloat(newMin + halfPointRange);
     }
     if (!defined(fixedMax)) {
-        newMax = H.correctFloat(newMax - halfPointRange);
+        newMax = correctFloat(newMax - halfPointRange);
     }
     // If the difference between the fixed range and the actual requested range
     // is too great, the user is dragging across an ordinal gap, and we need to
@@ -547,7 +548,7 @@ Axis.prototype.toFixedRange = function (pxMin, pxMax, fixedMin, fixedMax) {
         }
     }
     if (!isNumber(newMin) || !isNumber(newMax)) { // #1195, #7411
-        newMin = newMax = undefined;
+        newMin = newMax = void 0;
     }
     return {
         min: newMin,
@@ -861,8 +862,8 @@ Navigator.prototype = {
         if (this.hasDragged && !defined(pxMin)) {
             return;
         }
-        min = H.correctFloat(min - pointRange / 2);
-        max = H.correctFloat(max + pointRange / 2);
+        min = correctFloat(min - pointRange / 2);
+        max = correctFloat(max + pointRange / 2);
         // Don't render the navigator until we have data (#486, #4202, #5172).
         if (!isNumber(min) || !isNumber(max)) {
             // However, if navigator was already rendered, we may need to resize
@@ -898,8 +899,8 @@ Navigator.prototype = {
         // Are we below the minRange? (#2618, #6191)
         newMin = xAxis.toValue(pxMin, true);
         newMax = xAxis.toValue(pxMax, true);
-        currentRange = Math.abs(H.correctFloat(newMax - newMin));
-        if (H.correctFloat(currentRange - pointRange) < minRange) {
+        currentRange = Math.abs(correctFloat(newMax - newMin));
+        if (currentRange < minRange) {
             if (this.grabbedLeft) {
                 pxMin = xAxis.toPixels(newMax - minRange - pointRange, true);
             }
@@ -908,7 +909,7 @@ Navigator.prototype = {
             }
         }
         else if (defined(maxRange) &&
-            H.correctFloat(currentRange - pointRange) > maxRange) {
+            correctFloat(currentRange - pointRange) > maxRange) {
             if (this.grabbedLeft) {
                 pxMin = xAxis.toPixels(newMax - maxRange - pointRange, true);
             }
@@ -917,10 +918,10 @@ Navigator.prototype = {
             }
         }
         // Handles are allowed to cross, but never exceed the plot area
-        navigator.zoomedMax = Math.min(Math.max(pxMin, pxMax, 0), zoomedMax);
-        navigator.zoomedMin = Math.min(Math.max(navigator.fixedWidth ?
+        navigator.zoomedMax = clamp(Math.max(pxMin, pxMax), 0, zoomedMax);
+        navigator.zoomedMin = clamp(navigator.fixedWidth ?
             navigator.zoomedMax - navigator.fixedWidth :
-            Math.min(pxMin, pxMax), 0), zoomedMax);
+            Math.min(pxMin, pxMax), 0, zoomedMax);
         navigator.range = navigator.zoomedMax - navigator.zoomedMin;
         zoomedMax = Math.round(navigator.zoomedMax);
         zoomedMin = Math.round(navigator.zoomedMin);
@@ -1242,7 +1243,7 @@ Navigator.prototype = {
             this.eventsToUnbind.forEach(function (unbind) {
                 unbind();
             });
-            this.eventsToUnbind = undefined;
+            this.eventsToUnbind = void 0;
         }
         this.removeBaseSeriesEvents();
     },
@@ -1851,7 +1852,7 @@ if (!H.Navigator) {
                 }
             }
         }
-        if (e.zoomed !== undefined) {
+        if (typeof e.zoomed !== 'undefined') {
             e.preventDefault();
         }
     });

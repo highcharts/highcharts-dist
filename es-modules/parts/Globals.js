@@ -31,7 +31,7 @@ typeof win !== 'undefined' ?
 );
 var H = {
     product: 'Highcharts',
-    version: '7.2.1',
+    version: '8.0.0',
     deg2rad: Math.PI * 2 / 360,
     doc: doc,
     hasBidiBug: hasBidiBug,

@@ -8,8 +8,9 @@
 'use strict';
 import H from '../parts/Globals.js';
 import U from '../parts/Utilities.js';
+var correctFloat = U.correctFloat;
 var isArray = U.isArray, objectEach = U.objectEach;
-var ATR = H.seriesTypes.atr, SMA = H.seriesTypes.sma, merge = H.merge, correctFloat = H.correctFloat;
+var ATR = H.seriesTypes.atr, SMA = H.seriesTypes.sma, merge = H.merge;
 /* eslint-disable require-jsdoc */
 // Utils:
 function createPointObj(mainSeries, index, close) {
@@ -41,10 +42,10 @@ H.seriesType('supertrend', 'sma',
  * @extends      plotOptions.sma
  * @since        7.0.0
  * @product      highstock
- * @excluding    allAreas, color, cropThreshold, negativeColor, colorAxis,
- *               joinBy, keys, navigatorOptions, pointInterval,
- *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
- *               showInNavigator, stacking, threshold
+ * @excluding    allAreas, cropThreshold, negativeColor, colorAxis, joinBy,
+ *               keys, navigatorOptions, pointInterval, pointIntervalUnit,
+ *               pointPlacement, pointRange, pointStart, showInNavigator,
+ *               stacking, threshold
  * @requires     stock/indicators/indicators
  * @requires     stock/indicators/supertrend
  * @optionparent plotOptions.supertrend
@@ -73,7 +74,7 @@ H.seriesType('supertrend', 'sma',
      * @sample {highstock} stock/indicators/supertrend/
      *         Example with risingTrendColor
      *
-     * @type {Highcharts.ColorString}
+     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
     risingTrendColor: '#06B535',
     /**
@@ -82,7 +83,7 @@ H.seriesType('supertrend', 'sma',
      * @sample {highstock} stock/indicators/supertrend/
      *         Example with fallingTrendColor
      *
-     * @type {Highcharts.ColorString}
+     * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
      */
     fallingTrendColor: '#F21313',
     /**
@@ -161,14 +162,16 @@ H.seriesType('supertrend', 'sma',
             top: {
                 styles: {
                     lineWidth: indicOptions.lineWidth,
-                    lineColor: indicOptions.fallingTrendColor,
+                    lineColor: (indicOptions.fallingTrendColor ||
+                        indicOptions.color),
                     dashStyle: indicOptions.dashStyle
                 }
             },
             bottom: {
                 styles: {
                     lineWidth: indicOptions.lineWidth,
-                    lineColor: indicOptions.risingTrendColor,
+                    lineColor: (indicOptions.risingTrendColor ||
+                        indicOptions.color),
                     dashStyle: indicOptions.dashStyle
                 }
             },
@@ -254,14 +257,14 @@ H.seriesType('supertrend', 'sma',
                 };
                 if (point.y >= mainPoint.close &&
                     nextPoint.y >= nextMainPoint.close) {
-                    point.color =
-                        pointColor || indicOptions.fallingTrendColor;
+                    point.color = (pointColor || indicOptions.fallingTrendColor ||
+                        indicOptions.color);
                     groupedPoitns.top.push(newPoint);
                 }
                 else if (point.y < mainPoint.close &&
                     nextPoint.y < nextMainPoint.close) {
-                    point.color =
-                        pointColor || indicOptions.risingTrendColor;
+                    point.color = (pointColor || indicOptions.risingTrendColor ||
+                        indicOptions.color);
                     groupedPoitns.bottom.push(newPoint);
                 }
                 else {
@@ -273,10 +276,10 @@ H.seriesType('supertrend', 'sma',
                     }));
                     if (point.y >= mainPoint.close &&
                         nextPoint.y < nextMainPoint.close) {
-                        point.color =
-                            pointColor || indicOptions.fallingTrendColor;
-                        nextPoint.color =
-                            pointColor || indicOptions.risingTrendColor;
+                        point.color = (pointColor || indicOptions.fallingTrendColor ||
+                            indicOptions.color);
+                        nextPoint.color = (pointColor || indicOptions.risingTrendColor ||
+                            indicOptions.color);
                         groupedPoitns.top.push(newPoint);
                         groupedPoitns.top.push(merge(newNextPoint, {
                             isNull: true
@@ -284,10 +287,10 @@ H.seriesType('supertrend', 'sma',
                     }
                     else if (point.y < mainPoint.close &&
                         nextPoint.y >= nextMainPoint.close) {
-                        point.color =
-                            pointColor || indicOptions.risingTrendColor;
-                        nextPoint.color =
-                            pointColor || indicOptions.fallingTrendColor;
+                        point.color = (pointColor || indicOptions.risingTrendColor ||
+                            indicOptions.color);
+                        nextPoint.color = (pointColor || indicOptions.fallingTrendColor ||
+                            indicOptions.color);
                         groupedPoitns.bottom.push(newPoint);
                         groupedPoitns.bottom.push(merge(newNextPoint, {
                             isNull: true
@@ -297,13 +300,13 @@ H.seriesType('supertrend', 'sma',
             }
             else if (mainPoint) {
                 if (point.y >= mainPoint.close) {
-                    point.color =
-                        pointColor || indicOptions.fallingTrendColor;
+                    point.color = (pointColor || indicOptions.fallingTrendColor ||
+                        indicOptions.color);
                     groupedPoitns.top.push(newPoint);
                 }
                 else {
-                    point.color =
-                        pointColor || indicOptions.risingTrendColor;
+                    point.color = (pointColor || indicOptions.risingTrendColor ||
+                        indicOptions.color);
                     groupedPoitns.bottom.push(newPoint);
                 }
             }
@@ -361,7 +364,7 @@ H.seriesType('supertrend', 'sma',
         prevY, y, i;
         if ((xVal.length <= period) || !isArray(yVal[0]) ||
             yVal[0].length !== 4 || period < 0) {
-            return false;
+            return;
         }
         ATRData = ATR.prototype.getValues.call(this, series, {
             period: period
@@ -417,10 +420,10 @@ H.seriesType('supertrend', 'sma',
  * @extends   series,plotOptions.supertrend
  * @since     7.0.0
  * @product   highstock
- * @excluding allAreas, color, colorAxis, cropThreshold, data, dataParser,
- *            dataURL, joinBy, keys, navigatorOptions, negativeColor,
- *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
- *            pointStart, showInNavigator, stacking, threshold
+ * @excluding allAreas, colorAxis, cropThreshold, data, dataParser, dataURL,
+ *            joinBy, keys, navigatorOptions, negativeColor, pointInterval,
+ *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
+ *            showInNavigator, stacking, threshold
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/supertrend
  * @apioption series.supertrend

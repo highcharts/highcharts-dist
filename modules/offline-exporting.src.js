@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Client side exporting module
  *
@@ -40,7 +40,11 @@
          *  Mixin for downloading content in the browser
          *
          * */
-        var win = Highcharts.win, nav = win.navigator, doc = win.document, domurl = win.URL || win.webkitURL || win, isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
+        var win = Highcharts.win,
+            nav = win.navigator,
+            doc = win.document,
+            domurl = win.URL || win.webkitURL || win,
+            isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
         /**
          * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
          * @private
@@ -60,7 +64,10 @@
                 win.Blob &&
                 domurl.createObjectURL) {
                 // Try to convert data URL to Blob
-                var binStr = win.atob(parts[3]), buf = new win.ArrayBuffer(binStr.length), binary = new win.Uint8Array(buf), blob;
+                var binStr = win.atob(parts[3]),
+                    buf = new win.ArrayBuffer(binStr.length),
+                    binary = new win.Uint8Array(buf),
+                    blob;
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
@@ -80,7 +87,8 @@
          * @return {void}
          */
         Highcharts.downloadURL = function (dataURL, filename) {
-            var a = doc.createElement('a'), windowRef;
+            var a = doc.createElement('a'),
+                windowRef;
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -98,7 +106,7 @@
                 }
             }
             // Try HTML5 download attr if supported
-            if (a.download !== undefined) {
+            if (typeof a.download !== 'undefined') {
                 a.href = dataURL;
                 a.download = filename; // HTML5 download attribute
                 doc.body.appendChild(a);
@@ -109,7 +117,7 @@
                 // No download attr, just opening data URI
                 try {
                     windowRef = win.open(dataURL, 'chart');
-                    if (windowRef === undefined || windowRef === null) {
+                    if (typeof windowRef === 'undefined' || windowRef === null) {
                         throw new Error('Failed to open window');
                     }
                 }
@@ -135,9 +143,15 @@
          * */
         /* global MSBlobBuilder */
         var extend = U.extend;
-        var addEvent = Highcharts.addEvent, merge = Highcharts.merge, win = Highcharts.win, nav = win.navigator, doc = win.document, domurl = win.URL || win.webkitURL || win, isMSBrowser = /Edge\/|Trident\/|MSIE /.test(nav.userAgent), 
-        // Milliseconds to defer image load event handlers to offset IE bug
-        loadEventDeferDelay = isMSBrowser ? 150 : 0;
+        var addEvent = Highcharts.addEvent,
+            merge = Highcharts.merge,
+            win = Highcharts.win,
+            nav = win.navigator,
+            doc = win.document,
+            domurl = win.URL || win.webkitURL || win,
+            isMSBrowser = /Edge\/|Trident\/|MSIE /.test(nav.userAgent), 
+            // Milliseconds to defer image load event handlers to offset IE bug
+            loadEventDeferDelay = isMSBrowser ? 150 : 0;
         // Dummy object so we can reuse our canvas-tools.js without errors
         Highcharts.CanVGRenderer = {};
         /* eslint-disable valid-jsdoc */
@@ -171,7 +185,7 @@
         Highcharts.svgToDataUrl = function (svg) {
             // Webkit and not chrome
             var webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
-                nav.userAgent.indexOf('Chrome') < 0);
+                    nav.userAgent.indexOf('Chrome') < 0);
             try {
                 // Safari requires data URI since it doesn't allow navigation to blob
                 // URLs. Firefox has an issue with Blobs and internal references,
@@ -223,8 +237,8 @@
          */
         Highcharts.imageToDataUrl = function (imageURL, imageType, callbackArgs, scale, successCallback, taintedCallback, noCanvasSupportCallback, failedLoadCallback, finallyCallback) {
             var img = new win.Image(), taintedHandler, loadHandler = function () {
-                setTimeout(function () {
-                    var canvas = doc.createElement('canvas'), ctx = canvas.getContext && canvas.getContext('2d'), dataURL;
+                    setTimeout(function () {
+                        var canvas = doc.createElement('canvas'), ctx = canvas.getContext && canvas.getContext('2d'), dataURL;
                     try {
                         if (!ctx) {
                             noCanvasSupportCallback(imageURL, imageType, callbackArgs, scale);
@@ -308,8 +322,8 @@
          */
         Highcharts.downloadSVGLocal = function (svg, options, failCallback, successCallback) {
             var svgurl, blob, objectURLRevoke = true, finallyHandler, libURL = (options.libURL || Highcharts.getOptions().exporting.libURL), dummySVGContainer = doc.createElement('div'), imageType = options.type || 'image/png', filename = ((options.filename || 'chart') +
-                '.' +
-                (imageType === 'image/svg+xml' ? 'svg' : imageType.split('/')[1])), scale = options.scale || 1;
+                    '.' +
+                    (imageType === 'image/svg+xml' ? 'svg' : imageType.split('/')[1])), scale = options.scale || 1;
             // Allow libURL to end with or without fordward slash
             libURL = libURL.slice(-1) !== '/' ? libURL + '/' : libURL;
             /* eslint-disable valid-jsdoc */
@@ -318,7 +332,7 @@
              */
             function svgToPdf(svgElement, margin) {
                 var width = svgElement.width.baseVal.value + 2 * margin, height = svgElement.height.baseVal.value + 2 * margin, pdf = new win.jsPDF(// eslint-disable-line new-cap
-                'l', 'pt', [width, height]);
+                    'l', 'pt', [width, height]);
                 // Workaround for #7090, hidden elements were drawn anyway. It comes
                 // down to https://github.com/yWorks/svg2pdf.js/issues/28. Check this
                 // later.
@@ -334,12 +348,15 @@
              */
             function downloadPDF() {
                 dummySVGContainer.innerHTML = svg;
-                var textElements = dummySVGContainer.getElementsByTagName('text'), titleElements, svgData, 
-                // Copy style property to element from parents if it's not there.
-                // Searches up hierarchy until it finds prop, or hits the chart
-                // container.
-                setStylePropertyFromParents = function (el, propName) {
-                    var curParent = el;
+                var textElements = dummySVGContainer.getElementsByTagName('text'),
+                    titleElements,
+                    svgData, 
+                    // Copy style property to element from parents if it's not there.
+                    // Searches up hierarchy until it finds prop, or hits the chart
+                    // container.
+                    setStylePropertyFromParents = function (el,
+                    propName) {
+                        var curParent = el;
                     while (curParent && curParent !== dummySVGContainer) {
                         if (curParent.style[propName]) {
                             el.style[propName] =
@@ -443,7 +460,7 @@
                     // Failed due to tainted canvas
                     // Create new and untainted canvas
                     var canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), imageWidth = svg.match(/^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, imageHeight = svg.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, downloadWithCanVG = function () {
-                        ctx.drawSvg(svg, 0, 0, imageWidth, imageHeight);
+                            ctx.drawSvg(svg, 0, 0, imageWidth, imageHeight);
                         try {
                             Highcharts.downloadURL(nav.msSaveOrOpenBlob ?
                                 canvas.msToBlob() :
@@ -506,11 +523,20 @@
          * @return {void}
          */
         Highcharts.Chart.prototype.getSVGForLocalExport = function (options, chartOptions, failCallback, successCallback) {
-            var chart = this, images, imagesEmbedded = 0, chartCopyContainer, chartCopyOptions, el, i, l, href, 
-            // After grabbing the SVG of the chart's copy container we need to do
-            // sanitation on the SVG
-            sanitize = function (svg) {
-                return chart.sanitizeSVG(svg, chartCopyOptions);
+            var chart = this,
+                images,
+                imagesEmbedded = 0,
+                chartCopyContainer,
+                chartCopyOptions,
+                el,
+                i,
+                l,
+                href, 
+                // After grabbing the SVG of the chart's copy container we need to do
+                // sanitation on the SVG
+                sanitize = function (svg) {
+                    return chart.sanitizeSVG(svg,
+                chartCopyOptions);
             }, 
             // When done with last image we have our SVG
             checkDone = function () {
@@ -588,10 +614,14 @@
          * @requires modules/exporting
          */
         Highcharts.Chart.prototype.exportChartLocal = function (exportingOptions, chartOptions) {
-            var chart = this, options = Highcharts.merge(chart.options.exporting, exportingOptions), fallbackToExportServer = function (err) {
-                if (options.fallbackToExportServer === false) {
-                    if (options.error) {
-                        options.error(options, err);
+            var chart = this,
+                options = Highcharts.merge(chart.options.exporting,
+                exportingOptions),
+                fallbackToExportServer = function (err) {
+                    if (options.fallbackToExportServer === false) {
+                        if (options.error) {
+                            options.error(options,
+                err);
                     }
                     else {
                         Highcharts.error(28, true); // Fallback disabled
@@ -671,7 +701,7 @@
         };
         // Extend the default options to use the local exporter logic
         merge(true, Highcharts.getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/7.2.1/lib/',
+            libURL: 'https://code.highcharts.com/8.0.0/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {

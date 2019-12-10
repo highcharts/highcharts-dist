@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -41,26 +41,31 @@
         var error = H.error;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
-            /**
-             * Check whether given indicator is loaded, else throw error.
-             * @private
-             * @param {Highcharts.Indicator} indicator
-             *        Indicator constructor function.
-             * @param {string} requiredIndicator
-             *        Required indicator type.
-             * @param {string} type
-             *        Type of indicator where function was called (parent).
-             * @param {Highcharts.IndicatorCallbackFunction} callback
-             *        Callback which is triggered if the given indicator is loaded.
-             *        Takes indicator as an argument.
-             * @param {string} errMessage
-             *        Error message that will be logged in console.
-             * @return {boolean}
-             *         Returns false when there is no required indicator loaded.
-             */
-            isParentLoaded: function (indicator, requiredIndicator, type, callback, errMessage) {
-                if (indicator) {
-                    return callback ? callback(indicator) : true;
+                /**
+                 * Check whether given indicator is loaded,
+            else throw error.
+                 * @private
+                 * @param {Highcharts.Indicator} indicator
+                 *        Indicator constructor function.
+                 * @param {string} requiredIndicator
+                 *        Required indicator type.
+                 * @param {string} type
+                 *        Type of indicator where function was called (parent).
+                 * @param {Highcharts.IndicatorCallbackFunction} callback
+                 *        Callback which is triggered if the given indicator is loaded.
+                 *        Takes indicator as an argument.
+                 * @param {string} errMessage
+                 *        Error message that will be logged in console.
+                 * @return {boolean}
+                 *         Returns false when there is no required indicator loaded.
+                 */
+                isParentLoaded: function (indicator,
+            requiredIndicator,
+            type,
+            callback,
+            errMessage) {
+                    if (indicator) {
+                        return callback ? callback(indicator) : true;
                 }
                 error(errMessage || this.generateMessage(type, requiredIndicator));
                 return false;
@@ -85,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'indicators/trix.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicator) {
+    _registerModule(_modules, 'indicators/trix.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -93,7 +98,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = H.correctFloat, TEMA = H.seriesTypes.tema;
+        var correctFloat = U.correctFloat;
+        var TEMA = H.seriesTypes.tema;
         /**
          * The TRIX series type.
          *
@@ -129,7 +135,8 @@
          */
         {
             init: function () {
-                var args = arguments, ctx = this;
+                var args = arguments,
+                    ctx = this;
                 requiredIndicator.isParentLoaded(TEMA, 'tema', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
@@ -139,11 +146,11 @@
             getTemaPoint: function (xVal, tripledPeriod, EMAlevels, i) {
                 if (i > tripledPeriod) {
                     var TRIXPoint = [
-                        xVal[i - 3],
-                        EMAlevels.prevLevel3 !== 0 ?
-                            correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
-                                EMAlevels.prevLevel3 * 100 : null
-                    ];
+                            xVal[i - 3],
+                            EMAlevels.prevLevel3 !== 0 ?
+                                correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
+                                    EMAlevels.prevLevel3 * 100 : null
+                        ];
                 }
                 return TRIXPoint;
             }

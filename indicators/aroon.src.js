@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -39,7 +39,10 @@
          *
          * */
         var defined = U.defined;
-        var each = H.each, merge = H.merge, error = H.error, SMA = H.seriesTypes.sma;
+        var each = H.each,
+            merge = H.merge,
+            error = H.error,
+            SMA = H.seriesTypes.sma;
         /**
          * Mixin useful for all indicators that have more than one line.
          * Merge it with your implementation where you will provide
@@ -51,50 +54,50 @@
          * @mixin multipleLinesMixin
          */
         var multipleLinesMixin = {
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Lines ids. Required to plot appropriate amount of lines.
-             * Notice that pointArrayMap should have more elements than
-             * linesApiNames, because it contains main line and additional lines ids.
-             * Also it should be consistent with amount of lines calculated in
-             * getValues method from your implementation.
-             *
-             * @private
-             * @name multipleLinesMixin.pointArrayMap
-             * @type {Array<string>}
-             */
-            pointArrayMap: ['top', 'bottom'],
-            /**
-             * Main line id.
-             *
-             * @private
-             * @name multipleLinesMixin.pointValKey
-             * @type {string}
-             */
-            pointValKey: 'top',
-            /**
-             * Additional lines DOCS names. Elements of linesApiNames array should
-             * be consistent with DOCS line names defined in your implementation.
-             * Notice that linesApiNames should have decreased amount of elements
-             * relative to pointArrayMap (without pointValKey).
-             *
-             * @private
-             * @name multipleLinesMixin.linesApiNames
-             * @type {Array<string>}
-             */
-            linesApiNames: ['bottomLine'],
-            /**
-             * Create translatedLines Collection based on pointArrayMap.
-             *
-             * @private
-             * @function multipleLinesMixin.getTranslatedLinesNames
-             * @param {string} [excludedValue]
-             *        Main line id
-             * @return {Array<string>}
-             *         Returns translated lines names without excluded value.
-             */
-            getTranslatedLinesNames: function (excludedValue) {
-                var translatedLines = [];
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Lines ids. Required to plot appropriate amount of lines.
+                 * Notice that pointArrayMap should have more elements than
+                 * linesApiNames, because it contains main line and additional lines ids.
+                 * Also it should be consistent with amount of lines calculated in
+                 * getValues method from your implementation.
+                 *
+                 * @private
+                 * @name multipleLinesMixin.pointArrayMap
+                 * @type {Array<string>}
+                 */
+                pointArrayMap: ['top', 'bottom'],
+                /**
+                 * Main line id.
+                 *
+                 * @private
+                 * @name multipleLinesMixin.pointValKey
+                 * @type {string}
+                 */
+                pointValKey: 'top',
+                /**
+                 * Additional lines DOCS names. Elements of linesApiNames array should
+                 * be consistent with DOCS line names defined in your implementation.
+                 * Notice that linesApiNames should have decreased amount of elements
+                 * relative to pointArrayMap (without pointValKey).
+                 *
+                 * @private
+                 * @name multipleLinesMixin.linesApiNames
+                 * @type {Array<string>}
+                 */
+                linesApiNames: ['bottomLine'],
+                /**
+                 * Create translatedLines Collection based on pointArrayMap.
+                 *
+                 * @private
+                 * @function multipleLinesMixin.getTranslatedLinesNames
+                 * @param {string} [excludedValue]
+                 *        Main line id
+                 * @return {Array<string>}
+                 *         Returns translated lines names without excluded value.
+                 */
+                getTranslatedLinesNames: function (excludedValue) {
+                    var translatedLines = [];
                 each(this.pointArrayMap, function (propertyName) {
                     if (propertyName !== excludedValue) {
                         translatedLines.push('plot' +
@@ -127,7 +130,10 @@
              * @return {void}
              */
             translate: function () {
-                var indicator = this, pointArrayMap = indicator.pointArrayMap, LinesNames = [], value;
+                var indicator = this,
+                    pointArrayMap = indicator.pointArrayMap,
+                    LinesNames = [],
+                    value;
                 LinesNames = indicator.getTranslatedLinesNames();
                 SMA.prototype.translate.apply(indicator, arguments);
                 each(indicator.points, function (point) {
@@ -147,13 +153,22 @@
              * @return {void}
              */
             drawGraph: function () {
-                var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, 
-                // additional lines point place holders:
-                secondaryLines = [], secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey), point;
+                var indicator = this,
+                    pointValKey = indicator.pointValKey,
+                    linesApiNames = indicator.linesApiNames,
+                    mainLinePoints = indicator.points,
+                    pointsLength = mainLinePoints.length,
+                    mainLineOptions = indicator.options,
+                    mainLinePath = indicator.graph,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    }, 
+                    // additional lines point place holders:
+                    secondaryLines = [],
+                    secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey),
+                    point;
                 // Generate points for additional lines:
                 each(secondaryLinesNames, function (plotLine, index) {
                     // create additional lines point place holders
@@ -219,7 +234,9 @@
          * @private
          */
         function getExtremeIndexInArray(arr, extreme) {
-            var extremeValue = arr[0], valueIndex = 0, i;
+            var extremeValue = arr[0],
+                valueIndex = 0,
+                i;
             for (i = 1; i < arr.length; i++) {
                 if (extreme === 'max' && arr[i] >= extremeValue ||
                     extreme === 'min' && arr[i] <= extremeValue) {
@@ -294,7 +311,7 @@
                      *
                      * @type {Highcharts.ColorString}
                      */
-                    lineColor: undefined
+                    lineColor: void 0
                 }
             },
             dataGrouping: {
@@ -310,9 +327,22 @@
             pointValKey: 'y',
             linesApiNames: ['aroonDown'],
             getValues: function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // 0- date, 1- Aroon Up, 2- Aroon Down
-                AR = [], xData = [], yData = [], slicedY, low = 2, high = 1, aroonUp, aroonDown, xLow, xHigh, i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // 0- date, 1- Aroon Up, 2- Aroon Down
+                    AR = [],
+                    xData = [],
+                    yData = [],
+                    slicedY,
+                    low = 2,
+                    high = 1,
+                    aroonUp,
+                    aroonDown,
+                    xLow,
+                    xHigh,
+                    i;
                 // For a N-period, we start from N-1 point, to calculate Nth point
                 // That is why we later need to comprehend slice() elements list
                 // with (+1)

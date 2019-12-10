@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Vector plot series module
  *
@@ -40,7 +40,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var arrayMax = U.arrayMax, pick = U.pick;
+        var animObject = U.animObject,
+            arrayMax = U.arrayMax,
+            pick = U.pick;
         var seriesType = H.seriesType;
         /**
          * The vector series class.
@@ -126,7 +128,9 @@
              * @return {Highcharts.SVGAttributes}
              */
             pointAttribs: function (point, state) {
-                var options = this.options, stroke = point.color || this.color, strokeWidth = this.options.lineWidth;
+                var options = this.options,
+                    stroke = point.color || this.color,
+                    strokeWidth = this.options.lineWidth;
                 if (state) {
                     stroke = options.states[state].color || stroke;
                     strokeWidth =
@@ -162,11 +166,14 @@
              * @return {Highcharts.SVGPathArray}
              */
             arrow: function (point) {
-                var path, fraction = point.length / this.lengthMax, u = fraction * this.options.vectorLength / 20, o = {
-                    start: 10 * u,
-                    center: 0,
-                    end: -10 * u
-                }[this.options.rotationOrigin] || 0;
+                var path,
+                    fraction = point.length / this.lengthMax,
+                    u = fraction * this.options.vectorLength / 20,
+                    o = {
+                        start: 10 * u,
+                        center: 0,
+                        end: -10 * u
+                    }[this.options.rotationOrigin] || 0;
                 // The stem and the arrow head. Draw the arrow first with rotation
                 // 0, which is the arrow pointing down (vector from north to south).
                 path = [
@@ -194,7 +201,8 @@
             drawPoints: function () {
                 var chart = this.chart;
                 this.points.forEach(function (point) {
-                    var plotX = point.plotX, plotY = point.plotY;
+                    var plotX = point.plotX,
+                        plotY = point.plotY;
                     if (this.options.clip === false ||
                         chart.isInsidePlot(plotX, plotY, chart.inverted)) {
                         if (!point.graphic) {
@@ -231,17 +239,17 @@
             /*
             drawLegendSymbol: function (legend, item) {
                 var options = legend.options,
-                    symbolHeight = legend.symbolHeight,
-                    square = options.squareSymbol,
-                    symbolWidth = square ? symbolHeight : legend.symbolWidth,
-                    path = this.arrow.call({
-                        lengthMax: 1,
-                        options: {
-                            vectorLength: symbolWidth
-                        }
-                    }, {
-                        length: 1
-                    });
+                        symbolHeight = legend.symbolHeight,
+                        square = options.squareSymbol,
+                        symbolWidth = square ? symbolHeight : legend.symbolWidth,
+                        path = this.arrow.call({
+                            lengthMax: 1,
+                            options: {
+                                vectorLength: symbolWidth
+                            }
+                        }, {
+                            length: 1
+                        });
 
                 item.legendLine = this.chart.renderer.path(path)
                 .addClass('highcharts-point')
@@ -272,7 +280,7 @@
                 else {
                     this.markerGroup.animate({
                         opacity: 1
-                    }, H.animObject(this.options.animation));
+                    }, animObject(this.options.animation));
                     this.animate = null;
                 }
             }

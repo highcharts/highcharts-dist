@@ -1,5 +1,5 @@
 /*
- Highstock JS v7.2.1 (2019-10-31)
+ Highstock JS v8.0.0 (2019-12-10)
 
  Advanced Highstock tools
 

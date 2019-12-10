@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Wind barb series module
  *
@@ -39,24 +39,27 @@
          *
          * */
         var defined = U.defined;
-        var seriesTypes = H.seriesTypes, stableSort = H.stableSort;
+        var seriesTypes = H.seriesTypes,
+            stableSort = H.stableSort;
         /**
          * @private
          * @mixin onSeriesMixin
          */
         var onSeriesMixin = {
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Override getPlotBox. If the onSeries option is valid, return the plot box
-             * of the onSeries, otherwise proceed as usual.
-             *
-             * @private
-             * @function onSeriesMixin.getPlotBox
-             * @return {Highcharts.SeriesPlotBoxObject}
-             */
-            getPlotBox: function () {
-                return H.Series.prototype.getPlotBox.call((this.options.onSeries &&
-                    this.chart.get(this.options.onSeries)) || this);
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Override getPlotBox. If the onSeries option is valid,
+            return the plot box
+                 * of the onSeries,
+            otherwise proceed as usual.
+                 *
+                 * @private
+                 * @function onSeriesMixin.getPlotBox
+                 * @return {Highcharts.SeriesPlotBoxObject}
+                 */
+                getPlotBox: function () {
+                    return H.Series.prototype.getPlotBox.call((this.options.onSeries &&
+                        this.chart.get(this.options.onSeries)) || this);
             },
             /**
              * Extend the translate method by placing the point on the related series
@@ -67,8 +70,29 @@
              */
             translate: function () {
                 seriesTypes.column.prototype.translate.apply(this);
-                var series = this, options = series.options, chart = series.chart, points = series.points, cursor = points.length - 1, point, lastPoint, optionsOnSeries = options.onSeries, onSeries = (optionsOnSeries &&
-                    chart.get(optionsOnSeries)), onKey = options.onKey || 'y', step = onSeries && onSeries.options.step, onData = (onSeries && onSeries.points), i = onData && onData.length, inverted = chart.inverted, xAxis = series.xAxis, yAxis = series.yAxis, xOffset = 0, leftPoint, lastX, rightPoint, currentDataGrouping, distanceRatio;
+                var series = this,
+                    options = series.options,
+                    chart = series.chart,
+                    points = series.points,
+                    cursor = points.length - 1,
+                    point,
+                    lastPoint,
+                    optionsOnSeries = options.onSeries,
+                    onSeries = (optionsOnSeries &&
+                        chart.get(optionsOnSeries)),
+                    onKey = options.onKey || 'y',
+                    step = onSeries && onSeries.options.step,
+                    onData = (onSeries && onSeries.points),
+                    i = onData && onData.length,
+                    inverted = chart.inverted,
+                    xAxis = series.xAxis,
+                    yAxis = series.yAxis,
+                    xOffset = 0,
+                    leftPoint,
+                    lastX,
+                    rightPoint,
+                    currentDataGrouping,
+                    distanceRatio;
                 // relate to a master series
                 if (onSeries && onSeries.visible && i) {
                     xOffset = (onSeries.pointXOffset || 0) + (onSeries.barW || 0) / 2;
@@ -85,14 +109,15 @@
                         point = points[cursor];
                         point.y = leftPoint.y;
                         if (leftPoint.x <= point.x &&
-                            leftPoint[onKey] !== undefined) {
+                            typeof leftPoint[onKey] !== 'undefined') {
                             if (point.x <= lastX) { // #803
                                 point.plotY = leftPoint[onKey];
                                 // interpolate between points, #666
                                 if (leftPoint.x < point.x &&
                                     !step) {
                                     rightPoint = onData[i + 1];
-                                    if (rightPoint && rightPoint[onKey] !== undefined) {
+                                    if (rightPoint &&
+                                        typeof rightPoint[onKey] !== 'undefined') {
                                         // the distance ratio, between 0 and 1
                                         distanceRatio =
                                             (point.x - leftPoint.x) /
@@ -125,7 +150,7 @@
                     // we must remove the shapeArgs (#847). For inverted charts, we need
                     // to calculate position anyway, because series.invertGroups is not
                     // defined
-                    if (point.plotY === undefined || inverted) {
+                    if (typeof point.plotY === 'undefined' || inverted) {
                         if (point.plotX >= 0 &&
                             point.plotX <= xAxis.len) {
                             // We're inside xAxis range
@@ -147,7 +172,7 @@
                     // if multiple flags appear at the same x, order them into a stack
                     lastPoint = points[i - 1];
                     if (lastPoint && lastPoint.plotX === point.plotX) {
-                        if (lastPoint.stackIndex === undefined) {
+                        if (typeof lastPoint.stackIndex === 'undefined') {
                             lastPoint.stackIndex = 0;
                         }
                         stackIndex = lastPoint.stackIndex + 1;
@@ -173,8 +198,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber, pick = U.pick;
-        var noop = H.noop, seriesType = H.seriesType;
+        var animObject = U.animObject,
+            isNumber = U.isNumber,
+            pick = U.pick;
+        var noop = H.noop,
+            seriesType = H.seriesType;
         // eslint-disable-next-line valid-jsdoc
         /**
          * Once off, register the windbarb approximation for data grouping. This can be
@@ -186,7 +214,10 @@
         function registerApproximation() {
             if (H.approximations && !H.approximations.windbarb) {
                 H.approximations.windbarb = function (values, directions) {
-                    var vectorX = 0, vectorY = 0, i, len = values.length;
+                    var vectorX = 0,
+                        vectorY = 0,
+                        i,
+                        len = values.length;
                     for (i = 0; i < len; i++) {
                         vectorX += values[i] * Math.cos(directions[i] * H.deg2rad);
                         vectorY += values[i] * Math.sin(directions[i] * H.deg2rad);
@@ -332,7 +363,9 @@
             },
             // Get presentational attributes.
             pointAttribs: function (point, state) {
-                var options = this.options, stroke = point.color || this.color, strokeWidth = this.options.lineWidth;
+                var options = this.options,
+                    stroke = point.color || this.color,
+                    strokeWidth = this.options.lineWidth;
                 if (state) {
                     stroke = options.states[state].color || stroke;
                     strokeWidth =
@@ -345,13 +378,18 @@
                 };
             },
             markerAttribs: function () {
-                return undefined;
+                return;
             },
             getPlotBox: onSeriesMixin.getPlotBox,
             // Create a single wind arrow. It is later rotated around the zero
             // centerpoint.
             windArrow: function (point) {
-                var knots = point.value * 1.943844, level = point.beaufortLevel, path, barbs, u = this.options.vectorLength / 20, pos = -10;
+                var knots = point.value * 1.943844,
+                    level = point.beaufortLevel,
+                    path,
+                    barbs,
+                    u = this.options.vectorLength / 20,
+                    pos = -10;
                 if (point.isNull) {
                     return [];
                 }
@@ -398,7 +436,8 @@
                 return path;
             },
             translate: function () {
-                var beaufortFloor = this.beaufortFloor, beaufortName = this.beaufortName;
+                var beaufortFloor = this.beaufortFloor,
+                    beaufortName = this.beaufortName;
                 onSeriesMixin.translate.call(this);
                 this.points.forEach(function (point) {
                     var level = 0;
@@ -413,9 +452,13 @@
                 });
             },
             drawPoints: function () {
-                var chart = this.chart, yAxis = this.yAxis, inverted = chart.inverted, shapeOffset = this.options.vectorLength / 2;
+                var chart = this.chart,
+                    yAxis = this.yAxis,
+                    inverted = chart.inverted,
+                    shapeOffset = this.options.vectorLength / 2;
                 this.points.forEach(function (point) {
-                    var plotX = point.plotX, plotY = point.plotY;
+                    var plotX = point.plotX,
+                        plotY = point.plotY;
                     // Check if it's inside the plot area, but only for the X
                     // dimension.
                     if (this.options.clip === false ||
@@ -466,7 +509,7 @@
                 else {
                     this.markerGroup.animate({
                         opacity: 1
-                    }, H.animObject(this.options.animation));
+                    }, animObject(this.options.animation));
                     this.animate = null;
                 }
             },
@@ -479,6 +522,79 @@
                 return isNumber(this.value) && this.value >= 0;
             }
         });
+        /**
+         * A `windbarb` series. If the [type](#series.windbarb.type) option is not
+         * specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @extends   series,plotOptions.windbarb
+         * @excluding dataParser, dataURL
+         * @product   highcharts highstock
+         * @requires  modules/windbarb
+         * @apioption series.windbarb
+         */
+        /**
+         * An array of data points for the series. For the `windbarb` series type,
+         * points can be given in the following ways:
+         *
+         * 1. An array of arrays with 3 values. In this case, the values correspond to
+         *    `x,value,direction`. If the first value is a string, it is applied as the
+         *    name of the point, and the `x` value is inferred.
+         *    ```js
+         *       data: [
+         *           [Date.UTC(2017, 0, 1, 0), 3.3, 90],
+         *           [Date.UTC(2017, 0, 1, 1), 12.1, 180],
+         *           [Date.UTC(2017, 0, 1, 2), 11.1, 270]
+         *       ]
+         *    ```
+         *
+         * 2. An array of objects with named values. The following snippet shows only a
+         *    few settings, see the complete options set below. If the total number of
+         *    data points exceeds the series'
+         *    [turboThreshold](#series.area.turboThreshold), this option is not
+         *    available.
+         *    ```js
+         *       data: [{
+         *           x: Date.UTC(2017, 0, 1, 0),
+         *           value: 12.1,
+         *           direction: 90
+         *       }, {
+         *           x: Date.UTC(2017, 0, 1, 1),
+         *           value: 11.1,
+         *           direction: 270
+         *       }]
+         *    ```
+         *
+         * @sample {highcharts} highcharts/chart/reflow-true/
+         *         Numerical values
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/
+         *         Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *         Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/
+         *         Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/
+         *         Config objects
+         *
+         * @type      {Array<Array<(number|string),number,number>|*>}
+         * @extends   series.line.data
+         * @product   highcharts highstock
+         * @apioption series.windbarb.data
+         */
+        /**
+         * The wind speed in meters per second.
+         *
+         * @type      {number}
+         * @product   highcharts highstock
+         * @apioption series.windbarb.data.value
+         */
+        /**
+         * The wind direction in degrees, where 0 is north (pointing towards south).
+         *
+         * @type      {number}
+         * @product   highcharts highstock
+         * @apioption series.windbarb.data.direction
+         */
+        ''; // adds doclets above to transpiled file
 
     });
     _registerModule(_modules, 'masters/modules/windbarb.src.js', [], function () {

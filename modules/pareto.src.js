@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Pareto series type for Highcharts
  *
@@ -35,7 +35,9 @@
          *
          * */
         var defined = U.defined;
-        var Series = H.Series, addEvent = H.addEvent, noop = H.noop;
+        var Series = H.Series,
+            addEvent = H.addEvent,
+            noop = H.noop;
         /* ************************************************************************** *
          *
          * DERIVED SERIES MIXIN
@@ -49,17 +51,18 @@
          * @mixin derivedSeriesMixin
          */
         var derivedSeriesMixin = {
-            hasDerivedData: true,
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Initialise series
-             *
-             * @private
-             * @function derivedSeriesMixin.init
-             * @return {void}
-             */
-            init: function () {
-                Series.prototype.init.apply(this, arguments);
+                hasDerivedData: true,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Initialise series
+                 *
+                 * @private
+                 * @function derivedSeriesMixin.init
+                 * @return {void}
+                 */
+                init: function () {
+                    Series.prototype.init.apply(this,
+            arguments);
                 this.initialised = false;
                 this.baseSeries = null;
                 this.eventRemovers = [];
@@ -85,9 +88,11 @@
              * @return {void}
              */
             setBaseSeries: function () {
-                var chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
-                    (chart.series[baseSeriesOptions] ||
-                        chart.get(baseSeriesOptions)));
+                var chart = this.chart,
+                    baseSeriesOptions = this.options.baseSeries,
+                    baseSeries = (defined(baseSeriesOptions) &&
+                        (chart.series[baseSeriesOptions] ||
+                            chart.get(baseSeriesOptions)));
                 this.baseSeries = baseSeries || null;
             },
             /**
@@ -98,7 +103,8 @@
              * @return {void}
              */
             addEvents: function () {
-                var derivedSeries = this, chartSeriesLinked;
+                var derivedSeries = this,
+                    chartSeriesLinked;
                 chartSeriesLinked = addEvent(this.chart, 'afterLinkSeries', function () {
                     derivedSeries.setBaseSeries();
                     if (derivedSeries.baseSeries && !derivedSeries.initialised) {
@@ -118,7 +124,9 @@
              * @return {void}
              */
             addBaseSeriesEvents: function () {
-                var derivedSeries = this, updatedDataRemover, destroyRemover;
+                var derivedSeries = this,
+                    updatedDataRemover,
+                    destroyRemover;
                 updatedDataRemover = addEvent(derivedSeries.baseSeries, 'updatedData', function () {
                     derivedSeries.setDerivedData();
                 });
@@ -145,7 +153,7 @@
 
         return derivedSeriesMixin;
     });
-    _registerModule(_modules, 'modules/pareto.src.js', [_modules['parts/Globals.js'], _modules['mixins/derived-series.js']], function (H, derivedSeriesMixin) {
+    _registerModule(_modules, 'modules/pareto.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (H, U, derivedSeriesMixin) {
         /* *
          *
          *  (c) 2010-2017 Sebastian Bochan
@@ -155,7 +163,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = H.correctFloat, seriesType = H.seriesType, merge = H.merge;
+        var correctFloat = U.correctFloat;
+        var seriesType = H.seriesType,
+            merge = H.merge;
         /**
          * The pareto series type.
          *
@@ -204,7 +214,12 @@
              * @requires modules/pareto
              */
             setDerivedData: function () {
-                var xValues = this.baseSeries.xData, yValues = this.baseSeries.yData, sum = this.sumPointsPercents(yValues, xValues, null, true);
+                var xValues = this.baseSeries.xData,
+                    yValues = this.baseSeries.yData,
+                    sum = this.sumPointsPercents(yValues,
+                    xValues,
+                    null,
+                    true);
                 this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
             },
             /**
@@ -231,7 +246,10 @@
              * @requires modules/pareto
              */
             sumPointsPercents: function (yValues, xValues, sum, isSum) {
-                var sumY = 0, sumPercent = 0, percentPoints = [], percentPoint;
+                var sumY = 0,
+                    sumPercent = 0,
+                    percentPoints = [],
+                    percentPoint;
                 yValues.forEach(function (point, i) {
                     if (point !== null) {
                         if (isSum) {

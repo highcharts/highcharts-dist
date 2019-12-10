@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -42,6 +42,7 @@ import '../../indicators/psar.src.js';
 import '../../indicators/roc.src.js';
 import '../../indicators/rsi.src.js';
 import '../../indicators/stochastic.src.js';
+import '../../indicators/slow-stochastic.src.js';
 import '../../indicators/supertrend.src.js';
 import '../../indicators/volume-by-price.src.js';
 import '../../indicators/vwap.src.js';

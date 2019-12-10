@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -36,8 +36,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var correctFloat = H.correctFloat, noop = H.noop;
+        var correctFloat = U.correctFloat,
+            isArray = U.isArray;
+        var noop = H.noop;
         /**
          * The AO series type
          *
@@ -114,7 +115,14 @@
             translate: H.seriesTypes.column.prototype.translate,
             drawPoints: H.seriesTypes.column.prototype.drawPoints,
             drawGraph: function () {
-                var indicator = this, options = indicator.options, points = indicator.points, userColor = indicator.userOptions.color, positiveColor = options.greaterBarColor, negativeColor = options.lowerBarColor, firstPoint = points[0], i;
+                var indicator = this,
+                    options = indicator.options,
+                    points = indicator.points,
+                    userColor = indicator.userOptions.color,
+                    positiveColor = options.greaterBarColor,
+                    negativeColor = options.lowerBarColor,
+                    firstPoint = points[0],
+                    i;
                 if (!userColor && firstPoint) {
                     firstPoint.color = positiveColor;
                     for (i = 1; i < points.length; i++) {
@@ -131,14 +139,30 @@
                 }
             },
             getValues: function (series) {
-                var shortPeriod = 5, longPeriod = 34, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, AO = [], // 0- date, 1- Awesome Oscillator
-                xData = [], yData = [], high = 1, low = 2, shortSum = 0, longSum = 0, shortSMA, // Shorter Period SMA
-                longSMA, // Longer Period SMA
-                awesome, shortLastIndex, longLastIndex, price, i, j;
+                var shortPeriod = 5,
+                    longPeriod = 34,
+                    xVal = series.xData || [],
+                    yVal = series.yData || [],
+                    yValLen = yVal.length,
+                    AO = [], // 0- date, 1- Awesome Oscillator
+                    xData = [],
+                    yData = [],
+                    high = 1,
+                    low = 2,
+                    shortSum = 0,
+                    longSum = 0,
+                    shortSMA, // Shorter Period SMA
+                    longSMA, // Longer Period SMA
+                    awesome,
+                    shortLastIndex,
+                    longLastIndex,
+                    price,
+                    i,
+                    j;
                 if (xVal.length <= longPeriod ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return false;
+                    return;
                 }
                 for (i = 0; i < longPeriod - 1; i++) {
                     price = (yVal[i][high] + yVal[i][low]) / 2;

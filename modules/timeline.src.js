@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Timeline series
  *
@@ -69,53 +69,20 @@
         * @name Highcharts.TimelineDataLabelsFormatterContextObject#series
         * @type {Highcharts.Series}
         */
-        /**
-         * @interface Highcharts.TimelineDataLabelsOptionsObject
-         * @extends Highcharts.DataLabelsOptionsObject
-         */ /**
-        * Whether to position data labels alternately. For example, if
-        * [distance](#plotOptions.timeline.dataLabels.distance)
-        * is set equal to `100`, then data labels will be positioned alternately (on
-        * both sides of the point) at a distance of 100px.
-        *
-        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/series-timeline/alternate-disabled}
-        *      Alternate disabled
-        *
-        * @name Highcharts.TimelineDataLabelsOptionsObject#alternate
-        * @type {boolean|undefined}
-        */ /**
-        * The color of the line connecting the data label to the point. The default
-        * color is the same as the point's color.
-        *
-        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/series-timeline/connector-styles}
-        *      Custom connector width and color
-        *
-        * @name Highcharts.TimelineDataLabelsOptionsObject#connectorColor
-        * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
-        */ /**
-        * The width of the line connecting the data label to the point. In styled mode,
-        * the connector stroke width is given in the `.highcharts-data-label-connector`
-        * class.
-        *
-        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/series-timeline/connector-styles}
-        *      Custom connector width and color
-        *
-        * @name Highcharts.TimelineDataLabelsOptionsObject#connectorWidth
-        * @type {number|undefined}
-        */ /**
-        * A pixel value defining the distance between the data label and the point.
-        * Negative numbers puts the label on top of the point.
-        * @name Highcharts.TimelineDataLabelsOptionsObject#distance
-        * @type {number|undefined}
-        */ /**
-        * @name Highcharts.TimelineDataLabelsOptionsObject#formatter
-        * @type {Highcharts.TimelineDataLabelsFormatterCallbackFunction|undefined}
-        */ /**
-        * @name Highcharts.TimelineDataLabelsOptionsObject#width
-        * @type {number|undefined}
-        */
-        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, defined = U.defined, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
-        var addEvent = H.addEvent, LegendSymbolMixin = H.LegendSymbolMixin, TrackerMixin = H.TrackerMixin, merge = H.merge, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            defined = U.defined,
+            isNumber = U.isNumber,
+            objectEach = U.objectEach,
+            pick = U.pick;
+        var addEvent = H.addEvent,
+            LegendSymbolMixin = H.LegendSymbolMixin,
+            TrackerMixin = H.TrackerMixin,
+            merge = H.merge,
+            Point = H.Point,
+            Series = H.Series,
+            seriesType = H.seriesType,
+            seriesTypes = H.seriesTypes;
         /**
          * The timeline series type.
          *
@@ -165,14 +132,41 @@
                 }
             },
             /**
-             * @type {Highcharts.TimelineDataLabelsOptionsObject|Array<Highcharts.TimelineDataLabelsOptionsObject>}
+             * @declare Highcharts.TimelineDataLabelsOptionsObject
              */
             dataLabels: {
                 enabled: true,
                 allowOverlap: true,
                 /**
-                 * The width of the line connecting the data label to the point.
+                 * Whether to position data labels alternately. For example, if
+                 * [distance](#plotOptions.timeline.dataLabels.distance)
+                 * is set equal to `100`, then data labels will be positioned
+                 * alternately (on both sides of the point) at a distance of 100px.
                  *
+                 * @sample {highcharts} highcharts/series-timeline/alternate-disabled
+                 *         Alternate disabled
+                 */
+                alternate: true,
+                backgroundColor: '#ffffff',
+                borderWidth: 1,
+                borderColor: '#999999',
+                borderRadius: 3,
+                color: '#333333',
+                /**
+                 * The color of the line connecting the data label to the point.
+                 * The default color is the same as the point's color.
+                 *
+                 * In styled mode, the connector stroke is given in the
+                 * `.highcharts-data-label-connector` class.
+                 *
+                 * @sample {highcharts} highcharts/series-timeline/connector-styles
+                 *         Custom connector width and color
+                 *
+                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @apioption plotOptions.timeline.dataLabels.connectorColor
+                 */
+                /**
+                 * The width of the line connecting the data label to the point.
                  *
                  * In styled mode, the connector stroke width is given in the
                  * `.highcharts-data-label-connector` class.
@@ -182,26 +176,17 @@
                  */
                 connectorWidth: 1,
                 /**
-                 * The color of the line connecting the data label to the point.
-                 * The default color is the same as the point's color.
-                 *
-                 * In styled mode, the connector stroke is given in the
-                 * `.highcharts-data-label-connector` class.
-                 *
-                 * @type {String}
-                 * @apioption plotOptions.timeline.dataLabels.connectorColor
-                 * @sample {highcharts} highcharts/series-timeline/connector-styles
-                 *         Custom connector width and color
+                 * A pixel value defining the distance between the data label and
+                 * the point. Negative numbers puts the label on top of the point.
                  */
-                backgroundColor: '#ffffff',
+                distance: 100,
                 // eslint-disable-next-line valid-jsdoc
                 /**
-                 * @type      {Highcharts.FormatterCallbackFunction<object>}
+                 * @type    {Highcharts.TimelineDataLabelsFormatterCallbackFunction}
                  * @default function () {
+                 *   var format;
                  *
-                 *  var format;
-                 *
-                 *  if (!this.series.chart.styledMode) {
+                 *   if (!this.series.chart.styledMode) {
                  *       format = '<span style="color:' + this.point.color +
                  *           '">● </span>';
                  *   } else {
@@ -211,7 +196,6 @@
                  *       (this.point.label || '');
                  *   return format;
                  * }
-                 * @apioption plotOptions.timeline.dataLabels.formatter
                  */
                 formatter: function () {
                     var format;
@@ -227,37 +211,25 @@
                         (this.point.label || '');
                     return format;
                 },
-                borderWidth: 1,
-                borderColor: '#999999',
-                borderRadius: 3,
-                /**
-                 * A pixel value defining the distance between the data label
-                 * and the point. Negative numbers puts the label on top
-                 * of the point.
-                 */
-                distance: 100,
-                /**
-                 * Whether to position data labels alternately. For example, if
-                 * [distance](#plotOptions.timeline.dataLabels.distance) is set
-                 * equal to `100`, then data labels will be positioned alternately
-                 * (on both sides of the point) at a distance of 100px.
-                 *
-                 * @sample {highcharts} highcharts/series-timeline/alternate-disabled
-                 *         Alternate disabled
-                 */
-                alternate: true,
-                verticalAlign: 'middle',
-                color: '#333333',
                 style: {
+                    /** @internal */
                     textOutline: 'none',
+                    /** @internal */
                     fontWeight: 'normal',
+                    /** @internal */
                     fontSize: '12px'
                 },
                 /**
                  * Shadow options for the data label.
+                 *
                  * @type {boolean|Highcharts.CSSObject}
                  */
-                shadow: false
+                shadow: false,
+                /**
+                 * @type      {number}
+                 * @apioption plotOptions.timeline.dataLabels.width
+                 */
+                verticalAlign: 'middle'
             },
             marker: {
                 enabledThreshold: 0,
@@ -282,7 +254,8 @@
                 var series = this;
                 Series.prototype.init.apply(series, arguments);
                 addEvent(series, 'afterTranslate', function () {
-                    var lastPlotX, closestPointRangePx = Number.MAX_VALUE;
+                    var lastPlotX,
+                        closestPointRangePx = Number.MAX_VALUE;
                     series.points.forEach(function (point) {
                         // Set the isInside parameter basing also on the real point
                         // visibility, in order to avoid showing hidden points
@@ -308,9 +281,9 @@
                 });
                 addEvent(series, 'afterDrawDataLabels', function () {
                     var dataLabel; // @todo use this scope for series
-                    // Draw or align connector for each point.
-                    series.points.forEach(function (point) {
-                        dataLabel = point.dataLabel;
+                        // Draw or align connector for each point.
+                        series.points.forEach(function (point) {
+                            dataLabel = point.dataLabel;
                         if (dataLabel) {
                             // Within this wrap method is necessary to save the
                             // current animation params, because the data label
@@ -334,7 +307,7 @@
                         }
                     });
                 });
-                addEvent(series.chart, 'afterHideOverlappingLabels', function () {
+                addEvent(series.chart, 'afterHideOverlappingLabel', function () {
                     series.points.forEach(function (p) {
                         if (p.connector &&
                             p.dataLabel &&
@@ -345,8 +318,10 @@
                 });
             },
             alignDataLabel: function (point, dataLabel, options, alignTo) {
-                var series = this, isInverted = series.chart.inverted, visiblePoints = series.visibilityMap.filter(function (point) {
-                    return point;
+                var series = this,
+                    isInverted = series.chart.inverted,
+                    visiblePoints = series.visibilityMap.filter(function (point) {
+                        return point;
                 }), visiblePointsCount = series.visiblePointsCount, pointIndex = visiblePoints.indexOf(point), isFirstOrLast = (!pointIndex || pointIndex === visiblePointsCount - 1), dataLabelsOptions = series.options.dataLabels, userDLOptions = point.userDLOptions || {}, 
                 // Define multiplier which is used to calculate data label
                 // width. If data labels are alternate, they have two times more
@@ -384,7 +359,9 @@
                 Series.prototype.alignDataLabel.apply(series, arguments);
             },
             processData: function () {
-                var series = this, visiblePoints = 0, i;
+                var series = this,
+                    visiblePoints = 0,
+                    i;
                 series.visibilityMap = series.getVisibilityMap();
                 // Calculate currently visible points.
                 series.visibilityMap.forEach(function (point) {
@@ -400,9 +377,11 @@
                 return;
             },
             getXExtremes: function (xData) {
-                var series = this, filteredData = xData.filter(function (x, i) {
-                    return series.points[i].isValid() &&
-                        series.points[i].visible;
+                var series = this,
+                    filteredData = xData.filter(function (x,
+                    i) {
+                        return series.points[i].isValid() &&
+                            series.points[i].visible;
                 });
                 return {
                     min: arrayMin(filteredData),
@@ -419,16 +398,23 @@
                 });
             },
             getVisibilityMap: function () {
-                var series = this, map = (series.data.length ?
-                    series.data : series.userOptions.data).map(function (point) {
-                    return (point &&
-                        point.visible !== false &&
-                        !point.isNull) ? point : false;
+                var series = this,
+                    map = (series.data.length ?
+                        series.data : series.userOptions.data).map(function (point) {
+                        return (point &&
+                            point.visible !== false &&
+                            !point.isNull) ? point : false;
                 });
                 return map;
             },
             distributeDL: function () {
-                var series = this, dataLabelsOptions = series.options.dataLabels, options, pointDLOptions, newOptions = {}, visibilityIndex = 1, distance = dataLabelsOptions.distance;
+                var series = this,
+                    dataLabelsOptions = series.options.dataLabels,
+                    options,
+                    pointDLOptions,
+                    newOptions = {},
+                    visibilityIndex = 1,
+                    distance = dataLabelsOptions.distance;
                 series.points.forEach(function (point) {
                     if (point.visible && !point.isNull) {
                         options = point.options;
@@ -446,7 +432,19 @@
                 });
             },
             markerAttribs: function (point, state) {
-                var series = this, seriesMarkerOptions = series.options.marker, seriesStateOptions, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol), pointStateOptions, width = pick(pointMarkerOptions.width, seriesMarkerOptions.width, series.closestPointRangePx), height = pick(pointMarkerOptions.height, seriesMarkerOptions.height), radius = 0, attribs;
+                var series = this,
+                    seriesMarkerOptions = series.options.marker,
+                    seriesStateOptions,
+                    pointMarkerOptions = point.marker || {},
+                    symbol = (pointMarkerOptions.symbol || seriesMarkerOptions.symbol),
+                    pointStateOptions,
+                    width = pick(pointMarkerOptions.width,
+                    seriesMarkerOptions.width,
+                    series.closestPointRangePx),
+                    height = pick(pointMarkerOptions.height,
+                    seriesMarkerOptions.height),
+                    radius = 0,
+                    attribs;
                 // Call default markerAttribs method, when the xAxis type
                 // is set to datetime.
                 if (series.xAxis.isDatetimeAxis) {
@@ -486,7 +484,8 @@
          */
         {
             init: function () {
-                var point = Point.prototype.init.apply(this, arguments);
+                var point = Point.prototype.init.apply(this,
+                    arguments);
                 point.name = pick(point.name, 'Event');
                 point.y = 1;
                 return point;
@@ -495,7 +494,8 @@
                 return this.options.y !== null;
             },
             setVisible: function (vis, redraw) {
-                var point = this, series = point.series;
+                var point = this,
+                    series = point.series;
                 redraw = pick(redraw, series.options.ignoreHiddenPoint);
                 seriesTypes.pie.prototype.pointClass.prototype
                     .setVisible.call(point, vis, false);
@@ -513,13 +513,22 @@
                 }
             },
             getConnectorPath: function () {
-                var point = this, chart = point.series.chart, xAxisLen = point.series.xAxis.len, inverted = chart.inverted, direction = inverted ? 'x2' : 'y2', dl = point.dataLabel, targetDLPos = dl.targetPosition, coords = {
-                    x1: point.plotX,
-                    y1: point.plotY,
-                    x2: point.plotX,
-                    y2: isNumber(targetDLPos.y) ? targetDLPos.y : dl.y
-                }, negativeDistance = ((dl.alignAttr || dl)[direction[0]] <
-                    point.series.yAxis.len / 2), path;
+                var point = this,
+                    chart = point.series.chart,
+                    xAxisLen = point.series.xAxis.len,
+                    inverted = chart.inverted,
+                    direction = inverted ? 'x2' : 'y2',
+                    dl = point.dataLabel,
+                    targetDLPos = dl.targetPosition,
+                    coords = {
+                        x1: point.plotX,
+                        y1: point.plotY,
+                        x2: point.plotX,
+                        y2: isNumber(targetDLPos.y) ? targetDLPos.y : dl.y
+                    },
+                    negativeDistance = ((dl.alignAttr || dl)[direction[0]] <
+                        point.series.yAxis.len / 2),
+                    path;
                 // Recalculate coords when the chart is inverted.
                 if (inverted) {
                     coords = {
@@ -549,7 +558,8 @@
                 return path;
             },
             drawConnector: function () {
-                var point = this, series = point.series;
+                var point = this,
+                    series = point.series;
                 if (!point.connector) {
                     point.connector = series.chart.renderer
                         .path(point.getConnectorPath())
@@ -564,10 +574,19 @@
                 }
             },
             alignConnector: function () {
-                var point = this, series = point.series, connector = point.connector, dl = point.dataLabel, dlOptions = point.dataLabel.options = merge(series.options.dataLabels, point.options.dataLabels), chart = point.series.chart, bBox = connector.getBBox(), plotPos = {
-                    x: bBox.x + dl.translateX,
-                    y: bBox.y + dl.translateY
-                }, isVisible;
+                var point = this,
+                    series = point.series,
+                    connector = point.connector,
+                    dl = point.dataLabel,
+                    dlOptions = point.dataLabel.options = merge(series.options.dataLabels,
+                    point.options.dataLabels),
+                    chart = point.series.chart,
+                    bBox = connector.getBBox(),
+                    plotPos = {
+                        x: bBox.x + dl.translateX,
+                        y: bBox.y + dl.translateY
+                    },
+                    isVisible;
                 // Include a half of connector width in order to run animation,
                 // when connectors are aligned to the plot area edge.
                 if (chart.inverted) {

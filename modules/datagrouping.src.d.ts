@@ -26,7 +26,7 @@ declare module "../highcharts.src" {
          *        Whether to redraw the chart or wait for a later call to
          *        Chart#redraw.
          */
-        setDataGrouping(dataGrouping?: (boolean|PlotSeriesDataGroupingOptions), redraw?: boolean): void;
+        setDataGrouping(dataGrouping?: (boolean|DataGroupingOptionsObject), redraw?: boolean): void;
     }
 }
 export default factory;

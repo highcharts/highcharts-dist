@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Advanced Highstock tools
  *
@@ -55,7 +55,7 @@
          *        Chart container
          */
         var FullScreen = H.FullScreen = function (container) {
-            this.init(container.parentNode);
+                this.init(container.parentNode);
         };
         FullScreen.prototype = {
             /**

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -37,28 +37,40 @@
          *
          * */
         var isArray = U.isArray;
-        var seriesType = H.seriesType, UNDEFINED;
+        var seriesType = H.seriesType,
+            UNDEFINED;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
          * @private
          */
         function accumulateAverage(points, xVal, yVal, i) {
-            var xValue = xVal[i], yValue = yVal[i];
+            var xValue = xVal[i],
+                yValue = yVal[i];
             points.push([xValue, yValue]);
         }
         /**
          * @private
          */
         function getTR(currentPoint, prevPoint) {
-            var pointY = currentPoint, prevY = prevPoint, HL = pointY[1] - pointY[2], HCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[1] - prevY[3]), LCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[2] - prevY[3]), TR = Math.max(HL, HCp, LCp);
+            var pointY = currentPoint,
+                prevY = prevPoint,
+                HL = pointY[1] - pointY[2],
+                HCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[1] - prevY[3]),
+                LCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[2] - prevY[3]),
+                TR = Math.max(HL,
+                HCp,
+                LCp);
             return TR;
         }
         /**
          * @private
          */
         function populateAverage(points, xVal, yVal, i, period, prevATR) {
-            var x = xVal[i - 1], TR = getTR(yVal[i - 1], yVal[i - 2]), y;
+            var x = xVal[i - 1],
+                TR = getTR(yVal[i - 1],
+                yVal[i - 2]),
+                y;
             y = (((prevATR * (period - 1)) + TR) / period);
             return [x, y];
         }
@@ -97,12 +109,26 @@
          */
         {
             getValues: function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], yValue = yVal[0], range = 1, prevATR = 0, TR = 0, ATR = [], xData = [], yData = [], point, i, points;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    xValue = xVal[0],
+                    yValue = yVal[0],
+                    range = 1,
+                    prevATR = 0,
+                    TR = 0,
+                    ATR = [],
+                    xData = [],
+                    yData = [],
+                    point,
+                    i,
+                    points;
                 points = [[xValue, yValue]];
                 if ((xVal.length <= period) ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return false;
+                    return;
                 }
                 for (i = 1; i <= yValLen; i++) {
                     accumulateAverage(points, xVal, yVal, i);

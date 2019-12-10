@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -38,7 +38,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = H.seriesType, UNDEFINED;
+        var seriesType = H.seriesType,
+            UNDEFINED;
         /**
          * The Zig Zag series type.
          *
@@ -102,16 +103,34 @@
             nameSuffixes: ['%'],
             nameBase: 'Zig Zag',
             getValues: function (series, params) {
-                var lowIndex = params.lowIndex, highIndex = params.highIndex, deviation = params.deviation / 100, deviations = {
-                    'low': 1 + deviation,
-                    'high': 1 - deviation
-                }, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, zigzag = [], xData = [], yData = [], i, j, zigzagPoint, firstZigzagLow, firstZigzagHigh, directionUp, zigzagLen, exitLoop = false, yIndex = false;
+                var lowIndex = params.lowIndex,
+                    highIndex = params.highIndex,
+                    deviation = params.deviation / 100,
+                    deviations = {
+                        'low': 1 + deviation,
+                        'high': 1 - deviation
+                    },
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    zigzag = [],
+                    xData = [],
+                    yData = [],
+                    i,
+                    j,
+                    zigzagPoint,
+                    firstZigzagLow,
+                    firstZigzagHigh,
+                    directionUp,
+                    zigzagLen,
+                    exitLoop = false,
+                    yIndex = false;
                 // Exit if not enught points or no low or high values
-                if (xVal.length <= 1 ||
+                if (!xVal || xVal.length <= 1 ||
                     (yValLen &&
                         (yVal[0][lowIndex] === UNDEFINED ||
                             yVal[0][highIndex] === UNDEFINED))) {
-                    return false;
+                    return;
                 }
                 // Set first zigzag point candidate
                 firstZigzagLow = yVal[0][lowIndex];

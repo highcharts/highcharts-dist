@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -42,9 +42,14 @@
          * @private
          */
         function populateAverage(xVal, yVal, yValVolume, i) {
-            var high = yVal[i][1], low = yVal[i][2], close = yVal[i][3], volume = yValVolume[i], adY = close === high && close === low || high === low ?
-                0 :
-                ((2 * close - low - high) / (high - low)) * volume, adX = xVal[i];
+            var high = yVal[i][1],
+                low = yVal[i][2],
+                close = yVal[i][3],
+                volume = yValVolume[i],
+                adY = close === high && close === low || high === low ?
+                    0 :
+                    ((2 * close - low - high) / (high - low)) * volume,
+                adX = xVal[i];
             return [adX, adY];
         }
         /* eslint-enable valid-jsdoc */
@@ -91,16 +96,29 @@
             nameComponents: false,
             nameBase: 'Accumulation/Distribution',
             getValues: function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, volumeSeriesID = params.volumeSeriesID, volumeSeries = series.chart.get(volumeSeriesID), yValVolume = volumeSeries && volumeSeries.yData, yValLen = yVal ? yVal.length : 0, AD = [], xData = [], yData = [], len, i, ADPoint;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    volumeSeriesID = params.volumeSeriesID,
+                    volumeSeries = series.chart.get(volumeSeriesID),
+                    yValVolume = volumeSeries && volumeSeries.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    AD = [],
+                    xData = [],
+                    yData = [],
+                    len,
+                    i,
+                    ADPoint;
                 if (xVal.length <= period &&
                     yValLen &&
                     yVal[0].length !== 4) {
-                    return false;
+                    return;
                 }
                 if (!volumeSeries) {
-                    return H.error('Series ' +
+                    H.error('Series ' +
                         volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
+                    return;
                 }
                 // i = period <-- skip first N-points
                 // Calculate value one-by-one for each period in visible data
@@ -149,26 +167,31 @@
         var error = H.error;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
-            /**
-             * Check whether given indicator is loaded, else throw error.
-             * @private
-             * @param {Highcharts.Indicator} indicator
-             *        Indicator constructor function.
-             * @param {string} requiredIndicator
-             *        Required indicator type.
-             * @param {string} type
-             *        Type of indicator where function was called (parent).
-             * @param {Highcharts.IndicatorCallbackFunction} callback
-             *        Callback which is triggered if the given indicator is loaded.
-             *        Takes indicator as an argument.
-             * @param {string} errMessage
-             *        Error message that will be logged in console.
-             * @return {boolean}
-             *         Returns false when there is no required indicator loaded.
-             */
-            isParentLoaded: function (indicator, requiredIndicator, type, callback, errMessage) {
-                if (indicator) {
-                    return callback ? callback(indicator) : true;
+                /**
+                 * Check whether given indicator is loaded,
+            else throw error.
+                 * @private
+                 * @param {Highcharts.Indicator} indicator
+                 *        Indicator constructor function.
+                 * @param {string} requiredIndicator
+                 *        Required indicator type.
+                 * @param {string} type
+                 *        Type of indicator where function was called (parent).
+                 * @param {Highcharts.IndicatorCallbackFunction} callback
+                 *        Callback which is triggered if the given indicator is loaded.
+                 *        Takes indicator as an argument.
+                 * @param {string} errMessage
+                 *        Error message that will be logged in console.
+                 * @return {boolean}
+                 *         Returns false when there is no required indicator loaded.
+                 */
+                isParentLoaded: function (indicator,
+            requiredIndicator,
+            type,
+            callback,
+            errMessage) {
+                    if (indicator) {
+                        return callback ? callback(indicator) : true;
                 }
                 error(errMessage || this.generateMessage(type, requiredIndicator));
                 return false;
@@ -193,7 +216,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'indicators/chaikin.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicatorMixin) {
+    _registerModule(_modules, 'indicators/chaikin.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -201,7 +224,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var EMA = H.seriesTypes.ema, AD = H.seriesTypes.ad, error = H.error, correctFloat = H.correctFloat, requiredIndicator = requiredIndicatorMixin;
+        var correctFloat = U.correctFloat;
+        var EMA = H.seriesTypes.ema,
+            AD = H.seriesTypes.ad,
+            error = H.error,
+            requiredIndicator = requiredIndicatorMixin;
         /**
          * The Chaikin series type.
          *
@@ -261,27 +288,34 @@
             nameBase: 'Chaikin Osc',
             nameComponents: ['periods'],
             init: function () {
-                var args = arguments, ctx = this;
+                var args = arguments,
+                    ctx = this;
                 requiredIndicator.isParentLoaded(EMA, 'ema', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
                 });
             },
             getValues: function (series, params) {
-                var periods = params.periods, period = params.period, 
-                // Accumulation Distribution Line data
-                ADL, 
-                // 0- date, 1- Chaikin Oscillator
-                CHA = [], xData = [], yData = [], periodsOffset, 
-                // Shorter Period EMA
-                SPE, 
-                // Longer Period EMA
-                LPE, oscillator, i;
+                var periods = params.periods,
+                    period = params.period, 
+                    // Accumulation Distribution Line data
+                    ADL, 
+                    // 0- date, 1- Chaikin Oscillator
+                    CHA = [],
+                    xData = [],
+                    yData = [],
+                    periodsOffset, 
+                    // Shorter Period EMA
+                    SPE, 
+                    // Longer Period EMA
+                    LPE,
+                    oscillator,
+                    i;
                 // Check if periods are correct
                 if (periods.length !== 2 || periods[1] <= periods[0]) {
                     error('Error: "Chaikin requires two periods. Notice, first ' +
                         'period should be lower than the second one."');
-                    return false;
+                    return;
                 }
                 ADL = AD.prototype.getValues.call(this, series, {
                     volumeSeriesID: params.volumeSeriesID,
@@ -289,7 +323,7 @@
                 });
                 // Check if adl is calculated properly, if not skip
                 if (!ADL) {
-                    return false;
+                    return;
                 }
                 SPE = EMA.prototype.getValues.call(this, ADL, {
                     period: periods[0]
@@ -299,7 +333,7 @@
                 });
                 // Check if ema is calculated properly, if not skip
                 if (!SPE || !LPE) {
-                    return false;
+                    return;
                 }
                 periodsOffset = periods[1] - periods[0];
                 for (i = 0; i < LPE.yData.length; i++) {

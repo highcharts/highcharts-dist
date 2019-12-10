@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -95,12 +95,19 @@
              * @return {object} - computed VWAP
              **/
             getValues: function (series, params) {
-                var indicator = this, chart = series.chart, xValues = series.xData, yValues = series.yData, period = params.period, isOHLC = true, volumeSeries;
+                var indicator = this,
+                    chart = series.chart,
+                    xValues = series.xData,
+                    yValues = series.yData,
+                    period = params.period,
+                    isOHLC = true,
+                    volumeSeries;
                 // Checks if volume series exists
                 if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
-                    return H.error('Series ' +
+                    H.error('Series ' +
                         params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, chart);
+                    return;
                 }
                 // Checks if series data fits the OHLC format
                 if (!(isArray(yValues[0]))) {
@@ -122,7 +129,20 @@
              * @return {object} - Object contains computed VWAP
              **/
             calculateVWAPValues: function (isOHLC, xValues, yValues, volumeSeries, period) {
-                var volumeValues = volumeSeries.yData, volumeLength = volumeSeries.xData.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [], commonLength, typicalPrice, cPrice, cVolume, i, j;
+                var volumeValues = volumeSeries.yData,
+                    volumeLength = volumeSeries.xData.length,
+                    pointsLength = xValues.length,
+                    cumulativePrice = [],
+                    cumulativeVolume = [],
+                    xData = [],
+                    yData = [],
+                    VWAP = [],
+                    commonLength,
+                    typicalPrice,
+                    cPrice,
+                    cVolume,
+                    i,
+                    j;
                 if (pointsLength <= volumeLength) {
                     commonLength = pointsLength;
                 }

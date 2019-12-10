@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -39,7 +39,10 @@
          *
          * */
         var defined = U.defined;
-        var each = H.each, merge = H.merge, error = H.error, SMA = H.seriesTypes.sma;
+        var each = H.each,
+            merge = H.merge,
+            error = H.error,
+            SMA = H.seriesTypes.sma;
         /**
          * Mixin useful for all indicators that have more than one line.
          * Merge it with your implementation where you will provide
@@ -51,50 +54,50 @@
          * @mixin multipleLinesMixin
          */
         var multipleLinesMixin = {
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Lines ids. Required to plot appropriate amount of lines.
-             * Notice that pointArrayMap should have more elements than
-             * linesApiNames, because it contains main line and additional lines ids.
-             * Also it should be consistent with amount of lines calculated in
-             * getValues method from your implementation.
-             *
-             * @private
-             * @name multipleLinesMixin.pointArrayMap
-             * @type {Array<string>}
-             */
-            pointArrayMap: ['top', 'bottom'],
-            /**
-             * Main line id.
-             *
-             * @private
-             * @name multipleLinesMixin.pointValKey
-             * @type {string}
-             */
-            pointValKey: 'top',
-            /**
-             * Additional lines DOCS names. Elements of linesApiNames array should
-             * be consistent with DOCS line names defined in your implementation.
-             * Notice that linesApiNames should have decreased amount of elements
-             * relative to pointArrayMap (without pointValKey).
-             *
-             * @private
-             * @name multipleLinesMixin.linesApiNames
-             * @type {Array<string>}
-             */
-            linesApiNames: ['bottomLine'],
-            /**
-             * Create translatedLines Collection based on pointArrayMap.
-             *
-             * @private
-             * @function multipleLinesMixin.getTranslatedLinesNames
-             * @param {string} [excludedValue]
-             *        Main line id
-             * @return {Array<string>}
-             *         Returns translated lines names without excluded value.
-             */
-            getTranslatedLinesNames: function (excludedValue) {
-                var translatedLines = [];
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Lines ids. Required to plot appropriate amount of lines.
+                 * Notice that pointArrayMap should have more elements than
+                 * linesApiNames, because it contains main line and additional lines ids.
+                 * Also it should be consistent with amount of lines calculated in
+                 * getValues method from your implementation.
+                 *
+                 * @private
+                 * @name multipleLinesMixin.pointArrayMap
+                 * @type {Array<string>}
+                 */
+                pointArrayMap: ['top', 'bottom'],
+                /**
+                 * Main line id.
+                 *
+                 * @private
+                 * @name multipleLinesMixin.pointValKey
+                 * @type {string}
+                 */
+                pointValKey: 'top',
+                /**
+                 * Additional lines DOCS names. Elements of linesApiNames array should
+                 * be consistent with DOCS line names defined in your implementation.
+                 * Notice that linesApiNames should have decreased amount of elements
+                 * relative to pointArrayMap (without pointValKey).
+                 *
+                 * @private
+                 * @name multipleLinesMixin.linesApiNames
+                 * @type {Array<string>}
+                 */
+                linesApiNames: ['bottomLine'],
+                /**
+                 * Create translatedLines Collection based on pointArrayMap.
+                 *
+                 * @private
+                 * @function multipleLinesMixin.getTranslatedLinesNames
+                 * @param {string} [excludedValue]
+                 *        Main line id
+                 * @return {Array<string>}
+                 *         Returns translated lines names without excluded value.
+                 */
+                getTranslatedLinesNames: function (excludedValue) {
+                    var translatedLines = [];
                 each(this.pointArrayMap, function (propertyName) {
                     if (propertyName !== excludedValue) {
                         translatedLines.push('plot' +
@@ -127,7 +130,10 @@
              * @return {void}
              */
             translate: function () {
-                var indicator = this, pointArrayMap = indicator.pointArrayMap, LinesNames = [], value;
+                var indicator = this,
+                    pointArrayMap = indicator.pointArrayMap,
+                    LinesNames = [],
+                    value;
                 LinesNames = indicator.getTranslatedLinesNames();
                 SMA.prototype.translate.apply(indicator, arguments);
                 each(indicator.points, function (point) {
@@ -147,13 +153,22 @@
              * @return {void}
              */
             drawGraph: function () {
-                var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, 
-                // additional lines point place holders:
-                secondaryLines = [], secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey), point;
+                var indicator = this,
+                    pointValKey = indicator.pointValKey,
+                    linesApiNames = indicator.linesApiNames,
+                    mainLinePoints = indicator.points,
+                    pointsLength = mainLinePoints.length,
+                    mainLineOptions = indicator.options,
+                    mainLinePath = indicator.graph,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    }, 
+                    // additional lines point place holders:
+                    secondaryLines = [],
+                    secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey),
+                    point;
                 // Generate points for additional lines:
                 each(secondaryLinesNames, function (plotLine, index) {
                     // create additional lines point place holders
@@ -216,26 +231,31 @@
         var error = H.error;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
-            /**
-             * Check whether given indicator is loaded, else throw error.
-             * @private
-             * @param {Highcharts.Indicator} indicator
-             *        Indicator constructor function.
-             * @param {string} requiredIndicator
-             *        Required indicator type.
-             * @param {string} type
-             *        Type of indicator where function was called (parent).
-             * @param {Highcharts.IndicatorCallbackFunction} callback
-             *        Callback which is triggered if the given indicator is loaded.
-             *        Takes indicator as an argument.
-             * @param {string} errMessage
-             *        Error message that will be logged in console.
-             * @return {boolean}
-             *         Returns false when there is no required indicator loaded.
-             */
-            isParentLoaded: function (indicator, requiredIndicator, type, callback, errMessage) {
-                if (indicator) {
-                    return callback ? callback(indicator) : true;
+                /**
+                 * Check whether given indicator is loaded,
+            else throw error.
+                 * @private
+                 * @param {Highcharts.Indicator} indicator
+                 *        Indicator constructor function.
+                 * @param {string} requiredIndicator
+                 *        Required indicator type.
+                 * @param {string} type
+                 *        Type of indicator where function was called (parent).
+                 * @param {Highcharts.IndicatorCallbackFunction} callback
+                 *        Callback which is triggered if the given indicator is loaded.
+                 *        Takes indicator as an argument.
+                 * @param {string} errMessage
+                 *        Error message that will be logged in console.
+                 * @return {boolean}
+                 *         Returns false when there is no required indicator loaded.
+                 */
+                isParentLoaded: function (indicator,
+            requiredIndicator,
+            type,
+            callback,
+            errMessage) {
+                    if (indicator) {
+                        return callback ? callback(indicator) : true;
                 }
                 error(errMessage || this.generateMessage(type, requiredIndicator));
                 return false;
@@ -268,7 +288,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var AROON = H.seriesTypes.aroon, requiredIndicator = requiredIndicatorMixin;
+        var AROON = H.seriesTypes.aroon,
+            requiredIndicator = requiredIndicatorMixin;
         /**
          * The Aroon Oscillator series type.
          *
@@ -327,7 +348,8 @@
             pointValKey: 'y',
             linesApiNames: [],
             init: function () {
-                var args = arguments, ctx = this;
+                var args = arguments,
+                    ctx = this;
                 requiredIndicator.isParentLoaded(AROON, 'aroon', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
@@ -335,7 +357,14 @@
             },
             getValues: function (series, params) {
                 // 0- date, 1- Aroon Oscillator
-                var ARO = [], xData = [], yData = [], aroon, aroonUp, aroonDown, oscillator, i;
+                var ARO = [],
+                    xData = [],
+                    yData = [],
+                    aroon,
+                    aroonUp,
+                    aroonDown,
+                    oscillator,
+                    i;
                 aroon = AROON.prototype.getValues.call(this, series, params);
                 for (i = 0; i < aroon.yData.length; i++) {
                     aroonUp = aroon.yData[i][0];

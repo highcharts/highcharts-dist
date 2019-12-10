@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Debugger module
  *
@@ -173,7 +173,9 @@
          *
          * */
         var isNumber = U.isNumber;
-        var addEvent = H.addEvent, setOptions = H.setOptions, each = H.each;
+        var addEvent = H.addEvent,
+            setOptions = H.setOptions,
+            each = H.each;
         setOptions({
             /**
              * @optionparent chart
@@ -194,7 +196,13 @@
         });
         /* eslint-disable no-invalid-this */
         addEvent(H.Chart, 'displayError', function (e) {
-            var chart = this, code = e.code, msg, options = chart.options.chart, renderer = chart.renderer, chartWidth, chartHeight;
+            var chart = this,
+                code = e.code,
+                msg,
+                options = chart.options.chart,
+                renderer = chart.renderer,
+                chartWidth,
+                chartHeight;
             if (chart.errorElements) {
                 each(chart.errorElements, function (el) {
                     if (el) {
@@ -221,7 +229,7 @@
                     zIndex: 3
                 }).add();
                 // Render error message
-                chart.errorElements[1] = renderer.label(msg, 0, 0, 'rect', undefined, undefined, undefined, undefined, 'debugger').css({
+                chart.errorElements[1] = renderer.label(msg, 0, 0, 'rect', void 0, void 0, void 0, void 0, 'debugger').css({
                     color: '#ffffff',
                     width: chartWidth - 16,
                     padding: 0

@@ -23,7 +23,7 @@ var isFunction = function (x) {
  * @function Highcharts.Tree#getListOfParents
  *
  * @param {Array<*>} data
- *        List of points set in options. `Array<*>.parent`is parent id of point.
+ *        List of points set in options. `Array.parent` is parent id of point.
  *
  * @param {Array<string>} ids
  *        List of all point ids.
@@ -34,7 +34,7 @@ var isFunction = function (x) {
 var getListOfParents = function (data, ids) {
     var listOfParents = data.reduce(function (prev, curr) {
         var parent = pick(curr.parent, '');
-        if (prev[parent] === undefined) {
+        if (typeof prev[parent] === 'undefined') {
             prev[parent] = [];
         }
         prev[parent].push(curr);

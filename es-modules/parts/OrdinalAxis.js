@@ -47,7 +47,7 @@ Axis.prototype.getTimeTicks = function (normalizedInterval, min, max, startOfWee
     if ((!this.options.ordinal && !this.options.breaks) ||
         !positions ||
         positions.length < 3 ||
-        min === undefined) {
+        typeof min === 'undefined') {
         return time.getTimeTicks.apply(time, arguments);
     }
     // Analyze the positions array to split it into segments on gaps larger than
@@ -132,7 +132,7 @@ Axis.prototype.getTimeTicks = function (normalizedInterval, min, max, startOfWee
         }
         // Now loop over again and remove ticks where needed
         i = groupPositions[length - 1] > max ? length - 1 : length; // #817
-        lastTranslated = undefined;
+        lastTranslated = void 0;
         while (i--) {
             translated = translatedArr[i];
             distance = Math.abs(lastTranslated - translated);
@@ -283,7 +283,7 @@ extend(Axis.prototype, /** @lends Axis.prototype */ {
             else {
                 axis.overscrollPointsRange = pick(axis.closestPointRange, axis.overscrollPointsRange);
                 axis.ordinalPositions = axis.ordinalSlope = axis.ordinalOffset =
-                    undefined;
+                    void 0;
             }
         }
         axis.isOrdinal = isOrdinal && useOrdinal; // #3818, #4196, #4926
@@ -401,7 +401,8 @@ extend(Axis.prototype, /** @lends Axis.prototype */ {
             // If the index is within the range of the ordinal positions, return
             // the associated or interpolated value. If not, just return the
             // value
-            return (distance !== undefined && ordinalPositions[i] !== undefined ?
+            return (typeof distance !== 'undefined' &&
+                typeof ordinalPositions[i] !== 'undefined' ?
                 ordinalPositions[i] + (distance ?
                     distance *
                         (ordinalPositions[i + 1] - ordinalPositions[i]) :
@@ -604,8 +605,12 @@ extend(Axis.prototype, /** @lends Axis.prototype */ {
 Axis.prototype.ordinal2lin = Axis.prototype.val2lin;
 // Extending the Chart.pan method for ordinal axes
 addEvent(Chart, 'pan', function (e) {
-    var chart = this, xAxis = chart.xAxis[0], overscroll = xAxis.options.overscroll, chartX = e.originalEvent.chartX, runBase = false;
-    if (xAxis.options.ordinal && xAxis.series.length) {
+    var chart = this, xAxis = chart.xAxis[0], overscroll = xAxis.options.overscroll, chartX = e.originalEvent.chartX, panning = chart.options.chart &&
+        chart.options.chart.panning, runBase = false;
+    if (panning &&
+        panning.type !== 'y' &&
+        xAxis.options.ordinal &&
+        xAxis.series.length) {
         var mouseDownX = chart.mouseDownX, extremes = xAxis.getExtremes(), dataMax = extremes.dataMax, min = extremes.min, max = extremes.max, trimmedRange, hoverPoints = chart.hoverPoints, closestPointRange = xAxis.closestPointRange || xAxis.overscrollPointsRange, pointPixelWidth = (xAxis.translationSlope *
             (xAxis.ordinalSlope || closestPointRange)), 
         // how many ordinal units did we move?
@@ -666,7 +671,7 @@ addEvent(Chart, 'pan', function (e) {
         runBase = true;
     }
     // revert to the linear chart.pan version
-    if (runBase) {
+    if (runBase || (panning && /y/.test(panning.type))) {
         if (overscroll) {
             xAxis.max = xAxis.dataMax + overscroll;
         }

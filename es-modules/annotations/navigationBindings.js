@@ -1329,7 +1329,7 @@ H.setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/7.2.1/gfx/stock-icons/
+         * @default   https://code.highcharts.com/8.0.0/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */
@@ -1342,11 +1342,11 @@ H.setOptions({
          */
 
         /**
-         * A `hidePopop` event. Fired when Popup should be hidden, for exampole
+         * A `closePopup` event. Fired when Popup should be hidden, for example
          * when clicking on an annotation again.
          *
          * @type      {Function}
-         * @apioption navigation.events.hidePopup
+         * @apioption navigation.events.closePopup
          */
 
         /**

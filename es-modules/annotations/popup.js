@@ -16,11 +16,11 @@ var defined = U.defined,
     isObject = U.isObject,
     isString = U.isString,
     objectEach = U.objectEach,
-    pick = U.pick;
+    pick = U.pick,
+    wrap = U.wrap;
 
 var addEvent = H.addEvent,
     createElement = H.createElement,
-    wrap = H.wrap,
     indexFilter = /\d/g,
     PREFIX = 'highcharts-',
     DIV = 'div',
@@ -1062,7 +1062,7 @@ addEvent(H.NavigationBindings, 'showPopup', function (config) {
                     this.chart.options.stockTools &&
                     this.chart.options.stockTools.gui.iconsURL
                 ) ||
-                'https://code.highcharts.com/7.2.1/gfx/stock-icons/'
+                'https://code.highcharts.com/8.0.0/gfx/stock-icons/'
             )
         );
     }

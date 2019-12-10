@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  * @module highcharts/modules/stock-tools
  * @requires highcharts
  * @requires highcharts/modules/stock

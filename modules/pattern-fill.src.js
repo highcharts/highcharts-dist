@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -100,7 +100,7 @@
         * identical patterns are reused. To refer to an existing pattern for a
         * Highcharts color, use `color: "url(#pattern-id)"`.
         * @name Highcharts.PatternOptionsObject#id
-        * @type {string}
+        * @type {string|undefined}
         */
         /**
          * Holds a pattern definition.
@@ -136,9 +136,45 @@
         * Animation options for the image pattern loading.
         * @name Highcharts.PatternObject#animation
         * @type {boolean|Highcharts.AnimationOptionsObject|undefined}
+        */ /**
+        * Optionally an index referencing which pattern to use. Highcharts adds
+        * 10 default patterns to the `Highcharts.patterns` array. Additional
+        * pattern definitions can be pushed to this array if desired. This option
+        * is an index into this array.
+        * @name Highcharts.PatternObject#patternIndex
+        * @type {number|undefined}
         */
-        var erase = U.erase, pick = U.pick;
-        var addEvent = H.addEvent, wrap = H.wrap, merge = H.merge;
+        var animObject = U.animObject,
+            erase = U.erase,
+            pick = U.pick,
+            wrap = U.wrap;
+        var addEvent = H.addEvent,
+            merge = H.merge;
+        // Add the predefined patterns
+        H.patterns = (function () {
+            var patterns = [],
+                colors = H.getOptions().colors;
+            [
+                'M 0 0 L 10 10 M 9 -1 L 11 1 M -1 9 L 1 11',
+                'M 0 10 L 10 0 M -1 1 L 1 -1 M 9 11 L 11 9',
+                'M 3 0 L 3 10 M 8 0 L 8 10',
+                'M 0 3 L 10 3 M 0 8 L 10 8',
+                'M 0 3 L 5 3 L 5 0 M 5 10 L 5 7 L 10 7',
+                'M 3 3 L 8 3 L 8 8 L 3 8 Z',
+                'M 5 5 m -4 0 a 4 4 0 1 1 8 0 a 4 4 0 1 1 -8 0',
+                'M 10 3 L 5 3 L 5 0 M 5 10 L 5 7 L 0 7',
+                'M 2 5 L 5 2 L 8 5 L 5 8 Z',
+                'M 0 0 L 5 10 L 10 0'
+            ].forEach(function (pattern, i) {
+                patterns.push({
+                    path: pattern,
+                    color: colors[i],
+                    width: 10,
+                    height: 10
+                });
+            });
+            return patterns;
+        })();
         /**
          * Utility function to compute a hash value from an object. Modified Java
          * String.hashCode implementation in JS. Use the preSeed parameter to add an
@@ -157,7 +193,12 @@
          *         The computed hash.
          */
         function hashFromObject(obj, preSeed) {
-            var str = JSON.stringify(obj), strLen = str.length || 0, hash = 0, i = 0, char, seedStep;
+            var str = JSON.stringify(obj),
+                strLen = str.length || 0,
+                hash = 0,
+                i = 0,
+                char,
+                seedStep;
             if (preSeed) {
                 seedStep = Math.max(Math.floor(strLen / 500), 1);
                 for (var a = 0; a < strLen; a += seedStep) {
@@ -195,9 +236,10 @@
                 return;
             }
             var bBox = this.graphic && (this.graphic.getBBox &&
-                this.graphic.getBBox(true) ||
-                this.graphic.element &&
-                    this.graphic.element.getBBox()) || {}, shapeArgs = this.shapeArgs;
+                    this.graphic.getBBox(true) ||
+                    this.graphic.element &&
+                        this.graphic.element.getBBox()) || {},
+                shapeArgs = this.shapeArgs;
             // Prefer using shapeArgs, as it is animation agnostic
             if (shapeArgs) {
                 bBox.width = shapeArgs.width || bBox.width;
@@ -268,15 +310,27 @@
          * @requires modules/pattern-fill
          */
         H.SVGRenderer.prototype.addPattern = function (options, animation) {
-            var pattern, animate = pick(animation, true), animationOptions = H.animObject(animate), path, defaultSize = 32, width = options.width || options._width || defaultSize, height = (options.height || options._height || defaultSize), color = options.color || '#343434', id = options.id, ren = this, rect = function (fill) {
-                ren.rect(0, 0, width, height)
-                    .attr({ fill: fill })
-                    .add(pattern);
+            var pattern,
+                animate = pick(animation,
+                true),
+                animationOptions = animObject(animate),
+                path,
+                defaultSize = 32,
+                width = options.width || options._width || defaultSize,
+                height = (options.height || options._height || defaultSize),
+                color = options.color || '#343434',
+                id = options.id,
+                ren = this,
+                rect = function (fill) {
+                    ren.rect(0, 0,
+                width,
+                height)
+                        .attr({ fill: fill })
+                        .add(pattern);
             }, attribs;
             if (!id) {
                 this.idCounter = this.idCounter || 0;
-                id = 'highcharts-pattern-' + (this.chartIndex || 0) + '-' +
-                    this.idCounter;
+                id = 'highcharts-pattern-' + this.idCounter + '-' + (this.chartIndex || 0);
                 ++this.idCounter;
             }
             // Do nothing if ID already exists
@@ -336,7 +390,7 @@
                 }
             }
             // For non-animated patterns, set opacity now
-            if (!(options.image && animate) && options.opacity !== undefined) {
+            if (!(options.image && animate) && typeof options.opacity !== 'undefined') {
                 [].forEach.call(pattern.element.childNodes, function (child) {
                     child.setAttribute('opacity', options.opacity);
                 });
@@ -396,7 +450,8 @@
         });
         // Merge series color options to points
         addEvent(H.Point, 'afterInit', function () {
-            var point = this, colorOptions = point.options.color;
+            var point = this,
+                colorOptions = point.options.color;
             // Only do this if we have defined a specific color on this point. Otherwise
             // we will end up trying to re-add the series color for each point.
             if (colorOptions && colorOptions.pattern) {
@@ -413,7 +468,16 @@
         });
         // Add functionality to SVG renderer to handle patterns as complex colors
         H.addEvent(H.SVGRenderer, 'complexColor', function (args) {
-            var color = args.args[0], prop = args.args[1], element = args.args[2], pattern = color.pattern, value = '#343434', forceHashId;
+            var color = args.args[0],
+                prop = args.args[1],
+                element = args.args[2],
+                chartIndex = (this.chartIndex || 0);
+            var pattern = color.pattern,
+                value = '#343434';
+            // Handle patternIndex
+            if (typeof color.patternIndex !== 'undefined' && H.patterns) {
+                pattern = H.patterns[color.patternIndex];
+            }
             // Skip and call default if there is no pattern
             if (!pattern) {
                 return true;
@@ -427,8 +491,8 @@
                 // point render, meaning they are drawn before autocalculated image
                 // width/heights. We don't want them to highjack the width/height for
                 // this ID if it is defined by users.
-                forceHashId = element.parentNode &&
-                    element.parentNode.getAttribute('class');
+                var forceHashId = element.parentNode &&
+                        element.parentNode.getAttribute('class');
                 forceHashId = forceHashId &&
                     forceHashId.indexOf('highcharts-legend') > -1;
                 // If we don't have a width/height yet, handle it. Try faking a point
@@ -444,13 +508,13 @@
                 if (forceHashId || !pattern.id) {
                     // Make a copy so we don't accidentally edit options when setting ID
                     pattern = merge({}, pattern);
-                    pattern.id = 'highcharts-pattern-' + (this.chartIndex || 0) + '-' +
+                    pattern.id = 'highcharts-pattern-' + chartIndex + '-' +
                         hashFromObject(pattern) + hashFromObject(pattern, true);
                 }
                 // Add it. This function does nothing if an element with this ID
                 // already exists.
                 this.addPattern(pattern, !this.forExport && pick(pattern.animation, this.globalAnimation, { duration: 100 }));
-                value = 'url(' + this.url + '#' + pattern.id + ')';
+                value = "url(" + this.url + "#" + pattern.id + ")";
             }
             else {
                 // Not a full pattern definition, just add color
@@ -494,22 +558,23 @@
         // Add a garbage collector to delete old patterns with autogenerated hashes that
         // are no longer being referenced.
         H.addEvent(H.Chart, 'redraw', function () {
-            var usedIds = [], renderer = this.renderer, 
-            // Get the autocomputed patterns - these are the ones we might delete
-            patterns = (renderer.defIds || []).filter(function (pattern) {
-                return (pattern.indexOf &&
-                    pattern.indexOf('highcharts-pattern-') === 0);
+            var usedIds = [],
+                renderer = this.renderer, 
+                // Get the autocomputed patterns - these are the ones we might delete
+                patterns = (renderer.defIds || []).filter(function (pattern) {
+                    return (pattern.indexOf &&
+                        pattern.indexOf('highcharts-pattern-') === 0);
             });
             if (patterns.length) {
                 // Look through the DOM for usage of the patterns. This can be points,
                 // series, tooltips etc.
-                [].forEach.call(this.renderTo.querySelectorAll('[color^="url(#"], [fill^="url(#"], [stroke^="url(#"]'), function (node) {
+                [].forEach.call(this.renderTo.querySelectorAll('[color^="url("], [fill^="url("], [stroke^="url("]'), function (node) {
                     var id = node.getAttribute('fill') ||
-                        node.getAttribute('color') ||
-                        node.getAttribute('stroke');
+                            node.getAttribute('color') ||
+                            node.getAttribute('stroke');
                     if (id) {
                         usedIds.push(id
-                            .substring(id.indexOf('url(#') + 5)
+                            .substring(id.indexOf('url(') + 5)
                             .replace(')', ''));
                     }
                 });
@@ -526,32 +591,6 @@
                     }
                 });
             }
-        });
-        /* eslint-enable no-invalid-this */
-        // Add the predefined patterns
-        H.Chart.prototype.callbacks.push(function (chart) {
-            var colors = H.getOptions().colors, index = chart.index, forExport = chart.options.chart.forExport;
-            [
-                'M 0 0 L 10 10 M 9 -1 L 11 1 M -1 9 L 1 11',
-                'M 0 10 L 10 0 M -1 1 L 1 -1 M 9 11 L 11 9',
-                'M 3 0 L 3 10 M 8 0 L 8 10',
-                'M 0 3 L 10 3 M 0 8 L 10 8',
-                'M 0 3 L 5 3 L 5 0 M 5 10 L 5 7 L 10 7',
-                'M 3 3 L 8 3 L 8 8 L 3 8 Z',
-                'M 5 5 m -4 0 a 4 4 0 1 1 8 0 a 4 4 0 1 1 -8 0',
-                'M 10 3 L 5 3 L 5 0 M 5 10 L 5 7 L 0 7',
-                'M 2 5 L 5 2 L 8 5 L 5 8 Z',
-                'M 0 0 L 5 10 L 10 0'
-            ].forEach(function (pattern, i) {
-                chart.renderer.addPattern({
-                    id: 'highcharts-default-pattern-' +
-                        (index && !forExport ? index + '-' : '') + i,
-                    path: pattern,
-                    color: colors[i],
-                    width: 10,
-                    height: 10
-                });
-            });
         });
 
     });

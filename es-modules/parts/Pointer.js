@@ -94,10 +94,10 @@ import Highcharts from './Globals.js';
 * @type {Array<Highcharts.SelectDataObject>}
 */
 import U from './Utilities.js';
-var attr = U.attr, defined = U.defined, extend = U.extend, isNumber = U.isNumber, isObject = U.isObject, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
+var attr = U.attr, defined = U.defined, extend = U.extend, isNumber = U.isNumber, isObject = U.isObject, objectEach = U.objectEach, offset = U.offset, pick = U.pick, splat = U.splat;
 import './Tooltip.js';
 import './Color.js';
-var H = Highcharts, addEvent = H.addEvent, charts = H.charts, color = H.color, css = H.css, find = H.find, fireEvent = H.fireEvent, offset = H.offset, Tooltip = H.Tooltip;
+var H = Highcharts, addEvent = H.addEvent, charts = H.charts, color = H.color, css = H.css, find = H.find, fireEvent = H.fireEvent, Tooltip = H.Tooltip;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * The mouse and touch tracker object. Each {@link Chart} item has one
@@ -190,8 +190,10 @@ Highcharts.Pointer.prototype = {
      *         The offset of the chart container within the page
      */
     getChartPosition: function () {
+        var chart = this.chart;
+        var container = chart.scrollingContainer || chart.container;
         return (this.chartPosition ||
-            (this.chartPosition = offset(this.chart.container)));
+            (this.chartPosition = offset(container)));
     },
     /**
      * Takes a browser event object and extends it with custom Highcharts
@@ -458,7 +460,7 @@ Highcharts.Pointer.prototype = {
     runPointActions: function (e, p) {
         var pointer = this, chart = pointer.chart, series = chart.series, tooltip = (chart.tooltip && chart.tooltip.options.enabled ?
             chart.tooltip :
-            undefined), shared = (tooltip ?
+            void 0), shared = (tooltip ?
             tooltip.shared :
             false), hoverPoint = p || chart.hoverPoint, hoverSeries = hoverPoint && hoverPoint.series || chart.hoverSeries, 
         // onMouseOver or already hovering a series with directTouch
@@ -537,7 +539,7 @@ Highcharts.Pointer.prototype = {
         // Issues related to crosshair #4927, #5269 #5066, #5658
         chart.axes.forEach(function drawAxisCrosshair(axis) {
             var snap = pick(axis.crosshair.snap, true), point = !snap ?
-                undefined :
+                void 0 :
                 H.find(points, function (p) {
                     return p.series[axis.coll] === axis;
                 });
@@ -619,7 +621,8 @@ Highcharts.Pointer.prototype = {
         // #5101)
         if (allowMove && tooltipPoints) {
             splat(tooltipPoints).forEach(function (point) {
-                if (point.series.isCartesian && point.plotX === undefined) {
+                if (point.series.isCartesian &&
+                    typeof point.plotX === 'undefined') {
                     allowMove = false;
                 }
             });
@@ -646,7 +649,8 @@ Highcharts.Pointer.prototype = {
                 else if (hoverPoint) { // #2500
                     hoverPoint.setState(hoverPoint.state, true);
                     chart.axes.forEach(function (axis) {
-                        if (axis.crosshair) {
+                        if (axis.crosshair &&
+                            hoverPoint.series[axis.coll] === axis) {
                             axis.drawCrosshair(null, hoverPoint);
                         }
                     });
@@ -740,7 +744,9 @@ Highcharts.Pointer.prototype = {
      * @return {void}
      */
     drag: function (e) {
-        var chart = this.chart, chartOptions = chart.options.chart, chartX = e.chartX, chartY = e.chartY, zoomHor = this.zoomHor, zoomVert = this.zoomVert, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, clickedInside, size, selectionMarker = this.selectionMarker, mouseDownX = this.mouseDownX, mouseDownY = this.mouseDownY, panKey = (chartOptions.panKey && e[chartOptions.panKey + 'Key']);
+        var chart = this.chart, chartOptions = chart.options.chart, chartX = e.chartX, chartY = e.chartY, zoomHor = this.zoomHor, zoomVert = this.zoomVert, plotLeft = chart.plotLeft, plotTop = chart.plotTop, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, clickedInside, size, selectionMarker = this.selectionMarker, mouseDownX = this.mouseDownX, mouseDownY = this.mouseDownY, panningEnabled = isObject(chartOptions.panning) ?
+            chartOptions.panning && chartOptions.panning.enabled :
+            chartOptions.panning, panKey = (chartOptions.panKey && e[chartOptions.panKey + 'Key']);
         // If the device supports both touch and mouse (like IE11), and we are
         // touch-dragging inside the plot area, don't handle the mouse event.
         // #4339.
@@ -805,7 +811,9 @@ Highcharts.Pointer.prototype = {
                 });
             }
             // panning
-            if (clickedInside && !selectionMarker && chartOptions.panning) {
+            if (clickedInside &&
+                !selectionMarker &&
+                panningEnabled) {
                 chart.pan(e, chartOptions.panning);
             }
         }
@@ -959,7 +967,7 @@ Highcharts.Pointer.prototype = {
         if (chart && (e.relatedTarget || e.toElement)) {
             chart.pointer.reset();
             // Also reset the chart position, used in #149 fix
-            chart.pointer.chartPosition = undefined;
+            chart.pointer.chartPosition = void 0;
         }
     },
     /**

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.2.1 (2019-10-31)
+ * @license Highmaps JS v8.0.0 (2019-12-10)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -39,9 +39,10 @@
          *
          * */
         /* global document, jQuery, $ */
-        var extend = U.extend;
+        var extend = U.extend,
+            wrap = U.wrap;
         /* eslint-disable no-invalid-this */
-        H.wrap(H.Data.prototype, 'init', function (proceed, options) {
+        wrap(H.Data.prototype, 'init', function (proceed, options) {
             proceed.call(this, options);
             if (options.svg) {
                 this.loadSVG();
@@ -51,11 +52,21 @@
         extend(H.Data.prototype, {
             // Parse an SVG path into a simplified array that Highcharts can read
             pathToArray: function (path, matrix) {
-                var i = 0, position = 0, point, positions, fixedPoint = [0, 0], startPoint = [0, 0], isRelative, isString, operator, matrixTransform = function (p, m) {
-                    return [
-                        m.a * p[0] + m.c * p[1] + m.e,
-                        m.b * p[0] + m.d * p[1] + m.f
-                    ];
+                var i = 0,
+                    position = 0,
+                    point,
+                    positions,
+                    fixedPoint = [0, 0],
+                    startPoint = [0, 0],
+                    isRelative,
+                    isString,
+                    operator,
+                    matrixTransform = function (p,
+                    m) {
+                        return [
+                            m.a * p[0] + m.c * p[1] + m.e,
+                            m.b * p[0] + m.d * p[1] + m.f
+                        ];
                 };
                 path = path
                     // Scientific notation
@@ -194,7 +205,10 @@
             },
             // Scale the path to fit within a given box and round all numbers
             roundPaths: function (arr, scale) {
-                var mapProto = H.seriesTypes.map.prototype, fakeSeries, origSize, transA;
+                var mapProto = H.seriesTypes.map.prototype,
+                    fakeSeries,
+                    origSize,
+                    transA;
                 fakeSeries = {
                     xAxis: {
                         translate: H.Axis.prototype.translate,
@@ -217,7 +231,8 @@
                 fakeSeries.xAxis.min = fakeSeries.minX;
                 fakeSeries.yAxis.min = (fakeSeries.minY + scale) / transA;
                 arr.forEach(function (point) {
-                    var i, path;
+                    var i,
+                        path;
                     point.path = path = mapProto.translatePath.call(fakeSeries, point.path, true);
                     i = path.length;
                     while (i--) {
@@ -231,7 +246,8 @@
             },
             // Load an SVG file and extract the paths
             loadSVG: function () {
-                var data = this, options = this.options;
+                var data = this,
+                    options = this.options;
                 /* eslint-disable valid-jsdoc */
                 /**
                  * @private
@@ -288,7 +304,12 @@
                  * @private
                  */
                 function handleSVG(xml) {
-                    var arr = [], currentParent, allPaths, commonLineage, lastCommonAncestor, handleGroups;
+                    var arr = [],
+                        currentParent,
+                        allPaths,
+                        commonLineage,
+                        lastCommonAncestor,
+                        handleGroups;
                     // Make a hidden frame where the SVG is rendered
                     data.$frame = data.$frame || $('<div>')
                         .css({
@@ -311,7 +332,9 @@
                     // If not all paths belong to the same group, handle groups
                     allPaths.forEach(function (path, i) {
                         if (!path.skip) {
-                            var itemLineage = [], parentNode, j;
+                            var itemLineage = [],
+                                parentNode,
+                                j;
                             if (i > 0 && path.parentNode !== currentParent) {
                                 handleGroups = true;
                             }
@@ -339,7 +362,8 @@
                     // Iterate groups to find sub paths
                     if (handleGroups) {
                         lastCommonAncestor.getElementsByTagName('g').forEach(function (g) {
-                            var groupPath = [], pathHasFill;
+                            var groupPath = [],
+                                pathHasFill;
                             getPathLikeChildren(g).forEach(function (path) {
                                 if (!path.skip) {
                                     groupPath = groupPath.concat(data.pathToArray(getPathDefinition(path), getTranslate(path)));

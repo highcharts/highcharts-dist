@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -36,8 +36,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
-        var seriesType = H.seriesType, noop = H.noop, merge = H.merge, SMA = H.seriesTypes.sma, EMA = H.seriesTypes.ema, correctFloat = H.correctFloat;
+        var correctFloat = U.correctFloat,
+            defined = U.defined;
+        var seriesType = H.seriesType,
+            noop = H.noop,
+            merge = H.merge,
+            SMA = H.seriesTypes.sma,
+            EMA = H.seriesTypes.ema;
         /**
          * The MACD series type.
          *
@@ -100,7 +105,7 @@
                      *
                      * @type  {Highcharts.ColorString}
                      */
-                    lineColor: undefined
+                    lineColor: void 0
                 }
             },
             /**
@@ -124,7 +129,7 @@
                      *
                      * @type  {Highcharts.ColorString}
                      */
-                    lineColor: undefined
+                    lineColor: void 0
                 }
             },
             threshold: 0,
@@ -218,11 +223,19 @@
             },
             drawPoints: H.seriesTypes.column.prototype.drawPoints,
             drawGraph: function () {
-                var indicator = this, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, histogramZones = indicator.zones, gappedExtend = {
-                    options: {
-                        gapSize: mainLineOptions.gapSize
-                    }
-                }, otherSignals = [[], []], point;
+                var indicator = this,
+                    mainLinePoints = indicator.points,
+                    pointsLength = mainLinePoints.length,
+                    mainLineOptions = indicator.options,
+                    histogramZones = indicator.zones,
+                    gappedExtend = {
+                        options: {
+                            gapSize: mainLineOptions.gapSize
+                        }
+                    },
+                    otherSignals = [[],
+                    []],
+                    point;
                 // Generate points for top and bottom lines:
                 while (pointsLength--) {
                     point = mainLinePoints[pointsLength];
@@ -261,7 +274,9 @@
                 // indicator.graph = null;
             },
             getZonesGraphs: function (props) {
-                var allZones = SMA.prototype.getZonesGraphs.call(this, props), currentZones = allZones;
+                var allZones = SMA.prototype.getZonesGraphs.call(this,
+                    props),
+                    currentZones = allZones;
                 if (this.currentLineZone) {
                     currentZones = allZones.splice(this[this.currentLineZone].startIndex + 1);
                     if (!currentZones.length) {
@@ -289,10 +304,17 @@
                 this.zones = histogramZones;
             },
             getValues: function (series, params) {
-                var j = 0, MACD = [], xMACD = [], yMACD = [], signalLine = [], shortEMA, longEMA, i;
+                var j = 0,
+                    MACD = [],
+                    xMACD = [],
+                    yMACD = [],
+                    signalLine = [],
+                    shortEMA,
+                    longEMA,
+                    i;
                 if (series.xData.length <
                     params.longPeriod + params.signalPeriod) {
-                    return false;
+                    return;
                 }
                 // Calculating the short and long EMA used when calculating the MACD
                 shortEMA = EMA.prototype.getValues(series, {
@@ -337,7 +359,8 @@
                 // Setting the MACD Histogram. In comparison to the loop with pure
                 // MACD this loop uses MACD x value not xData.
                 for (i = 0; i < MACD.length; i++) {
-                    if (MACD[i][0] >= signalLine[0][0]) { // detect the first point
+                    // detect the first point
+                    if (MACD[i][0] >= signalLine[0][0]) {
                         MACD[i][2] = signalLine[j][1];
                         yMACD[i] = [0, signalLine[j][1], MACD[i][3]];
                         if (MACD[i][3] === null) {

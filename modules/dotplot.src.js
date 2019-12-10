@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Dot plot series type for Highcharts
  *
@@ -47,7 +47,9 @@
          * - Custom icons like persons, carts etc. Either as images, font icons or
          *   Highcharts symbols.
          */
-        var extend = U.extend, objectEach = U.objectEach, pick = U.pick;
+        var extend = U.extend,
+            objectEach = U.objectEach,
+            pick = U.pick;
         var seriesType = H.seriesType;
         /**
          * @private
@@ -67,11 +69,29 @@
             }
         }, {
             drawPoints: function () {
-                var series = this, renderer = series.chart.renderer, seriesMarkerOptions = this.options.marker, itemPaddingTranslated = this.yAxis.transA *
-                    series.options.itemPadding, borderWidth = this.borderWidth, crisp = borderWidth % 2 ? 0.5 : 1;
+                var series = this,
+                    renderer = series.chart.renderer,
+                    seriesMarkerOptions = this.options.marker,
+                    itemPaddingTranslated = this.yAxis.transA *
+                        series.options.itemPadding,
+                    borderWidth = this.borderWidth,
+                    crisp = borderWidth % 2 ? 0.5 : 1;
                 this.points.forEach(function (point) {
-                    var yPos, attr, graphics, itemY, pointAttr, pointMarkerOptions = point.marker || {}, symbol = (pointMarkerOptions.symbol ||
-                        seriesMarkerOptions.symbol), radius = pick(pointMarkerOptions.radius, seriesMarkerOptions.radius), size, yTop, isSquare = symbol !== 'rect', x, y;
+                    var yPos,
+                        attr,
+                        graphics,
+                        itemY,
+                        pointAttr,
+                        pointMarkerOptions = point.marker || {},
+                        symbol = (pointMarkerOptions.symbol ||
+                            seriesMarkerOptions.symbol),
+                        radius = pick(pointMarkerOptions.radius,
+                        seriesMarkerOptions.radius),
+                        size,
+                        yTop,
+                        isSquare = symbol !== 'rect',
+                        x,
+                        y;
                     point.graphics = graphics = point.graphics || {};
                     pointAttr = point.pointAttr ?
                         (point.pointAttr[point.selected ? 'selected' : ''] ||

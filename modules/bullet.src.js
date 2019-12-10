@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * Bullet graph series type for Highcharts
  *
@@ -38,8 +38,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber, pick = U.pick;
-        var relativeLength = H.relativeLength, seriesType = H.seriesType, columnProto = H.seriesTypes.column.prototype;
+        var isNumber = U.isNumber,
+            pick = U.pick,
+            relativeLength = U.relativeLength;
+        var seriesType = H.seriesType,
+            columnProto = H.seriesTypes.column.prototype;
         /**
          * The bullet series type.
          *
@@ -140,10 +143,22 @@
              * @function Highcharts.Series#drawPoints
              */
             drawPoints: function () {
-                var series = this, chart = series.chart, options = series.options, animationLimit = options.animationLimit || 250;
+                var series = this,
+                    chart = series.chart,
+                    options = series.options,
+                    animationLimit = options.animationLimit || 250;
                 columnProto.drawPoints.apply(this);
                 series.points.forEach(function (point) {
-                    var pointOptions = point.options, shapeArgs, targetGraphic = point.targetGraphic, targetShapeArgs, targetVal = point.target, pointVal = point.y, width, height, targetOptions, y;
+                    var pointOptions = point.options,
+                        shapeArgs,
+                        targetGraphic = point.targetGraphic,
+                        targetShapeArgs,
+                        targetVal = point.target,
+                        pointVal = point.y,
+                        width,
+                        height,
+                        targetOptions,
+                        y;
                     if (isNumber(targetVal) && targetVal !== null) {
                         targetOptions = H.merge(options.targetOptions, pointOptions.targetOptions);
                         height = targetOptions.height;
@@ -174,7 +189,7 @@
                                 targetGraphic.element.point = point;
                             }
                             else {
-                                targetGraphic.element.point = undefined;
+                                targetGraphic.element.point = void 0;
                             }
                         }
                         else {
@@ -191,7 +206,7 @@
                                     x: point.x,
                                     y: targetVal,
                                     options: {}
-                                }).color || series.color)) || undefined, point.color, series.color),
+                                }).color || series.color)) || void 0, point.color, series.color),
                                 stroke: pick(targetOptions.borderColor, point.borderColor, series.options.borderColor),
                                 'stroke-width': targetOptions.borderWidth
                             });
@@ -216,7 +231,10 @@
              * @function Highcharts.Series#getExtremes
              */
             getExtremes: function (yData) {
-                var series = this, targetData = series.targetData, yMax, yMin;
+                var series = this,
+                    targetData = series.targetData,
+                    yMax,
+                    yMin;
                 columnProto.getExtremes.call(this, yData);
                 if (targetData && targetData.length) {
                     yMax = series.dataMax;

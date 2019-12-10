@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -36,8 +36,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray, objectEach = U.objectEach;
-        var ATR = H.seriesTypes.atr, SMA = H.seriesTypes.sma, merge = H.merge, correctFloat = H.correctFloat;
+        var correctFloat = U.correctFloat;
+        var isArray = U.isArray,
+            objectEach = U.objectEach;
+        var ATR = H.seriesTypes.atr,
+            SMA = H.seriesTypes.sma,
+            merge = H.merge;
         /* eslint-disable require-jsdoc */
         // Utils:
         function createPointObj(mainSeries, index, close) {
@@ -69,10 +73,10 @@
          * @extends      plotOptions.sma
          * @since        7.0.0
          * @product      highstock
-         * @excluding    allAreas, color, cropThreshold, negativeColor, colorAxis,
-         *               joinBy, keys, navigatorOptions, pointInterval,
-         *               pointIntervalUnit, pointPlacement, pointRange, pointStart,
-         *               showInNavigator, stacking, threshold
+         * @excluding    allAreas, cropThreshold, negativeColor, colorAxis, joinBy,
+         *               keys, navigatorOptions, pointInterval, pointIntervalUnit,
+         *               pointPlacement, pointRange, pointStart, showInNavigator,
+         *               stacking, threshold
          * @requires     stock/indicators/indicators
          * @requires     stock/indicators/supertrend
          * @optionparent plotOptions.supertrend
@@ -101,7 +105,7 @@
              * @sample {highstock} stock/indicators/supertrend/
              *         Example with risingTrendColor
              *
-             * @type {Highcharts.ColorString}
+             * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
             risingTrendColor: '#06B535',
             /**
@@ -110,7 +114,7 @@
              * @sample {highstock} stock/indicators/supertrend/
              *         Example with fallingTrendColor
              *
-             * @type {Highcharts.ColorString}
+             * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
             fallingTrendColor: '#F21313',
             /**
@@ -156,7 +160,8 @@
             nameComponents: ['multiplier', 'period'],
             requiredIndicators: ['atr'],
             init: function () {
-                var options, parentOptions;
+                var options,
+                    parentOptions;
                 SMA.prototype.init.apply(this, arguments);
                 options = this.options;
                 parentOptions = this.linkedParent.options;
@@ -167,54 +172,66 @@
                     (options.params.period - 1));
             },
             drawGraph: function () {
-                var indicator = this, indicOptions = indicator.options, 
-                // Series that indicator is linked to
-                mainSeries = indicator.linkedParent, mainLinePoints = (mainSeries ? mainSeries.points : []), indicPoints = indicator.points, indicPath = indicator.graph, indicPointsLen = indicPoints.length, 
-                // Points offset between lines
-                tempOffset = mainLinePoints.length - indicPointsLen, offset = tempOffset > 0 ? tempOffset : 0, 
-                // @todo: fix when ichi-moku indicator is merged to master.
-                gappedExtend = {
-                    options: {
-                        gapSize: indicOptions.gapSize
-                    }
-                }, 
-                // Sorted supertrend points array
-                groupedPoitns = {
-                    top: [],
-                    bottom: [],
-                    intersect: [] // Change trend line points
-                }, 
-                // Options for trend lines
-                supertrendLineOptions = {
-                    top: {
-                        styles: {
-                            lineWidth: indicOptions.lineWidth,
-                            lineColor: indicOptions.fallingTrendColor,
-                            dashStyle: indicOptions.dashStyle
+                var indicator = this,
+                    indicOptions = indicator.options, 
+                    // Series that indicator is linked to
+                    mainSeries = indicator.linkedParent,
+                    mainLinePoints = (mainSeries ? mainSeries.points : []),
+                    indicPoints = indicator.points,
+                    indicPath = indicator.graph,
+                    indicPointsLen = indicPoints.length, 
+                    // Points offset between lines
+                    tempOffset = mainLinePoints.length - indicPointsLen,
+                    offset = tempOffset > 0 ? tempOffset : 0, 
+                    // @todo: fix when ichi-moku indicator is merged to master.
+                    gappedExtend = {
+                        options: {
+                            gapSize: indicOptions.gapSize
                         }
+                    }, 
+                    // Sorted supertrend points array
+                    groupedPoitns = {
+                        top: [],
+                        bottom: [],
+                        intersect: [] // Change trend line points
+                    }, 
+                    // Options for trend lines
+                    supertrendLineOptions = {
+                        top: {
+                            styles: {
+                                lineWidth: indicOptions.lineWidth,
+                                lineColor: (indicOptions.fallingTrendColor ||
+                                    indicOptions.color),
+                                dashStyle: indicOptions.dashStyle
+                            }
+                        },
+                        bottom: {
+                            styles: {
+                                lineWidth: indicOptions.lineWidth,
+                                lineColor: (indicOptions.risingTrendColor ||
+                                    indicOptions.color),
+                                dashStyle: indicOptions.dashStyle
+                            }
+                        },
+                        intersect: indicOptions.changeTrendLine
                     },
-                    bottom: {
-                        styles: {
-                            lineWidth: indicOptions.lineWidth,
-                            lineColor: indicOptions.risingTrendColor,
-                            dashStyle: indicOptions.dashStyle
-                        }
-                    },
-                    intersect: indicOptions.changeTrendLine
-                }, close = 3, 
-                // Supertrend line point
-                point, 
-                // Supertrend line next point (has smaller x pos than point)
-                nextPoint, 
-                // Main series points
-                mainPoint, nextMainPoint, 
-                // Used when supertrend and main points are shifted
-                // relative to each other
-                prevMainPoint, prevPrevMainPoint, 
-                // Used when particular point color is set
-                pointColor, 
-                // Temporary points that fill groupedPoitns array
-                newPoint, newNextPoint;
+                    close = 3, 
+                    // Supertrend line point
+                    point, 
+                    // Supertrend line next point (has smaller x pos than point)
+                    nextPoint, 
+                    // Main series points
+                    mainPoint,
+                    nextMainPoint, 
+                    // Used when supertrend and main points are shifted
+                    // relative to each other
+                    prevMainPoint,
+                    prevPrevMainPoint, 
+                    // Used when particular point color is set
+                    pointColor, 
+                    // Temporary points that fill groupedPoitns array
+                    newPoint,
+                    newNextPoint;
                 // Loop which sort supertrend points
                 while (indicPointsLen--) {
                     point = indicPoints[indicPointsLen];
@@ -282,14 +299,14 @@
                         };
                         if (point.y >= mainPoint.close &&
                             nextPoint.y >= nextMainPoint.close) {
-                            point.color =
-                                pointColor || indicOptions.fallingTrendColor;
+                            point.color = (pointColor || indicOptions.fallingTrendColor ||
+                                indicOptions.color);
                             groupedPoitns.top.push(newPoint);
                         }
                         else if (point.y < mainPoint.close &&
                             nextPoint.y < nextMainPoint.close) {
-                            point.color =
-                                pointColor || indicOptions.risingTrendColor;
+                            point.color = (pointColor || indicOptions.risingTrendColor ||
+                                indicOptions.color);
                             groupedPoitns.bottom.push(newPoint);
                         }
                         else {
@@ -301,10 +318,10 @@
                             }));
                             if (point.y >= mainPoint.close &&
                                 nextPoint.y < nextMainPoint.close) {
-                                point.color =
-                                    pointColor || indicOptions.fallingTrendColor;
-                                nextPoint.color =
-                                    pointColor || indicOptions.risingTrendColor;
+                                point.color = (pointColor || indicOptions.fallingTrendColor ||
+                                    indicOptions.color);
+                                nextPoint.color = (pointColor || indicOptions.risingTrendColor ||
+                                    indicOptions.color);
                                 groupedPoitns.top.push(newPoint);
                                 groupedPoitns.top.push(merge(newNextPoint, {
                                     isNull: true
@@ -312,10 +329,10 @@
                             }
                             else if (point.y < mainPoint.close &&
                                 nextPoint.y >= nextMainPoint.close) {
-                                point.color =
-                                    pointColor || indicOptions.risingTrendColor;
-                                nextPoint.color =
-                                    pointColor || indicOptions.fallingTrendColor;
+                                point.color = (pointColor || indicOptions.risingTrendColor ||
+                                    indicOptions.color);
+                                nextPoint.color = (pointColor || indicOptions.fallingTrendColor ||
+                                    indicOptions.color);
                                 groupedPoitns.bottom.push(newPoint);
                                 groupedPoitns.bottom.push(merge(newNextPoint, {
                                     isNull: true
@@ -325,13 +342,13 @@
                     }
                     else if (mainPoint) {
                         if (point.y >= mainPoint.close) {
-                            point.color =
-                                pointColor || indicOptions.fallingTrendColor;
+                            point.color = (pointColor || indicOptions.fallingTrendColor ||
+                                indicOptions.color);
                             groupedPoitns.top.push(newPoint);
                         }
                         else {
-                            point.color =
-                                pointColor || indicOptions.risingTrendColor;
+                            point.color = (pointColor || indicOptions.risingTrendColor ||
+                                indicOptions.color);
                             groupedPoitns.bottom.push(newPoint);
                         }
                     }
@@ -383,13 +400,33 @@
             //      Current Close > Current FINAL LOWERBAND
             //     ) THAN Current FINAL LOWERBAND
             getValues: function (series, params) {
-                var period = params.period, multiplier = params.multiplier, xVal = series.xData, yVal = series.yData, ATRData = [], 
-                // 0- date, 1- Supertrend indicator
-                ST = [], xData = [], yData = [], close = 3, low = 2, high = 1, periodsOffset = (period === 0) ? 0 : period - 1, basicUp, basicDown, finalUp = [], finalDown = [], supertrend, prevFinalUp, prevFinalDown, prevST, // previous Supertrend
-                prevY, y, i;
+                var period = params.period,
+                    multiplier = params.multiplier,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    ATRData = [], 
+                    // 0- date, 1- Supertrend indicator
+                    ST = [],
+                    xData = [],
+                    yData = [],
+                    close = 3,
+                    low = 2,
+                    high = 1,
+                    periodsOffset = (period === 0) ? 0 : period - 1,
+                    basicUp,
+                    basicDown,
+                    finalUp = [],
+                    finalDown = [],
+                    supertrend,
+                    prevFinalUp,
+                    prevFinalDown,
+                    prevST, // previous Supertrend
+                    prevY,
+                    y,
+                    i;
                 if ((xVal.length <= period) || !isArray(yVal[0]) ||
                     yVal[0].length !== 4 || period < 0) {
-                    return false;
+                    return;
                 }
                 ATRData = ATR.prototype.getValues.call(this, series, {
                     period: period
@@ -445,10 +482,10 @@
          * @extends   series,plotOptions.supertrend
          * @since     7.0.0
          * @product   highstock
-         * @excluding allAreas, color, colorAxis, cropThreshold, data, dataParser,
-         *            dataURL, joinBy, keys, navigatorOptions, negativeColor,
-         *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
-         *            pointStart, showInNavigator, stacking, threshold
+         * @excluding allAreas, colorAxis, cropThreshold, data, dataParser, dataURL,
+         *            joinBy, keys, navigatorOptions, negativeColor, pointInterval,
+         *            pointIntervalUnit, pointPlacement, pointRange, pointStart,
+         *            showInNavigator, stacking, threshold
          * @requires  stock/indicators/indicators
          * @requires  stock/indicators/supertrend
          * @apioption series.supertrend

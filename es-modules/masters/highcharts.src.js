@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  * @module highcharts/highcharts
  *
  * (c) 2009-2018 Torstein Honsi
@@ -39,24 +39,34 @@ import '../parts/Interaction.js';
 import '../parts/Responsive.js';
 
 extend(Highcharts, {
+    animObject: U.animObject,
     arrayMax: U.arrayMax,
     arrayMin: U.arrayMin,
     attr: U.attr,
+    correctFloat: U.correctFloat,
     defined: U.defined,
+    destroyObjectProperties: U.destroyObjectProperties,
+    discardElement: U.discardElement,
     erase: U.erase,
     extend: U.extend,
+    extendClass: U.extendClass,
     isArray: U.isArray,
     isClass: U.isClass,
     isDOMElement: U.isDOMElement,
     isNumber: U.isNumber,
     isObject: U.isObject,
     isString: U.isString,
+    numberFormat: U.numberFormat,
     objectEach: U.objectEach,
+    offset: U.offset,
+    pad: U.pad,
     pick: U.pick,
     pInt: U.pInt,
+    relativeLength: U.relativeLength,
     setAnimation: U.setAnimation,
     splat: U.splat,
-    syncTimeout: U.syncTimeout
+    syncTimeout: U.syncTimeout,
+    wrap: U.wrap
 });
 
 export default Highcharts;

@@ -13,7 +13,7 @@ import H from '../parts/Globals.js';
  * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
  */
 import U from '../parts/Utilities.js';
-var arrayMax = U.arrayMax, arrayMin = U.arrayMin, extend = U.extend, isNumber = U.isNumber, pick = U.pick, pInt = U.pInt;
+var arrayMax = U.arrayMax, arrayMin = U.arrayMin, clamp = U.clamp, extend = U.extend, isNumber = U.isNumber, pick = U.pick, pInt = U.pInt;
 import '../parts/Axis.js';
 import '../parts/Color.js';
 import '../parts/Point.js';
@@ -31,20 +31,17 @@ var Axis = H.Axis, color = H.color, noop = H.noop, Point = H.Point, Series = H.S
  *         Bubble chart
  *
  * @extends      plotOptions.scatter
+ * @excluding    cluster
  * @product      highcharts highstock
  * @requires     highcharts-more
  * @optionparent plotOptions.bubble
  */
 seriesType('bubble', 'scatter', {
     dataLabels: {
-        // eslint-disable-next-line valid-jsdoc
-        /** @ignore-option */
         formatter: function () {
             return this.point.z;
         },
-        /** @ignore-option */
         inside: true,
-        /** @ignore-option */
         verticalAlign: 'middle'
     },
     /**
@@ -395,7 +392,7 @@ seriesType('bubble', 'scatter', {
             }
             else { // below zThreshold
                 // #1691
-                point.shapeArgs = point.plotY = point.dlBox = undefined;
+                point.shapeArgs = point.plotY = point.dlBox = void 0;
             }
         }
     },
@@ -443,9 +440,9 @@ Axis.prototype.beforePadding = function () {
                 // Find the min and max Z
                 zData = series.zData.filter(isNumber);
                 if (zData.length) { // #1735
-                    zMin = pick(seriesOptions.zMin, Math.min(zMin, Math.max(arrayMin(zData), seriesOptions.displayNegative === false ?
+                    zMin = pick(seriesOptions.zMin, clamp(arrayMin(zData), seriesOptions.displayNegative === false ?
                         seriesOptions.zThreshold :
-                        -Number.MAX_VALUE)));
+                        -Number.MAX_VALUE, zMin));
                     zMax = pick(seriesOptions.zMax, Math.max(zMax, arrayMax(zData)));
                 }
             }
@@ -460,7 +457,7 @@ Axis.prototype.beforePadding = function () {
             while (i--) {
                 if (isNumber(data[i]) &&
                     axis.dataMin <= data[i] &&
-                    data[i] <= axis.dataMax) {
+                    data[i] <= axis.max) {
                     radius = series.radii ? series.radii[i] : 0;
                     pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
                     pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
@@ -478,7 +475,7 @@ Axis.prototype.beforePadding = function () {
             ['min', 'userMin', pxMin],
             ['max', 'userMax', pxMax]
         ].forEach(function (keys) {
-            if (pick(axis.options[keys[0]], axis[keys[1]]) === undefined) {
+            if (typeof pick(axis.options[keys[0]], axis[keys[1]]) === 'undefined') {
                 axis[keys[0]] += keys[2] / transA;
             }
         });

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * X-range series
  *
@@ -48,8 +48,22 @@
         * @type {number|undefined}
         * @requires modules/xrange
         */
-        var defined = U.defined, isNumber = U.isNumber, isObject = U.isObject, pick = U.pick;
-        var addEvent = H.addEvent, color = H.color, columnType = H.seriesTypes.column, correctFloat = H.correctFloat, merge = H.merge, seriesType = H.seriesType, seriesTypes = H.seriesTypes, Axis = H.Axis, Point = H.Point, Series = H.Series;
+        var clamp = U.clamp,
+            correctFloat = U.correctFloat,
+            defined = U.defined,
+            isNumber = U.isNumber,
+            isObject = U.isObject,
+            pick = U.pick;
+        var addEvent = H.addEvent,
+            color = H.color,
+            columnType = H.seriesTypes.column,
+            find = H.find,
+            merge = H.merge,
+            seriesType = H.seriesType,
+            seriesTypes = H.seriesTypes,
+            Axis = H.Axis,
+            Point = H.Point,
+            Series = H.Series;
         /**
          * Return color of a point based on its category.
          *
@@ -66,9 +80,12 @@
          *         Returns an object containing the properties color and colorIndex.
          */
         function getColorByCategory(series, point) {
-            var colors = series.options.colors || series.chart.options.colors, colorCount = colors ?
-                colors.length :
-                series.chart.options.chart.colorCount, colorIndex = point.y % colorCount, color = colors && colors[colorIndex];
+            var colors = series.options.colors || series.chart.options.colors,
+                colorCount = colors ?
+                    colors.length :
+                    series.chart.options.chart.colorCount,
+                colorIndex = point.y % colorCount,
+                color = colors && colors[colorIndex];
             return {
                 colorIndex: colorIndex,
                 color: color
@@ -140,10 +157,9 @@
              */
             colorByPoint: true,
             dataLabels: {
-                // eslint-disable-next-line valid-jsdoc
-                /** @ignore-option */
                 formatter: function () {
-                    var point = this.point, amount = point.partialFill;
+                    var point = this.point,
+                        amount = point.partialFill;
                     if (isObject(amount)) {
                         amount = amount.amount;
                     }
@@ -151,9 +167,7 @@
                         return correctFloat(amount * 100) + '%';
                     }
                 },
-                /** @ignore-option */
                 inside: true,
-                /** @ignore-option */
                 verticalAlign: 'middle'
             },
             tooltip: {
@@ -182,7 +196,8 @@
              * @return {Highcharts.ColumnMetricsObject}
              */
             getColumnMetrics: function () {
-                var metrics, chart = this.chart;
+                var metrics,
+                    chart = this.chart;
                 /**
                  * @private
                  */
@@ -219,7 +234,12 @@
              */
             cropData: function (xData, yData, min, max) {
                 // Replace xData with x2Data to find the appropriate cropStart
-                var cropData = Series.prototype.cropData, crop = cropData.call(this, this.x2Data, yData, min, max);
+                var cropData = Series.prototype.cropData,
+                    crop = cropData.call(this,
+                    this.x2Data,
+                    yData,
+                    min,
+                    max);
                 // Re-insert the cropped xData
                 crop.xData = xData.slice(crop.start, crop.end);
                 return crop;
@@ -235,29 +255,34 @@
              * returns undefined if no match is found.
              */
             findPointIndex: function (options) {
-                var series = this, 
-                // Search in data, since broken-axis can remove points inside a
-                // break.
-                points = series.data, oldData = series.points, id = options.id, point, pointIndex;
+                var _a = this,
+                    cropped = _a.cropped,
+                    cropStart = _a.cropStart,
+                    points = _a.points;
+                var id = options.id;
+                var pointIndex;
                 if (id) {
-                    point = H.find(points, function (point) {
-                        return point.id === id;
+                    var point = find(points,
+                        function (point) {
+                            return point.id === id;
                     });
-                    pointIndex = point ? point.index : undefined;
+                    pointIndex = point ? point.index : void 0;
                 }
-                if (pointIndex === undefined) {
-                    point = H.find(points, function (point) {
-                        return (point.x === options.x &&
-                            point.x2 === options.x2 &&
-                            !(oldData[pointIndex] &&
-                                oldData[pointIndex].touched));
+                if (typeof pointIndex === 'undefined') {
+                    var point = find(points,
+                        function (point) {
+                            return (point.x === options.x &&
+                                point.x2 === options.x2 &&
+                                !point.touched);
                     });
-                    pointIndex = point ? point.index : undefined;
+                    pointIndex = point ? point.index : void 0;
                 }
                 // Reduce pointIndex if data is cropped
-                if (series.cropped &&
-                    pointIndex >= series.cropStart) {
-                    pointIndex -= series.cropStart;
+                if (cropped &&
+                    isNumber(pointIndex) &&
+                    isNumber(cropStart) &&
+                    pointIndex >= cropStart) {
+                    pointIndex -= cropStart;
                 }
                 return pointIndex;
             },
@@ -268,7 +293,29 @@
              * @param {Highcharts.Point} point
              */
             translatePoint: function (point) {
-                var series = this, xAxis = series.xAxis, yAxis = series.yAxis, metrics = series.columnMetrics, options = series.options, minPointLength = options.minPointLength || 0, plotX = point.plotX, posX = pick(point.x2, point.x + (point.len || 0)), plotX2 = xAxis.translate(posX, 0, 0, 0, 1), length = Math.abs(plotX2 - plotX), widthDifference, shapeArgs, partialFill, inverted = this.chart.inverted, borderWidth = pick(options.borderWidth, 1), crisper = borderWidth % 2 / 2, yOffset = metrics.offset, pointHeight = Math.round(metrics.width), dlLeft, dlRight, dlWidth, clipRectWidth;
+                var series = this,
+                    xAxis = series.xAxis,
+                    yAxis = series.yAxis,
+                    metrics = series.columnMetrics,
+                    options = series.options,
+                    minPointLength = options.minPointLength || 0,
+                    plotX = point.plotX,
+                    posX = pick(point.x2,
+                    point.x + (point.len || 0)),
+                    plotX2 = xAxis.translate(posX, 0, 0, 0, 1),
+                    length = Math.abs(plotX2 - plotX),
+                    widthDifference,
+                    shapeArgs,
+                    partialFill,
+                    inverted = this.chart.inverted,
+                    borderWidth = pick(options.borderWidth, 1),
+                    crisper = borderWidth % 2 / 2,
+                    yOffset = metrics.offset,
+                    pointHeight = Math.round(metrics.width),
+                    dlLeft,
+                    dlRight,
+                    dlWidth,
+                    clipRectWidth;
                 if (minPointLength) {
                     widthDifference = minPointLength - length;
                     if (widthDifference < 0) {
@@ -278,7 +325,7 @@
                     plotX2 += widthDifference / 2;
                 }
                 plotX = Math.max(plotX, -10);
-                plotX2 = Math.min(Math.max(plotX2, -10), xAxis.len + 10);
+                plotX2 = clamp(plotX2, -10, xAxis.len + 10);
                 // Handle individual pointWidth
                 if (defined(point.options.pointWidth)) {
                     yOffset -= ((Math.ceil(point.options.pointWidth) - pointHeight) / 2);
@@ -301,8 +348,8 @@
                 dlLeft = point.shapeArgs.x;
                 dlRight = dlLeft + point.shapeArgs.width;
                 if (dlLeft < 0 || dlRight > xAxis.len) {
-                    dlLeft = Math.min(xAxis.len, Math.max(0, dlLeft));
-                    dlRight = Math.max(0, Math.min(dlRight, xAxis.len));
+                    dlLeft = clamp(dlLeft, 0, xAxis.len);
+                    dlRight = clamp(dlRight, 0, xAxis.len);
                     dlWidth = dlRight - dlLeft;
                     point.dlBox = merge(point.shapeArgs, {
                         x: dlLeft,
@@ -314,22 +361,13 @@
                     point.dlBox = null;
                 }
                 // Tooltip position
-                if (!inverted) {
-                    point.tooltipPos[0] +=
-                        length / 2 * (xAxis.reversed ? -1 : 1);
-                    point.tooltipPos[1] -= metrics.width / 2;
-                    // Limit position by the correct axis size (#9727)
-                    point.tooltipPos[0] = Math.max(Math.min(point.tooltipPos[0], xAxis.len - 1), 0);
-                    point.tooltipPos[1] = Math.max(Math.min(point.tooltipPos[1], yAxis.len - 1), 0);
-                }
-                else {
-                    point.tooltipPos[1] +=
-                        length / 2 * (xAxis.reversed ? 1 : -1);
-                    point.tooltipPos[0] += metrics.width / 2;
-                    // Limit position by the correct axis size (#9727)
-                    point.tooltipPos[1] = Math.max(Math.min(point.tooltipPos[1], xAxis.len - 1), 0);
-                    point.tooltipPos[0] = Math.max(Math.min(point.tooltipPos[0], yAxis.len - 1), 0);
-                }
+                var tooltipPos = point.tooltipPos;
+                var xIndex = !inverted ? 0 : 1;
+                var yIndex = !inverted ? 1 : 0;
+                // Limit position by the correct axis size (#9727)
+                tooltipPos[xIndex] = clamp(tooltipPos[xIndex] + ((!inverted ? 1 : -1) * (xAxis.reversed ? -1 : 1) *
+                    (length / 2)), 0, xAxis.len - 1);
+                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((!inverted ? -1 : 1) * (metrics.width / 2)), 0, yAxis.len - 1);
                 // Add a partShapeArgs to the point, based on the shapeArgs property
                 partialFill = point.partialFill;
                 if (partialFill) {
@@ -387,8 +425,26 @@
              *        'animate' (animates changes) or 'attr' (sets options)
              */
             drawPoint: function (point, verb) {
-                var series = this, seriesOpts = series.options, renderer = series.chart.renderer, graphic = point.graphic, type = point.shapeType, shapeArgs = point.shapeArgs, partShapeArgs = point.partShapeArgs, clipRectArgs = point.clipRectArgs, pfOptions = point.partialFill, cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, pointState = point.state, stateOpts = (seriesOpts.states[pointState || 'normal'] ||
-                    {}), pointStateVerb = pointState === undefined ? 'attr' : verb, pointAttr = series.pointAttribs(point, pointState), animation = pick(series.chart.options.chart.animation, stateOpts.animation), fill;
+                var series = this,
+                    seriesOpts = series.options,
+                    renderer = series.chart.renderer,
+                    graphic = point.graphic,
+                    type = point.shapeType,
+                    shapeArgs = point.shapeArgs,
+                    partShapeArgs = point.partShapeArgs,
+                    clipRectArgs = point.clipRectArgs,
+                    pfOptions = point.partialFill,
+                    cutOff = seriesOpts.stacking && !seriesOpts.borderRadius,
+                    pointState = point.state,
+                    stateOpts = (seriesOpts.states[pointState || 'normal'] ||
+                        {}),
+                    pointStateVerb = typeof pointState === 'undefined' ?
+                        'attr' : verb,
+                    pointAttr = series.pointAttribs(point,
+                    pointState),
+                    animation = pick(series.chart.options.chart.animation,
+                    stateOpts.animation),
+                    fill;
                 if (!point.isNull) {
                     // Original graphic
                     if (graphic) { // update
@@ -451,7 +507,8 @@
              * @function Highcharts.Series#drawPoints
              */
             drawPoints: function () {
-                var series = this, verb = series.getAnimationVerb();
+                var series = this,
+                    verb = series.getAnimationVerb();
                 // Draw the columns
                 series.points.forEach(function (point) {
                     series.drawPoint(point, verb);
@@ -475,8 +532,9 @@
             // Override to remove stroke from points. For partial fill.
             pointAttribs: function () {
                 var series = this,
-                    retVal = columnType.prototype.pointAttribs
-                        .apply(series, arguments);
+                        retVal = columnType.prototype.pointAttribs
+                            .apply(series,
+                    arguments);
 
                 //retVal['stroke-width'] = 0;
                 return retVal;
@@ -504,7 +562,8 @@
              * @private
              */
             resolveColor: function () {
-                var series = this.series, colorByPoint;
+                var series = this.series,
+                    colorByPoint;
                 if (series.options.colorByPoint && !this.options.color) {
                     colorByPoint = getColorByCategory(series, this);
                     if (!series.chart.styledMode) {
@@ -549,7 +608,9 @@
              */
             // Add x2 and yCategory to the available properties for tooltip formats
             getLabelConfig: function () {
-                var point = this, cfg = Point.prototype.getLabelConfig.call(point), yCats = point.series.yAxis.categories;
+                var point = this,
+                    cfg = Point.prototype.getLabelConfig.call(point),
+                    yCats = point.series.yAxis.categories;
                 cfg.x2 = point.x2;
                 cfg.yCategory = point.yCategory = yCats && yCats[point.y];
                 return cfg;
@@ -572,7 +633,9 @@
          */
         addEvent(Axis, 'afterGetSeriesExtremes', function () {
             var axis = this, // eslint-disable-line no-invalid-this
-            axisSeries = axis.series, dataMax, modMax;
+                axisSeries = axis.series,
+                dataMax,
+                modMax;
             if (axis.isXAxis) {
                 dataMax = pick(axis.dataMax, -Number.MAX_VALUE);
                 axisSeries.forEach(function (series) {
@@ -629,6 +692,7 @@
          * @sample {highcharts} highcharts/series/data-array-of-objects/
          *         Config objects
          *
+         * @declare   Highcharts.XrangePointOptionsObject
          * @type      {Array<*>}
          * @extends   series.line.data
          * @product   highcharts highstock gantt
@@ -672,6 +736,7 @@
          * @sample {highcharts} highcharts/demo/x-range
          *         X-range with partial fill
          *
+         * @declare   Highcharts.XrangePointPartialFillOptionsObject
          * @product   highcharts highstock gantt
          * @apioption series.xrange.data.partialFill
          */

@@ -23,28 +23,13 @@ import H from './Globals.js';
 * @name Highcharts.ColumnMetricsObject#offset
 * @type {number}
 */
-/* *
- * @interface Highcharts.PointOptionsObject in parts/Point.ts
- */ /**
-* A name for the dash style to use for the column or bar. Overrides dashStyle
-* on the series. In styled mode, the stroke dash-array can be set with the same
-* classes as listed under {@link Highcharts.PointOptionsObject#color}.
-* @name Highcharts.PointOptionsObject#dashStyle
-* @type {Highcharts.DashStyleValue|undefined}
-*/ /**
-
-* A pixel value specifying a fixed width for the column or bar. Overrides
-* pointWidth on the series.
-* @name Highcharts.PointOptionsObject#pointWidth
-* @type {number|undefined}
-*/
 import U from './Utilities.js';
-var defined = U.defined, extend = U.extend, isNumber = U.isNumber, pick = U.pick;
+var animObject = U.animObject, clamp = U.clamp, defined = U.defined, extend = U.extend, isNumber = U.isNumber, pick = U.pick;
 import './Color.js';
 import './Legend.js';
 import './Series.js';
 import './Options.js';
-var animObject = H.animObject, color = H.color, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, Series = H.Series, seriesType = H.seriesType, svg = H.svg;
+var color = H.color, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, Series = H.Series, seriesType = H.seriesType, svg = H.svg;
 /**
  * The column series type.
  *
@@ -269,6 +254,8 @@ seriesType('column', 'line',
      * The default `null` means it is computed automatically, but this
      * option can be used to override the automatic value.
      *
+     * This option is set by default to 1 if data sorting is enabled.
+     *
      * @sample {highcharts} highcharts/plotoptions/column-pointrange/
      *         Set the point range to one day on a data set with one week
      *         between the points
@@ -350,15 +337,8 @@ seriesType('column', 'line',
         }
     },
     dataLabels: {
-        /**
-         * @internal
-         */
         align: null,
-        /**
-         * @internal
-         */
         verticalAlign: null,
-        /** @internal */
         y: null
     },
     /**
@@ -496,7 +476,8 @@ seriesType('column', 'line',
                     yAxis.pos === otherYAxis.pos) { // #642, #2086
                     if (otherOptions.stacking) {
                         stackKey = otherSeries.stackKey;
-                        if (stackGroups[stackKey] === undefined) {
+                        if (typeof stackGroups[stackKey] ===
+                            'undefined') {
                             stackGroups[stackKey] = columnCount++;
                         }
                         columnIndex = stackGroups[stackKey];
@@ -599,7 +580,7 @@ seriesType('column', 'line',
             var yBottom = pick(point.yBottom, translatedThreshold), safeDistance = 999 + Math.abs(yBottom), pointWidth = seriesPointWidth, 
             // Don't draw too far outside plot area (#1303, #2241,
             // #4264)
-            plotY = Math.min(Math.max(-safeDistance, point.plotY), yAxis.len + safeDistance), barX = point.plotX + seriesXOffset, barW = seriesBarW, barY = Math.min(plotY, yBottom), up, barH = Math.max(plotY, yBottom) - barY;
+            plotY = clamp(point.plotY, -safeDistance, yAxis.len + safeDistance), barX = point.plotX + seriesXOffset, barW = seriesBarW, barY = Math.min(plotY, yBottom), up, barH = Math.max(plotY, yBottom) - barY;
             // Handle options.minPointLength
             if (minPointLength && Math.abs(barH) < minPointLength) {
                 barH = minPointLength;
@@ -698,7 +679,7 @@ seriesType('column', 'line',
             this.color ||
             fill), strokeWidth = (point && point[strokeWidthOption]) ||
             options[strokeWidthOption] ||
-            this[strokeWidthOption] || 0, dashstyle = (point && point.options.dashStyle) || options.dashStyle, opacity = pick(options.opacity, 1), zone, brightness;
+            this[strokeWidthOption] || 0, dashstyle = (point && point.options.dashStyle) || options.dashStyle, opacity = pick(point && point.opacity, options.opacity, 1), zone, brightness;
         // Handle zone colors
         if (point && this.zones.length) {
             zone = point.getZone();
@@ -714,7 +695,7 @@ seriesType('column', 'line',
             }
         }
         // Select or hover states
-        if (state) {
+        if (state && point) {
             stateOptions = merge(options.states[state], 
             // #6401
             point.options.states &&
@@ -722,7 +703,7 @@ seriesType('column', 'line',
                 {});
             brightness = stateOptions.brightness;
             fill =
-                stateOptions.color || (brightness !== undefined &&
+                stateOptions.color || (typeof brightness !== 'undefined' &&
                     color(fill)
                         .brighten(stateOptions.brightness)
                         .get()) || fill;
@@ -755,7 +736,7 @@ seriesType('column', 'line',
         var series = this, chart = this.chart, options = series.options, renderer = chart.renderer, animationLimit = options.animationLimit || 250, shapeArgs;
         // draw the columns
         series.points.forEach(function (point) {
-            var plotY = point.plotY, graphic = point.graphic, verb = graphic && chart.pointCount < animationLimit ?
+            var plotY = point.plotY, graphic = point.graphic, hasGraphic = !!graphic, verb = graphic && chart.pointCount < animationLimit ?
                 'animate' : 'attr';
             if (isNumber(plotY) && point.y !== null) {
                 shapeArgs = point.shapeArgs;
@@ -764,13 +745,29 @@ seriesType('column', 'line',
                 if (graphic && point.hasNewShapeType()) {
                     graphic = graphic.destroy();
                 }
-                if (graphic) { // update
-                    graphic[verb](merge(shapeArgs));
+                // Set starting position for point sliding animation.
+                if (series.enabledDataSorting) {
+                    point.startXPos = series.xAxis.reversed ?
+                        -(shapeArgs ? shapeArgs.width : 0) :
+                        series.xAxis.width;
                 }
-                else {
+                if (!graphic) {
                     point.graphic = graphic =
                         renderer[point.shapeType](shapeArgs)
                             .add(point.group || series.group);
+                    if (graphic &&
+                        series.enabledDataSorting &&
+                        chart.hasRendered &&
+                        chart.pointCount < animationLimit) {
+                        graphic.attr({
+                            x: point.startXPos
+                        });
+                        hasGraphic = true;
+                        verb = 'animate';
+                    }
+                }
+                if (graphic && hasGraphic) { // update
+                    graphic[verb](merge(shapeArgs));
                 }
                 // Border radius is not stylable (#6900)
                 if (options.borderRadius) {
@@ -804,7 +801,7 @@ seriesType('column', 'line',
         if (svg) { // VML is too slow anyway
             if (init) {
                 attr.scaleY = 0.001;
-                translatedThreshold = Math.min(yAxis.pos + yAxis.len, Math.max(yAxis.pos, yAxis.toPixels(options.threshold)));
+                translatedThreshold = clamp(yAxis.toPixels(options.threshold), yAxis.pos, yAxis.pos + yAxis.len);
                 if (inverted) {
                     attr.translateX = translatedThreshold - yAxis.len;
                 }

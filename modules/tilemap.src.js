@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.2.1 (2019-10-31)
+ * @license Highmaps JS v8.0.0 (2019-12-10)
  *
  * Tilemap module
  *
@@ -41,18 +41,18 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend, pick = U.pick;
+        var clamp = U.clamp,
+            extend = U.extend,
+            pick = U.pick;
         /**
          * @typedef {"circle"|"diamond"|"hexagon"|"square"} Highcharts.TilemapShapeValue
          */
         var seriesType = H.seriesType, 
-        // Utility func to get the middle number of 3
-        between = function (x, a, b) {
-            return Math.min(Math.max(a, x), b);
-        }, 
-        // Utility func to get padding definition from tile size division
-        tilePaddingFromTileSize = function (series, xDiv, yDiv) {
-            var options = series.options;
+            // Utility func to get padding definition from tile size division
+            tilePaddingFromTileSize = function (series,
+            xDiv,
+            yDiv) {
+                var options = series.options;
             return {
                 xPad: (options.colsize || 1) / -xDiv,
                 yPad: (options.rowsize || 1) / -yDiv
@@ -82,21 +82,39 @@
                     ];
                 },
                 translate: function () {
-                    var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, xPad = (options.colsize || 1) / 3, yPad = (options.rowsize || 1) / 2, yShift;
+                    var series = this,
+                        options = series.options,
+                        xAxis = series.xAxis,
+                        yAxis = series.yAxis,
+                        seriesPointPadding = options.pointPadding || 0,
+                        xPad = (options.colsize || 1) / 3,
+                        yPad = (options.rowsize || 1) / 2,
+                        yShift;
                     series.generatePoints();
                     series.points.forEach(function (point) {
-                        var x1 = between(Math.floor(xAxis.len -
-                            xAxis.translate(point.x - xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x2 = between(Math.floor(xAxis.len -
-                            xAxis.translate(point.x - xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x3 = between(Math.floor(xAxis.len -
-                            xAxis.translate(point.x + xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), x4 = between(Math.floor(xAxis.len -
-                            xAxis.translate(point.x + xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len), y1 = between(Math.floor(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y2 = between(Math.floor(yAxis.translate(point.y, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y3 = between(Math.floor(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), pointPadding = pick(point.pointPadding, seriesPointPadding), 
-                        // We calculate the point padding of the midpoints to
-                        // preserve the angles of the shape.
-                        midPointPadding = pointPadding *
-                            Math.abs(x2 - x1) / Math.abs(y3 - y2), xMidPadding = xAxis.reversed ?
-                            -midPointPadding : midPointPadding, xPointPadding = xAxis.reversed ?
-                            -pointPadding : pointPadding, yPointPadding = yAxis.reversed ?
-                            -pointPadding : pointPadding;
+                        var x1 = clamp(Math.floor(xAxis.len -
+                                xAxis.translate(point.x - xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
+                            x2 = clamp(Math.floor(xAxis.len -
+                                xAxis.translate(point.x - xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
+                            x3 = clamp(Math.floor(xAxis.len -
+                                xAxis.translate(point.x + xPad, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
+                            x4 = clamp(Math.floor(xAxis.len -
+                                xAxis.translate(point.x + xPad * 2, 0, 1, 0, 1)), -xAxis.len, 2 * xAxis.len),
+                            y1 = clamp(Math.floor(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
+                            y2 = clamp(Math.floor(yAxis.translate(point.y, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
+                            y3 = clamp(Math.floor(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
+                            pointPadding = pick(point.pointPadding,
+                            seriesPointPadding), 
+                            // We calculate the point padding of the midpoints to
+                            // preserve the angles of the shape.
+                            midPointPadding = pointPadding *
+                                Math.abs(x2 - x1) / Math.abs(y3 - y2),
+                            xMidPadding = xAxis.reversed ?
+                                -midPointPadding : midPointPadding,
+                            xPointPadding = xAxis.reversed ?
+                                -pointPadding : pointPadding,
+                            yPointPadding = yAxis.reversed ?
+                                -pointPadding : pointPadding;
                         // Shift y-values for every second grid column
                         if (point.x % 2) {
                             yShift = yShift || Math.round(Math.abs(y3 - y1) / 2) *
@@ -157,19 +175,35 @@
                     ];
                 },
                 translate: function () {
-                    var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, xPad = (options.colsize || 1), yPad = (options.rowsize || 1) / 2, yShift;
+                    var series = this,
+                        options = series.options,
+                        xAxis = series.xAxis,
+                        yAxis = series.yAxis,
+                        seriesPointPadding = options.pointPadding || 0,
+                        xPad = (options.colsize || 1),
+                        yPad = (options.rowsize || 1) / 2,
+                        yShift;
                     series.generatePoints();
                     series.points.forEach(function (point) {
-                        var x1 = between(Math.round(xAxis.len -
-                            xAxis.translate(point.x - xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), x2 = between(Math.round(xAxis.len -
-                            xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), x3 = between(Math.round(xAxis.len -
-                            xAxis.translate(point.x + xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), y1 = between(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), y2 = between(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), y3 = between(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), pointPadding = pick(point.pointPadding, seriesPointPadding), 
-                        // We calculate the point padding of the midpoints to
-                        // preserve the angles of the shape.
-                        midPointPadding = pointPadding *
-                            Math.abs(x2 - x1) / Math.abs(y3 - y2), xPointPadding = xAxis.reversed ?
-                            -midPointPadding : midPointPadding, yPointPadding = yAxis.reversed ?
-                            -pointPadding : pointPadding;
+                        var x1 = clamp(Math.round(xAxis.len -
+                                xAxis.translate(point.x - xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len),
+                            x2 = clamp(Math.round(xAxis.len -
+                                xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len),
+                            x3 = clamp(Math.round(xAxis.len -
+                                xAxis.translate(point.x + xPad, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len),
+                            y1 = clamp(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len),
+                            y2 = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len),
+                            y3 = clamp(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len),
+                            pointPadding = pick(point.pointPadding,
+                            seriesPointPadding), 
+                            // We calculate the point padding of the midpoints to
+                            // preserve the angles of the shape.
+                            midPointPadding = pointPadding *
+                                Math.abs(x2 - x1) / Math.abs(y3 - y2),
+                            xPointPadding = xAxis.reversed ?
+                                -midPointPadding : midPointPadding,
+                            yPointPadding = yAxis.reversed ?
+                                -pointPadding : pointPadding;
                         // Shift y-values for every second grid column
                         // We have to reverse the shift for reversed y-axes
                         if (point.x % 2) {
@@ -216,13 +250,27 @@
                         .call(this, size + (size && this.radius));
                 },
                 translate: function () {
-                    var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, yRadius = (options.rowsize || 1) / 2, colsize = (options.colsize || 1), colsizePx, yRadiusPx, xRadiusPx, radius, forceNextRadiusCompute = false;
+                    var series = this,
+                        options = series.options,
+                        xAxis = series.xAxis,
+                        yAxis = series.yAxis,
+                        seriesPointPadding = options.pointPadding || 0,
+                        yRadius = (options.rowsize || 1) / 2,
+                        colsize = (options.colsize || 1),
+                        colsizePx,
+                        yRadiusPx,
+                        xRadiusPx,
+                        radius,
+                        forceNextRadiusCompute = false;
                     series.generatePoints();
                     series.points.forEach(function (point) {
-                        var x = between(Math.round(xAxis.len -
-                            xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len), y = between(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len), pointPadding = seriesPointPadding, hasPerPointPadding = false;
+                        var x = clamp(Math.round(xAxis.len -
+                                xAxis.translate(point.x, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len),
+                            y = clamp(Math.round(yAxis.translate(point.y, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len),
+                            pointPadding = seriesPointPadding,
+                            hasPerPointPadding = false;
                         // If there is point padding defined on a single point, add it
-                        if (point.pointPadding !== undefined) {
+                        if (typeof point.pointPadding !== 'undefined') {
                             pointPadding = point.pointPadding;
                             hasPerPointPadding = true;
                             forceNextRadiusCompute = true;
@@ -246,9 +294,9 @@
                             instead (yRadiusPx).
                         */
                         if (!radius || forceNextRadiusCompute) {
-                            colsizePx = Math.abs(between(Math.floor(xAxis.len -
+                            colsizePx = Math.abs(clamp(Math.floor(xAxis.len -
                                 xAxis.translate(point.x + colsize, 0, 1, 0, 0)), -xAxis.len, 2 * xAxis.len) - x);
-                            yRadiusPx = Math.abs(between(Math.floor(yAxis.translate(point.y + yRadius, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len) - y);
+                            yRadiusPx = Math.abs(clamp(Math.floor(yAxis.translate(point.y + yRadius, 0, 1, 0, 0)), -yAxis.len, 2 * yAxis.len) - y);
                             xRadiusPx = Math.floor(Math.sqrt((colsizePx * colsizePx + yRadiusPx * yRadiusPx)) / 2);
                             radius = Math.min(colsizePx, xRadiusPx, yRadiusPx) - pointPadding;
                             // If we have per point padding we need to always compute
@@ -299,17 +347,17 @@
                 return;
             }
             var axis = this, 
-            // Find which series' padding to use
-            seriesPadding = axis.series
-                .map(function (series) {
-                return series.getSeriesPixelPadding &&
-                    series.getSeriesPixelPadding(axis);
+                // Find which series' padding to use
+                seriesPadding = axis.series
+                    .map(function (series) {
+                    return series.getSeriesPixelPadding &&
+                        series.getSeriesPixelPadding(axis);
             })
                 .reduce(function (a, b) {
                 return (a && a.padding) > (b && b.padding) ?
                     a :
                     b;
-            }, undefined) ||
+            }, void 0) ||
                 {
                     padding: 0,
                     axisLengthFactor: 1
@@ -421,7 +469,8 @@
             // Set tile shape object on series
             setOptions: function () {
                 // Call original function
-                var ret = H.seriesTypes.heatmap.prototype.setOptions.apply(this, Array.prototype.slice.call(arguments));
+                var ret = H.seriesTypes.heatmap.prototype.setOptions.apply(this,
+                    Array.prototype.slice.call(arguments));
                 this.tileShape = H.tileShapeTypes[ret.tileShape];
                 return ret;
             },
@@ -431,7 +480,10 @@
             },
             // Get metrics for padding of axis for this series
             getSeriesPixelPadding: function (axis) {
-                var isX = axis.isXAxis, padding = this.tileShape.getSeriesPadding(this), coord1, coord2;
+                var isX = axis.isXAxis,
+                    padding = this.tileShape.getSeriesPadding(this),
+                    coord1,
+                    coord2;
                 // If the shape type does not require padding, return no-op padding
                 if (!padding) {
                     return {

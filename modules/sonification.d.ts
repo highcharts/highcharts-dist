@@ -110,7 +110,7 @@ declare module "../highcharts" {
         /**
          * The options to pass to Instrument.play.
          */
-        playOptions: object;
+        playOptions: InstrumentPlayOptionsObject;
     }
     /**
      * Options for an Earcon.
@@ -446,7 +446,7 @@ declare module "../highcharts" {
          * of point data properties to objects with min/max values: (see online
          * documentation for example)
          */
-        dataExtremes?: object;
+        dataExtremes?: Dictionary<RangeObject>;
         /**
          * Duration for sonifying the entire chart. The duration is distributed
          * across the different series intelligently, but does not take earcons
@@ -519,7 +519,7 @@ declare module "../highcharts" {
          * of point data properties to objects with min/max values: (see online
          * documentation for example)
          */
-        dataExtremes?: object;
+        dataExtremes?: Dictionary<RangeObject>;
         /**
          * The duration for playing the points. Note that points might continue
          * to play after the duration has passed, but no new points will start
@@ -634,7 +634,7 @@ declare module "../highcharts" {
          * @param callbackData
          *        Data to send to the onEnd callback functions.
          */
-        stop(immediately: boolean, onStopped: Function, callbackData: any): void;
+        stop(immediately: boolean, onStopped?: Function, callbackData?: any): void;
     }
     /**
      * Global classes and objects related to sonification.

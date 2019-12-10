@@ -13,36 +13,8 @@
  * */
 'use strict';
 import H from '../parts/Globals.js';
-/**
- * Possible rotation options for data labels in the sunburst series.
- *
- * @typedef {"auto"|"perpendicular"|"parallel"} Highcharts.SeriesSunburstDataLabelsRotationValue
- */
-/**
- * Options for data labels in the sunburst series.
- *
- * @interface Highcharts.SeriesSunburstDataLabelsOptionsObject
- * @extends Highcharts.DataLabelsOptionsObject
- */ /**
-* @name Highcharts.SeriesSunburstDataLabelsOptionsObject#align
-* @type {undefined}
-*/ /**
-* @name Highcharts.SeriesSunburstDataLabelsOptionsObject#allowOverlap
-* @type {undefined}
-*/ /**
-* Decides how the data label will be rotated relative to the perimeter
-* of the sunburst. Valid values are `auto`, `parallel` and
-* `perpendicular`. When `auto`, the best fit will be computed for the
-* point.
-*
-* The `series.rotation` option takes precedence over `rotationMode`.
-*
-* @name Highcharts.SeriesSunburstDataLabelsOptionsObject#rotationMode
-* @type {Highcharts.SeriesSunburstDataLabelsRotationValue|undefined}
-* @since 6.0.0
-*/
 import U from '../parts/Utilities.js';
-var extend = U.extend, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString;
+var correctFloat = U.correctFloat, extend = U.extend, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, splat = U.splat;
 import '../mixins/centered-series.js';
 import drawPoint from '../mixins/draw-point.js';
 import mixinTreeSeries from '../mixins/tree-series.js';
@@ -180,26 +152,53 @@ var getDlOptions = function getDlOptions(params) {
     // Set options to new object to avoid problems with scope
     var point = params.point, shape = isObject(params.shapeArgs) ? params.shapeArgs : {}, optionsPoint = (isObject(params.optionsPoint) ?
         params.optionsPoint.dataLabels :
-        {}), optionsLevel = (isObject(params.level) ?
+        {}), 
+    // The splat was used because levels dataLabels
+    // options doesn't work as an array
+    optionsLevel = splat(isObject(params.level) ?
         params.level.dataLabels :
-        {}), options = merge({
+        {})[0], options = merge({
         style: {}
     }, optionsLevel, optionsPoint), rotationRad, rotation, rotationMode = options.rotationMode;
     if (!isNumber(options.rotation)) {
-        if (rotationMode === 'auto') {
+        if (rotationMode === 'auto' || rotationMode === 'circular') {
             if (point.innerArcLength < 1 &&
                 point.outerArcLength > shape.radius) {
                 rotationRad = 0;
+                // Triger setTextPath function to get textOutline etc.
+                if (point.dataLabelPath && rotationMode === 'circular') {
+                    options.textPath = {
+                        enabled: true
+                    };
+                }
             }
             else if (point.innerArcLength > 1 &&
                 point.outerArcLength > 1.5 * shape.radius) {
-                rotationMode = 'parallel';
+                if (rotationMode === 'circular') {
+                    options.textPath = {
+                        enabled: true,
+                        attributes: {
+                            dy: 5
+                        }
+                    };
+                }
+                else {
+                    rotationMode = 'parallel';
+                }
             }
             else {
+                // Trigger the destroyTextPath function
+                if (point.dataLabel &&
+                    point.dataLabel.textPathWrapper &&
+                    rotationMode === 'circular') {
+                    options.textPath = {
+                        enabled: false
+                    };
+                }
                 rotationMode = 'perpendicular';
             }
         }
-        if (rotationMode !== 'auto') {
+        if (rotationMode !== 'auto' && rotationMode !== 'circular') {
             rotationRad = (shape.end -
                 (shape.end - shape.start) / 2);
         }
@@ -227,6 +226,33 @@ var getDlOptions = function getDlOptions(params) {
             rotation += 180;
         }
         options.rotation = rotation;
+    }
+    if (options.textPath) {
+        if (point.shapeExisting.innerR === 0 &&
+            options.textPath.enabled) {
+            // Enable rotation to render text
+            options.rotation = 0;
+            // Center dataLabel - disable textPath
+            options.textPath.enabled = false;
+            // Setting width and padding
+            options.style.width = Math.max((point.shapeExisting.r * 2) -
+                2 * (options.padding || 0), 1);
+        }
+        else if (point.dlOptions &&
+            point.dlOptions.textPath &&
+            !point.dlOptions.textPath.enabled &&
+            (rotationMode === 'circular')) {
+            // Bring dataLabel back if was a center dataLabel
+            options.textPath.enabled = true;
+        }
+        if (options.textPath.enabled) {
+            // Enable rotation to render text
+            options.rotation = 0;
+            // Setting width and padding
+            options.style.width = Math.max((point.outerArcLength +
+                point.innerArcLength) / 2 -
+                2 * (options.padding || 0), 1);
+        }
     }
     // NOTE: alignDataLabel positions the data label differntly when rotation is
     // 0. Avoiding this by setting rotation to a small number.
@@ -309,6 +335,13 @@ var getDrillId = function getDrillId(point, idRoot, mapIdToNode) {
         }
     }
     return drillId;
+};
+var getLevelFromAndTo = function getLevelFromAndTo(_a) {
+    var level = _a.level, height = _a.height;
+    //  Never displays level below 1
+    var from = level > 0 ? level : 1;
+    var to = level + height;
+    return { from: from, to: to };
 };
 var cbSetTreeValuesBefore = function before(node, options) {
     var mapIdToNode = options.mapIdToNode, nodeParent = mapIdToNode[node.parent], series = options.series, chart = series.chart, points = series.points, point = points[node.i], colors = (series.options.colors || chart && chart.options.colors), colorInfo = getColor(node, {
@@ -405,7 +438,7 @@ var sunburstOptions = {
     /**
      * Can set `dataLabels` on all points which lies on the same level.
      *
-     * @type      {Highcharts.SeriesSunburstDataLabelsOptionsObject}
+     * @extends   plotOptions.sunburst.dataLabels
      * @apioption plotOptions.sunburst.levels.dataLabels
      */
     /**
@@ -468,18 +501,26 @@ var sunburstOptions = {
      */
     opacity: 1,
     /**
-     * @type    {Highcharts.SeriesSunburstDataLabelsOptionsObject|Array<Highcharts.SeriesSunburstDataLabelsOptionsObject>}
-     * @default {"allowOverlap": true, "defer": true, "rotationMode": "auto", "style": {"textOverflow": "ellipsis"}}
+     * @declare Highcharts.SeriesSunburstDataLabelsOptionsObject
      */
     dataLabels: {
-        /** @ignore-option */
         allowOverlap: true,
-        /** @ignore-option */
         defer: true,
-        /** @ignore-option */
+        /**
+         * Decides how the data label will be rotated relative to the perimeter
+         * of the sunburst. Valid values are `auto`, `parallel` and
+         * `perpendicular`. When `auto`, the best fit will be computed for the
+         * point.
+         *
+         * The `series.rotation` option takes precedence over `rotationMode`.
+         *
+         * @type       {string}
+         * @validvalue ["auto", "perpendicular", "parallel"]
+         * @since      6.0.0
+         */
         rotationMode: 'auto',
-        /** @ignore-option */
         style: {
+            /** @internal */
             textOverflow: 'ellipsis'
         }
     },
@@ -488,7 +529,7 @@ var sunburstOptions = {
      *
      * @type {string}
      */
-    rootId: undefined,
+    rootId: void 0,
     /**
      * Used together with the levels and `allowDrillToNode` options. When
      * set to false the first level visible when drilling is considered
@@ -535,8 +576,8 @@ var sunburstOptions = {
     /**
      * Options for the button appearing when traversing down in a treemap.
      *
-     * @extends plotOptions.treemap.traverseUpButton
-     * @since 6.0.0
+     * @extends   plotOptions.treemap.traverseUpButton
+     * @since     6.0.0
      * @apioption plotOptions.sunburst.traverseUpButton
      */
     /**
@@ -698,10 +739,11 @@ var sunburstSeries = {
         nodeRoot = mapIdToNode[rootId];
         idTop = isString(nodeRoot.parent) ? nodeRoot.parent : '';
         nodeTop = mapIdToNode[idTop];
+        var _a = getLevelFromAndTo(nodeRoot), from = _a.from, to = _a.to;
         mapOptionsToLevel = getLevelOptions({
-            from: nodeRoot.level > 0 ? nodeRoot.level : 1,
+            from: from,
             levels: series.options.levels,
-            to: tree.height,
+            to: to,
             defaults: {
                 colorByPoint: options.colorByPoint,
                 dataLabels: options.dataLabels,
@@ -714,8 +756,8 @@ var sunburstSeries = {
         // getLevelOptions
         mapOptionsToLevel = calculateLevelSizes(mapOptionsToLevel, {
             diffRadius: diffRadius,
-            from: nodeRoot.level > 0 ? nodeRoot.level : 1,
-            to: tree.height
+            from: from,
+            to: to
         });
         // TODO Try to combine setTreeValues & setColorRecursive to avoid
         //  unnecessary looping.
@@ -749,6 +791,13 @@ var sunburstSeries = {
         });
         // reset object
         nodeIds = {};
+    },
+    alignDataLabel: function (point, dataLabel, labelOptions) {
+        if (labelOptions.textPath && labelOptions.textPath.enabled) {
+            return;
+        }
+        return seriesTypes.treemap.prototype.alignDataLabel
+            .apply(this, arguments);
     },
     // Animate the slices in. Similar to the animation of polar charts.
     animate: function (init) {
@@ -786,6 +835,7 @@ var sunburstSeries = {
     },
     utils: {
         calculateLevelSizes: calculateLevelSizes,
+        getLevelFromAndTo: getLevelFromAndTo,
         range: range
     }
 };
@@ -797,6 +847,45 @@ var sunburstPoint = {
     },
     isValid: function isValid() {
         return true;
+    },
+    getDataLabelPath: function (label) {
+        var renderer = this.series.chart.renderer, shapeArgs = this.shapeExisting, start = shapeArgs.start, end = shapeArgs.end, angle = start + (end - start) / 2, // arc middle value
+        upperHalf = angle < 0 &&
+            angle > -Math.PI ||
+            angle > Math.PI, r = (shapeArgs.r + (label.options.distance || 0)), moreThanHalf;
+        // Check if point is a full circle
+        if (start === -Math.PI / 2 &&
+            correctFloat(end) === correctFloat(Math.PI * 1.5)) {
+            start = -Math.PI + Math.PI / 360;
+            end = -Math.PI / 360;
+            upperHalf = true;
+        }
+        // Check if dataLabels should be render in the
+        // upper half of the circle
+        if (end - start > Math.PI) {
+            upperHalf = false;
+            moreThanHalf = true;
+        }
+        if (this.dataLabelPath) {
+            this.dataLabelPath = this.dataLabelPath.destroy();
+        }
+        this.dataLabelPath = renderer
+            .arc({
+            open: true,
+            longArc: moreThanHalf ? 1 : 0
+        })
+            // Add it inside the data label group so it gets destroyed
+            // with the label
+            .add(label);
+        this.dataLabelPath.attr({
+            start: (upperHalf ? start : end),
+            end: (upperHalf ? end : start),
+            clockwise: +upperHalf,
+            x: shapeArgs.x,
+            y: shapeArgs.y,
+            r: (r + shapeArgs.innerR) / 2
+        });
+        return this.dataLabelPath;
     }
 };
 /**
@@ -838,7 +927,7 @@ var sunburstPoint = {
  * @type      {string}
  * @since     6.0.0
  * @product   highcharts
- * @apioption series.treemap.data.parent
+ * @apioption series.sunburst.data.parent
  */
 /**
   * Whether to display a slice offset from the center. When a sunburst point is

@@ -1,5 +1,5 @@
 /*
- Highstock JS v7.2.1 (2019-10-31)
+ Highstock JS v8.0.0 (2019-12-10)
 
  Indicator series type for Highstock
 
@@ -14,5 +14,5 @@ m=a.seriesTypes.ohlc.prototype,q=e.generateMessage;l(a.Series,"init",function(c)
 c)});return a},init:function(a,d){function c(){var a=b.points||[],c=(b.xData||[]).length,d=b.getValues(b.linkedParent,b.options.params)||{values:[],xData:[],yData:[]},f=[],e=!0;if(c&&!b.hasGroupedData&&b.visible&&b.points)if(b.cropped){if(b.xAxis){var g=b.xAxis.min;var w=b.xAxis.max}c=b.cropData(d.xData,d.yData,g,w);for(g=0;g<c.xData.length;g++)f.push([c.xData[g]].concat(t(c.yData[g])));c=d.xData.indexOf(b.xData[0]);g=d.xData.indexOf(b.xData[b.xData.length-1]);-1===c&&g===d.xData.length-2&&f[0][0]===
 a[0].x&&f.shift();b.updateData(f)}else d.xData.length!==c-1&&d.xData.length!==c+1&&(e=!1,b.updateData(d.values));e&&(b.xData=d.xData,b.yData=d.yData,b.options.data=d.values);!1===b.bindTo.series&&(delete b.processedXData,b.isDirty=!0,b.redraw());b.isDirtyData=!1}var b=this,f=b.requireIndicators();if(!f.allLoaded)return u(q(b.type,f.needed));k.prototype.init.call(b,a,d);a.linkSeries();b.dataEventsToUnbind=[];if(!b.linkedParent)return u("Series "+b.options.linkedTo+" not found! Check `linkedTo`.",!1,
 a);b.dataEventsToUnbind.push(l(b.bindTo.series?b.linkedParent:b.linkedParent.xAxis,b.bindTo.eventName,c));if("init"===b.calculateOn)c();else var e=l(b.chart,b.calculateOn,function(){c();e()});return b},getName:function(){var a=this.name,d=[];a||((this.nameComponents||[]).forEach(function(a,b){d.push(this.options.params[a]+h(this.nameSuffixes[b],""))},this),a=(this.nameBase||this.type.toUpperCase())+(this.nameComponents?" ("+d.join(", ")+")":""));return a},getValues:function(a,d){var c=d.period,b=
-a.xData;a=a.yData;var f=a.length,e=0,h=0,k=[],l=[],m=[],n=-1;if(b.length<c)return!1;for(p(a[0])&&(n=d.index?d.index:0);e<c-1;)h+=0>n?a[e]:a[e][n],e++;for(d=e;d<f;d++){h+=0>n?a[d]:a[d][n];var g=[b[d],h/c];k.push(g);l.push(g[0]);m.push(g[1]);h-=0>n?a[d-e]:a[d-e][n]}return{values:k,xData:l,yData:m}},destroy:function(){this.dataEventsToUnbind.forEach(function(a){a()});k.prototype.destroy.call(this)}});""});e(a,"masters/indicators/indicators.src.js",[],function(){})});
+a.xData;a=a.yData;var f=a.length,e=0,h=0,k=[],l=[],m=[],n=-1;if(!(b.length<c)){for(p(a[0])&&(n=d.index?d.index:0);e<c-1;)h+=0>n?a[e]:a[e][n],e++;for(d=e;d<f;d++){h+=0>n?a[d]:a[d][n];var g=[b[d],h/c];k.push(g);l.push(g[0]);m.push(g[1]);h-=0>n?a[d-e]:a[d-e][n]}return{values:k,xData:l,yData:m}}},destroy:function(){this.dataEventsToUnbind.forEach(function(a){a()});k.prototype.destroy.apply(this,arguments)}});""});e(a,"masters/indicators/indicators.src.js",[],function(){})});
 //# sourceMappingURL=indicators.js.map

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Advanced Highstock tools
  *
@@ -40,13 +40,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          */
         var isArray = U.isArray;
-        var addEvent = H.addEvent, merge = H.merge;
+        var addEvent = H.addEvent,
+            merge = H.merge;
         /**
          * The line marks the last price from visible range of points.
          *
          * @sample {highstock} stock/indicators/last-visible-price
          *         Last visible price
          *
+         * @declare   Highcharts.SeriesLastVisiblePriceOptionsObject
          * @product   highstock
          * @requires  modules/price-indicator
          * @apioption plotOptions.series.lastVisiblePrice
@@ -58,6 +60,10 @@
          * @product   highstock
          * @default   true
          * @apioption plotOptions.series.lastVisiblePrice.enabled
+         */
+        /**
+         * @declare   Highcharts.SeriesLastVisiblePriceLabelOptionsObject
+         * @apioption plotOptions.series.lastVisiblePrice.label
          */
         /**
          * Enable or disable the label.
@@ -74,6 +80,7 @@
          * @sample {highstock} stock/indicators/last-price
          *         Last price
          *
+         * @declare   Highcharts.SeriesLastPriceOptionsObject
          * @product   highstock
          * @requires  modules/price-indicator
          * @apioption plotOptions.series.lastPrice
@@ -97,10 +104,26 @@
          */
         /* eslint-disable no-invalid-this */
         addEvent(H.Series, 'afterRender', function () {
-            var serie = this, seriesOptions = serie.options, pointRange = seriesOptions.pointRange, lastVisiblePrice = seriesOptions.lastVisiblePrice, lastPrice = seriesOptions.lastPrice;
+            var serie = this,
+                seriesOptions = serie.options,
+                pointRange = seriesOptions.pointRange,
+                lastVisiblePrice = seriesOptions.lastVisiblePrice,
+                lastPrice = seriesOptions.lastPrice;
             if ((lastVisiblePrice || lastPrice) &&
                 seriesOptions.id !== 'highcharts-navigator-series') {
-                var xAxis = serie.xAxis, yAxis = serie.yAxis, origOptions = yAxis.crosshair, origGraphic = yAxis.cross, origLabel = yAxis.crossLabel, points = serie.points, yLength = serie.yData.length, pLength = points.length, x = serie.xData[serie.xData.length - 1], y = serie.yData[yLength - 1], lastPoint, yValue, crop;
+                var xAxis = serie.xAxis,
+                    yAxis = serie.yAxis,
+                    origOptions = yAxis.crosshair,
+                    origGraphic = yAxis.cross,
+                    origLabel = yAxis.crossLabel,
+                    points = serie.points,
+                    yLength = serie.yData.length,
+                    pLength = points.length,
+                    x = serie.xData[serie.xData.length - 1],
+                    y = serie.yData[yLength - 1],
+                    lastPoint,
+                    yValue,
+                    crop;
                 if (lastPrice && lastPrice.enabled) {
                     yAxis.crosshair = yAxis.options.crosshair = seriesOptions.lastPrice;
                     yAxis.cross = serie.lastPrice;

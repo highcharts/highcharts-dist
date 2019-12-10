@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v7.2.1 (2019-10-31)
+ * @license Highcharts JS v8.0.0 (2019-12-10)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -66,8 +66,16 @@
          * https://jsfiddle.net/highcharts/264Nm/
          * https://jsfiddle.net/highcharts/y5A37/
          */
-        var extend = U.extend, isNumber = U.isNumber, pick = U.pick, syncTimeout = U.syncTimeout;
-        var labelDistance = 3, addEvent = H.addEvent, Series = H.Series, SVGRenderer = H.SVGRenderer, Chart = H.Chart;
+        var animObject = U.animObject,
+            extend = U.extend,
+            isNumber = U.isNumber,
+            pick = U.pick,
+            syncTimeout = U.syncTimeout;
+        var labelDistance = 3,
+            addEvent = H.addEvent,
+            Series = H.Series,
+            SVGRenderer = H.SVGRenderer,
+            Chart = H.Chart;
         H.setOptions({
             /**
              * @optionparent plotOptions
@@ -90,6 +98,7 @@
                      * @sample highcharts/series-label/stock-chart
                      *         Stock chart
                      *
+                     * @declare  Highcharts.SeriesLabelOptionsObject
                      * @since    6.0.0
                      * @product  highcharts highstock gantt
                      * @requires modules/series-label
@@ -141,11 +150,10 @@
                          * Styles for the series label. The color defaults to the series
                          * color, or a contrast color if `onArea`.
                          *
-                         * @type    {Highcharts.CSSObject}
-                         * @default {"font-weight": "bold"}
+                         * @type {Highcharts.CSSObject}
                          */
                         style: {
-                            /** @ignore */
+                            /** @internal */
                             fontWeight: 'bold'
                         },
                         /**
@@ -200,7 +208,11 @@
          * @function Highcharts.SVGRenderer#symbols.connector
          */
         SVGRenderer.prototype.symbols.connector = function (x, y, w, h, options) {
-            var anchorX = options && options.anchorX, anchorY = options && options.anchorY, path, yOffset, lateral = w / 2;
+            var anchorX = options && options.anchorX,
+                anchorY = options && options.anchorY,
+                path,
+                yOffset,
+                lateral = w / 2;
             if (isNumber(anchorX) && isNumber(anchorY)) {
                 path = ['M', anchorX, anchorY];
                 // Prefer 45 deg connectors
@@ -241,7 +253,29 @@
             if (!this.xAxis && !this.yAxis) {
                 return;
             }
-            var distance = 16, points = this.points, point, last, interpolated = [], i, deltaX, deltaY, delta, len, n, j, d, graph = this.graph || this.area, node = graph.element, inverted = this.chart.inverted, xAxis = this.xAxis, yAxis = this.yAxis, paneLeft = inverted ? yAxis.pos : xAxis.pos, paneTop = inverted ? xAxis.pos : yAxis.pos, onArea = pick(this.options.label.onArea, !!this.area), translatedThreshold = yAxis.getThreshold(this.options.threshold), grid = {};
+            var distance = 16,
+                points = this.points,
+                point,
+                last,
+                interpolated = [],
+                i,
+                deltaX,
+                deltaY,
+                delta,
+                len,
+                n,
+                j,
+                d,
+                graph = this.graph || this.area,
+                node = graph.element,
+                inverted = this.chart.inverted,
+                xAxis = this.xAxis,
+                yAxis = this.yAxis,
+                paneLeft = inverted ? yAxis.pos : xAxis.pos,
+                paneTop = inverted ? xAxis.pos : yAxis.pos,
+                onArea = pick(this.options.label.onArea, !!this.area),
+                translatedThreshold = yAxis.getThreshold(this.options.threshold),
+                grid = {};
             /**
              * Push the point to the interpolated points, but only if that position in
              * the grid has not been occupied. As a performance optimization, we divide
@@ -250,7 +284,7 @@
              */
             function pushDiscrete(point) {
                 var cellSize = 8, key = Math.round(point.plotX / cellSize) + ',' +
-                    Math.round(point.plotY / cellSize);
+                        Math.round(point.plotY / cellSize);
                 if (!grid[key]) {
                     grid[key] = 1;
                     interpolated.push(point);
@@ -366,7 +400,20 @@
          */
         Series.prototype.checkClearPoint = function (x, y, bBox, checkDistance) {
             var distToOthersSquared = Number.MAX_VALUE, // distance to other graphs
-            distToPointSquared = Number.MAX_VALUE, dist, connectorPoint, onArea = pick(this.options.label.onArea, !!this.area), findDistanceToOthers = (onArea || this.options.label.connectorAllowed), chart = this.chart, series, points, leastDistance = 16, withinRange, xDist, yDist, i, j;
+                distToPointSquared = Number.MAX_VALUE,
+                dist,
+                connectorPoint,
+                onArea = pick(this.options.label.onArea, !!this.area),
+                findDistanceToOthers = (onArea || this.options.label.connectorAllowed),
+                chart = this.chart,
+                series,
+                points,
+                leastDistance = 16,
+                withinRange,
+                xDist,
+                yDist,
+                i,
+                j;
             /**
              * @private
              */
@@ -476,7 +523,8 @@
          */
         Chart.prototype.drawSeriesLabels = function () {
             // console.time('drawSeriesLabels');
-            var chart = this, labelSeries = this.labelSeries;
+            var chart = this,
+                labelSeries = this.labelSeries;
             chart.boxesToAvoid = [];
             // Build the interpolated points
             labelSeries.forEach(function (series) {
@@ -503,7 +551,11 @@
                  * @private
                  */
                 function insidePane(x, y, bBox) {
-                    var leftBound = Math.max(paneLeft, pick(areaMin, -Infinity)), rightBound = Math.min(paneLeft + paneWidth, pick(areaMax, Infinity));
+                    var leftBound = Math.max(paneLeft,
+                        pick(areaMin, -Infinity)),
+                        rightBound = Math.min(paneLeft + paneWidth,
+                        pick(areaMax,
+                        Infinity));
                     return (x > leftBound &&
                         x <= rightBound - bBox.width &&
                         y >= paneTop &&
@@ -626,17 +678,19 @@
                             bottom: best.y + bBox.height
                         });
                         // Move it if needed
-                        var dist = Math.sqrt(Math.pow(Math.abs(best.x - label.x), 2), Math.pow(Math.abs(best.y - label.y), 2));
+                        var dist = Math.sqrt(Math.pow(Math.abs(best.x - label.x), 2),
+                            Math.pow(Math.abs(best.y - label.y), 2));
                         if (dist) {
                             // Move fast and fade in - pure animation movement is
                             // distractive...
                             var attr = {
-                                opacity: chart.renderer.forExport ? 1 : 0,
-                                x: best.x,
-                                y: best.y
-                            }, anim = {
-                                opacity: 1
-                            };
+                                    opacity: chart.renderer.forExport ? 1 : 0,
+                                    x: best.x,
+                                    y: best.y
+                                },
+                                anim = {
+                                    opacity: 1
+                                };
                             // ... unless we're just moving a short distance
                             if (dist <= 10) {
                                 anim = {
@@ -655,7 +709,7 @@
                                 .animate(anim, isNew ?
                                 // Default initial animation to a fraction of
                                 // the series animation (#9396)
-                                H.animObject(series.options.animation).duration * 0.2 :
+                                animObject(series.options.animation).duration * 0.2 :
                                 // On updating, default to the general chart
                                 // animation
                                 chart.renderer.globalAnimation);
@@ -663,9 +717,10 @@
                             series.options.kdNow = true;
                             series.buildKDTree();
                             var closest = series.searchPoint({
-                                chartX: best.x,
-                                chartY: best.y
-                            }, true);
+                                    chartX: best.x,
+                                    chartY: best.y
+                                },
+                                true);
                             label.closest = [
                                 closest,
                                 best.x - closest.plotX,
@@ -692,13 +747,16 @@
          * @function drawLabels
          */
         function drawLabels(e) {
-            var chart = this, delay = H.animObject(chart.renderer.globalAnimation).duration;
+            var chart = this,
+                delay = animObject(chart.renderer.globalAnimation).duration;
             chart.labelSeries = [];
             chart.labelSeriesMaxSum = 0;
             H.clearTimeout(chart.seriesLabelTimer);
             // Which series should have labels
             chart.series.forEach(function (series) {
-                var options = series.options.label, label = series.labelBySeries, closest = label && label.closest;
+                var options = series.options.label,
+                    label = series.labelBySeries,
+                    closest = label && label.closest;
                 if (options.enabled &&
                     series.visible &&
                     (series.graph || series.area) &&
@@ -712,11 +770,11 @@
                     }
                     // The labels are processing heavy, wait until the animation is done
                     if (e.type === 'load') {
-                        delay = Math.max(delay, H.animObject(series.options.animation).duration);
+                        delay = Math.max(delay, animObject(series.options.animation).duration);
                     }
                     // Keep the position updated to the axis while redrawing
                     if (closest) {
-                        if (closest[0].plotX !== undefined) {
+                        if (typeof closest[0].plotX !== 'undefined') {
                             label.animate({
                                 x: closest[0].plotX + closest[1],
                                 y: closest[0].plotY + closest[2]

@@ -1,5 +1,5 @@
 /*
- Highcharts JS v7.2.1 (2019-10-31)
+ Highcharts JS v8.0.0 (2019-12-10)
 
  Dot plot series type for Highcharts
 

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -40,16 +40,20 @@
          * */
         var reduce = H.reduce;
         var reduceArrayMixin = {
-            /**
-             * Get min value of array filled by OHLC data.
-             * @private
-             * @param {Array<*>} arr Array of OHLC points (arrays).
-             * @param {string} index Index of "low" value in point array.
-             * @return {number} Returns min value.
-             */
-            minInArray: function (arr, index) {
-                return reduce(arr, function (min, target) {
-                    return Math.min(min, target[index]);
+                /**
+                 * Get min value of array filled by OHLC data.
+                 * @private
+                 * @param {Array<*>} arr Array of OHLC points (arrays).
+                 * @param {string} index Index of "low" value in point array.
+                 * @return {number} Returns min value.
+                 */
+                minInArray: function (arr,
+            index) {
+                    return reduce(arr,
+            function (min,
+            target) {
+                        return Math.min(min,
+            target[index]);
                 }, Number.MAX_VALUE);
             },
             /**
@@ -139,16 +143,28 @@
         {
             nameBase: 'Williams %R',
             getValues: function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, WR = [], // 0- date, 1- Williams %R
-                xData = [], yData = [], slicedY, close = 3, low = 2, high = 1, extremes, R, HH, // Highest high value in period
-                LL, // Lowest low value in period
-                CC, // Current close value
-                i;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    WR = [], // 0- date, 1- Williams %R
+                    xData = [],
+                    yData = [],
+                    slicedY,
+                    close = 3,
+                    low = 2,
+                    high = 1,
+                    extremes,
+                    R,
+                    HH, // Highest high value in period
+                    LL, // Lowest low value in period
+                    CC, // Current close value
+                    i;
                 // Williams %R requires close value
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return false;
+                    return;
                 }
                 // For a N-period, we start from N-1 point, to calculate Nth point
                 // That is why we later need to comprehend slice() elements list

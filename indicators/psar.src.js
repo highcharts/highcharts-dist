@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Parabolic SAR Indicator for Highstock
  *
@@ -189,14 +189,37 @@
         }, {
             nameComponents: false,
             getValues: function (series, params) {
-                var xVal = series.xData, yVal = series.yData, 
-                // Extreme point is the lowest low for falling and highest high
-                // for rising psar - and we are starting with falling
-                extremePoint = yVal[0][1], accelerationFactor = params.initialAccelerationFactor, maxAccelerationFactor = params.maxAccelerationFactor, increment = params.increment, 
-                // Set initial acc factor (for every new trend!)
-                initialAccelerationFactor = params.initialAccelerationFactor, PSAR = yVal[0][2], decimals = params.decimals, index = params.index, PSARArr = [], xData = [], yData = [], previousDirection = 1, direction, EPMinusPSAR, accelerationFactorMultiply, newDirection, prevLow, prevPrevLow, prevHigh, prevPrevHigh, newExtremePoint, high, low, ind;
+                var xVal = series.xData,
+                    yVal = series.yData, 
+                    // Extreme point is the lowest low for falling and highest high
+                    // for rising psar - and we are starting with falling
+                    extremePoint = yVal[0][1],
+                    accelerationFactor = params.initialAccelerationFactor,
+                    maxAccelerationFactor = params.maxAccelerationFactor,
+                    increment = params.increment, 
+                    // Set initial acc factor (for every new trend!)
+                    initialAccelerationFactor = params.initialAccelerationFactor,
+                    PSAR = yVal[0][2],
+                    decimals = params.decimals,
+                    index = params.index,
+                    PSARArr = [],
+                    xData = [],
+                    yData = [],
+                    previousDirection = 1,
+                    direction,
+                    EPMinusPSAR,
+                    accelerationFactorMultiply,
+                    newDirection,
+                    prevLow,
+                    prevPrevLow,
+                    prevHigh,
+                    prevPrevHigh,
+                    newExtremePoint,
+                    high,
+                    low,
+                    ind;
                 if (index >= yVal.length) {
-                    return false;
+                    return;
                 }
                 for (ind = 0; ind < index; ind++) {
                     extremePoint = Math.max(yVal[ind][1], extremePoint);

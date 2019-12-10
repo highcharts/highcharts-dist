@@ -419,6 +419,11 @@ g.highcharts-series,
   stroke-width: 2px;
 }
 
+/* Dumbbell/lollipop connector */
+.highcharts-lollipop-stem {
+  stroke: #000000;
+}
+
 /* Legend */
 .highcharts-legend-box {
   fill: none;

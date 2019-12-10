@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -37,7 +37,8 @@
          *
          * */
         var isArray = U.isArray;
-        var merge = H.merge, SMA = H.seriesTypes.sma;
+        var merge = H.merge,
+            SMA = H.seriesTypes.sma;
         /**
          * The Price Envelopes series type.
          *
@@ -99,7 +100,7 @@
                      *
                      * @type {Highcharts.ColorString}
                      */
-                    lineColor: undefined
+                    lineColor: void 0
                 }
             },
             /**
@@ -157,12 +158,19 @@
                 });
             },
             drawGraph: function () {
-                var indicator = this, middleLinePoints = indicator.points, pointsLength = middleLinePoints.length, middleLineOptions = (indicator.options), middleLinePath = indicator.graph, gappedExtend = {
-                    options: {
-                        gapSize: middleLineOptions.gapSize
-                    }
-                }, deviations = [[], []], // top and bottom point place holders
-                point;
+                var indicator = this,
+                    middleLinePoints = indicator.points,
+                    pointsLength = middleLinePoints.length,
+                    middleLineOptions = (indicator.options),
+                    middleLinePath = indicator.graph,
+                    gappedExtend = {
+                        options: {
+                            gapSize: middleLineOptions.gapSize
+                        }
+                    },
+                    deviations = [[],
+                    []], // top and bottom point place holders
+                    point;
                 // Generate points for top and bottom lines:
                 while (pointsLength--) {
                     point = middleLinePoints[pointsLength];
@@ -193,16 +201,30 @@
                 SMA.prototype.drawGraph.call(indicator);
             },
             getValues: function (series, params) {
-                var period = params.period, topPercent = params.topBand, botPercent = params.bottomBand, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, 
-                // 0- date, 1-top line, 2-middle line, 3-bottom line
-                PE = [], 
-                // middle line, top line and bottom line
-                ML, TL, BL, date, xData = [], yData = [], slicedX, slicedY, point, i;
+                var period = params.period,
+                    topPercent = params.topBand,
+                    botPercent = params.bottomBand,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    yValLen = yVal ? yVal.length : 0, 
+                    // 0- date, 1-top line, 2-middle line, 3-bottom line
+                    PE = [], 
+                    // middle line, top line and bottom line
+                    ML,
+                    TL,
+                    BL,
+                    date,
+                    xData = [],
+                    yData = [],
+                    slicedX,
+                    slicedY,
+                    point,
+                    i;
                 // Price envelopes requires close value
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return false;
+                    return;
                 }
                 for (i = period; i <= yValLen; i++) {
                     slicedX = xVal.slice(i - period, i);

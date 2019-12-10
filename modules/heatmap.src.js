@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v7.2.1 (2019-10-31)
+ * @license Highmaps JS v8.0.0 (2019-12-10)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -52,8 +52,9 @@
              * @return {void}
              */
             setVisible: function (vis) {
-                var point = this, method = vis ? 'show' : 'hide';
-                point.visible = Boolean(vis);
+                var point = this,
+                    method = vis ? 'show' : 'hide';
+                point.visible = point.options.visible = Boolean(vis);
                 // Show and hide associated elements
                 ['graphic', 'dataLabel'].forEach(function (key) {
                     if (point[key]) {
@@ -79,13 +80,18 @@
              * @return {void}
              */
             translateColors: function () {
-                var series = this, points = this.data.length ? this.data : this.points, nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
+                var series = this,
+                    points = this.data.length ? this.data : this.points,
+                    nullColor = this.options.nullColor,
+                    colorAxis = this.colorAxis,
+                    colorKey = this.colorKey;
                 points.forEach(function (point) {
-                    var value = point[colorKey], color;
+                    var value = point[colorKey],
+                        color;
                     color = point.options.color ||
                         (point.isNull ?
                             nullColor :
-                            (colorAxis && value !== undefined) ?
+                            (colorAxis && typeof value !== 'undefined') ?
                                 colorAxis.toColor(value, point) :
                                 point.color || series.color);
                     if (color) {
@@ -112,10 +118,28 @@
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        var erase = U.erase, extend = U.extend, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
-        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Series = H.Series, Point = H.Point, color = H.color, ColorAxis, Legend = H.Legend, LegendSymbolMixin = H.LegendSymbolMixin, colorPointMixin = H.colorPointMixin, colorSeriesMixin = H.colorSeriesMixin, noop = H.noop, merge = H.merge;
+        var erase = U.erase,
+            extend = U.extend,
+            isNumber = U.isNumber,
+            pick = U.pick,
+            splat = U.splat;
+        var addEvent = H.addEvent,
+            Axis = H.Axis,
+            Chart = H.Chart,
+            Series = H.Series,
+            Point = H.Point,
+            color = H.color,
+            ColorAxis,
+            Legend = H.Legend,
+            LegendSymbolMixin = H.LegendSymbolMixin,
+            colorPointMixin = H.colorPointMixin,
+            colorSeriesMixin = H.colorSeriesMixin,
+            noop = H.noop,
+            merge = H.merge;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
+        Chart.prototype.collectionsWithUpdate.push('colorAxis');
+        Chart.prototype.collectionsWithInit.colorAxis = [Chart.prototype.addColorAxis];
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * The ColorAxis object for inclusion in gradient legends.
@@ -181,10 +205,10 @@
              *
              * @extends      xAxis
              * @excluding    alignTicks, allowDecimals, alternateGridColor, breaks,
-             *               categories, crosshair, dateTimeLabelFormats, lineWidth,
-             *               linkedTo, maxZoom, minRange, minTickInterval, offset,
-             *               opposite, pane, plotBands, plotLines, reversedStacks,
-             *               showEmpty, title, zoomEnabled
+             *               categories, crosshair, dateTimeLabelFormats, height, left,
+             *               lineWidth, linkedTo, maxZoom, minRange, minTickInterval,
+             *               offset, opposite, pane, plotBands, plotLines,
+             *               reversedStacks, showEmpty, title, top, width, zoomEnabled
              * @product      highcharts highstock highmaps
              * @type         {*|Array<*>}
              * @optionparent colorAxis
@@ -397,6 +421,7 @@
                  * @sample {highmaps} maps/coloraxis/marker/
                  *         Black marker
                  *
+                 * @declare Highcharts.PointMarkerOptionsObject
                  * @product highcharts highstock highmaps
                  */
                 marker: {
@@ -405,14 +430,13 @@
                      * `false` to disable animation. Defaults to `{ duration: 50 }`.
                      *
                      * @type    {boolean|Highcharts.AnimationOptionsObject}
-                     * @default {"duration": 50}
                      * @product highcharts highstock highmaps
                      */
                     animation: {
-                        /** @ignore */
+                        /** @internal */
                         duration: 50
                     },
-                    /** @ignore */
+                    /** @internal */
                     width: 0.01,
                     /**
                      * The color of the marker.
@@ -433,10 +457,10 @@
                  */
                 labels: {
                     /**
-                     * How to handle overflowing labels on horizontal color axis.
-                     * Can be undefined or "justify". If "justify", labels will not
-                     * render outside the legend area. If there is room to move it,
-                     * it will be aligned to the edge, else it will be removed.
+                     * How to handle overflowing labels on horizontal color axis. If set
+                     * to `"allow"`, it will not be aligned at all. By default it
+                     * `"justify"` labels inside the chart area. If there is room to
+                     * move it, it will be aligned to the edge, else it will be removed.
                      *
                      * @validvalue ["allow", "justify"]
                      * @product    highcharts highstock highmaps
@@ -594,7 +618,12 @@
              * @private
              */
             initDataClasses: function (userOptions) {
-                var chart = this.chart, dataClasses, colorCounter = 0, colorCount = chart.options.chart.colorCount, options = this.options, len = userOptions.dataClasses.length;
+                var chart = this.chart,
+                    dataClasses,
+                    colorCounter = 0,
+                    colorCount = chart.options.chart.colorCount,
+                    options = this.options,
+                    len = userOptions.dataClasses.length;
                 this.dataClasses = dataClasses =
                     [];
                 this.legendItems = [];
@@ -668,9 +697,10 @@
              * @return {Highcharts.ColorAxisOptions}
              */
             buildOptions: function (options, userOptions) {
-                var legend = this.options.legend, horiz = userOptions.layout ?
-                    userOptions.layout !== 'vertical' :
-                    legend.layout !== 'vertical';
+                var legend = this.options.legend,
+                    horiz = userOptions.layout ?
+                        userOptions.layout !== 'vertical' :
+                        legend.layout !== 'vertical';
                 return merge(options, {
                     side: horiz ? 2 : 1,
                     reversed: !horiz
@@ -699,7 +729,13 @@
              * @private
              */
             setAxisSize: function () {
-                var symbol = this.legendSymbol, chart = this.chart, legendOptions = chart.options.legend || {}, x, y, width, height;
+                var symbol = this.legendSymbol,
+                    chart = this.chart,
+                    legendOptions = chart.options.legend || {},
+                    x,
+                    y,
+                    width,
+                    height;
                 if (symbol) {
                     this.left = x = symbol.attr('x');
                     this.top = y = symbol.attr('y');
@@ -738,15 +774,22 @@
              * @return {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
              */
             toColor: function (value, point) {
-                var pos, stops = this.stops, from, to, color, dataClasses = this.dataClasses, dataClass, i;
+                var pos,
+                    stops = this.stops,
+                    from,
+                    to,
+                    color,
+                    dataClasses = this.dataClasses,
+                    dataClass,
+                    i;
                 if (dataClasses) {
                     i = dataClasses.length;
                     while (i--) {
                         dataClass = dataClasses[i];
                         from = dataClass.from;
                         to = dataClass.to;
-                        if ((from === undefined || value >= from) &&
-                            (to === undefined || value <= to)) {
+                        if ((typeof from === 'undefined' || value >= from) &&
+                            (typeof to === 'undefined' || value <= to)) {
                             color = dataClass.color;
                             if (point) {
                                 point.dataClass = i;
@@ -781,7 +824,8 @@
              * @return {void}
              */
             getOffset: function () {
-                var group = this.legendGroup, sideOffset = this.chart.axisOffset[this.side];
+                var group = this.legendGroup,
+                    sideOffset = this.chart.axisOffset[this.side];
                 if (group) {
                     // Hook for the getOffset method to add groups to this parent
                     // group
@@ -805,7 +849,11 @@
              * @function Highcharts.ColorAxis#setLegendColor
              */
             setLegendColor: function () {
-                var grad, horiz = this.horiz, reversed = this.reversed, one = reversed ? 1 : 0, zero = reversed ? 0 : 1;
+                var grad,
+                    horiz = this.horiz,
+                    reversed = this.reversed,
+                    one = reversed ? 1 : 0,
+                    zero = reversed ? 0 : 1;
                 grad = horiz ? [one, 0, zero, 0] : [0, zero, 0, one]; // #3190
                 this.legendColor = {
                     linearGradient: {
@@ -828,7 +876,16 @@
              * @return {void}
              */
             drawLegendSymbol: function (legend, item) {
-                var padding = legend.padding, legendOptions = legend.options, horiz = this.horiz, width = pick(legendOptions.symbolWidth, horiz ? this.defaultLegendLength : 12), height = pick(legendOptions.symbolHeight, horiz ? 12 : this.defaultLegendLength), labelPadding = pick(legendOptions.labelPadding, horiz ? 16 : 30), itemDistance = pick(legendOptions.itemDistance, 10);
+                var padding = legend.padding,
+                    legendOptions = legend.options,
+                    horiz = this.horiz,
+                    width = pick(legendOptions.symbolWidth,
+                    horiz ? this.defaultLegendLength : 12),
+                    height = pick(legendOptions.symbolHeight,
+                    horiz ? 12 : this.defaultLegendLength),
+                    labelPadding = pick(legendOptions.labelPadding,
+                    horiz ? 16 : 30),
+                    itemDistance = pick(legendOptions.itemDistance, 10);
                 this.setLegendColor();
                 // Create the gradient
                 item.legendSymbol = this.chart.renderer.rect(0, legend.baseline - 11, width, height).attr({
@@ -859,7 +916,16 @@
              * @private
              */
             getSeriesExtremes: function () {
-                var series = this.series, colorValArray, colorKey, colorValIndex, pointArrayMap, calculatedExtremes, cSeries, i = series.length, yData, j;
+                var series = this.series,
+                    colorValArray,
+                    colorKey,
+                    colorValIndex,
+                    pointArrayMap,
+                    calculatedExtremes,
+                    cSeries,
+                    i = series.length,
+                    yData,
+                    j;
                 this.dataMin = Infinity;
                 this.dataMax = -Infinity;
                 while (i--) { // x, y, value, other
@@ -896,7 +962,7 @@
                         cSeries.minColorValue = cSeries.dataMin;
                         cSeries.maxColorValue = cSeries.dataMax;
                     }
-                    if (cSeries.minColorValue !== undefined) {
+                    if (typeof cSeries.minColorValue !== 'undefined') {
                         this.dataMin =
                             Math.min(this.dataMin, cSeries.minColorValue);
                         this.dataMax =
@@ -925,7 +991,11 @@
              * @fires Highcharts.ColorAxis#event:drawCrosshair
              */
             drawCrosshair: function (e, point) {
-                var plotX = point && point.plotX, plotY = point && point.plotY, crossPos, axisPos = this.pos, axisLen = this.len;
+                var plotX = point && point.plotX,
+                    plotY = point && point.plotY,
+                    crossPos,
+                    axisPos = this.pos,
+                    axisLen = this.len;
                 if (point) {
                     crossPos = this.toPixels(point[point.series.colorKey]);
                     if (crossPos < axisPos) {
@@ -997,7 +1067,10 @@
              * @return {void}
              */
             update: function (newOptions, redraw) {
-                var chart = this.chart, legend = chart.legend, updatedOptions = this.buildOptions.call(chart, {}, newOptions);
+                var chart = this.chart,
+                    legend = chart.legend,
+                    updatedOptions = this.buildOptions.call(chart, {},
+                    newOptions);
                 this.series.forEach(function (series) {
                     // Needed for Axis.update when choropleth colors change
                     series.isDirtyData = true;
@@ -1058,28 +1131,36 @@
              * @return {Array<Highcharts.ColorAxisLegendItemObject>}
              */
             getDataClassLegendSymbols: function () {
-                var axis = this, chart = this.chart, legendItems = this.legendItems, legendOptions = chart.options.legend, valueDecimals = legendOptions.valueDecimals, valueSuffix = legendOptions.valueSuffix || '', name;
+                var axis = this,
+                    chart = this.chart,
+                    legendItems = this.legendItems,
+                    legendOptions = chart.options.legend,
+                    valueDecimals = legendOptions.valueDecimals,
+                    valueSuffix = legendOptions.valueSuffix || '',
+                    name;
                 if (!legendItems.length) {
                     this.dataClasses.forEach(function (dataClass, i) {
-                        var vis = true, from = dataClass.from, to = dataClass.to;
+                        var vis = true,
+                            from = dataClass.from,
+                            to = dataClass.to;
+                        var numberFormatter = chart.numberFormatter;
                         // Assemble the default name. This can be overridden
                         // by legend.options.labelFormatter
                         name = '';
-                        if (from === undefined) {
+                        if (typeof from === 'undefined') {
                             name = '< ';
                         }
-                        else if (to === undefined) {
+                        else if (typeof to === 'undefined') {
                             name = '> ';
                         }
-                        if (from !== undefined) {
-                            name += H.numberFormat(from, valueDecimals) +
-                                valueSuffix;
+                        if (typeof from !== 'undefined') {
+                            name += numberFormatter(from, valueDecimals) + valueSuffix;
                         }
-                        if (from !== undefined && to !== undefined) {
+                        if (typeof from !== 'undefined' && typeof to !== 'undefined') {
                             name += ' - ';
                         }
-                        if (to !== undefined) {
-                            name += H.numberFormat(to, valueDecimals) + valueSuffix;
+                        if (typeof to !== 'undefined') {
+                            name += numberFormatter(to, valueDecimals) + valueSuffix;
                         }
                         // Add a mock object to the legend items
                         legendItems.push(extend({
@@ -1127,7 +1208,8 @@
         });
         // Extend the chart getAxes method to also get the color axis
         addEvent(Chart, 'afterGetAxes', function () {
-            var chart = this, options = chart.options;
+            var chart = this,
+                options = chart.options;
             this.colorAxis = [];
             if (options.colorAxis) {
                 options.colorAxis = splat(options.colorAxis);
@@ -1150,7 +1232,10 @@
         // Add the color axis. This also removes the axis' own series to prevent
         // them from showing up individually.
         addEvent(Legend, 'afterGetAllItems', function (e) {
-            var colorAxisItems = [], colorAxes = this.chart.colorAxis || [], options, i;
+            var colorAxisItems = [],
+                colorAxes = this.chart.colorAxis || [],
+                options,
+                i;
             colorAxes.forEach(function (colorAxis) {
                 options = colorAxis.options;
                 if (options && options.showInLegend) {
@@ -1221,7 +1306,8 @@
          *
          * */
         var defined = U.defined;
-        var noop = H.noop, seriesTypes = H.seriesTypes;
+        var noop = H.noop,
+            seriesTypes = H.seriesTypes;
         /**
          * Mixin for maps and heatmaps
          *
@@ -1312,8 +1398,18 @@
         * @name Highcharts.PointOptionsObject#value
         * @type {number|null|undefined}
         */
-        var extend = U.extend, pick = U.pick;
-        var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, fireEvent = H.fireEvent, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
+        var clamp = U.clamp,
+            extend = U.extend,
+            pick = U.pick;
+        var colorMapPointMixin = H.colorMapPointMixin,
+            colorMapSeriesMixin = H.colorMapSeriesMixin,
+            LegendSymbolMixin = H.LegendSymbolMixin,
+            merge = H.merge,
+            noop = H.noop,
+            fireEvent = H.fireEvent,
+            Series = H.Series,
+            seriesType = H.seriesType,
+            seriesTypes = H.seriesTypes;
         /**
          * @private
          * @class
@@ -1339,7 +1435,7 @@
          *               findNearestPointBy, getExtremesFromAll, jitter, linecap,
          *               lineWidth, marker, pointInterval, pointIntervalUnit,
          *               pointRange, pointStart, shadow, softThreshold, stacking,
-         *               step, threshold
+         *               step, threshold, cluster
          * @product      highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
@@ -1412,20 +1508,13 @@
              */
             nullColor: '#f7f7f7',
             dataLabels: {
-                // eslint-disable-next-line valid-jsdoc
-                /** @ignore-option */
                 formatter: function () {
                     return this.point.value;
                 },
-                /** @ignore-option */
                 inside: true,
-                /** @ignore-option */
                 verticalAlign: 'middle',
-                /** @ignore-option */
                 crop: false,
-                /** @ignore-option */
                 overflow: false,
-                /** @ignore-option */
                 padding: 0 // #3837
             },
             /** @ignore-option */
@@ -1478,14 +1567,24 @@
              * @return {void}
              */
             translate: function () {
-                var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, between = function (x, a, b) {
-                    return Math.min(Math.max(a, x), b);
-                }, pointPlacement = series.pointPlacementToXValue(); // #7860
-                series.generatePoints();
+                var series = this,
+                    options = series.options,
+                    xAxis = series.xAxis,
+                    yAxis = series.yAxis,
+                    seriesPointPadding = options.pointPadding || 0,
+                    pointPlacement = series.pointPlacementToXValue(); // #7860
+                    series.generatePoints();
                 series.points.forEach(function (point) {
-                    var xPad = (options.colsize || 1) / 2, yPad = (options.rowsize || 1) / 2, x1 = between(Math.round(xAxis.len -
-                        xAxis.translate(point.x - xPad, 0, 1, 0, 1, -pointPlacement)), -xAxis.len, 2 * xAxis.len), x2 = between(Math.round(xAxis.len -
-                        xAxis.translate(point.x + xPad, 0, 1, 0, 1, -pointPlacement)), -xAxis.len, 2 * xAxis.len), y1 = between(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y2 = between(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), pointPadding = pick(point.pointPadding, seriesPointPadding);
+                    var xPad = (options.colsize || 1) / 2,
+                        yPad = (options.rowsize || 1) / 2,
+                        x1 = clamp(Math.round(xAxis.len -
+                            xAxis.translate(point.x - xPad, 0, 1, 0, 1, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
+                        x2 = clamp(Math.round(xAxis.len -
+                            xAxis.translate(point.x + xPad, 0, 1, 0, 1, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
+                        y1 = clamp(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
+                        y2 = clamp(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
+                        pointPadding = pick(point.pointPadding,
+                        seriesPointPadding);
                     // Set plotX and plotY for use in K-D-Tree and more
                     point.plotX = point.clientX = (x1 + x2) / 2;
                     point.plotY = (y1 + y2) / 2;

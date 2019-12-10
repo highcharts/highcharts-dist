@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Indicator series type for Highstock
  *
@@ -42,9 +42,14 @@
          * @private
          */
         function populateAverage(xVal, yVal, yValVolume, i) {
-            var high = yVal[i][1], low = yVal[i][2], close = yVal[i][3], volume = yValVolume[i], adY = close === high && close === low || high === low ?
-                0 :
-                ((2 * close - low - high) / (high - low)) * volume, adX = xVal[i];
+            var high = yVal[i][1],
+                low = yVal[i][2],
+                close = yVal[i][3],
+                volume = yValVolume[i],
+                adY = close === high && close === low || high === low ?
+                    0 :
+                    ((2 * close - low - high) / (high - low)) * volume,
+                adX = xVal[i];
             return [adX, adY];
         }
         /* eslint-enable valid-jsdoc */
@@ -91,16 +96,29 @@
             nameComponents: false,
             nameBase: 'Accumulation/Distribution',
             getValues: function (series, params) {
-                var period = params.period, xVal = series.xData, yVal = series.yData, volumeSeriesID = params.volumeSeriesID, volumeSeries = series.chart.get(volumeSeriesID), yValVolume = volumeSeries && volumeSeries.yData, yValLen = yVal ? yVal.length : 0, AD = [], xData = [], yData = [], len, i, ADPoint;
+                var period = params.period,
+                    xVal = series.xData,
+                    yVal = series.yData,
+                    volumeSeriesID = params.volumeSeriesID,
+                    volumeSeries = series.chart.get(volumeSeriesID),
+                    yValVolume = volumeSeries && volumeSeries.yData,
+                    yValLen = yVal ? yVal.length : 0,
+                    AD = [],
+                    xData = [],
+                    yData = [],
+                    len,
+                    i,
+                    ADPoint;
                 if (xVal.length <= period &&
                     yValLen &&
                     yVal[0].length !== 4) {
-                    return false;
+                    return;
                 }
                 if (!volumeSeries) {
-                    return H.error('Series ' +
+                    H.error('Series ' +
                         volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
+                    return;
                 }
                 // i = period <-- skip first N-points
                 // Calculate value one-by-one for each period in visible data

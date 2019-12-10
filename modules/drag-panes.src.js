@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v7.2.1 (2019-10-31)
+ * @license Highstock JS v8.0.0 (2019-12-10)
  *
  * Drag-panes module
  *
@@ -43,158 +43,167 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber, objectEach = U.objectEach;
-        var hasTouch = H.hasTouch, merge = H.merge, wrap = H.wrap, addEvent = H.addEvent, relativeLength = H.relativeLength, Axis = H.Axis, Pointer = H.Pointer, 
-        // Default options for AxisResizer.
-        resizerOptions = {
-            /**
-             * Minimal size of a resizable axis. Could be set as a percent
-             * of plot area or pixel size.
-             *
-             * @sample {highstock} stock/yaxis/resize-min-max-length
-             *         minLength and maxLength
-             *
-             * @type      {number|string}
-             * @product   highstock
-             * @requires  modules/drag-panes
-             * @apioption yAxis.minLength
-             */
-            minLength: '10%',
-            /**
-             * Maximal size of a resizable axis. Could be set as a percent
-             * of plot area or pixel size.
-             *
-             * @sample {highstock} stock/yaxis/resize-min-max-length
-             *         minLength and maxLength
-             *
-             * @type      {number|string}
-             * @product   highstock
-             * @requires  modules/drag-panes
-             * @apioption yAxis.maxLength
-             */
-            maxLength: '100%',
-            /**
-             * Options for axis resizing. It adds a thick line between panes which
-             * the user can drag in order to resize the panes.
-             *
-             * @sample {highstock} stock/demo/candlestick-and-volume
-             *         Axis resizing enabled
-             *
-             * @product      highstock
-             * @requires     modules/drag-panes
-             * @optionparent yAxis.resize
-             */
-            resize: {
+        var clamp = U.clamp,
+            isNumber = U.isNumber,
+            objectEach = U.objectEach,
+            relativeLength = U.relativeLength,
+            wrap = U.wrap;
+        var hasTouch = H.hasTouch,
+            merge = H.merge,
+            addEvent = H.addEvent,
+            Axis = H.Axis,
+            Pointer = H.Pointer, 
+            // Default options for AxisResizer.
+            resizerOptions = {
                 /**
-                 * Contains two arrays of axes that are controlled by control line
-                 * of the axis.
+                 * Minimal size of a resizable axis. Could be set as a percent
+                 * of plot area or pixel size.
                  *
-                 * @requires modules/drag-panes
+                 * @sample {highstock} stock/yaxis/resize-min-max-length
+                 *         minLength and maxLength
+                 *
+                 * @type      {number|string}
+                 * @product   highstock
+                 * @requires  modules/drag-panes
+                 * @apioption yAxis.minLength
                  */
-                controlledAxis: {
-                    /**
-                     * Array of axes that should move out of the way of resizing
-                     * being done for the current axis. If not set, the next axis
-                     * will be used.
-                     *
-                     * @sample {highstock} stock/yaxis/multiple-resizers
-                     *         Three panes with resizers
-                     * @sample {highstock} stock/yaxis/resize-multiple-axes
-                     *         One resizer controlling multiple axes
-                     *
-                     * @type     {Array<number|string>}
-                     * @default  []
-                     * @requires modules/drag-panes
-                     */
-                    next: [],
-                    /**
-                     * Array of axes that should move with the current axis
-                     * while resizing.
-                     *
-                     * @sample {highstock} stock/yaxis/multiple-resizers
-                     *         Three panes with resizers
-                     * @sample {highstock} stock/yaxis/resize-multiple-axes
-                     *         One resizer controlling multiple axes
-                     *
-                     * @type     {Array<number|string>}
-                     * @default  []
-                     * @requires modules/drag-panes
-                     */
-                    prev: []
-                },
+                minLength: '10%',
                 /**
-                 * Enable or disable resize by drag for the axis.
+                 * Maximal size of a resizable axis. Could be set as a percent
+                 * of plot area or pixel size.
+                 *
+                 * @sample {highstock} stock/yaxis/resize-min-max-length
+                 *         minLength and maxLength
+                 *
+                 * @type      {number|string}
+                 * @product   highstock
+                 * @requires  modules/drag-panes
+                 * @apioption yAxis.maxLength
+                 */
+                maxLength: '100%',
+                /**
+                 * Options for axis resizing. It adds a thick line between panes which
+                 * the user can drag in order to resize the panes.
                  *
                  * @sample {highstock} stock/demo/candlestick-and-volume
-                 *         Enabled resizer
+                 *         Axis resizing enabled
                  *
-                 * @requires modules/drag-panes
+                 * @product      highstock
+                 * @requires     modules/drag-panes
+                 * @optionparent yAxis.resize
                  */
-                enabled: false,
-                /**
-                 * Cursor style for the control line.
-                 *
-                 * In styled mode use class `highcharts-axis-resizer` instead.
-                 *
-                 * @requires modules/drag-panes
-                 */
-                cursor: 'ns-resize',
-                /**
-                 * Color of the control line.
-                 *
-                 * In styled mode use class `highcharts-axis-resizer` instead.
-                 *
-                 * @sample {highstock} stock/yaxis/styled-resizer
-                 *         Styled resizer
-                 *
-                 * @type     {Highcharts.ColorString}
-                 * @requires modules/drag-panes
-                 */
-                lineColor: '#cccccc',
-                /**
-                 * Dash style of the control line.
-                 *
-                 * In styled mode use class `highcharts-axis-resizer` instead.
-                 *
-                 * @see For supported options check [dashStyle](#plotOptions.series.dashStyle)
-                 *
-                 * @sample {highstock} stock/yaxis/styled-resizer
-                 *         Styled resizer
-                 *
-                 * @requires modules/drag-panes
-                 */
-                lineDashStyle: 'Solid',
-                /**
-                 * Width of the control line.
-                 *
-                 * In styled mode use class `highcharts-axis-resizer` instead.
-                 *
-                 * @sample {highstock} stock/yaxis/styled-resizer
-                 *         Styled resizer
-                 *
-                 * @requires modules/drag-panes
-                 */
-                lineWidth: 4,
-                /**
-                 * Horizontal offset of the control line.
-                 *
-                 * @sample {highstock} stock/yaxis/styled-resizer
-                 *         Styled resizer
-                 *
-                 * @requires modules/drag-panes
-                 */
-                x: 0,
-                /**
-                 * Vertical offset of the control line.
-                 *
-                 * @sample {highstock} stock/yaxis/styled-resizer
-                 *         Styled resizer
-                 *
-                 * @requires modules/drag-panes
-                 */
-                y: 0
-            }
-        };
+                resize: {
+                    /**
+                     * Contains two arrays of axes that are controlled by control line
+                     * of the axis.
+                     *
+                     * @requires modules/drag-panes
+                     */
+                    controlledAxis: {
+                        /**
+                         * Array of axes that should move out of the way of resizing
+                         * being done for the current axis. If not set,
+            the next axis
+                         * will be used.
+                         *
+                         * @sample {highstock} stock/yaxis/multiple-resizers
+                         *         Three panes with resizers
+                         * @sample {highstock} stock/yaxis/resize-multiple-axes
+                         *         One resizer controlling multiple axes
+                         *
+                         * @type     {Array<number|string>}
+                         * @default  []
+                         * @requires modules/drag-panes
+                         */
+                        next: [],
+                        /**
+                         * Array of axes that should move with the current axis
+                         * while resizing.
+                         *
+                         * @sample {highstock} stock/yaxis/multiple-resizers
+                         *         Three panes with resizers
+                         * @sample {highstock} stock/yaxis/resize-multiple-axes
+                         *         One resizer controlling multiple axes
+                         *
+                         * @type     {Array<number|string>}
+                         * @default  []
+                         * @requires modules/drag-panes
+                         */
+                        prev: []
+                    },
+                    /**
+                     * Enable or disable resize by drag for the axis.
+                     *
+                     * @sample {highstock} stock/demo/candlestick-and-volume
+                     *         Enabled resizer
+                     *
+                     * @requires modules/drag-panes
+                     */
+                    enabled: false,
+                    /**
+                     * Cursor style for the control line.
+                     *
+                     * In styled mode use class `highcharts-axis-resizer` instead.
+                     *
+                     * @requires modules/drag-panes
+                     */
+                    cursor: 'ns-resize',
+                    /**
+                     * Color of the control line.
+                     *
+                     * In styled mode use class `highcharts-axis-resizer` instead.
+                     *
+                     * @sample {highstock} stock/yaxis/styled-resizer
+                     *         Styled resizer
+                     *
+                     * @type     {Highcharts.ColorString}
+                     * @requires modules/drag-panes
+                     */
+                    lineColor: '#cccccc',
+                    /**
+                     * Dash style of the control line.
+                     *
+                     * In styled mode use class `highcharts-axis-resizer` instead.
+                     *
+                     * @see For supported options check [dashStyle](#plotOptions.series.dashStyle)
+                     *
+                     * @sample {highstock} stock/yaxis/styled-resizer
+                     *         Styled resizer
+                     *
+                     * @requires modules/drag-panes
+                     */
+                    lineDashStyle: 'Solid',
+                    /**
+                     * Width of the control line.
+                     *
+                     * In styled mode use class `highcharts-axis-resizer` instead.
+                     *
+                     * @sample {highstock} stock/yaxis/styled-resizer
+                     *         Styled resizer
+                     *
+                     * @requires modules/drag-panes
+                     */
+                    lineWidth: 4,
+                    /**
+                     * Horizontal offset of the control line.
+                     *
+                     * @sample {highstock} stock/yaxis/styled-resizer
+                     *         Styled resizer
+                     *
+                     * @requires modules/drag-panes
+                     */
+                    x: 0,
+                    /**
+                     * Vertical offset of the control line.
+                     *
+                     * @sample {highstock} stock/yaxis/styled-resizer
+                     *         Styled resizer
+                     *
+                     * @requires modules/drag-panes
+                     */
+                    y: 0
+                }
+            };
         merge(true, Axis.prototype.defaultYAxisOptions, resizerOptions);
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
@@ -235,9 +244,18 @@
              * @function Highcharts.AxisResizer#render
              */
             render: function () {
-                var resizer = this, axis = resizer.axis, chart = axis.chart, options = resizer.options, x = options.x, y = options.y, 
-                // Normalize control line position according to the plot area
-                pos = Math.min(Math.max(axis.top + axis.height + y, chart.plotTop), chart.plotTop + chart.plotHeight), attr = {}, lineWidth;
+                var resizer = this,
+                    axis = resizer.axis,
+                    chart = axis.chart,
+                    options = resizer.options,
+                    x = options.x,
+                    y = options.y, 
+                    // Normalize control line position according to the plot area
+                    pos = clamp(axis.top + axis.height + y,
+                    chart.plotTop,
+                    chart.plotTop + chart.plotHeight),
+                    attr = {},
+                    lineWidth;
                 if (!chart.styledMode) {
                     attr = {
                         cursor: options.cursor,
@@ -270,7 +288,13 @@
              * @function Highcharts.AxisResizer#addMouseEvents
              */
             addMouseEvents: function () {
-                var resizer = this, ctrlLineElem = resizer.controlLine.element, container = resizer.axis.chart.container, eventsToUnbind = [], mouseMoveHandler, mouseUpHandler, mouseDownHandler;
+                var resizer = this,
+                    ctrlLineElem = resizer.controlLine.element,
+                    container = resizer.axis.chart.container,
+                    eventsToUnbind = [],
+                    mouseMoveHandler,
+                    mouseUpHandler,
+                    mouseDownHandler;
                 // Create mouse events' handlers.
                 // Make them as separate functions to enable wrapping them:
                 resizer.mouseMoveHandler = mouseMoveHandler = function (e) {
@@ -351,18 +375,27 @@
              * @param {number} chartY
              */
             updateAxes: function (chartY) {
-                var resizer = this, chart = resizer.axis.chart, axes = resizer.options.controlledAxis, nextAxes = axes.next.length === 0 ?
-                    [chart.yAxis.indexOf(resizer.axis) + 1] : axes.next, 
-                // Main axis is included in the prev array by default
-                prevAxes = [resizer.axis].concat(axes.prev), 
-                // prev and next configs
-                axesConfigs = [], stopDrag = false, plotTop = chart.plotTop, plotHeight = chart.plotHeight, plotBottom = plotTop + plotHeight, yDelta, calculatePercent = function (value) {
-                    return value * 100 / plotHeight + '%';
+                var resizer = this,
+                    chart = resizer.axis.chart,
+                    axes = resizer.options.controlledAxis,
+                    nextAxes = axes.next.length === 0 ?
+                        [chart.yAxis.indexOf(resizer.axis) + 1] : axes.next, 
+                    // Main axis is included in the prev array by default
+                    prevAxes = [resizer.axis].concat(axes.prev), 
+                    // prev and next configs
+                    axesConfigs = [],
+                    stopDrag = false,
+                    plotTop = chart.plotTop,
+                    plotHeight = chart.plotHeight,
+                    plotBottom = plotTop + plotHeight,
+                    yDelta,
+                    calculatePercent = function (value) {
+                        return value * 100 / plotHeight + '%';
                 }, normalize = function (val, min, max) {
-                    return Math.round(Math.min(Math.max(val, min), max));
+                    return Math.round(clamp(val, min, max));
                 };
                 // Normalize chartY to plot area limits
-                chartY = Math.max(Math.min(chartY, plotBottom), plotTop);
+                chartY = clamp(chartY, plotTop, plotBottom);
                 yDelta = chartY - resizer.lastPos;
                 // Update on changes of at least 1 pixel in the desired direction
                 if (yDelta * yDelta < 1) {
@@ -373,15 +406,22 @@
                     axesGroup.forEach(function (axisInfo, i) {
                         // Axes given as array index, axis object or axis id
                         var axis = isNumber(axisInfo) ?
-                            // If it's a number - it's an index
-                            chart.yAxis[axisInfo] :
-                            (
-                            // If it's first elem. in first group
-                            (!isNext && !i) ?
-                                // then it's an Axis object
-                                axisInfo :
-                                // else it should be an id
-                                chart.get(axisInfo)), axisOptions = axis && axis.options, optionsToUpdate = {}, hDelta = 0, height, top, minLength, maxLength;
+                                // If it's a number - it's an index
+                                chart.yAxis[axisInfo] :
+                                (
+                                // If it's first elem. in first group
+                                (!isNext && !i) ?
+                                    // then it's an Axis object
+                                    axisInfo :
+                                    // else it should be an id
+                                    chart.get(axisInfo)),
+                            axisOptions = axis && axis.options,
+                            optionsToUpdate = {},
+                            hDelta = 0,
+                            height,
+                            top,
+                            minLength,
+                            maxLength;
                         // Skip if axis is not found
                         // or it is navigator's yAxis (#7732)
                         if (!axisOptions ||
@@ -458,7 +498,8 @@
              * @function Highcharts.AxisResizer#destroy
              */
             destroy: function () {
-                var resizer = this, axis = resizer.axis;
+                var resizer = this,
+                    axis = resizer.axis;
                 // Clear resizer in axis
                 delete axis.resizer;
                 // Clear control line events
@@ -480,7 +521,10 @@
         /* eslint-disable no-invalid-this */
         // Add new AxisResizer, update or remove it
         addEvent(Axis, 'afterRender', function () {
-            var axis = this, resizer = axis.resizer, resizerOptions = axis.options.resize, enabled;
+            var axis = this,
+                resizer = axis.resizer,
+                resizerOptions = axis.options.resize,
+                enabled;
             if (resizerOptions) {
                 enabled = resizerOptions.enabled !== false;
                 if (resizer) {
