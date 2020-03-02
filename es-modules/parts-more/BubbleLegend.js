@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2019 Highsoft AS
+ *  (c) 2010-2020 Highsoft AS
  *
  *  Author: Paweł Potaczek
  *
@@ -26,9 +26,13 @@ import H from '../parts/Globals.js';
 * @name Highcharts.BubbleLegendFormatterContextObject#value
 * @type {number}
 */
+''; // detach doclets above
+import Color from '../parts/Color.js';
+var color = Color.parse;
+import Legend from '../parts/Legend.js';
 import U from '../parts/Utilities.js';
-var arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick, wrap = U.wrap;
-var Series = H.Series, Legend = H.Legend, Chart = H.Chart, addEvent = H.addEvent, color = H.color, merge = H.merge, noop = H.noop, stableSort = H.stableSort, setOptions = H.setOptions;
+var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick, stableSort = U.stableSort, wrap = U.wrap;
+var Series = H.Series, Chart = H.Chart, noop = H.noop, setOptions = H.setOptions;
 setOptions({
     legend: {
         /**
@@ -141,9 +145,8 @@ setOptions({
                  */
                 allowOverlap: false,
                 /**
-                 * A [format string](http://docs.highcharts.com/#formatting)
-                 * for the bubble legend labels. Available variables are the
-                 * same as for `formatter`.
+                 * A format string for the bubble legend labels. Available
+                 * variables are the same as for `formatter`.
                  *
                  * @sample highcharts/bubble-legend/format/
                  *         Add a unit
@@ -572,7 +575,7 @@ H.BubbleLegend.prototype = {
     formatLabel: function (range) {
         var options = this.options, formatter = options.labels.formatter, format = options.labels.format;
         var numberFormatter = this.chart.numberFormatter;
-        return format ? H.format(format, range) :
+        return format ? U.format(format, range) :
             formatter ? formatter.call(range) :
                 numberFormatter(range.value, 1);
     },
@@ -707,7 +710,7 @@ H.BubbleLegend.prototype = {
     }
 };
 // Start the bubble legend creation process.
-addEvent(H.Legend, 'afterGetAllItems', function (e) {
+addEvent(Legend, 'afterGetAllItems', function (e) {
     var legend = this, bubbleLegend = legend.bubbleLegend, legendOptions = legend.options, options = legendOptions.bubbleLegend, bubbleSeriesIndex = legend.chart.getVisibleBubbleSeriesIndex();
     // Remove unnecessary element
     if (bubbleLegend && bubbleLegend.ranges && bubbleLegend.ranges.length) {

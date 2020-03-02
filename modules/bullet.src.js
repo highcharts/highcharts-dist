@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Bullet graph series type for Highcharts
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'modules/bullet.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Kacper Madej
+         *  (c) 2010-2020 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
@@ -39,10 +39,11 @@
          *
          * */
         var isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
-            relativeLength = U.relativeLength;
-        var seriesType = H.seriesType,
-            columnProto = H.seriesTypes.column.prototype;
+            relativeLength = U.relativeLength,
+            seriesType = U.seriesType;
+        var columnProto = H.seriesTypes.column.prototype;
         /**
          * The bullet series type.
          *
@@ -65,7 +66,8 @@
          * @extends      plotOptions.column
          * @since        6.0.0
          * @product      highcharts
-         * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase
+         * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
+         *               dataSorting
          * @requires     modules/bullet
          * @optionparent plotOptions.bullet
          */
@@ -160,7 +162,7 @@
                         targetOptions,
                         y;
                     if (isNumber(targetVal) && targetVal !== null) {
-                        targetOptions = H.merge(options.targetOptions, pointOptions.targetOptions);
+                        targetOptions = merge(options.targetOptions, pointOptions.targetOptions);
                         height = targetOptions.height;
                         shapeArgs = point.shapeArgs;
                         width = relativeLength(targetOptions.width, shapeArgs.width);
@@ -271,7 +273,7 @@
          * @extends   series,plotOptions.bullet
          * @since     6.0.0
          * @product   highcharts
-         * @excluding dataParser, dataURL, marker
+         * @excluding dataParser, dataURL, marker, dataSorting
          * @requires  modules/bullet
          * @apioption series.bullet
          */

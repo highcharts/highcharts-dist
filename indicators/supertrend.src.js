@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Indicator series type for Highstock
  *
@@ -36,12 +36,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
+        var correctFloat = U.correctFloat,
+            merge = U.merge,
+            seriesType = U.seriesType;
         var isArray = U.isArray,
             objectEach = U.objectEach;
         var ATR = H.seriesTypes.atr,
-            SMA = H.seriesTypes.sma,
-            merge = H.merge;
+            SMA = H.seriesTypes.sma;
         /* eslint-disable require-jsdoc */
         // Utils:
         function createPointObj(mainSeries, index, close) {
@@ -61,7 +62,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('supertrend', 'sma', 
+        seriesType('supertrend', 'sma', 
         /**
          * Supertrend indicator. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js` and

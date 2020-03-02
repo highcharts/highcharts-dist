@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.0.0 (2019-12-10)
+ * @license Highmaps JS v8.0.1 (2020-03-02)
  *
  * Tilemap module
  *
@@ -41,23 +41,33 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var clamp = U.clamp,
-            extend = U.extend,
-            pick = U.pick;
         /**
          * @typedef {"circle"|"diamond"|"hexagon"|"square"} Highcharts.TilemapShapeValue
          */
-        var seriesType = H.seriesType, 
-            // Utility func to get padding definition from tile size division
-            tilePaddingFromTileSize = function (series,
-            xDiv,
-            yDiv) {
-                var options = series.options;
+        ''; // detach doclets above
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
+            extend = U.extend,
+            pick = U.pick,
+            seriesType = U.seriesType;
+        /**
+         * Utility func to get padding definition from tile size division
+         * @private
+         * @param {Highcharts.TilemapSeries} series
+         * series
+         * @param {Highcharts.number} xDiv
+         * xDiv
+         * @param {Highcharts.number} yDiv
+         * yDiv
+         * @return {Highcharts.TilemapPaddingObject}
+         */
+        function tilePaddingFromTileSize(series, xDiv, yDiv) {
+            var options = series.options;
             return {
                 xPad: (options.colsize || 1) / -xDiv,
                 yPad: (options.rowsize || 1) / -yDiv
             };
-        };
+        }
         // Map of shape types.
         H.tileShapeTypes = {
             // Hexagon shape type.
@@ -342,7 +352,7 @@
         // Extension to add pixel padding for series. Uses getSeriesPixelPadding on each
         // series and adds the largest padding required. If no series has this function
         // defined, we add nothing.
-        H.addEvent(H.Axis, 'afterSetAxisTranslation', function () {
+        addEvent(H.Axis, 'afterSetAxisTranslation', function () {
             if (this.recomputingForTilemap || this.coll === 'colorAxis') {
                 return;
             }
@@ -400,7 +410,8 @@
          *
          * @extends      plotOptions.heatmap
          * @since        6.0.0
-         * @excluding    jitter, joinBy, shadow, allAreas, mapData, data
+         * @excluding    jitter, joinBy, shadow, allAreas, mapData, data,
+         *               dataSorting
          * @product      highcharts highmaps
          * @requires     modules/tilemap.js
          * @optionparent plotOptions.tilemap
@@ -530,7 +541,7 @@
          *
          * @extends   series,plotOptions.tilemap
          * @excluding allAreas, dataParser, dataURL, joinBy, mapData, marker,
-         *            pointRange, shadow, stack
+         *            pointRange, shadow, stack, dataSorting
          * @product   highcharts highmaps
          * @requires  modules/tilemap.js
          * @apioption series.tilemap

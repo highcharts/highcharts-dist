@@ -1,5 +1,5 @@
 /*
- Highstock JS v8.0.0 (2019-12-10)
+ Highstock JS v8.0.1 (2020-03-02)
 
  Indicator series type for Highstock
 
@@ -7,8 +7,8 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/ao",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,b,f,m){a.hasOwnProperty(b)||(a[b]=m.apply(null,f))}a=a?a._modules:{};b(a,"indicators/ao.src.js",[a["parts/Globals.js"],a["parts/Utilities.js"]],function(a,b){var f=b.correctFloat,
-m=b.isArray;a.seriesType("ao","sma",{greaterBarColor:"#06B535",lowerBarColor:"#F21313",threshold:0,groupPadding:.2,pointPadding:.2,states:{hover:{halo:{size:0}}}},{nameBase:"AO",nameComponents:!1,markerAttribs:a.noop,getColumnMetrics:a.seriesTypes.column.prototype.getColumnMetrics,crispCol:a.seriesTypes.column.prototype.crispCol,translate:a.seriesTypes.column.prototype.translate,drawPoints:a.seriesTypes.column.prototype.drawPoints,drawGraph:function(){var a=this.options,g=this.points,b=a.greaterBarColor;
-a=a.lowerBarColor;var d=g[0];if(!this.userOptions.color&&d)for(d.color=b,d=1;d<g.length;d++)g[d].color=g[d].y>g[d-1].y?b:g[d].y<g[d-1].y?a:g[d-1].color},getValues:function(a){var b=a.xData||[];a=a.yData||[];var q=a.length,d=[],n=[],p=[],h=0,k=0,c;if(!(34>=b.length)&&m(a[0])&&4===a[0].length){for(c=0;33>c;c++){var e=(a[c][1]+a[c][2])/2;29<=c&&(h=f(h+e));k=f(k+e)}for(c=33;c<q;c++){e=(a[c][1]+a[c][2])/2;h=f(h+e);k=f(k+e);e=h/5;var l=k/34;e=f(e-l);d.push([b[c],e]);n.push(b[c]);p.push(e);e=c+1-5;l=c+1-
-34;h=f(h-(a[e][1]+a[e][2])/2);k=f(k-(a[l][1]+a[l][2])/2)}return{values:d,xData:n,yData:p}}}});""});b(a,"masters/indicators/ao.src.js",[],function(){})});
+(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/ao",["highcharts","highcharts/modules/stock"],function(e){a(e);a.Highcharts=e;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function e(a,g,h,e){a.hasOwnProperty(g)||(a[g]=e.apply(null,h))}a=a?a._modules:{};e(a,"indicators/ao.src.js",[a["parts/Globals.js"],a["parts/Utilities.js"]],function(a,g){var h=g.correctFloat,
+e=g.isArray;g=g.seriesType;g("ao","sma",{greaterBarColor:"#06B535",lowerBarColor:"#F21313",threshold:0,groupPadding:.2,pointPadding:.2,states:{hover:{halo:{size:0}}}},{nameBase:"AO",nameComponents:!1,markerAttribs:a.noop,getColumnMetrics:a.seriesTypes.column.prototype.getColumnMetrics,crispCol:a.seriesTypes.column.prototype.crispCol,translate:a.seriesTypes.column.prototype.translate,drawPoints:a.seriesTypes.column.prototype.drawPoints,drawGraph:function(){var a=this.options,f=this.points,e=a.greaterBarColor;
+a=a.lowerBarColor;var c=f[0];if(!this.userOptions.color&&c)for(c.color=e,c=1;c<f.length;c++)f[c].color=f[c].y>f[c-1].y?e:f[c].y<f[c-1].y?a:f[c-1].color},getValues:function(a){var f=a.xData||[];a=a.yData||[];var g=a.length,c=[],n=[],p=[],k=0,l=0,b;if(!(34>=f.length)&&e(a[0])&&4===a[0].length){for(b=0;33>b;b++){var d=(a[b][1]+a[b][2])/2;29<=b&&(k=h(k+d));l=h(l+d)}for(b=33;b<g;b++){d=(a[b][1]+a[b][2])/2;k=h(k+d);l=h(l+d);d=k/5;var m=l/34;d=h(d-m);c.push([f[b],d]);n.push(f[b]);p.push(d);d=b+1-5;m=b+1-
+34;k=h(k-(a[d][1]+a[d][2])/2);l=h(l-(a[m][1]+a[m][2])/2)}return{values:c,xData:n,yData:p}}}});""});e(a,"masters/indicators/ao.src.js",[],function(){})});
 //# sourceMappingURL=ao.js.map

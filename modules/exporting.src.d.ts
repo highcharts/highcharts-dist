@@ -14,6 +14,7 @@ import * as _Highcharts from "../highcharts.src";
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
     interface Chart {
+        fullscreen: Fullscreen;
         /**
          * Exporting module required. Submit an SVG version of the chart to a
          * server along with some parameters for conversion.
@@ -67,6 +68,38 @@ declare module "../highcharts.src" {
          * @fires Highcharts.Chart#afterPrint
          */
         print(): void;
+    }
+    /**
+     * Handles displaying chart's container in the fullscreen mode.
+     */
+    class Fullscreen {
+        /**
+         * Chart managed by the fullscreen controller.
+         */
+        chart: Chart;
+        /**
+         * The flag is set to `true` when the chart is displayed in the
+         * fullscreen mode.
+         */
+        isOpen?: boolean;
+        /**
+         * Stops displaying the chart in fullscreen mode. Exporting module
+         * required.
+         */
+        close(): void;
+        /**
+         * Displays the chart in fullscreen mode. When fired customly by user
+         * before exporting context button is created, button's text will not be
+         * replaced - it's on the user side. Exporting module required.
+         */
+        open(): void;
+        /**
+         * Toggles displaying the chart in fullscreen mode. By default, when the
+         * exporting module is enabled, a context button with a drop down menu
+         * in the upper right corner accesses this function. Exporting module
+         * required.
+         */
+        toggle(): void;
     }
 }
 export default factory;

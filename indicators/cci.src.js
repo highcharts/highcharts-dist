@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,15 +28,15 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/cci.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/cci.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.0.0 (2019-12-10)
+ * @license Highmaps JS v8.0.1 (2020-03-02)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *
@@ -31,16 +31,16 @@
     _registerModule(_modules, 'parts-map/MapAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var pick = U.pick;
-        var addEvent = H.addEvent,
-            Axis = H.Axis;
+        var addEvent = U.addEvent,
+            pick = U.pick;
+        var Axis = H.Axis;
         /* eslint-disable no-invalid-this */
         // Override to use the extreme coordinates from the SVG shape, not the data
         // values
@@ -136,7 +136,7 @@
     _registerModule(_modules, 'parts-map/ColorSeriesMixin.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -193,7 +193,7 @@
                     colorAxis = this.colorAxis,
                     colorKey = this.colorKey;
                 points.forEach(function (point) {
-                    var value = point[colorKey],
+                    var value = point.getNestedProperty(colorKey),
                         color;
                     color = point.options.color ||
                         (point.isNull ?
@@ -210,10 +210,10 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, Color, Point, Legend, LegendSymbolMixin, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -225,24 +225,22 @@
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        var erase = U.erase,
+        ''; // detach doclet above
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            erase = U.erase,
             extend = U.extend,
             isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
             splat = U.splat;
-        var addEvent = H.addEvent,
-            Axis = H.Axis,
+        var Axis = H.Axis,
             Chart = H.Chart,
             Series = H.Series,
-            Point = H.Point,
-            color = H.color,
             ColorAxis,
-            Legend = H.Legend,
-            LegendSymbolMixin = H.LegendSymbolMixin,
             colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
-            noop = H.noop,
-            merge = H.merge;
+            noop = H.noop;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         Chart.prototype.collectionsWithUpdate.push('colorAxis');
@@ -1104,7 +1102,7 @@
                     axisPos = this.pos,
                     axisLen = this.len;
                 if (point) {
-                    crossPos = this.toPixels(point[point.series.colorKey]);
+                    crossPos = this.toPixels(point.getNestedProperty(point.series.colorKey));
                     if (crossPos < axisPos) {
                         crossPos = axisPos - 2;
                     }
@@ -1402,10 +1400,10 @@
         });
 
     });
-    _registerModule(_modules, 'parts-map/ColorMapSeriesMixin.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/ColorMapSeriesMixin.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1444,7 +1442,7 @@
              * @return {void}
              */
             setState: function (state) {
-                H.Point.prototype.setState.call(this, state);
+                Point.prototype.setState.call(this, state);
                 if (this.graphic) {
                     this.graphic.attr({
                         zIndex: state === 'hover' ? 1 : 0
@@ -1486,20 +1484,20 @@
     _registerModule(_modules, 'parts-map/MapNavigation.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
+        var addEvent = U.addEvent,
+            extend = U.extend,
+            merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick;
-        var addEvent = H.addEvent,
-            Chart = H.Chart,
-            doc = H.doc,
-            merge = H.merge;
+        var Chart = H.Chart,
+            doc = H.doc;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * @private
@@ -1604,13 +1602,21 @@
                     })
                         .add();
                     button.handler = buttonOptions.onclick;
-                    button.align(extend(buttonOptions, {
-                        width: button.width,
-                        height: 2 * button.height
-                    }), null, buttonOptions.alignTo);
                     // Stop double click event (#4444)
                     addEvent(button.element, 'dblclick', stopEvent);
                     mapNavButtons.push(button);
+                    // Align it after the plotBox is known (#12776)
+                    var bo = buttonOptions;
+                    var un = addEvent(chart, 'load',
+                        function () {
+                            button.align(extend(bo, {
+                                width: button.width,
+                                height: 2 * button.height
+                            }),
+                        null,
+                        bo.alignTo);
+                        un();
+                    });
                 });
             }
             this.updateEvents(o);
@@ -1811,7 +1817,7 @@
     _registerModule(_modules, 'parts-map/MapPointer.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1872,10 +1878,10 @@
         });
 
     });
-    _registerModule(_modules, 'parts-map/MapSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/MapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, Point, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1883,20 +1889,19 @@
          *
          * */
         var extend = U.extend,
+            fireEvent = U.fireEvent,
+            getNestedProperty = U.getNestedProperty,
             isArray = U.isArray,
             isNumber = U.isNumber,
+            merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
+            seriesType = U.seriesType,
             splat = U.splat;
         var colorMapPointMixin = H.colorMapPointMixin,
             colorMapSeriesMixin = H.colorMapSeriesMixin,
-            LegendSymbolMixin = H.LegendSymbolMixin,
-            merge = H.merge,
             noop = H.noop,
-            fireEvent = H.fireEvent,
-            Point = H.Point,
             Series = H.Series,
-            seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
         /**
          * @private
@@ -2352,7 +2357,7 @@
                                 if (pointArrayMap[j] &&
                                     typeof val[ix] !== 'undefined') {
                                     if (pointArrayMap[j].indexOf('.') > 0) {
-                                        H.Point.prototype.setNestedProperty(data[i], val[ix], pointArrayMap[j]);
+                                        Point.prototype.setNestedProperty(data[i], val[ix], pointArrayMap[j]);
                                     }
                                     else {
                                         data[i][pointArrayMap[j]] =
@@ -2401,9 +2406,12 @@
                     this.mapMap = mapMap;
                     // Registered the point codes that actually hold data
                     if (data && joinBy[1]) {
-                        data.forEach(function (point) {
-                            if (mapMap[point[joinBy[1]]]) {
-                                dataUsed.push(mapMap[point[joinBy[1]]]);
+                        var joinKey_1 = joinBy[1];
+                        data.forEach(function (pointOptions) {
+                            var mapKey = getNestedProperty(joinKey_1,
+                                pointOptions);
+                            if (mapMap[mapKey]) {
+                                dataUsed.push(mapMap[mapKey]);
                             }
                         });
                     }
@@ -2412,8 +2420,9 @@
                         data = data || [];
                         // Registered the point codes that actually hold data
                         if (joinBy[1]) {
-                            data.forEach(function (point) {
-                                dataUsed.push(point[joinBy[1]]);
+                            var joinKey_2 = joinBy[1];
+                            data.forEach(function (pointOptions) {
+                                dataUsed.push(getNestedProperty(joinKey_2, pointOptions));
                             });
                         }
                         // Add those map points that don't correspond to data, which
@@ -2774,9 +2783,12 @@
                     x),
                     joinBy = series.joinBy,
                     mapPoint;
-                if (series.mapData) {
-                    mapPoint = typeof point[joinBy[1]] !== 'undefined' &&
-                        series.mapMap[point[joinBy[1]]];
+                if (series.mapData && series.mapMap) {
+                    var joinKey = joinBy[1];
+                    var mapKey = Point.prototype.getNestedProperty.call(point,
+                        joinKey);
+                    mapPoint = typeof mapKey !== 'undefined' &&
+                        series.mapMap[mapKey];
                     if (mapPoint) {
                         // This applies only to bubbles
                         if (series.xyFromShape) {
@@ -2793,7 +2805,7 @@
             },
             // Stop the fade-out
             onMouseOver: function (e) {
-                H.clearTimeout(this.colorInterval);
+                U.clearTimeout(this.colorInterval);
                 if (this.value !== null || this.series.options.nullInteraction) {
                     Point.prototype.onMouseOver.call(this, e);
                 }
@@ -2899,7 +2911,7 @@
          * @sample maps/series/data-datalabels/
          *         Disable data labels for individual areas
          *
-         * @type      {Highcharts.DataLabelsOptionsObject}
+         * @type      {Highcharts.DataLabelsOptions}
          * @product   highmaps
          * @apioption series.map.data.dataLabels
          */
@@ -2999,18 +3011,18 @@
         ''; // adds doclets above to the transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/MapLineSeries.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/MapLineSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = H.seriesType,
-            seriesTypes = H.seriesTypes;
+        var seriesType = U.seriesType;
+        var seriesTypes = H.seriesTypes;
         /**
          * @private
          * @class
@@ -3130,7 +3142,7 @@
     _registerModule(_modules, 'parts-map/MapPointSeries.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -3302,10 +3314,10 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/BubbleLegend.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-more/BubbleLegend.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Legend.js'], _modules['parts/Utilities.js']], function (H, Color, Legend, U) {
         /* *
          *
-         *  (c) 2010-2019 Highsoft AS
+         *  (c) 2010-2020 Highsoft AS
          *
          *  Author: Paweł Potaczek
          *
@@ -3329,20 +3341,20 @@
         * @name Highcharts.BubbleLegendFormatterContextObject#value
         * @type {number}
         */
-        var arrayMax = U.arrayMax,
+        ''; // detach doclets above
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             isNumber = U.isNumber,
+            merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
+            stableSort = U.stableSort,
             wrap = U.wrap;
         var Series = H.Series,
-            Legend = H.Legend,
             Chart = H.Chart,
-            addEvent = H.addEvent,
-            color = H.color,
-            merge = H.merge,
             noop = H.noop,
-            stableSort = H.stableSort,
             setOptions = H.setOptions;
         setOptions({
             legend: {
@@ -3456,9 +3468,8 @@
                          */
                         allowOverlap: false,
                         /**
-                         * A [format string](http://docs.highcharts.com/#formatting)
-                         * for the bubble legend labels. Available variables are the
-                         * same as for `formatter`.
+                         * A format string for the bubble legend labels. Available
+                         * variables are the same as for `formatter`.
                          *
                          * @sample highcharts/bubble-legend/format/
                          *         Add a unit
@@ -3942,7 +3953,7 @@
                     formatter = options.labels.formatter,
                     format = options.labels.format;
                 var numberFormatter = this.chart.numberFormatter;
-                return format ? H.format(format, range) :
+                return format ? U.format(format, range) :
                     formatter ? formatter.call(range) :
                         numberFormatter(range.value, 1);
             },
@@ -4103,7 +4114,7 @@
             }
         };
         // Start the bubble legend creation process.
-        addEvent(H.Legend, 'afterGetAllItems', function (e) {
+        addEvent(Legend, 'afterGetAllItems', function (e) {
             var legend = this,
                 bubbleLegend = legend.bubbleLegend,
                 legendOptions = legend.options,
@@ -4307,10 +4318,10 @@
         });
 
     });
-    _registerModule(_modules, 'parts-more/BubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-more/BubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -4320,19 +4331,18 @@
         /**
          * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
          */
+        var color = Color.parse;
         var arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             clamp = U.clamp,
             extend = U.extend,
             isNumber = U.isNumber,
             pick = U.pick,
-            pInt = U.pInt;
+            pInt = U.pInt,
+            seriesType = U.seriesType;
         var Axis = H.Axis,
-            color = H.color,
             noop = H.noop,
-            Point = H.Point,
             Series = H.Series,
-            seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
         /**
          * A bubble series is a three dimensional series type where each point renders
@@ -4920,20 +4930,19 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/MapBubbleSeries.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/MapBubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var merge = H.merge,
-            Point = H.Point,
-            seriesType = H.seriesType,
-            seriesTypes = H.seriesTypes;
+        var merge = U.merge,
+            seriesType = U.seriesType;
+        var seriesTypes = H.seriesTypes;
         // The mapbubble series type
         if (seriesTypes.bubble) {
             /**
@@ -5163,10 +5172,10 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -5187,15 +5196,14 @@
         */
         var clamp = U.clamp,
             extend = U.extend,
-            pick = U.pick;
+            fireEvent = U.fireEvent,
+            merge = U.merge,
+            pick = U.pick,
+            seriesType = U.seriesType;
         var colorMapPointMixin = H.colorMapPointMixin,
             colorMapSeriesMixin = H.colorMapSeriesMixin,
-            LegendSymbolMixin = H.LegendSymbolMixin,
-            merge = H.merge,
             noop = H.noop,
-            fireEvent = H.fireEvent,
             Series = H.Series,
-            seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
         /**
          * @private
@@ -5354,23 +5362,41 @@
              * @return {void}
              */
             translate: function () {
-                var series = this,
-                    options = series.options,
+                var series = this;
+                series.generatePoints();
+                var _a = series.options,
+                    _b = _a.colsize,
+                    colsize = _b === void 0 ? 1 : _b,
+                    _c = _a.pointPadding,
+                    seriesPointPadding = _c === void 0 ? 0 : _c,
+                    _d = _a.rowsize,
+                    rowsize = _d === void 0 ? 1 : _d,
+                    points = series.points,
                     xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    seriesPointPadding = options.pointPadding || 0,
-                    pointPlacement = series.pointPlacementToXValue(); // #7860
-                    series.generatePoints();
-                series.points.forEach(function (point) {
-                    var xPad = (options.colsize || 1) / 2,
-                        yPad = (options.rowsize || 1) / 2,
-                        x1 = clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x - xPad, 0, 1, 0, 1, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
-                        x2 = clamp(Math.round(xAxis.len -
-                            xAxis.translate(point.x + xPad, 0, 1, 0, 1, -pointPlacement)), -xAxis.len, 2 * xAxis.len),
-                        y1 = clamp(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
-                        y2 = clamp(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len),
-                        pointPadding = pick(point.pointPadding,
+                    yAxis = series.yAxis;
+                var xPad = colsize / 2;
+                var yPad = rowsize / 2;
+                // Translate point values functionality
+                var pointPlacement = series.pointPlacementToXValue(); // #7860
+                    var translateX = function (value) { return Math.round(clamp(xAxis.translate(value,
+                    false,
+                    false,
+                    false,
+                    true,
+                    pointPlacement), 0,
+                    xAxis.len)); };
+                var translateY = function (value) { return Math.round(clamp(yAxis.translate(value,
+                    false,
+                    true,
+                    false,
+                    true), 0,
+                    yAxis.len)); };
+                points.forEach(function (point) {
+                    var x1 = translateX(point.x - xPad);
+                    var x2 = translateX(point.x + xPad);
+                    var y1 = translateY(point.y - yPad);
+                    var y2 = translateY(point.y + yPad);
+                    var pointPadding = pick(point.pointPadding,
                         seriesPointPadding);
                     // Set plotX and plotY for use in K-D-Tree and more
                     point.plotX = point.clientX = (x1 + x2) / 2;
@@ -5603,7 +5629,7 @@
     _registerModule(_modules, 'parts-map/GeoJSON.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -5636,11 +5662,12 @@
         * @name Highcharts.MapLatLonObject#lon
         * @type {number}
         */
-        var extend = U.extend,
+        var error = U.error,
+            extend = U.extend,
+            format = U.format,
+            merge = U.merge,
             wrap = U.wrap;
         var Chart = H.Chart,
-            format = H.format,
-            merge = H.merge,
             win = H.win;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
@@ -5690,14 +5717,26 @@
          *         An object with `x` and `y` properties.
          */
         Chart.prototype.transformFromLatLon = function (latLon, transform) {
-            if (typeof win.proj4 === 'undefined') {
-                H.error(21, false, this);
+            /**
+             * Allows to manually load the proj4 library from Highcharts options
+             * instead of the `window`.
+             * In case of loading the library from a `script` tag,
+             * this option is not needed, it will be loaded from there by default.
+             *
+             * @type       {function}
+             * @product    highmaps
+             * @apioption  chart.proj4
+             */
+            var _a;
+            var proj4 = (((_a = this.userOptions.chart) === null || _a === void 0 ? void 0 : _a.proj4) || win.proj4);
+            if (!proj4) {
+                error(21, false, this);
                 return {
                     x: 0,
                     y: null
                 };
             }
-            var projected = win.proj4(transform.crs,
+            var projected = proj4(transform.crs,
                 [latLon.lon,
                 latLon.lat]),
                 cosAngle = transform.cosAngle ||
@@ -5741,7 +5780,7 @@
          */
         Chart.prototype.transformToLatLon = function (point, transform) {
             if (typeof win.proj4 === 'undefined') {
-                H.error(21, false, this);
+                error(21, false, this);
                 return;
             }
             var normalized = {
@@ -5787,7 +5826,7 @@
             var transforms = this.mapTransforms,
                 transform;
             if (!transforms) {
-                H.error(22, false, this);
+                error(22, false, this);
                 return;
             }
             for (transform in transforms) {
@@ -5822,7 +5861,7 @@
                 transform,
                 coords;
             if (!transforms) {
-                H.error(22, false, this);
+                error(22, false, this);
                 return {
                     x: 0,
                     y: null
@@ -5970,7 +6009,7 @@
     _registerModule(_modules, 'parts-map/Map.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -5978,10 +6017,10 @@
          *
          * */
         var extend = U.extend,
+            merge = U.merge,
             pick = U.pick;
         var Chart = H.Chart,
             defaultOptions = H.defaultOptions,
-            merge = H.merge,
             Renderer = H.Renderer,
             SVGRenderer = H.SVGRenderer,
             VMLRenderer = H.VMLRenderer;

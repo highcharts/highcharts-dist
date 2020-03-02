@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Money Flow Index indicator for Highstock
  *
@@ -28,19 +28,21 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/mfi.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/mfi.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  Money Flow Index indicator for Highstock
          *
-         *  (c) 2010-2019 Grzegorz Blachliński
+         *  (c) 2010-2020 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
+        var error = U.error,
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable require-jsdoc */
         // Utils:
         function sumArray(array) {
@@ -67,7 +69,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('mfi', 'sma', 
+        seriesType('mfi', 'sma', 
         /**
          * Money Flow Index. This series requires `linkedTo` option to be set and
          * should be loaded after the `stock/indicators/indicators.js` file.
@@ -131,7 +133,7 @@
                     MFIPoint,
                     i;
                 if (!volumeSeries) {
-                    H.error('Series ' +
+                    error('Series ' +
                         params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                     return;

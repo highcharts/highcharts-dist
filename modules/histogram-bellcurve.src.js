@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -33,9 +33,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
+        var addEvent = U.addEvent,
+            defined = U.defined;
         var Series = H.Series,
-            addEvent = H.addEvent,
             noop = H.noop;
         /* ************************************************************************** *
          *
@@ -152,7 +152,7 @@
 
         return derivedSeriesMixin;
     });
-    _registerModule(_modules, 'modules/histogram.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (H, U, derivedSeriesMixin) {
+    _registerModule(_modules, 'modules/histogram.src.js', [_modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (U, derivedSeriesMixin) {
         /* *
          *
          *  Copyright (c) 2010-2017 Highsoft AS
@@ -167,9 +167,9 @@
             arrayMin = U.arrayMin,
             correctFloat = U.correctFloat,
             isNumber = U.isNumber,
-            objectEach = U.objectEach;
-        var seriesType = H.seriesType,
-            merge = H.merge;
+            merge = U.merge,
+            objectEach = U.objectEach,
+            seriesType = U.seriesType;
         /* ************************************************************************** *
          *  HISTOGRAM
          * ************************************************************************** */
@@ -352,10 +352,10 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'modules/bellcurve.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (H, U, derivedSeriesMixin) {
+    _registerModule(_modules, 'modules/bellcurve.src.js', [_modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (U, derivedSeriesMixin) {
         /* *
          *
-         *  (c) 2010-2019 Highsoft AS
+         *  (c) 2010-2020 Highsoft AS
          *
          *  Author: Sebastian Domas
          *
@@ -365,9 +365,9 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            isNumber = U.isNumber;
-        var seriesType = H.seriesType,
-            merge = H.merge;
+            isNumber = U.isNumber,
+            merge = U.merge,
+            seriesType = U.seriesType;
         /* ************************************************************************** *
          *  BELL CURVE                                                                *
          * ************************************************************************** */

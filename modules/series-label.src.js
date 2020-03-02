@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -29,7 +29,7 @@
     _registerModule(_modules, 'modules/series-label.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2019 Torstein Honsi
+         *  (c) 2009-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -66,19 +66,21 @@
          * https://jsfiddle.net/highcharts/264Nm/
          * https://jsfiddle.net/highcharts/y5A37/
          */
-        var animObject = U.animObject,
+        var addEvent = U.addEvent,
+            animObject = U.animObject,
             extend = U.extend,
             isNumber = U.isNumber,
             pick = U.pick,
             syncTimeout = U.syncTimeout;
         var labelDistance = 3,
-            addEvent = H.addEvent,
             Series = H.Series,
             SVGRenderer = H.SVGRenderer,
             Chart = H.Chart;
         H.setOptions({
             /**
              * @optionparent plotOptions
+             *
+             * @private
              */
             plotOptions: {
                 series: {
@@ -751,7 +753,7 @@
                 delay = animObject(chart.renderer.globalAnimation).duration;
             chart.labelSeries = [];
             chart.labelSeriesMaxSum = 0;
-            H.clearTimeout(chart.seriesLabelTimer);
+            U.clearTimeout(chart.seriesLabelTimer);
             // Which series should have labels
             chart.series.forEach(function (series) {
                 var options = series.options.label,

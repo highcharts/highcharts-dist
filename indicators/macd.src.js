@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Indicator series type for Highstock
  *
@@ -37,10 +37,10 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            defined = U.defined;
-        var seriesType = H.seriesType,
-            noop = H.noop,
-            merge = H.merge,
+            defined = U.defined,
+            merge = U.merge,
+            seriesType = U.seriesType;
+        var noop = H.noop,
             SMA = H.seriesTypes.sma,
             EMA = H.seriesTypes.ema;
         /**

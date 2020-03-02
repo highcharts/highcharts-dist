@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Solid angular gauge module
  *
@@ -28,12 +28,12 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/solid-gauge.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/solid-gauge.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, Color, LegendSymbolMixin, U) {
         /* *
          *
          *  Solid angular gauge module
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -49,11 +49,14 @@
         * @name Highcharts.SymbolOptionsObject#rounded
         * @type {boolean|undefined}
         */
+        var color = Color.parse;
         var clamp = U.clamp,
             extend = U.extend,
             isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
             pInt = U.pInt,
+            seriesType = U.seriesType,
             wrap = U.wrap;
         var Renderer = H.Renderer,
             colorAxisMethods;
@@ -108,7 +111,7 @@
                 this.dataClasses = dataClasses = [];
                 userOptions.dataClasses.forEach(function (dataClass, i) {
                     var colors;
-                    dataClass = H.merge(dataClass);
+                    dataClass = merge(dataClass);
                     dataClasses.push(dataClass);
                     if (!dataClass.color) {
                         if (options.dataClassColor === 'category') {
@@ -120,7 +123,7 @@
                             }
                         }
                         else {
-                            dataClass.color = H.color(options.minColor).tweenTo(H.color(options.maxColor), i / (userOptions.dataClasses.length - 1));
+                            dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), i / (userOptions.dataClasses.length - 1));
                         }
                     }
                 });
@@ -131,7 +134,7 @@
                     [1, this.options.maxColor]
                 ];
                 this.stops.forEach(function (stop) {
-                    stop.color = H.color(stop[1]);
+                    stop.color = color(stop[1]);
                 });
             },
             // Translate from a value to a color
@@ -278,8 +281,8 @@
                 }
             };
         // The solidgauge series type
-        H.seriesType('solidgauge', 'gauge', solidGaugeOptions, {
-            drawLegendSymbol: H.LegendSymbolMixin.drawRectangle,
+        seriesType('solidgauge', 'gauge', solidGaugeOptions, {
+            drawLegendSymbol: LegendSymbolMixin.drawRectangle,
             // Extend the translate function to extend the Y axis with the necessary
             // decoration (#5895).
             translate: function () {
@@ -412,7 +415,8 @@
          *            cropThreshold, dashStyle, dataParser, dataURL, dial,
          *            findNearestPointBy, getExtremesFromAll, marker, negativeColor,
          *            pointPlacement, pivot, shadow, softThreshold, stack, stacking,
-         *            states, step, threshold, turboThreshold, wrap, zoneAxis, zones
+         *            states, step, threshold, turboThreshold, wrap, zoneAxis, zones,
+         *            dataSorting
          * @product   highcharts
          * @requires  modules/solid-gauge
          * @apioption series.solidgauge

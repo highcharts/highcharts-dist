@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Data module
  *
@@ -38,7 +38,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var objectEach = U.objectEach;
+        var merge = U.merge,
+            objectEach = U.objectEach;
         /**
          * @interface Highcharts.AjaxSettingsObject
          */ /**
@@ -83,7 +84,7 @@
          *         Returns false, if error occured.
          */
         H.ajax = function (attr) {
-            var options = H.merge(true, {
+            var options = merge(true, {
                     url: false,
                     type: 'get',
                     dataType: 'json',
@@ -181,7 +182,7 @@
          *
          *  Data module
          *
-         *  (c) 2012-2019 Torstein Honsi
+         *  (c) 2012-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1310,6 +1311,8 @@
                     [].forEach.call(table.getElementsByTagName('tr'), function (tr, rowNo) {
                         if (rowNo >= startRow && rowNo <= endRow) {
                             [].forEach.call(tr.children, function (item, colNo) {
+                                var row = columns[colNo - startColumn];
+                                var i = 1;
                                 if ((item.tagName === 'TD' ||
                                     item.tagName === 'TH') &&
                                     colNo >= startColumn &&
@@ -1318,6 +1321,13 @@
                                         columns[colNo - startColumn] = [];
                                     }
                                     columns[colNo - startColumn][rowNo - startRow] = item.innerHTML;
+                                    // Loop over all previous indices and make sure
+                                    // they are nulls, not undefined.
+                                    while (rowNo - startRow >= i &&
+                                        row[rowNo - startRow - i] === void 0) {
+                                        row[rowNo - startRow - i] = null;
+                                        i++;
+                                    }
                                 }
                             });
                         }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.0 (2019-12-10)
+ * @license Highcharts Gantt JS v8.0.1 (2020-03-02)
  *
  * Pathfinder
  *
@@ -938,7 +938,7 @@
             H.SVGRenderer.prototype.symbols['triangle-left-half'];
 
     });
-    _registerModule(_modules, 'parts-gantt/Pathfinder.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/PathfinderAlgorithms.js']], function (H, U, pathfinderAlgorithms) {
+    _registerModule(_modules, 'parts-gantt/Pathfinder.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/PathfinderAlgorithms.js']], function (H, Point, U, pathfinderAlgorithms) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -971,14 +971,16 @@
          *
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
-        var defined = U.defined,
+        ''; // detach doclets above
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            error = U.error,
             extend = U.extend,
+            merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
             splat = U.splat;
         var deg2rad = H.deg2rad,
-            addEvent = H.addEvent,
-            merge = H.merge,
             max = Math.max,
             min = Math.min;
         /*
@@ -1546,7 +1548,7 @@
                     algorithm = pathfinder.algorithms[options.type],
                     chartObstacles = pathfinder.chartObstacles;
                 if (typeof algorithm !== 'function') {
-                    H.error('"' + options.type + '" is not a Pathfinder algorithm.');
+                    error('"' + options.type + '" is not a Pathfinder algorithm.');
                     return;
                 }
                 // This function calculates obstacles on demand if they don't exist
@@ -1711,7 +1713,7 @@
                                 connects.forEach(function (connect) {
                                     to = chart.get(typeof connect === 'string' ?
                                         connect : connect.to);
-                                    if (to instanceof H.Point &&
+                                    if (to instanceof Point &&
                                         to.series.visible &&
                                         to.visible &&
                                         to.isInside !== false) {
@@ -1912,7 +1914,7 @@
         H.Connection = Connection;
         H.Pathfinder = Pathfinder;
         // Add pathfinding capabilities to Points
-        extend(H.Point.prototype, /** @lends Point.prototype */ {
+        extend(Point.prototype, /** @lends Point.prototype */ {
             /**
              * Get coordinates of anchor point for pathfinder connection.
              *
@@ -2077,7 +2079,7 @@
                     return acc || series.options && series.options.pathfinder;
                 }, false)) {
                 merge(true, (chart.options.connectors = chart.options.connectors || {}), chart.options.pathfinder);
-                H.error('WARNING: Pathfinder options have been renamed. ' +
+                error('WARNING: Pathfinder options have been renamed. ' +
                     'Use "chart.connectors" or "series.connectors" instead.');
             }
         }

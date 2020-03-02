@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Highcharts funnel module
  *
@@ -28,12 +28,12 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts/Globals.js']], function (Highcharts, U, H) {
         /* *
          *
          *  Highcharts funnel module
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -65,7 +65,7 @@
          *         Funnel demo
          *
          * @extends      plotOptions.pie
-         * @excluding    innerSize,size
+         * @excluding    innerSize,size,dataSorting
          * @product      highcharts
          * @requires     modules/funnel
          * @optionparent plotOptions.funnel
@@ -466,9 +466,14 @@
         /* eslint-disable no-invalid-this */
         addEvent(Highcharts.Chart, 'afterHideAllOverlappingLabels', function () {
             this.series.forEach(function (series) {
-                if (series instanceof seriesTypes.pie &&
+                var dataLabelsOptions = series.options && series.options.dataLabels;
+                if (H.isArray(dataLabelsOptions)) {
+                    dataLabelsOptions = dataLabelsOptions[0];
+                }
+                if (series.is('pie') &&
                     series.placeDataLabels &&
-                    !((series.options || {}).dataLabels || {}).inside) {
+                    dataLabelsOptions &&
+                    !dataLabelsOptions.inside) {
                     series.placeDataLabels();
                 }
             });
@@ -478,7 +483,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.funnel
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis
+         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting
          * @product   highcharts
          * @requires  modules/funnel
          * @apioption series.funnel
@@ -578,7 +583,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.pyramid
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis
+         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting
          * @product   highcharts
          * @requires  modules/funnel
          * @apioption series.pyramid

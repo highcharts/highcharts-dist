@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.0 (2019-12-10)
+ * @license Highcharts Gantt JS v8.0.1 (2020-03-02)
  *
  * Gantt series
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'parts-gantt/CurrentDateIndicator.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2016-2019 Highsoft AS
+         *  (c) 2016-2020 Highsoft AS
          *
          *  Author: Lars A. V. Cabrera
          *
@@ -40,11 +40,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var wrap = U.wrap;
-        var addEvent = H.addEvent,
-            Axis = H.Axis,
-            PlotLineOrBand = H.PlotLineOrBand,
-            merge = H.merge;
+        var addEvent = U.addEvent,
+            merge = U.merge,
+            wrap = U.wrap;
+        var Axis = H.Axis,
+            PlotLineOrBand = H.PlotLineOrBand;
         var defaultConfig = {
                 /**
                  * Show an indicator on the axis for the current date and time. Can be a
@@ -128,7 +128,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Globals.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (H, Tick, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -139,19 +139,22 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
+        var addEvent = U.addEvent,
+            defined = U.defined,
             erase = U.erase,
+            find = U.find,
             isArray = U.isArray,
             isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
+            timeUnits = U.timeUnits,
             wrap = U.wrap;
-        var addEvent = H.addEvent,
-            argsToArray = function (args) {
+        var argsToArray = function (args) {
                 return Array.prototype.slice.call(args, 1);
         }, dateFormat = H.dateFormat, isObject = function (x) {
             // Always use strict mode
             return U.isObject(x, true);
-        }, merge = H.merge, Chart = H.Chart, Axis = H.Axis, Tick = H.Tick;
+        }, Chart = H.Chart, Axis = H.Axis;
         var applyGridOptions = function applyGridOptions(axis) {
                 var options = axis.options;
             // Center-align by default
@@ -313,17 +316,21 @@
             });
             return dimensions;
         };
-        // Add custom date formats
+        // Adds week date format
         H.dateFormats.W = function (timestamp) {
-            var d = new Date(timestamp),
-                yearStart,
-                weekNo;
-            d.setHours(0, 0, 0, 0);
-            d.setDate(d.getDate() - (d.getDay() || 7));
-            yearStart = new Date(d.getFullYear(), 0, 1);
-            weekNo =
-                Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-            return weekNo;
+            var d = new this.Date(timestamp);
+            var firstDay = (this.get('Day',
+                d) + 6) % 7;
+            var thursday = new this.Date(d.valueOf());
+            this.set('Date', thursday, this.get('Date', d) - firstDay + 3);
+            var firstThursday = new this.Date(this.get('FullYear',
+                thursday), 0, 1);
+            if (this.get('Day', firstThursday) !== 4) {
+                this.set('Month', d, 0);
+                this.set('Date', d, 1 + (11 - this.get('Day', firstThursday)) % 7);
+            }
+            return (1 +
+                Math.floor((thursday.valueOf() - firstThursday.valueOf()) / 604800000)).toString();
         };
         // First letter of the day of the week, e.g. 'M' for 'Monday'.
         H.dateFormats.E = function (timestamp) {
@@ -633,7 +640,7 @@
                                     unitName = 'year';
                                     count = parentInfo.count * 10;
                                 }
-                                unitRange = H.timeUnits[unitName];
+                                unitRange = timeUnits[unitName];
                                 this.tickInterval = unitRange * count;
                                 return this.getTimeTicks({
                                     unitRange: unitRange,
@@ -863,7 +870,7 @@
                             axis).series[0],
                         isFirst = value === tickPos[0],
                         isLast = value === tickPos[tickPos.length - 1],
-                        point = series && H.find(series.options.data,
+                        point = series && find(series.options.data,
                         function (p) {
                             return p[axis.isXAxis ? 'x' : 'y'] === value;
                     });
@@ -961,14 +968,15 @@
     _registerModule(_modules, 'modules/static-scale.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2016-2019 Torstein Honsi, Lars Cabrera
+         *  (c) 2016-2020 Torstein Honsi, Lars Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
+        var addEvent = U.addEvent,
+            defined = U.defined,
             isNumber = U.isNumber,
             pick = U.pick;
         var Chart = H.Chart;
@@ -989,7 +997,7 @@
          * @product   gantt
          * @apioption yAxis.staticScale
          */
-        H.addEvent(H.Axis, 'afterSetOptions', function () {
+        addEvent(H.Axis, 'afterSetOptions', function () {
             var chartOptions = this.chart.options && this.chart.options.chart;
             if (!this.horiz &&
                 isNumber(this.options.staticScale) &&
@@ -1035,13 +1043,241 @@
             }
             this.redrawTrigger = null;
         };
-        H.addEvent(Chart, 'render', Chart.prototype.adjustHeight);
+        addEvent(Chart, 'render', Chart.prototype.adjustHeight);
 
+    });
+    _registerModule(_modules, 'mixins/tree-series.js', [_modules['parts/Color.js'], _modules['parts/Utilities.js']], function (Color, U) {
+        /* *
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var extend = U.extend,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            isObject = U.isObject,
+            merge = U.merge,
+            pick = U.pick;
+        var isBoolean = function (x) {
+                return typeof x === 'boolean';
+        }, isFn = function (x) {
+            return typeof x === 'function';
+        };
+        /* eslint-disable valid-jsdoc */
+        /**
+         * @todo Combine buildTree and buildNode with setTreeValues
+         * @todo Remove logic from Treemap and make it utilize this mixin.
+         * @private
+         */
+        var setTreeValues = function setTreeValues(tree,
+            options) {
+                var before = options.before,
+            idRoot = options.idRoot,
+            mapIdToNode = options.mapIdToNode,
+            nodeRoot = mapIdToNode[idRoot],
+            levelIsConstant = (isBoolean(options.levelIsConstant) ?
+                    options.levelIsConstant :
+                    true),
+            points = options.points,
+            point = points[tree.i],
+            optionsPoint = point && point.options || {},
+            childrenTotal = 0,
+            children = [],
+            value;
+            extend(tree, {
+                levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
+                name: pick(point && point.name, ''),
+                visible: (idRoot === tree.id ||
+                    (isBoolean(options.visible) ? options.visible : false))
+            });
+            if (isFn(before)) {
+                tree = before(tree, options);
+            }
+            // First give the children some values
+            tree.children.forEach(function (child, i) {
+                var newOptions = extend({},
+                    options);
+                extend(newOptions, {
+                    index: i,
+                    siblings: tree.children.length,
+                    visible: tree.visible
+                });
+                child = setTreeValues(child, newOptions);
+                children.push(child);
+                if (child.visible) {
+                    childrenTotal += child.val;
+                }
+            });
+            tree.visible = childrenTotal > 0 || tree.visible;
+            // Set the values
+            value = pick(optionsPoint.value, childrenTotal);
+            extend(tree, {
+                children: children,
+                childrenTotal: childrenTotal,
+                isLeaf: tree.visible && !childrenTotal,
+                val: value
+            });
+            return tree;
+        };
+        /**
+         * @private
+         */
+        var getColor = function getColor(node,
+            options) {
+                var index = options.index,
+            mapOptionsToLevel = options.mapOptionsToLevel,
+            parentColor = options.parentColor,
+            parentColorIndex = options.parentColorIndex,
+            series = options.series,
+            colors = options.colors,
+            siblings = options.siblings,
+            points = series.points,
+            getColorByPoint,
+            chartOptionsChart = series.chart.options.chart,
+            point,
+            level,
+            colorByPoint,
+            colorIndexByPoint,
+            color,
+            colorIndex;
+            /**
+             * @private
+             */
+            function variation(color) {
+                var colorVariation = level && level.colorVariation;
+                if (colorVariation) {
+                    if (colorVariation.key === 'brightness') {
+                        return Color.parse(color).brighten(colorVariation.to * (index / siblings)).get();
+                    }
+                }
+                return color;
+            }
+            if (node) {
+                point = points[node.i];
+                level = mapOptionsToLevel[node.level] || {};
+                getColorByPoint = point && level.colorByPoint;
+                if (getColorByPoint) {
+                    colorIndexByPoint = point.index % (colors ?
+                        colors.length :
+                        chartOptionsChart.colorCount);
+                    colorByPoint = colors && colors[colorIndexByPoint];
+                }
+                // Select either point color, level color or inherited color.
+                if (!series.chart.styledMode) {
+                    color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variation(parentColor), series.color);
+                }
+                colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+            }
+            return {
+                color: color,
+                colorIndex: colorIndex
+            };
+        };
+        /**
+         * Creates a map from level number to its given options.
+         *
+         * @private
+         * @function getLevelOptions
+         * @param {object} params
+         *        Object containing parameters.
+         *        - `defaults` Object containing default options. The default options
+         *           are merged with the userOptions to get the final options for a
+         *           specific level.
+         *        - `from` The lowest level number.
+         *        - `levels` User options from series.levels.
+         *        - `to` The highest level number.
+         * @return {Highcharts.Dictionary<object>|null}
+         *         Returns a map from level number to its given options.
+         */
+        var getLevelOptions = function getLevelOptions(params) {
+                var result = null,
+            defaults,
+            converted,
+            i,
+            from,
+            to,
+            levels;
+            if (isObject(params)) {
+                result = {};
+                from = isNumber(params.from) ? params.from : 1;
+                levels = params.levels;
+                converted = {};
+                defaults = isObject(params.defaults) ? params.defaults : {};
+                if (isArray(levels)) {
+                    converted = levels.reduce(function (obj, item) {
+                        var level,
+                            levelIsConstant,
+                            options;
+                        if (isObject(item) && isNumber(item.level)) {
+                            options = merge({}, item);
+                            levelIsConstant = (isBoolean(options.levelIsConstant) ?
+                                options.levelIsConstant :
+                                defaults.levelIsConstant);
+                            // Delete redundant properties.
+                            delete options.levelIsConstant;
+                            delete options.level;
+                            // Calculate which level these options apply to.
+                            level = item.level + (levelIsConstant ? 0 : from - 1);
+                            if (isObject(obj[level])) {
+                                extend(obj[level], options);
+                            }
+                            else {
+                                obj[level] = options;
+                            }
+                        }
+                        return obj;
+                    }, {});
+                }
+                to = isNumber(params.to) ? params.to : 1;
+                for (i = 0; i <= to; i++) {
+                    result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
+                }
+            }
+            return result;
+        };
+        /**
+         * Update the rootId property on the series. Also makes sure that it is
+         * accessible to exporting.
+         *
+         * @private
+         * @function updateRootId
+         *
+         * @param {object} series
+         *        The series to operate on.
+         *
+         * @return {string}
+         *         Returns the resulting rootId after update.
+         */
+        var updateRootId = function (series) {
+                var rootId,
+            options;
+            if (isObject(series)) {
+                // Get the series options.
+                options = isObject(series.options) ? series.options : {};
+                // Calculate the rootId.
+                rootId = pick(series.rootNode, options.rootId, '');
+                // Set rootId on series.userOptions to pick it up in exporting.
+                if (isObject(series.userOptions)) {
+                    series.userOptions.rootId = rootId;
+                }
+                // Set rootId on series to pick it up on next update.
+                series.rootNode = rootId;
+            }
+            return rootId;
+        };
+        var result = {
+                getColor: getColor,
+                getLevelOptions: getLevelOptions,
+                setTreeValues: setTreeValues,
+                updateRootId: updateRootId
+            };
+
+        return result;
     });
     _registerModule(_modules, 'parts-gantt/Tree.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2016-2019 Highsoft AS
+         *  (c) 2016-2020 Highsoft AS
          *
          *  Authors: Jon Arild Nygard
          *
@@ -1175,250 +1411,23 @@
 
         return Tree;
     });
-    _registerModule(_modules, 'mixins/tree-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var extend = U.extend,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            pick = U.pick;
-        var isBoolean = function (x) {
-                return typeof x === 'boolean';
-        }, isFn = function (x) {
-            return typeof x === 'function';
-        }, merge = H.merge;
-        /* eslint-disable valid-jsdoc */
-        /**
-         * @todo Combine buildTree and buildNode with setTreeValues
-         * @todo Remove logic from Treemap and make it utilize this mixin.
-         * @private
-         */
-        var setTreeValues = function setTreeValues(tree,
-            options) {
-                var before = options.before,
-            idRoot = options.idRoot,
-            mapIdToNode = options.mapIdToNode,
-            nodeRoot = mapIdToNode[idRoot],
-            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                    options.levelIsConstant :
-                    true),
-            points = options.points,
-            point = points[tree.i],
-            optionsPoint = point && point.options || {},
-            childrenTotal = 0,
-            children = [],
-            value;
-            extend(tree, {
-                levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
-                name: pick(point && point.name, ''),
-                visible: (idRoot === tree.id ||
-                    (isBoolean(options.visible) ? options.visible : false))
-            });
-            if (isFn(before)) {
-                tree = before(tree, options);
-            }
-            // First give the children some values
-            tree.children.forEach(function (child, i) {
-                var newOptions = extend({},
-                    options);
-                extend(newOptions, {
-                    index: i,
-                    siblings: tree.children.length,
-                    visible: tree.visible
-                });
-                child = setTreeValues(child, newOptions);
-                children.push(child);
-                if (child.visible) {
-                    childrenTotal += child.val;
-                }
-            });
-            tree.visible = childrenTotal > 0 || tree.visible;
-            // Set the values
-            value = pick(optionsPoint.value, childrenTotal);
-            extend(tree, {
-                children: children,
-                childrenTotal: childrenTotal,
-                isLeaf: tree.visible && !childrenTotal,
-                val: value
-            });
-            return tree;
-        };
-        /**
-         * @private
-         */
-        var getColor = function getColor(node,
-            options) {
-                var index = options.index,
-            mapOptionsToLevel = options.mapOptionsToLevel,
-            parentColor = options.parentColor,
-            parentColorIndex = options.parentColorIndex,
-            series = options.series,
-            colors = options.colors,
-            siblings = options.siblings,
-            points = series.points,
-            getColorByPoint,
-            chartOptionsChart = series.chart.options.chart,
-            point,
-            level,
-            colorByPoint,
-            colorIndexByPoint,
-            color,
-            colorIndex;
-            /**
-             * @private
-             */
-            function variation(color) {
-                var colorVariation = level && level.colorVariation;
-                if (colorVariation) {
-                    if (colorVariation.key === 'brightness') {
-                        return H.color(color).brighten(colorVariation.to * (index / siblings)).get();
-                    }
-                }
-                return color;
-            }
-            if (node) {
-                point = points[node.i];
-                level = mapOptionsToLevel[node.level] || {};
-                getColorByPoint = point && level.colorByPoint;
-                if (getColorByPoint) {
-                    colorIndexByPoint = point.index % (colors ?
-                        colors.length :
-                        chartOptionsChart.colorCount);
-                    colorByPoint = colors && colors[colorIndexByPoint];
-                }
-                // Select either point color, level color or inherited color.
-                if (!series.chart.styledMode) {
-                    color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variation(parentColor), series.color);
-                }
-                colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
-            }
-            return {
-                color: color,
-                colorIndex: colorIndex
-            };
-        };
-        /**
-         * Creates a map from level number to its given options.
-         *
-         * @private
-         * @function getLevelOptions
-         * @param {object} params
-         *        Object containing parameters.
-         *        - `defaults` Object containing default options. The default options
-         *           are merged with the userOptions to get the final options for a
-         *           specific level.
-         *        - `from` The lowest level number.
-         *        - `levels` User options from series.levels.
-         *        - `to` The highest level number.
-         * @return {Highcharts.Dictionary<object>|null}
-         *         Returns a map from level number to its given options.
-         */
-        var getLevelOptions = function getLevelOptions(params) {
-                var result = null,
-            defaults,
-            converted,
-            i,
-            from,
-            to,
-            levels;
-            if (isObject(params)) {
-                result = {};
-                from = isNumber(params.from) ? params.from : 1;
-                levels = params.levels;
-                converted = {};
-                defaults = isObject(params.defaults) ? params.defaults : {};
-                if (isArray(levels)) {
-                    converted = levels.reduce(function (obj, item) {
-                        var level,
-                            levelIsConstant,
-                            options;
-                        if (isObject(item) && isNumber(item.level)) {
-                            options = merge({}, item);
-                            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                                options.levelIsConstant :
-                                defaults.levelIsConstant);
-                            // Delete redundant properties.
-                            delete options.levelIsConstant;
-                            delete options.level;
-                            // Calculate which level these options apply to.
-                            level = item.level + (levelIsConstant ? 0 : from - 1);
-                            if (isObject(obj[level])) {
-                                extend(obj[level], options);
-                            }
-                            else {
-                                obj[level] = options;
-                            }
-                        }
-                        return obj;
-                    }, {});
-                }
-                to = isNumber(params.to) ? params.to : 1;
-                for (i = 0; i <= to; i++) {
-                    result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
-                }
-            }
-            return result;
-        };
-        /**
-         * Update the rootId property on the series. Also makes sure that it is
-         * accessible to exporting.
-         *
-         * @private
-         * @function updateRootId
-         *
-         * @param {object} series
-         *        The series to operate on.
-         *
-         * @return {string}
-         *         Returns the resulting rootId after update.
-         */
-        var updateRootId = function (series) {
-                var rootId,
-            options;
-            if (isObject(series)) {
-                // Get the series options.
-                options = isObject(series.options) ? series.options : {};
-                // Calculate the rootId.
-                rootId = pick(series.rootNode, options.rootId, '');
-                // Set rootId on series.userOptions to pick it up in exporting.
-                if (isObject(series.userOptions)) {
-                    series.userOptions.rootId = rootId;
-                }
-                // Set rootId on series to pick it up on next update.
-                series.rootNode = rootId;
-            }
-            return rootId;
-        };
-        var result = {
-                getColor: getColor,
-                getLevelOptions: getLevelOptions,
-                setTreeValues: setTreeValues,
-                updateRootId: updateRootId
-            };
-
-        return result;
-    });
     _registerModule(_modules, 'modules/broken-axis.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2019 Torstein Honsi
+         *  (c) 2009-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
+        var addEvent = U.addEvent,
+            extend = U.extend,
+            find = U.find,
+            fireEvent = U.fireEvent,
             isArray = U.isArray,
             pick = U.pick;
-        var addEvent = H.addEvent,
-            find = H.find,
-            fireEvent = H.fireEvent,
-            Axis = H.Axis,
+        var Axis = H.Axis,
             Series = H.Series;
         /**
          * Returns the first break found where the x is larger then break.from and
@@ -1834,13 +1843,13 @@
              * Together with [gapSize](plotOptions.series.gapSize), this option defines
              * where to draw gaps in the graph.
              *
-             * When the `gapUnit` is `relative` (default), a gap size of 5 means
+             * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
              * that if the distance between two points is greater than five times
              * that of the two closest points, the graph will be broken.
              *
-             * When the `gapUnit` is `value`, the gap is based on absolute axis values,
-             * which on a datetime axis is milliseconds. This also applies to the
-             * navigator series that inherits gap options from the base series.
+             * When the `gapUnit` is `"value"`, the gap is based on absolute axis
+             * values, which on a datetime axis is milliseconds. This also applies
+             * to the navigator series that inherits gap options from the base series.
              *
              * @see [gapSize](plotOptions.series.gapSize)
              *
@@ -1902,7 +1911,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-gantt/TreeGrid.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/Tree.js'], _modules['mixins/tree-series.js']], function (H, U, Tree, mixinTreeSeries) {
+    _registerModule(_modules, 'parts-gantt/TreeGrid.js', [_modules['parts/Globals.js'], _modules['mixins/tree-series.js'], _modules['parts/Tick.js'], _modules['parts-gantt/Tree.js'], _modules['parts/Utilities.js']], function (H, mixinTreeSeries, Tick, Tree, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -1914,21 +1923,23 @@
          *
          * */
         /* eslint no-console: 0 */
-        var defined = U.defined,
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            fireEvent = U.fireEvent,
             extend = U.extend,
             isNumber = U.isNumber,
             isString = U.isString,
+            merge = U.merge,
             pick = U.pick,
             wrap = U.wrap;
-        var addEvent = H.addEvent,
-            argsToArray = function (args) {
+        var argsToArray = function (args) {
                 return Array.prototype.slice.call(args, 1);
-        }, find = H.find, fireEvent = H.fireEvent, getLevelOptions = mixinTreeSeries.getLevelOptions, merge = H.merge, isBoolean = function (x) {
+        }, find = U.find, getLevelOptions = mixinTreeSeries.getLevelOptions, isBoolean = function (x) {
             return typeof x === 'boolean';
         }, isObject = function (x) {
             // Always use strict mode.
             return U.isObject(x, true);
-        }, GridAxis = H.Axis, GridAxisTick = H.Tick;
+        }, GridAxis = H.Axis, GridAxisTick = Tick;
         var override = function (obj,
             methods) {
                 var method,
@@ -2397,7 +2408,7 @@
                     // its dependency on axis.max.
                     if (e.type === 'beforeRender') {
                         removeFoundExtremesEvent =
-                            H.addEvent(axis, 'foundExtremes', function () {
+                            addEvent(axis, 'foundExtremes', function () {
                                 treeGrid.collapsedNodes.forEach(function (node) {
                                     var breaks = collapse(axis,
                                         node);
@@ -2695,14 +2706,14 @@
                     [label, tick.labelIcon].forEach(function (object) {
                         if (!object.attachedTreeGridEvents) {
                             // On hover
-                            H.addEvent(object.element, 'mouseover', function () {
+                            addEvent(object.element, 'mouseover', function () {
                                 onTickHover(label);
                             });
                             // On hover out
-                            H.addEvent(object.element, 'mouseout', function () {
+                            addEvent(object.element, 'mouseout', function () {
                                 onTickHoverExit(label, labelOptions);
                             });
-                            H.addEvent(object.element, 'click', function () {
+                            addEvent(object.element, 'click', function () {
                                 tick.toggleCollapse();
                             });
                             object.attachedTreeGridEvents = true;
@@ -3693,7 +3704,7 @@
             H.SVGRenderer.prototype.symbols['triangle-left-half'];
 
     });
-    _registerModule(_modules, 'parts-gantt/Pathfinder.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/PathfinderAlgorithms.js']], function (H, U, pathfinderAlgorithms) {
+    _registerModule(_modules, 'parts-gantt/Pathfinder.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/PathfinderAlgorithms.js']], function (H, Point, U, pathfinderAlgorithms) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -3726,14 +3737,16 @@
          *
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
-        var defined = U.defined,
+        ''; // detach doclets above
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            error = U.error,
             extend = U.extend,
+            merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
             splat = U.splat;
         var deg2rad = H.deg2rad,
-            addEvent = H.addEvent,
-            merge = H.merge,
             max = Math.max,
             min = Math.min;
         /*
@@ -4301,7 +4314,7 @@
                     algorithm = pathfinder.algorithms[options.type],
                     chartObstacles = pathfinder.chartObstacles;
                 if (typeof algorithm !== 'function') {
-                    H.error('"' + options.type + '" is not a Pathfinder algorithm.');
+                    error('"' + options.type + '" is not a Pathfinder algorithm.');
                     return;
                 }
                 // This function calculates obstacles on demand if they don't exist
@@ -4466,7 +4479,7 @@
                                 connects.forEach(function (connect) {
                                     to = chart.get(typeof connect === 'string' ?
                                         connect : connect.to);
-                                    if (to instanceof H.Point &&
+                                    if (to instanceof Point &&
                                         to.series.visible &&
                                         to.visible &&
                                         to.isInside !== false) {
@@ -4667,7 +4680,7 @@
         H.Connection = Connection;
         H.Pathfinder = Pathfinder;
         // Add pathfinding capabilities to Points
-        extend(H.Point.prototype, /** @lends Point.prototype */ {
+        extend(Point.prototype, /** @lends Point.prototype */ {
             /**
              * Get coordinates of anchor point for pathfinder connection.
              *
@@ -4832,7 +4845,7 @@
                     return acc || series.options && series.options.pathfinder;
                 }, false)) {
                 merge(true, (chart.options.connectors = chart.options.connectors || {}), chart.options.pathfinder);
-                H.error('WARNING: Pathfinder options have been renamed. ' +
+                error('WARNING: Pathfinder options have been renamed. ' +
                     'Use "chart.connectors" or "series.connectors" instead.');
             }
         }
@@ -4847,12 +4860,12 @@
         });
 
     });
-    _registerModule(_modules, 'modules/xrange.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/xrange.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
         /* *
          *
          *  X-range series module
          *
-         *  (c) 2010-2019 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2020 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
@@ -4867,21 +4880,20 @@
         * @type {number|undefined}
         * @requires modules/xrange
         */
-        var clamp = U.clamp,
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
             correctFloat = U.correctFloat,
             defined = U.defined,
+            find = U.find,
             isNumber = U.isNumber,
             isObject = U.isObject,
-            pick = U.pick;
-        var addEvent = H.addEvent,
-            color = H.color,
-            columnType = H.seriesTypes.column,
-            find = H.find,
-            merge = H.merge,
-            seriesType = H.seriesType,
+            merge = U.merge,
+            pick = U.pick,
+            seriesType = U.seriesType;
+        var columnType = H.seriesTypes.column,
             seriesTypes = H.seriesTypes,
             Axis = H.Axis,
-            Point = H.Point,
             Series = H.Series;
         /**
          * Return color of a point based on its category.
@@ -4936,7 +4948,7 @@
          *               edgeWidth, findNearestPointBy, getExtremesFromAll,
          *               negativeColor, pointInterval, pointIntervalUnit,
          *               pointPlacement, pointRange, pointStart, softThreshold,
-         *               stacking, threshold, data
+         *               stacking, threshold, data, dataSorting
          * @requires     modules/xrange
          * @optionparent plotOptions.xrange
          */
@@ -5134,7 +5146,8 @@
                     dlLeft,
                     dlRight,
                     dlWidth,
-                    clipRectWidth;
+                    clipRectWidth,
+                    tooltipYOffset;
                 if (minPointLength) {
                     widthDifference = minPointLength - length;
                     if (widthDifference < 0) {
@@ -5183,10 +5196,12 @@
                 var tooltipPos = point.tooltipPos;
                 var xIndex = !inverted ? 0 : 1;
                 var yIndex = !inverted ? 1 : 0;
+                tooltipYOffset = series.columnMetrics ?
+                    series.columnMetrics.offset : -metrics.width / 2;
                 // Limit position by the correct axis size (#9727)
                 tooltipPos[xIndex] = clamp(tooltipPos[xIndex] + ((!inverted ? 1 : -1) * (xAxis.reversed ? -1 : 1) *
                     (length / 2)), 0, xAxis.len - 1);
-                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((!inverted ? -1 : 1) * (metrics.width / 2)), 0, yAxis.len - 1);
+                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((inverted ? -1 : 1) * tooltipYOffset), 0, yAxis.len - 1);
                 // Add a partShapeArgs to the point, based on the shapeArgs property
                 partialFill = point.partialFill;
                 if (partialFill) {
@@ -5264,7 +5279,7 @@
                     animation = pick(series.chart.options.chart.animation,
                     stateOpts.animation),
                     fill;
-                if (!point.isNull) {
+                if (!point.isNull && point.visible !== false) {
                     // Original graphic
                     if (graphic) { // update
                         graphic.rect[verb](shapeArgs);
@@ -5481,7 +5496,7 @@
          * @excluding boostThreshold, crisp, cropThreshold, depth, edgeColor, edgeWidth,
          *            findNearestPointBy, getExtremesFromAll, negativeColor,
          *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
-         *            pointStart, softThreshold, stacking, threshold
+         *            pointStart, softThreshold, stacking, threshold, dataSorting
          * @product   highcharts highstock gantt
          * @requires  modules/xrange
          * @apioption series.xrange
@@ -5581,7 +5596,7 @@
     _registerModule(_modules, 'parts-gantt/GanttSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2016-2019 Highsoft AS
+         *  (c) 2016-2020 Highsoft AS
          *
          *  Author: Lars A. V. Cabrera
          *
@@ -5591,11 +5606,11 @@
          *
          * */
         var isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
+            seriesType = U.seriesType,
             splat = U.splat;
         var dateFormat = H.dateFormat,
-            merge = H.merge,
-            seriesType = H.seriesType,
             seriesTypes = H.seriesTypes,
             Series = H.Series,
             parent = seriesTypes.xrange;
@@ -5732,7 +5747,7 @@
                     cutOff = seriesOpts.stacking && !seriesOpts.borderRadius,
                     diamondShape;
                 if (point.options.milestone) {
-                    if (isNumber(plotY) && point.y !== null) {
+                    if (isNumber(plotY) && point.y !== null && point.visible !== false) {
                         diamondShape = renderer.symbols.diamond(shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height);
                         if (graphic) {
                             graphic[verb]({
@@ -5955,7 +5970,7 @@
     _registerModule(_modules, 'parts-gantt/GanttChart.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2016-2019 Highsoft AS
+         *  (c) 2016-2020 Highsoft AS
          *
          *  Author: Lars A. V. Cabrera
          *
@@ -5965,9 +5980,9 @@
          *
          * */
         var isArray = U.isArray,
+            merge = U.merge,
             splat = U.splat;
-        var merge = H.merge,
-            Chart = H.Chart;
+        var Chart = H.Chart;
         /**
          * Factory function for Gantt charts.
          *
@@ -6073,25 +6088,25 @@
     _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat,
+        var addEvent = U.addEvent,
+            correctFloat = U.correctFloat,
             defined = U.defined,
             destroyObjectProperties = U.destroyObjectProperties,
-            pick = U.pick;
-        var addEvent = H.addEvent,
-            Axis = H.Axis,
+            fireEvent = U.fireEvent,
+            merge = U.merge,
+            pick = U.pick,
+            removeEvent = U.removeEvent;
+        var Axis = H.Axis,
             defaultOptions = H.defaultOptions,
-            fireEvent = H.fireEvent,
             hasTouch = H.hasTouch,
             isTouchDevice = H.isTouchDevice,
-            merge = H.merge,
-            removeEvent = H.removeEvent,
             swapXY;
         /**
          *
@@ -6326,19 +6341,230 @@
          * @param {Highcharts.ScrollbarOptions} options
          * @param {Highcharts.Chart} chart
          */
-        function Scrollbar(renderer, options, chart) {
-            this.init(renderer, options, chart);
-        }
-        Scrollbar.prototype = {
+        var Scrollbar = /** @class */ (function () {
+                /* *
+                 *
+                 *  Constructors
+                 *
+                 * */
+                function Scrollbar(renderer, options, chart) {
+                    /* *
+                     *
+                     *  Properties
+                     *
+                     * */
+                    this._events = [];
+                this.chartX = 0;
+                this.chartY = 0;
+                this.from = 0;
+                this.group = void 0;
+                this.scrollbar = void 0;
+                this.scrollbarButtons = [];
+                this.scrollbarGroup = void 0;
+                this.scrollbarLeft = 0;
+                this.scrollbarRifles = void 0;
+                this.scrollbarStrokeWidth = 1;
+                this.scrollbarTop = 0;
+                this.size = 0;
+                this.to = 0;
+                this.track = void 0;
+                this.trackBorderWidth = 1;
+                this.userOptions = {};
+                this.x = 0;
+                this.y = 0;
+                this.chart = chart;
+                this.options = options;
+                this.renderer = chart.renderer;
+                this.init(renderer, options, chart);
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Set up the mouse and touch events for the Scrollbar
+             *
+             * @private
+             * @function Highcharts.Scrollbar#addEvents
+             * @return {void}
+             */
+            Scrollbar.prototype.addEvents = function () {
+                var buttonsOrder = this.options.inverted ? [1, 0] : [0, 1],
+                    buttons = this.scrollbarButtons,
+                    bar = this.scrollbarGroup.element,
+                    track = this.track.element,
+                    mouseDownHandler = this.mouseDownHandler.bind(this),
+                    mouseMoveHandler = this.mouseMoveHandler.bind(this),
+                    mouseUpHandler = this.mouseUpHandler.bind(this),
+                    _events;
+                // Mouse events
+                _events = [
+                    [buttons[buttonsOrder[0]].element, 'click', this.buttonToMinClick.bind(this)],
+                    [buttons[buttonsOrder[1]].element, 'click', this.buttonToMaxClick.bind(this)],
+                    [track, 'click', this.trackClick.bind(this)],
+                    [bar, 'mousedown', mouseDownHandler],
+                    [bar.ownerDocument, 'mousemove', mouseMoveHandler],
+                    [bar.ownerDocument, 'mouseup', mouseUpHandler]
+                ];
+                // Touch events
+                if (hasTouch) {
+                    _events.push([bar, 'touchstart', mouseDownHandler], [bar.ownerDocument, 'touchmove', mouseMoveHandler], [bar.ownerDocument, 'touchend', mouseUpHandler]);
+                }
+                // Add them all
+                _events.forEach(function (args) {
+                    addEvent.apply(null, args);
+                });
+                this._events = _events;
+            };
+            Scrollbar.prototype.buttonToMaxClick = function (e) {
+                var scroller = this;
+                var range = (scroller.to - scroller.from) * pick(scroller.options.step, 0.2);
+                scroller.updatePosition(scroller.from + range, scroller.to + range);
+                fireEvent(scroller, 'changed', {
+                    from: scroller.from,
+                    to: scroller.to,
+                    trigger: 'scrollbar',
+                    DOMEvent: e
+                });
+            };
+            Scrollbar.prototype.buttonToMinClick = function (e) {
+                var scroller = this;
+                var range = correctFloat(scroller.to - scroller.from) *
+                        pick(scroller.options.step, 0.2);
+                scroller.updatePosition(correctFloat(scroller.from - range), correctFloat(scroller.to - range));
+                fireEvent(scroller, 'changed', {
+                    from: scroller.from,
+                    to: scroller.to,
+                    trigger: 'scrollbar',
+                    DOMEvent: e
+                });
+            };
+            /**
+             * Get normalized (0-1) cursor position over the scrollbar
+             *
+             * @private
+             * @function Highcharts.Scrollbar#cursorToScrollbarPosition
+             *
+             * @param  {*} normalizedEvent
+             *         normalized event, with chartX and chartY values
+             *
+             * @return {Highcharts.Dictionary<number>}
+             *         Local position {chartX, chartY}
+             */
+            Scrollbar.prototype.cursorToScrollbarPosition = function (normalizedEvent) {
+                var scroller = this,
+                    options = scroller.options,
+                    minWidthDifference = options.minWidth > scroller.calculatedWidth ?
+                        options.minWidth :
+                        0; // minWidth distorts translation
+                    return {
+                        chartX: (normalizedEvent.chartX - scroller.x -
+                            scroller.xOffset) /
+                            (scroller.barWidth - minWidthDifference),
+                        chartY: (normalizedEvent.chartY - scroller.y -
+                            scroller.yOffset) /
+                            (scroller.barWidth - minWidthDifference)
+                    };
+            };
+            /**
+             * Destroys allocated elements.
+             *
+             * @private
+             * @function Highcharts.Scrollbar#destroy
+             * @return {void}
+             */
+            Scrollbar.prototype.destroy = function () {
+                var scroller = this.chart.scroller;
+                // Disconnect events added in addEvents
+                this.removeEvents();
+                // Destroy properties
+                [
+                    'track',
+                    'scrollbarRifles',
+                    'scrollbar',
+                    'scrollbarGroup',
+                    'group'
+                ].forEach(function (prop) {
+                    if (this[prop] && this[prop].destroy) {
+                        this[prop] = this[prop].destroy();
+                    }
+                }, this);
+                // #6421, chart may have more scrollbars
+                if (scroller && this === scroller.scrollbar) {
+                    scroller.scrollbar = null;
+                    // Destroy elements in collection
+                    destroyObjectProperties(scroller.scrollbarButtons);
+                }
+            };
+            /**
+             * Draw the scrollbar buttons with arrows
+             *
+             * @private
+             * @function Highcharts.Scrollbar#drawScrollbarButton
+             * @param {number} index
+             *        0 is left, 1 is right
+             * @return {void}
+             */
+            Scrollbar.prototype.drawScrollbarButton = function (index) {
+                var scroller = this,
+                    renderer = scroller.renderer,
+                    scrollbarButtons = scroller.scrollbarButtons,
+                    options = scroller.options,
+                    size = scroller.size,
+                    group,
+                    tempElem;
+                group = renderer.g().add(scroller.group);
+                scrollbarButtons.push(group);
+                // Create a rectangle for the scrollbar button
+                tempElem = renderer.rect()
+                    .addClass('highcharts-scrollbar-button')
+                    .add(group);
+                // Presentational attributes
+                if (!this.chart.styledMode) {
+                    tempElem.attr({
+                        stroke: options.buttonBorderColor,
+                        'stroke-width': options.buttonBorderWidth,
+                        fill: options.buttonBackgroundColor
+                    });
+                }
+                // Place the rectangle based on the rendered stroke width
+                tempElem.attr(tempElem.crisp({
+                    x: -0.5,
+                    y: -0.5,
+                    width: size + 1,
+                    height: size + 1,
+                    r: options.buttonBorderRadius
+                }, tempElem.strokeWidth()));
+                // Button arrow
+                tempElem = renderer
+                    .path(swapXY([
+                    'M',
+                    size / 2 + (index ? -1 : 1),
+                    size / 2 - 3,
+                    'L',
+                    size / 2 + (index ? -1 : 1),
+                    size / 2 + 3,
+                    'L',
+                    size / 2 + (index ? 2 : -2),
+                    size / 2
+                ], options.vertical))
+                    .addClass('highcharts-scrollbar-arrow')
+                    .add(scrollbarButtons[index]);
+                if (!this.chart.styledMode) {
+                    tempElem.attr({
+                        fill: options.buttonArrowColor
+                    });
+                }
+            };
             /**
              * @private
              * @function Highcharts.Scrollbar#init
              * @param {Highcharts.SVGRenderer} renderer
              * @param {Highcharts.ScrollbarOptions} options
              * @param {Highcharts.Chart} chart
-             * @return {void}
              */
-            init: function (renderer, options, chart) {
+            Scrollbar.prototype.init = function (renderer, options, chart) {
                 this.scrollbarButtons = [];
                 this.renderer = renderer;
                 this.userOptions = options;
@@ -6349,17 +6575,151 @@
                 // Init
                 if (options.enabled) {
                     this.render();
-                    this.initEvents();
                     this.addEvents();
                 }
-            },
+            };
+            Scrollbar.prototype.mouseDownHandler = function (e) {
+                var scroller = this;
+                var normalizedEvent = scroller.chart.pointer.normalize(e),
+                    mousePosition = scroller.cursorToScrollbarPosition(normalizedEvent);
+                scroller.chartX = mousePosition.chartX;
+                scroller.chartY = mousePosition.chartY;
+                scroller.initPositions = [scroller.from, scroller.to];
+                scroller.grabbedCenter = true;
+            };
+            /**
+             * Event handler for the mouse move event.
+             * @private
+             */
+            Scrollbar.prototype.mouseMoveHandler = function (e) {
+                var scroller = this;
+                var normalizedEvent = scroller.chart.pointer.normalize(e),
+                    options = scroller.options,
+                    direction = options.vertical ? 'chartY' : 'chartX',
+                    initPositions = scroller.initPositions || [],
+                    scrollPosition,
+                    chartPosition,
+                    change;
+                // In iOS, a mousemove event with e.pageX === 0 is fired when
+                // holding the finger down in the center of the scrollbar. This
+                // should be ignored.
+                if (scroller.grabbedCenter &&
+                    // #4696, scrollbar failed on Android
+                    (!e.touches || e.touches[0][direction] !== 0)) {
+                    chartPosition = scroller.cursorToScrollbarPosition(normalizedEvent)[direction];
+                    scrollPosition = scroller[direction];
+                    change = chartPosition - scrollPosition;
+                    scroller.hasDragged = true;
+                    scroller.updatePosition(initPositions[0] + change, initPositions[1] + change);
+                    if (scroller.hasDragged) {
+                        fireEvent(scroller, 'changed', {
+                            from: scroller.from,
+                            to: scroller.to,
+                            trigger: 'scrollbar',
+                            DOMType: e.type,
+                            DOMEvent: e
+                        });
+                    }
+                }
+            };
+            /**
+             * Event handler for the mouse up event.
+             * @private
+             */
+            Scrollbar.prototype.mouseUpHandler = function (e) {
+                var scroller = this;
+                if (scroller.hasDragged) {
+                    fireEvent(scroller, 'changed', {
+                        from: scroller.from,
+                        to: scroller.to,
+                        trigger: 'scrollbar',
+                        DOMType: e.type,
+                        DOMEvent: e
+                    });
+                }
+                scroller.grabbedCenter =
+                    scroller.hasDragged =
+                        scroller.chartX =
+                            scroller.chartY = null;
+            };
+            /**
+             * Position the scrollbar, method called from a parent with defined
+             * dimensions.
+             *
+             * @private
+             * @function Highcharts.Scrollbar#position
+             * @param {number} x
+             *        x-position on the chart
+             * @param {number} y
+             *        y-position on the chart
+             * @param {number} width
+             *        width of the scrollbar
+             * @param {number} height
+             *        height of the scorllbar
+             * @return {void}
+             */
+            Scrollbar.prototype.position = function (x, y, width, height) {
+                var scroller = this,
+                    options = scroller.options,
+                    vertical = options.vertical,
+                    xOffset = height,
+                    yOffset = 0,
+                    method = scroller.rendered ? 'animate' : 'attr';
+                scroller.x = x;
+                scroller.y = y + this.trackBorderWidth;
+                scroller.width = width; // width with buttons
+                scroller.height = height;
+                scroller.xOffset = xOffset;
+                scroller.yOffset = yOffset;
+                // If Scrollbar is a vertical type, swap options:
+                if (vertical) {
+                    scroller.width = scroller.yOffset = width = yOffset = scroller.size;
+                    scroller.xOffset = xOffset = 0;
+                    scroller.barWidth = height - width * 2; // width without buttons
+                    scroller.x = x = x + scroller.options.margin;
+                }
+                else {
+                    scroller.height = scroller.xOffset = height = xOffset =
+                        scroller.size;
+                    scroller.barWidth = width - height * 2; // width without buttons
+                    scroller.y = scroller.y + scroller.options.margin;
+                }
+                // Set general position for a group:
+                scroller.group[method]({
+                    translateX: x,
+                    translateY: scroller.y
+                });
+                // Resize background/track:
+                scroller.track[method]({
+                    width: width,
+                    height: height
+                });
+                // Move right/bottom button ot it's place:
+                scroller.scrollbarButtons[1][method]({
+                    translateX: vertical ? 0 : width - xOffset,
+                    translateY: vertical ? height - yOffset : 0
+                });
+            };
+            /**
+             * Removes the event handlers attached previously with addEvents.
+             *
+             * @private
+             * @function Highcharts.Scrollbar#removeEvents
+             * @return {void}
+             */
+            Scrollbar.prototype.removeEvents = function () {
+                this._events.forEach(function (args) {
+                    removeEvent.apply(null, args);
+                });
+                this._events.length = 0;
+            };
             /**
              * Render scrollbar with all required items.
              *
              * @private
              * @function Highcharts.Scrollbar#render
              */
-            render: function () {
+            Scrollbar.prototype.render = function () {
                 var scroller = this,
                     renderer = scroller.renderer,
                     options = scroller.options,
@@ -6433,125 +6793,7 @@
                 // Draw the buttons:
                 scroller.drawScrollbarButton(0);
                 scroller.drawScrollbarButton(1);
-            },
-            /**
-             * Position the scrollbar, method called from a parent with defined
-             * dimensions.
-             *
-             * @private
-             * @function Highcharts.Scrollbar#position
-             * @param {number} x
-             *        x-position on the chart
-             * @param {number} y
-             *        y-position on the chart
-             * @param {number} width
-             *        width of the scrollbar
-             * @param {number} height
-             *        height of the scorllbar
-             * @return {void}
-             */
-            position: function (x, y, width, height) {
-                var scroller = this,
-                    options = scroller.options,
-                    vertical = options.vertical,
-                    xOffset = height,
-                    yOffset = 0,
-                    method = scroller.rendered ? 'animate' : 'attr';
-                scroller.x = x;
-                scroller.y = y + this.trackBorderWidth;
-                scroller.width = width; // width with buttons
-                scroller.height = height;
-                scroller.xOffset = xOffset;
-                scroller.yOffset = yOffset;
-                // If Scrollbar is a vertical type, swap options:
-                if (vertical) {
-                    scroller.width = scroller.yOffset = width = yOffset = scroller.size;
-                    scroller.xOffset = xOffset = 0;
-                    scroller.barWidth = height - width * 2; // width without buttons
-                    scroller.x = x = x + scroller.options.margin;
-                }
-                else {
-                    scroller.height = scroller.xOffset = height = xOffset =
-                        scroller.size;
-                    scroller.barWidth = width - height * 2; // width without buttons
-                    scroller.y = scroller.y + scroller.options.margin;
-                }
-                // Set general position for a group:
-                scroller.group[method]({
-                    translateX: x,
-                    translateY: scroller.y
-                });
-                // Resize background/track:
-                scroller.track[method]({
-                    width: width,
-                    height: height
-                });
-                // Move right/bottom button ot it's place:
-                scroller.scrollbarButtons[1][method]({
-                    translateX: vertical ? 0 : width - xOffset,
-                    translateY: vertical ? height - yOffset : 0
-                });
-            },
-            /**
-             * Draw the scrollbar buttons with arrows
-             *
-             * @private
-             * @function Highcharts.Scrollbar#drawScrollbarButton
-             * @param {number} index
-             *        0 is left, 1 is right
-             * @return {void}
-             */
-            drawScrollbarButton: function (index) {
-                var scroller = this,
-                    renderer = scroller.renderer,
-                    scrollbarButtons = scroller.scrollbarButtons,
-                    options = scroller.options,
-                    size = scroller.size,
-                    group,
-                    tempElem;
-                group = renderer.g().add(scroller.group);
-                scrollbarButtons.push(group);
-                // Create a rectangle for the scrollbar button
-                tempElem = renderer.rect()
-                    .addClass('highcharts-scrollbar-button')
-                    .add(group);
-                // Presentational attributes
-                if (!this.chart.styledMode) {
-                    tempElem.attr({
-                        stroke: options.buttonBorderColor,
-                        'stroke-width': options.buttonBorderWidth,
-                        fill: options.buttonBackgroundColor
-                    });
-                }
-                // Place the rectangle based on the rendered stroke width
-                tempElem.attr(tempElem.crisp({
-                    x: -0.5,
-                    y: -0.5,
-                    width: size + 1,
-                    height: size + 1,
-                    r: options.buttonBorderRadius
-                }, tempElem.strokeWidth()));
-                // Button arrow
-                tempElem = renderer
-                    .path(swapXY([
-                    'M',
-                    size / 2 + (index ? -1 : 1),
-                    size / 2 - 3,
-                    'L',
-                    size / 2 + (index ? -1 : 1),
-                    size / 2 + 3,
-                    'L',
-                    size / 2 + (index ? 2 : -2),
-                    size / 2
-                ], options.vertical))
-                    .addClass('highcharts-scrollbar-arrow')
-                    .add(scrollbarButtons[index]);
-                if (!this.chart.styledMode) {
-                    tempElem.attr({
-                        fill: options.buttonArrowColor
-                    });
-                }
-            },
+            };
             /**
              * Set scrollbar size, with a given scale.
              *
@@ -6563,7 +6805,7 @@
              *        scale (0-1) where bar should end
              * @return {void}
              */
-            setRange: function (from, to) {
+            Scrollbar.prototype.setRange = function (from, to) {
                 var scroller = this,
                     options = scroller.options,
                     vertical = options.vertical,
@@ -6636,148 +6878,41 @@
                     }
                 }
                 scroller.rendered = true;
-            },
-            /**
-             * Init events methods, so we have an access to the Scrollbar itself
-             *
-             * @private
-             * @function Highcharts.Scrollbar#initEvents
-             * @return {void}
-             * @fires Highcharts.Scrollbar#event:changed
-             */
-            initEvents: function () {
+            };
+            Scrollbar.prototype.trackClick = function (e) {
                 var scroller = this;
-                /**
-                 * Event handler for the mouse move event.
-                 * @private
-                 */
-                scroller.mouseMoveHandler = function (e) {
-                    var normalizedEvent = scroller.chart.pointer.normalize(e),
-                        options = scroller.options,
-                        direction = options.vertical ? 'chartY' : 'chartX',
-                        initPositions = scroller.initPositions,
-                        scrollPosition,
-                        chartPosition,
-                        change;
-                    // In iOS, a mousemove event with e.pageX === 0 is fired when
-                    // holding the finger down in the center of the scrollbar. This
-                    // should be ignored.
-                    if (scroller.grabbedCenter &&
-                        // #4696, scrollbar failed on Android
-                        (!e.touches || e.touches[0][direction] !== 0)) {
-                        chartPosition = scroller.cursorToScrollbarPosition(normalizedEvent)[direction];
-                        scrollPosition = scroller[direction];
-                        change = chartPosition - scrollPosition;
-                        scroller.hasDragged = true;
-                        scroller.updatePosition(initPositions[0] + change, initPositions[1] + change);
-                        if (scroller.hasDragged) {
-                            fireEvent(scroller, 'changed', {
-                                from: scroller.from,
-                                to: scroller.to,
-                                trigger: 'scrollbar',
-                                DOMType: e.type,
-                                DOMEvent: e
-                            });
-                        }
-                    }
-                };
-                /**
-                 * Event handler for the mouse up event.
-                 * @private
-                 */
-                scroller.mouseUpHandler = function (e) {
-                    if (scroller.hasDragged) {
-                        fireEvent(scroller, 'changed', {
-                            from: scroller.from,
-                            to: scroller.to,
-                            trigger: 'scrollbar',
-                            DOMType: e.type,
-                            DOMEvent: e
-                        });
-                    }
-                    scroller.grabbedCenter =
-                        scroller.hasDragged =
-                            scroller.chartX =
-                                scroller.chartY = null;
-                };
-                scroller.mouseDownHandler = function (e) {
-                    var normalizedEvent = scroller.chart.pointer.normalize(e),
-                        mousePosition = scroller.cursorToScrollbarPosition(normalizedEvent);
-                    scroller.chartX = mousePosition.chartX;
-                    scroller.chartY = mousePosition.chartY;
-                    scroller.initPositions = [scroller.from, scroller.to];
-                    scroller.grabbedCenter = true;
-                };
-                scroller.buttonToMinClick = function (e) {
-                    var range = correctFloat(scroller.to - scroller.from) *
-                            scroller.options.step;
-                    scroller.updatePosition(correctFloat(scroller.from - range), correctFloat(scroller.to - range));
-                    fireEvent(scroller, 'changed', {
-                        from: scroller.from,
-                        to: scroller.to,
-                        trigger: 'scrollbar',
-                        DOMEvent: e
-                    });
-                };
-                scroller.buttonToMaxClick = function (e) {
-                    var range = (scroller.to - scroller.from) * scroller.options.step;
+                var normalizedEvent = scroller.chart.pointer.normalize(e),
+                    range = scroller.to - scroller.from,
+                    top = scroller.y + scroller.scrollbarTop,
+                    left = scroller.x + scroller.scrollbarLeft;
+                if ((scroller.options.vertical && normalizedEvent.chartY > top) ||
+                    (!scroller.options.vertical && normalizedEvent.chartX > left)) {
+                    // On the top or on the left side of the track:
                     scroller.updatePosition(scroller.from + range, scroller.to + range);
-                    fireEvent(scroller, 'changed', {
-                        from: scroller.from,
-                        to: scroller.to,
-                        trigger: 'scrollbar',
-                        DOMEvent: e
-                    });
-                };
-                scroller.trackClick = function (e) {
-                    var normalizedEvent = scroller.chart.pointer.normalize(e),
-                        range = scroller.to - scroller.from,
-                        top = scroller.y + scroller.scrollbarTop,
-                        left = scroller.x + scroller.scrollbarLeft;
-                    if ((scroller.options.vertical && normalizedEvent.chartY > top) ||
-                        (!scroller.options.vertical && normalizedEvent.chartX > left)) {
-                        // On the top or on the left side of the track:
-                        scroller.updatePosition(scroller.from + range, scroller.to + range);
-                    }
-                    else {
-                        // On the bottom or the right side of the track:
-                        scroller.updatePosition(scroller.from - range, scroller.to - range);
-                    }
-                    fireEvent(scroller, 'changed', {
-                        from: scroller.from,
-                        to: scroller.to,
-                        trigger: 'scrollbar',
-                        DOMEvent: e
-                    });
-                };
-            },
+                }
+                else {
+                    // On the bottom or the right side of the track:
+                    scroller.updatePosition(scroller.from - range, scroller.to - range);
+                }
+                fireEvent(scroller, 'changed', {
+                    from: scroller.from,
+                    to: scroller.to,
+                    trigger: 'scrollbar',
+                    DOMEvent: e
+                });
+            };
             /**
-             * Get normalized (0-1) cursor position over the scrollbar
+             * Update the scrollbar with new options
              *
              * @private
-             * @function Highcharts.Scrollbar#cursorToScrollbarPosition
-             *
-             * @param  {*} normalizedEvent
-             *         normalized event, with chartX and chartY values
-             *
-             * @return {Highcharts.Dictionary<number>}
-             *         Local position {chartX, chartY}
+             * @function Highcharts.Scrollbar#update
+             * @param  {Highcharts.ScrollbarOptions} options
+             * @return {void}
              */
-            cursorToScrollbarPosition: function (normalizedEvent) {
-                var scroller = this,
-                    options = scroller.options,
-                    minWidthDifference = options.minWidth > scroller.calculatedWidth ?
-                        options.minWidth :
-                        0; // minWidth distorts translation
-                    return {
-                        chartX: (normalizedEvent.chartX - scroller.x -
-                            scroller.xOffset) /
-                            (scroller.barWidth - minWidthDifference),
-                        chartY: (normalizedEvent.chartY - scroller.y -
-                            scroller.yOffset) /
-                            (scroller.barWidth - minWidthDifference)
-                    };
-            },
+            Scrollbar.prototype.update = function (options) {
+                this.destroy();
+                this.init(this.chart.renderer, merge(true, this.options, options), this.chart);
+            };
             /**
              * Update position option in the Scrollbar, with normalized 0-1 scale
              *
@@ -6787,7 +6922,7 @@
              * @param  {number} to
              * @return {void}
              */
-            updatePosition: function (from, to) {
+            Scrollbar.prototype.updatePosition = function (from, to) {
                 if (to > 1) {
                     from = correctFloat(1 - correctFloat(to - from));
                     to = 1;
@@ -6798,98 +6933,9 @@
                 }
                 this.from = from;
                 this.to = to;
-            },
-            /**
-             * Update the scrollbar with new options
-             *
-             * @private
-             * @function Highcharts.Scrollbar#update
-             * @param  {Highcharts.ScrollbarOptions} options
-             * @return {void}
-             */
-            update: function (options) {
-                this.destroy();
-                this.init(this.chart.renderer, merge(true, this.options, options), this.chart);
-            },
-            /**
-             * Set up the mouse and touch events for the Scrollbar
-             *
-             * @private
-             * @function Highcharts.Scrollbar#addEvents
-             * @return {void}
-             */
-            addEvents: function () {
-                var buttonsOrder = this.options.inverted ? [1, 0] : [0, 1],
-                    buttons = this.scrollbarButtons,
-                    bar = this.scrollbarGroup.element,
-                    track = this.track.element,
-                    mouseDownHandler = this.mouseDownHandler,
-                    mouseMoveHandler = this.mouseMoveHandler,
-                    mouseUpHandler = this.mouseUpHandler,
-                    _events;
-                // Mouse events
-                _events = [
-                    [buttons[buttonsOrder[0]].element, 'click', this.buttonToMinClick],
-                    [buttons[buttonsOrder[1]].element, 'click', this.buttonToMaxClick],
-                    [track, 'click', this.trackClick],
-                    [bar, 'mousedown', mouseDownHandler],
-                    [bar.ownerDocument, 'mousemove', mouseMoveHandler],
-                    [bar.ownerDocument, 'mouseup', mouseUpHandler]
-                ];
-                // Touch events
-                if (hasTouch) {
-                    _events.push([bar, 'touchstart', mouseDownHandler], [bar.ownerDocument, 'touchmove', mouseMoveHandler], [bar.ownerDocument, 'touchend', mouseUpHandler]);
-                }
-                // Add them all
-                _events.forEach(function (args) {
-                    addEvent.apply(null, args);
-                });
-                this._events = _events;
-            },
-            /**
-             * Removes the event handlers attached previously with addEvents.
-             *
-             * @private
-             * @function Highcharts.Scrollbar#removeEvents
-             * @return {void}
-             */
-            removeEvents: function () {
-                this._events.forEach(function (args) {
-                    removeEvent.apply(null, args);
-                });
-                this._events.length = 0;
-            },
-            /**
-             * Destroys allocated elements.
-             *
-             * @private
-             * @function Highcharts.Scrollbar#destroy
-             * @return {void}
-             */
-            destroy: function () {
-                var scroller = this.chart.scroller;
-                // Disconnect events added in addEvents
-                this.removeEvents();
-                // Destroy properties
-                [
-                    'track',
-                    'scrollbarRifles',
-                    'scrollbar',
-                    'scrollbarGroup',
-                    'group'
-                ].forEach(function (prop) {
-                    if (this[prop] && this[prop].destroy) {
-                        this[prop] = this[prop].destroy();
-                    }
-                }, this);
-                // #6421, chart may have more scrollbars
-                if (scroller && this === scroller.scrollbar) {
-                    scroller.scrollbar = null;
-                    // Destroy elements in collection
-                    destroyObjectProperties(scroller.scrollbarButtons);
-                }
-            }
-        };
+            };
+            return Scrollbar;
+        }());
         if (!H.Scrollbar) {
             /* *
              * Wrap axis initialization and create scrollbar if enabled:
@@ -6942,8 +6988,8 @@
                 }
             });
             /* *
-            * Wrap rendering axis, and update scrollbar if one is created:
-            */
+             * Wrap rendering axis, and update scrollbar if one is created:
+             */
             addEvent(Axis, 'afterRender', function () {
                 var axis = this,
                     scrollMin = Math.min(pick(axis.options.min,
@@ -7037,11 +7083,12 @@
             H.Scrollbar = Scrollbar;
         }
 
+        return H.Scrollbar;
     });
     _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -7076,23 +7123,23 @@
          * @return {number}
          *         Parsed JavaScript time value.
          */
-        var defined = U.defined,
+        var addEvent = U.addEvent,
+            createElement = U.createElement,
+            css = U.css,
+            defined = U.defined,
             destroyObjectProperties = U.destroyObjectProperties,
             discardElement = U.discardElement,
             extend = U.extend,
+            fireEvent = U.fireEvent,
             isNumber = U.isNumber,
+            merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
             pInt = U.pInt,
             splat = U.splat;
-        var addEvent = H.addEvent,
-            Axis = H.Axis,
+        var Axis = H.Axis,
             Chart = H.Chart,
-            css = H.css,
-            createElement = H.createElement,
-            defaultOptions = H.defaultOptions,
-            fireEvent = H.fireEvent,
-            merge = H.merge;
+            defaultOptions = H.defaultOptions;
         /* ************************************************************************** *
          * Start Range Selector code                                                  *
          * ************************************************************************** */
@@ -8249,7 +8296,7 @@
                     legendOptions = legend && legend.options,
                     buttonPositionY = buttonPosition.y,
                     inputPositionY = inputPosition.y,
-                    animate = rendered || false,
+                    animate = chart.hasLoaded,
                     verb = animate ? 'animate' : 'attr',
                     exportingX = 0,
                     alignTranslateY,
@@ -8602,10 +8649,6 @@
         Axis.prototype.minFromRange = function () {
             var rangeOptions = this.range,
                 type = rangeOptions.type,
-                timeName = {
-                    month: 'Month',
-                    year: 'FullYear'
-                }[type],
                 min,
                 max = this.max,
                 dataMin,
@@ -8614,9 +8657,10 @@
                 // Get the true range from a start date
                 getTrueRange = function (base,
                 count) {
-                    var date = new time.Date(base),
-                basePeriod = time.get(timeName,
-                date);
+                    var timeName = type === 'year' ? 'FullYear' : 'Month';
+                var date = new time.Date(base);
+                var basePeriod = time.get(timeName,
+                    date);
                 time.set(timeName, date, basePeriod + count);
                 if (basePeriod === time.get(timeName, date)) {
                     time.set('Date', date, 0); // #6537
@@ -8782,36 +8826,36 @@
         }
 
     });
-    _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Scrollbar.js'], _modules['parts/Utilities.js']], function (H, Color, Scrollbar, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var clamp = U.clamp,
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
             correctFloat = U.correctFloat,
             defined = U.defined,
             destroyObjectProperties = U.destroyObjectProperties,
             erase = U.erase,
             extend = U.extend,
+            find = U.find,
             isArray = U.isArray,
             isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
+            removeEvent = U.removeEvent,
             splat = U.splat;
-        var addEvent = H.addEvent,
-            Axis = H.Axis,
+        var Axis = H.Axis,
             Chart = H.Chart,
-            color = H.color,
             defaultOptions = H.defaultOptions,
             hasTouch = H.hasTouch,
             isTouchDevice = H.isTouchDevice,
-            merge = H.merge,
-            removeEvent = H.removeEvent,
-            Scrollbar = H.Scrollbar,
             Series = H.Series,
             seriesTypes = H.seriesTypes,
             defaultSeriesType, 
@@ -10067,11 +10111,16 @@
                     chart = navigator.chart,
                     xAxis = navigator.xAxis,
                     scrollbar = navigator.scrollbar,
+                    DOMEvent = e.DOMEvent || e,
+                    inverted = chart.inverted,
+                    verb = navigator.rendered && !navigator.hasDragged ?
+                        'animate' : 'attr',
+                    zoomedMax = Math.round(navigator.zoomedMax),
+                    zoomedMin = Math.round(navigator.zoomedMin),
                     unionExtremes,
                     fixedMin,
                     fixedMax,
-                    ext,
-                    DOMEvent = e.DOMEvent || e;
+                    ext;
                 if (
                 // MouseUp is called for both, navigator and scrollbar (that order),
                 // which causes calling afterSetExtremes twice. Prevent first call
@@ -10116,6 +10165,21 @@
                         navigator.grabbedCenter = navigator.fixedWidth =
                             navigator.fixedExtreme = navigator.otherHandlePos =
                                 navigator.hasDragged = navigator.dragOffset = null;
+                }
+                // Update position of navigator shades, outline and handles (#12573)
+                if (navigator.navigatorEnabled) {
+                    if (navigator.shades) {
+                        navigator.drawMasks(zoomedMin, zoomedMax, inverted, verb);
+                    }
+                    if (navigator.outline) {
+                        navigator.drawOutline(zoomedMin, zoomedMax, inverted, verb);
+                    }
+                    if (navigator.navigatorOptions.handles.enabled &&
+                        Object.keys(navigator.handles).length ===
+                            navigator.handles.length) {
+                        navigator.drawHandle(zoomedMin, 0, inverted, verb);
+                        navigator.drawHandle(zoomedMax, 1, inverted, verb);
+                    }
                 }
             },
             /**
@@ -10343,7 +10407,7 @@
                     chart.options && chart.options.navigator.baseSeries ||
                     (chart.series.length ?
                         // Find the first non-navigator series (#8430)
-                        H.find(chart.series, function (s) {
+                        find(chart.series, function (s) {
                             return !s.options.isInternal;
                         }).index :
                         0));

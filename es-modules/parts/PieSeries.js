@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2019 Torstein Honsi
+ *  (c) 2010-2020 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,15 +9,15 @@
  * */
 'use strict';
 import H from './Globals.js';
+import LegendSymbolMixin from '../mixins/legend-symbol.js';
+import Point from './Point.js';
 import U from './Utilities.js';
-var clamp = U.clamp, defined = U.defined, isNumber = U.isNumber, pick = U.pick, relativeLength = U.relativeLength, setAnimation = U.setAnimation;
+var addEvent = U.addEvent, clamp = U.clamp, defined = U.defined, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength, seriesType = U.seriesType, setAnimation = U.setAnimation;
 import './ColumnSeries.js';
 import '../mixins/centered-series.js';
-import './Legend.js';
 import './Options.js';
-import './Point.js';
 import './Series.js';
-var addEvent = H.addEvent, CenteredSeriesMixin = H.CenteredSeriesMixin, getStartAndEndRadians = CenteredSeriesMixin.getStartAndEndRadians, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, Point = H.Point, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes, fireEvent = H.fireEvent;
+var CenteredSeriesMixin = H.CenteredSeriesMixin, getStartAndEndRadians = CenteredSeriesMixin.getStartAndEndRadians, noop = H.noop, Series = H.Series, seriesTypes = H.seriesTypes;
 /**
  * Pie series type.
  *
@@ -41,7 +41,7 @@ seriesType('pie', 'line',
  *               findNearestPointBy, getExtremesFromAll, label, lineWidth,
  *               marker, negativeColor, pointInterval, pointIntervalUnit,
  *               pointPlacement, pointStart, softThreshold, stacking, step,
- *               threshold, turboThreshold, zoneAxis, zones
+ *               threshold, turboThreshold, zoneAxis, zones, dataSorting
  * @product      highcharts
  * @optionparent plotOptions.pie
  */
@@ -274,6 +274,7 @@ seriesType('pie', 'line',
          * @sample {highcharts} highcharts/plotoptions/pie-datalabels-distance/
          *         Data labels on top of the pie
          *
+         * @type    {number|string}
          * @since   2.1
          * @product highcharts
          */
@@ -297,9 +298,9 @@ seriesType('pie', 'line',
          */
         softConnector: true,
         /**
-         * @sample {highcharts} highcharts/plotOptions/pie-datalabels-overflow
+         * @sample {highcharts} highcharts/plotoptions/pie-datalabels-overflow
          *         Long labels truncated with an ellipsis
-         * @sample {highcharts} highcharts/plotOptions/pie-datalabels-overflow-wrap
+         * @sample {highcharts} highcharts/plotoptions/pie-datalabels-overflow-wrap
          *         Long labels are wrapped
          *
          * @type      {Highcharts.CSSObject}
@@ -793,7 +794,7 @@ seriesType('pie', 'line',
                 fill: options.fillColor || 'none',
                 stroke: options.color ||
                     '#cccccc'
-            });
+            }, this.options.animation);
         }
         else if (this.graph) { // Destroy the graph object.
             this.graph = this.graph.destroy();
@@ -877,6 +878,11 @@ seriesType('pie', 'line',
     drawPoints: function () {
         var renderer = this.chart.renderer;
         this.points.forEach(function (point) {
+            // When updating a series between 2d and 3d or cartesian and
+            // polar, the shape type changes.
+            if (point.graphic && point.hasNewShapeType()) {
+                point.graphic = point.graphic.destroy();
+            }
             if (!point.graphic) {
                 point.graphic = renderer[point.shapeType](point.shapeArgs)
                     .add(point.series.group);
@@ -1175,7 +1181,7 @@ seriesType('pie', 'line',
  * it is inherited from [chart.type](#chart.type).
  *
  * @extends   series,plotOptions.pie
- * @excluding dataParser, dataURL, stack, xAxis, yAxis
+ * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting, step
  * @product   highcharts
  * @apioption series.pie
  */

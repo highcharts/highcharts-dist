@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2009-2019 Øystein Moseng
+ *  (c) 2009-2020 Øystein Moseng
  *
  *  Handle keyboard navigation for series.
  *
@@ -11,6 +11,7 @@
  * */
 'use strict';
 import H from '../../../../parts/Globals.js';
+import Point from '../../../../parts/Point.js';
 import U from '../../../../parts/Utilities.js';
 var extend = U.extend, defined = U.defined;
 import KeyboardNavigationHandler from '../../KeyboardNavigationHandler.js';
@@ -141,7 +142,7 @@ function getClosestPoint(point, series, xWeight, yWeight) {
  * @return {Highcharts.Point}
  *         This highlighted point.
  */
-H.Point.prototype.highlight = function () {
+Point.prototype.highlight = function () {
     var chart = this.series.chart;
     if (!this.isNull) {
         this.onMouseOver(); // Show the hover marker and tooltip
@@ -322,7 +323,7 @@ H.Chart.prototype.highlightAdjacentPointVertical = function (down) {
             var yDistance = point.plotY - curPoint.plotY, width = Math.abs(point.plotX - curPoint.plotX), distance = Math.abs(yDistance) * Math.abs(yDistance) +
                 width * width * 4; // Weigh horizontal distance highly
             // Reverse distance number if axis is reversed
-            if (series.yAxis.reversed) {
+            if (series.yAxis && series.yAxis.reversed) {
                 yDistance *= -1;
             }
             if (yDistance <= 0 && down || yDistance >= 0 && !down || // Chk dir
@@ -519,10 +520,14 @@ extend(SeriesKeyboardNavigation.prototype, /** @lends Highcharts.SeriesKeyboardN
      */
     onHandlerTerminate: function () {
         var chart = this.chart;
+        var curPoint = chart.highlightedPoint;
         if (chart.tooltip) {
             chart.tooltip.hide(0);
         }
-        delete chart.highlightedPoint;
+        if (curPoint) {
+            curPoint.onMouseOut();
+            delete chart.highlightedPoint;
+        }
     },
     /**
      * Function that attempts to highlight next/prev point. Handles wrap around.

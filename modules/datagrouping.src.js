@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Data grouping module
  *
@@ -28,10 +28,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (H, Point, Tooltip, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -53,21 +53,21 @@
         * @name Highcharts.DataGroupingInfoObject#start
         * @type {number}
         */
-        var arrayMax = U.arrayMax,
+        ''; // detach doclets above
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             correctFloat = U.correctFloat,
             defined = U.defined,
+            error = U.error,
             extend = U.extend,
+            format = U.format,
             isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick;
-        var addEvent = H.addEvent,
-            Axis = H.Axis,
+        var Axis = H.Axis,
             defaultPlotOptions = H.defaultPlotOptions,
-            format = H.format,
-            merge = H.merge,
-            Point = H.Point,
-            Series = H.Series,
-            Tooltip = H.Tooltip;
+            Series = H.Series;
         /* ************************************************************************** *
          *  Start data grouping module                                                *
          * ************************************************************************** */
@@ -423,13 +423,13 @@
         // Set default approximations to the prototypes if present. Properties are
         // inherited down. Can be overridden for individual series types.
         seriesProto.getDGApproximation = function () {
-            if (H.seriesTypes.arearange && this instanceof H.seriesTypes.arearange) {
+            if (this.is('arearange')) {
                 return 'range';
             }
-            if (H.seriesTypes.ohlc && this instanceof H.seriesTypes.ohlc) {
+            if (this.is('ohlc')) {
                 return 'ohlc';
             }
-            if (H.seriesTypes.column && this instanceof H.seriesTypes.column) {
+            if (this.is('column')) {
                 return 'sum';
             }
             return 'average';
@@ -624,7 +624,7 @@
         // points.
         addEvent(Point, 'update', function () {
             if (this.dataGroup) {
-                H.error(24, false, this.series.chart);
+                error(24, false, this.series.chart);
                 return false;
             }
         });

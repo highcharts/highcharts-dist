@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  * Organization chart series type
  * @module highcharts/modules/organization
  * @requires highcharts

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Wind barb series module
  *
@@ -31,16 +31,16 @@
     _registerModule(_modules, 'mixins/on-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
-        var seriesTypes = H.seriesTypes,
-            stableSort = H.stableSort;
+        var defined = U.defined,
+            stableSort = U.stableSort;
+        var seriesTypes = H.seriesTypes;
         /**
          * @private
          * @mixin onSeriesMixin
@@ -191,7 +191,7 @@
          *
          *  Wind barb series module
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -200,9 +200,9 @@
          * */
         var animObject = U.animObject,
             isNumber = U.isNumber,
-            pick = U.pick;
-        var noop = H.noop,
-            seriesType = H.seriesType;
+            pick = U.pick,
+            seriesType = U.seriesType;
+        var noop = H.noop;
         // eslint-disable-next-line valid-jsdoc
         /**
          * Once off, register the windbarb approximation for data grouping. This can be
@@ -583,7 +583,7 @@
         /**
          * The wind speed in meters per second.
          *
-         * @type      {number}
+         * @type      {number|null}
          * @product   highcharts highstock
          * @apioption series.windbarb.data.value
          */

@@ -449,9 +449,17 @@ g.highcharts-series,
   stroke-width: 2px;
 }
 
-/* Dumbbell/lollipop connector */
 .highcharts-lollipop-stem {
   stroke: #fff;
+}
+
+.highcharts-focus-border {
+  fill: none;
+  stroke-width: 2px;
+}
+
+.highcharts-legend-item-hidden .highcharts-focus-border {
+  fill: none !important;
 }
 
 /* Legend */

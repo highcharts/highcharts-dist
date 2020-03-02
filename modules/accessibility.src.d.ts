@@ -15,6 +15,10 @@ export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
     interface Chart {
         /**
+         * Dismiss popup content in chart, including export menu and tooltip.
+         */
+        dismissPopupContent(): void;
+        /**
          * Apply context to a format string from lang options of the chart.
          *
          * @param langKey
@@ -176,7 +180,7 @@ declare module "../highcharts.src" {
      *
      * @param chart
      *        A `Chart` instance with a time object and numberFormatter, passed
-     *        on to H.format().
+     *        on to format().
      *
      * @return The formatted string.
      */

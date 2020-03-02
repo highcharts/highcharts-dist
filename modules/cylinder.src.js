@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Highcharts cylinder module
  *
@@ -28,12 +28,12 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/cylinder.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/cylinder.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
         /* *
          *
          *  Highcharts cylinder - a 3D series
          *
-         *  (c) 2010-2019 Highsoft AS
+         *  (c) 2010-2020 Highsoft AS
          *
          *  Author: Kacper Madej
          *
@@ -42,12 +42,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var pick = U.pick;
+        var color = Color.parse;
+        var merge = U.merge,
+            pick = U.pick,
+            seriesType = U.seriesType;
         var charts = H.charts,
-            color = H.color,
             deg2rad = H.deg2rad,
-            perspective = H.perspective,
-            seriesType = H.seriesType, 
+            perspective = H.perspective, 
             // Work on H.Renderer instead of H.SVGRenderer for VML support.
             RendererProto = H.Renderer.prototype,
             cuboidPath = RendererProto.cuboidPath,
@@ -161,7 +162,7 @@
          * @apioption series.cylinder.data
          */
         // cylinder extends cuboid
-        cylinderMethods = H.merge(RendererProto.elements3d.cuboid, {
+        cylinderMethods = merge(RendererProto.elements3d.cuboid, {
             parts: ['top', 'bottom', 'front', 'back'],
             pathType: 'cylinder',
             fillSetter: function (fill) {

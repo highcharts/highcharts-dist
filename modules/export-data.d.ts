@@ -64,16 +64,6 @@ declare module "../highcharts" {
          */
         getTable(useLocalDecimalPoint?: boolean): string;
         /**
-         * Experimental function to send a chart's config to the Cloud for
-         * editing.
-         *
-         * Limitations
-         *
-         * - All functions (formatters and callbacks) are removed since they're
-         * not JSON.
-         */
-        openInCloud(): void;
-        /**
          * Export-data module required. View the data in a table below the
          * chart.
          *

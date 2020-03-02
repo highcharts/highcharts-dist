@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Indicator series type for Highstock
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'mixins/reduce-array.js', [_modules['parts/Globals.js']], function (H) {
         /**
          *
-         *  (c) 2010-2019 Pawel Fus & Daniel Studencki
+         *  (c) 2010-2020 Pawel Fus & Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
@@ -91,17 +91,17 @@
     _registerModule(_modules, 'mixins/multipe-lines.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /**
          *
-         *  (c) 2010-2019 Wojciech Chmiel
+         *  (c) 2010-2020 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
+        var defined = U.defined,
+            error = U.error,
+            merge = U.merge;
         var each = H.each,
-            merge = H.merge,
-            error = H.error,
             SMA = H.seriesTypes.sma;
         /**
          * Mixin useful for all indicators that have more than one line.
@@ -278,7 +278,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'indicators/price-channel.src.js', [_modules['parts/Globals.js'], _modules['mixins/reduce-array.js'], _modules['mixins/multipe-lines.js']], function (H, reduceArrayMixin, multipleLinesMixin) {
+    _registerModule(_modules, 'indicators/price-channel.src.js', [_modules['parts/Utilities.js'], _modules['mixins/reduce-array.js'], _modules['mixins/multipe-lines.js']], function (U, reduceArrayMixin, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -286,8 +286,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getArrayExtremes = reduceArrayMixin.getArrayExtremes,
-            merge = H.merge;
+        var merge = U.merge,
+            seriesType = U.seriesType;
+        var getArrayExtremes = reduceArrayMixin.getArrayExtremes;
         /**
          * The Price Channel series type.
          *
@@ -297,7 +298,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('pc', 'sma', 
+        seriesType('pc', 'sma', 
         /**
          * Price channel (PC). This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js`.

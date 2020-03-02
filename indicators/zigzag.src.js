@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,18 +28,18 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/zigzag.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/zigzag.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2019 Kacper Madej
+         *  (c) 2010-2020 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = H.seriesType,
-            UNDEFINED;
+        var seriesType = U.seriesType;
+        var UNDEFINED;
         /**
          * The Zig Zag series type.
          *

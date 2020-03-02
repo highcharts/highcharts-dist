@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,14 +28,15 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/accumulation-distribution.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/accumulation-distribution.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
-        var seriesType = H.seriesType;
+        var error = U.error,
+            seriesType = U.seriesType;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -115,7 +116,7 @@
                     return;
                 }
                 if (!volumeSeries) {
-                    H.error('Series ' +
+                    error('Series ' +
                         volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                     return;
@@ -154,17 +155,17 @@
         ''; // add doclet above to transpiled file
 
     });
-    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Utilities.js']], function (U) {
         /**
          *
-         *  (c) 2010-2019 Daniel Studencki
+         *  (c) 2010-2020 Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = H.error;
+        var error = U.error;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
                 /**
@@ -224,10 +225,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
+        var correctFloat = U.correctFloat,
+            error = U.error,
+            seriesType = U.seriesType;
         var EMA = H.seriesTypes.ema,
             AD = H.seriesTypes.ad,
-            error = H.error,
             requiredIndicator = requiredIndicatorMixin;
         /**
          * The Chaikin series type.
@@ -238,7 +240,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('chaikin', 'ema', 
+        seriesType('chaikin', 'ema', 
         /**
          * Chaikin Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`

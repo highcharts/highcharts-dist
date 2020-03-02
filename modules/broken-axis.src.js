@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -29,20 +29,20 @@
     _registerModule(_modules, 'modules/broken-axis.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2019 Torstein Honsi
+         *  (c) 2009-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
+        var addEvent = U.addEvent,
+            extend = U.extend,
+            find = U.find,
+            fireEvent = U.fireEvent,
             isArray = U.isArray,
             pick = U.pick;
-        var addEvent = H.addEvent,
-            find = H.find,
-            fireEvent = H.fireEvent,
-            Axis = H.Axis,
+        var Axis = H.Axis,
             Series = H.Series;
         /**
          * Returns the first break found where the x is larger then break.from and
@@ -458,13 +458,13 @@
              * Together with [gapSize](plotOptions.series.gapSize), this option defines
              * where to draw gaps in the graph.
              *
-             * When the `gapUnit` is `relative` (default), a gap size of 5 means
+             * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
              * that if the distance between two points is greater than five times
              * that of the two closest points, the graph will be broken.
              *
-             * When the `gapUnit` is `value`, the gap is based on absolute axis values,
-             * which on a datetime axis is milliseconds. This also applies to the
-             * navigator series that inherits gap options from the base series.
+             * When the `gapUnit` is `"value"`, the gap is based on absolute axis
+             * values, which on a datetime axis is milliseconds. This also applies
+             * to the navigator series that inherits gap options from the base series.
              *
              * @see [gapSize](plotOptions.series.gapSize)
              *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.0 (2019-12-10)
+ * @license Highcharts Gantt JS v8.0.1 (2020-03-02)
  *
  * GridAxis
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Globals.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (H, Tick, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -39,19 +39,22 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
+        var addEvent = U.addEvent,
+            defined = U.defined,
             erase = U.erase,
+            find = U.find,
             isArray = U.isArray,
             isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
+            timeUnits = U.timeUnits,
             wrap = U.wrap;
-        var addEvent = H.addEvent,
-            argsToArray = function (args) {
+        var argsToArray = function (args) {
                 return Array.prototype.slice.call(args, 1);
         }, dateFormat = H.dateFormat, isObject = function (x) {
             // Always use strict mode
             return U.isObject(x, true);
-        }, merge = H.merge, Chart = H.Chart, Axis = H.Axis, Tick = H.Tick;
+        }, Chart = H.Chart, Axis = H.Axis;
         var applyGridOptions = function applyGridOptions(axis) {
                 var options = axis.options;
             // Center-align by default
@@ -213,17 +216,21 @@
             });
             return dimensions;
         };
-        // Add custom date formats
+        // Adds week date format
         H.dateFormats.W = function (timestamp) {
-            var d = new Date(timestamp),
-                yearStart,
-                weekNo;
-            d.setHours(0, 0, 0, 0);
-            d.setDate(d.getDate() - (d.getDay() || 7));
-            yearStart = new Date(d.getFullYear(), 0, 1);
-            weekNo =
-                Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-            return weekNo;
+            var d = new this.Date(timestamp);
+            var firstDay = (this.get('Day',
+                d) + 6) % 7;
+            var thursday = new this.Date(d.valueOf());
+            this.set('Date', thursday, this.get('Date', d) - firstDay + 3);
+            var firstThursday = new this.Date(this.get('FullYear',
+                thursday), 0, 1);
+            if (this.get('Day', firstThursday) !== 4) {
+                this.set('Month', d, 0);
+                this.set('Date', d, 1 + (11 - this.get('Day', firstThursday)) % 7);
+            }
+            return (1 +
+                Math.floor((thursday.valueOf() - firstThursday.valueOf()) / 604800000)).toString();
         };
         // First letter of the day of the week, e.g. 'M' for 'Monday'.
         H.dateFormats.E = function (timestamp) {
@@ -533,7 +540,7 @@
                                     unitName = 'year';
                                     count = parentInfo.count * 10;
                                 }
-                                unitRange = H.timeUnits[unitName];
+                                unitRange = timeUnits[unitName];
                                 this.tickInterval = unitRange * count;
                                 return this.getTimeTicks({
                                     unitRange: unitRange,
@@ -763,7 +770,7 @@
                             axis).series[0],
                         isFirst = value === tickPos[0],
                         isLast = value === tickPos[tickPos.length - 1],
-                        point = series && H.find(series.options.data,
+                        point = series && find(series.options.data,
                         function (p) {
                             return p[axis.isXAxis ? 'x' : 'y'] === value;
                     });

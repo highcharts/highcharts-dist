@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Boost module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/boost-canvas.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/boost-canvas.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -44,19 +44,19 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
             isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
             wrap = U.wrap;
         var win = H.win,
             doc = win.document,
             noop = function () { },
-            Color = H.Color,
             Series = H.Series,
             seriesTypes = H.seriesTypes,
-            addEvent = H.addEvent,
-            fireEvent = H.fireEvent,
-            merge = H.merge,
-            pick = H.pick,
             CHUNK_SIZE = 50000,
             destroyLoadingDiv;
         /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -352,8 +352,7 @@
                     if (rawData.length > 99999) {
                         chart.options.loading = merge(loadingOptions, {
                             labelStyle: {
-                                backgroundColor: H.color('#ffffff')
-                                    .setOpacity(0.75).get(),
+                                backgroundColor: color('#ffffff').setOpacity(0.75).get(),
                                 padding: '1em',
                                 borderRadius: '0.5em'
                             },
@@ -362,7 +361,7 @@
                                 opacity: 1
                             }
                         });
-                        H.clearTimeout(destroyLoadingDiv);
+                        U.clearTimeout(destroyLoadingDiv);
                         chart.showLoading('Drawing...');
                         chart.options.loading = loadingOptions; // reset
                     }

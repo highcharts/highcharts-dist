@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
@@ -29,10 +29,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/oldie.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/oldie.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -41,7 +41,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            createElement = U.createElement,
+            css = U.css,
+            defined = U.defined,
             discardElement = U.discardElement,
             erase = U.erase,
             extend = U.extend,
@@ -49,18 +53,17 @@
             isArray = U.isArray,
             isNumber = U.isNumber,
             isObject = U.isObject,
+            merge = U.merge,
             offset = U.offset,
             pick = U.pick,
-            pInt = U.pInt;
+            pInt = U.pInt,
+            uniqueKey = U.uniqueKey;
         var VMLRenderer,
             VMLRendererExtension,
             VMLElement,
             Chart = H.Chart,
-            createElement = H.createElement,
-            css = H.css,
             deg2rad = H.deg2rad,
             doc = H.doc,
-            merge = H.merge,
             noop = H.noop,
             svg = H.svg,
             SVGElement = H.SVGElement,
@@ -77,10 +80,10 @@
          * @apioption global.VMLRadialGradientURL
          */
         H.getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/8.0.0/gfx/vml-radial-gradient.png';
+            'http://code.highcharts.com/8.0.1/gfx/vml-radial-gradient.png';
         // Utilites
         if (doc && !doc.defaultView) {
-            H.getStyle = function (el, prop) {
+            H.getStyle = U.getStyle = function (el, prop) {
                 var val,
                     alias = {
                         width: 'clientWidth',
@@ -95,7 +98,7 @@
                 // Getting the rendered width and height
                 if (alias) {
                     el.style.zoom = 1;
-                    return Math.max(el[alias] - 2 * H.getStyle(el, 'padding'), 0);
+                    return Math.max(el[alias] - 2 * U.getStyle(el, 'padding'), 0);
                 }
                 val = el.currentStyle[prop.replace(/\-(\w)/g, function (a, b) {
                     return b.toUpperCase();
@@ -114,7 +117,7 @@
             // This applies only to charts for export, where IE runs the SVGRenderer
             // instead of the VMLRenderer
             // (#1079, #1063)
-            H.addEvent(SVGElement, 'afterInit', function () {
+            addEvent(SVGElement, 'afterInit', function () {
                 if (this.element.nodeName === 'text') {
                     this.css({
                         position: 'absolute'
@@ -225,7 +228,7 @@
                     }
                     // unique function string (#6746)
                     if (!fn.hcKey) {
-                        fn.hcKey = H.uniqueKey();
+                        fn.hcKey = uniqueKey();
                     }
                     // Link wrapped fn with original fn, so we can get this in
                     // removeEvent
@@ -902,7 +905,7 @@
                  *
                  * @return {T}
                  */
-                color: function (color, elem, prop, wrapper) {
+                color: function (colorOption, elem, prop, wrapper) {
                     var renderer = this,
                         colorObject,
                         regexRgba = /^rgba/,
@@ -910,17 +913,17 @@
                         fillType,
                         ret = 'none';
                     // Check for linear or radial gradient
-                    if (color &&
-                        color.linearGradient) {
+                    if (colorOption &&
+                        colorOption.linearGradient) {
                         fillType = 'gradient';
                     }
-                    else if (color &&
-                        color.radialGradient) {
+                    else if (colorOption &&
+                        colorOption.radialGradient) {
                         fillType = 'pattern';
                     }
                     if (fillType) {
-                        var stopColor, stopOpacity, gradient = (color.linearGradient ||
-                                color.radialGradient), x1, y1, x2, y2, opacity1, opacity2, color1, color2, fillAttr = '', stops = color.stops, firstStop, lastStop, colors = [], addFillNode = function () {
+                        var stopColor, stopOpacity, gradient = (colorOption.linearGradient ||
+                                colorOption.radialGradient), x1, y1, x2, y2, opacity1, opacity2, color1, color2, fillAttr = '', stops = colorOption.stops, firstStop, lastStop, colors = [], addFillNode = function () {
                                 // Add the fill subnode. When colors attribute is used,
                                 // the meanings of opacity and o:opacity2 are reversed.
                                 markup = ['<fill colors="' + colors.join(',') +
@@ -947,7 +950,7 @@
                         // Compute the stops
                         stops.forEach(function (stop, i) {
                             if (regexRgba.test(stop[1])) {
-                                colorObject = H.color(stop[1]);
+                                colorObject = color(stop[1]);
                                 stopColor = colorObject.get('rgb');
                                 stopOpacity = colorObject.get('a');
                             }
@@ -1032,8 +1035,8 @@
                         // If the color is an rgba color, split it and add a fill node
                         // to hold the opacity component
                     }
-                    else if (regexRgba.test(color) && elem.tagName !== 'IMG') {
-                        colorObject = H.color(color);
+                    else if (regexRgba.test(colorOption) && elem.tagName !== 'IMG') {
+                        colorObject = color(colorOption);
                         wrapper[prop + '-opacitySetter'](colorObject.get('a'), prop, elem);
                         ret = colorObject.get('rgb');
                     }
@@ -1044,7 +1047,7 @@
                             propNodes[0].opacity = 1;
                             propNodes[0].type = 'solid';
                         }
-                        ret = color;
+                        ret = colorOption;
                     }
                     return ret;
                 },

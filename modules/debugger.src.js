@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Debugger module
  *
@@ -165,16 +165,16 @@
     _registerModule(_modules, 'modules/debugger.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber;
-        var addEvent = H.addEvent,
-            setOptions = H.setOptions,
+        var addEvent = U.addEvent,
+            isNumber = U.isNumber;
+        var setOptions = H.setOptions,
             each = H.each;
         setOptions({
             /**

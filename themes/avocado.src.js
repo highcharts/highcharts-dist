@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * (c) 2009-2019 Highsoft AS
  *
@@ -29,7 +29,7 @@
     _registerModule(_modules, 'themes/avocado.js', [_modules['parts/Globals.js']], function (Highcharts) {
         /* *
          *
-         *  (c) 2010-2019 Highsoft AS
+         *  (c) 2010-2020 Highsoft AS
          *
          *  Author: Øystein Moseng
          *

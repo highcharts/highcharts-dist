@@ -12,6 +12,10 @@ import * as _Highcharts from "../highcharts";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts" {}
+declare module "../highcharts" {
+    interface Chart {
+        fullscreen: Fullscreen;
+    }
+}
 export default factory;
 export let Highcharts: typeof _Highcharts;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Vector plot series module
  *
@@ -33,7 +33,7 @@
          *
          *  Vector plot series module
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -42,8 +42,8 @@
          * */
         var animObject = U.animObject,
             arrayMax = U.arrayMax,
-            pick = U.pick;
-        var seriesType = H.seriesType;
+            pick = U.pick,
+            seriesType = U.seriesType;
         /**
          * The vector series class.
          *

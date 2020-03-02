@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,18 +28,18 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Utilities.js']], function (U) {
         /**
          *
-         *  (c) 2010-2019 Kamil Kulig
+         *  (c) 2010-2020 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /**
          * Linear regression series type.
          *
@@ -95,9 +95,9 @@
                  * // base series:
                  *
                  * data: [
-                 *   [Date.UTC(2019, 0, 1), 1],
-                 *   [Date.UTC(2019, 0, 2), 3],
-                 *   [Date.UTC(2019, 0, 3), 5]
+                 *   [Date.UTC(2020, 0, 1), 1],
+                 *   [Date.UTC(2020, 0, 2), 3],
+                 *   [Date.UTC(2020, 0, 3), 5]
                  * ]
                  *
                  * // This will produce one point in the indicator series that has a

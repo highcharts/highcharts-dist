@@ -8,7 +8,3 @@
  * in the Highcharts namespace.
  */
 export type GlobalSVGElement = SVGElement;
-/**
- * Initialize the new data announcer.
- */
-export function init(): void;

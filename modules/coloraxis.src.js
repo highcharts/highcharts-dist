@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * ColorAxis module
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'parts-map/ColorSeriesMixin.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -88,7 +88,7 @@
                     colorAxis = this.colorAxis,
                     colorKey = this.colorKey;
                 points.forEach(function (point) {
-                    var value = point[colorKey],
+                    var value = point.getNestedProperty(colorKey),
                         color;
                     color = point.options.color ||
                         (point.isNull ?
@@ -105,10 +105,10 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, Color, Point, Legend, LegendSymbolMixin, U) {
         /* *
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -120,24 +120,22 @@
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        var erase = U.erase,
+        ''; // detach doclet above
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            erase = U.erase,
             extend = U.extend,
             isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
             splat = U.splat;
-        var addEvent = H.addEvent,
-            Axis = H.Axis,
+        var Axis = H.Axis,
             Chart = H.Chart,
             Series = H.Series,
-            Point = H.Point,
-            color = H.color,
             ColorAxis,
-            Legend = H.Legend,
-            LegendSymbolMixin = H.LegendSymbolMixin,
             colorPointMixin = H.colorPointMixin,
             colorSeriesMixin = H.colorSeriesMixin,
-            noop = H.noop,
-            merge = H.merge;
+            noop = H.noop;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         Chart.prototype.collectionsWithUpdate.push('colorAxis');
@@ -999,7 +997,7 @@
                     axisPos = this.pos,
                     axisLen = this.len;
                 if (point) {
-                    crossPos = this.toPixels(point[point.series.colorKey]);
+                    crossPos = this.toPixels(point.getNestedProperty(point.series.colorKey));
                     if (crossPos < axisPos) {
                         crossPos = axisPos - 2;
                     }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * (c) 2017-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -674,13 +674,13 @@
 
         return content;
     });
-    _registerModule(_modules, 'modules/venn.src.js', [_modules['parts/Globals.js'], _modules['mixins/draw-point.js'], _modules['mixins/geometry.js'], _modules['mixins/geometry-circles.js'], _modules['mixins/nelder-mead.js'], _modules['parts/Utilities.js']], function (H, draw, geometry, GeometryCircleMixin, NelderMeadModule, U) {
+    _registerModule(_modules, 'modules/venn.src.js', [_modules['parts/Globals.js'], _modules['mixins/draw-point.js'], _modules['mixins/geometry.js'], _modules['mixins/geometry-circles.js'], _modules['mixins/nelder-mead.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, draw, geometry, geometryCirclesModule, nelderMeadModule, Color, U) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a Venn
          *  diagram.
          *
-         *  (c) 2016-2019 Highsoft AS
+         *  (c) 2016-2020 Highsoft AS
          *  Authors: Jon Arild Nygard
          *
          *  Layout algorithm by Ben Frederickson:
@@ -691,29 +691,29 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getAreaOfCircle = GeometryCircleMixin.getAreaOfCircle,
-            getAreaOfIntersectionBetweenCircles = GeometryCircleMixin.getAreaOfIntersectionBetweenCircles,
-            getCircleCircleIntersection = GeometryCircleMixin.getCircleCircleIntersection,
-            getCirclesIntersectionPolygon = GeometryCircleMixin.getCirclesIntersectionPolygon,
-            getOverlapBetweenCirclesByDistance = GeometryCircleMixin.getOverlapBetweenCircles,
-            isCircle1CompletelyOverlappingCircle2 = GeometryCircleMixin.isCircle1CompletelyOverlappingCircle2,
-            isPointInsideAllCircles = GeometryCircleMixin.isPointInsideAllCircles,
-            isPointInsideCircle = GeometryCircleMixin.isPointInsideCircle,
-            isPointOutsideAllCircles = GeometryCircleMixin.isPointOutsideAllCircles;
+        var getAreaOfCircle = geometryCirclesModule.getAreaOfCircle,
+            getAreaOfIntersectionBetweenCircles = geometryCirclesModule.getAreaOfIntersectionBetweenCircles,
+            getCircleCircleIntersection = geometryCirclesModule.getCircleCircleIntersection,
+            getCirclesIntersectionPolygon = geometryCirclesModule.getCirclesIntersectionPolygon,
+            getOverlapBetweenCirclesByDistance = geometryCirclesModule.getOverlapBetweenCircles,
+            isCircle1CompletelyOverlappingCircle2 = geometryCirclesModule.isCircle1CompletelyOverlappingCircle2,
+            isPointInsideAllCircles = geometryCirclesModule.isPointInsideAllCircles,
+            isPointInsideCircle = geometryCirclesModule.isPointInsideCircle,
+            isPointOutsideAllCircles = geometryCirclesModule.isPointOutsideAllCircles;
         // TODO: replace with individual imports
-        var nelderMead = NelderMeadModule.nelderMead;
-        var animObject = U.animObject,
+        var nelderMead = nelderMeadModule.nelderMead;
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            animObject = U.animObject,
+            extend = U.extend,
             isArray = U.isArray,
             isNumber = U.isNumber,
             isObject = U.isObject,
-            isString = U.isString;
-        var addEvent = H.addEvent,
-            color = H.Color,
-            extend = H.extend,
-            getCenterOfPoints = geometry.getCenterOfPoints,
+            isString = U.isString,
+            merge = U.merge,
+            seriesType = U.seriesType;
+        var getCenterOfPoints = geometry.getCenterOfPoints,
             getDistanceBetweenPoints = geometry.getDistanceBetweenPoints,
-            merge = H.merge,
-            seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
         var objectValues = function objectValues(obj) {
                 return Object.keys(obj).map(function (x) {
@@ -1443,7 +1443,8 @@
          *               findNearestPointBy, getExtremesFromAll, jitter, label, linecap,
          *               lineWidth, linkedTo, marker, negativeColor, pointInterval,
          *               pointIntervalUnit, pointPlacement, pointStart, softThreshold,
-         *               stacking, steps, threshold, xAxis, yAxis, zoneAxis, zones
+         *               stacking, steps, threshold, xAxis, yAxis, zoneAxis, zones,
+         *               dataSorting
          * @product      highcharts
          * @requires     modules/venn
          * @optionparent plotOptions.venn
@@ -1485,6 +1486,9 @@
                     color: '#cccccc',
                     borderColor: '#000000',
                     animation: false
+                },
+                inactive: {
+                    opacity: 0.075
                 }
             },
             tooltip: {
@@ -1689,13 +1693,13 @@
             utils: {
                 addOverlapToSets: addOverlapToSets,
                 geometry: geometry,
-                geometryCircles: GeometryCircleMixin,
+                geometryCircles: geometryCirclesModule,
                 getLabelWidth: getLabelWidth,
                 getMarginFromCircles: getMarginFromCircles,
                 getDistanceBetweenCirclesByOverlap: getDistanceBetweenCirclesByOverlap,
                 layoutGreedyVenn: layoutGreedyVenn,
                 loss: loss,
-                nelderMead: NelderMeadModule,
+                nelderMead: nelderMeadModule,
                 processVennData: processVennData,
                 sortByTotalOverlap: sortByTotalOverlap
             }
@@ -1720,7 +1724,7 @@
          *            findNearestPointBy, getExtremesFromAll, label, linecap, lineWidth,
          *            linkedTo, marker, negativeColor, pointInterval, pointIntervalUnit,
          *            pointPlacement, pointStart, softThreshold, stack, stacking, steps,
-         *            threshold, xAxis, yAxis, zoneAxis, zones
+         *            threshold, xAxis, yAxis, zoneAxis, zones, dataSorting
          * @product   highcharts
          * @requires  modules/venn
          * @apioption series.venn
@@ -1797,7 +1801,7 @@
         addEvent(seriesTypes.venn, 'afterSetOptions', function (e) {
             var options = e.options,
                 states = options.states;
-            if (this instanceof seriesTypes.venn) {
+            if (this.is('venn')) {
                 // Explicitly disable all halo options.
                 Object.keys(states).forEach(function (state) {
                     states[state].halo = false;

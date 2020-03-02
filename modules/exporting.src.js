@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Exporting module
  *
@@ -30,62 +30,228 @@
     }
     _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Globals.js']], function (H) {
         /* *
+         * (c) 2009-2020 Rafal Sebestjanski
          *
-         *  (c) 2009-2019 Sebastian Bochann
+         * Full screen for Highcharts
          *
-         *  Full screen for Highcharts
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+         * License: www.highcharts.com/license
+         */
+        var addEvent = H.addEvent,
+            Chart = H.Chart;
         /**
-         * The FullScreen class.
-         * The module allows user to enable full screen mode in StockTools.
+         * The module allows user to enable display chart in full screen mode.
+         * Used in StockTools too.
          * Based on default solutions in browsers.
          *
-         * @private
-         * @class
-         * @name Highcharts.FullScreen
-         *
-         * @param {Highcharts.HTMLDOMElement} container
-         *        Chart container
          */
-        var FullScreen = H.FullScreen = function (container) {
-                this.init(container.parentNode);
-        };
-        FullScreen.prototype = {
-            /**
-             * Init function
-             * @private
-             * @param {Highcharts.HTMLDOMElement} container
-             *        Chart container's parent
-             * @return {void}
-             */
-            init: function (container) {
-                var promise;
-                if (container.requestFullscreen) {
-                    promise = container.requestFullscreen();
+        /* eslint-disable no-invalid-this, valid-jsdoc */
+        /**
+         * Handles displaying chart's container in the fullscreen mode.
+         *
+         * @class
+         * @name Highcharts.Fullscreen
+         * @hideconstructor
+         * @requires modules/full-screen
+         */
+        var Fullscreen = /** @class */ (function () {
+                /* *
+                 *
+                 *  Constructors
+                 *
+                 * */
+                function Fullscreen(chart) {
+                    /**
+                     * Chart managed by the fullscreen controller.
+                     * @name Highcharts.Fullscreen#chart
+                     * @type {Highcharts.Chart}
+                     */
+                    this.chart = chart;
+                /**
+                 * The flag is set to `true` when the chart is displayed in
+                 * the fullscreen mode.
+                 *
+                 * @name Highcharts.Fullscreen#isOpen
+                 * @type {boolean|undefined}
+                 * @since 8.0.1
+                 */
+                this.isOpen = false;
+                if (!(chart.container.parentNode instanceof Element)) {
+                    return;
                 }
-                else if (container.mozRequestFullScreen) {
-                    promise = container.mozRequestFullScreen();
-                }
-                else if (container.webkitRequestFullscreen) {
-                    promise = container.webkitRequestFullscreen();
-                }
-                else if (container.msRequestFullscreen) {
-                    promise = container.msRequestFullscreen();
-                }
-                if (promise) {
-                    promise['catch'](function () {
-                        alert('Full screen is not supported inside a frame'); // eslint-disable-line no-alert
-                    });
+                var container = chart.container.parentNode;
+                // Hold event and methods available only for a current browser.
+                if (!this.browserProps) {
+                    if (typeof container.requestFullscreen === 'function') {
+                        this.browserProps = {
+                            fullscreenChange: 'fullscreenchange',
+                            requestFullscreen: 'requestFullscreen',
+                            exitFullscreen: 'exitFullscreen'
+                        };
+                    }
+                    else if (container.mozRequestFullScreen) {
+                        this.browserProps = {
+                            fullscreenChange: 'mozfullscreenchange',
+                            requestFullscreen: 'mozRequestFullScreen',
+                            exitFullscreen: 'mozCancelFullScreen'
+                        };
+                    }
+                    else if (container.webkitRequestFullScreen) {
+                        this.browserProps = {
+                            fullscreenChange: 'webkitfullscreenchange',
+                            requestFullscreen: 'webkitRequestFullScreen',
+                            exitFullscreen: 'webkitExitFullscreen'
+                        };
+                    }
+                    else if (container.msRequestFullscreen) {
+                        this.browserProps = {
+                            fullscreenChange: 'MSFullscreenChange',
+                            requestFullscreen: 'msRequestFullscreen',
+                            exitFullscreen: 'msExitFullscreen'
+                        };
+                    }
                 }
             }
-        };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Stops displaying the chart in fullscreen mode.
+             * Exporting module required.
+             *
+             * @since       8.0.1
+             *
+             * @function    Highcharts.Fullscreen#close
+             * @return      {void}
+             * @requires    modules/full-screen
+             */
+            Fullscreen.prototype.close = function () {
+                var fullscreen = this,
+                    chart = fullscreen.chart;
+                // Don't fire exitFullscreen() when user exited using 'Escape' button.
+                if (fullscreen.isOpen &&
+                    fullscreen.browserProps &&
+                    chart.container.ownerDocument instanceof Document) {
+                    chart.container.ownerDocument[fullscreen.browserProps.exitFullscreen]();
+                }
+                // Unbind event as it's necessary only before exiting from fullscreen.
+                if (fullscreen.unbindFullscreenEvent) {
+                    fullscreen.unbindFullscreenEvent();
+                }
+                fullscreen.isOpen = false;
+                fullscreen.setButtonText();
+            };
+            /**
+             * Displays the chart in fullscreen mode.
+             * When fired customly by user before exporting context button is created,
+             * button's text will not be replaced - it's on the user side.
+             * Exporting module required.
+             *
+             * @since       8.0.1
+             *
+             * @function Highcharts.Fullscreen#open
+             * @return      {void}
+             * @requires    modules/full-screen
+             */
+            Fullscreen.prototype.open = function () {
+                var fullscreen = this,
+                    chart = fullscreen.chart;
+                // Handle exitFullscreen() method when user clicks 'Escape' button.
+                if (fullscreen.browserProps) {
+                    fullscreen.unbindFullscreenEvent = H.addEvent(chart.container.ownerDocument, // chart's document
+                    fullscreen.browserProps.fullscreenChange, function () {
+                        // Handle lack of async of browser's fullScreenChange event.
+                        if (fullscreen.isOpen) {
+                            fullscreen.isOpen = false;
+                            fullscreen.close();
+                        }
+                        else {
+                            fullscreen.isOpen = true;
+                            fullscreen.setButtonText();
+                        }
+                    });
+                    if (chart.container.parentNode instanceof Element) {
+                        var promise = chart.container.parentNode[fullscreen.browserProps.requestFullscreen]();
+                        if (promise) {
+                            promise['catch'](function () {
+                                alert(// eslint-disable-line no-alert
+                                'Full screen is not supported inside a frame.');
+                            });
+                        }
+                    }
+                    H.addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
+                }
+            };
+            /**
+             * Replaces the exporting context button's text when toogling the
+             * fullscreen mode.
+             *
+             * @private
+             *
+             * @since 8.0.1
+             *
+             * @requires modules/full-screen
+             * @return {void}
+             */
+            Fullscreen.prototype.setButtonText = function () {
+                var _a,
+                    _b,
+                    _c,
+                    _d;
+                var chart = this.chart,
+                    exportDivElements = chart.exportDivElements,
+                    exportingOptions = chart.options.exporting,
+                    menuItems = (_b = (_a = exportingOptions) === null || _a === void 0 ? void 0 : _a.buttons) === null || _b === void 0 ? void 0 : _b.contextButton.menuItems,
+                    lang = chart.options.lang;
+                if (((_c = exportingOptions) === null || _c === void 0 ? void 0 : _c.menuItemDefinitions) && ((_d = lang) === null || _d === void 0 ? void 0 : _d.exitFullscreen) &&
+                    lang.viewFullscreen &&
+                    menuItems &&
+                    exportDivElements &&
+                    exportDivElements.length) {
+                    exportDivElements[menuItems.indexOf('viewFullscreen')]
+                        .innerHTML = !this.isOpen ?
+                        (exportingOptions.menuItemDefinitions.viewFullscreen.text ||
+                            lang.viewFullscreen) : lang.exitFullscreen;
+                }
+            };
+            /**
+             * Toggles displaying the chart in fullscreen mode.
+             * By default, when the exporting module is enabled, a context button with
+             * a drop down menu in the upper right corner accesses this function.
+             * Exporting module required.
+             *
+             * @since 8.0.1
+             *
+             * @sample      highcharts/members/chart-togglefullscreen/
+             *              Toggle fullscreen mode from a HTML button
+             *
+             * @function Highcharts.Fullscreen#toggle
+             * @requires    modules/full-screen
+             */
+            Fullscreen.prototype.toggle = function () {
+                var fullscreen = this;
+                if (!fullscreen.isOpen) {
+                    fullscreen.open();
+                }
+                else {
+                    fullscreen.close();
+                }
+            };
+            return Fullscreen;
+        }());
+        H.Fullscreen = Fullscreen;
+        // Initialize fullscreen
+        addEvent(Chart, 'beforeRender', function () {
+            /**
+             * @name Highcharts.Chart#fullscreen
+             * @type {Highcharts.Fullscreen}
+             * @requires modules/full-screen
+             */
+            this.fullscreen = new H.Fullscreen(this);
+        });
 
+        return H.Fullscreen;
     });
     _registerModule(_modules, 'mixins/navigation.js', [], function () {
         /**
@@ -151,7 +317,7 @@
          *
          *  Exporting module
          *
-         *  (c) 2010-2019 Torstein Honsi
+         *  (c) 2010-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -224,21 +390,23 @@
          *
          * @typedef {"image/png"|"image/jpeg"|"application/pdf"|"image/svg+xml"} Highcharts.ExportingMimeTypeValue
          */
-        var discardElement = U.discardElement,
+        var addEvent = U.addEvent,
+            css = U.css,
+            createElement = U.createElement,
+            discardElement = U.discardElement,
             extend = U.extend,
+            find = U.find,
+            fireEvent = U.fireEvent,
             isObject = U.isObject,
+            merge = U.merge,
             objectEach = U.objectEach,
-            pick = U.pick;
+            pick = U.pick,
+            removeEvent = U.removeEvent,
+            uniqueKey = U.uniqueKey;
         // create shortcuts
         var defaultOptions = H.defaultOptions,
             doc = H.doc,
             Chart = H.Chart,
-            addEvent = H.addEvent,
-            removeEvent = H.removeEvent,
-            fireEvent = H.fireEvent,
-            createElement = H.createElement,
-            css = H.css,
-            merge = H.merge,
             isTouchDevice = H.isTouchDevice,
             win = H.win,
             userAgent = win.navigator.userAgent,
@@ -253,14 +421,23 @@
          */
         , {
             /**
-             * Exporting module only. View the chart in full screen.
+             * Exporting module only. The text for the menu item to view the chart
+             * in full screen.
              *
-             * @since    7.1.0
-             * @requires modules/exporting
+             * @since 8.0.1
              *
              * @private
              */
             viewFullscreen: 'View in full screen',
+            /**
+             * Exporting module only. The text for the menu item to exit the chart
+             * from full screen.
+             *
+             * @since 8.0.1
+             *
+             * @private
+             */
+            exitFullscreen: 'Exit from full screen',
             /**
              * Exporting module only. The text for the menu item to print the chart.
              *
@@ -954,12 +1131,16 @@
              * - **textKey:** If internationalization is required, the key to a language
              *   string
              *
+             * Custom text for the "exitFullScreen" can be set only in lang options
+             * (it is not a separate button).
+             *
              * @sample {highcharts} highcharts/exporting/menuitemdefinitions/
              *         Menu item definitions
              * @sample {highstock} highcharts/exporting/menuitemdefinitions/
              *         Menu item definitions
              * @sample {highmaps} highcharts/exporting/menuitemdefinitions/
              *         Menu item definitions
+             *
              *
              * @type    {Highcharts.Dictionary<Highcharts.ExportingMenuObject>}
              * @default {"viewFullscreen": {}, "printChart": {}, "separator": {}, "downloadPNG": {}, "downloadJPEG": {}, "downloadPDF": {}, "downloadSVG": {}}
@@ -972,7 +1153,7 @@
                 viewFullscreen: {
                     textKey: 'viewFullscreen',
                     onclick: function () {
-                        this.fullscreen = new H.FullScreen(this.container);
+                        this.fullscreen.toggle();
                     }
                 },
                 /**
@@ -1271,7 +1452,7 @@
                 // Assign an internal key to ensure a one-to-one mapping (#5924)
                 chart.axes.forEach(function (axis) {
                     if (!axis.userOptions.internalKey) { // #6444
-                        axis.userOptions.internalKey = H.uniqueKey();
+                        axis.userOptions.internalKey = uniqueKey();
                     }
                 });
                 // generate the chart copy
@@ -1288,7 +1469,7 @@
                 }
                 // Reflect axis extremes in the export (#5924)
                 chart.axes.forEach(function (axis) {
-                    var axisCopy = H.find(chartCopy.axes,
+                    var axisCopy = find(chartCopy.axes,
                         function (copy) {
                             return copy.options.internalKey ===
                                 axis.userOptions.internalKey;
@@ -1611,14 +1792,14 @@
                         }
                         chart.openMenu = false;
                         css(chart.renderTo, { overflow: 'hidden' }); // #10361
-                        H.clearTimeout(menu.hideTimer);
+                        U.clearTimeout(menu.hideTimer);
                         fireEvent(chart, 'exportMenuHidden');
                     };
                     // Hide the menu some time after mouse leave (#1357)
                     chart.exportEvents.push(addEvent(menu, 'mouseleave', function () {
                         menu.hideTimer = win.setTimeout(menu.hideMenu, 500);
                     }), addEvent(menu, 'mouseenter', function () {
-                        H.clearTimeout(menu.hideTimer);
+                        U.clearTimeout(menu.hideTimer);
                     }), 
                     // Hide it on clicking or touching outside the menu (#2258,
                     // #2335, #2407)
@@ -1851,7 +2032,7 @@
                 if (exportDivElements) {
                     exportDivElements.forEach(function (elem, i) {
                         // Remove the event handler
-                        H.clearTimeout(elem.hideTimer); // #5427
+                        U.clearTimeout(elem.hideTimer); // #5427
                         removeEvent(elem, 'mouseleave');
                         // Remove inline events
                         chart.exportDivElements[i] =

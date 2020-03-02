@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -33,18 +33,21 @@
          *
          *  Parallel coordinates module
          *
-         *  (c) 2010-2019 Pawel Fus
+         *  (c) 2010-2020 Pawel Fus
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var arrayMax = U.arrayMax,
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             defined = U.defined,
             erase = U.erase,
             extend = U.extend,
+            format = U.format,
+            merge = U.merge,
             pick = U.pick,
             splat = U.splat,
             wrap = U.wrap;
@@ -53,8 +56,6 @@
             Chart = H.Chart,
             ChartProto = Chart.prototype,
             AxisProto = H.Axis.prototype;
-        var addEvent = H.addEvent,
-            merge = H.merge;
         var defaultXAxisOptions = {
                 lineWidth: 0,
                 tickLength: 0,
@@ -401,7 +402,7 @@
             }
         }, { order: 1 });
         // On destroy, we need to remove series from each axis.series
-        H.addEvent(H.Series, 'destroy', function () {
+        addEvent(H.Series, 'destroy', function () {
             if (this.chart.hasParallelCoordinates) {
                 (this.chart.axes || []).forEach(function (axis) {
                     if (axis && axis.series) {
@@ -458,7 +459,7 @@
                  */
                 yAxisOptions.tooltipValueFormat, yAxisOptions.labels.format);
                 if (labelFormat) {
-                    formattedValue = H.format(labelFormat, extend(this, { value: this.y }), chart);
+                    formattedValue = format(labelFormat, extend(this, { value: this.y }), chart);
                 }
                 else if (yAxis.isDatetimeAxis) {
                     formattedValue = chart.time.dateFormat(chart.time.resolveDTLFormat(yAxisOptions.dateTimeLabelFormats[yAxis.tickPositions.info.unitName]).main, this.y);

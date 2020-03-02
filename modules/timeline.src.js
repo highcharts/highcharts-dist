@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Timeline series
  *
@@ -29,12 +29,12 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/timeline.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/timeline.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, Point, LegendSymbolMixin, U) {
         /* *
          *
          *  Timeline Series.
          *
-         *  (c) 2010-2019 Highsoft AS
+         *  (c) 2010-2020 Highsoft AS
          *
          *  Author: Daniel Studencki
          *
@@ -50,7 +50,7 @@
          *
          * @callback Highcharts.TimelineDataLabelsFormatterCallbackFunction
          *
-         * @param {Highcharts.DataLabelsFormatterContextObject|Highcharts.TimelineDataLabelsFormatterContextObject} this
+         * @param {Highcharts.PointLabelObject|Highcharts.TimelineDataLabelsFormatterContextObject} this
          *        Data label context to format
          *
          * @return {number|string|null|undefined}
@@ -58,7 +58,7 @@
          */
         /**
          * @interface Highcharts.TimelineDataLabelsFormatterContextObject
-         * @extends Highcharts.DataLabelsFormatterContextObject
+         * @extends Highcharts.PointLabelObject
          */ /**
         * @name Highcharts.TimelineDataLabelsFormatterContextObject#key
         * @type {string|undefined}
@@ -69,19 +69,17 @@
         * @name Highcharts.TimelineDataLabelsFormatterContextObject#series
         * @type {Highcharts.Series}
         */
-        var arrayMax = U.arrayMax,
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             defined = U.defined,
             isNumber = U.isNumber,
+            merge = U.merge,
             objectEach = U.objectEach,
-            pick = U.pick;
-        var addEvent = H.addEvent,
-            LegendSymbolMixin = H.LegendSymbolMixin,
-            TrackerMixin = H.TrackerMixin,
-            merge = H.merge,
-            Point = H.Point,
+            pick = U.pick,
+            seriesType = U.seriesType;
+        var TrackerMixin = H.TrackerMixin,
             Series = H.Series,
-            seriesType = H.seriesType,
             seriesTypes = H.seriesTypes;
         /**
          * The timeline series type.
@@ -111,7 +109,7 @@
          *               getExtremesFromAll, lineWidth, negativeColor,
          *               pointInterval, pointIntervalUnit, pointPlacement,
          *               pointStart, softThreshold, stacking, step, threshold,
-         *               turboThreshold, zoneAxis, zones
+         *               turboThreshold, zoneAxis, zones, dataSorting
          * @requires     modules/timeline
          * @optionparent plotOptions.timeline
          */
@@ -133,6 +131,8 @@
             },
             /**
              * @declare Highcharts.TimelineDataLabelsOptionsObject
+             *
+             * @private
              */
             dataLabels: {
                 enabled: true,
@@ -618,7 +618,7 @@
          *            getExtremesFromAll, lineWidth, negativeColor,
          *            pointInterval, pointIntervalUnit, pointPlacement, pointStart,
          *            softThreshold, stacking, stack, step, threshold, turboThreshold,
-         *            zoneAxis, zones
+         *            zoneAxis, zones, dataSorting
          * @product   highcharts
          * @requires  modules/timeline
          * @apioption series.timeline

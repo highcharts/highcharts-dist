@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.0 (2019-12-10)
+ * @license Highcharts Gantt JS v8.0.1 (2020-03-02)
  *
  * Tree Grid
  *
@@ -28,7 +28,372 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'mixins/tree-series.js', [_modules['parts/Color.js'], _modules['parts/Utilities.js']], function (Color, U) {
+        /* *
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var extend = U.extend,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            isObject = U.isObject,
+            merge = U.merge,
+            pick = U.pick;
+        var isBoolean = function (x) {
+                return typeof x === 'boolean';
+        }, isFn = function (x) {
+            return typeof x === 'function';
+        };
+        /* eslint-disable valid-jsdoc */
+        /**
+         * @todo Combine buildTree and buildNode with setTreeValues
+         * @todo Remove logic from Treemap and make it utilize this mixin.
+         * @private
+         */
+        var setTreeValues = function setTreeValues(tree,
+            options) {
+                var before = options.before,
+            idRoot = options.idRoot,
+            mapIdToNode = options.mapIdToNode,
+            nodeRoot = mapIdToNode[idRoot],
+            levelIsConstant = (isBoolean(options.levelIsConstant) ?
+                    options.levelIsConstant :
+                    true),
+            points = options.points,
+            point = points[tree.i],
+            optionsPoint = point && point.options || {},
+            childrenTotal = 0,
+            children = [],
+            value;
+            extend(tree, {
+                levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
+                name: pick(point && point.name, ''),
+                visible: (idRoot === tree.id ||
+                    (isBoolean(options.visible) ? options.visible : false))
+            });
+            if (isFn(before)) {
+                tree = before(tree, options);
+            }
+            // First give the children some values
+            tree.children.forEach(function (child, i) {
+                var newOptions = extend({},
+                    options);
+                extend(newOptions, {
+                    index: i,
+                    siblings: tree.children.length,
+                    visible: tree.visible
+                });
+                child = setTreeValues(child, newOptions);
+                children.push(child);
+                if (child.visible) {
+                    childrenTotal += child.val;
+                }
+            });
+            tree.visible = childrenTotal > 0 || tree.visible;
+            // Set the values
+            value = pick(optionsPoint.value, childrenTotal);
+            extend(tree, {
+                children: children,
+                childrenTotal: childrenTotal,
+                isLeaf: tree.visible && !childrenTotal,
+                val: value
+            });
+            return tree;
+        };
+        /**
+         * @private
+         */
+        var getColor = function getColor(node,
+            options) {
+                var index = options.index,
+            mapOptionsToLevel = options.mapOptionsToLevel,
+            parentColor = options.parentColor,
+            parentColorIndex = options.parentColorIndex,
+            series = options.series,
+            colors = options.colors,
+            siblings = options.siblings,
+            points = series.points,
+            getColorByPoint,
+            chartOptionsChart = series.chart.options.chart,
+            point,
+            level,
+            colorByPoint,
+            colorIndexByPoint,
+            color,
+            colorIndex;
+            /**
+             * @private
+             */
+            function variation(color) {
+                var colorVariation = level && level.colorVariation;
+                if (colorVariation) {
+                    if (colorVariation.key === 'brightness') {
+                        return Color.parse(color).brighten(colorVariation.to * (index / siblings)).get();
+                    }
+                }
+                return color;
+            }
+            if (node) {
+                point = points[node.i];
+                level = mapOptionsToLevel[node.level] || {};
+                getColorByPoint = point && level.colorByPoint;
+                if (getColorByPoint) {
+                    colorIndexByPoint = point.index % (colors ?
+                        colors.length :
+                        chartOptionsChart.colorCount);
+                    colorByPoint = colors && colors[colorIndexByPoint];
+                }
+                // Select either point color, level color or inherited color.
+                if (!series.chart.styledMode) {
+                    color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variation(parentColor), series.color);
+                }
+                colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+            }
+            return {
+                color: color,
+                colorIndex: colorIndex
+            };
+        };
+        /**
+         * Creates a map from level number to its given options.
+         *
+         * @private
+         * @function getLevelOptions
+         * @param {object} params
+         *        Object containing parameters.
+         *        - `defaults` Object containing default options. The default options
+         *           are merged with the userOptions to get the final options for a
+         *           specific level.
+         *        - `from` The lowest level number.
+         *        - `levels` User options from series.levels.
+         *        - `to` The highest level number.
+         * @return {Highcharts.Dictionary<object>|null}
+         *         Returns a map from level number to its given options.
+         */
+        var getLevelOptions = function getLevelOptions(params) {
+                var result = null,
+            defaults,
+            converted,
+            i,
+            from,
+            to,
+            levels;
+            if (isObject(params)) {
+                result = {};
+                from = isNumber(params.from) ? params.from : 1;
+                levels = params.levels;
+                converted = {};
+                defaults = isObject(params.defaults) ? params.defaults : {};
+                if (isArray(levels)) {
+                    converted = levels.reduce(function (obj, item) {
+                        var level,
+                            levelIsConstant,
+                            options;
+                        if (isObject(item) && isNumber(item.level)) {
+                            options = merge({}, item);
+                            levelIsConstant = (isBoolean(options.levelIsConstant) ?
+                                options.levelIsConstant :
+                                defaults.levelIsConstant);
+                            // Delete redundant properties.
+                            delete options.levelIsConstant;
+                            delete options.level;
+                            // Calculate which level these options apply to.
+                            level = item.level + (levelIsConstant ? 0 : from - 1);
+                            if (isObject(obj[level])) {
+                                extend(obj[level], options);
+                            }
+                            else {
+                                obj[level] = options;
+                            }
+                        }
+                        return obj;
+                    }, {});
+                }
+                to = isNumber(params.to) ? params.to : 1;
+                for (i = 0; i <= to; i++) {
+                    result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
+                }
+            }
+            return result;
+        };
+        /**
+         * Update the rootId property on the series. Also makes sure that it is
+         * accessible to exporting.
+         *
+         * @private
+         * @function updateRootId
+         *
+         * @param {object} series
+         *        The series to operate on.
+         *
+         * @return {string}
+         *         Returns the resulting rootId after update.
+         */
+        var updateRootId = function (series) {
+                var rootId,
+            options;
+            if (isObject(series)) {
+                // Get the series options.
+                options = isObject(series.options) ? series.options : {};
+                // Calculate the rootId.
+                rootId = pick(series.rootNode, options.rootId, '');
+                // Set rootId on series.userOptions to pick it up in exporting.
+                if (isObject(series.userOptions)) {
+                    series.userOptions.rootId = rootId;
+                }
+                // Set rootId on series to pick it up on next update.
+                series.rootNode = rootId;
+            }
+            return rootId;
+        };
+        var result = {
+                getColor: getColor,
+                getLevelOptions: getLevelOptions,
+                setTreeValues: setTreeValues,
+                updateRootId: updateRootId
+            };
+
+        return result;
+    });
+    _registerModule(_modules, 'parts-gantt/Tree.js', [_modules['parts/Utilities.js']], function (U) {
+        /* *
+         *
+         *  (c) 2016-2020 Highsoft AS
+         *
+         *  Authors: Jon Arild Nygard
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* eslint no-console: 0 */
+        var extend = U.extend,
+            isNumber = U.isNumber,
+            pick = U.pick;
+        var isFunction = function (x) {
+                return typeof x === 'function';
+        };
+        /**
+         * Creates an object map from parent id to childrens index.
+         *
+         * @private
+         * @function Highcharts.Tree#getListOfParents
+         *
+         * @param {Array<*>} data
+         *        List of points set in options. `Array.parent` is parent id of point.
+         *
+         * @param {Array<string>} ids
+         *        List of all point ids.
+         *
+         * @return {Highcharts.Dictionary<Array<*>>}
+         *         Map from parent id to children index in data
+         */
+        var getListOfParents = function (data,
+            ids) {
+                var listOfParents = data.reduce(function (prev,
+            curr) {
+                    var parent = pick(curr.parent, '');
+                if (typeof prev[parent] === 'undefined') {
+                    prev[parent] = [];
+                }
+                prev[parent].push(curr);
+                return prev;
+            }, {}), parents = Object.keys(listOfParents);
+            // If parent does not exist, hoist parent to root of tree.
+            parents.forEach(function (parent, list) {
+                var children = listOfParents[parent];
+                if ((parent !== '') && (ids.indexOf(parent) === -1)) {
+                    children.forEach(function (child) {
+                        list[''].push(child);
+                    });
+                    delete list[parent];
+                }
+            });
+            return listOfParents;
+        };
+        var getNode = function (id,
+            parent,
+            level,
+            data,
+            mapOfIdToChildren,
+            options) {
+                var descendants = 0,
+            height = 0,
+            after = options && options.after,
+            before = options && options.before,
+            node = {
+                    data: data,
+                    depth: level - 1,
+                    id: id,
+                    level: level,
+                    parent: parent
+                },
+            start,
+            end,
+            children;
+            // Allow custom logic before the children has been created.
+            if (isFunction(before)) {
+                before(node, options);
+            }
+            // Call getNode recursively on the children. Calulate the height of the
+            // node, and the number of descendants.
+            children = ((mapOfIdToChildren[id] || [])).map(function (child) {
+                var node = getNode(child.id,
+                    id, (level + 1),
+                    child,
+                    mapOfIdToChildren,
+                    options),
+                    childStart = child.start,
+                    childEnd = (child.milestone === true ?
+                        childStart :
+                        child.end);
+                // Start should be the lowest child.start.
+                start = ((!isNumber(start) || childStart < start) ?
+                    childStart :
+                    start);
+                // End should be the largest child.end.
+                // If child is milestone, then use start as end.
+                end = ((!isNumber(end) || childEnd > end) ?
+                    childEnd :
+                    end);
+                descendants = descendants + 1 + node.descendants;
+                height = Math.max(node.height + 1, height);
+                return node;
+            });
+            // Calculate start and end for point if it is not already explicitly set.
+            if (data) {
+                data.start = pick(data.start, start);
+                data.end = pick(data.end, end);
+            }
+            extend(node, {
+                children: children,
+                descendants: descendants,
+                height: height
+            });
+            // Allow custom logic after the children has been created.
+            if (isFunction(after)) {
+                after(node, options);
+            }
+            return node;
+        };
+        var getTree = function (data,
+            options) {
+                var ids = data.map(function (d) {
+                    return d.id;
+            }), mapOfIdToChildren = getListOfParents(data, ids);
+            return getNode('', null, 1, null, mapOfIdToChildren, options);
+        };
+        var Tree = {
+                getListOfParents: getListOfParents,
+                getNode: getNode,
+                getTree: getTree
+            };
+
+        return Tree;
+    });
+    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Globals.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (H, Tick, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -39,19 +404,22 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
+        var addEvent = U.addEvent,
+            defined = U.defined,
             erase = U.erase,
+            find = U.find,
             isArray = U.isArray,
             isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick,
+            timeUnits = U.timeUnits,
             wrap = U.wrap;
-        var addEvent = H.addEvent,
-            argsToArray = function (args) {
+        var argsToArray = function (args) {
                 return Array.prototype.slice.call(args, 1);
         }, dateFormat = H.dateFormat, isObject = function (x) {
             // Always use strict mode
             return U.isObject(x, true);
-        }, merge = H.merge, Chart = H.Chart, Axis = H.Axis, Tick = H.Tick;
+        }, Chart = H.Chart, Axis = H.Axis;
         var applyGridOptions = function applyGridOptions(axis) {
                 var options = axis.options;
             // Center-align by default
@@ -213,17 +581,21 @@
             });
             return dimensions;
         };
-        // Add custom date formats
+        // Adds week date format
         H.dateFormats.W = function (timestamp) {
-            var d = new Date(timestamp),
-                yearStart,
-                weekNo;
-            d.setHours(0, 0, 0, 0);
-            d.setDate(d.getDate() - (d.getDay() || 7));
-            yearStart = new Date(d.getFullYear(), 0, 1);
-            weekNo =
-                Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-            return weekNo;
+            var d = new this.Date(timestamp);
+            var firstDay = (this.get('Day',
+                d) + 6) % 7;
+            var thursday = new this.Date(d.valueOf());
+            this.set('Date', thursday, this.get('Date', d) - firstDay + 3);
+            var firstThursday = new this.Date(this.get('FullYear',
+                thursday), 0, 1);
+            if (this.get('Day', firstThursday) !== 4) {
+                this.set('Month', d, 0);
+                this.set('Date', d, 1 + (11 - this.get('Day', firstThursday)) % 7);
+            }
+            return (1 +
+                Math.floor((thursday.valueOf() - firstThursday.valueOf()) / 604800000)).toString();
         };
         // First letter of the day of the week, e.g. 'M' for 'Monday'.
         H.dateFormats.E = function (timestamp) {
@@ -533,7 +905,7 @@
                                     unitName = 'year';
                                     count = parentInfo.count * 10;
                                 }
-                                unitRange = H.timeUnits[unitName];
+                                unitRange = timeUnits[unitName];
                                 this.tickInterval = unitRange * count;
                                 return this.getTimeTicks({
                                     unitRange: unitRange,
@@ -763,7 +1135,7 @@
                             axis).series[0],
                         isFirst = value === tickPos[0],
                         isLast = value === tickPos[tickPos.length - 1],
-                        point = series && H.find(series.options.data,
+                        point = series && find(series.options.data,
                         function (p) {
                             return p[axis.isXAxis ? 'x' : 'y'] === value;
                     });
@@ -858,387 +1230,23 @@
         addEvent(Chart, 'afterSetChartSize', onGridAxisAfterSetChartSize);
 
     });
-    _registerModule(_modules, 'parts-gantt/Tree.js', [_modules['parts/Utilities.js']], function (U) {
-        /* *
-         *
-         *  (c) 2016-2019 Highsoft AS
-         *
-         *  Authors: Jon Arild Nygard
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        /* eslint no-console: 0 */
-        var extend = U.extend,
-            isNumber = U.isNumber,
-            pick = U.pick;
-        var isFunction = function (x) {
-                return typeof x === 'function';
-        };
-        /**
-         * Creates an object map from parent id to childrens index.
-         *
-         * @private
-         * @function Highcharts.Tree#getListOfParents
-         *
-         * @param {Array<*>} data
-         *        List of points set in options. `Array.parent` is parent id of point.
-         *
-         * @param {Array<string>} ids
-         *        List of all point ids.
-         *
-         * @return {Highcharts.Dictionary<Array<*>>}
-         *         Map from parent id to children index in data
-         */
-        var getListOfParents = function (data,
-            ids) {
-                var listOfParents = data.reduce(function (prev,
-            curr) {
-                    var parent = pick(curr.parent, '');
-                if (typeof prev[parent] === 'undefined') {
-                    prev[parent] = [];
-                }
-                prev[parent].push(curr);
-                return prev;
-            }, {}), parents = Object.keys(listOfParents);
-            // If parent does not exist, hoist parent to root of tree.
-            parents.forEach(function (parent, list) {
-                var children = listOfParents[parent];
-                if ((parent !== '') && (ids.indexOf(parent) === -1)) {
-                    children.forEach(function (child) {
-                        list[''].push(child);
-                    });
-                    delete list[parent];
-                }
-            });
-            return listOfParents;
-        };
-        var getNode = function (id,
-            parent,
-            level,
-            data,
-            mapOfIdToChildren,
-            options) {
-                var descendants = 0,
-            height = 0,
-            after = options && options.after,
-            before = options && options.before,
-            node = {
-                    data: data,
-                    depth: level - 1,
-                    id: id,
-                    level: level,
-                    parent: parent
-                },
-            start,
-            end,
-            children;
-            // Allow custom logic before the children has been created.
-            if (isFunction(before)) {
-                before(node, options);
-            }
-            // Call getNode recursively on the children. Calulate the height of the
-            // node, and the number of descendants.
-            children = ((mapOfIdToChildren[id] || [])).map(function (child) {
-                var node = getNode(child.id,
-                    id, (level + 1),
-                    child,
-                    mapOfIdToChildren,
-                    options),
-                    childStart = child.start,
-                    childEnd = (child.milestone === true ?
-                        childStart :
-                        child.end);
-                // Start should be the lowest child.start.
-                start = ((!isNumber(start) || childStart < start) ?
-                    childStart :
-                    start);
-                // End should be the largest child.end.
-                // If child is milestone, then use start as end.
-                end = ((!isNumber(end) || childEnd > end) ?
-                    childEnd :
-                    end);
-                descendants = descendants + 1 + node.descendants;
-                height = Math.max(node.height + 1, height);
-                return node;
-            });
-            // Calculate start and end for point if it is not already explicitly set.
-            if (data) {
-                data.start = pick(data.start, start);
-                data.end = pick(data.end, end);
-            }
-            extend(node, {
-                children: children,
-                descendants: descendants,
-                height: height
-            });
-            // Allow custom logic after the children has been created.
-            if (isFunction(after)) {
-                after(node, options);
-            }
-            return node;
-        };
-        var getTree = function (data,
-            options) {
-                var ids = data.map(function (d) {
-                    return d.id;
-            }), mapOfIdToChildren = getListOfParents(data, ids);
-            return getNode('', null, 1, null, mapOfIdToChildren, options);
-        };
-        var Tree = {
-                getListOfParents: getListOfParents,
-                getNode: getNode,
-                getTree: getTree
-            };
-
-        return Tree;
-    });
-    _registerModule(_modules, 'mixins/tree-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var extend = U.extend,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            pick = U.pick;
-        var isBoolean = function (x) {
-                return typeof x === 'boolean';
-        }, isFn = function (x) {
-            return typeof x === 'function';
-        }, merge = H.merge;
-        /* eslint-disable valid-jsdoc */
-        /**
-         * @todo Combine buildTree and buildNode with setTreeValues
-         * @todo Remove logic from Treemap and make it utilize this mixin.
-         * @private
-         */
-        var setTreeValues = function setTreeValues(tree,
-            options) {
-                var before = options.before,
-            idRoot = options.idRoot,
-            mapIdToNode = options.mapIdToNode,
-            nodeRoot = mapIdToNode[idRoot],
-            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                    options.levelIsConstant :
-                    true),
-            points = options.points,
-            point = points[tree.i],
-            optionsPoint = point && point.options || {},
-            childrenTotal = 0,
-            children = [],
-            value;
-            extend(tree, {
-                levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
-                name: pick(point && point.name, ''),
-                visible: (idRoot === tree.id ||
-                    (isBoolean(options.visible) ? options.visible : false))
-            });
-            if (isFn(before)) {
-                tree = before(tree, options);
-            }
-            // First give the children some values
-            tree.children.forEach(function (child, i) {
-                var newOptions = extend({},
-                    options);
-                extend(newOptions, {
-                    index: i,
-                    siblings: tree.children.length,
-                    visible: tree.visible
-                });
-                child = setTreeValues(child, newOptions);
-                children.push(child);
-                if (child.visible) {
-                    childrenTotal += child.val;
-                }
-            });
-            tree.visible = childrenTotal > 0 || tree.visible;
-            // Set the values
-            value = pick(optionsPoint.value, childrenTotal);
-            extend(tree, {
-                children: children,
-                childrenTotal: childrenTotal,
-                isLeaf: tree.visible && !childrenTotal,
-                val: value
-            });
-            return tree;
-        };
-        /**
-         * @private
-         */
-        var getColor = function getColor(node,
-            options) {
-                var index = options.index,
-            mapOptionsToLevel = options.mapOptionsToLevel,
-            parentColor = options.parentColor,
-            parentColorIndex = options.parentColorIndex,
-            series = options.series,
-            colors = options.colors,
-            siblings = options.siblings,
-            points = series.points,
-            getColorByPoint,
-            chartOptionsChart = series.chart.options.chart,
-            point,
-            level,
-            colorByPoint,
-            colorIndexByPoint,
-            color,
-            colorIndex;
-            /**
-             * @private
-             */
-            function variation(color) {
-                var colorVariation = level && level.colorVariation;
-                if (colorVariation) {
-                    if (colorVariation.key === 'brightness') {
-                        return H.color(color).brighten(colorVariation.to * (index / siblings)).get();
-                    }
-                }
-                return color;
-            }
-            if (node) {
-                point = points[node.i];
-                level = mapOptionsToLevel[node.level] || {};
-                getColorByPoint = point && level.colorByPoint;
-                if (getColorByPoint) {
-                    colorIndexByPoint = point.index % (colors ?
-                        colors.length :
-                        chartOptionsChart.colorCount);
-                    colorByPoint = colors && colors[colorIndexByPoint];
-                }
-                // Select either point color, level color or inherited color.
-                if (!series.chart.styledMode) {
-                    color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variation(parentColor), series.color);
-                }
-                colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
-            }
-            return {
-                color: color,
-                colorIndex: colorIndex
-            };
-        };
-        /**
-         * Creates a map from level number to its given options.
-         *
-         * @private
-         * @function getLevelOptions
-         * @param {object} params
-         *        Object containing parameters.
-         *        - `defaults` Object containing default options. The default options
-         *           are merged with the userOptions to get the final options for a
-         *           specific level.
-         *        - `from` The lowest level number.
-         *        - `levels` User options from series.levels.
-         *        - `to` The highest level number.
-         * @return {Highcharts.Dictionary<object>|null}
-         *         Returns a map from level number to its given options.
-         */
-        var getLevelOptions = function getLevelOptions(params) {
-                var result = null,
-            defaults,
-            converted,
-            i,
-            from,
-            to,
-            levels;
-            if (isObject(params)) {
-                result = {};
-                from = isNumber(params.from) ? params.from : 1;
-                levels = params.levels;
-                converted = {};
-                defaults = isObject(params.defaults) ? params.defaults : {};
-                if (isArray(levels)) {
-                    converted = levels.reduce(function (obj, item) {
-                        var level,
-                            levelIsConstant,
-                            options;
-                        if (isObject(item) && isNumber(item.level)) {
-                            options = merge({}, item);
-                            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                                options.levelIsConstant :
-                                defaults.levelIsConstant);
-                            // Delete redundant properties.
-                            delete options.levelIsConstant;
-                            delete options.level;
-                            // Calculate which level these options apply to.
-                            level = item.level + (levelIsConstant ? 0 : from - 1);
-                            if (isObject(obj[level])) {
-                                extend(obj[level], options);
-                            }
-                            else {
-                                obj[level] = options;
-                            }
-                        }
-                        return obj;
-                    }, {});
-                }
-                to = isNumber(params.to) ? params.to : 1;
-                for (i = 0; i <= to; i++) {
-                    result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
-                }
-            }
-            return result;
-        };
-        /**
-         * Update the rootId property on the series. Also makes sure that it is
-         * accessible to exporting.
-         *
-         * @private
-         * @function updateRootId
-         *
-         * @param {object} series
-         *        The series to operate on.
-         *
-         * @return {string}
-         *         Returns the resulting rootId after update.
-         */
-        var updateRootId = function (series) {
-                var rootId,
-            options;
-            if (isObject(series)) {
-                // Get the series options.
-                options = isObject(series.options) ? series.options : {};
-                // Calculate the rootId.
-                rootId = pick(series.rootNode, options.rootId, '');
-                // Set rootId on series.userOptions to pick it up in exporting.
-                if (isObject(series.userOptions)) {
-                    series.userOptions.rootId = rootId;
-                }
-                // Set rootId on series to pick it up on next update.
-                series.rootNode = rootId;
-            }
-            return rootId;
-        };
-        var result = {
-                getColor: getColor,
-                getLevelOptions: getLevelOptions,
-                setTreeValues: setTreeValues,
-                updateRootId: updateRootId
-            };
-
-        return result;
-    });
     _registerModule(_modules, 'modules/broken-axis.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2019 Torstein Honsi
+         *  (c) 2009-2020 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
+        var addEvent = U.addEvent,
+            extend = U.extend,
+            find = U.find,
+            fireEvent = U.fireEvent,
             isArray = U.isArray,
             pick = U.pick;
-        var addEvent = H.addEvent,
-            find = H.find,
-            fireEvent = H.fireEvent,
-            Axis = H.Axis,
+        var Axis = H.Axis,
             Series = H.Series;
         /**
          * Returns the first break found where the x is larger then break.from and
@@ -1654,13 +1662,13 @@
              * Together with [gapSize](plotOptions.series.gapSize), this option defines
              * where to draw gaps in the graph.
              *
-             * When the `gapUnit` is `relative` (default), a gap size of 5 means
+             * When the `gapUnit` is `"relative"` (default), a gap size of 5 means
              * that if the distance between two points is greater than five times
              * that of the two closest points, the graph will be broken.
              *
-             * When the `gapUnit` is `value`, the gap is based on absolute axis values,
-             * which on a datetime axis is milliseconds. This also applies to the
-             * navigator series that inherits gap options from the base series.
+             * When the `gapUnit` is `"value"`, the gap is based on absolute axis
+             * values, which on a datetime axis is milliseconds. This also applies
+             * to the navigator series that inherits gap options from the base series.
              *
              * @see [gapSize](plotOptions.series.gapSize)
              *
@@ -1722,7 +1730,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-gantt/TreeGrid.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/Tree.js'], _modules['mixins/tree-series.js']], function (H, U, Tree, mixinTreeSeries) {
+    _registerModule(_modules, 'parts-gantt/TreeGrid.js', [_modules['parts/Globals.js'], _modules['mixins/tree-series.js'], _modules['parts/Tick.js'], _modules['parts-gantt/Tree.js'], _modules['parts/Utilities.js']], function (H, mixinTreeSeries, Tick, Tree, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -1734,21 +1742,23 @@
          *
          * */
         /* eslint no-console: 0 */
-        var defined = U.defined,
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            fireEvent = U.fireEvent,
             extend = U.extend,
             isNumber = U.isNumber,
             isString = U.isString,
+            merge = U.merge,
             pick = U.pick,
             wrap = U.wrap;
-        var addEvent = H.addEvent,
-            argsToArray = function (args) {
+        var argsToArray = function (args) {
                 return Array.prototype.slice.call(args, 1);
-        }, find = H.find, fireEvent = H.fireEvent, getLevelOptions = mixinTreeSeries.getLevelOptions, merge = H.merge, isBoolean = function (x) {
+        }, find = U.find, getLevelOptions = mixinTreeSeries.getLevelOptions, isBoolean = function (x) {
             return typeof x === 'boolean';
         }, isObject = function (x) {
             // Always use strict mode.
             return U.isObject(x, true);
-        }, GridAxis = H.Axis, GridAxisTick = H.Tick;
+        }, GridAxis = H.Axis, GridAxisTick = Tick;
         var override = function (obj,
             methods) {
                 var method,
@@ -2217,7 +2227,7 @@
                     // its dependency on axis.max.
                     if (e.type === 'beforeRender') {
                         removeFoundExtremesEvent =
-                            H.addEvent(axis, 'foundExtremes', function () {
+                            addEvent(axis, 'foundExtremes', function () {
                                 treeGrid.collapsedNodes.forEach(function (node) {
                                     var breaks = collapse(axis,
                                         node);
@@ -2515,14 +2525,14 @@
                     [label, tick.labelIcon].forEach(function (object) {
                         if (!object.attachedTreeGridEvents) {
                             // On hover
-                            H.addEvent(object.element, 'mouseover', function () {
+                            addEvent(object.element, 'mouseover', function () {
                                 onTickHover(label);
                             });
                             // On hover out
-                            H.addEvent(object.element, 'mouseout', function () {
+                            addEvent(object.element, 'mouseout', function () {
                                 onTickHoverExit(label, labelOptions);
                             });
-                            H.addEvent(object.element, 'click', function () {
+                            addEvent(object.element, 'click', function () {
                                 tick.toggleCollapse();
                             });
                             object.attachedTreeGridEvents = true;

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Indicator series type for Highstock
  *
@@ -37,7 +37,8 @@
          *
          * */
         var defined = U.defined,
-            isArray = U.isArray;
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         var SMA = H.seriesTypes.sma;
         /* eslint-disable valid-jsdoc */
         /**
@@ -67,7 +68,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('pivotpoints', 'sma', 
+        seriesType('pivotpoints', 'sma', 
         /**
          * Pivot points indicator. This series requires the `linkedTo` option to be
          * set and should be loaded after `stock/indicators/indicators.js` file.

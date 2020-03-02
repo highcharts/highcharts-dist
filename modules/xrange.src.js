@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * X-range series
  *
@@ -28,12 +28,12 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/xrange.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/xrange.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
         /* *
          *
          *  X-range series module
          *
-         *  (c) 2010-2019 Torstein Honsi, Lars A. V. Cabrera
+         *  (c) 2010-2020 Torstein Honsi, Lars A. V. Cabrera
          *
          *  License: www.highcharts.com/license
          *
@@ -48,21 +48,20 @@
         * @type {number|undefined}
         * @requires modules/xrange
         */
-        var clamp = U.clamp,
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
             correctFloat = U.correctFloat,
             defined = U.defined,
+            find = U.find,
             isNumber = U.isNumber,
             isObject = U.isObject,
-            pick = U.pick;
-        var addEvent = H.addEvent,
-            color = H.color,
-            columnType = H.seriesTypes.column,
-            find = H.find,
-            merge = H.merge,
-            seriesType = H.seriesType,
+            merge = U.merge,
+            pick = U.pick,
+            seriesType = U.seriesType;
+        var columnType = H.seriesTypes.column,
             seriesTypes = H.seriesTypes,
             Axis = H.Axis,
-            Point = H.Point,
             Series = H.Series;
         /**
          * Return color of a point based on its category.
@@ -117,7 +116,7 @@
          *               edgeWidth, findNearestPointBy, getExtremesFromAll,
          *               negativeColor, pointInterval, pointIntervalUnit,
          *               pointPlacement, pointRange, pointStart, softThreshold,
-         *               stacking, threshold, data
+         *               stacking, threshold, data, dataSorting
          * @requires     modules/xrange
          * @optionparent plotOptions.xrange
          */
@@ -315,7 +314,8 @@
                     dlLeft,
                     dlRight,
                     dlWidth,
-                    clipRectWidth;
+                    clipRectWidth,
+                    tooltipYOffset;
                 if (minPointLength) {
                     widthDifference = minPointLength - length;
                     if (widthDifference < 0) {
@@ -364,10 +364,12 @@
                 var tooltipPos = point.tooltipPos;
                 var xIndex = !inverted ? 0 : 1;
                 var yIndex = !inverted ? 1 : 0;
+                tooltipYOffset = series.columnMetrics ?
+                    series.columnMetrics.offset : -metrics.width / 2;
                 // Limit position by the correct axis size (#9727)
                 tooltipPos[xIndex] = clamp(tooltipPos[xIndex] + ((!inverted ? 1 : -1) * (xAxis.reversed ? -1 : 1) *
                     (length / 2)), 0, xAxis.len - 1);
-                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((!inverted ? -1 : 1) * (metrics.width / 2)), 0, yAxis.len - 1);
+                tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((inverted ? -1 : 1) * tooltipYOffset), 0, yAxis.len - 1);
                 // Add a partShapeArgs to the point, based on the shapeArgs property
                 partialFill = point.partialFill;
                 if (partialFill) {
@@ -445,7 +447,7 @@
                     animation = pick(series.chart.options.chart.animation,
                     stateOpts.animation),
                     fill;
-                if (!point.isNull) {
+                if (!point.isNull && point.visible !== false) {
                     // Original graphic
                     if (graphic) { // update
                         graphic.rect[verb](shapeArgs);
@@ -662,7 +664,7 @@
          * @excluding boostThreshold, crisp, cropThreshold, depth, edgeColor, edgeWidth,
          *            findNearestPointBy, getExtremesFromAll, negativeColor,
          *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
-         *            pointStart, softThreshold, stacking, threshold
+         *            pointStart, softThreshold, stacking, threshold, dataSorting
          * @product   highcharts highstock gantt
          * @requires  modules/xrange
          * @apioption series.xrange

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * All technical indicators for Highstock
  *
@@ -28,17 +28,17 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Utilities.js']], function (U) {
         /**
          *
-         *  (c) 2010-2019 Daniel Studencki
+         *  (c) 2010-2020 Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = H.error;
+        var error = U.error;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
                 /**
@@ -98,14 +98,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
+        var addEvent = U.addEvent,
+            error = U.error,
+            extend = U.extend,
             isArray = U.isArray,
             pick = U.pick,
+            seriesType = U.seriesType,
             splat = U.splat;
-        var error = H.error,
-            Series = H.Series,
-            addEvent = H.addEvent,
-            seriesType = H.seriesType,
+        var Series = H.Series,
             seriesTypes = H.seriesTypes,
             ohlcProto = H.seriesTypes.ohlc.prototype,
             generateMessage = requiredIndicatorMixin.generateMessage;
@@ -445,14 +445,15 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/accumulation-distribution.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/accumulation-distribution.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
-        var seriesType = H.seriesType;
+        var error = U.error,
+            seriesType = U.seriesType;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -532,7 +533,7 @@
                     return;
                 }
                 if (!volumeSeries) {
-                    H.error('Series ' +
+                    error('Series ' +
                         volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                     return;
@@ -580,7 +581,8 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            isArray = U.isArray;
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         var noop = H.noop;
         /**
          * The AO series type
@@ -591,7 +593,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('ao', 'sma', 
+        seriesType('ao', 'sma', 
         /**
          * Awesome Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -760,17 +762,17 @@
     _registerModule(_modules, 'mixins/multipe-lines.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /**
          *
-         *  (c) 2010-2019 Wojciech Chmiel
+         *  (c) 2010-2020 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
+        var defined = U.defined,
+            error = U.error,
+            merge = U.merge;
         var each = H.each,
-            merge = H.merge,
-            error = H.error,
             SMA = H.seriesTypes.sma;
         /**
          * Mixin useful for all indicators that have more than one line.
@@ -947,7 +949,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'indicators/aroon.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/multipe-lines.js']], function (H, U, multipleLinesMixin) {
+    _registerModule(_modules, 'indicators/aroon.src.js', [_modules['parts/Utilities.js'], _modules['mixins/multipe-lines.js']], function (U, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -955,7 +957,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var pick = U.pick;
+        var merge = U.merge,
+            pick = U.pick,
+            seriesType = U.seriesType;
         /* eslint-disable valid-jsdoc */
         // Utils
         // Index of element with extreme value from array (min or max)
@@ -985,7 +989,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('aroon', 'sma', 
+        seriesType('aroon', 'sma', 
         /**
          * Aroon. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js`.
@@ -1050,7 +1054,7 @@
         /**
          * @lends Highcharts.Series#
          */
-        H.merge(multipleLinesMixin, {
+        merge(multipleLinesMixin, {
             nameBase: 'Aroon',
             pointArrayMap: ['y', 'aroonDown'],
             pointValKey: 'y',
@@ -1115,7 +1119,7 @@
         ''; // to avoid removal of the above jsdoc
 
     });
-    _registerModule(_modules, 'indicators/aroon-oscillator.src.js', [_modules['parts/Globals.js'], _modules['mixins/multipe-lines.js'], _modules['mixins/indicator-required.js']], function (H, multipleLinesMixin, requiredIndicatorMixin) {
+    _registerModule(_modules, 'indicators/aroon-oscillator.src.js', [_modules['parts/Globals.js'], _modules['mixins/multipe-lines.js'], _modules['mixins/indicator-required.js'], _modules['parts/Utilities.js']], function (H, multipleLinesMixin, requiredIndicatorMixin, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1123,6 +1127,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var merge = U.merge,
+            seriesType = U.seriesType;
         var AROON = H.seriesTypes.aroon,
             requiredIndicator = requiredIndicatorMixin;
         /**
@@ -1134,7 +1140,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('aroonoscillator', 'aroon', 
+        seriesType('aroonoscillator', 'aroon', 
         /**
          * Aroon Oscillator. This series requires the `linkedTo` option to be set
          * and should be loaded after the `stock/indicators/indicators.js` and
@@ -1177,7 +1183,7 @@
         /**
          * @lends Highcharts.Series#
          */
-        H.merge(multipleLinesMixin, {
+        merge(multipleLinesMixin, {
             nameBase: 'Aroon Oscillator',
             pointArrayMap: ['y'],
             pointValKey: 'y',
@@ -1235,7 +1241,7 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/atr.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/atr.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1243,9 +1249,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType,
-            UNDEFINED;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
+        var UNDEFINED;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -1388,9 +1394,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var merge = H.merge,
-            SMA = H.seriesTypes.sma;
+        var isArray = U.isArray,
+            merge = U.merge,
+            seriesType = U.seriesType;
+        var SMA = H.seriesTypes.sma;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -1420,7 +1427,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('bb', 'sma', 
+        seriesType('bb', 'sma', 
         /**
          * Bollinger bands (BB). This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js` file.
@@ -1492,7 +1499,7 @@
         /**
          * @lends Highcharts.Series#
          */
-        H.merge(multipleLinesMixin, {
+        merge(multipleLinesMixin, {
             pointArrayMap: ['top', 'middle', 'bottom'],
             pointValKey: 'middle',
             nameComponents: ['period', 'standardDeviation'],
@@ -1576,15 +1583,15 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/cci.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/cci.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -1705,10 +1712,10 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/cmf.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/cmf.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2019 Highsoft AS
+         *  (c) 2010-2020 Highsoft AS
          *
          *  Author: Sebastian Domas
          *
@@ -1719,6 +1726,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesType = U.seriesType;
         /**
          * The CMF series type.
          *
@@ -1728,7 +1736,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('cmf', 'sma', 
+        seriesType('cmf', 'sma', 
         /**
          * Chaikin Money Flow indicator (cmf).
          *
@@ -1906,7 +1914,7 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/dpo.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/dpo.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1915,7 +1923,8 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            pick = U.pick;
+            pick = U.pick,
+            seriesType = U.seriesType;
         /* eslint-disable valid-jsdoc */
         // Utils
         /**
@@ -1939,7 +1948,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('dpo', 'sma', 
+        seriesType('dpo', 'sma', 
         /**
          * Detrended Price Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`.
@@ -2040,7 +2049,7 @@
         ''; // to include the above in the js output'
 
     });
-    _registerModule(_modules, 'indicators/ema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/ema.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2049,8 +2058,8 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            isArray = U.isArray;
-        var seriesType = H.seriesType;
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         /**
          * The EMA series type.
          *
@@ -2181,10 +2190,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
+        var correctFloat = U.correctFloat,
+            error = U.error,
+            seriesType = U.seriesType;
         var EMA = H.seriesTypes.ema,
             AD = H.seriesTypes.ad,
-            error = H.error,
             requiredIndicator = requiredIndicatorMixin;
         /**
          * The Chaikin series type.
@@ -2195,7 +2205,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('chaikin', 'ema', 
+        seriesType('chaikin', 'ema', 
         /**
          * Chaikin Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -2334,7 +2344,8 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            isArray = U.isArray;
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         var EMAindicator = H.seriesTypes.ema,
             requiredIndicator = requiredIndicatorMixin;
         /**
@@ -2346,7 +2357,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('dema', 'ema', 
+        seriesType('dema', 'ema', 
         /**
          * Double exponential moving average (DEMA) indicator. This series requires
          * `linkedTo` option to be set and should be loaded after the
@@ -2483,7 +2494,8 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            isArray = U.isArray;
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         var EMAindicator = H.seriesTypes.ema,
             requiredIndicator = requiredIndicatorMixin;
         /**
@@ -2495,7 +2507,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('tema', 'ema', 
+        seriesType('tema', 'ema', 
         /**
          * Triple exponential moving average (TEMA) indicator. This series requires
          * `linkedTo` option to be set and should be loaded after the
@@ -2666,7 +2678,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
+        var correctFloat = U.correctFloat,
+            seriesType = U.seriesType;
         var TEMA = H.seriesTypes.tema;
         /**
          * The TRIX series type.
@@ -2677,7 +2690,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('trix', 'tema', 
+        seriesType('trix', 'tema', 
         /**
          * Triple exponential average (TRIX) oscillator. This series requires
          * `linkedTo` option to be set.
@@ -2738,7 +2751,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/apo.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicatorMixin) {
+    _registerModule(_modules, 'indicators/apo.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2746,8 +2759,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var error = U.error,
+            seriesType = U.seriesType;
         var EMA = H.seriesTypes.ema,
-            error = H.error,
             requiredIndicator = requiredIndicatorMixin;
         /**
          * The APO series type.
@@ -2758,7 +2772,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('apo', 'ema', 
+        seriesType('apo', 'ema', 
         /**
          * Absolute Price Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -2875,7 +2889,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/ichimoku-kinko-hyo.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/ichimoku-kinko-hyo.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2884,13 +2898,13 @@
          *
          * */
         /* eslint-enable @typescript-eslint/interface-name-prefix */
+        var color = Color.parse;
         var defined = U.defined,
             isArray = U.isArray,
-            objectEach = U.objectEach;
+            merge = U.merge,
+            objectEach = U.objectEach,
+            seriesType = U.seriesType;
         var UNDEFINED,
-            seriesType = H.seriesType,
-            merge = H.merge,
-            color = H.color,
             SMA = H.seriesTypes.sma;
         /* eslint-disable require-jsdoc */
         // Utils:
@@ -3598,11 +3612,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
+        var correctFloat = U.correctFloat,
+            merge = U.merge,
+            seriesType = U.seriesType;
         var SMA = H.seriesTypes.sma,
             EMA = H.seriesTypes.ema,
-            ATR = H.seriesTypes.atr,
-            merge = H.merge;
+            ATR = H.seriesTypes.atr;
         /**
          * The Keltner Channels series type.
          *
@@ -3612,7 +3627,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('keltnerchannels', 'sma', 
+        seriesType('keltnerchannels', 'sma', 
         /**
          * Keltner Channels. This series requires the `linkedTo` option to be set
          * and should be loaded after the `stock/indicators/indicators.js`,
@@ -3788,10 +3803,10 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            defined = U.defined;
-        var seriesType = H.seriesType,
-            noop = H.noop,
-            merge = H.merge,
+            defined = U.defined,
+            merge = U.merge,
+            seriesType = U.seriesType;
+        var noop = H.noop,
             SMA = H.seriesTypes.sma,
             EMA = H.seriesTypes.ema;
         /**
@@ -4149,19 +4164,21 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/mfi.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/mfi.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  Money Flow Index indicator for Highstock
          *
-         *  (c) 2010-2019 Grzegorz Blachliński
+         *  (c) 2010-2020 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
+        var error = U.error,
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable require-jsdoc */
         // Utils:
         function sumArray(array) {
@@ -4188,7 +4205,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('mfi', 'sma', 
+        seriesType('mfi', 'sma', 
         /**
          * Money Flow Index. This series requires `linkedTo` option to be set and
          * should be loaded after the `stock/indicators/indicators.js` file.
@@ -4252,7 +4269,7 @@
                     MFIPoint,
                     i;
                 if (!volumeSeries) {
-                    H.error('Series ' +
+                    error('Series ' +
                         params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
                     return;
@@ -4324,7 +4341,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/momentum.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/momentum.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4332,8 +4349,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable require-jsdoc */
         function populateAverage(points, xVal, yVal, i, period) {
             var mmY = yVal[i - 1][3] - yVal[i - period - 1][3],
@@ -4436,7 +4453,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/natr.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/natr.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4444,6 +4461,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesType = U.seriesType;
         var ATR = H.seriesTypes.atr;
         /**
          * The NATR series type.
@@ -4454,7 +4472,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('natr', 'sma', 
+        seriesType('natr', 'sma', 
         /**
          * Normalized average true range indicator (NATR). This series requires
          * `linkedTo` option to be set and should be loaded after the
@@ -4522,7 +4540,8 @@
          *
          * */
         var defined = U.defined,
-            isArray = U.isArray;
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         var SMA = H.seriesTypes.sma;
         /* eslint-disable valid-jsdoc */
         /**
@@ -4552,7 +4571,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('pivotpoints', 'sma', 
+        seriesType('pivotpoints', 'sma', 
         /**
          * Pivot points indicator. This series requires the `linkedTo` option to be
          * set and should be loaded after `stock/indicators/indicators.js` file.
@@ -4853,9 +4872,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
+        var correctFloat = U.correctFloat,
+            error = U.error,
+            seriesType = U.seriesType;
         var EMA = H.seriesTypes.ema,
-            error = H.error,
             requiredIndicator = requiredIndicatorMixin;
         /**
          * The PPO series type.
@@ -4866,7 +4886,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('ppo', 'ema', 
+        seriesType('ppo', 'ema', 
         /**
          * Percentage Price Oscillator. This series requires the
          * `linkedTo` option to be set and should be loaded after the
@@ -4987,7 +5007,7 @@
     _registerModule(_modules, 'mixins/reduce-array.js', [_modules['parts/Globals.js']], function (H) {
         /**
          *
-         *  (c) 2010-2019 Pawel Fus & Daniel Studencki
+         *  (c) 2010-2020 Pawel Fus & Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
@@ -5044,7 +5064,7 @@
 
         return reduceArrayMixin;
     });
-    _registerModule(_modules, 'indicators/price-channel.src.js', [_modules['parts/Globals.js'], _modules['mixins/reduce-array.js'], _modules['mixins/multipe-lines.js']], function (H, reduceArrayMixin, multipleLinesMixin) {
+    _registerModule(_modules, 'indicators/price-channel.src.js', [_modules['parts/Utilities.js'], _modules['mixins/reduce-array.js'], _modules['mixins/multipe-lines.js']], function (U, reduceArrayMixin, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -5052,8 +5072,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getArrayExtremes = reduceArrayMixin.getArrayExtremes,
-            merge = H.merge;
+        var merge = U.merge,
+            seriesType = U.seriesType;
+        var getArrayExtremes = reduceArrayMixin.getArrayExtremes;
         /**
          * The Price Channel series type.
          *
@@ -5063,7 +5084,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('pc', 'sma', 
+        seriesType('pc', 'sma', 
         /**
          * Price channel (PC). This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js`.
@@ -5199,9 +5220,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var merge = H.merge,
-            SMA = H.seriesTypes.sma;
+        var isArray = U.isArray,
+            merge = U.merge,
+            seriesType = U.seriesType;
+        var SMA = H.seriesTypes.sma;
         /**
          * The Price Envelopes series type.
          *
@@ -5211,7 +5233,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('priceenvelopes', 'sma', 
+        seriesType('priceenvelopes', 'sma', 
         /**
          * Price envelopes indicator based on [SMA](#plotOptions.sma) calculations.
          * This series requires the `linkedTo` option to be set and should be loaded
@@ -5426,18 +5448,19 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/psar.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/psar.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  Parabolic SAR indicator for Highstock
          *
-         *  (c) 2010-2019 Grzegorz Blachliński
+         *  (c) 2010-2020 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesType = U.seriesType;
         /* eslint-disable require-jsdoc */
         // Utils:
         function toFixed(a, n) {
@@ -5519,7 +5542,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('psar', 'sma', 
+        seriesType('psar', 'sma', 
         /**
          * Parabolic SAR. This series requires `linkedTo`
          * option to be set and should be loaded
@@ -5680,18 +5703,18 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/roc.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/roc.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2019 Kacper Madej
+         *  (c) 2010-2020 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable require-jsdoc */
         // Utils:
         function populateAverage(xVal, yVal, i, period, index) {
@@ -5824,7 +5847,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/rsi.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/rsi.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -5832,7 +5855,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable require-jsdoc */
         // Utils:
         function toFixed(a, n) {
@@ -5848,7 +5872,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('rsi', 'sma', 
+        seriesType('rsi', 'sma', 
         /**
          * Relative strength index (RSI) technical indicator. This series
          * requires the `linkedTo` option to be set and should be loaded after
@@ -5979,9 +6003,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var merge = H.merge,
-            SMA = H.seriesTypes.sma,
+        var isArray = U.isArray,
+            merge = U.merge,
+            seriesType = U.seriesType;
+        var SMA = H.seriesTypes.sma,
             getArrayExtremes = reduceArrayMixin.getArrayExtremes;
         /**
          * The Stochastic series type.
@@ -5992,7 +6017,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('stochastic', 'sma', 
+        seriesType('stochastic', 'sma', 
         /**
          * Stochastic oscillator. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js` file.
@@ -6058,7 +6083,7 @@
         /**
          * @lends Highcharts.Series#
          */
-        H.merge(multipleLinesMixin, {
+        merge(multipleLinesMixin, {
             nameComponents: ['periods'],
             nameBase: 'Stochastic',
             pointArrayMap: ['y', 'smoothed'],
@@ -6154,7 +6179,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/slow-stochastic.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicator) {
+    _registerModule(_modules, 'indicators/slow-stochastic.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -6162,6 +6187,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesType = U.seriesType;
         var seriesTypes = H.seriesTypes;
         /**
          * The Slow Stochastic series type.
@@ -6172,7 +6198,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('slowstochastic', 'stochastic', 
+        seriesType('slowstochastic', 'stochastic', 
         /**
          * Slow Stochastic oscillator. This series requires the `linkedTo` option
          * to be set and should be loaded after `stock/indicators/indicators.js`
@@ -6279,12 +6305,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
+        var correctFloat = U.correctFloat,
+            merge = U.merge,
+            seriesType = U.seriesType;
         var isArray = U.isArray,
             objectEach = U.objectEach;
         var ATR = H.seriesTypes.atr,
-            SMA = H.seriesTypes.sma,
-            merge = H.merge;
+            SMA = H.seriesTypes.sma;
         /* eslint-disable require-jsdoc */
         // Utils:
         function createPointObj(mainSeries, index, close) {
@@ -6304,7 +6331,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('supertrend', 'sma', 
+        seriesType('supertrend', 'sma', 
         /**
          * Supertrend indicator. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js` and
@@ -6736,10 +6763,10 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/volume-by-price.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/volume-by-price.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
         /* *
          *
-         *  (c) 2010-2019 Paweł Dalek
+         *  (c) 2010-2020 Paweł Dalek
          *
          *  Volume By Price (VBP) indicator for Highstock
          *
@@ -6748,12 +6775,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var animObject = U.animObject,
+        var addEvent = U.addEvent,
+            animObject = U.animObject,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             correctFloat = U.correctFloat,
+            error = U.error,
             extend = U.extend,
-            isArray = U.isArray;
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable require-jsdoc */
         // Utils
         function arrayExtremesOHLC(data) {
@@ -6779,8 +6809,6 @@
         /* eslint-enable require-jsdoc */
         var abs = Math.abs,
             noop = H.noop,
-            addEvent = H.addEvent,
-            seriesType = H.seriesType,
             columnPrototype = H.seriesTypes.column.prototype;
         /**
          * The Volume By Price (VBP) series type.
@@ -7088,13 +7116,13 @@
                     priceZones;
                 // Checks if base series exists
                 if (!series.chart) {
-                    H.error('Base series not found! In case it has been removed, add ' +
+                    error('Base series not found! In case it has been removed, add ' +
                         'a new one.', true, chart);
                     return;
                 }
                 // Checks if volume series exists
                 if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
-                    H.error('Series ' +
+                    error('Series ' +
                         params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, chart);
                     return;
@@ -7102,7 +7130,7 @@
                 // Checks if series data fits the OHLC format
                 isOHLC = isArray(yValues[0]);
                 if (isOHLC && yValues[0].length !== 4) {
-                    H.error('Type of ' +
+                    error('Type of ' +
                         series.name +
                         ' series is different than line, OHLC or candlestick.', true, chart);
                     return;
@@ -7279,7 +7307,7 @@
                 if (this.negativeGraphic) {
                     this.negativeGraphic = this.negativeGraphic.destroy();
                 }
-                return H.Point.prototype.destroy.apply(this, arguments);
+                return Point.prototype.destroy.apply(this, arguments);
             }
         });
         /**
@@ -7297,10 +7325,10 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/vwap.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/vwap.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2019 Paweł Dalek
+         *  (c) 2010-2020 Paweł Dalek
          *
          *  Volume Weighted Average Price (VWAP) indicator for Highstock
          *
@@ -7309,8 +7337,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var error = U.error,
+            isArray = U.isArray,
+            seriesType = U.seriesType;
         /**
          * The Volume Weighted Average Price (VWAP) series type.
          *
@@ -7373,7 +7402,7 @@
                     volumeSeries;
                 // Checks if volume series exists
                 if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
-                    H.error('Series ' +
+                    error('Series ' +
                         params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, chart);
                     return;
@@ -7465,7 +7494,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/williams-r.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/reduce-array.js']], function (H, U, reduceArrayMixin) {
+    _registerModule(_modules, 'indicators/williams-r.src.js', [_modules['parts/Utilities.js'], _modules['mixins/reduce-array.js']], function (U, reduceArrayMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -7473,7 +7502,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         var getArrayExtremes = reduceArrayMixin.getArrayExtremes;
         /**
          * The Williams %R series type.
@@ -7484,7 +7514,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('williamsr', 'sma', 
+        seriesType('williamsr', 'sma', 
         /**
          * Williams %R. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js`.
@@ -7583,18 +7613,18 @@
         ''; // adds doclets above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/wma.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/wma.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2019 Kacper Madej
+         *  (c) 2010-2020 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -7728,18 +7758,18 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/zigzag.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'indicators/zigzag.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2019 Kacper Madej
+         *  (c) 2010-2020 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = H.seriesType,
-            UNDEFINED;
+        var seriesType = U.seriesType;
+        var UNDEFINED;
         /**
          * The Zig Zag series type.
          *
@@ -7929,18 +7959,18 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Utilities.js']], function (U) {
         /**
          *
-         *  (c) 2010-2019 Kamil Kulig
+         *  (c) 2010-2020 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /**
          * Linear regression series type.
          *
@@ -7996,9 +8026,9 @@
                  * // base series:
                  *
                  * data: [
-                 *   [Date.UTC(2019, 0, 1), 1],
-                 *   [Date.UTC(2019, 0, 2), 3],
-                 *   [Date.UTC(2019, 0, 3), 5]
+                 *   [Date.UTC(2020, 0, 1), 1],
+                 *   [Date.UTC(2020, 0, 2), 3],
+                 *   [Date.UTC(2020, 0, 3), 5]
                  * ]
                  *
                  * // This will produce one point in the indicator series that has a
@@ -8330,9 +8360,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
-        var SMA = H.seriesTypes.sma,
-            merge = H.merge;
+        var correctFloat = U.correctFloat,
+            merge = U.merge,
+            seriesType = U.seriesType;
+        var SMA = H.seriesTypes.sma;
         /* eslint-disable valid-jsdoc */
         /**
          * @private
@@ -8363,7 +8394,7 @@
          *
          * @augments Highcharts.Series
          */
-        H.seriesType('abands', 'sma', 
+        seriesType('abands', 'sma', 
         /**
          * Acceleration bands (ABANDS). This series requires the `linkedTo` option
          * to be set and should be loaded after the
@@ -8524,7 +8555,7 @@
         ''; // to include the above in jsdoc
 
     });
-    _registerModule(_modules, 'indicators/trendline.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/trendline.src.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -8532,8 +8563,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        var seriesType = H.seriesType;
+        var isArray = U.isArray,
+            seriesType = U.seriesType;
         /**
          * The Trend line series type.
          *

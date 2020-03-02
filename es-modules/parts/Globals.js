@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2019 Torstein Honsi
+ *  (c) 2010-2020 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -31,7 +31,7 @@ typeof win !== 'undefined' ?
 );
 var H = {
     product: 'Highcharts',
-    version: '8.0.0',
+    version: '8.0.1',
     deg2rad: Math.PI * 2 / 360,
     doc: doc,
     hasBidiBug: hasBidiBug,

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.0.0 (2019-12-10)
+ * @license Highmaps JS v8.0.1 (2020-03-02)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -29,7 +29,7 @@
     _registerModule(_modules, 'modules/map-parser.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2019 Torstein Honsi
+         *  (c) 2009-2020 Torstein Honsi
          *
          *  SVG map parser. This file requires data.js.
          *

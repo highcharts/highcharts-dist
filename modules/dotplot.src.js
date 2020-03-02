@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Dot plot series type for Highcharts
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'modules/dotplot.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2019 Torstein Honsi
+         *  (c) 2009-2020 Torstein Honsi
          *
          *  Dot plot series type for Highcharts
          *
@@ -49,8 +49,8 @@
          */
         var extend = U.extend,
             objectEach = U.objectEach,
-            pick = U.pick;
-        var seriesType = H.seriesType;
+            pick = U.pick,
+            seriesType = U.seriesType;
         /**
          * @private
          * @class
@@ -68,6 +68,7 @@
                 }
             }
         }, {
+            markerAttribs: void 0,
             drawPoints: function () {
                 var series = this,
                     renderer = series.chart.renderer,

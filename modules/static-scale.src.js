@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.0 (2019-12-10)
+ * @license Highcharts Gantt JS v8.0.1 (2020-03-02)
  *
  * StaticScale
  *
@@ -31,14 +31,15 @@
     _registerModule(_modules, 'modules/static-scale.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2016-2019 Torstein Honsi, Lars Cabrera
+         *  (c) 2016-2020 Torstein Honsi, Lars Cabrera
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
+        var addEvent = U.addEvent,
+            defined = U.defined,
             isNumber = U.isNumber,
             pick = U.pick;
         var Chart = H.Chart;
@@ -59,7 +60,7 @@
          * @product   gantt
          * @apioption yAxis.staticScale
          */
-        H.addEvent(H.Axis, 'afterSetOptions', function () {
+        addEvent(H.Axis, 'afterSetOptions', function () {
             var chartOptions = this.chart.options && this.chart.options.chart;
             if (!this.horiz &&
                 isNumber(this.options.staticScale) &&
@@ -105,7 +106,7 @@
             }
             this.redrawTrigger = null;
         };
-        H.addEvent(Chart, 'render', Chart.prototype.adjustHeight);
+        addEvent(Chart, 'render', Chart.prototype.adjustHeight);
 
     });
     _registerModule(_modules, 'masters/modules/static-scale.src.js', [], function () {

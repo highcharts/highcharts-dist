@@ -75,7 +75,7 @@ declare module "../highcharts.src" {
          * @param options
          *        The options for sonifying this chart.
          */
-        sonify(options: SonifyChartOptionsObject): void;
+        sonify(options: SonificationOptions): void;
     }
     /**
      * An Earcon configuration, specifying an Earcon and when to play it.
@@ -433,7 +433,7 @@ declare module "../highcharts.src" {
     /**
      * Options for sonifying a chart.
      */
-    interface SonifyChartOptionsObject {
+    interface SonificationOptions {
         /**
          * Milliseconds of silent waiting to add between series. Note that
          * waiting time is considered part of the sonify duration.

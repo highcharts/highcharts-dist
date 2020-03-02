@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.0 (2019-12-10)
+ * @license Highcharts JS v8.0.1 (2020-03-02)
  *
  * Pareto series type for Highcharts
  *
@@ -34,9 +34,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
+        var addEvent = U.addEvent,
+            defined = U.defined;
         var Series = H.Series,
-            addEvent = H.addEvent,
             noop = H.noop;
         /* ************************************************************************** *
          *
@@ -153,7 +153,7 @@
 
         return derivedSeriesMixin;
     });
-    _registerModule(_modules, 'modules/pareto.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (H, U, derivedSeriesMixin) {
+    _registerModule(_modules, 'modules/pareto.src.js', [_modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (U, derivedSeriesMixin) {
         /* *
          *
          *  (c) 2010-2017 Sebastian Bochan
@@ -163,9 +163,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat;
-        var seriesType = H.seriesType,
-            merge = H.merge;
+        var correctFloat = U.correctFloat,
+            merge = U.merge,
+            seriesType = U.seriesType;
         /**
          * The pareto series type.
          *

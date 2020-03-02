@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.0 (2019-12-10)
+ * @license Highstock JS v8.0.1 (2020-03-02)
  *
  * Advanced Highstock tools
  *
@@ -31,7 +31,7 @@
     }
     _registerModule(_modules, 'modules/price-indicator.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /**
-         * (c) 2009-2019 Sebastian Bochann
+         * (c) 2009-2020 Sebastian Bochann
          *
          * Price indicator for Highcharts
          *
@@ -39,9 +39,9 @@
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          */
-        var isArray = U.isArray;
-        var addEvent = H.addEvent,
-            merge = H.merge;
+        var addEvent = U.addEvent,
+            isArray = U.isArray,
+            merge = U.merge;
         /**
          * The line marks the last price from visible range of points.
          *

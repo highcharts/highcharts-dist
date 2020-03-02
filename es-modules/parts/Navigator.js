@@ -1,6 +1,6 @@
 /* *
  *
- *  (c) 2010-2019 Torstein Honsi
+ *  (c) 2010-2020 Torstein Honsi
  *
  *  License: www.highcharts.com/license
  *
@@ -9,15 +9,16 @@
  * */
 'use strict';
 import H from './Globals.js';
+import Color from './Color.js';
+var color = Color.parse;
+import Scrollbar from './Scrollbar.js';
 import U from './Utilities.js';
-var clamp = U.clamp, correctFloat = U.correctFloat, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
-import './Color.js';
+var addEvent = U.addEvent, clamp = U.clamp, correctFloat = U.correctFloat, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, extend = U.extend, find = U.find, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, pick = U.pick, removeEvent = U.removeEvent, splat = U.splat;
 import './Axis.js';
 import './Chart.js';
 import './Series.js';
 import './Options.js';
-import './Scrollbar.js';
-var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, color = H.color, defaultOptions = H.defaultOptions, hasTouch = H.hasTouch, isTouchDevice = H.isTouchDevice, merge = H.merge, removeEvent = H.removeEvent, Scrollbar = H.Scrollbar, Series = H.Series, seriesTypes = H.seriesTypes, defaultSeriesType, 
+var Axis = H.Axis, Chart = H.Chart, defaultOptions = H.defaultOptions, hasTouch = H.hasTouch, isTouchDevice = H.isTouchDevice, Series = H.Series, seriesTypes = H.seriesTypes, defaultSeriesType, 
 // Finding the min or max of a set of variables where we don't know if they
 // are defined, is a pattern that is repeated several places in Highcharts.
 // Consider making this a global utility method.
@@ -1184,7 +1185,8 @@ Navigator.prototype = {
      * @return {void}
      */
     onMouseUp: function (e) {
-        var navigator = this, chart = navigator.chart, xAxis = navigator.xAxis, scrollbar = navigator.scrollbar, unionExtremes, fixedMin, fixedMax, ext, DOMEvent = e.DOMEvent || e;
+        var navigator = this, chart = navigator.chart, xAxis = navigator.xAxis, scrollbar = navigator.scrollbar, DOMEvent = e.DOMEvent || e, inverted = chart.inverted, verb = navigator.rendered && !navigator.hasDragged ?
+            'animate' : 'attr', zoomedMax = Math.round(navigator.zoomedMax), zoomedMin = Math.round(navigator.zoomedMin), unionExtremes, fixedMin, fixedMax, ext;
         if (
         // MouseUp is called for both, navigator and scrollbar (that order),
         // which causes calling afterSetExtremes twice. Prevent first call
@@ -1229,6 +1231,21 @@ Navigator.prototype = {
                 navigator.grabbedCenter = navigator.fixedWidth =
                     navigator.fixedExtreme = navigator.otherHandlePos =
                         navigator.hasDragged = navigator.dragOffset = null;
+        }
+        // Update position of navigator shades, outline and handles (#12573)
+        if (navigator.navigatorEnabled) {
+            if (navigator.shades) {
+                navigator.drawMasks(zoomedMin, zoomedMax, inverted, verb);
+            }
+            if (navigator.outline) {
+                navigator.drawOutline(zoomedMin, zoomedMax, inverted, verb);
+            }
+            if (navigator.navigatorOptions.handles.enabled &&
+                Object.keys(navigator.handles).length ===
+                    navigator.handles.length) {
+                navigator.drawHandle(zoomedMin, 0, inverted, verb);
+                navigator.drawHandle(zoomedMax, 1, inverted, verb);
+            }
         }
     },
     /**
@@ -1439,7 +1456,7 @@ Navigator.prototype = {
             chart.options && chart.options.navigator.baseSeries ||
             (chart.series.length ?
                 // Find the first non-navigator series (#8430)
-                H.find(chart.series, function (s) {
+                find(chart.series, function (s) {
                     return !s.options.isInternal;
                 }).index :
                 0));
