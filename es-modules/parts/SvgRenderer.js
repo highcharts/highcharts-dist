@@ -2512,7 +2512,7 @@ extend(SVGRenderer.prototype, /** @lends Highcharts.SVGRenderer.prototype */ {
             '';
         // Add description
         desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.0.1'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.0.2'));
         /**
          * A pointer to the `defs` node of the root SVG.
          *

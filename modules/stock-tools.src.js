@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.1 (2020-03-02)
+ * @license Highstock JS v8.0.2 (2020-03-03)
  *
  * Advanced Highstock tools
  *
@@ -3140,7 +3140,7 @@
             getIconsURL: function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/8.0.1/gfx/stock-icons/';
+                    'https://code.highcharts.com/8.0.2/gfx/stock-icons/';
             },
             /**
              * Mapping JSON fields to CSS classes.

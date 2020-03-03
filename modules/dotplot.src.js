@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.1 (2020-03-02)
+ * @license Highcharts JS v8.0.2 (2020-03-03)
  *
  * Dot plot series type for Highcharts
  *

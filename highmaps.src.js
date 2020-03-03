@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.0.1 (2020-03-02)
+ * @license Highmaps JS v8.0.2 (2020-03-03)
  *
  * (c) 2011-2018 Torstein Honsi
  *
@@ -62,7 +62,7 @@
             );
         var H = {
                 product: 'Highcharts',
-                version: '8.0.1',
+                version: '8.0.2',
                 deg2rad: Math.PI * 2 / 360,
                 doc: doc,
                 hasBidiBug: hasBidiBug,
@@ -5869,7 +5869,7 @@
                     '';
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.0.1'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.0.2'));
                 /**
                  * A pointer to the `defs` node of the root SVG.
                  *
