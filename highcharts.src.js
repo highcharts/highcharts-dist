@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -62,7 +62,7 @@
             );
         var H = {
                 product: 'Highcharts',
-                version: '8.0.2',
+                version: '8.0.3',
                 deg2rad: Math.PI * 2 / 360,
                 doc: doc,
                 hasBidiBug: hasBidiBug,
@@ -2924,6 +2924,9 @@
          *
          * @class
          * @name Highcharts.Color
+         *
+         * @param {Highcharts.ColorType} input
+         * The input color in either rbga or hex format
          */
         var Color = /** @class */ (function () {
                 /* *
@@ -2931,12 +2934,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * Handle color operations. Some object methods are chainable.
-                 *
-                 * @param {Highcharts.ColorType} input
-                 *        The input color in either rbga or hex format
-                 */
                 function Color(input) {
                     // Collection of parsers. This can be extended from the outside by pushing
                     // parsers to Highcharts.Color.prototype.parsers.
@@ -2960,6 +2957,10 @@
                         }
                     }];
                 this.rgba = [];
+                // Backwards compatibility, allow instanciation without new (#13053)
+                if (!(this instanceof Color)) {
+                    return new Color(input);
+                }
                 this.init(input);
             }
             /* *
@@ -5869,7 +5870,7 @@
                     '';
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.0.2'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.0.3'));
                 /**
                  * A pointer to the `defs` node of the root SVG.
                  *
@@ -8409,6 +8410,21 @@
          *
          * @class
          * @name Highcharts.Tick
+         *
+         * @param {Highcharts.Axis} axis
+         * The axis of the tick.
+         *
+         * @param {number} pos
+         * The position of the tick on the axis in terms of axis values.
+         *
+         * @param {string} [type]
+         * The type of tick, either 'minor' or an empty string
+         *
+         * @param {boolean} [noLabel=false]
+         * Whether to disable the label or not. Defaults to false.
+         *
+         * @param {object} [parameters]
+         * Optional parameters for the tick.
          */
         var Tick = /** @class */ (function () {
                 /* *
@@ -8416,22 +8432,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * @param {Highcharts.Axis} axis
-                 * The axis of the tick.
-                 *
-                 * @param {number} pos
-                 * The position of the tick on the axis in terms of axis values.
-                 *
-                 * @param {string} [type]
-                 * The type of tick, either 'minor' or an empty string
-                 *
-                 * @param {boolean} [noLabel=false]
-                 * Whether to disable the label or not. Defaults to false.
-                 *
-                 * @param {object} [parameters]
-                 * Optional parameters for the tick.
-                 */
                 function Tick(axis, pos, type, noLabel, parameters) {
                     this.isNew = true;
                 this.isNewLabel = true;
@@ -9253,10 +9253,13 @@
          *        chart.time.dateFormat('%Y-%m-%d %H:%M:%S', Date.now())
          * );
          *
+         * @since 6.0.5
+         *
          * @class
          * @name Highcharts.Time
          *
-         * @since 6.0.5
+         * @param {Highcharts.TimeOptions} options
+         * Time options as defined in [chart.options.time](/highcharts/time).
          */
         var Time = /** @class */ (function () {
                 /* *
@@ -9264,14 +9267,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * Time settings are applied in general for each page using
-                 * `Highcharts.setOptions`, or individually for each Chart item through the
-                 * [time](https://api.highcharts.com/highcharts/time) options set.
-                 *
-                 * @param {Highcharts.TimeOptions} options
-                 * Time options as defined in [chart.options.time](/highcharts/time).
-                 */
                 function Time(options) {
                     /* *
                      *
@@ -9559,16 +9554,14 @@
              *         The formatted date.
              */
             Time.prototype.dateFormat = function (format, timestamp, capitalize) {
-                var _a,
-                    _b,
-                    _c;
+                var _a;
                 if (!defined(timestamp) || isNaN(timestamp)) {
                     return ((_a = H.defaultOptions.lang) === null || _a === void 0 ? void 0 : _a.invalidDate) || '';
                 }
                 format = pick(format, '%Y-%m-%d %H:%M:%S');
                 var time = this, date = new this.Date(timestamp), 
                     // get the basic time values
-                    hours = this.get('Hours', date), day = this.get('Day', date), dayOfMonth = this.get('Date', date), month = this.get('Month', date), fullYear = this.get('FullYear', date), lang = H.defaultOptions.lang, langWeekdays = (_b = lang) === null || _b === void 0 ? void 0 : _b.weekdays, shortWeekdays = (_c = lang) === null || _c === void 0 ? void 0 : _c.shortWeekdays, 
+                    hours = this.get('Hours', date), day = this.get('Day', date), dayOfMonth = this.get('Date', date), month = this.get('Month', date), fullYear = this.get('FullYear', date), lang = H.defaultOptions.lang, langWeekdays = lang === null || lang === void 0 ? void 0 : lang.weekdays, shortWeekdays = lang === null || lang === void 0 ? void 0 : lang.shortWeekdays, 
                     // List all format keys. Custom formats can be added from the
                     // outside.
                     replacements = extend({
@@ -19211,6 +19204,8 @@
                                     -tickmarkOffset :
                                     tickmarkOffset)) { // #2248, #4660
                                 if (!alternateBands[pos]) {
+                                    // Should be imported from PlotLineOrBand.js, but
+                                    // the dependency cycle with axis is a problem
                                     alternateBands[pos] = new H.PlotLineOrBand(axis);
                                 }
                                 from = pos + tickmarkOffset; // #949
@@ -19825,14 +19820,14 @@
          *
          * @param {Highcharts.AxisPlotLinesOptions|Highcharts.AxisPlotBandsOptions} [options]
          */
-        H.PlotLineOrBand = function (axis, options) {
-            this.axis = axis;
-            if (options) {
-                this.options = options;
-                this.id = options.id;
+        var PlotLineOrBand = /** @class */ (function () {
+                function PlotLineOrBand(axis, options) {
+                    this.axis = axis;
+                if (options) {
+                    this.options = options;
+                    this.id = options.id;
+                }
             }
-        };
-        H.PlotLineOrBand.prototype = {
             /**
              * Render the plot line or plot band. If it is already existing,
              * move it.
@@ -19841,7 +19836,7 @@
              * @function Highcharts.PlotLineOrBand#render
              * @return {Highcharts.PlotLineOrBand|undefined}
              */
-            render: function () {
+            PlotLineOrBand.prototype.render = function () {
                 H.fireEvent(this, 'render');
                 var plotLine = this,
                     axis = plotLine.axis,
@@ -19975,7 +19970,7 @@
                 }
                 // chainable
                 return plotLine;
-            },
+            };
             /**
              * Render and align label for plot line or band.
              *
@@ -19987,7 +19982,7 @@
              * @param {number} [zIndex]
              * @return {void}
              */
-            renderLabel: function (optionsLabel, path, isBand, zIndex) {
+            PlotLineOrBand.prototype.renderLabel = function (optionsLabel, path, isBand, zIndex) {
                 var plotLine = this,
                     label = plotLine.label,
                     renderer = plotLine.axis.chart.renderer,
@@ -20036,7 +20031,7 @@
                     height: arrayMax(yBounds) - y
                 });
                 label.show(true);
-            },
+            };
             /**
              * Get label's text content.
              *
@@ -20045,25 +20040,26 @@
              * @param {Highcharts.AxisPlotLinesLabelOptions|Highcharts.AxisPlotBandsLabelOptions} optionsLabel
              * @return {string}
              */
-            getLabelText: function (optionsLabel) {
+            PlotLineOrBand.prototype.getLabelText = function (optionsLabel) {
                 return defined(optionsLabel.formatter) ?
                     optionsLabel.formatter
                         .call(this) :
                     optionsLabel.text;
-            },
+            };
             /**
              * Remove the plot line or band.
              *
              * @function Highcharts.PlotLineOrBand#destroy
              * @return {void}
              */
-            destroy: function () {
+            PlotLineOrBand.prototype.destroy = function () {
                 // remove it from the lookup
                 erase(this.axis.plotLinesAndBands, this);
                 delete this.axis;
                 destroyObjectProperties(this);
-            }
-        };
+            };
+            return PlotLineOrBand;
+        }());
         /* eslint-enable no-invalid-this, valid-jsdoc */
         // Object with members for extending the Axis prototype
         extend(Axis.prototype, /** @lends Highcharts.Axis.prototype */ {
@@ -20754,7 +20750,7 @@
              * @return {Highcharts.PlotLineOrBand|undefined}
              */
             addPlotBandOrLine: function (options, coll) {
-                var obj = new H.PlotLineOrBand(this,
+                var obj = new PlotLineOrBand(this,
                     options).render(),
                     userOptions = this.userOptions;
                 if (obj) { // #2189
@@ -20839,7 +20835,9 @@
                 this.removePlotBandOrLine(id);
             }
         });
+        H.PlotLineOrBand = PlotLineOrBand;
 
+        return H.PlotLineOrBand;
     });
     _registerModule(_modules, 'parts/Tooltip.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
@@ -20968,6 +20966,12 @@
          *
          * @class
          * @name Highcharts.Tooltip
+         *
+         * @param {Highcharts.Chart} chart
+         * The chart instance.
+         *
+         * @param {Highcharts.TooltipOptions} options
+         * Tooltip options.
          */
         var Tooltip = /** @class */ (function () {
                 /* *
@@ -20975,15 +20979,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * Tooltip of a chart.
-                 *
-                 * @param {Highcharts.Chart} chart
-                 *        The chart instance.
-                 *
-                 * @param {Highcharts.TooltipOptions} options
-                 *        Tooltip options.
-                 */
                 function Tooltip(chart, options) {
                     /* *
                      *
@@ -22349,6 +22344,13 @@
          *
          * @class
          * @name Highcharts.Pointer
+         *
+         * @param {Highcharts.Chart} chart
+         * The chart instance.
+         *
+         * @param {Highcharts.Options} options
+         * The root options object. The pointer uses options from the chart and
+         * tooltip structures.
          */
         var Pointer = /** @class */ (function () {
                 /* *
@@ -22356,16 +22358,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * Initiates mouse and touch tracker object.
-                 *
-                 * @param {Highcharts.Chart} chart
-                 * The chart instance.
-                 *
-                 * @param {Highcharts.Options} options
-                 * The root options object. The pointer uses options from the chart and
-                 * tooltip structures.
-                 */
                 function Pointer(chart, options) {
                     this.lastValidTouch = {};
                 this.pinchDown = [];
@@ -33057,25 +33049,31 @@
                             options.yAxis
                         ].join(','), // #4526
                     clipRect = chart[sharedClipKey], markerClipRect = chart[sharedClipKey + 'm'];
+                if (animation) {
+                    clipBox.width = 0;
+                    if (inverted) {
+                        clipBox.x = chart.plotHeight +
+                            (options.clip !== false ? 0 : chart.plotTop);
+                    }
+                }
                 // If a clipping rectangle with the same properties is currently
                 // present in the chart, use that.
                 if (!clipRect) {
                     // When animation is set, prepare the initial positions
                     if (animation) {
-                        clipBox.width = 0;
-                        if (inverted) {
-                            clipBox.x = chart.plotSizeX +
-                                (options.clip !== false ? 0 : chart.plotTop);
-                        }
                         chart[sharedClipKey + 'm'] = markerClipRect =
                             renderer.clipRect(
                             // include the width of the first marker
                             inverted ? chart.plotSizeX + 99 : -99, inverted ? -chart.plotLeft : -chart.plotTop, 99, inverted ? chart.chartWidth : chart.chartHeight);
                     }
-                    chart[sharedClipKey] = clipRect =
-                        renderer.clipRect(clipBox);
+                    chart[sharedClipKey] = clipRect = renderer.clipRect(clipBox);
                     // Create hashmap for series indexes
                     clipRect.count = { length: 0 };
+                    // When the series is rendered again before starting animating, in
+                    // compliance to a responsive rule
+                }
+                else if (!chart.hasLoaded) {
+                    clipRect.attr(clipBox);
                 }
                 if (animation) {
                     if (!clipRect.count[this.index]) {
@@ -33130,25 +33128,25 @@
                     sharedClipKey,
                     finalBox;
                 // Initialize the animation. Set up the clipping rectangle.
-                if (init) {
-                    series.setClip(animation);
-                    // Run the animation
-                }
-                else {
-                    sharedClipKey = this.sharedClipKey;
-                    clipRect = chart[sharedClipKey];
-                    finalBox = series.getClipBox(animation, true);
-                    if (clipRect) {
-                        clipRect.animate(finalBox, animation);
+                if (!chart.hasRendered) {
+                    if (init) {
+                        series.setClip(animation);
+                        // Run the animation
                     }
-                    if (chart[sharedClipKey + 'm']) {
-                        chart[sharedClipKey + 'm'].animate({
-                            width: finalBox.width + 99,
-                            x: finalBox.x - (chart.inverted ? 0 : 99)
-                        }, animation);
+                    else {
+                        sharedClipKey = this.sharedClipKey;
+                        clipRect = chart[sharedClipKey];
+                        finalBox = series.getClipBox(animation, true);
+                        if (clipRect) {
+                            clipRect.animate(finalBox, animation);
+                        }
+                        if (chart[sharedClipKey + 'm']) {
+                            chart[sharedClipKey + 'm'].animate({
+                                width: finalBox.width + 99,
+                                x: finalBox.x - (chart.inverted ? 0 : 99)
+                            }, animation);
+                        }
                     }
-                    // Delete this function to allow it only once
-                    series.animate = null;
                 }
             },
             /**
@@ -33982,7 +33980,7 @@
                     options = series.options, 
                     // Animation doesn't work in IE8 quirks when the group div is
                     // hidden, and looks bad in other oldIE
-                    animDuration = (!!series.animate &&
+                    animDuration = (!series.finishedAnimating &&
                         chart.renderer.isSVG &&
                         animObject(options.animation).duration),
                     visibility = series.visible ? 'inherit' : 'hidden', // #2597
@@ -33995,7 +33993,7 @@
                 group = series.plotGroup('group', 'series', visibility, zIndex, chartSeriesGroup);
                 series.markerGroup = series.plotGroup('markerGroup', 'markers', visibility, zIndex, chartSeriesGroup);
                 // initiate the animation
-                if (animDuration) {
+                if (animDuration && series.animate) {
                     series.animate(true);
                 }
                 // SVGRenderer needs to know this before drawing elements (#1089,
@@ -34040,7 +34038,7 @@
                     group.clip(chart.clipRect);
                 }
                 // Run the animation
-                if (animDuration) {
+                if (animDuration && series.animate) {
                     series.animate();
                 }
                 // Call the afterAnimate function on animation complete (but don't
@@ -38321,38 +38319,34 @@
                     translateProp = inverted ? 'translateX' : 'translateY',
                     translateStart,
                     translatedThreshold;
-                if (svg) { // VML is too slow anyway
-                    if (init) {
-                        attr.scaleY = 0.001;
-                        translatedThreshold = clamp(yAxis.toPixels(options.threshold), yAxis.pos, yAxis.pos + yAxis.len);
-                        if (inverted) {
-                            attr.translateX = translatedThreshold - yAxis.len;
-                        }
-                        else {
-                            attr.translateY = translatedThreshold;
-                        }
-                        // apply finnal clipping (used in Highstock) (#7083)
-                        // animation is done by scaleY, so cliping is for panes
-                        if (series.clipBox) {
-                            series.setClip();
-                        }
-                        series.group.attr(attr);
+                if (init) {
+                    attr.scaleY = 0.001;
+                    translatedThreshold = clamp(yAxis.toPixels(options.threshold), yAxis.pos, yAxis.pos + yAxis.len);
+                    if (inverted) {
+                        attr.translateX = translatedThreshold - yAxis.len;
                     }
-                    else { // run the animation
-                        translateStart = series.group.attr(translateProp);
-                        series.group.animate({ scaleY: 1 }, extend(animObject(series.options.animation), {
-                            // Do the scale synchronously to ensure smooth
-                            // updating (#5030, #7228)
-                            step: function (val, fx) {
-                                attr[translateProp] =
-                                    translateStart +
-                                        fx.pos * (yAxis.pos - translateStart);
-                                series.group.attr(attr);
-                            }
-                        }));
-                        // delete this function to allow it only once
-                        series.animate = null;
+                    else {
+                        attr.translateY = translatedThreshold;
                     }
+                    // apply finnal clipping (used in Highstock) (#7083)
+                    // animation is done by scaleY, so cliping is for panes
+                    if (series.clipBox) {
+                        series.setClip();
+                    }
+                    series.group.attr(attr);
+                }
+                else { // run the animation
+                    translateStart = series.group.attr(translateProp);
+                    series.group.animate({ scaleY: 1 }, extend(animObject(series.options.animation), {
+                        // Do the scale synchronously to ensure smooth
+                        // updating (#5030, #7228)
+                        step: function (val, fx) {
+                            attr[translateProp] =
+                                translateStart +
+                                    fx.pos * (yAxis.pos - translateStart);
+                            series.group.attr(attr);
+                        }
+                    }));
                 }
             },
             /**
@@ -39596,8 +39590,6 @@
                             }, series.options.animation);
                         }
                     });
-                    // delete this function to allow it only once
-                    series.animate = null;
                 }
             },
             // Define hasData function for non-cartesian series.

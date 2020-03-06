@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.2 (2020-03-03)
+ * @license Highstock JS v8.0.3 (2020-03-06)
  *
  * All technical indicators for Highstock
  *
@@ -6976,7 +6976,7 @@
             animate: function (init) {
                 var series = this,
                     attr = {};
-                if (H.svg && !init) {
+                if (!init) {
                     attr.translateX = series.yAxis.pos;
                     series.group.animate(attr, extend(animObject(series.options.animation), {
                         step: function (val, fx) {
@@ -6985,8 +6985,6 @@
                             });
                         }
                     }));
-                    // Delete this function to allow it only once
-                    series.animate = null;
                 }
             },
             drawPoints: function () {

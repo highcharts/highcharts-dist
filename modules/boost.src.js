@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * Boost module
  *
@@ -2425,7 +2425,6 @@
                     }
                     // If we are zooming out from SVG mode, destroy the graphics
                     if (this.points || this.graph) {
-                        this.animate = null;
                         this.destroyGraphics();
                     }
                     // If we're rendering per. series we should create the marker groups
@@ -2957,9 +2956,6 @@
             this.allowDG = false;
             this.directTouch = false;
             this.stickyTracking = true;
-            // Once we've been in boost mode, we don't want animation when returning to
-            // vanilla mode.
-            this.animate = null;
             // Hide series label if any
             if (this.labelBySeries) {
                 this.labelBySeries = this.labelBySeries.destroy();

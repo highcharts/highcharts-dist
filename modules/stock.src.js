@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.2 (2020-03-03)
+ * @license Highstock JS v8.0.3 (2020-03-06)
  *
  * Highstock as a plugin for Highcharts
  *
@@ -1619,10 +1619,32 @@
          * @param {Highcharts.Chart} chart
          *        Chart object
          */
-        function Navigator(chart) {
-            this.init(chart);
-        }
-        Navigator.prototype = {
+        var Navigator = /** @class */ (function () {
+                function Navigator(chart) {
+                    this.baseSeries = void 0;
+                this.chart = void 0;
+                this.handles = void 0;
+                this.height = void 0;
+                this.left = void 0;
+                this.navigatorEnabled = void 0;
+                this.navigatorGroup = void 0;
+                this.navigatorOptions = void 0;
+                this.navigatorSeries = void 0;
+                this.navigatorSize = void 0;
+                this.opposite = void 0;
+                this.outline = void 0;
+                this.outlineHeight = void 0;
+                this.range = void 0;
+                this.rendered = void 0;
+                this.shades = void 0;
+                this.size = void 0;
+                this.top = void 0;
+                this.xAxis = void 0;
+                this.yAxis = void 0;
+                this.zoomedMax = void 0;
+                this.zoomedMin = void 0;
+                this.init(chart);
+            }
             /**
              * Draw one of the handles on the side of the zoomed range in the navigator
              *
@@ -1641,7 +1663,7 @@
              * @param {string} verb
              *        use 'animate' or 'attr'
              */
-            drawHandle: function (x, index, inverted, verb) {
+            Navigator.prototype.drawHandle = function (x, index, inverted, verb) {
                 var navigator = this,
                     height = navigator.navigatorOptions.handles.height;
                 // Place it
@@ -1652,7 +1674,7 @@
                     translateX: Math.round(navigator.left + parseInt(x, 10)),
                     translateY: Math.round(navigator.top + navigator.height / 2 - height / 2 - 1)
                 });
-            },
+            };
             /**
              * Render outline around the zoomed range
              *
@@ -1671,7 +1693,7 @@
              * @param {string} verb
              *        use 'animate' or 'attr'
              */
-            drawOutline: function (zoomedMin, zoomedMax, inverted, verb) {
+            Navigator.prototype.drawOutline = function (zoomedMin, zoomedMax, inverted, verb) {
                 var navigator = this,
                     maskInside = navigator.navigatorOptions.maskInside,
                     outlineWidth = navigator.outline.strokeWidth(),
@@ -1753,7 +1775,7 @@
                 navigator.outline[verb]({
                     d: path
                 });
-            },
+            };
             /**
              * Render outline around the zoomed range
              *
@@ -1772,7 +1794,7 @@
              * @param {string} verb
              *        use 'animate' or 'attr'
              */
-            drawMasks: function (zoomedMin, zoomedMax, inverted, verb) {
+            Navigator.prototype.drawMasks = function (zoomedMin, zoomedMax, inverted, verb) {
                 var navigator = this,
                     left = navigator.left,
                     top = navigator.top,
@@ -1811,7 +1833,7 @@
                         height: height[i]
                     });
                 });
-            },
+            };
             /**
              * Generate DOM elements for a navigator:
              *
@@ -1826,7 +1848,7 @@
              * @private
              * @function Highcharts.Navigator#renderElements
              */
-            renderElements: function () {
+            Navigator.prototype.renderElements = function () {
                 var navigator = this,
                     navigatorOptions = navigator.navigatorOptions,
                     maskInside = navigatorOptions.maskInside,
@@ -1897,7 +1919,7 @@
                         }
                     });
                 }
-            },
+            };
             /**
              * Update navigator
              *
@@ -1907,7 +1929,7 @@
              * @param {Highcharts.NavigatorOptions} options
              *        Options to merge in when updating navigator
              */
-            update: function (options) {
+            Navigator.prototype.update = function (options) {
                 // Remove references to old navigator series in base series
                 (this.series || []).forEach(function (series) {
                     if (series.baseSeries) {
@@ -1919,7 +1941,7 @@
                 var chartOptions = this.chart.options;
                 merge(true, chartOptions.navigator, this.options, options);
                 this.init(this.chart);
-            },
+            };
             /**
              * Render the navigator
              *
@@ -1935,7 +1957,7 @@
              *        Pixel value maximum
              * @return {void}
              */
-            render: function (min, max, pxMin, pxMax) {
+            Navigator.prototype.render = function (min, max, pxMin, pxMax) {
                 var navigator = this,
                     chart = navigator.chart,
                     navigatorWidth,
@@ -2063,14 +2085,14 @@
                     navigator.zoomedMin / (navigatorSize || 1), navigator.zoomedMax / (navigatorSize || 1));
                 }
                 navigator.rendered = true;
-            },
+            };
             /**
              * Set up the mouse and touch events for the navigator
              *
              * @private
              * @function Highcharts.Navigator#addMouseEvents
              */
-            addMouseEvents: function () {
+            Navigator.prototype.addMouseEvents = function () {
                 var navigator = this,
                     chart = navigator.chart,
                     container = chart.container,
@@ -2105,7 +2127,7 @@
                         chart.navigator.modifyNavigatorAxisExtremes();
                     }));
                 }
-            },
+            };
             /**
              * Generate events for handles and masks
              *
@@ -2119,7 +2141,7 @@
              *         An array of functions to remove navigator functions from the
              *         events again.
              */
-            getPartsEvents: function (eventName) {
+            Navigator.prototype.getPartsEvents = function (eventName) {
                 var navigator = this,
                     events = [];
                 ['shades', 'handles'].forEach(function (name) {
@@ -2130,7 +2152,7 @@
                     });
                 });
                 return events;
-            },
+            };
             /**
              * Mousedown on a shaded mask, either:
              *
@@ -2147,7 +2169,7 @@
              * @param {number} index
              *        Index of a mask in Navigator.shades array
              */
-            shadesMousedown: function (e, index) {
+            Navigator.prototype.shadesMousedown = function (e, index) {
                 e = this.chart.pointer.normalize(e);
                 var navigator = this,
                     chart = navigator.chart,
@@ -2199,7 +2221,7 @@
                         }
                     }
                 }
-            },
+            };
             /**
              * Mousedown on a handle mask.
              * Will store necessary information for drag&drop.
@@ -2212,7 +2234,7 @@
              *        Index of a handle in Navigator.handles array
              * @return {void}
              */
-            handlesMousedown: function (e, index) {
+            Navigator.prototype.handlesMousedown = function (e, index) {
                 e = this.chart.pointer.normalize(e);
                 var navigator = this,
                     chart = navigator.chart,
@@ -2233,7 +2255,7 @@
                     navigator.fixedExtreme = reverse ? baseXAxis.max : baseXAxis.min;
                 }
                 chart.fixedRange = null;
-            },
+            };
             /**
              * Mouse move event based on x/y mouse position.
              *
@@ -2243,7 +2265,7 @@
              * @param {Highcharts.PointerEventObject} e
              *        Mouse event
              */
-            onMouseMove: function (e) {
+            Navigator.prototype.onMouseMove = function (e) {
                 var navigator = this,
                     chart = navigator.chart,
                     left = navigator.left,
@@ -2298,7 +2320,7 @@
                         }, 0);
                     }
                 }
-            },
+            };
             /**
              * Mouse up event based on x/y mouse position.
              *
@@ -2308,7 +2330,7 @@
              *        Mouse event
              * @return {void}
              */
-            onMouseUp: function (e) {
+            Navigator.prototype.onMouseUp = function (e) {
                 var navigator = this,
                     chart = navigator.chart,
                     xAxis = navigator.xAxis,
@@ -2383,7 +2405,7 @@
                         navigator.drawHandle(zoomedMax, 1, inverted, verb);
                     }
                 }
-            },
+            };
             /**
              * Removes the event handlers attached previously with addEvents.
              *
@@ -2391,7 +2413,7 @@
              * @function Highcharts.Navigator#removeEvents
              * @return {void}
              */
-            removeEvents: function () {
+            Navigator.prototype.removeEvents = function () {
                 if (this.eventsToUnbind) {
                     this.eventsToUnbind.forEach(function (unbind) {
                         unbind();
@@ -2399,7 +2421,7 @@
                     this.eventsToUnbind = void 0;
                 }
                 this.removeBaseSeriesEvents();
-            },
+            };
             /**
              * Remove data events.
              *
@@ -2407,7 +2429,7 @@
              * @function Highcharts.Navigator#removeBaseSeriesEvents
              * @return {void}
              */
-            removeBaseSeriesEvents: function () {
+            Navigator.prototype.removeBaseSeriesEvents = function () {
                 var baseSeries = this.baseSeries || [];
                 if (this.navigatorEnabled && baseSeries[0]) {
                     if (this.navigatorOptions.adaptToUpdatedData !== false) {
@@ -2420,7 +2442,7 @@
                         removeEvent(baseSeries[0].xAxis, 'foundExtremes', this.modifyBaseAxisExtremes);
                     }
                 }
-            },
+            };
             /**
              * Initialize the Navigator object
              *
@@ -2429,7 +2451,7 @@
              *
              * @param {Highcharts.Chart} chart
              */
-            init: function (chart) {
+            Navigator.prototype.init = function (chart) {
                 var chartOptions = chart.options,
                     navigatorOptions = chartOptions.navigator,
                     navigatorEnabled = navigatorOptions.enabled,
@@ -2563,7 +2585,7 @@
                 navigator.addBaseSeriesEvents();
                 // Add redraw events
                 navigator.addChartEvents();
-            },
+            };
             /**
              * Get the union data extremes of the chart - the outer data extremes of the
              * base X axis and the navigator axis.
@@ -2574,7 +2596,7 @@
              *        as the param says.
              * @return {Highcharts.Dictionary<(number|undefined)>|undefined}
              */
-            getUnionExtremes: function (returnFalseOnNoBaseSeries) {
+            Navigator.prototype.getUnionExtremes = function (returnFalseOnNoBaseSeries) {
                 var baseAxis = this.chart.xAxis[0],
                     navAxis = this.xAxis,
                     navAxisOptions = navAxis.options,
@@ -2588,7 +2610,7 @@
                     };
                 }
                 return ret;
-            },
+            };
             /**
              * Set the base series and update the navigator series from this. With a bit
              * of modification we should be able to make this an API method to be called
@@ -2602,7 +2624,7 @@
              *        Whether to redraw after update.
              * @return {void}
              */
-            setBaseSeries: function (baseSeriesOptions, redraw) {
+            Navigator.prototype.setBaseSeries = function (baseSeriesOptions, redraw) {
                 var chart = this.chart,
                     baseSeries = this.baseSeries = [];
                 baseSeriesOptions = (baseSeriesOptions ||
@@ -2630,7 +2652,7 @@
                 if (this.xAxis && !this.xAxis.fake) {
                     this.updateNavigatorSeries(true, redraw);
                 }
-            },
+            };
             /**
              * Update series in the navigator from baseSeries, adding new if does not
              * exist.
@@ -2641,7 +2663,7 @@
              * @param {boolean} [redraw]
              * @return {void}
              */
-            updateNavigatorSeries: function (addEvents, redraw) {
+            Navigator.prototype.updateNavigatorSeries = function (addEvents, redraw) {
                 var navigator = this,
                     chart = navigator.chart,
                     baseSeries = navigator.baseSeries,
@@ -2770,7 +2792,7 @@
                 if (addEvents) {
                     this.addBaseSeriesEvents();
                 }
-            },
+            };
             /**
              * Add data events.
              * For example when main series is updated we need to recalculate extremes
@@ -2779,7 +2801,7 @@
              * @function Highcharts.Navigator#addBaseSeriesEvent
              * @return {void}
              */
-            addBaseSeriesEvents: function () {
+            Navigator.prototype.addBaseSeriesEvents = function () {
                 var navigator = this,
                     baseSeries = navigator.baseSeries || [];
                 // Bind modified extremes event to first base's xAxis only.
@@ -2819,7 +2841,7 @@
                         }
                     });
                 }, this);
-            },
+            };
             /**
              * Get minimum from all base series connected to the navigator
              * @private
@@ -2827,12 +2849,12 @@
              *         Minium from the current series
              * @return {number} Minimum from all series
              */
-            getBaseSeriesMin: function (currentSeriesMin) {
+            Navigator.prototype.getBaseSeriesMin = function (currentSeriesMin) {
                 return this.baseSeries.reduce(function (min, series) {
                     // (#10193)
                     return Math.min(min, series.xData ? series.xData[0] : min);
                 }, currentSeriesMin);
-            },
+            };
             /**
              * Set the navigator x axis extremes to reflect the total. The navigator
              * extremes should always be the extremes of the union of all series in the
@@ -2841,7 +2863,7 @@
              * @private
              * @function Highcharts.Navigator#modifyNavigatorAxisExtremes
              */
-            modifyNavigatorAxisExtremes: function () {
+            Navigator.prototype.modifyNavigatorAxisExtremes = function () {
                 var xAxis = this.xAxis,
                     unionExtremes;
                 if (typeof xAxis.getExtremes !== 'undefined') {
@@ -2853,14 +2875,14 @@
                         xAxis.max = unionExtremes.dataMax;
                     }
                 }
-            },
+            };
             /**
              * Hook to modify the base axis extremes with information from the Navigator
              *
              * @private
              * @function Highcharts.Navigator#modifyBaseAxisExtremes
              */
-            modifyBaseAxisExtremes: function () {
+            Navigator.prototype.modifyBaseAxisExtremes = function () {
                 var baseXAxis = this,
                     navigator = baseXAxis.chart.navigator,
                     baseExtremes = baseXAxis.getExtremes(),
@@ -2910,7 +2932,7 @@
                 // Reset
                 navigator.stickToMin =
                     navigator.stickToMax = null;
-            },
+            };
             /**
              * Handler for updated data on the base series. When data is modified, the
              * navigator series must reflect it. This is called from the Chart.redraw
@@ -2919,7 +2941,7 @@
              * @private
              * @function Highcharts.Navigator#updateDataHandler
              */
-            updatedDataHandler: function () {
+            Navigator.prototype.updatedDataHandler = function () {
                 var navigator = this.chart.navigator,
                     baseSeries = this,
                     navigatorSeries = this.navigatorSeries,
@@ -2940,7 +2962,7 @@
                     navigatorSeries.options.pointStart = baseSeries.xData[0];
                     navigatorSeries.setData(baseSeries.options.data, false, null, false); // #5414
                 }
-            },
+            };
             /**
              * Add chart events, like redrawing navigator, when chart requires that.
              *
@@ -2948,7 +2970,7 @@
              * @function Highcharts.Navigator#addChartEvents
              * @return {void}
              */
-            addChartEvents: function () {
+            Navigator.prototype.addChartEvents = function () {
                 if (!this.eventsToUnbind) {
                     this.eventsToUnbind = [];
                 }
@@ -2981,14 +3003,14 @@
                             navigator.outlineHeight :
                             0) + navigator.navigatorOptions.margin;
                 }));
-            },
+            };
             /**
              * Destroys allocated elements.
              *
              * @private
              * @function Highcharts.Navigator#destroy
              */
-            destroy: function () {
+            Navigator.prototype.destroy = function () {
                 // Disconnect events added in addEvents
                 this.removeEvents();
                 if (this.xAxis) {
@@ -3020,8 +3042,10 @@
                 [this.handles].forEach(function (coll) {
                     destroyObjectProperties(coll);
                 }, this);
-            }
-        };
+            };
+            return Navigator;
+        }());
+        // End of prototype
         if (!H.Navigator) {
             H.Navigator = Navigator;
             // For Stock charts, override selection zooming with some special features
@@ -3186,7 +3210,9 @@
                 }
             });
         }
+        H.Navigator = Navigator;
 
+        return H.Navigator;
     });
     _registerModule(_modules, 'parts/OrdinalAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
@@ -6832,9 +6858,6 @@
             animate: function (init) {
                 if (init) {
                     this.setClip();
-                }
-                else {
-                    this.animate = null;
                 }
             },
             /**

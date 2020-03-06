@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.0.2 (2020-03-03)
+ * @license Highmaps JS v8.0.3 (2020-03-06)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *
@@ -2723,8 +2723,6 @@
                             scaleX: 1,
                             scaleY: 1
                         }, animation);
-                        // Delete this function to allow it only once
-                        this.animate = null;
                     }
                 }
             },
@@ -2756,7 +2754,6 @@
                             }, animationOptions);
                         }
                     });
-                    this.animate = null;
                 }
             },
             drawLegendSymbol: LegendSymbolMixin.drawRectangle,
@@ -3615,10 +3612,25 @@
          * @param {Highcharts.Legend} legend
          *        Legend
          */
-        H.BubbleLegend = function (options, legend) {
-            this.init(options, legend);
-        };
-        H.BubbleLegend.prototype = {
+        var BubbleLegend = /** @class */ (function () {
+                function BubbleLegend(options, legend) {
+                    this.chart = void 0;
+                this.fontMetrics = void 0;
+                this.legend = void 0;
+                this.legendGroup = void 0;
+                this.legendItem = void 0;
+                this.legendItemHeight = void 0;
+                this.legendItemWidth = void 0;
+                this.legendSymbol = void 0;
+                this.maxLabel = void 0;
+                this.movementX = void 0;
+                this.ranges = void 0;
+                this.visible = void 0;
+                this.symbols = void 0;
+                this.options = void 0;
+                this.setState = noop;
+                this.init(options, legend);
+            }
             /**
              * Create basic bubbleLegend properties similar to item in legend.
              *
@@ -3630,13 +3642,12 @@
              *        Legend
              * @return {void}
              */
-            init: function (options, legend) {
+            BubbleLegend.prototype.init = function (options, legend) {
                 this.options = options;
                 this.visible = true;
                 this.chart = legend.chart;
                 this.legend = legend;
-            },
-            setState: noop,
+            };
             /**
              * Depending on the position option, add bubbleLegend to legend items.
              *
@@ -3646,10 +3657,10 @@
              *        All legend items
              * @return {void}
              */
-            addToLegend: function (items) {
+            BubbleLegend.prototype.addToLegend = function (items) {
                 // Insert bubbleLegend into legend items
                 items.splice(this.options.legendIndex, 0, this);
-            },
+            };
             /**
              * Calculate ranges, sizes and call the next steps of bubbleLegend
              * creation.
@@ -3660,7 +3671,7 @@
              *        Legend instance
              * @return {void}
              */
-            drawLegendSymbol: function (legend) {
+            BubbleLegend.prototype.drawLegendSymbol = function (legend) {
                 var chart = this.chart,
                     options = this.options,
                     size,
@@ -3698,7 +3709,7 @@
                     connectorSpace : 0;
                 this.legendItemWidth = size + connectorSpace + itemDistance;
                 this.legendItemHeight = size + this.fontMetrics.h / 2;
-            },
+            };
             /**
              * Set style options for each bubbleLegend range.
              *
@@ -3706,7 +3717,7 @@
              * @function Highcharts.BubbleLegend#setOptions
              * @return {void}
              */
-            setOptions: function () {
+            BubbleLegend.prototype.setOptions = function () {
                 var ranges = this.ranges,
                     options = this.options,
                     series = this.chart.series[options.seriesIndex],
@@ -3746,7 +3757,7 @@
                         });
                     }
                 }, this);
-            },
+            };
             /**
              * Merge options for bubbleLegend labels.
              *
@@ -3754,7 +3765,7 @@
              * @function Highcharts.BubbleLegend#getLabelStyles
              * @return {Highcharts.CSSObject}
              */
-            getLabelStyles: function () {
+            BubbleLegend.prototype.getLabelStyles = function () {
                 var options = this.options,
                     additionalLabelsStyle = {},
                     labelsOnLeft = options.labels.align === 'left',
@@ -3773,7 +3784,7 @@
                     'z-index': options.zIndex,
                     align: rtl || labelsOnLeft ? 'right' : 'left'
                 });
-            },
+            };
             /**
              * Calculate radius for each bubble range,
              * used code from BubbleSeries.js 'getRadius' method.
@@ -3785,7 +3796,7 @@
              * @return {number|null}
              *         Radius for one range
              */
-            getRangeRadius: function (value) {
+            BubbleLegend.prototype.getRangeRadius = function (value) {
                 var options = this.options,
                     seriesIndex = this.options.seriesIndex,
                     bubbleSeries = this.chart.series[seriesIndex],
@@ -3794,7 +3805,7 @@
                     minSize = options.minSize,
                     maxSize = options.maxSize;
                 return bubbleSeries.getRadius.call(this, zMin, zMax, minSize, maxSize, value);
-            },
+            };
             /**
              * Render the legendSymbol group.
              *
@@ -3802,7 +3813,7 @@
              * @function Highcharts.BubbleLegend#render
              * @return {void}
              */
-            render: function () {
+            BubbleLegend.prototype.render = function () {
                 var renderer = this.chart.renderer,
                     zThreshold = this.options.zThreshold;
                 if (!this.symbols) {
@@ -3827,7 +3838,7 @@
                 this.legendSymbol.add(this.legendItem);
                 this.legendItem.add(this.legendGroup);
                 this.hideOverlappingLabels();
-            },
+            };
             /**
              * Render one range, consisting of bubble symbol, connector and label.
              *
@@ -3837,7 +3848,7 @@
              *        Range options
              * @return {void}
              */
-            renderRange: function (range) {
+            BubbleLegend.prototype.renderRange = function (range) {
                 var mainRange = this.ranges[0],
                     legend = this.legend,
                     options = this.options,
@@ -3914,7 +3925,7 @@
                     x: labelX,
                     y: labelY + labelMovement
                 };
-            },
+            };
             /**
              * Get the label which takes up the most space.
              *
@@ -3922,7 +3933,7 @@
              * @function Highcharts.BubbleLegend#getMaxLabelSize
              * @return {Highcharts.BBoxObject}
              */
-            getMaxLabelSize: function () {
+            BubbleLegend.prototype.getMaxLabelSize = function () {
                 var labels = this.symbols.labels,
                     maxLabel,
                     labelSize;
@@ -3937,7 +3948,7 @@
                     }
                 });
                 return maxLabel || {};
-            },
+            };
             /**
              * Get formatted label for range.
              *
@@ -3948,7 +3959,7 @@
              * @return {string}
              *         Range label text
              */
-            formatLabel: function (range) {
+            BubbleLegend.prototype.formatLabel = function (range) {
                 var options = this.options,
                     formatter = options.labels.formatter,
                     format = options.labels.format;
@@ -3956,7 +3967,7 @@
                 return format ? U.format(format, range) :
                     formatter ? formatter.call(range) :
                         numberFormatter(range.value, 1);
-            },
+            };
             /**
              * By using default chart 'hideOverlappingLabels' method, hide or show
              * labels and connectors.
@@ -3965,7 +3976,7 @@
              * @function Highcharts.BubbleLegend#hideOverlappingLabels
              * @return {void}
              */
-            hideOverlappingLabels: function () {
+            BubbleLegend.prototype.hideOverlappingLabels = function () {
                 var chart = this.chart,
                     allowOverlap = this.options.labels.allowOverlap,
                     symbols = this.symbols;
@@ -3981,7 +3992,7 @@
                         }
                     });
                 }
-            },
+            };
             /**
              * Calculate ranges from created series.
              *
@@ -3990,7 +4001,7 @@
              * @return {Array<Highcharts.LegendBubbleLegendRangesOptions>}
              *         Array of range objects
              */
-            getRanges: function () {
+            BubbleLegend.prototype.getRanges = function () {
                 var bubbleLegend = this.legend.bubbleLegend,
                     series = bubbleLegend.chart.series,
                     ranges,
@@ -4033,7 +4044,7 @@
                     }
                 });
                 return ranges;
-            },
+            };
             /**
              * Calculate bubble legend sizes from rendered series.
              *
@@ -4042,7 +4053,7 @@
              * @return {Array<number,number>}
              *         Calculated min and max bubble sizes
              */
-            predictBubbleSizes: function () {
+            BubbleLegend.prototype.predictBubbleSizes = function () {
                 var chart = this.chart,
                     fontMetrics = this.fontMetrics,
                     legendOptions = chart.legend.options,
@@ -4075,7 +4086,7 @@
                     }
                 }
                 return [minSize, Math.ceil(calculatedSize)];
-            },
+            };
             /**
              * Correct ranges with calculated sizes.
              *
@@ -4085,12 +4096,12 @@
              * @param {number} max
              * @return {void}
              */
-            updateRanges: function (min, max) {
+            BubbleLegend.prototype.updateRanges = function (min, max) {
                 var bubbleLegendOptions = this.legend.options.bubbleLegend;
                 bubbleLegendOptions.minSize = min;
                 bubbleLegendOptions.maxSize = max;
                 bubbleLegendOptions.ranges = this.getRanges();
-            },
+            };
             /**
              * Because of the possibility of creating another legend line, predicted
              * bubble legend sizes may differ by a few pixels, so it is necessary to
@@ -4100,7 +4111,7 @@
              * @function Highcharts.BubbleLegend#correctSizes
              * @return {void}
              */
-            correctSizes: function () {
+            BubbleLegend.prototype.correctSizes = function () {
                 var legend = this.legend,
                     chart = this.chart,
                     bubbleSeries = chart.series[this.options.seriesIndex],
@@ -4111,8 +4122,9 @@
                     this.updateRanges(this.options.minSize, bubbleSeries.maxPxSize);
                     legend.render();
                 }
-            }
-        };
+            };
+            return BubbleLegend;
+        }());
         // Start the bubble legend creation process.
         addEvent(Legend, 'afterGetAllItems', function (e) {
             var legend = this,
@@ -4316,7 +4328,9 @@
                 }
             }
         });
+        H.BubbleLegend = BubbleLegend;
 
+        return H.BubbleLegend;
     });
     _registerModule(_modules, 'parts-more/BubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
         /* *
@@ -4689,8 +4703,6 @@
                             graphic.animate(animationTarget, this.options.animation);
                         }
                     }, this);
-                    // delete this function to allow it only once
-                    this.animate = null;
                 }
             },
             /**

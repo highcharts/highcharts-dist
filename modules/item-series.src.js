@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * Item series type for Highcharts
  *
@@ -454,7 +454,6 @@
                     this.group.animate({
                         opacity: 1
                     }, this.options.animation);
-                    this.animate = null;
                 }
             }
         }, 

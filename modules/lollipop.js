@@ -1,5 +1,5 @@
 /*
- Highcharts JS v8.0.2 (2020-03-03)
+ Highcharts JS v8.0.3 (2020-03-05)
 
  (c) 2009-2019 Sebastian Bochan, Rafal Sebestjanski
 

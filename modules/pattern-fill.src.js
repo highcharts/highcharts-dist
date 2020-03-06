@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * Module for adding patterns and images as point fills.
  *

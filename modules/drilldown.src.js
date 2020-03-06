@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * Highcharts Drilldown module
  *
@@ -855,8 +855,8 @@
                         });
                     }
                 }, Math.max(this.chart.options.drilldown.animation.duration - 50, 0));
-                // Reset
-                this.animate = noop;
+                // Reset to prototype
+                delete this.animate;
             }
         };
         ColumnSeries.prototype.animateDrilldown = function (init) {
@@ -894,7 +894,8 @@
                         point.dataLabel.fadeIn(animationOptions);
                     }
                 });
-                this.animate = null;
+                // Reset to prototype
+                delete this.animate;
             }
         };
         /**
@@ -974,7 +975,8 @@
                                 }))[animationOptions ? 'animate' : 'attr'](animateTo, animationOptions);
                             }
                         });
-                        this.animate = null;
+                        // Reset to prototype
+                        delete this.animate;
                     }
                 }
             });

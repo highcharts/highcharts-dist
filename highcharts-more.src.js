@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -58,12 +58,177 @@
          * @param {Highcharts.PaneOptions} options
          * @param {Highcharts.Chart} chart
          */
-        function Pane(options, chart) {
-            this.init(options, chart);
-        }
-        // Extend the Pane prototype
-        extend(Pane.prototype, {
-            coll: 'pane',
+        var Pane = /** @class */ (function () {
+                function Pane(options, chart) {
+                    this.background = void 0;
+                this.center = void 0;
+                this.chart = void 0;
+                this.options = void 0;
+                this.coll = 'pane'; // Member of chart.pane
+                /**
+                 * The pane serves as a container for axes and backgrounds for circular
+                 * gauges and polar charts.
+                 *
+                 * @since        2.3.0
+                 * @product      highcharts
+                 * @requires     highcharts-more
+                 * @optionparent pane
+                 */
+                this.defaultOptions = {
+                    /**
+                     * The end angle of the polar X axis or gauge value axis, given in
+                     * degrees where 0 is north. Defaults to [startAngle](#pane.startAngle)
+                     * + 360.
+                     *
+                     * @sample {highcharts} highcharts/demo/gauge-vu-meter/
+                     *         VU-meter with custom start and end angle
+                     *
+                     * @type      {number}
+                     * @since     2.3.0
+                     * @product   highcharts
+                     * @apioption pane.endAngle
+                     */
+                    /**
+                     * The center of a polar chart or angular gauge, given as an array
+                     * of [x, y] positions. Positions can be given as integers that
+                     * transform to pixels, or as percentages of the plot area size.
+                     *
+                     * @sample {highcharts} highcharts/demo/gauge-vu-meter/
+                     *         Two gauges with different center
+                     *
+                     * @type    {Array<string|number>}
+                     * @default ["50%", "50%"]
+                     * @since   2.3.0
+                     * @product highcharts
+                     */
+                    center: ['50%', '50%'],
+                    /**
+                     * The size of the pane, either as a number defining pixels, or a
+                     * percentage defining a percentage of the available plot area (the
+                     * smallest of the plot height or plot width).
+                     *
+                     * @sample {highcharts} highcharts/demo/gauge-vu-meter/
+                     *         Smaller size
+                     *
+                     * @type    {number|string}
+                     * @product highcharts
+                     */
+                    size: '85%',
+                    /**
+                     * The inner size of the pane, either as a number defining pixels, or a
+                     * percentage defining a percentage of the pane's size.
+                     *
+                     * @sample {highcharts} highcharts/series-polar/column-inverted-inner
+                     *         The inner size set to 20%
+                     *
+                     * @type    {number|string}
+                     * @product highcharts
+                     */
+                    innerSize: '0%',
+                    /**
+                     * The start angle of the polar X axis or gauge axis, given in degrees
+                     * where 0 is north. Defaults to 0.
+                     *
+                     * @sample {highcharts} highcharts/demo/gauge-vu-meter/
+                     *         VU-meter with custom start and end angle
+                     *
+                     * @since   2.3.0
+                     * @product highcharts
+                     */
+                    startAngle: 0
+                };
+                /**
+                 * An array of background items for the pane.
+                 *
+                 * @sample {highcharts} highcharts/demo/gauge-speedometer/
+                 *         Speedometer gauge with multiple backgrounds
+                 *
+                 * @type         {Array<*>}
+                 * @optionparent pane.background
+                 */
+                this.defaultBackgroundOptions = {
+                    /**
+                     * The class name for this background.
+                     *
+                     * @sample {highcharts} highcharts/css/pane/
+                     *         Panes styled by CSS
+                     * @sample {highstock} highcharts/css/pane/
+                     *         Panes styled by CSS
+                     * @sample {highmaps} highcharts/css/pane/
+                     *         Panes styled by CSS
+                     *
+                     * @type      {string}
+                     * @default   highcharts-pane
+                     * @since     5.0.0
+                     * @apioption pane.background.className
+                     */
+                    /**
+                     * The shape of the pane background. When `solid`, the background
+                     * is circular. When `arc`, the background extends only from the min
+                     * to the max of the value axis.
+                     *
+                     * @type    {Highcharts.PaneBackgroundShapeValue}
+                     * @since   2.3.0
+                     * @product highcharts
+                     */
+                    shape: 'circle',
+                    /**
+                     * The pixel border width of the pane background.
+                     *
+                     * @since 2.3.0
+                     * @product highcharts
+                     */
+                    borderWidth: 1,
+                    /**
+                     * The pane background border color.
+                     *
+                     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @since   2.3.0
+                     * @product highcharts
+                     */
+                    borderColor: '#cccccc',
+                    /**
+                     * The background color or gradient for the pane.
+                     *
+                     * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @default { linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 }, stops: [[0, #ffffff], [1, #e6e6e6]] }
+                     * @since   2.3.0
+                     * @product highcharts
+                     */
+                    backgroundColor: {
+                        /** @ignore-option */
+                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                        /** @ignore-option */
+                        stops: [
+                            [0, '#ffffff'],
+                            [1, '#e6e6e6']
+                        ]
+                    },
+                    /** @ignore-option */
+                    from: -Number.MAX_VALUE,
+                    /**
+                     * The inner radius of the pane background. Can be either numeric
+                     * (pixels) or a percentage string.
+                     *
+                     * @type    {number|string}
+                     * @since   2.3.0
+                     * @product highcharts
+                     */
+                    innerRadius: 0,
+                    /** @ignore-option */
+                    to: Number.MAX_VALUE,
+                    /**
+                     * The outer radius of the circular pane background. Can be either
+                     * numeric (pixels) or a percentage string.
+                     *
+                     * @type     {number|string}
+                     * @since    2.3.0
+                     * @product  highcharts
+                     */
+                    outerRadius: '105%'
+                };
+                this.init(options, chart);
+            }
             /**
              * Initialize the Pane object
              *
@@ -74,29 +239,29 @@
              *
              * @param {Highcharts.Chart} chart
              */
-            init: function (options, chart) {
+            Pane.prototype.init = function (options, chart) {
                 this.chart = chart;
                 this.background = [];
                 chart.pane.push(this);
                 this.setOptions(options);
-            },
+            };
             /**
              * @private
              * @function Highcharts.Pane#setOptions
              *
              * @param {Highcharts.PaneOptions} options
              */
-            setOptions: function (options) {
+            Pane.prototype.setOptions = function (options) {
                 // Set options. Angular charts have a default background (#3318)
                 this.options = options = merge(this.defaultOptions, this.chart.angular ? { background: {} } : void 0, options);
-            },
+            };
             /**
              * Render the pane with its backgrounds.
              *
              * @private
              * @function Highcharts.Pane#render
              */
-            render: function () {
+            Pane.prototype.render = function () {
                 var options = this.options,
                     backgroundOption = this.options.background,
                     renderer = this.chart.renderer,
@@ -124,7 +289,7 @@
                         }
                     }
                 }
-            },
+            };
             /**
              * Render an individual pane background.
              *
@@ -137,7 +302,7 @@
              * @param {number} i
              *        The index of the background in this.backgrounds
              */
-            renderBackground: function (backgroundOptions, i) {
+            Pane.prototype.renderBackground = function (backgroundOptions, i) {
                 var method = 'animate',
                     attribs = {
                         'class': 'highcharts-pane ' + (backgroundOptions.className || '')
@@ -158,169 +323,7 @@
                 this.background[i][method]({
                     'd': this.axis.getPlotBandPath(backgroundOptions.from, backgroundOptions.to, backgroundOptions)
                 }).attr(attribs);
-            },
-            /**
-             * The pane serves as a container for axes and backgrounds for circular
-             * gauges and polar charts.
-             *
-             * @since        2.3.0
-             * @product      highcharts
-             * @requires     highcharts-more
-             * @optionparent pane
-             */
-            defaultOptions: {
-                /**
-                 * The end angle of the polar X axis or gauge value axis, given in
-                 * degrees where 0 is north. Defaults to [startAngle](#pane.startAngle)
-                 * + 360.
-                 *
-                 * @sample {highcharts} highcharts/demo/gauge-vu-meter/
-                 *         VU-meter with custom start and end angle
-                 *
-                 * @type      {number}
-                 * @since     2.3.0
-                 * @product   highcharts
-                 * @apioption pane.endAngle
-                 */
-                /**
-                 * The center of a polar chart or angular gauge, given as an array
-                 * of [x, y] positions. Positions can be given as integers that
-                 * transform to pixels, or as percentages of the plot area size.
-                 *
-                 * @sample {highcharts} highcharts/demo/gauge-vu-meter/
-                 *         Two gauges with different center
-                 *
-                 * @type    {Array<string|number>}
-                 * @default ["50%", "50%"]
-                 * @since   2.3.0
-                 * @product highcharts
-                 */
-                center: ['50%', '50%'],
-                /**
-                 * The size of the pane, either as a number defining pixels, or a
-                 * percentage defining a percentage of the available plot area (the
-                 * smallest of the plot height or plot width).
-                 *
-                 * @sample {highcharts} highcharts/demo/gauge-vu-meter/
-                 *         Smaller size
-                 *
-                 * @type    {number|string}
-                 * @product highcharts
-                 */
-                size: '85%',
-                /**
-                 * The inner size of the pane, either as a number defining pixels, or a
-                 * percentage defining a percentage of the pane's size.
-                 *
-                 * @sample {highcharts} highcharts/series-polar/column-inverted-inner
-                 *         The inner size set to 20%
-                 *
-                 * @type    {number|string}
-                 * @product highcharts
-                 */
-                innerSize: '0%',
-                /**
-                 * The start angle of the polar X axis or gauge axis, given in degrees
-                 * where 0 is north. Defaults to 0.
-                 *
-                 * @sample {highcharts} highcharts/demo/gauge-vu-meter/
-                 *         VU-meter with custom start and end angle
-                 *
-                 * @since   2.3.0
-                 * @product highcharts
-                 */
-                startAngle: 0
-            },
-            /**
-             * An array of background items for the pane.
-             *
-             * @sample {highcharts} highcharts/demo/gauge-speedometer/
-             *         Speedometer gauge with multiple backgrounds
-             *
-             * @type         {Array<*>}
-             * @optionparent pane.background
-             */
-            defaultBackgroundOptions: {
-                /**
-                 * The class name for this background.
-                 *
-                 * @sample {highcharts} highcharts/css/pane/
-                 *         Panes styled by CSS
-                 * @sample {highstock} highcharts/css/pane/
-                 *         Panes styled by CSS
-                 * @sample {highmaps} highcharts/css/pane/
-                 *         Panes styled by CSS
-                 *
-                 * @type      {string}
-                 * @default   highcharts-pane
-                 * @since     5.0.0
-                 * @apioption pane.background.className
-                 */
-                /**
-                 * The shape of the pane background. When `solid`, the background
-                 * is circular. When `arc`, the background extends only from the min
-                 * to the max of the value axis.
-                 *
-                 * @type    {Highcharts.PaneBackgroundShapeValue}
-                 * @since   2.3.0
-                 * @product highcharts
-                 */
-                shape: 'circle',
-                /**
-                 * The pixel border width of the pane background.
-                 *
-                 * @since 2.3.0
-                 * @product highcharts
-                 */
-                borderWidth: 1,
-                /**
-                 * The pane background border color.
-                 *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @since   2.3.0
-                 * @product highcharts
-                 */
-                borderColor: '#cccccc',
-                /**
-                 * The background color or gradient for the pane.
-                 *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @default { linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 }, stops: [[0, #ffffff], [1, #e6e6e6]] }
-                 * @since   2.3.0
-                 * @product highcharts
-                 */
-                backgroundColor: {
-                    /** @ignore-option */
-                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-                    /** @ignore-option */
-                    stops: [
-                        [0, '#ffffff'],
-                        [1, '#e6e6e6']
-                    ]
-                },
-                /** @ignore-option */
-                from: -Number.MAX_VALUE,
-                /**
-                 * The inner radius of the pane background. Can be either numeric
-                 * (pixels) or a percentage string.
-                 *
-                 * @type    {number|string}
-                 * @since   2.3.0
-                 * @product highcharts
-                 */
-                innerRadius: 0,
-                /** @ignore-option */
-                to: Number.MAX_VALUE,
-                /**
-                 * The outer radius of the circular pane background. Can be either
-                 * numeric (pixels) or a percentage string.
-                 *
-                 * @type     {number|string}
-                 * @since    2.3.0
-                 * @product  highcharts
-                 */
-                outerRadius: '105%'
-            },
+            };
             /**
              * Gets the center for the pane and its axis.
              *
@@ -329,11 +332,11 @@
              * @param {Highcharts.RadialAxis} [axis]
              * @return {void}
              */
-            updateCenter: function (axis) {
+            Pane.prototype.updateCenter = function (axis) {
                 this.center = (axis ||
                     this.axis ||
                     {}).center = CenteredSeriesMixin.getCenter.call(this);
-            },
+            };
             /**
              * Destroy the pane item
              *
@@ -360,7 +363,7 @@
              * @param {boolean} [redraw]
              * @return {void}
              */
-            update: function (options, redraw) {
+            Pane.prototype.update = function (options, redraw) {
                 merge(true, this.options, options);
                 merge(true, this.chart.options.pane, options); // #9917
                 this.setOptions(this.options);
@@ -371,9 +374,9 @@
                         axis.update({}, redraw);
                     }
                 }, this);
-            }
-        });
-        H.Pane = Pane;
+            };
+            return Pane;
+        }());
         /**
          * Check whether element is inside or outside pane.
          * @private
@@ -431,7 +434,9 @@
                 eventArgs.hoverPoint = void 0;
             }
         });
+        H.Pane = Pane;
 
+        return H.Pane;
     });
     _registerModule(_modules, 'parts-more/RadialAxis.js', [_modules['parts/Globals.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (H, Tick, U) {
         /* *
@@ -3006,8 +3011,6 @@
                             }, series.options.animation);
                         }
                     });
-                    // delete this function to allow it only once
-                    series.animate = null;
                 }
             },
             /**
@@ -5101,10 +5104,25 @@
          * @param {Highcharts.Legend} legend
          *        Legend
          */
-        H.BubbleLegend = function (options, legend) {
-            this.init(options, legend);
-        };
-        H.BubbleLegend.prototype = {
+        var BubbleLegend = /** @class */ (function () {
+                function BubbleLegend(options, legend) {
+                    this.chart = void 0;
+                this.fontMetrics = void 0;
+                this.legend = void 0;
+                this.legendGroup = void 0;
+                this.legendItem = void 0;
+                this.legendItemHeight = void 0;
+                this.legendItemWidth = void 0;
+                this.legendSymbol = void 0;
+                this.maxLabel = void 0;
+                this.movementX = void 0;
+                this.ranges = void 0;
+                this.visible = void 0;
+                this.symbols = void 0;
+                this.options = void 0;
+                this.setState = noop;
+                this.init(options, legend);
+            }
             /**
              * Create basic bubbleLegend properties similar to item in legend.
              *
@@ -5116,13 +5134,12 @@
              *        Legend
              * @return {void}
              */
-            init: function (options, legend) {
+            BubbleLegend.prototype.init = function (options, legend) {
                 this.options = options;
                 this.visible = true;
                 this.chart = legend.chart;
                 this.legend = legend;
-            },
-            setState: noop,
+            };
             /**
              * Depending on the position option, add bubbleLegend to legend items.
              *
@@ -5132,10 +5149,10 @@
              *        All legend items
              * @return {void}
              */
-            addToLegend: function (items) {
+            BubbleLegend.prototype.addToLegend = function (items) {
                 // Insert bubbleLegend into legend items
                 items.splice(this.options.legendIndex, 0, this);
-            },
+            };
             /**
              * Calculate ranges, sizes and call the next steps of bubbleLegend
              * creation.
@@ -5146,7 +5163,7 @@
              *        Legend instance
              * @return {void}
              */
-            drawLegendSymbol: function (legend) {
+            BubbleLegend.prototype.drawLegendSymbol = function (legend) {
                 var chart = this.chart,
                     options = this.options,
                     size,
@@ -5184,7 +5201,7 @@
                     connectorSpace : 0;
                 this.legendItemWidth = size + connectorSpace + itemDistance;
                 this.legendItemHeight = size + this.fontMetrics.h / 2;
-            },
+            };
             /**
              * Set style options for each bubbleLegend range.
              *
@@ -5192,7 +5209,7 @@
              * @function Highcharts.BubbleLegend#setOptions
              * @return {void}
              */
-            setOptions: function () {
+            BubbleLegend.prototype.setOptions = function () {
                 var ranges = this.ranges,
                     options = this.options,
                     series = this.chart.series[options.seriesIndex],
@@ -5232,7 +5249,7 @@
                         });
                     }
                 }, this);
-            },
+            };
             /**
              * Merge options for bubbleLegend labels.
              *
@@ -5240,7 +5257,7 @@
              * @function Highcharts.BubbleLegend#getLabelStyles
              * @return {Highcharts.CSSObject}
              */
-            getLabelStyles: function () {
+            BubbleLegend.prototype.getLabelStyles = function () {
                 var options = this.options,
                     additionalLabelsStyle = {},
                     labelsOnLeft = options.labels.align === 'left',
@@ -5259,7 +5276,7 @@
                     'z-index': options.zIndex,
                     align: rtl || labelsOnLeft ? 'right' : 'left'
                 });
-            },
+            };
             /**
              * Calculate radius for each bubble range,
              * used code from BubbleSeries.js 'getRadius' method.
@@ -5271,7 +5288,7 @@
              * @return {number|null}
              *         Radius for one range
              */
-            getRangeRadius: function (value) {
+            BubbleLegend.prototype.getRangeRadius = function (value) {
                 var options = this.options,
                     seriesIndex = this.options.seriesIndex,
                     bubbleSeries = this.chart.series[seriesIndex],
@@ -5280,7 +5297,7 @@
                     minSize = options.minSize,
                     maxSize = options.maxSize;
                 return bubbleSeries.getRadius.call(this, zMin, zMax, minSize, maxSize, value);
-            },
+            };
             /**
              * Render the legendSymbol group.
              *
@@ -5288,7 +5305,7 @@
              * @function Highcharts.BubbleLegend#render
              * @return {void}
              */
-            render: function () {
+            BubbleLegend.prototype.render = function () {
                 var renderer = this.chart.renderer,
                     zThreshold = this.options.zThreshold;
                 if (!this.symbols) {
@@ -5313,7 +5330,7 @@
                 this.legendSymbol.add(this.legendItem);
                 this.legendItem.add(this.legendGroup);
                 this.hideOverlappingLabels();
-            },
+            };
             /**
              * Render one range, consisting of bubble symbol, connector and label.
              *
@@ -5323,7 +5340,7 @@
              *        Range options
              * @return {void}
              */
-            renderRange: function (range) {
+            BubbleLegend.prototype.renderRange = function (range) {
                 var mainRange = this.ranges[0],
                     legend = this.legend,
                     options = this.options,
@@ -5400,7 +5417,7 @@
                     x: labelX,
                     y: labelY + labelMovement
                 };
-            },
+            };
             /**
              * Get the label which takes up the most space.
              *
@@ -5408,7 +5425,7 @@
              * @function Highcharts.BubbleLegend#getMaxLabelSize
              * @return {Highcharts.BBoxObject}
              */
-            getMaxLabelSize: function () {
+            BubbleLegend.prototype.getMaxLabelSize = function () {
                 var labels = this.symbols.labels,
                     maxLabel,
                     labelSize;
@@ -5423,7 +5440,7 @@
                     }
                 });
                 return maxLabel || {};
-            },
+            };
             /**
              * Get formatted label for range.
              *
@@ -5434,7 +5451,7 @@
              * @return {string}
              *         Range label text
              */
-            formatLabel: function (range) {
+            BubbleLegend.prototype.formatLabel = function (range) {
                 var options = this.options,
                     formatter = options.labels.formatter,
                     format = options.labels.format;
@@ -5442,7 +5459,7 @@
                 return format ? U.format(format, range) :
                     formatter ? formatter.call(range) :
                         numberFormatter(range.value, 1);
-            },
+            };
             /**
              * By using default chart 'hideOverlappingLabels' method, hide or show
              * labels and connectors.
@@ -5451,7 +5468,7 @@
              * @function Highcharts.BubbleLegend#hideOverlappingLabels
              * @return {void}
              */
-            hideOverlappingLabels: function () {
+            BubbleLegend.prototype.hideOverlappingLabels = function () {
                 var chart = this.chart,
                     allowOverlap = this.options.labels.allowOverlap,
                     symbols = this.symbols;
@@ -5467,7 +5484,7 @@
                         }
                     });
                 }
-            },
+            };
             /**
              * Calculate ranges from created series.
              *
@@ -5476,7 +5493,7 @@
              * @return {Array<Highcharts.LegendBubbleLegendRangesOptions>}
              *         Array of range objects
              */
-            getRanges: function () {
+            BubbleLegend.prototype.getRanges = function () {
                 var bubbleLegend = this.legend.bubbleLegend,
                     series = bubbleLegend.chart.series,
                     ranges,
@@ -5519,7 +5536,7 @@
                     }
                 });
                 return ranges;
-            },
+            };
             /**
              * Calculate bubble legend sizes from rendered series.
              *
@@ -5528,7 +5545,7 @@
              * @return {Array<number,number>}
              *         Calculated min and max bubble sizes
              */
-            predictBubbleSizes: function () {
+            BubbleLegend.prototype.predictBubbleSizes = function () {
                 var chart = this.chart,
                     fontMetrics = this.fontMetrics,
                     legendOptions = chart.legend.options,
@@ -5561,7 +5578,7 @@
                     }
                 }
                 return [minSize, Math.ceil(calculatedSize)];
-            },
+            };
             /**
              * Correct ranges with calculated sizes.
              *
@@ -5571,12 +5588,12 @@
              * @param {number} max
              * @return {void}
              */
-            updateRanges: function (min, max) {
+            BubbleLegend.prototype.updateRanges = function (min, max) {
                 var bubbleLegendOptions = this.legend.options.bubbleLegend;
                 bubbleLegendOptions.minSize = min;
                 bubbleLegendOptions.maxSize = max;
                 bubbleLegendOptions.ranges = this.getRanges();
-            },
+            };
             /**
              * Because of the possibility of creating another legend line, predicted
              * bubble legend sizes may differ by a few pixels, so it is necessary to
@@ -5586,7 +5603,7 @@
              * @function Highcharts.BubbleLegend#correctSizes
              * @return {void}
              */
-            correctSizes: function () {
+            BubbleLegend.prototype.correctSizes = function () {
                 var legend = this.legend,
                     chart = this.chart,
                     bubbleSeries = chart.series[this.options.seriesIndex],
@@ -5597,8 +5614,9 @@
                     this.updateRanges(this.options.minSize, bubbleSeries.maxPxSize);
                     legend.render();
                 }
-            }
-        };
+            };
+            return BubbleLegend;
+        }());
         // Start the bubble legend creation process.
         addEvent(Legend, 'afterGetAllItems', function (e) {
             var legend = this,
@@ -5802,7 +5820,9 @@
                 }
             }
         });
+        H.BubbleLegend = BubbleLegend;
 
+        return H.BubbleLegend;
     });
     _registerModule(_modules, 'parts-more/BubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
         /* *
@@ -6175,8 +6195,6 @@
                             graphic.animate(animationTarget, this.options.animation);
                         }
                     }, this);
-                    // delete this function to allow it only once
-                    this.animate = null;
                 }
             },
             /**
@@ -9251,7 +9269,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/Polar.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-more/Polar.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts-more/Pane.js']], function (H, U, Pane) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -9634,8 +9652,6 @@
                                         }, series.options.animation);
                                     }
                                 });
-                                // Delete this function to allow it only once
-                                series.animate = null;
                             }
                         }
                         else {
@@ -9665,8 +9681,6 @@
                                 if (markerGroup) {
                                     markerGroup.animate(attribs, animation);
                                 }
-                                // Delete this function to allow it only once
-                                series.animate = null;
                             }
                         }
                     }
@@ -10043,7 +10057,7 @@
                 this.pane = [];
             }
             splat(this.options.pane).forEach(function (paneOptions) {
-                new H.Pane(// eslint-disable-line no-new
+                new Pane(// eslint-disable-line no-new
                 paneOptions, this);
             }, this);
         });

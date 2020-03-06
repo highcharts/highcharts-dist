@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.2 (2020-03-03)
+ * @license Highcharts Gantt JS v8.0.3 (2020-03-06)
  *
  * CurrentDateIndicator
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-gantt/CurrentDateIndicator.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-gantt/CurrentDateIndicator.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts/PlotLineOrBand.js']], function (H, U, PlotLineOrBand) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -43,8 +43,7 @@
         var addEvent = U.addEvent,
             merge = U.merge,
             wrap = U.wrap;
-        var Axis = H.Axis,
-            PlotLineOrBand = H.PlotLineOrBand;
+        var Axis = H.Axis;
         var defaultConfig = {
                 /**
                  * Show an indicator on the axis for the current date and time. Can be a

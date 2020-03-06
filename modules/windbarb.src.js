@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * Wind barb series module
  *
@@ -510,7 +510,6 @@
                     this.markerGroup.animate({
                         opacity: 1
                     }, animObject(this.options.animation));
-                    this.animate = null;
                 }
             },
             // Don't invert the marker group (#4960)

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * 3D features for Highcharts JS
  *
@@ -3749,8 +3749,6 @@
                         });
                         // redraw datalabels to the correct position
                         this.drawDataLabels();
-                        // delete this function to allow it only once
-                        series.animate = null;
                     }
                 }
             }
@@ -4139,8 +4137,6 @@
                         if (markerGroup) {
                             markerGroup.animate(attribs, animation);
                         }
-                        // Delete this function to allow it only once
-                        this.animate = null;
                     }
                 }
             }

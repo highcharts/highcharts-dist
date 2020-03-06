@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * Accessibility module
  *
@@ -2587,14 +2587,11 @@
             var labelText = getLabelText(label);
             var points = label.points;
             var getAriaLabel = function (point) { var _a,
-                _b,
-                _c; return ((_c = (_b = (_a = point) === null || _a === void 0 ? void 0 : _a.graphic) === null || _b === void 0 ? void 0 : _b.element) === null || _c === void 0 ? void 0 : _c.getAttribute('aria-label')) || ''; };
+                _b; return ((_b = (_a = point === null || point === void 0 ? void 0 : point.graphic) === null || _a === void 0 ? void 0 : _a.element) === null || _b === void 0 ? void 0 : _b.getAttribute('aria-label')) || ''; };
             var getValueDesc = function (point) {
-                    var _a,
-                _b,
-                _c;
-                var valDesc = ((_b = (_a = point) === null || _a === void 0 ? void 0 : _a.accessibility) === null || _b === void 0 ? void 0 : _b.valueDescription) || getAriaLabel(point);
-                var seriesName = ((_c = point) === null || _c === void 0 ? void 0 : _c.series.name) || '';
+                    var _a;
+                var valDesc = ((_a = point === null || point === void 0 ? void 0 : point.accessibility) === null || _a === void 0 ? void 0 : _a.valueDescription) || getAriaLabel(point);
+                var seriesName = (point === null || point === void 0 ? void 0 : point.series.name) || '';
                 return (seriesName ? seriesName + ', ' : '') + 'data point ' + valDesc;
             };
             var pointValueDescriptions = points
@@ -4691,19 +4688,15 @@
                 var el = this.sonifyButton = getElement(sonifyButtonId);
                 var chart = this.chart;
                 var defaultHandler = function (e) {
-                        var _a,
-                    _b;
-                    (_a = el) === null || _a === void 0 ? void 0 : _a.setAttribute('aria-hidden', 'true');
-                    (_b = el) === null || _b === void 0 ? void 0 : _b.setAttribute('aria-label', '');
+                        el === null || el === void 0 ? void 0 : el.setAttribute('aria-hidden', 'true');
+                    el === null || el === void 0 ? void 0 : el.setAttribute('aria-label', '');
                     e.preventDefault();
                     e.stopPropagation();
                     var announceMsg = chart.langFormat('accessibility.sonification.playAsSoundClickAnnouncement', { chart: chart });
                     _this.announcer.announce(announceMsg);
                     setTimeout(function () {
-                        var _a,
-                            _b;
-                        (_a = el) === null || _a === void 0 ? void 0 : _a.removeAttribute('aria-hidden');
-                        (_b = el) === null || _b === void 0 ? void 0 : _b.removeAttribute('aria-label');
+                        el === null || el === void 0 ? void 0 : el.removeAttribute('aria-hidden');
+                        el === null || el === void 0 ? void 0 : el.removeAttribute('aria-label');
                         if (chart.sonify) {
                             chart.sonify();
                         }

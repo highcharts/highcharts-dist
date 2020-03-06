@@ -1,5 +1,5 @@
 /*
- Highcharts JS v8.0.2 (2020-03-03)
+ Highcharts JS v8.0.3 (2020-03-05)
 
  Wind barb series module
 
@@ -16,5 +16,5 @@ xOffset:0},{pointArrayMap:["value","direction"],parallelArrays:["x","value","dir
 e&&(a=c.states[e].color||a,b=(c.states[e].lineWidth||b)+(c.states[e].lineWidthPlus||0));return{stroke:a,"stroke-width":b}},markerAttribs:function(){},getPlotBox:k.getPlotBox,windArrow:function(a){var e=1.943844*a.value,c=this.options.vectorLength/20,b=-10;if(a.isNull)return[];if(0===a.beaufortLevel)return this.chart.renderer.symbols.circle(-10*c,-10*c,20*c,20*c);a=["M",0,7*c,"L",-1.5*c,7*c,0,10*c,1.5*c,7*c,0,7*c,0,-10*c];var d=(e-e%50)/50;if(0<d)for(;d--;)a.push(-10===b?"L":"M",0,b*c,"L",5*c,b*c+
 2,"L",0,b*c+4),e-=50,b+=7;d=(e-e%10)/10;if(0<d)for(;d--;)a.push(-10===b?"L":"M",0,b*c,"L",7*c,b*c),e-=10,b+=3;d=(e-e%5)/5;if(0<d)for(;d--;)a.push(-10===b?"L":"M",0,b*c,"L",4*c,b*c),e-=5,b+=3;return a},translate:function(){var a=this.beaufortFloor,e=this.beaufortName;k.translate.call(this);this.points.forEach(function(c){for(var b=0;b<a.length&&!(a[b]>c.value);b++);c.beaufortLevel=b-1;c.beaufort=e[b-1]})},drawPoints:function(){var a=this.chart,e=this.yAxis,c=a.inverted,b=this.options.vectorLength/
 2;this.points.forEach(function(d){var f=d.plotX,g=d.plotY;!1===this.options.clip||a.isInsidePlot(f,0,!1)?(d.graphic||(d.graphic=this.chart.renderer.path().add(this.markerGroup).addClass("highcharts-point highcharts-color-"+l(d.colorIndex,d.series.colorIndex))),d.graphic.attr({d:this.windArrow(d),translateX:f+this.options.xOffset,translateY:g+this.options.yOffset,rotation:d.direction}),this.chart.styledMode||d.graphic.attr(this.pointAttribs(d))):d.graphic&&(d.graphic=d.graphic.destroy());d.tooltipPos=
-[f+this.options.xOffset+(c&&!this.onSeries?b:0),g+this.options.yOffset-(c?0:b+e.pos-a.plotTop)]},this)},animate:function(a){a?this.markerGroup.attr({opacity:.01}):(this.markerGroup.animate({opacity:1},u(this.options.animation)),this.animate=null)},invertGroups:f,getExtremes:f},{isValid:function(){return t(this.value)&&0<=this.value}});""});k(a,"masters/modules/windbarb.src.js",[],function(){})});
+[f+this.options.xOffset+(c&&!this.onSeries?b:0),g+this.options.yOffset-(c?0:b+e.pos-a.plotTop)]},this)},animate:function(a){a?this.markerGroup.attr({opacity:.01}):this.markerGroup.animate({opacity:1},u(this.options.animation))},invertGroups:f,getExtremes:f},{isValid:function(){return t(this.value)&&0<=this.value}});""});k(a,"masters/modules/windbarb.src.js",[],function(){})});
 //# sourceMappingURL=windbarb.js.map

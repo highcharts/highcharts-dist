@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * Annotations module
  *
@@ -6293,7 +6293,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/8.0.2/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/8.0.3/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -7130,7 +7130,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/8.0.2/gfx/stock-icons/'));
+                    'https://code.highcharts.com/8.0.3/gfx/stock-icons/'));
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

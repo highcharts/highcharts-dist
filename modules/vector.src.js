@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.2 (2020-03-03)
+ * @license Highcharts JS v8.0.3 (2020-03-06)
  *
  * Vector plot series module
  *
@@ -281,7 +281,6 @@
                     this.markerGroup.animate({
                         opacity: 1
                     }, animObject(this.options.animation));
-                    this.animate = null;
                 }
             }
             /* eslint-enable valid-jsdoc */

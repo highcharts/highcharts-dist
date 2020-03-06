@@ -1,5 +1,5 @@
 /*
- Highstock JS v8.0.2 (2020-03-03)
+ Highstock JS v8.0.3 (2020-03-05)
 
  Drag-panes module
 
