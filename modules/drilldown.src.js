@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.3 (2020-03-06)
+ * @license Highcharts JS v8.0.4 (2020-03-10)
  *
  * Highcharts Drilldown module
  *
@@ -452,9 +452,7 @@
          * @function Highcharts.SVGElement#fadeIn
          *
          * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
-         *        The animation options for the element fade.
-         *
-         * @return {void}
+         * The animation options for the element fade.
          */
         H.SVGRenderer.prototype.Element.prototype.fadeIn = function (animation) {
             this
@@ -482,12 +480,10 @@
          * @function Highcharts.Chart#addSeriesAsDrilldown
          *
          * @param {Highcharts.Point} point
-         *        The point from which the drilldown will start.
+         * The point from which the drilldown will start.
          *
          * @param {Highcharts.SeriesOptionsType} options
-         *        The series options for the new, detailed series.
-         *
-         * @return {void}
+         * The series options for the new, detailed series.
          */
         Chart.prototype.addSeriesAsDrilldown = function (point, options) {
             this.addSingleSeriesAsDrilldown(point, options);
@@ -657,11 +653,9 @@
          * When the chart is drilled down to a child series, calling `chart.drillUp()`
          * will drill up to the parent series.
          *
-         * @function Highcharts.Chart#drillUp
-         *
-         * @return {void}
-         *
          * @requires  modules/drilldown
+         *
+         * @function Highcharts.Chart#drillUp
          */
         Chart.prototype.drillUp = function () {
             if (!this.drilldownLevels || this.drilldownLevels.length === 0) {
@@ -812,8 +806,7 @@
          * @private
          * @function Highcharts.ColumnSeries#animateDrillupTo
          * @param {boolean} [init=false]
-         *        Whether to initialize animation
-         * @return {void}
+         * Whether to initialize animation
          */
         ColumnSeries.prototype.animateDrillupTo = function (init) {
             if (!init) {

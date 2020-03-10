@@ -1215,7 +1215,7 @@ H.Toolbar.prototype = {
     getIconsURL: function () {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/8.0.3/gfx/stock-icons/';
+            'https://code.highcharts.com/8.0.4/gfx/stock-icons/';
     },
     /**
      * Mapping JSON fields to CSS classes.

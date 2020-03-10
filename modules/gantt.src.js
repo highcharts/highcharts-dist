@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.3 (2020-03-06)
+ * @license Highcharts Gantt JS v8.0.4 (2020-03-10)
  *
  * Gantt series
  *
@@ -8385,12 +8385,12 @@
                         navButtonOptions.height))) {
                     exportingX = -40;
                 }
-                if (buttonPosition.align === 'left') {
-                    translateX = buttonPosition.x - chart.spacing[3];
+                translateX = buttonPosition.x - chart.spacing[3];
+                if (buttonPosition.align === 'right') {
+                    translateX += exportingX - plotLeft; // (#13014)
                 }
-                else if (buttonPosition.align === 'right') {
-                    translateX =
-                        buttonPosition.x + exportingX - chart.spacing[1];
+                else if (buttonPosition.align === 'center') {
+                    translateX -= plotLeft / 2;
                 }
                 // align button group
                 buttonGroup.align({

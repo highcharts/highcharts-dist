@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.3 (2020-03-06)
+ * @license Highcharts JS v8.0.4 (2020-03-10)
  *
  * Sankey diagram module
  *
@@ -833,6 +833,7 @@
             // Create a single node that holds information on incoming and outgoing
             // links.
             createNode: H.NodesMixin.createNode,
+            searchPoint: H.noop,
             setData: H.NodesMixin.setData,
             destroy: H.NodesMixin.destroy,
             /* eslint-disable valid-jsdoc */

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.3 (2020-03-06)
+ * @license Highcharts Gantt JS v8.0.4 (2020-03-10)
  *
  * (c) 2017-2018 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
  *
@@ -62,7 +62,7 @@
             );
         var H = {
                 product: 'Highcharts',
-                version: '8.0.3',
+                version: '8.0.4',
                 deg2rad: Math.PI * 2 / 360,
                 doc: doc,
                 hasBidiBug: hasBidiBug,
@@ -4496,17 +4496,36 @@
              */
             on: function (eventType, handler) {
                 var svgElement = this,
-                    element = svgElement.element;
+                    element = svgElement.element,
+                    touchStartPos,
+                    touchEventFired;
                 // touch
                 if (hasTouch && eventType === 'click') {
                     element.ontouchstart = function (e) {
-                        svgElement.touchEventFired = Date.now(); // #2269
+                        // save touch position for later calculation
+                        touchStartPos = {
+                            clientX: e.touches[0].clientX,
+                            clientY: e.touches[0].clientY
+                        };
+                    };
+                    // Instead of ontouchstart, event handlers should be called
+                    // on touchend - similar to how current mouseup events are called
+                    element.ontouchend = function (e) {
+                        // hasMoved is a boolean variable containing logic if page
+                        // was scrolled, so if touch position changed more than
+                        // ~4px (value borrowed from general touch handler)
+                        var hasMoved = touchStartPos.clientX ? Math.sqrt(Math.pow(touchStartPos.clientX - e.changedTouches[0].clientX, 2) +
+                                Math.pow(touchStartPos.clientY - e.changedTouches[0].clientY, 2)) >= 4 : false;
+                        if (!hasMoved) { // only call handlers if page was not scrolled
+                            handler.call(element, e);
+                        }
+                        touchEventFired = true;
+                        // prevent other events from being fired. #9682
                         e.preventDefault();
-                        handler.call(element, e);
                     };
                     element.onclick = function (e) {
-                        if (win.navigator.userAgent.indexOf('Android') === -1 ||
-                            Date.now() - (svgElement.touchEventFired || 0) > 1100) {
+                        // Do not call onclick handler if touch event was fired already.
+                        if (!touchEventFired) {
                             handler.call(element, e);
                         }
                     };
@@ -5870,7 +5889,7 @@
                     '';
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.0.3'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.0.4'));
                 /**
                  * A pointer to the `defs` node of the root SVG.
                  *
@@ -9176,7 +9195,7 @@
          * Additonal time tick information.
          *
          * @interface Highcharts.TimeTicksInfoObject
-         * @augments Highcharts.TimeNormalizedObject
+         * @extends Highcharts.TimeNormalizedObject
          */ /**
         * @name Highcharts.TimeTicksInfoObject#higherRanks
         * @type {Array<string>}
@@ -9188,9 +9207,10 @@
          * Time ticks.
          *
          * @interface Highcharts.AxisTickPositionsArray
+         * @extends global.Array<number>
          */ /**
         * @name Highcharts.AxisTickPositionsArray#info
-        * @type {Highcharts.TimeTicksInfoObject}
+        * @type {Highcharts.TimeTicksInfoObject|undefined}
         */
         /**
          * A callback to return the time zone offset for a given datetime. It
@@ -9498,7 +9518,7 @@
                 // If not timezone is set, look for the getTimezoneOffset callback
                 if (this.useUTC && options.getTimezoneOffset) {
                     return function (timestamp) {
-                        return options.getTimezoneOffset(timestamp) * 60000;
+                        return options.getTimezoneOffset(timestamp.valueOf()) * 60000;
                     };
                 }
                 // Last, use the `timezoneOffset` option if set
@@ -12942,6 +12962,8 @@
                  *         A fixed tooltip position
                  * @sample {highstock} stock/tooltip/split-positioner/
                  *         Split tooltip with fixed positions
+                 * @sample {highstock} stock/tooltip/positioner-scrollable-plotarea/
+                 *         Scrollable plot area combined with tooltip positioner
                  *
                  * @type      {Highcharts.TooltipPositionerCallbackFunction}
                  * @since     2.2.4
@@ -13032,6 +13054,17 @@
                  * @since     5.0.0
                  * @product   highcharts highstock
                  * @apioption tooltip.split
+                 */
+                /**
+                 * Prevents the tooltip from switching or closing, when touched or
+                 * pointed.
+                 *
+                 * @sample highcharts/tooltip/stickoncontact/
+                 *         Tooltip sticks on pointer contact
+                 *
+                 * @type      {boolean}
+                 * @since     8.0.1
+                 * @apioption tooltip.stickOnContact
                  */
                 /**
                  * Use HTML to render the contents of the tooltip instead of SVG. Using
@@ -13340,8 +13373,6 @@
                     cursor: 'default',
                     /** @internal */
                     fontSize: '12px',
-                    /** @internal */
-                    pointerEvents: 'none',
                     /** @internal */
                     whiteSpace: 'nowrap'
                 }
@@ -17910,7 +17941,7 @@
                  * instead.
                  *
                  * @name Highcharts.Axis#tickPositions
-                 * @type {Array<number>|undefined}
+                 * @type {Highcharts.AxisTickPositionsArray|undefined}
                  */
                 this.tickPositions =
                     // Find the tick positions. Work on a copy (#1565)
@@ -20858,6 +20889,7 @@
             isNumber = U.isNumber,
             isString = U.isString,
             merge = U.merge,
+            offset = U.offset,
             pick = U.pick,
             splat = U.splat,
             syncTimeout = U.syncTimeout,
@@ -20925,7 +20957,7 @@
          * @param {number} labelHeight
          *        Height of the tooltip.
          *
-         * @param {Highcharts.TooltipPositionerPointObject} point
+         * @param {Highcharts.Point} point
          *        Point information for positioning a tooltip.
          *
          * @return {Highcharts.PositionObject}
@@ -20980,19 +21012,14 @@
                  *
                  * */
                 function Tooltip(chart, options) {
-                    /* *
-                     *
-                     *  Properties
-                     *
-                     * */
-                    this.chart = void 0;
-                this.crosshairs = [];
+                    this.crosshairs = [];
                 this.distance = 0;
                 this.isHidden = true;
                 this.isSticky = false;
                 this.now = {};
                 this.options = {};
                 this.outside = false;
+                this.chart = chart;
                 this.init(chart, options);
             }
             /* *
@@ -21160,7 +21187,7 @@
                         mouseEvent = pointer.normalize(mouseEvent);
                     }
                     ret = [
-                        mouseEvent.chartX - chart.plotLeft,
+                        mouseEvent.chartX - plotLeft,
                         mouseEvent.chartY - plotTop
                     ];
                     // Some series types use a specificly calculated tooltip position for
@@ -21265,10 +21292,23 @@
                     renderer = this.chart.renderer,
                     styledMode = this.chart.styledMode,
                     options = this.options,
-                    className = 'tooltip' +
-                        (defined(options.className) ? ' ' + options.className : ''),
+                    className = ('tooltip' + (defined(options.className) ?
+                        ' ' + options.className :
+                        '')),
+                    pointerEvents = (((_a = options.style) === null || _a === void 0 ? void 0 : _a.pointerEvents) ||
+                        (!this.followPointer && options.stickOnContact ? 'auto' : 'none')),
                     container,
-                    set;
+                    set,
+                    onMouseEnter = function () {
+                        tooltip.inContact = true;
+                }, onMouseLeave = function () {
+                    var series = tooltip.chart.hoverSeries;
+                    tooltip.inContact = false;
+                    if (series &&
+                        series.onMouseOut) {
+                        series.onMouseOut();
+                    }
+                };
                 if (!this.label) {
                     if (this.outside) {
                         /**
@@ -21284,7 +21324,7 @@
                         css(container, {
                             position: 'absolute',
                             top: '1px',
-                            pointerEvents: options.style && options.style.pointerEvents,
+                            pointerEvents: pointerEvents,
                             zIndex: 3
                         });
                         H.doc.body.appendChild(container);
@@ -21317,6 +21357,7 @@
                             })
                                 // #2301, #2657
                                 .css(options.style)
+                                .css({ pointerEvents: pointerEvents })
                                 .shadow(options.shadow);
                         }
                     }
@@ -21342,10 +21383,9 @@
                         };
                     }
                     this.label
-                        .attr({
-                        zIndex: 8,
-                        pointerEvents: (((_a = options.style) === null || _a === void 0 ? void 0 : _a.pointerEvents) || options.stickOnHover ? 'auto' : 'none')
-                    })
+                        .on('mouseenter', onMouseEnter)
+                        .on('mouseleave', onMouseLeave)
+                        .attr({ zIndex: 8 })
                         .add();
                 }
                 return this.label;
@@ -21651,6 +21691,14 @@
                 this.outside = pick(options.outside, Boolean(chart.scrollablePixelsX || chart.scrollablePixelsY));
             };
             /**
+             * Returns true, if the pointer is in contact with the tooltip tracker.
+             */
+            Tooltip.prototype.isStickyOnContact = function () {
+                return !!(!this.followPointer &&
+                    this.options.stickOnContact &&
+                    this.inContact);
+            };
+            /**
              * Moves the tooltip with a soft animation to a new position.
              *
              * @private
@@ -21686,6 +21734,7 @@
                 });
                 // Move to the intermediate value
                 tooltip.getLabel().attr(now);
+                tooltip.drawTracker();
                 // Run on next tick of the mouse tracker
                 if (animate) {
                     // Never allow two timeouts
@@ -22107,6 +22156,63 @@
                     var chartPosition = pointer.getChartPosition();
                     container.style.left = chartPosition.left + 'px';
                     container.style.top = chartPosition.top + 'px';
+                }
+            };
+            /**
+             * If the `stickOnContact` option is active, this will add a tracker shape.
+             *
+             * @private
+             * @function Highcharts.Tooltip#drawTracker
+             */
+            Tooltip.prototype.drawTracker = function () {
+                var tooltip = this;
+                if (tooltip.followPointer ||
+                    !tooltip.options.stickOnContact) {
+                    if (tooltip.tracker) {
+                        tooltip.tracker.destroy();
+                    }
+                    return;
+                }
+                var chart = tooltip.chart;
+                var label = tooltip.label;
+                var point = chart.hoverPoint;
+                if (!label || !point) {
+                    return;
+                }
+                var box = {
+                        x: 0,
+                        y: 0,
+                        width: 0,
+                        height: 0
+                    };
+                // Combine anchor and tooltip
+                var anchorPos = this.getAnchor(point);
+                var labelBBox = label.getBBox();
+                anchorPos[0] += chart.plotLeft - label.translateX;
+                anchorPos[1] += chart.plotTop - label.translateY;
+                // When the mouse pointer is between the anchor point and the label,
+                // the label should stick.
+                box.x = Math.min(0, anchorPos[0]);
+                box.y = Math.min(0, anchorPos[1]);
+                box.width = (anchorPos[0] < 0 ?
+                    Math.max(Math.abs(anchorPos[0]), (labelBBox.width - anchorPos[0])) :
+                    Math.max(Math.abs(anchorPos[0]), labelBBox.width));
+                box.height = (anchorPos[1] < 0 ?
+                    Math.max(Math.abs(anchorPos[1]), (labelBBox.height - Math.abs(anchorPos[1]))) :
+                    Math.max(Math.abs(anchorPos[1]), labelBBox.height));
+                if (tooltip.tracker) {
+                    tooltip.tracker.attr(box);
+                }
+                else {
+                    tooltip.tracker = label.renderer
+                        .rect(box)
+                        .addClass('highcharts-tracker')
+                        .add(label);
+                    if (!chart.styledMode) {
+                        tooltip.tracker.attr({
+                            fill: 'rgba(0,0,0,0)'
+                        });
+                    }
                 }
             };
             /**
@@ -22674,14 +22780,22 @@
              *         The point closest to given coordinates.
              */
             Pointer.prototype.findNearestKDPoint = function (series, shared, e) {
-                var closest,
-                    sort = function (p1,
-                    p2) {
-                        var isCloserX = p1.distX - p2.distX,
-                    isCloser = p1.dist - p2.dist,
-                    isAbove = (p2.series.group && p2.series.group.zIndex) -
+                var chart = this.chart;
+                var hoverPoint = chart.hoverPoint;
+                var tooltip = chart.tooltip;
+                if (hoverPoint &&
+                    tooltip &&
+                    tooltip.isStickyOnContact()) {
+                    return hoverPoint;
+                }
+                var closest;
+                /** @private */
+                function sort(p1, p2) {
+                    var isCloserX = p1.distX - p2.distX,
+                        isCloser = p1.dist - p2.dist,
+                        isAbove = (p2.series.group && p2.series.group.zIndex) -
                             (p1.series.group && p1.series.group.zIndex),
-                    result;
+                        result;
                     // We have two points which are not in the same place on xAxis
                     // and shared tooltip:
                     if (isCloserX !== 0 && shared) { // #5721
@@ -22703,9 +22817,6 @@
                                 1;
                     }
                     return result;
-                };
-                if (this.isStickyTooltip(e)) {
-                    return this.chart.hoverPoint;
                 }
                 series.forEach(function (s) {
                     var noSharedTooltip = s.noSharedTooltip && shared,
@@ -22920,13 +23031,13 @@
              * @return {void}
              */
             Pointer.prototype.onTrackerMouseOut = function (e) {
-                var series = this.chart.hoverSeries,
-                    relatedTarget = e.relatedTarget || e.toElement;
+                var chart = this.chart;
+                var series = chart.hoverSeries;
+                var relatedTarget = e.relatedTarget || e.toElement;
                 this.isDirectTouch = false;
                 if (series &&
                     relatedTarget &&
                     !series.stickyTracking &&
-                    !this.isStickyTooltip(e) &&
                     !this.inClass(relatedTarget, 'highcharts-tooltip') &&
                     (!this.inClass(relatedTarget, 'highcharts-series-' + series.index) || // #2499, #4465, #5553
                         !this.inClass(relatedTarget, 'highcharts-tracker'))) {
@@ -23001,54 +23112,6 @@
                     this.followTouchMove = pick(options.tooltip.followTouchMove, true);
                 }
                 this.setDOMEvents();
-            };
-            /**
-             * Returns true, if the `stickOnHover` option is active and a given pointer
-             * event occurs inside the combined boundings of the hovered point and
-             * tooltip.
-             *
-             * @private
-             * @param {Highcharts.PointerEventObject} e
-             * Pointer event to check agains the active tooltip.
-             *
-             * @return {boolean}
-             * True, if the pointer event occurs inside of the hovered boundings.
-             */
-            Pointer.prototype.isStickyTooltip = function (e) {
-                var chart = this.chart;
-                var chartPosition = this.chartPosition;
-                var point = chart.hoverPoint;
-                var tooltip = chart.tooltip;
-                var eventPosition = {
-                        x: e.chartX,
-                        y: e.chartY
-                    };
-                var isSticky = false;
-                if (chartPosition &&
-                    point &&
-                    point.graphic &&
-                    tooltip &&
-                    !tooltip.isHidden &&
-                    tooltip.options.stickOnHover &&
-                    tooltip.label) {
-                    var labelBBox = tooltip.label.getBBox();
-                    var labelOffset = Highcharts.offset(tooltip.label.element);
-                    var pointBBox = point.graphic.getBBox();
-                    var pointOffset = Highcharts.offset(point.graphic.element);
-                    labelBBox.x = labelOffset.left - chartPosition.left;
-                    labelBBox.y = labelOffset.top - chartPosition.top;
-                    pointBBox.x = pointOffset.left - chartPosition.left;
-                    pointBBox.y = pointOffset.top - chartPosition.top;
-                    var x1 = Math.min(pointBBox.x,
-                        labelBBox.x);
-                    var y1 = Math.min(pointBBox.y,
-                        labelBBox.y);
-                    var x2 = Math.max((pointBBox.x + pointBBox.width), (labelBBox.x + labelBBox.width));
-                    var y2 = Math.max((pointBBox.y + pointBBox.height), (labelBBox.y + labelBBox.height));
-                    isSticky = ((eventPosition.x >= x1 && eventPosition.x <= x2) &&
-                        (eventPosition.y >= y1 && eventPosition.y <= y2));
-                }
-                return isSticky;
             };
             /**
              * Takes a browser event object and extends it with custom Highcharts
@@ -23162,7 +23225,8 @@
             Pointer.prototype.onContainerMouseLeave = function (e) {
                 var chart = charts[H.hoverChartIndex];
                 // #4886, MS Touch end fires mouseleave but with no related target
-                if (chart && (e.relatedTarget || e.toElement)) {
+                if (chart &&
+                    (e.relatedTarget || e.toElement)) {
                     chart.pointer.reset();
                     // Also reset the chart position, used in #149 fix
                     chart.pointer.chartPosition = void 0;
@@ -23199,7 +23263,6 @@
                 }
                 // Show the tooltip and run mouse over events (#977)
                 if (!chart.openMenu &&
-                    !this.isStickyTooltip(e) &&
                     (this.inClass(e.target, 'highcharts-tracker') ||
                         chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop))) {
                     this.runPointActions(e);
@@ -23254,14 +23317,16 @@
              * @return {void}
              */
             Pointer.prototype.onDocumentMouseMove = function (e) {
-                var chart = this.chart,
-                    chartPosition = this.chartPosition;
+                var chart = this.chart;
+                var chartPosition = this.chartPosition;
+                var tooltip = chart.tooltip;
                 e = this.normalize(e, chartPosition);
                 // If we're outside, hide the tooltip
                 if (chartPosition &&
-                    !this.isStickyTooltip(e) &&
-                    !this.inClass(e.target, 'highcharts-tracker') &&
-                    !chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
+                    (!tooltip ||
+                        !tooltip.isStickyOnContact()) &&
+                    !chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop) &&
+                    !this.inClass(e.target, 'highcharts-tracker')) {
                     this.reset();
                 }
             };
@@ -26671,6 +26736,7 @@
                 chart.isResizing += 1;
                 // set the animation for the current process
                 setAnimation(animation, chart);
+                globalAnimation = renderer.globalAnimation;
                 chart.oldChartHeight = chart.chartHeight;
                 chart.oldChartWidth = chart.chartWidth;
                 if (typeof width !== 'undefined') {
@@ -26683,14 +26749,13 @@
                 // Resize the container with the global animation applied if enabled
                 // (#2503)
                 if (!chart.styledMode) {
-                    globalAnimation = renderer.globalAnimation;
                     (globalAnimation ? animate : css)(chart.container, {
                         width: chart.chartWidth + 'px',
                         height: chart.chartHeight + 'px'
                     }, globalAnimation);
                 }
                 chart.setChartSize(true);
-                renderer.setSize(chart.chartWidth, chart.chartHeight, animation);
+                renderer.setSize(chart.chartWidth, chart.chartHeight, globalAnimation);
                 // handle axes
                 chart.axes.forEach(function (axis) {
                     axis.isDirty = true;
@@ -26700,7 +26765,7 @@
                 chart.isDirtyBox = true; // force redraw of plot and chart border
                 chart.layOutTitles(); // #2857
                 chart.getMargins();
-                chart.redraw(animation);
+                chart.redraw(globalAnimation);
                 chart.oldChartHeight = null;
                 fireEvent(chart, 'resize');
                 // Fire endResize and set isResizing back. If animation is disabled,
@@ -29498,8 +29563,8 @@
              * @apioption plotOptions.series.custom
              */
             /**
-             * A name for the dash style to use for the graph, or for some series
-             * types the outline of each shape.
+             * Name of the dash style to use for the graph, or for some series types
+             * the outline of each shape.
              *
              * In styled mode, the
              * [stroke dash-array](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/series-dashstyle/)
@@ -32823,7 +32888,6 @@
                     threshold = options.threshold,
                     stackThreshold = options.startFromThreshold ? threshold : 0,
                     plotX,
-                    plotY,
                     lastPlotX,
                     stackIndicator,
                     zoneAxis = this.zoneAxis || 'y',
@@ -32910,15 +32974,10 @@
                     }
                     // Set the the plotY value, reset it for redraws
                     // #3201
-                    point.plotY = plotY = ((typeof yValue === 'number' && yValue !== Infinity) ?
+                    point.plotY = ((typeof yValue === 'number' && yValue !== Infinity) ?
                         limitedRange(yAxis.translate(yValue, 0, 1, 0, 1)) :
                         void 0);
-                    point.isInside =
-                        typeof plotY !== 'undefined' &&
-                            plotY >= 0 &&
-                            plotY <= yAxis.len && // #3519
-                            plotX >= 0 &&
-                            plotX <= xAxis.len;
+                    point.isInside = this.isPointInside(point);
                     // Set client related positions for mouse tracking
                     point.clientX = dynamicallyPlaced ?
                         correctFloat(xAxis.translate(xValue, 0, 0, 0, 1, pointPlacement)) :
@@ -34269,6 +34328,21 @@
                 return isNumber(factor) ?
                     factor * pick(pointRange, axis.pointRange) :
                     0;
+            },
+            /**
+             * @private
+             * @function Highcharts.Series#isPointInside
+             * @param {Highcharts.Point} point
+             * @return {boolean}
+             */
+            isPointInside: function (point) {
+                var isInside = typeof point.plotY !== 'undefined' &&
+                        typeof point.plotX !== 'undefined' &&
+                        point.plotY >= 0 &&
+                        point.plotY <= this.yAxis.len && // #3519
+                        point.plotX >= 0 &&
+                        point.plotX <= this.xAxis.len;
+                return isInside;
             }
         }); // end Series prototype
         /**
@@ -37471,6 +37545,7 @@
         * @name Highcharts.ColumnMetricsObject#offset
         * @type {number}
         */
+        ''; // detach doclets above
         var color = Color.parse;
         var animObject = U.animObject,
             clamp = U.clamp,
@@ -37502,8 +37577,8 @@
          *         Column chart
          *
          * @extends      plotOptions.line
-         * @excluding    connectNulls, dashStyle, gapSize, gapUnit, linecap,
-         *               lineWidth, marker, connectEnds, step, useOhlcData
+         * @excluding    connectEnds, connectNulls, gapSize, gapUnit, linecap,
+         *               lineWidth, marker, step, useOhlcData
          * @product      highcharts highstock
          * @optionparent plotOptions.column
          */
@@ -38341,10 +38416,11 @@
                         // Do the scale synchronously to ensure smooth
                         // updating (#5030, #7228)
                         step: function (val, fx) {
-                            attr[translateProp] =
-                                translateStart +
+                            if (series.group) {
+                                attr[translateProp] = translateStart +
                                     fx.pos * (yAxis.pos - translateStart);
-                            series.group.attr(attr);
+                                series.group.attr(attr);
+                            }
                         }
                     }));
                 }
@@ -41952,11 +42028,9 @@
                     snap = chart.options.tooltip.snap,
                     tracker = series.tracker,
                     i,
-                    onMouseOver = function (e) {
-                        pointer.normalize(e);
-                    if (chart.hoverSeries !== series &&
-                        !pointer.isStickyTooltip(e)) {
-                        series.onMouseOver();
+                    onMouseOver = function () {
+                        if (chart.hoverSeries !== series) {
+                            series.onMouseOver();
                     }
                 }, 
                 /*
@@ -51670,12 +51744,12 @@
                         navButtonOptions.height))) {
                     exportingX = -40;
                 }
-                if (buttonPosition.align === 'left') {
-                    translateX = buttonPosition.x - chart.spacing[3];
+                translateX = buttonPosition.x - chart.spacing[3];
+                if (buttonPosition.align === 'right') {
+                    translateX += exportingX - plotLeft; // (#13014)
                 }
-                else if (buttonPosition.align === 'right') {
-                    translateX =
-                        buttonPosition.x + exportingX - chart.spacing[1];
+                else if (buttonPosition.align === 'center') {
+                    translateX -= plotLeft / 2;
                 }
                 // align button group
                 buttonGroup.align({

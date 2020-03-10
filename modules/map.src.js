@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.0.3 (2020-03-06)
+ * @license Highmaps JS v8.0.4 (2020-03-10)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *

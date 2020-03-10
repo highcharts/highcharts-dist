@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.3 (2020-03-06)
+ * @license Highcharts JS v8.0.4 (2020-03-10)
  *
  * Client side exporting module
  *
@@ -701,7 +701,7 @@
         };
         // Extend the default options to use the local exporter logic
         merge(true, Highcharts.getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/8.0.3/lib/',
+            libURL: 'https://code.highcharts.com/8.0.4/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {

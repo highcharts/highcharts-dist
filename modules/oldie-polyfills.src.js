@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.3 (2020-03-06)
+ * @license Highcharts JS v8.0.4 (2020-03-10)
  *
  * Old IE (v6, v7, v8) array polyfills for Highcharts v7+.
  *
@@ -123,6 +123,23 @@
                     accumulator = func.call(context, accumulator, this[i], i, this);
                 }
                 return accumulator;
+            };
+        }
+        if (!Function.prototype.bind) {
+            Function.prototype.bind = function () {
+                var thatFunc = this;
+                var thatArg = arguments[0];
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (typeof thatFunc !== 'function') {
+                    // closest thing possible to the ECMAScript 5
+                    // internal IsCallable function
+                    throw new TypeError('Function.prototype.bind - ' +
+                        'what is trying to be bound is not callable');
+                }
+                return function () {
+                    var funcArgs = args.concat(Array.prototype.slice.call(arguments));
+                    return thatFunc.apply(thatArg, funcArgs);
+                };
             };
         }
         if (!Object.keys) {
