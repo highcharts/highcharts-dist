@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Bullet graph series type for Highcharts
  *
@@ -237,14 +237,19 @@
                     targetData = series.targetData,
                     yMax,
                     yMin;
-                columnProto.getExtremes.call(this, yData);
+                var dataExtremes = columnProto.getExtremes.call(this,
+                    yData);
                 if (targetData && targetData.length) {
-                    yMax = series.dataMax;
-                    yMin = series.dataMin;
-                    columnProto.getExtremes.call(this, targetData);
-                    series.dataMax = Math.max(series.dataMax, yMax);
-                    series.dataMin = Math.min(series.dataMin, yMin);
+                    var targetExtremes = columnProto.getExtremes.call(this,
+                        targetData);
+                    if (isNumber(targetExtremes.dataMin)) {
+                        dataExtremes.dataMin = Math.min(pick(dataExtremes.dataMin, Infinity), targetExtremes.dataMin);
+                    }
+                    if (isNumber(targetExtremes.dataMax)) {
+                        dataExtremes.dataMax = Math.max(pick(dataExtremes.dataMax, -Infinity), targetExtremes.dataMax);
+                    }
                 }
+                return dataExtremes;
             }
             /* eslint-enable valid-jsdoc */
         }, 

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.4 (2020-03-10)
+ * @license Highstock JS v8.1.0 (2020-05-05)
  *
  * Indicator series type for Highstock
  *
@@ -95,6 +95,7 @@
             threshold: 0,
             groupPadding: 0.2,
             pointPadding: 0.2,
+            crisp: false,
             states: {
                 hover: {
                     halo: {

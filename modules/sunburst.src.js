@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * (c) 2016-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -51,12 +51,14 @@
          * @todo export this function to enable usage
          */
         var draw = function draw(params) {
-                var component = this,
-            graphic = component.graphic,
-            animatableAttribs = params.animatableAttribs,
-            onComplete = params.onComplete,
-            css = params.css,
-            renderer = params.renderer;
+                var _a;
+            var component = this,
+                graphic = component.graphic,
+                animatableAttribs = params.animatableAttribs,
+                onComplete = params.onComplete,
+                css = params.css,
+                renderer = params.renderer,
+                animation = (_a = component.series) === null || _a === void 0 ? void 0 : _a.options.animation;
             if (component.shouldDraw()) {
                 if (!graphic) {
                     component.graphic = graphic =
@@ -66,7 +68,7 @@
                 graphic
                     .css(css)
                     .attr(params.attribs)
-                    .animate(animatableAttribs, params.isNew ? false : void 0, onComplete);
+                    .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
             }
             else if (graphic) {
                 var destroy = function () {
@@ -1821,11 +1823,15 @@
             drawLegendSymbol: LegendSymbolMixin.drawRectangle,
             getExtremes: function () {
                 // Get the extremes from the value data
-                Series.prototype.getExtremes.call(this, this.colorValueData);
-                this.valueMin = this.dataMin;
-                this.valueMax = this.dataMax;
+                var _a = Series.prototype.getExtremes
+                        .call(this,
+                    this.colorValueData),
+                    dataMin = _a.dataMin,
+                    dataMax = _a.dataMax;
+                this.valueMin = dataMin;
+                this.valueMax = dataMax;
                 // Get the extremes from the y data
-                Series.prototype.getExtremes.call(this);
+                return Series.prototype.getExtremes.call(this);
             },
             getExtremesFromAll: true,
             /**

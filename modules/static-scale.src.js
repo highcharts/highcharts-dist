@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.4 (2020-03-10)
+ * @license Highcharts Gantt JS v8.1.0 (2020-05-05)
  *
  * StaticScale
  *
@@ -80,7 +80,7 @@
                         height,
                         diff;
                     if (axis.staticScale && defined(axis.min)) {
-                        height = pick(axis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
+                        height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
                         // Minimum height is 1 x staticScale.
                         height = Math.max(height, staticScale);
                         diff = height - chart.plotHeight;

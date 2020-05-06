@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Variable Pie module for Highcharts
  *
@@ -46,10 +46,10 @@
         var arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             clamp = U.clamp,
+            fireEvent = U.fireEvent,
             pick = U.pick,
             seriesType = U.seriesType;
-        var fireEvent = H.fireEvent,
-            pieProto = H.seriesTypes.pie.prototype;
+        var pieProto = H.seriesTypes.pie.prototype;
         /**
          * The variablepie series type.
          *

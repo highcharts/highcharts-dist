@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Sankey diagram module
  *
@@ -1124,10 +1124,10 @@
                     return y;
                 };
                 var fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
-                        options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.column * this.colDistance, outgoing = point.outgoing, straight = right > nodeLeft;
+                        options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.column * this.colDistance, outgoing = point.outgoing, straight = right > nodeLeft + nodeW;
                 if (chart.inverted) {
                     fromY = chart.plotSizeY - fromY;
-                    toY = chart.plotSizeY - toY;
+                    toY = (chart.plotSizeY || 0) - toY;
                     right = chart.plotSizeX - right;
                     nodeW = -nodeW;
                     linkHeight = -linkHeight;
@@ -1141,24 +1141,30 @@
                     toY + linkHeight
                 ];
                 // Links going from left to right
-                if (straight) {
+                if (straight && typeof toY === 'number') {
                     point.shapeArgs = {
                         d: [
-                            'M', nodeLeft + nodeW, fromY,
-                            'C', nodeLeft + nodeW + curvy, fromY,
-                            right - curvy, toY,
-                            right, toY,
-                            'L',
-                            right + (outgoing ? nodeW : 0),
-                            toY + linkHeight / 2,
-                            'L',
-                            right,
-                            toY + linkHeight,
-                            'C', right - curvy, toY + linkHeight,
-                            nodeLeft + nodeW + curvy,
-                            fromY + linkHeight,
-                            nodeLeft + nodeW, fromY + linkHeight,
-                            'z'
+                            ['M', nodeLeft + nodeW, fromY],
+                            [
+                                'C',
+                                nodeLeft + nodeW + curvy,
+                                fromY,
+                                right - curvy,
+                                toY,
+                                right,
+                                toY
+                            ],
+                            ['L', right + (outgoing ? nodeW : 0), toY + linkHeight / 2],
+                            ['L', right, toY + linkHeight],
+                            [
+                                'C',
+                                right - curvy,
+                                toY + linkHeight,
+                                nodeLeft + nodeW + curvy,
+                                fromY + linkHeight,
+                                nodeLeft + nodeW, fromY + linkHeight
+                            ],
+                            ['Z']
                         ]
                     };
                     // Experimental: Circular links pointing backwards. In
@@ -1169,7 +1175,7 @@
                     // - Automatically determine if the link should go up or
                     //   down.
                 }
-                else {
+                else if (typeof toY === 'number') {
                     var bend = 20,
                         vDist = chart.plotHeight - fromY - linkHeight,
                         x1 = right - bend - linkHeight,
@@ -1194,23 +1200,23 @@
                         cx2 = x4 + linkHeight * 0.7;
                     point.shapeArgs = {
                         d: [
-                            'M', x4, fy1,
-                            'C', cx2, fy1, x6, cfy1, x6, fy3,
-                            'L', x6, y4,
-                            'C', x6, cy2, cx2, y6, x4, y6,
-                            'L', x3, y6,
-                            'C', cx1, y6, x1, cy2, x1, y4,
-                            'L', x1, ty3,
-                            'C', x1, cty1, cx1, ty1, x3, ty1,
-                            'L', x3, ty2,
-                            'C', x2, ty2, x2, ty2, x2, ty3,
-                            'L', x2, y4,
-                            'C', x2, y5, x2, y5, x3, y5,
-                            'L', x4, y5,
-                            'C', x5, y5, x5, y5, x5, y4,
-                            'L', x5, fy3,
-                            'C', x5, fy2, x5, fy2, x4, fy2,
-                            'z'
+                            ['M', x4, fy1],
+                            ['C', cx2, fy1, x6, cfy1, x6, fy3],
+                            ['L', x6, y4],
+                            ['C', x6, cy2, cx2, y6, x4, y6],
+                            ['L', x3, y6],
+                            ['C', cx1, y6, x1, cy2, x1, y4],
+                            ['L', x1, ty3],
+                            ['C', x1, cty1, cx1, ty1, x3, ty1],
+                            ['L', x3, ty2],
+                            ['C', x2, ty2, x2, ty2, x2, ty3],
+                            ['L', x2, y4],
+                            ['C', x2, y5, x2, y5, x3, y5],
+                            ['L', x4, y5],
+                            ['C', x5, y5, x5, y5, x5, y4],
+                            ['L', x5, fy3],
+                            ['C', x5, fy2, x5, fy2, x4, fy2],
+                            ['Z']
                         ]
                     };
                 }

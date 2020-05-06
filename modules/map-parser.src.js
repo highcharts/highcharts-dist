@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.0.4 (2020-03-10)
+ * @license Highmaps JS v8.1.0 (2020-05-05)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/map-parser.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/map-parser.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/data.src.js']], function (H, U, Data) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi
@@ -42,7 +42,7 @@
         var extend = U.extend,
             wrap = U.wrap;
         /* eslint-disable no-invalid-this */
-        wrap(H.Data.prototype, 'init', function (proceed, options) {
+        wrap(Data.prototype, 'init', function (proceed, options) {
             proceed.call(this, options);
             if (options.svg) {
                 this.loadSVG();

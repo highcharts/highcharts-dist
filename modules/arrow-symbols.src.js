@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Arrow Symbols
  *
@@ -71,10 +71,10 @@
          */
         H.SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
             return [
-                'M', x, y + h / 2,
-                'L', x + w, y,
-                'L', x, y + h / 2,
-                'L', x + w, y + h
+                ['M', x, y + h / 2],
+                ['L', x + w, y],
+                ['L', x, y + h / 2],
+                ['L', x + w, y + h]
             ];
         };
         /**
@@ -138,10 +138,10 @@
          */
         H.SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
             return [
-                'M', x + w, y,
-                'L', x, y + h / 2,
-                'L', x + w, y + h,
-                'Z'
+                ['M', x + w, y],
+                ['L', x, y + h / 2],
+                ['L', x + w, y + h],
+                ['Z']
             ];
         };
         /**

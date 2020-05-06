@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts/Globals.js']], function (Highcharts, U, H) {
+    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -41,7 +41,8 @@
          *
          * */
         /* eslint indent: 0 */
-        var pick = U.pick;
+        var isArray = U.isArray,
+            pick = U.pick;
         // create shortcuts
         var seriesType = Highcharts.seriesType,
             seriesTypes = Highcharts.seriesTypes,
@@ -301,16 +302,14 @@
                     }
                     // save the path
                     path = [
-                        'M',
-                        x1, y1,
-                        'L',
-                        x2, y1,
-                        x4, y3
+                        ['M', x1, y1],
+                        ['L', x2, y1],
+                        ['L', x4, y3]
                     ];
                     if (y5 !== null) {
-                        path.push(x4, y5, x3, y5);
+                        path.push(['L', x4, y5], ['L', x3, y5]);
                     }
-                    path.push(x3, y3, 'Z');
+                    path.push(['L', x3, y3], ['Z']);
                     // prepare for using shared dr
                     point.shapeType = 'path';
                     point.shapeArgs = { d: path };
@@ -467,7 +466,7 @@
         addEvent(Highcharts.Chart, 'afterHideAllOverlappingLabels', function () {
             this.series.forEach(function (series) {
                 var dataLabelsOptions = series.options && series.options.dataLabels;
-                if (H.isArray(dataLabelsOptions)) {
+                if (isArray(dataLabelsOptions)) {
                     dataLabelsOptions = dataLabelsOptions[0];
                 }
                 if (series.is('pie') &&

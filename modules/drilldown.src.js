@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Highcharts Drilldown module
  *
@@ -154,6 +154,7 @@
         * @type {"drillup"}
         */
         var addEvent = U.addEvent,
+            removeEvent = U.removeEvent,
             animObject = U.animObject,
             extend = U.extend,
             fireEvent = U.fireEvent,
@@ -1069,14 +1070,19 @@
                         label.basicStyles = merge(label.styles);
                     }
                     label.addClass('highcharts-drilldown-axis-label');
+                    // #12656 - avoid duplicate of attach event
+                    if (label.removeOnDrillableClick) {
+                        removeEvent(label.element, 'click');
+                    }
                     label.removeOnDrillableClick = addEvent(label.element, 'click', function (e) {
+                        e.preventDefault();
                         axis.drilldownCategory(pos, e);
                     });
                     if (!styledMode) {
                         label.css(axis.chart.options.drilldown.activeAxisLabelStyle);
                     }
                 }
-                else if (label && label.removeOnDrillableClick) {
+                else if (label && label.drillable && label.removeOnDrillableClick) {
                     if (!styledMode) {
                         label.styles = {}; // reset for full overwrite of styles
                         label.css(label.basicStyles);

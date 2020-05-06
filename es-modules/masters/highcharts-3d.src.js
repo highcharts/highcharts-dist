@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -11,7 +11,9 @@
 import '../parts-3d/Math.js';
 import '../parts-3d/SVGRenderer.js';
 import '../parts-3d/Chart.js';
-import '../parts-3d/Axis.js';
+import '../parts-3d/ZAxis.js';
+import '../parts-3d/Axis3D.js';
+import '../parts-3d/Tick3D.js';
 import '../parts-3d/Series.js';
 import '../parts-3d/Column.js';
 import '../parts-3d/Pie.js';

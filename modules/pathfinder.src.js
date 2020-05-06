@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.0.4 (2020-03-10)
+ * @license Highcharts Gantt JS v8.1.0 (2020-05-05)
  *
  * Pathfinder
  *
@@ -148,9 +148,9 @@
         function pathFromSegments(segments) {
             var path = [];
             if (segments.length) {
-                path.push('M', segments[0].start.x, segments[0].start.y);
+                path.push(['M', segments[0].start.x, segments[0].start.y]);
                 for (var i = 0; i < segments.length; ++i) {
-                    path.push('L', segments[i].end.x, segments[i].end.y);
+                    path.push(['L', segments[i].end.x, segments[i].end.y]);
                 }
             }
             return path;
@@ -187,20 +187,32 @@
                  * @function Highcharts.Pathfinder.algorithms.straight
                  *
                  * @param {Highcharts.PositionObject} start
-                 *        Starting coordinate, object with x/y props.
+                 *        Starting coordinate,
+            object with x/y props.
                  *
                  * @param {Highcharts.PositionObject} end
-                 *        Ending coordinate, object with x/y props.
+                 *        Ending coordinate,
+            object with x/y props.
                  *
                  * @return {object}
                  *         An object with the SVG path in Array form as accepted by the SVG
-                 *         renderer, as well as an array of new obstacles making up this
+                 *         renderer,
+            as well as an array of new obstacles making up this
                  *         path.
                  */
-                straight: function (start, end) {
+                straight: function (start,
+            end) {
                     return {
-                        path: ['M', start.x, start.y, 'L', end.x, end.y],
-                        obstacles: [{ start: start, end: end }]
+                        path: [
+                            ['M',
+            start.x,
+            start.y],
+                            ['L',
+            end.x,
+            end.y]
+                        ],
+                        obstacles: [{ start: start,
+            end: end }]
                     };
             },
             /**
@@ -786,10 +798,10 @@
          */
         H.SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
             return [
-                'M', x, y + h / 2,
-                'L', x + w, y,
-                'L', x, y + h / 2,
-                'L', x + w, y + h
+                ['M', x, y + h / 2],
+                ['L', x + w, y],
+                ['L', x, y + h / 2],
+                ['L', x + w, y + h]
             ];
         };
         /**
@@ -853,10 +865,10 @@
          */
         H.SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
             return [
-                'M', x + w, y,
-                'L', x, y + h / 2,
-                'L', x + w, y + h,
-                'Z'
+                ['M', x + w, y],
+                ['L', x, y + h / 2],
+                ['L', x + w, y + h],
+                ['Z']
             ];
         };
         /**
@@ -1462,72 +1474,73 @@
                     box,
                     width,
                     height,
-                    pathVector;
+                    pathVector,
+                    segment;
                 if (!options.enabled) {
                     return;
                 }
                 // Last vector before start/end of path, used to get angle
                 if (type === 'start') {
-                    pathVector = {
-                        x: path[4],
-                        y: path[5]
-                    };
+                    segment = path[1];
                 }
                 else { // 'end'
+                    segment = path[path.length - 2];
+                }
+                if (segment && segment[0] === 'M' || segment[0] === 'L') {
                     pathVector = {
-                        x: path[path.length - 5],
-                        y: path[path.length - 4]
+                        x: segment[1],
+                        y: segment[2]
                     };
-                }
-                // Get angle between pathVector and anchor point and use it to create
-                // marker position.
-                radians = point.getRadiansToVector(pathVector, anchor);
-                markerVector = point.getMarkerVector(radians, options.radius, anchor);
-                // Rotation of marker is calculated from angle between pathVector and
-                // markerVector.
-                // (Note:
-                //  Used to recalculate radians between markerVector and pathVector,
-                //  but this should be the same as between pathVector and anchor.)
-                rotation = -radians / deg2rad;
-                if (options.width && options.height) {
-                    width = options.width;
-                    height = options.height;
-                }
-                else {
-                    width = height = options.radius * 2;
-                }
-                // Add graphics object if it does not exist
-                connection.graphics = connection.graphics || {};
-                box = {
-                    x: markerVector.x - (width / 2),
-                    y: markerVector.y - (height / 2),
-                    width: width,
-                    height: height,
-                    rotation: rotation,
-                    rotationOriginX: markerVector.x,
-                    rotationOriginY: markerVector.y
-                };
-                if (!connection.graphics[type]) {
-                    // Create new marker element
-                    connection.graphics[type] = renderer
-                        .symbol(options.symbol)
-                        .addClass('highcharts-point-connecting-path-' + type + '-marker')
-                        .attr(box)
-                        .add(pathfinder.group);
-                    if (!renderer.styledMode) {
-                        connection.graphics[type].attr({
-                            fill: options.color || connection.fromPoint.color,
-                            stroke: options.lineColor,
-                            'stroke-width': options.lineWidth,
-                            opacity: 0
-                        })
-                            .animate({
-                            opacity: 1
-                        }, point.series.options.animation);
+                    // Get angle between pathVector and anchor point and use it to
+                    // create marker position.
+                    radians = point.getRadiansToVector(pathVector, anchor);
+                    markerVector = point.getMarkerVector(radians, options.radius, anchor);
+                    // Rotation of marker is calculated from angle between pathVector
+                    // and markerVector.
+                    // (Note:
+                    //  Used to recalculate radians between markerVector and pathVector,
+                    //  but this should be the same as between pathVector and anchor.)
+                    rotation = -radians / deg2rad;
+                    if (options.width && options.height) {
+                        width = options.width;
+                        height = options.height;
                     }
-                }
-                else {
-                    connection.graphics[type].animate(box);
+                    else {
+                        width = height = options.radius * 2;
+                    }
+                    // Add graphics object if it does not exist
+                    connection.graphics = connection.graphics || {};
+                    box = {
+                        x: markerVector.x - (width / 2),
+                        y: markerVector.y - (height / 2),
+                        width: width,
+                        height: height,
+                        rotation: rotation,
+                        rotationOriginX: markerVector.x,
+                        rotationOriginY: markerVector.y
+                    };
+                    if (!connection.graphics[type]) {
+                        // Create new marker element
+                        connection.graphics[type] = renderer
+                            .symbol(options.symbol)
+                            .addClass('highcharts-point-connecting-path-' + type + '-marker')
+                            .attr(box)
+                            .add(pathfinder.group);
+                        if (!renderer.styledMode) {
+                            connection.graphics[type].attr({
+                                fill: options.color || connection.fromPoint.color,
+                                stroke: options.lineColor,
+                                'stroke-width': options.lineWidth,
+                                opacity: 0
+                            })
+                                .animate({
+                                opacity: 1
+                            }, point.series.options.animation);
+                        }
+                    }
+                    else {
+                        connection.graphics[type].animate(box);
+                    }
                 }
             },
             /**
@@ -1970,10 +1983,12 @@
                 var box;
                 if (!defined(v2)) {
                     box = getPointBB(this);
-                    v2 = {
-                        x: (box.xMin + box.xMax) / 2,
-                        y: (box.yMin + box.yMax) / 2
-                    };
+                    if (box) {
+                        v2 = {
+                            x: (box.xMin + box.xMax) / 2,
+                            y: (box.yMin + box.yMax) / 2
+                        };
+                    }
                 }
                 return Math.atan2(v2.y - v1.y, v1.x - v2.x);
             },

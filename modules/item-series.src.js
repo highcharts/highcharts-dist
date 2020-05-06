@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Item series type for Highcharts
  *
@@ -42,13 +42,13 @@
          * */
         var defined = U.defined,
             extend = U.extend,
+            fireEvent = U.fireEvent,
             isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
             seriesType = U.seriesType;
-        var fireEvent = H.fireEvent,
-            piePoint = H.seriesTypes.pie.prototype.pointClass.prototype;
+        var piePoint = H.seriesTypes.pie.prototype.pointClass.prototype;
         /**
          * The item series type.
          *
@@ -141,6 +141,7 @@
              * @type {number}
              */
             rows: void 0,
+            crisp: false,
             showInLegend: true,
             /**
              * In circular view, the start angle of the item layout, in degrees

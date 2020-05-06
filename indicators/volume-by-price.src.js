@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.4 (2020-03-10)
+ * @license Highstock JS v8.1.0 (2020-05-05)
  *
  * Indicator series type for Highstock
  *
@@ -240,10 +240,17 @@
             // Initial animation
             animate: function (init) {
                 var series = this,
-                    attr = {};
-                if (!init) {
-                    attr.translateX = series.yAxis.pos;
-                    series.group.animate(attr, extend(animObject(series.options.animation), {
+                    inverted = series.chart.inverted,
+                    group = series.group,
+                    attr = {},
+                    translate,
+                    position;
+                if (!init && group) {
+                    translate = inverted ? 'translateY' : 'translateX';
+                    position = inverted ? series.yAxis.top : series.xAxis.left;
+                    group['forceAnimate:' + translate] = true;
+                    attr[translate] = position;
+                    group.animate(attr, extend(animObject(series.options.animation), {
                         step: function (val, fx) {
                             series.group.attr({
                                 scaleX: Math.max(0.001, fx.pos)
@@ -533,14 +540,15 @@
                     verticalLinePos;
                 zonesValues.forEach(function (value) {
                     verticalLinePos = yAxis.toPixels(value) - verticalOffset;
-                    zoneLinesPath = zoneLinesPath.concat(chart.renderer.crispLine([
-                        'M',
-                        leftLinePos,
-                        verticalLinePos,
-                        'L',
-                        rightLinePos,
-                        verticalLinePos
-                    ], zonesStyles.lineWidth));
+                    zoneLinesPath = zoneLinesPath.concat(chart.renderer.crispLine([[
+                            'M',
+                            leftLinePos,
+                            verticalLinePos
+                        ], [
+                            'L',
+                            rightLinePos,
+                            verticalLinePos
+                        ]], zonesStyles.lineWidth));
                 });
                 // Create zone lines one path or update it while animating
                 if (zoneLinesSVG) {

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.4 (2020-03-10)
+ * @license Highstock JS v8.1.0 (2020-05-05)
  *
  * Indicator series type for Highstock
  *
@@ -619,7 +619,6 @@
                 var indicator = this,
                     path = [],
                     spanA,
-                    fillArray = [],
                     spanAarr = [];
                 points = points || this.points;
                 // Render Senkou Span
@@ -627,13 +626,12 @@
                     spanA = SMA.prototype.getGraphPath.call(indicator, 
                     // Reverse points, so Senkou Span A will start from the end:
                     indicator.nextPoints);
-                    spanA[0] = 'L';
+                    spanA[0][0] = 'L';
                     path = SMA.prototype.getGraphPath.call(indicator, points);
                     spanAarr = spanA.slice(0, path.length);
-                    for (var i = (spanAarr.length - 1); i > 0; i -= 3) {
-                        fillArray.push(spanAarr[i - 2], spanAarr[i - 1], spanAarr[i]);
+                    for (var i = spanAarr.length - 1; i >= 0; i--) {
+                        path.push(spanAarr[i]);
                     }
-                    path = path.concat(fillArray);
                 }
                 else {
                     path = SMA.prototype.getGraphPath.apply(indicator, arguments);

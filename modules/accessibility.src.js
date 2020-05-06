@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Accessibility module
  *
@@ -216,7 +216,8 @@
          *
          * */
         var stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
-        var find = U.find;
+        var defined = U.defined,
+            find = U.find;
         /* eslint-disable valid-jsdoc */
         /**
          * @return {string}
@@ -235,7 +236,7 @@
                 axis.axisTitle && axis.axisTitle.textStr ||
                 axis.options.id ||
                 axis.categories && 'categories' ||
-                axis.isDatetimeAxis && 'Time' ||
+                axis.dateTime && 'Time' ||
                 'values'));
         }
         /**
@@ -338,6 +339,47 @@
                 }
             }
         }
+        /**
+         * Get relative position of point on an x/y axis from 0 to 1.
+         * @private
+         * @param {Highcharts.Axis} axis
+         * @param {Highcharts.Point} point
+         * @return {number}
+         */
+        function getRelativePointAxisPosition(axis, point) {
+            if (!defined(axis.dataMin) || !defined(axis.dataMax)) {
+                return 0;
+            }
+            var axisStart = axis.toPixels(axis.dataMin);
+            var axisEnd = axis.toPixels(axis.dataMax);
+            // We have to use pixel position because of axis breaks, log axis etc.
+            var positionProp = axis.coll === 'xAxis' ? 'x' : 'y';
+            var pointPos = axis.toPixels(point[positionProp] || 0);
+            return (pointPos - axisStart) / (axisEnd - axisStart);
+        }
+        /**
+         * Get relative position of point on an x/y axis from 0 to 1.
+         * @private
+         * @param {Highcharts.Point} point
+         */
+        function scrollToPoint(point) {
+            var xAxis = point.series.xAxis;
+            var yAxis = point.series.yAxis;
+            var axis = (xAxis === null || xAxis === void 0 ? void 0 : xAxis.scrollbar) ? xAxis : yAxis;
+            var scrollbar = axis === null || axis === void 0 ? void 0 : axis.scrollbar;
+            if (scrollbar && defined(scrollbar.to) && defined(scrollbar.from)) {
+                var range = scrollbar.to - scrollbar.from;
+                var pos = getRelativePointAxisPosition(axis,
+                    point);
+                scrollbar.updatePosition(pos - range / 2, pos + range / 2);
+                Highcharts.fireEvent(scrollbar, 'changed', {
+                    from: scrollbar.from,
+                    to: scrollbar.to,
+                    trigger: 'scrollbar',
+                    DOMEvent: null
+                });
+            }
+        }
         var ChartUtilities = {
                 getChartTitle: getChartTitle,
                 getAxisDescription: getAxisDescription,
@@ -346,7 +388,8 @@
                 getSeriesFromName: getSeriesFromName,
                 getSeriesA11yElement: getSeriesA11yElement,
                 unhideChartElementFromAT: unhideChartElementFromAT,
-                hideSeriesFromAT: hideSeriesFromAT
+                hideSeriesFromAT: hideSeriesFromAT,
+                scrollToPoint: scrollToPoint
             };
 
         return ChartUtilities;
@@ -567,9 +610,9 @@
          *
          * */
         var win = H.win,
-            doc = win.document,
-            fireEvent = H.fireEvent;
+            doc = win.document;
         var extend = U.extend,
+            fireEvent = U.fireEvent,
             merge = U.merge;
         var removeElement = HTMLUtilities.removeElement,
             getFakeMouseEvent = HTMLUtilities.getFakeMouseEvent;
@@ -964,6 +1007,9 @@
                 ep.addEvent(chart.renderTo, 'keydown', function (e) { return _this.onKeydown(e); });
                 ep.addEvent(chart.container, 'focus', function (e) { return _this.onFocus(e); });
                 ep.addEvent(doc, 'mouseup', function () { return _this.onMouseUp(); });
+                ep.addEvent(chart.renderTo, 'mousedown', function () {
+                    _this.isClickingChart = true;
+                });
                 ep.addEvent(chart.renderTo, 'mouseover', function () {
                     _this.pointerIsOverChart = true;
                 });
@@ -1014,7 +1060,8 @@
                 var chart = this.chart;
                 var focusComesFromChart = (e.relatedTarget &&
                         chart.container.contains(e.relatedTarget));
-                if (!focusComesFromChart) {
+                // Init keyboard nav if tabbing into chart
+                if (!this.isClickingChart && !focusComesFromChart) {
                     (_a = this.modules[0]) === null || _a === void 0 ? void 0 : _a.init(1);
                 }
             },
@@ -1024,6 +1071,7 @@
              * @private
              */
             onMouseUp: function () {
+                delete this.isClickingChart;
                 if (!this.keyboardReset && !this.pointerIsOverChart) {
                     var chart = this.chart,
                         curMod = this.modules &&
@@ -1344,10 +1392,13 @@
             updateLegendItemProxyVisibility: function () {
                 var legend = this.chart.legend,
                     items = legend.allItems || [],
-                    curPage = legend.currentPage || 1;
+                    curPage = legend.currentPage || 1,
+                    clipHeight = legend.clipHeight || 0;
                 items.forEach(function (item) {
                     var itemPage = item.pageIx || 0,
-                        hide = itemPage !== curPage - 1;
+                        y = item._legendItemPos ? item._legendItemPos[1] : 0,
+                        h = item.legendItem ? Math.round(item.legendItem.getBBox().height) : 0,
+                        hide = y + h - legend.pages[itemPage] > clipHeight || itemPage !== curPage - 1;
                     if (item.a11yProxyElement) {
                         item.a11yProxyElement.style.visibility = hide ?
                             'hidden' : 'visible';
@@ -1918,7 +1969,8 @@
         var extend = U.extend,
             defined = U.defined;
         var getPointFromXY = ChartUtilities.getPointFromXY,
-            getSeriesFromName = ChartUtilities.getSeriesFromName;
+            getSeriesFromName = ChartUtilities.getSeriesFromName,
+            scrollToPoint = ChartUtilities.scrollToPoint;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /*
          * Set for which series types it makes sense to move to the closest point with
@@ -2064,6 +2116,7 @@
                 }
                 // Don't call blur on the element, as it messes up the chart div's focus
             }
+            scrollToPoint(this);
             // We focus only after calling onMouseOver because the state change can
             // change z-index and mess up the element.
             if (this.graphic) {
@@ -2467,15 +2520,13 @@
              * @private
              */
             onHandlerTerminate: function () {
+                var _a,
+                    _b;
                 var chart = this.chart;
                 var curPoint = chart.highlightedPoint;
-                if (chart.tooltip) {
-                    chart.tooltip.hide(0);
-                }
-                if (curPoint) {
-                    curPoint.onMouseOut();
-                    delete chart.highlightedPoint;
-                }
+                (_a = chart.tooltip) === null || _a === void 0 ? void 0 : _a.hide(0);
+                (_b = curPoint === null || curPoint === void 0 ? void 0 : curPoint.onMouseOut) === null || _b === void 0 ? void 0 : _b.call(curPoint);
+                delete chart.highlightedPoint;
             },
             /**
              * Function that attempts to highlight next/prev point. Handles wrap around.
@@ -2665,7 +2716,7 @@
 
         return AnnotationsA11y;
     });
-    _registerModule(_modules, 'modules/accessibility/components/SeriesComponent/SeriesDescriber.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/accessibility/components/AnnotationsA11y.js'], _modules['modules/accessibility/utils/htmlUtilities.js'], _modules['modules/accessibility/utils/chartUtilities.js'], _modules['parts/Tooltip.js']], function (H, U, AnnotationsA11y, HTMLUtilities, ChartUtilities, Tooltip) {
+    _registerModule(_modules, 'modules/accessibility/components/SeriesComponent/SeriesDescriber.js', [_modules['parts/Utilities.js'], _modules['modules/accessibility/components/AnnotationsA11y.js'], _modules['modules/accessibility/utils/htmlUtilities.js'], _modules['modules/accessibility/utils/chartUtilities.js'], _modules['parts/Tooltip.js']], function (U, AnnotationsA11y, HTMLUtilities, ChartUtilities, Tooltip) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -2677,10 +2728,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var numberFormat = H.numberFormat,
-            format = H.format;
         var find = U.find,
+            format = U.format,
             isNumber = U.isNumber,
+            numberFormat = U.numberFormat,
             pick = U.pick,
             defined = U.defined;
         var getPointAnnotationTexts = AnnotationsA11y.getPointAnnotationTexts;
@@ -2873,7 +2924,7 @@
             var series = point.series,
                 chart = series.chart,
                 a11yOptions = chart.options.accessibility.point || {},
-                hasDateXAxis = series.xAxis && series.xAxis.isDatetimeAxis;
+                hasDateXAxis = series.xAxis && series.xAxis.dateTime;
             if (hasDateXAxis) {
                 var tooltipDateFormat = Tooltip.prototype.getXDateFormat.call({
                         getDateFormat: Tooltip.prototype.getDateFormat,
@@ -3022,9 +3073,11 @@
                     var pointEl = point.graphic && point.graphic.element ||
                             shouldAddDummyPoint(point) && addDummyPointElement(point);
                     if (pointEl) {
-                        // We always set tabindex, as long as we are setting
-                        // props.
+                        // We always set tabindex, as long as we are setting props.
+                        // When setting tabindex, also remove default outline to
+                        // avoid ugly border on click.
                         pointEl.setAttribute('tabindex', '-1');
+                        pointEl.style.outline = '0';
                         if (setScreenReaderProps) {
                             setPointScreenReaderAttribs(point, pointEl);
                         }
@@ -3073,6 +3126,7 @@
                 seriesElement.setAttribute('role', 'region');
             } /* else do not add role */
             seriesElement.setAttribute('tabindex', '-1');
+            seriesElement.style.outline = '0'; // Don't show browser outline on click, despite tabindex
             seriesElement.setAttribute('aria-label', escapeStringForHTML(stripHTMLTags(a11yOptions.series.descriptionFormatter &&
                 a11yOptions.series.descriptionFormatter(series) ||
                 defaultSeriesDescriptionFormatter(series))));
@@ -4534,10 +4588,12 @@
              * @return {string}
              */
             defaultBeforeChartFormatter: function () {
+                var _a;
                 var chart = this.chart,
                     format = chart.options.accessibility
                         .screenReaderSection.beforeChartFormat,
                     axesDesc = this.getAxesDescription(),
+                    shouldHaveSonifyBtn = chart.sonify && ((_a = chart.options.sonification) === null || _a === void 0 ? void 0 : _a.enabled),
                     sonifyButtonId = 'highcharts-a11y-sonify-data-btn-' +
                         chart.index,
                     dataTableButtonId = 'hc-linkto-highcharts-data-table-' +
@@ -4551,7 +4607,7 @@
                         chartLongdesc: this.getLongdescText(),
                         xAxisDescription: axesDesc.xAxis,
                         yAxisDescription: axesDesc.yAxis,
-                        playAsSoundButton: chart.sonify ?
+                        playAsSoundButton: shouldHaveSonifyBtn ?
                             this.getSonifyButtonText(sonifyButtonId) : '',
                         viewTableButton: chart.getCSV ?
                             this.getDataTableButtonText(dataTableButtonId) : '',
@@ -4794,7 +4850,7 @@
                     return this.getCategoryAxisRangeDesc(axis);
                 }
                 // Use time range, not from-to?
-                if (axis.isDatetimeAxis && (axis.min === 0 || axis.dataMin === 0)) {
+                if (axis.dateTime && (axis.min === 0 || axis.dataMin === 0)) {
                     return this.getAxisTimeLengthDesc(axis);
                 }
                 // Just use from and to.
@@ -4855,7 +4911,7 @@
                     dateRangeFormat = chart.options.accessibility
                         .screenReaderSection.axisRangeDateFormat,
                     format = function (axisKey) {
-                        return axis.isDatetimeAxis ? chart.time.dateFormat(dateRangeFormat,
+                        return axis.dateTime ? chart.time.dateFormat(dateRangeFormat,
                     axis[axisKey]) : axis[axisKey];
                 };
                 return chart.langFormat('accessibility.axis.rangeFromTo', {
@@ -5515,24 +5571,6 @@
                      */
                     point: {
                         /**
-                         * Format to use for describing the values of data points
-                         * to assistive technology - including screen readers.
-                         * The point context is available as `{point}`.
-                         *
-                         * Additionally, the series name, annotation info, and
-                         * description added in `point.accessibility.description`
-                         * is added by default if relevant. To override this, use the
-                         * [accessibility.point.descriptionFormatter](#accessibility.point.descriptionFormatter)
-                         * option.
-                         *
-                         * @see [point.accessibility.description](#series.line.data.accessibility.description)
-                         * @see [accessibility.point.descriptionFormatter](#accessibility.point.descriptionFormatter)
-                         *
-                         * @type      {string}
-                         * @since 8.0.1
-                         */
-                        valueDescriptionFormat: '{index}. {xDescription}{separator}{value}.'
-                        /**
                          * Date format to use for points on datetime axes when describing
                          * them to screen reader users.
                          *
@@ -5604,6 +5642,24 @@
                          * @since 8.0.0
                          * @apioption accessibility.point.descriptionFormatter
                          */
+                        /**
+                         * Format to use for describing the values of data points
+                         * to assistive technology - including screen readers.
+                         * The point context is available as `{point}`.
+                         *
+                         * Additionally, the series name, annotation info, and
+                         * description added in `point.accessibility.description`
+                         * is added by default if relevant. To override this, use the
+                         * [accessibility.point.descriptionFormatter](#accessibility.point.descriptionFormatter)
+                         * option.
+                         *
+                         * @see [point.accessibility.description](#series.line.data.accessibility.description)
+                         * @see [accessibility.point.descriptionFormatter](#accessibility.point.descriptionFormatter)
+                         *
+                         * @type      {string}
+                         * @since 8.0.1
+                         */
+                        valueDescriptionFormat: '{index}. {xDescription}{separator}{value}.'
                     },
                     /**
                      * Amount of landmarks/regions to create for screen reader users. More
@@ -6950,6 +7006,91 @@
             extend = U.extend,
             pick = U.pick;
         /* eslint-disable no-invalid-this, valid-jsdoc */
+        // Attributes that trigger a focus border update
+        var svgElementBorderUpdateTriggers = [
+                'x', 'y', 'transform', 'width', 'height', 'r', 'd', 'stroke-width'
+            ];
+        /**
+         * Add hook to destroy focus border if SVG element is destroyed, unless
+         * hook already exists.
+         *
+         * @param el Element to add destroy hook to
+         */
+        function addDestroyFocusBorderHook(el) {
+            if (el.focusBorderDestroyHook) {
+                return;
+            }
+            var origDestroy = el.destroy;
+            el.destroy = function () {
+                var _a,
+                    _b;
+                (_b = (_a = el.focusBorder) === null || _a === void 0 ? void 0 : _a.destroy) === null || _b === void 0 ? void 0 : _b.call(_a);
+                return origDestroy.apply(el, arguments);
+            };
+            el.focusBorderDestroyHook = origDestroy;
+        }
+        /**
+         * Remove hook from SVG element added by addDestroyFocusBorderHook, if
+         * existing.
+         *
+         * @param el Element to remove destroy hook from
+         */
+        function removeDestroyFocusBorderHook(el) {
+            if (!el.focusBorderDestroyHook) {
+                return;
+            }
+            el.destroy = el.focusBorderDestroyHook;
+            delete el.focusBorderDestroyHook;
+        }
+        /**
+         * Add hooks to update the focus border of an element when the element
+         * size/position is updated, unless already added.
+         *
+         * @param el Element to add update hooks to
+         * @param updateParams Parameters to pass through to addFocusBorder when updating.
+         */
+        function addUpdateFocusBorderHooks(el) {
+            var updateParams = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                updateParams[_i - 1] = arguments[_i];
+            }
+            if (el.focusBorderUpdateHooks) {
+                return;
+            }
+            el.focusBorderUpdateHooks = {};
+            svgElementBorderUpdateTriggers.forEach(function (trigger) {
+                var setterKey = trigger + 'Setter';
+                var origSetter = el[setterKey] || el._defaultSetter;
+                el.focusBorderUpdateHooks[setterKey] = origSetter;
+                el[setterKey] = function () {
+                    var ret = origSetter.apply(el,
+                        arguments);
+                    el.addFocusBorder.apply(el, updateParams);
+                    return ret;
+                };
+            });
+        }
+        /**
+         * Remove hooks from SVG element added by addUpdateFocusBorderHooks, if
+         * existing.
+         *
+         * @param el Element to remove update hooks from
+         */
+        function removeUpdateFocusBorderHooks(el) {
+            if (!el.focusBorderUpdateHooks) {
+                return;
+            }
+            Object.keys(el.focusBorderUpdateHooks).forEach(function (setterKey) {
+                var origSetter = el.focusBorderUpdateHooks[setterKey];
+                if (origSetter === el._defaultSetter) {
+                    delete el[setterKey];
+                }
+                else {
+                    el[setterKey] = origSetter;
+                }
+            });
+            delete el.focusBorderUpdateHooks;
+        }
         /*
          * Add focus border functionality to SVGElements. Draws a new rect on top of
          * element around its bounding box. This is used by multiple components.
@@ -6973,7 +7114,55 @@
                     pad = pick(margin, 3);
                 bb.x += this.translateX ? this.translateX : 0;
                 bb.y += this.translateY ? this.translateY : 0;
-                this.focusBorder = this.renderer.rect(bb.x - pad, bb.y - pad, bb.width + 2 * pad, bb.height + 2 * pad, parseInt((style && style.borderRadius || 0).toString(), 10))
+                var borderPosX = bb.x - pad,
+                    borderPosY = bb.y - pad,
+                    borderWidth = bb.width + 2 * pad,
+                    borderHeight = bb.height + 2 * pad;
+                // For text elements, apply x and y offset, #11397.
+                /**
+                 * @private
+                 * @function
+                 *
+                 * @param {Highcharts.SVGElement} text
+                 *
+                 * @return {TextAnchorCorrectionObject}
+                 */
+                function getTextAnchorCorrection(text) {
+                    var posXCorrection = 0,
+                        posYCorrection = 0;
+                    if (text.attr('text-anchor') === 'middle') {
+                        posXCorrection = H.isFirefox && text.rotation ? 0.25 : 0.5;
+                        posYCorrection = H.isFirefox && !text.rotation ? 0.75 : 0.5;
+                    }
+                    else if (!text.rotation) {
+                        posYCorrection = 0.75;
+                    }
+                    else {
+                        posXCorrection = 0.25;
+                    }
+                    return {
+                        x: posXCorrection,
+                        y: posYCorrection
+                    };
+                }
+                if (this.element.nodeName === 'text' || this.isLabel) {
+                    var isRotated = !!this.rotation,
+                        correction = !this.isLabel ? getTextAnchorCorrection(this) :
+                            {
+                                x: isRotated ? 1 : 0,
+                                y: 0
+                            };
+                    borderPosX = +this.attr('x') - (bb.width * correction.x) - pad;
+                    borderPosY = +this.attr('y') - (bb.height * correction.y) - pad;
+                    if (this.isLabel && isRotated) {
+                        var temp = borderWidth;
+                        borderWidth = borderHeight;
+                        borderHeight = temp;
+                        borderPosX = +this.attr('x') - (bb.height * correction.x) - pad;
+                        borderPosY = +this.attr('y') - (bb.width * correction.y) - pad;
+                    }
+                }
+                this.focusBorder = this.renderer.rect(borderPosX, borderPosY, borderWidth, borderHeight, parseInt((style && style.borderRadius || 0).toString(), 10))
                     .addClass('highcharts-focus-border')
                     .attr({
                     zIndex: 99
@@ -6985,18 +7174,42 @@
                         'stroke-width': style && style.strokeWidth
                     });
                 }
+                addUpdateFocusBorderHooks(this, margin, style);
+                addDestroyFocusBorderHook(this);
             },
             /**
              * @private
              * @function Highcharts.SVGElement#removeFocusBorder
              */
             removeFocusBorder: function () {
+                removeUpdateFocusBorderHooks(this);
+                removeDestroyFocusBorderHook(this);
                 if (this.focusBorder) {
                     this.focusBorder.destroy();
                     delete this.focusBorder;
                 }
             }
         });
+        /**
+         * Redraws the focus border on the currently focused element.
+         *
+         * @private
+         * @function Highcharts.Chart#renderFocusBorder
+         */
+        H.Chart.prototype.renderFocusBorder = function () {
+            var focusElement = this.focusElement,
+                focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder;
+            if (focusElement) {
+                focusElement.removeFocusBorder();
+                if (focusBorderOptions.enabled) {
+                    focusElement.addFocusBorder(focusBorderOptions.margin, {
+                        stroke: focusBorderOptions.style.color,
+                        strokeWidth: focusBorderOptions.style.lineWidth,
+                        borderRadius: focusBorderOptions.style.borderRadius
+                    });
+                }
+            }
+        };
         /**
          * Set chart's focus to an SVGElement. Calls focus() on it, and draws the focus
          * border. This is used by multiple components.
@@ -7029,19 +7242,11 @@
                     browserFocusElement.style.outline = 'none';
                 }
             }
-            if (focusBorderOptions.enabled) {
-                // Remove old focus border
-                if (this.focusElement) {
-                    this.focusElement.removeFocusBorder();
-                }
-                // Draw focus border (since some browsers don't do it automatically)
-                svgElement.addFocusBorder(focusBorderOptions.margin, {
-                    stroke: focusBorderOptions.style.color,
-                    strokeWidth: focusBorderOptions.style.lineWidth,
-                    borderRadius: focusBorderOptions.style.borderRadius
-                });
-                this.focusElement = svgElement;
+            if (this.focusElement) {
+                this.focusElement.removeFocusBorder();
             }
+            this.focusElement = svgElement;
+            this.renderFocusBorder();
         };
 
     });

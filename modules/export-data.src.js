@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Exporting module
  *
@@ -517,6 +517,22 @@
                  */
                 downloadXLS: 'Download XLS',
                 /**
+                 * The text for exported table.
+                 *
+                 * @since 8.1.0
+                 * @requires modules/export-data
+                 */
+                exportData: {
+                    /**
+                     * The category column title.
+                     */
+                    categoryHeader: 'Category',
+                    /**
+                     * The category column title when axis type set to "datetime".
+                     */
+                    categoryDatetimeHeader: 'DateTime'
+                },
+                /**
                  * The text for the menu item.
                  *
                  * @since    6.0.0
@@ -544,7 +560,6 @@
          *
          * @private
          * @function Highcharts.Chart#setUpKeyToAxis
-         * @return {void}
          */
         Highcharts.Chart.prototype.setUpKeyToAxis = function () {
             if (seriesTypes.arearange) {
@@ -590,7 +605,11 @@
                 columnTitleObj,
                 i,
                 x,
-                xTitle, 
+                xTitle,
+                langOptions = this.options.lang,
+                exportDataOptions = langOptions.exportData,
+                categoryHeader = exportDataOptions.categoryHeader,
+                categoryDatetimeHeader = exportDataOptions.categoryDatetimeHeader, 
                 // Options
                 columnHeaderFormatter = function (item,
                 key,
@@ -604,11 +623,11 @@
                     }
                 }
                 if (!item) {
-                    return 'Category';
+                    return categoryHeader;
                 }
                 if (item instanceof Highcharts.Axis) {
                     return (item.options.title && item.options.title.text) ||
-                        (item.isDatetimeAxis ? 'DateTime' : 'Category');
+                        (item.dateTime ? categoryDatetimeHeader : categoryHeader);
                 }
                 if (multiLevelHeaders) {
                     return {
@@ -633,7 +652,7 @@
                             series.chart[axisName][pIdx] :
                             series[axisName];
                     categoryMap[prop] = (axis && axis.categories) || [];
-                    dateTimeValueAxisMap[prop] = (axis && axis.isDatetimeAxis);
+                    dateTimeValueAxisMap[prop] = (axis && axis.dateTime);
                 });
                 return {
                     categoryMap: categoryMap,
@@ -645,10 +664,11 @@
             this.setUpKeyToAxis();
             this.series.forEach(function (series) {
                 var keys = series.options.keys,
+                    xAxis = series.xAxis,
                     pointArrayMap = keys || series.pointArrayMap || ['y'],
                     valueCount = pointArrayMap.length,
                     xTaken = !series.requireSorting && {},
-                    xAxisIndex = xAxes.indexOf(series.xAxis),
+                    xAxisIndex = xAxes.indexOf(xAxis),
                     categoryAndDatetimeMap = getCategoryAndDateTimeMap(series,
                     pointArrayMap),
                     mockSeries,
@@ -702,7 +722,9 @@
                         name = series.data[pIdx] && series.data[pIdx].name;
                         j = 0;
                         // Pies, funnels, geo maps etc. use point name in X row
-                        if (!series.xAxis || series.exportKey === 'name') {
+                        if (!xAxis ||
+                            series.exportKey === 'name' ||
+                            (!hasParallelCoords && xAxis && xAxis.hasNames)) {
                             key = name;
                         }
                         if (xTaken) {
@@ -772,7 +794,7 @@
                 row) {
                     var category = row.name;
                     if (xAxis && !defined(category)) {
-                        if (xAxis.isDatetimeAxis) {
+                        if (xAxis.dateTime) {
                             if (row.x instanceof Date) {
                                 row.x = row.x.getTime();
                             }
@@ -1027,11 +1049,14 @@
             }
         }
         /**
-         * Call this on click of 'Download CSV' button
+         * Generates a data URL of CSV for local download in the browser. This is the
+         * default action for a click on the 'Download CSV' button.
          *
-         * @private
+         * See {@link Highcharts.Chart#getCSV} to get the CSV data itself.
+         *
          * @function Highcharts.Chart#downloadCSV
-         * @return {void}
+         *
+         * @requires modules/exporting
          */
         Highcharts.Chart.prototype.downloadCSV = function () {
             var csv = this.getCSV(true);
@@ -1039,11 +1064,14 @@
                 'data:text/csv,\uFEFF' + encodeURIComponent(csv), this.getFilename() + '.csv');
         };
         /**
-         * Call this on click of 'Download XLS' button
+         * Generates a data URL of an XLS document for local download in the browser.
+         * This is the default action for a click on the 'Download XLS' button.
          *
-         * @private
+         * See {@link Highcharts.Chart#getTable} to get the table data itself.
+         *
          * @function Highcharts.Chart#downloadXLS
-         * @return {void}
+         *
+         * @requires modules/exporting
          */
         Highcharts.Chart.prototype.downloadXLS = function () {
             var uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
@@ -1072,7 +1100,6 @@
          * Export-data module required. View the data in a table below the chart.
          *
          * @function Highcharts.Chart#viewData
-         * @return {void}
          *
          * @fires Highcharts.Chart#event:afterViewData
          */

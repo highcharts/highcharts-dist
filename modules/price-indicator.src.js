@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.4 (2020-03-10)
+ * @license Highstock JS v8.1.0 (2020-05-05)
  *
  * Advanced Highstock tools
  *
@@ -149,14 +149,17 @@
                     }, seriesOptions.lastVisiblePrice);
                     yAxis.cross = serie.lastVisiblePrice;
                     lastPoint = points[pLength - crop];
+                    if (serie.crossLabel) {
+                        serie.crossLabel.destroy();
+                        // Set to undefined to avoid collision with
+                        // the yAxis crosshair #11480
+                        delete yAxis.crossLabel;
+                    }
                     // Save price
                     yAxis.drawCrosshair(null, lastPoint);
                     if (yAxis.cross) {
                         serie.lastVisiblePrice = yAxis.cross;
                         serie.lastVisiblePrice.y = lastPoint.y;
-                    }
-                    if (serie.crossLabel) {
-                        serie.crossLabel.destroy();
                     }
                     serie.crossLabel = yAxis.crossLabel;
                 }

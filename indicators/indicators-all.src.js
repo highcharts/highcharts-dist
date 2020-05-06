@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.4 (2020-03-10)
+ * @license Highstock JS v8.1.0 (2020-05-05)
  *
  * All technical indicators for Highstock
  *
@@ -639,6 +639,7 @@
             threshold: 0,
             groupPadding: 0.2,
             pointPadding: 0.2,
+            crisp: false,
             states: {
                 hover: {
                     halo: {
@@ -772,8 +773,7 @@
         var defined = U.defined,
             error = U.error,
             merge = U.merge;
-        var each = H.each,
-            SMA = H.seriesTypes.sma;
+        var SMA = H.seriesTypes.sma;
         /**
          * Mixin useful for all indicators that have more than one line.
          * Merge it with your implementation where you will provide
@@ -829,7 +829,7 @@
                  */
                 getTranslatedLinesNames: function (excludedValue) {
                     var translatedLines = [];
-                each(this.pointArrayMap, function (propertyName) {
+                (this.pointArrayMap || []).forEach(function (propertyName) {
                     if (propertyName !== excludedValue) {
                         translatedLines.push('plot' +
                             propertyName.charAt(0).toUpperCase() +
@@ -848,7 +848,7 @@
              */
             toYData: function (point) {
                 var pointColl = [];
-                each(this.pointArrayMap, function (propertyName) {
+                (this.pointArrayMap || []).forEach(function (propertyName) {
                     pointColl.push(point[propertyName]);
                 });
                 return pointColl;
@@ -867,8 +867,8 @@
                     value;
                 LinesNames = indicator.getTranslatedLinesNames();
                 SMA.prototype.translate.apply(indicator, arguments);
-                each(indicator.points, function (point) {
-                    each(pointArrayMap, function (propertyName, i) {
+                indicator.points.forEach(function (point) {
+                    pointArrayMap.forEach(function (propertyName, i) {
                         value = point[propertyName];
                         if (value !== null) {
                             point[LinesNames[i]] = indicator.yAxis.toPixels(value, true);
@@ -901,7 +901,7 @@
                     secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey),
                     point;
                 // Generate points for additional lines:
-                each(secondaryLinesNames, function (plotLine, index) {
+                secondaryLinesNames.forEach(function (plotLine, index) {
                     // create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
@@ -916,7 +916,7 @@
                     pointsLength = mainLinePoints.length;
                 });
                 // Modify options and generate additional lines:
-                each(linesApiNames, function (lineName, i) {
+                linesApiNames.forEach(function (lineName, i) {
                     if (secondaryLines[i]) {
                         indicator.points = secondaryLines[i];
                         if (mainLineOptions[lineName]) {
@@ -3480,7 +3480,6 @@
                 var indicator = this,
                     path = [],
                     spanA,
-                    fillArray = [],
                     spanAarr = [];
                 points = points || this.points;
                 // Render Senkou Span
@@ -3488,13 +3487,12 @@
                     spanA = SMA.prototype.getGraphPath.call(indicator, 
                     // Reverse points, so Senkou Span A will start from the end:
                     indicator.nextPoints);
-                    spanA[0] = 'L';
+                    spanA[0][0] = 'L';
                     path = SMA.prototype.getGraphPath.call(indicator, points);
                     spanAarr = spanA.slice(0, path.length);
-                    for (var i = (spanAarr.length - 1); i > 0; i -= 3) {
-                        fillArray.push(spanAarr[i - 2], spanAarr[i - 1], spanAarr[i]);
+                    for (var i = spanAarr.length - 1; i >= 0; i--) {
+                        path.push(spanAarr[i]);
                     }
-                    path = path.concat(fillArray);
                 }
                 else {
                     path = SMA.prototype.getGraphPath.apply(indicator, arguments);
@@ -3901,6 +3899,7 @@
             threshold: 0,
             groupPadding: 0.1,
             pointPadding: 0.1,
+            crisp: false,
             states: {
                 hover: {
                     halo: {
@@ -5004,7 +5003,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'mixins/reduce-array.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'mixins/reduce-array.js', [], function () {
         /**
          *
          *  (c) 2010-2020 Pawel Fus & Daniel Studencki
@@ -5014,7 +5013,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var reduce = H.reduce;
         var reduceArrayMixin = {
                 /**
                  * Get min value of array filled by OHLC data.
@@ -5025,8 +5023,7 @@
                  */
                 minInArray: function (arr,
             index) {
-                    return reduce(arr,
-            function (min,
+                    return arr.reduce(function (min,
             target) {
                         return Math.min(min,
             target[index]);
@@ -5040,7 +5037,7 @@
              * @return {number} Returns max value.
              */
             maxInArray: function (arr, index) {
-                return reduce(arr, function (max, target) {
+                return arr.reduce(function (max, target) {
                     return Math.max(max, target[index]);
                 }, -Number.MAX_VALUE);
             },
@@ -5053,7 +5050,7 @@
              * @return {Array<number,number>} Returns array with min and max value.
              */
             getArrayExtremes: function (arr, minIndex, maxIndex) {
-                return reduce(arr, function (prev, target) {
+                return arr.reduce(function (prev, target) {
                     return [
                         Math.min(prev[0], target[minIndex]),
                         Math.max(prev[1], target[maxIndex])
@@ -6975,10 +6972,17 @@
             // Initial animation
             animate: function (init) {
                 var series = this,
-                    attr = {};
-                if (!init) {
-                    attr.translateX = series.yAxis.pos;
-                    series.group.animate(attr, extend(animObject(series.options.animation), {
+                    inverted = series.chart.inverted,
+                    group = series.group,
+                    attr = {},
+                    translate,
+                    position;
+                if (!init && group) {
+                    translate = inverted ? 'translateY' : 'translateX';
+                    position = inverted ? series.yAxis.top : series.xAxis.left;
+                    group['forceAnimate:' + translate] = true;
+                    attr[translate] = position;
+                    group.animate(attr, extend(animObject(series.options.animation), {
                         step: function (val, fx) {
                             series.group.attr({
                                 scaleX: Math.max(0.001, fx.pos)
@@ -7268,14 +7272,15 @@
                     verticalLinePos;
                 zonesValues.forEach(function (value) {
                     verticalLinePos = yAxis.toPixels(value) - verticalOffset;
-                    zoneLinesPath = zoneLinesPath.concat(chart.renderer.crispLine([
-                        'M',
-                        leftLinePos,
-                        verticalLinePos,
-                        'L',
-                        rightLinePos,
-                        verticalLinePos
-                    ], zonesStyles.lineWidth));
+                    zoneLinesPath = zoneLinesPath.concat(chart.renderer.crispLine([[
+                            'M',
+                            leftLinePos,
+                            verticalLinePos
+                        ], [
+                            'L',
+                            rightLinePos,
+                            verticalLinePos
+                        ]], zonesStyles.lineWidth));
                 });
                 // Create zone lines one path or update it while animating
                 if (zoneLinesSVG) {

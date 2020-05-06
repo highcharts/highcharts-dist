@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Force directed graph module
  *
@@ -969,6 +969,7 @@
          *
          * */
         var addEvent = U.addEvent,
+            merge = U.merge,
             clamp = U.clamp,
             defined = U.defined,
             extend = U.extend,
@@ -1002,9 +1003,13 @@
                 this.setInitialRendering(true);
                 this.integration =
                     H.networkgraphIntegrations[options.integration];
+                this.enableSimulation = options.enableSimulation;
                 this.attractiveForce = pick(options.attractiveForce, this.integration.attractiveForceFunction);
                 this.repulsiveForce = pick(options.repulsiveForce, this.integration.repulsiveForceFunction);
                 this.approximation = options.approximation;
+            },
+            updateSimulation: function (enable) {
+                this.enableSimulation = pick(enable, this.options.enableSimulation);
             },
             start: function () {
                 var layout = this,
@@ -1012,16 +1017,18 @@
                     options = this.options;
                 layout.currentStep = 0;
                 layout.forces = series[0] && series[0].forces || [];
+                layout.chart = series[0] && series[0].chart;
                 if (layout.initialRendering) {
                     layout.initPositions();
                     // Render elements in initial positions:
                     series.forEach(function (s) {
+                        s.finishedAnimating = true; // #13169
                         s.render();
                     });
                 }
                 layout.setK();
                 layout.resetSimulation(options);
-                if (options.enableSimulation) {
+                if (layout.enableSimulation) {
                     layout.step();
                 }
             },
@@ -1044,7 +1051,7 @@
                 layout.temperature = layout.coolDown(layout.startTemperature, layout.diffTemperature, layout.currentStep);
                 layout.prevSystemTemperature = layout.systemTemperature;
                 layout.systemTemperature = layout.getSystemTemperature();
-                if (options.enableSimulation) {
+                if (layout.enableSimulation) {
                     series.forEach(function (s) {
                         // Chart could be destroyed during the simulation
                         if (s.chart) {
@@ -1453,7 +1460,7 @@
                 if (layout.maxIterations-- &&
                     isFinite(layout.temperature) &&
                     !layout.isStable() &&
-                    !layout.options.enableSimulation) {
+                    !layout.enableSimulation) {
                     // Hook similar to build-in addEvent, but instead of
                     // creating whole events logic, use just a function.
                     // It's faster which is important for rAF code.
@@ -1487,6 +1494,21 @@
                     });
                 }
             }
+        });
+        // disable simulation before print if enabled
+        addEvent(Chart, 'beforePrint', function () {
+            this.graphLayoutsLookup.forEach(function (layout) {
+                layout.updateSimulation(false);
+            });
+            this.redraw();
+        });
+        // re-enable simulation after print
+        addEvent(Chart, 'afterPrint', function () {
+            this.graphLayoutsLookup.forEach(function (layout) {
+                // return to default simulation
+                layout.updateSimulation();
+            });
+            this.redraw();
         });
 
     });
@@ -1866,6 +1888,9 @@
                 },
                 textPath: {
                     enabled: false
+                },
+                style: {
+                    transition: 'opacity 2000ms'
                 }
             },
             /**
@@ -2258,30 +2283,31 @@
              * @private
              */
             render: function () {
-                var points = this.points,
-                    hoverPoint = this.chart.hoverPoint,
+                var series = this,
+                    points = series.points,
+                    hoverPoint = series.chart.hoverPoint,
                     dataLabels = [];
                 // Render markers:
-                this.points = this.nodes;
+                series.points = series.nodes;
                 seriesTypes.line.prototype.render.call(this);
-                this.points = points;
+                series.points = points;
                 points.forEach(function (point) {
                     if (point.fromNode && point.toNode) {
                         point.renderLink();
                         point.redrawLink();
                     }
                 });
-                if (hoverPoint && hoverPoint.series === this) {
-                    this.redrawHalo(hoverPoint);
+                if (hoverPoint && hoverPoint.series === series) {
+                    series.redrawHalo(hoverPoint);
                 }
-                if (this.chart.hasRendered &&
-                    !this.options.dataLabels.allowOverlap) {
-                    this.nodes.concat(this.points).forEach(function (node) {
+                if (series.chart.hasRendered &&
+                    !series.options.dataLabels.allowOverlap) {
+                    series.nodes.concat(series.points).forEach(function (node) {
                         if (node.dataLabel) {
                             dataLabels.push(node.dataLabel);
                         }
                     });
-                    this.chart.hideOverlappingLabels(dataLabels);
+                    series.chart.hideOverlappingLabels(dataLabels);
                 }
             },
             // Networkgraph has two separate collecions of nodes and lines, render
@@ -2463,9 +2489,13 @@
                         });
                     }
                     this.graphic.animate(this.shapeArgs);
-                    // Required for dataLabels:
-                    this.plotX = (path[1] + path[4]) / 2;
-                    this.plotY = (path[2] + path[5]) / 2;
+                    // Required for dataLabels
+                    var start = path[0];
+                    var end = path[1];
+                    if (start[0] === 'M' && end[0] === 'L') {
+                        this.plotX = (start[1] + end[1]) / 2;
+                        this.plotY = (start[2] + end[2]) / 2;
+                    }
                 }
             },
             /**
@@ -2501,12 +2531,8 @@
                     right = this.fromNode;
                 }
                 return [
-                    'M',
-                    left.plotX,
-                    left.plotY,
-                    'L',
-                    right.plotX,
-                    right.plotY
+                    ['M', left.plotX || 0, left.plotY || 0],
+                    ['L', right.plotX || 0, right.plotY || 0]
                 ];
                 /*
                 IDEA: different link shapes?

@@ -7,7 +7,9 @@
  */
 'use strict';
 import H from '../parts/Globals.js';
-var addEvent = H.addEvent, Chart = H.Chart;
+import U from '../parts/Utilities.js';
+var addEvent = U.addEvent;
+var Chart = H.Chart;
 /**
  * The module allows user to enable display chart in full screen mode.
  * Used in StockTools too.
@@ -45,10 +47,7 @@ var Fullscreen = /** @class */ (function () {
          * @since 8.0.1
          */
         this.isOpen = false;
-        if (!(chart.container.parentNode instanceof Element)) {
-            return;
-        }
-        var container = chart.container.parentNode;
+        var container = chart.renderTo;
         // Hold event and methods available only for a current browser.
         if (!this.browserProps) {
             if (typeof container.requestFullscreen === 'function') {
@@ -127,7 +126,7 @@ var Fullscreen = /** @class */ (function () {
         var fullscreen = this, chart = fullscreen.chart;
         // Handle exitFullscreen() method when user clicks 'Escape' button.
         if (fullscreen.browserProps) {
-            fullscreen.unbindFullscreenEvent = H.addEvent(chart.container.ownerDocument, // chart's document
+            fullscreen.unbindFullscreenEvent = addEvent(chart.container.ownerDocument, // chart's document
             fullscreen.browserProps.fullscreenChange, function () {
                 // Handle lack of async of browser's fullScreenChange event.
                 if (fullscreen.isOpen) {
@@ -139,16 +138,15 @@ var Fullscreen = /** @class */ (function () {
                     fullscreen.setButtonText();
                 }
             });
-            if (chart.container.parentNode instanceof Element) {
-                var promise = chart.container.parentNode[fullscreen.browserProps.requestFullscreen]();
-                if (promise) {
-                    promise['catch'](function () {
-                        alert(// eslint-disable-line no-alert
-                        'Full screen is not supported inside a frame.');
-                    });
-                }
+            var promise = chart.renderTo[fullscreen.browserProps.requestFullscreen]();
+            if (promise) {
+                // No dot notation because of IE8 compatibility
+                promise['catch'](function () {
+                    alert(// eslint-disable-line no-alert
+                    'Full screen is not supported inside a frame.');
+                });
             }
-            H.addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
+            addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
         }
     };
     /**

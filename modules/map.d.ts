@@ -205,7 +205,7 @@ declare module "../highcharts" {
     /**
      * Utility for reading SVG paths directly.
      */
-    function splitPath(path: string): SVGPathArray;
+    function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

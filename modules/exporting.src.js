@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Exporting module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          * (c) 2009-2020 Rafal Sebestjanski
          *
@@ -36,8 +36,8 @@
          *
          * License: www.highcharts.com/license
          */
-        var addEvent = H.addEvent,
-            Chart = H.Chart;
+        var addEvent = U.addEvent;
+        var Chart = H.Chart;
         /**
          * The module allows user to enable display chart in full screen mode.
          * Used in StockTools too.
@@ -75,10 +75,7 @@
                  * @since 8.0.1
                  */
                 this.isOpen = false;
-                if (!(chart.container.parentNode instanceof Element)) {
-                    return;
-                }
-                var container = chart.container.parentNode;
+                var container = chart.renderTo;
                 // Hold event and methods available only for a current browser.
                 if (!this.browserProps) {
                     if (typeof container.requestFullscreen === 'function') {
@@ -159,7 +156,7 @@
                     chart = fullscreen.chart;
                 // Handle exitFullscreen() method when user clicks 'Escape' button.
                 if (fullscreen.browserProps) {
-                    fullscreen.unbindFullscreenEvent = H.addEvent(chart.container.ownerDocument, // chart's document
+                    fullscreen.unbindFullscreenEvent = addEvent(chart.container.ownerDocument, // chart's document
                     fullscreen.browserProps.fullscreenChange, function () {
                         // Handle lack of async of browser's fullScreenChange event.
                         if (fullscreen.isOpen) {
@@ -171,16 +168,15 @@
                             fullscreen.setButtonText();
                         }
                     });
-                    if (chart.container.parentNode instanceof Element) {
-                        var promise = chart.container.parentNode[fullscreen.browserProps.requestFullscreen]();
-                        if (promise) {
-                            promise['catch'](function () {
-                                alert(// eslint-disable-line no-alert
-                                'Full screen is not supported inside a frame.');
-                            });
-                        }
+                    var promise = chart.renderTo[fullscreen.browserProps.requestFullscreen]();
+                    if (promise) {
+                        // No dot notation because of IE8 compatibility
+                        promise['catch'](function () {
+                            alert(// eslint-disable-line no-alert
+                            'Full screen is not supported inside a frame.');
+                        });
                     }
-                    H.addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
+                    addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
                 }
             };
             /**
@@ -2258,24 +2254,24 @@
         };
         symbols.menu = function (x, y, width, height) {
             var arr = [
-                    'M',
+                    ['M',
                 x,
-                y + 2.5,
-                    'L',
+                y + 2.5],
+                    ['L',
                 x + width,
-                y + 2.5,
-                    'M',
+                y + 2.5],
+                    ['M',
                 x,
-                y + height / 2 + 0.5,
-                    'L',
+                y + height / 2 + 0.5],
+                    ['L',
                 x + width,
-                y + height / 2 + 0.5,
-                    'M',
+                y + height / 2 + 0.5],
+                    ['M',
                 x,
-                y + height - 1.5,
-                    'L',
+                y + height - 1.5],
+                    ['L',
                 x + width,
-                y + height - 1.5
+                y + height - 1.5]
                 ];
             return arr;
         };

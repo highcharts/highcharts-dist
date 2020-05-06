@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -293,7 +293,11 @@
                 x < max &&
                     (series.userOptions.binWidth ||
                         correctFloat(max - x) >= binWidth ||
-                        correctFloat(min + (frequencies.length * binWidth) - x) <= 0); x = correctFloat(x + binWidth)) {
+                        // #13069 - Every add and subtract operation should
+                        // be corrected, due to general problems with
+                        // operations on float numbers in JS.
+                        correctFloat(correctFloat(min + (frequencies.length * binWidth)) -
+                            x) <= 0); x = correctFloat(x + binWidth)) {
                     frequencies.push(x);
                     bins[x] = 0;
                 }

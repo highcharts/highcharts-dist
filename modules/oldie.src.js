@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
@@ -80,7 +80,7 @@
          * @apioption global.VMLRadialGradientURL
          */
         H.getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/8.0.4/gfx/vml-radial-gradient.png';
+            'http://code.highcharts.com/8.1.0/gfx/vml-radial-gradient.png';
         // Utilites
         if (doc && !doc.defaultView) {
             H.getStyle = U.getStyle = function (el, prop) {
@@ -515,9 +515,9 @@
                 on: function (eventType, handler) {
                     // simplest possible event model for internal use
                     this.element['on' + eventType] = function () {
-                        var evt = win.event;
-                        evt.target = evt.srcElement;
-                        handler(evt);
+                        var e = win.event;
+                        e.target = e.srcElement;
+                        handler(e);
                     };
                     return this;
                 },
@@ -799,6 +799,8 @@
                         boxWrapper,
                         box,
                         css;
+                    // Extended SVGRenderer member
+                    this.crispPolyLine = SVGRenderer.prototype.crispPolyLine;
                     renderer.alignedObjects = [];
                     boxWrapper = renderer.createElement('div')
                         .css({ position: 'relative' });

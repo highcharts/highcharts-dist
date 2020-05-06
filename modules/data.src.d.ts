@@ -132,7 +132,7 @@ declare module "../highcharts.src" {
         /**
          * Parse a HTML table
          */
-        parseTable(): (Array<Array<DataValueType>>|undefined);
+        parseTable(): Array<Array<DataValueType>>;
         /**
          * Parse numeric cells in to number types and date types in to true
          * dates.
@@ -141,7 +141,7 @@ declare module "../highcharts.src" {
         /**
          * Reorganize rows into columns.
          */
-        rowsToColumns(rows: Array<Array<(number|string)>>): Array<Array<(number|string)>>;
+        rowsToColumns(rows: Array<Array<DataValueType>>): (Array<Array<DataValueType>>|undefined);
         /**
          * Trim a string from whitespaces.
          *

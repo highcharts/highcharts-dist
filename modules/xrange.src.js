@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * X-range series
  *
@@ -185,6 +185,15 @@
             autoIncrement: H.noop,
             buildKDTree: H.noop,
             /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             * @function Highcarts.seriesTypes.xrange#init
+             * @return {void}
+             */
+            init: function () {
+                seriesTypes.column.prototype.init.apply(this, arguments);
+                this.options.stacking = void 0; // #13161
+            },
             /**
              * Borrow the column series metrics, but with swapped axes. This gives
              * free access to features like groupPadding, grouping, pointWidth etc.

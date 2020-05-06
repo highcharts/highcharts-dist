@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Sonification module
  *
@@ -821,7 +821,7 @@
              * @private
              * @param {number} value
              * The relative data value to translate.
-             * @param {Highcharts.RangeObject} dataExtremes
+             * @param {Highcharts.RangeObject} DataExtremesObject
              * The possible extremes for this value.
              * @param {object} limits
              * Limits for the virtual axis.
@@ -2142,9 +2142,6 @@
         function chartSonify(options) {
             var opts = getChartSonifyOptions(this,
                 options);
-            if (opts.enabled === false) {
-                return;
-            }
             // Only one timeline can play at a time.
             if (this.sonification.timeline) {
                 this.sonification.timeline.pause();

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -28,7 +28,8 @@
  * - Dash styles are not rendered on lines.
  * - Columns are always one pixel wide. Don't set the threshold too low.
  * - Disable animations
- * - Marker shapes are not supported: markers will always be circles
+ * - Marker shapes are not supported: markers will always be circles, except
+ *   heatmap series, where markers are always rectangles.
  *
  * Optimizing tips for users
  * - Set extremes (min, max) explicitly on the axes in order for Highcharts to

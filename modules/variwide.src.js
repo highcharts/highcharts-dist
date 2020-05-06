@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Highcharts variwide module
  *
@@ -212,7 +212,7 @@
                 series.points.forEach(function (point) {
                     xValue = point.x;
                     pointWidth = point.shapeArgs.width;
-                    stack = yAxis.stacks[(series.negStacks &&
+                    stack = yAxis.stacking.stacks[(series.negStacks &&
                         point.y < (options.startFromThreshold ?
                             0 :
                             options.threshold) ?

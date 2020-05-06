@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.4 (2020-03-10)
+ * @license Highstock JS v8.1.0 (2020-05-05)
  *
  * Data grouping module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (H, Point, Tooltip, U) {
+    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/DateTimeAxis.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (DateTimeAxis, H, Point, Tooltip, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -510,12 +510,13 @@
                         xMin = extremes.min,
                         xMax = extremes.max,
                         groupIntervalFactor = (ordinal &&
-                            xAxis.getGroupIntervalFactor(xMin,
+                            xAxis.ordinal &&
+                            xAxis.ordinal.getGroupIntervalFactor(xMin,
                         xMax,
                         series)) || 1,
                         interval = (groupPixelWidth * (xMax - xMin) / plotSizeX) *
                             groupIntervalFactor,
-                        groupPositions = xAxis.getTimeTicks(xAxis.normalizeTimeTickInterval(interval,
+                        groupPositions = xAxis.getTimeTicks(DateTimeAxis.AdditionsClass.prototype.normalizeTimeTickInterval(interval,
                         dataGroupingOptions.units ||
                             defaultDataGroupingUnits), 
                         // Processed data may extend beyond axis (#4907)
@@ -779,6 +780,7 @@
          * @return {void}
          */
         Axis.prototype.setDataGrouping = function (dataGrouping, redraw) {
+            var axis = this;
             var i;
             redraw = pick(redraw, true);
             if (!dataGrouping) {
@@ -803,7 +805,9 @@
                 }, false);
             }
             // Clear ordinal slope, so we won't accidentaly use the old one (#7827)
-            this.ordinalSlope = null;
+            if (axis.ordinal) {
+                axis.ordinal.slope = void 0;
+            }
             if (redraw) {
                 this.chart.redraw();
             }
@@ -827,7 +831,8 @@
          *
          * @declare   Highcharts.DataGroupingOptionsObject
          * @product   highstock
-         * @requires  modules/datagrouping
+         * @requires  product:highstock
+         * @requires  module:modules/datagrouping
          * @apioption plotOptions.series.dataGrouping
          */
         /**
@@ -862,7 +867,6 @@
          *         Approximation callback with custom data
          *
          * @type       {Highcharts.DataGroupingApproximationValue|Function}
-         * @product    highstock
          * @apioption  plotOptions.series.dataGrouping.approximation
          */
         /**
@@ -895,7 +899,6 @@
          *  and applied to the start and end date of the time span.
          *
          * @type      {object}
-         * @product   highstock
          * @apioption plotOptions.series.dataGrouping.dateTimeLabelFormats
          */
         /**
@@ -903,7 +906,6 @@
          *
          * @type      {boolean}
          * @default   true
-         * @product   highstock
          * @apioption plotOptions.series.dataGrouping.enabled
          */
         /**
@@ -913,7 +915,6 @@
          *
          * @type      {boolean}
          * @default   false
-         * @product   highstock
          * @apioption plotOptions.series.dataGrouping.forced
          */
         /**
@@ -930,7 +931,6 @@
          *
          * @type      {number}
          * @default   2
-         * @product   highstock
          * @apioption plotOptions.series.dataGrouping.groupPixelWidth
          */
         /**
@@ -947,7 +947,6 @@
          * @type      {boolean}
          * @default   false
          * @since     6.1.0
-         * @product   highstock
          * @apioption plotOptions.series.dataGrouping.groupAll
          */
         /**
@@ -960,7 +959,6 @@
          *
          * @type      {boolean}
          * @default   false
-         * @product   highstock
          * @apioption plotOptions.series.dataGrouping.smoothed
          */
         /**
@@ -998,7 +996,6 @@
          * ```
          *
          * @type      {Array<Array<string,(Array<number>|null)>>}
-         * @product   highstock
          * @apioption plotOptions.series.dataGrouping.units
          */
         /**
@@ -1014,7 +1011,6 @@
          *
          * @type      {number}
          * @default   10
-         * @product   highstock
          * @apioption plotOptions.column.dataGrouping.groupPixelWidth
          */
         ''; // required by JSDoc parsing

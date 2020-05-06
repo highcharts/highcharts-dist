@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.4 (2020-03-10)
+ * @license Highstock JS v8.1.0 (2020-05-05)
  *
  * Indicator series type for Highstock
  *
@@ -41,8 +41,7 @@
         var defined = U.defined,
             error = U.error,
             merge = U.merge;
-        var each = H.each,
-            SMA = H.seriesTypes.sma;
+        var SMA = H.seriesTypes.sma;
         /**
          * Mixin useful for all indicators that have more than one line.
          * Merge it with your implementation where you will provide
@@ -98,7 +97,7 @@
                  */
                 getTranslatedLinesNames: function (excludedValue) {
                     var translatedLines = [];
-                each(this.pointArrayMap, function (propertyName) {
+                (this.pointArrayMap || []).forEach(function (propertyName) {
                     if (propertyName !== excludedValue) {
                         translatedLines.push('plot' +
                             propertyName.charAt(0).toUpperCase() +
@@ -117,7 +116,7 @@
              */
             toYData: function (point) {
                 var pointColl = [];
-                each(this.pointArrayMap, function (propertyName) {
+                (this.pointArrayMap || []).forEach(function (propertyName) {
                     pointColl.push(point[propertyName]);
                 });
                 return pointColl;
@@ -136,8 +135,8 @@
                     value;
                 LinesNames = indicator.getTranslatedLinesNames();
                 SMA.prototype.translate.apply(indicator, arguments);
-                each(indicator.points, function (point) {
-                    each(pointArrayMap, function (propertyName, i) {
+                indicator.points.forEach(function (point) {
+                    pointArrayMap.forEach(function (propertyName, i) {
                         value = point[propertyName];
                         if (value !== null) {
                             point[LinesNames[i]] = indicator.yAxis.toPixels(value, true);
@@ -170,7 +169,7 @@
                     secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey),
                     point;
                 // Generate points for additional lines:
-                each(secondaryLinesNames, function (plotLine, index) {
+                secondaryLinesNames.forEach(function (plotLine, index) {
                     // create additional lines point place holders
                     secondaryLines[index] = [];
                     while (pointsLength--) {
@@ -185,7 +184,7 @@
                     pointsLength = mainLinePoints.length;
                 });
                 // Modify options and generate additional lines:
-                each(linesApiNames, function (lineName, i) {
+                linesApiNames.forEach(function (lineName, i) {
                     if (secondaryLines[i]) {
                         indicator.points = secondaryLines[i];
                         if (mainLineOptions[lineName]) {

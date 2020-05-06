@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.0.4 (2020-03-10)
+ * @license Highcharts JS v8.1.0 (2020-05-05)
  *
  * Boost module
  *
@@ -26,7 +26,8 @@
  * - Dash styles are not rendered on lines.
  * - Columns are always one pixel wide. Don't set the threshold too low.
  * - Disable animations
- * - Marker shapes are not supported: markers will always be circles
+ * - Marker shapes are not supported: markers will always be circles, except
+ *   heatmap series, where markers are always rectangles.
  *
  * Optimizing tips for users
  * - Set extremes (min, max) explicitly on the axes in order for Highcharts to
@@ -138,7 +139,7 @@
 
         return boostableMap;
     });
-    _registerModule(_modules, 'modules/boost/wgl-shader.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/boost/wgl-shader.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
          *  Copyright (c) 2019-2020 Highsoft AS
@@ -151,8 +152,8 @@
          *
          * */
         var clamp = U.clamp,
-            error = U.error;
-        var pick = H.pick;
+            error = U.error,
+            pick = U.pick;
         /* eslint-disable valid-jsdoc */
         /**
          * A static shader mimicing axis translation functions found in parts/Axis
@@ -787,12 +788,12 @@
          * */
         var color = Color.parse;
         var isNumber = U.isNumber,
+            isObject = U.isObject,
             merge = U.merge,
-            objectEach = U.objectEach;
+            objectEach = U.objectEach,
+            pick = U.pick;
         var win = H.win,
-            doc = win.document,
-            some = H.some,
-            pick = H.pick;
+            doc = win.document;
         /* eslint-disable valid-jsdoc */
         /**
          * Main renderer. Used to render series.
@@ -996,11 +997,12 @@
                         options.gapSize;
                 }
                 if (zones) {
-                    some(zones, function (zone) {
+                    zones.some(function (zone) {
                         if (typeof zone.value === 'undefined') {
                             zoneDefColor = new Color(zone.color);
                             return true;
                         }
+                        return false;
                     });
                     if (!zoneDefColor) {
                         zoneDefColor = ((series.pointAttribs && series.pointAttribs().fill) ||
@@ -1192,6 +1194,16 @@
                     //     pcolor[1] /= 255.0;
                     //     pcolor[2] /= 255.0;
                     // }
+                    // Handle the point.color option (#5999)
+                    var pointOptions = rawData && rawData[i];
+                    if (!useRaw && isObject(pointOptions, true)) {
+                        if (pointOptions.color) {
+                            pcolor = color(pointOptions.color).rgba;
+                            pcolor[0] /= 255.0;
+                            pcolor[1] /= 255.0;
+                            pcolor[2] /= 255.0;
+                        }
+                    }
                     if (useRaw) {
                         x = d[0];
                         y = d[1];
@@ -1289,7 +1301,7 @@
                     // Note: Boost requires that zones are sorted!
                     if (zones) {
                         pcolor = zoneDefColor.rgba;
-                        some(zones, function (// eslint-disable-line no-loop-func
+                        zones.some(function (// eslint-disable-line no-loop-func
                         zone, i) {
                             var last = zones[i - 1];
                             if (typeof zone.value !== 'undefined' && y <= zone.value) {
@@ -1298,6 +1310,7 @@
                                 }
                                 return true;
                             }
+                            return false;
                         });
                         pcolor[0] /= 255.0;
                         pcolor[1] /= 255.0;
@@ -1512,7 +1525,7 @@
                 shader.setUniform('xAxisLen', axis.len);
                 shader.setUniform('xAxisPos', axis.pos);
                 shader.setUniform('xAxisCVSCoord', (!axis.horiz));
-                shader.setUniform('xAxisIsLog', axis.isLog);
+                shader.setUniform('xAxisIsLog', (!!axis.logarithmic));
                 shader.setUniform('xAxisReversed', (!!axis.reversed));
             }
             /**
@@ -1531,7 +1544,7 @@
                 shader.setUniform('yAxisLen', axis.len);
                 shader.setUniform('yAxisPos', axis.pos);
                 shader.setUniform('yAxisCVSCoord', (!axis.horiz));
-                shader.setUniform('yAxisIsLog', axis.isLog);
+                shader.setUniform('yAxisIsLog', (!!axis.logarithmic));
                 shader.setUniform('yAxisReversed', (!!axis.reversed));
             }
             /**
@@ -1666,7 +1679,7 @@
                     setYAxis(s.series.yAxis);
                     setThreshold(hasThreshold, translatedThreshold);
                     if (s.drawMode === 'points') {
-                        if (options.marker && options.marker.radius) {
+                        if (options.marker && isNumber(options.marker.radius)) {
                             shader.setPointSize(options.marker.radius * 2.0);
                         }
                         else {
@@ -1690,7 +1703,7 @@
                         }
                     }
                     if (s.hasMarkers && showMarkers) {
-                        if (options.marker && options.marker.radius) {
+                        if (options.marker && isNumber(options.marker.radius)) {
                             shader.setPointSize(options.marker.radius * 2.0);
                         }
                         else {
@@ -2082,7 +2095,7 @@
 
         return createAndAttachRenderer;
     });
-    _registerModule(_modules, 'modules/boost/boost-utils.js', [_modules['parts/Globals.js'], _modules['modules/boost/boostable-map.js'], _modules['modules/boost/boost-attach.js']], function (H, boostableMap, createAndAttachRenderer) {
+    _registerModule(_modules, 'modules/boost/boost-utils.js', [_modules['parts/Globals.js'], _modules['modules/boost/boostable-map.js'], _modules['modules/boost/boost-attach.js'], _modules['parts/Utilities.js']], function (H, boostableMap, createAndAttachRenderer, U) {
         /* *
          *
          *  Copyright (c) 2019-2020 Highsoft AS
@@ -2096,9 +2109,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var pick = U.pick;
         var win = H.win,
-            doc = win.document,
-            pick = H.pick;
+            doc = win.document;
         // This should be a const.
         var CHUNK_SIZE = 3000;
         /**
@@ -2669,6 +2682,7 @@
          * */
         var addEvent = U.addEvent,
             error = U.error,
+            isArray = U.isArray,
             isNumber = U.isNumber,
             pick = U.pick,
             wrap = U.wrap;
@@ -2828,6 +2842,7 @@
             if (!this.isSeriesBoosting || (!this.hasExtremes || !this.hasExtremes())) {
                 return proceed.apply(this, Array.prototype.slice.call(arguments, 1));
             }
+            return {};
         });
         /*
          * Override a bunch of methods the same way. If the number of points is
@@ -2916,7 +2931,7 @@
                 if (this.isSeriesBoosting) {
                     // Force turbo-mode:
                     firstPoint = this.getFirstValidPoint(this.options.data);
-                    if (!isNumber(firstPoint) && !H.isArray(firstPoint)) {
+                    if (!isNumber(firstPoint) && !isArray(firstPoint)) {
                         error(12, false, this.chart);
                     }
                     this.enterBoost();

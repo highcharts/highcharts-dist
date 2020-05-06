@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.0.4 (2020-03-10)
+ * @license Highstock JS v8.1.0 (2020-05-05)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/reduce-array.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'mixins/reduce-array.js', [], function () {
         /**
          *
          *  (c) 2010-2020 Pawel Fus & Daniel Studencki
@@ -38,7 +38,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var reduce = H.reduce;
         var reduceArrayMixin = {
                 /**
                  * Get min value of array filled by OHLC data.
@@ -49,8 +48,7 @@
                  */
                 minInArray: function (arr,
             index) {
-                    return reduce(arr,
-            function (min,
+                    return arr.reduce(function (min,
             target) {
                         return Math.min(min,
             target[index]);
@@ -64,7 +62,7 @@
              * @return {number} Returns max value.
              */
             maxInArray: function (arr, index) {
-                return reduce(arr, function (max, target) {
+                return arr.reduce(function (max, target) {
                     return Math.max(max, target[index]);
                 }, -Number.MAX_VALUE);
             },
@@ -77,7 +75,7 @@
              * @return {Array<number,number>} Returns array with min and max value.
              */
             getArrayExtremes: function (arr, minIndex, maxIndex) {
-                return reduce(arr, function (prev, target) {
+                return arr.reduce(function (prev, target) {
                     return [
                         Math.min(prev[0], target[minIndex]),
                         Math.max(prev[1], target[maxIndex])
