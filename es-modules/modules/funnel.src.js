@@ -11,13 +11,13 @@
  * */
 /* eslint indent: 0 */
 'use strict';
-import Highcharts from '../parts/Globals.js';
+import Chart from '../parts/Chart.js';
+import H from '../parts/Globals.js';
+var noop = H.noop, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
 import U from '../parts/Utilities.js';
-var isArray = U.isArray, pick = U.pick;
+var addEvent = U.addEvent, fireEvent = U.fireEvent, isArray = U.isArray, pick = U.pick;
 import '../parts/Options.js';
 import '../parts/Series.js';
-// create shortcuts
-var seriesType = Highcharts.seriesType, seriesTypes = Highcharts.seriesTypes, fireEvent = Highcharts.fireEvent, addEvent = Highcharts.addEvent, noop = Highcharts.noop;
 /**
  * @private
  * @class
@@ -380,7 +380,7 @@ seriesType('funnel', 'pie',
     }
 });
 /* eslint-disable no-invalid-this */
-addEvent(Highcharts.Chart, 'afterHideAllOverlappingLabels', function () {
+addEvent(Chart, 'afterHideAllOverlappingLabels', function () {
     this.series.forEach(function (series) {
         var dataLabelsOptions = series.options && series.options.dataLabels;
         if (isArray(dataLabelsOptions)) {

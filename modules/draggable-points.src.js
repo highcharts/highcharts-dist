@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -38,6 +38,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick;
         /**
          * Current drag and drop position.
          *
@@ -195,11 +200,6 @@
         * @type {"drop"}
         */
         ''; // detaches doclets above
-        var addEvent = U.addEvent,
-            clamp = U.clamp,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick;
         var seriesTypes = H.seriesTypes;
         /**
          * Flip a side property, used with resizeRect. If input side is "left", return
@@ -363,19 +363,20 @@
                 },
                 // Horizontal handle
                 handleFormatter: function (point) {
-                    var shapeArgs = point.shapeArgs,
+                    var shapeArgs = point.shapeArgs || {},
                         radius = shapeArgs.r || 0, // Rounding of bar corners
-                        centerX = shapeArgs.width / 2;
+                        width = shapeArgs.width || 0,
+                        centerX = width / 2;
                     return [
                         // Left wick
-                        'M', radius, 0,
-                        'L', centerX - 5, 0,
+                        ['M', radius, 0],
+                        ['L', centerX - 5, 0],
                         // Circle
-                        'A', 1, 1, 0, 0, 0, centerX + 5, 0,
-                        'A', 1, 1, 0, 0, 0, centerX - 5, 0,
+                        ['A', 1, 1, 0, 0, 0, centerX + 5, 0],
+                        ['A', 1, 1, 0, 0, 0, centerX - 5, 0],
                         // Right wick
-                        'M', centerX + 5, 0,
-                        'L', shapeArgs.width - radius, 0
+                        ['M', centerX + 5, 0],
+                        ['L', width - radius, 0]
                     ];
                 }
             }
@@ -1642,7 +1643,6 @@
          *        A chart with dragDropData.newPoints.
          * @param {boolean} [animate=true]
          *        Animate updating points?
-         * @return {void}
          */
         function updatePoints(chart, animate) {
             var newPoints = chart.dragDropData.newPoints,
@@ -1678,7 +1678,6 @@
          *        Difference in X position.
          * @param {number} dY
          *        Difference in Y position.
-         * @return {void}
          */
         function resizeGuideBox(point, dX, dY) {
             var series = point.series,
@@ -1715,7 +1714,6 @@
          *        The mouse move event.
          * @param {Highcharts.Point} point
          *        The point that is dragged.
-         * @return {void}
          */
         function dragMove(e, point) {
             var series = point.series,
@@ -1910,7 +1908,6 @@
          * @function mouseOut
          * @param {Highcharts.Point} point
          *        The point mousing out of.
-         * @return {void}
          */
         function mouseOut(point) {
             var chart = point.series && point.series.chart,
@@ -1931,7 +1928,6 @@
          * @function onResizeHandleMouseOut
          * @param {Highcharts.Point} point
          *        The point mousing out of.
-         * @return {void}
          */
         function onResizeHandleMouseOut(point) {
             var chart = point.series.chart;
@@ -1954,7 +1950,6 @@
          *        The point mousing down on.
          * @param {string} updateProp
          *        The data property this resize handle is attached to for this point.
-         * @return {void}
          */
         function onResizeHandleMouseDown(e, point, updateProp) {
             var chart = point.series.chart;
@@ -2130,7 +2125,6 @@
          * @function mouseOver
          * @param {Highcharts.Point} point
          *        The point mousing over.
-         * @return {void}
          */
         function mouseOver(point) {
             var series = point.series,
@@ -2161,7 +2155,6 @@
          *        The mouse move event.
          * @param {Highcharts.Chart} chart
          *        The chart we are moving across.
-         * @return {void}
          */
         function mouseMove(e, chart) {
             // Ignore if zoom/pan key is pressed
@@ -2220,7 +2213,6 @@
          *        The mouse up event.
          * @param {Highcharts.Chart} chart
          *        The chart we were dragging in.
-         * @return {void}
          */
         function mouseUp(e, chart) {
             var dragDropData = chart.dragDropData;
@@ -2271,7 +2263,6 @@
          *        The mouse down event.
          * @param {Highcharts.Chart} chart
          *        The chart we are clicking.
-         * @return {void}
          */
         function mouseDown(e, chart) {
             var dragPoint = chart.hoverPoint,
@@ -2354,7 +2345,6 @@
          * @function addDragDropEvents
          * @param {Highcharts.Chart} chart
          *        The chart to add events to.
-         * @return {void}
          */
         function addDragDropEvents(chart) {
             var container = chart.container,

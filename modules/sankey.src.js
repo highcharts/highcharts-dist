@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Sankey diagram module
  *
@@ -69,7 +69,7 @@
                     node.linksTo = [];
                     node.linksFrom = [];
                     node.formatPrefix = 'node';
-                    node.name = node.name || node.options.id; // for use in formats
+                    node.name = node.name || node.options.id || ''; // for use in formats
                     // Mass is used in networkgraph:
                     node.mass = pick(
                     // Node:
@@ -1268,7 +1268,7 @@
                         while (i--) {
                             if (column[i].getSum() * factor < minLinkWidth) {
                                 column.splice(i, 1);
-                                remainingHeight -= minLinkWidth + series.nodePadding;
+                                remainingHeight -= minLinkWidth;
                                 exceedsMinLinkWidth = true;
                             }
                         }

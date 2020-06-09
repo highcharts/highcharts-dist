@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  * @module highcharts/highcharts
  *
  * (c) 2009-2018 Torstein Honsi
@@ -8,7 +8,7 @@
  */
 'use strict';
 import Highcharts from '../parts/Globals.js';
-import '../parts/SvgRenderer.js';
+import '../parts/SVGRenderer.js';
 import '../parts/Html.js';
 import '../parts/Axis.js';
 import '../parts/DateTimeAxis.js';

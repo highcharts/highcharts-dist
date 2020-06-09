@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Exporting module
  *
@@ -278,7 +278,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/export-data.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'modules/export-data.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Experimental data export module for Highcharts
@@ -293,6 +293,18 @@
         // @todo
         // - Set up systematic tests for all series types, paired with tests of the data
         //   module importing the same data.
+        var doc = H.doc,
+            seriesTypes = H.seriesTypes,
+            win = H.win;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            extend = U.extend,
+            find = U.find,
+            fireEvent = U.fireEvent,
+            getOptions = U.getOptions,
+            isNumber = U.isNumber,
+            pick = U.pick,
+            setOptions = U.setOptions;
         /**
          * Function callback to execute while data rows are processed for exporting.
          * This allows the modification of data rows before processed into the final
@@ -316,15 +328,7 @@
         * @name Highcharts.ExportDataEventObject#dataRows
         * @type {Array<Array<string>>}
         */
-        var defined = U.defined,
-            extend = U.extend,
-            isObject = U.isObject,
-            pick = U.pick;
-        var win = Highcharts.win,
-            doc = win.document,
-            seriesTypes = Highcharts.seriesTypes,
-            downloadURL = Highcharts.downloadURL,
-            fireEvent = Highcharts.fireEvent;
+        var downloadURL = H.downloadURL;
         // Can we add this to utils? Also used in screen-reader.js
         /**
          * HTML encode some characters vulnerable for XSS.
@@ -341,7 +345,7 @@
                 .replace(/'/g, '&#x27;')
                 .replace(/\//g, '&#x2F;');
         }
-        Highcharts.setOptions({
+        setOptions({
             /**
              * Callback that fires while exporting data. This allows the modification of
              * data rows before processed into the final format.
@@ -543,7 +547,7 @@
         });
         /* eslint-disable no-invalid-this */
         // Add an event listener to handle the showTable option
-        Highcharts.addEvent(Highcharts.Chart, 'render', function () {
+        addEvent(Chart, 'render', function () {
             if (this.options &&
                 this.options.exporting &&
                 this.options.exporting.showTable &&
@@ -561,7 +565,7 @@
          * @private
          * @function Highcharts.Chart#setUpKeyToAxis
          */
-        Highcharts.Chart.prototype.setUpKeyToAxis = function () {
+        Chart.prototype.setUpKeyToAxis = function () {
             if (seriesTypes.arearange) {
                 seriesTypes.arearange.prototype.keyToAxis = {
                     low: 'y',
@@ -591,7 +595,7 @@
          *
          * @fires Highcharts.Chart#event:exportData
          */
-        Highcharts.Chart.prototype.getDataRows = function (multiLevelHeaders) {
+        Chart.prototype.getDataRows = function (multiLevelHeaders) {
             var hasParallelCoords = this.hasParallelCoordinates,
                 time = this.time,
                 csvOptions = ((this.options.exporting && this.options.exporting.csv) || {}),
@@ -648,7 +652,7 @@
                             prop) + 'Axis', 
                         // Points in parallel coordinates refers to all yAxis
                         // not only `series.yAxis`
-                        axis = Highcharts.isNumber(pIdx) ?
+                        axis = isNumber(pIdx) ?
                             series.chart[axisName][pIdx] :
                             series[axisName];
                     categoryMap[prop] = (axis && axis.categories) || [];
@@ -658,6 +662,25 @@
                     categoryMap: categoryMap,
                     dateTimeValueAxisMap: dateTimeValueAxisMap
                 };
+            }, 
+            // Create point array depends if xAxis is category
+            // or point.name is defined #13293
+            getPointArray = function (series, xAxis) {
+                var namedPoints = series.data.filter(function (d) { return d.name; });
+                if (namedPoints.length &&
+                    xAxis &&
+                    !xAxis.categories &&
+                    !series.keyToAxis) {
+                    if (series.pointArrayMap) {
+                        var pointArrayMapCheck = series.pointArrayMap.filter(function (p) { return p === 'x'; });
+                        if (pointArrayMapCheck.length) {
+                            series.pointArrayMap.unshift('x');
+                            return series.pointArrayMap;
+                        }
+                    }
+                    return ['x', 'y'];
+                }
+                return series.pointArrayMap || ['y'];
             }, xAxisIndices = [];
             // Loop the series and index values
             i = 0;
@@ -665,7 +688,8 @@
             this.series.forEach(function (series) {
                 var keys = series.options.keys,
                     xAxis = series.xAxis,
-                    pointArrayMap = keys || series.pointArrayMap || ['y'],
+                    pointArrayMap = keys || getPointArray(series,
+                    xAxis),
                     valueCount = pointArrayMap.length,
                     xTaken = !series.requireSorting && {},
                     xAxisIndex = xAxes.indexOf(xAxis),
@@ -680,7 +704,7 @@
                     // Build a lookup for X axis index and the position of the first
                     // series that belongs to that X axis. Includes -1 for non-axis
                     // series types like pies.
-                    if (!Highcharts.find(xAxisIndices, function (index) {
+                    if (!find(xAxisIndices, function (index) {
                         return index[0] === xAxisIndex;
                     })) {
                         xAxisIndices.push([xAxisIndex, i]);
@@ -724,7 +748,7 @@
                         // Pies, funnels, geo maps etc. use point name in X row
                         if (!xAxis ||
                             series.exportKey === 'name' ||
-                            (!hasParallelCoords && xAxis && xAxis.hasNames)) {
+                            (!hasParallelCoords && xAxis && xAxis.hasNames) && name) {
                             key = name;
                         }
                         if (xTaken) {
@@ -828,7 +852,7 @@
          * @return {string}
          *         CSV representation of the data
          */
-        Highcharts.Chart.prototype.getCSV = function (useLocalDecimalPoint) {
+        Chart.prototype.getCSV = function (useLocalDecimalPoint) {
             var csv = '', rows = this.getDataRows(), csvOptions = this.options.exporting.csv, decimalPoint = pick(csvOptions.decimalPoint, csvOptions.itemDelimiter !== ',' && useLocalDecimalPoint ?
                     (1.1).toLocaleString()[1] :
                     '.'), 
@@ -880,7 +904,7 @@
          *
          * @fires Highcharts.Chart#event:afterGetTable
          */
-        Highcharts.Chart.prototype.getTable = function (useLocalDecimalPoint) {
+        Chart.prototype.getTable = function (useLocalDecimalPoint) {
             var html = '<table id="highcharts-data-table-' + this.index + '">', options = this.options, decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.', useMultiLevelHeaders = pick(options.exporting.useMultiLevelHeaders, true), rows = this.getDataRows(useMultiLevelHeaders), rowLength = 0, topHeaders = useMultiLevelHeaders ? rows.shift() : null, subHeaders = rows.shift(), 
                 // Compare two rows for equality
                 isRowEqual = function (row1, row2) {
@@ -1058,7 +1082,7 @@
          *
          * @requires modules/exporting
          */
-        Highcharts.Chart.prototype.downloadCSV = function () {
+        Chart.prototype.downloadCSV = function () {
             var csv = this.getCSV(true);
             downloadURL(getBlobFromContent(csv, 'text/csv') ||
                 'data:text/csv,\uFEFF' + encodeURIComponent(csv), this.getFilename() + '.csv');
@@ -1073,7 +1097,7 @@
          *
          * @requires modules/exporting
          */
-        Highcharts.Chart.prototype.downloadXLS = function () {
+        Chart.prototype.downloadXLS = function () {
             var uri = 'data:application/vnd.ms-excel;base64,', template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
                     'xmlns:x="urn:schemas-microsoft-com:office:excel" ' +
                     'xmlns="http://www.w3.org/TR/REC-html40">' +
@@ -1103,7 +1127,7 @@
          *
          * @fires Highcharts.Chart#event:afterViewData
          */
-        Highcharts.Chart.prototype.viewData = function () {
+        Chart.prototype.viewData = function () {
             if (!this.dataTableDiv) {
                 this.dataTableDiv = doc.createElement('div');
                 this.dataTableDiv.className = 'highcharts-data-table';
@@ -1114,7 +1138,7 @@
             fireEvent(this, 'afterViewData', this.dataTableDiv);
         };
         // Add "Download CSV" to the exporting menu.
-        var exportingOptions = Highcharts.getOptions().exporting;
+        var exportingOptions = getOptions().exporting;
         if (exportingOptions) {
             extend(exportingOptions.menuItemDefinitions, {
                 downloadCSV: {

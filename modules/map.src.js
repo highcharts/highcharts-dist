@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.1.0 (2020-05-05)
+ * @license Highmaps JS v8.1.1 (2020-06-09)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *
@@ -228,6 +228,7 @@
                         point[key][method]();
                     }
                 });
+                this.series.buildKDTree(); // rebuild kdtree #13195
             }
             /* eslint-enable valid-jsdoc */
         };
@@ -261,8 +262,11 @@
                             (colorAxis && typeof value !== 'undefined') ?
                                 colorAxis.toColor(value, point) :
                                 point.color || series.color);
-                    if (color) {
+                    if (color && point.color !== color) {
                         point.color = color;
+                        if (series.options.legendType === 'point' && point.legendItem) {
+                            series.chart.legend.colorizeItem(point, point.visible);
+                        }
                     }
                 });
             }
@@ -270,7 +274,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Axis.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, Color, H, Legend, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -297,6 +301,7 @@
             };
         })();
         var color = Color.parse;
+        var noop = H.noop;
         var addEvent = U.addEvent,
             erase = U.erase,
             extend = U.extend,
@@ -311,11 +316,9 @@
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
         ''; // detach doclet above
-        var Chart = H.Chart,
-            Series = H.Series,
+        var Series = H.Series,
             colorPointMixin = H.colorPointMixin,
-            colorSeriesMixin = H.colorSeriesMixin,
-            noop = H.noop;
+            colorSeriesMixin = H.colorSeriesMixin;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         Chart.prototype.collectionsWithUpdate.push('colorAxis');
@@ -796,21 +799,21 @@
              * @private
              */
             ColorAxis.prototype.getPlotLinePath = function (options) {
-                var axis = this;
-                var left = axis.left;
-                var pos = options.translatedValue;
-                var top = axis.top;
+                var axis = this,
+                    left = axis.left,
+                    pos = options.translatedValue,
+                    top = axis.top;
                 // crosshairs only
                 return isNumber(pos) ? // pos can be 0 (#3969)
                     (axis.horiz ? [
-                        ['M', pos - 4, this.top - 6],
-                        ['L', pos + 4, this.top - 6],
-                        ['L', pos, this.top],
+                        ['M', pos - 4, top - 6],
+                        ['L', pos + 4, top - 6],
+                        ['L', pos, top],
                         ['Z']
                     ] : [
-                        ['M', this.left, pos],
-                        ['L', this.left - 6, pos + 6],
-                        ['L', this.left - 6, pos - 6],
+                        ['M', left, pos],
+                        ['L', left - 6, pos + 6],
+                        ['L', left - 6, pos - 6],
                         ['Z']
                     ]) :
                     _super.prototype.getPlotLinePath.call(this, options);
@@ -832,10 +835,10 @@
              * and call {@link Highcharts.Chart#redraw} after.
              */
             ColorAxis.prototype.update = function (newOptions, redraw) {
-                var axis = this;
-                var chart = axis.chart;
-                var legend = chart.legend;
-                var updatedOptions = ColorAxis.buildOptions(chart, {},
+                var axis = this,
+                    chart = axis.chart,
+                    legend = chart.legend,
+                    updatedOptions = ColorAxis.buildOptions(chart, {},
                     newOptions);
                 this.series.forEach(function (series) {
                     // Needed for Axis.update when choropleth colors change
@@ -1567,7 +1570,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/MapNavigation.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/MapNavigation.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1577,13 +1580,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var doc = H.doc;
         var addEvent = U.addEvent,
             extend = U.extend,
             merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick;
-        var Chart = H.Chart,
-            doc = H.doc;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * @private
@@ -1900,7 +1902,7 @@
         H.MapNavigation = MapNavigation;
 
     });
-    _registerModule(_modules, 'parts-map/MapPointer.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/MapPointer.js', [_modules['parts/Pointer.js'], _modules['parts/Utilities.js']], function (Pointer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1913,7 +1915,6 @@
         var extend = U.extend,
             pick = U.pick,
             wrap = U.wrap;
-        var Pointer = H.Pointer;
         /* eslint-disable no-invalid-this */
         // Extend the Pointer
         extend(Pointer.prototype, {
@@ -1964,7 +1965,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-map/MapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'parts-map/MapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, Point, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2282,7 +2283,7 @@
                             // Legacy one-dimensional array
                         }
                         else if (point.path[0] === 'M') {
-                            point.path = H.SVGRenderer.prototype.pathToSegments(point.path);
+                            point.path = SVGRenderer.prototype.pathToSegments(point.path);
                         }
                         var path = point.path || [],
                             pointMaxX = -MAX_VALUE,
@@ -3422,7 +3423,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/BubbleLegend.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Legend.js'], _modules['parts/Utilities.js']], function (H, Color, Legend, U) {
+    _registerModule(_modules, 'parts-more/BubbleLegend.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, Legend, U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -3434,6 +3435,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            setOptions = U.setOptions,
+            stableSort = U.stableSort,
+            wrap = U.wrap;
         /**
          * @interface Highcharts.BubbleLegendFormatterContextObject
          */ /**
@@ -3450,20 +3462,8 @@
         * @type {number}
         */
         ''; // detach doclets above
-        var color = Color.parse;
-        var addEvent = U.addEvent,
-            arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            stableSort = U.stableSort,
-            wrap = U.wrap;
         var Series = H.Series,
-            Chart = H.Chart,
-            noop = H.noop,
-            setOptions = H.setOptions;
+            noop = H.noop;
         setOptions({
             legend: {
                 /**
@@ -4790,24 +4790,19 @@
                     this.points.length < this.options.animationLimit // #8099
                 ) {
                     this.points.forEach(function (point) {
-                        var graphic = point.graphic,
-                            animationTarget;
+                        var graphic = point.graphic;
                         if (graphic && graphic.width) { // URL symbols don't have width
-                            animationTarget = {
-                                x: graphic.x,
-                                y: graphic.y,
-                                width: graphic.width,
-                                height: graphic.height
-                            };
                             // Start values
-                            graphic.attr({
-                                x: point.plotX,
-                                y: point.plotY,
-                                width: 1,
-                                height: 1
-                            });
+                            if (!this.hasRendered) {
+                                graphic.attr({
+                                    x: point.plotX,
+                                    y: point.plotY,
+                                    width: 1,
+                                    height: 1
+                                });
+                            }
                             // Run animation
-                            graphic.animate(animationTarget, this.options.animation);
+                            graphic.animate(this.markerAttribs(point), this.options.animation);
                         }
                     }, this);
                 }
@@ -5291,7 +5286,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -5301,6 +5296,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var clamp = U.clamp,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
+            seriesType = U.seriesType;
         /* *
          * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
@@ -5313,19 +5315,13 @@
         * @name Highcharts.PointOptionsObject#value
         * @type {number|null|undefined}
         */
-        var clamp = U.clamp,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
+        ''; // detach doclets above
         var colorMapPointMixin = H.colorMapPointMixin,
             colorMapSeriesMixin = H.colorMapSeriesMixin,
             noop = H.noop,
             Series = H.Series,
             seriesTypes = H.seriesTypes,
-            symbols = H.SVGRenderer.prototype.symbols;
+            symbols = SVGRenderer.prototype.symbols;
         /**
          * @private
          * @class
@@ -5435,6 +5431,7 @@
             },
             /**
              * @excluding radius, enabledThreshold
+             * @since     8.1
              */
             marker: {
                 /**
@@ -6094,11 +6091,13 @@
         /**
          * @excluding radius, enabledThreshold
          * @product   highcharts highmaps
+         * @since     8.1
          * @apioption series.heatmap.data.marker
          */
         /**
          * @excluding radius, enabledThreshold
          * @product   highcharts highmaps
+         * @since     8.1
          * @apioption series.heatmap.marker
          */
         /**
@@ -6308,7 +6307,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/GeoJSON.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/GeoJSON.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6318,6 +6317,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var win = H.win;
+        var error = U.error,
+            extend = U.extend,
+            format = U.format,
+            merge = U.merge,
+            wrap = U.wrap;
         /**
          * Result object of a map transformation.
          *
@@ -6344,13 +6349,7 @@
         * @name Highcharts.MapLatLonObject#lon
         * @type {number}
         */
-        var error = U.error,
-            extend = U.extend,
-            format = U.format,
-            merge = U.merge,
-            wrap = U.wrap;
-        var Chart = H.Chart,
-            win = H.win;
+        ''; // detach doclets above
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Test for point in polygon. Polygon defined as array of [x,y] points.
@@ -6689,7 +6688,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-map/Map.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-map/Map.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, H, O, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6699,13 +6698,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var defaultOptions = O.defaultOptions;
         var extend = U.extend,
+            getOptions = U.getOptions,
             merge = U.merge,
             pick = U.pick;
-        var Chart = H.Chart,
-            defaultOptions = H.defaultOptions,
-            Renderer = H.Renderer,
-            SVGRenderer = H.SVGRenderer,
+        var Renderer = H.Renderer,
             VMLRenderer = H.VMLRenderer;
         // Add language
         extend(defaultOptions.lang, {
@@ -7009,11 +7007,13 @@
                 ['Z']
             ];
         }
-        SVGRenderer.prototype.symbols.topbutton = function (x, y, w, h, attr) {
-            return selectiveRoundedRect(x - 1, y - 1, w, h, attr.r, attr.r, 0, 0);
+        SVGRenderer.prototype.symbols.topbutton = function (x, y, w, h, options) {
+            var r = (options && options.r) || 0;
+            return selectiveRoundedRect(x - 1, y - 1, w, h, r, r, 0, 0);
         };
-        SVGRenderer.prototype.symbols.bottombutton = function (x, y, w, h, attr) {
-            return selectiveRoundedRect(x - 1, y - 1, w, h, 0, 0, attr.r, attr.r);
+        SVGRenderer.prototype.symbols.bottombutton = function (x, y, w, h, options) {
+            var r = (options && options.r) || 0;
+            return selectiveRoundedRect(x - 1, y - 1, w, h, 0, 0, r, r);
         };
         // The symbol callbacks are generated on the SVGRenderer object in all browsers.
         // Even VML browsers need this in order to generate shapes in export. Now share
@@ -7066,7 +7066,7 @@
                     startOnTick: false
                 },
                 seriesOptions,
-                defaultCreditsOptions = H.getOptions().credits;
+                defaultCreditsOptions = getOptions().credits;
             /* For visual testing
             hiddenAxis.gridLineWidth = 1;
             hiddenAxis.gridZIndex = 10;

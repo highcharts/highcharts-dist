@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Debugger module
  *
@@ -132,6 +132,10 @@
                 "title": "Non-unique point or node id",
                 "text": "<h1>Non-unique point or node id</h1><p>This error occurs when using the same <code>id</code> for two or more points or nodes.</p>"
             },
+            "32": {
+                "title": "Deprecated function or property",
+                "text": "<h1>Deprecated function or property</h1><p>This error occurs when using a deprecated function or property. Consult the <a href=\"https://api.highcharts.com/\">API documentation</a> for alternatives, if no replacement is mentioned by the error itself.</p>"
+            },
             "meta": {
                 "files": [
                     "errors/10/readme.md",
@@ -156,7 +160,8 @@
                     "errors/28/readme.md",
                     "errors/29/readme.md",
                     "errors/30/readme.md",
-                    "errors/31/readme.md"
+                    "errors/31/readme.md",
+                    "errors/32/readme.md"
                 ]
             }
         };
@@ -173,8 +178,8 @@
          *
          * */
         var addEvent = U.addEvent,
-            isNumber = U.isNumber;
-        var setOptions = H.setOptions;
+            isNumber = U.isNumber,
+            setOptions = U.setOptions;
         setOptions({
             /**
              * @optionparent chart

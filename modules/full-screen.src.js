@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.0 (2020-05-05)
+ * @license Highstock JS v8.1.1 (2020-06-09)
  *
  * Advanced Highstock tools
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          * (c) 2009-2020 Rafal Sebestjanski
          *
@@ -38,7 +38,6 @@
          * License: www.highcharts.com/license
          */
         var addEvent = U.addEvent;
-        var Chart = H.Chart;
         /**
          * The module allows user to enable display chart in full screen mode.
          * Used in StockTools too.

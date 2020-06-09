@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-more/Pane.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-more/Pane.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Pointer.js'], _modules['parts/Utilities.js']], function (Chart, H, Pointer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -36,17 +36,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /**
-         * @typedef {"arc"|"circle"|"solid"} Highcharts.PaneBackgroundShapeValue
-         */
         var addEvent = U.addEvent,
             extend = U.extend,
             merge = U.merge,
             pick = U.pick,
             splat = U.splat;
+        /**
+         * @typedef {"arc"|"circle"|"solid"} Highcharts.PaneBackgroundShapeValue
+         */
         var CenteredSeriesMixin = H.CenteredSeriesMixin;
         /* eslint-disable no-invalid-this, valid-jsdoc */
-        H.Chart.prototype.collectionsWithUpdate.push('pane');
+        Chart.prototype.collectionsWithUpdate.push('pane');
         /**
          * The Pane object allows options that are common to a set of X and Y axes.
          *
@@ -404,13 +404,13 @@
             }
             return hoverPane;
         };
-        addEvent(H.Chart, 'afterIsInsidePlot', function (e) {
+        addEvent(Chart, 'afterIsInsidePlot', function (e) {
             var chart = this;
             if (chart.polar) {
                 e.isInsidePlot = chart.pane.some(function (pane) { return isInsidePane(e.x, e.y, pane.center); });
             }
         });
-        addEvent(H.Pointer, 'beforeGetHoverData', function (eventArgs) {
+        addEvent(Pointer, 'beforeGetHoverData', function (eventArgs) {
             var chart = this.chart;
             if (chart.polar) {
                 // Find pane we are currently hovering over.
@@ -424,7 +424,7 @@
                 };
             }
         });
-        addEvent(H.Pointer, 'afterGetHoverData', function (eventArgs) {
+        addEvent(Pointer, 'afterGetHoverData', function (eventArgs) {
             var chart = this.chart;
             if (eventArgs.hoverPoint &&
                 eventArgs.hoverPoint.plotX &&
@@ -502,6 +502,7 @@
             defined = U.defined,
             extend = U.extend,
             fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
             pInt = U.pInt,
@@ -750,14 +751,19 @@
                  * @return {RadialAxisPath}
                  */
                 axis.getPlotBandPath = function (from, to, options) {
+                    var radiusToPixels = function (radius) {
+                            if (typeof radius === 'string') {
+                                var r = parseInt(radius, 10);
+                            if (percentRegex.test(radius)) {
+                                r = (r * fullRadius) / 100;
+                            }
+                            return r;
+                        }
+                        return radius;
+                    };
                     var center = this.center,
                         startAngleRad = this.startAngleRad,
                         fullRadius = center[2] / 2,
-                        radii = [
-                            pick(options.outerRadius, '100%'),
-                            options.innerRadius,
-                            pick(options.thickness, 10)
-                        ],
                         offset = Math.min(this.offset, 0),
                         percentRegex = /%$/,
                         start,
@@ -766,7 +772,11 @@
                         xOnPerimeter,
                         open,
                         isCircular = this.isCircular, // X axis in a polar chart
-                        path;
+                        path,
+                        outerRadius = pick(radiusToPixels(options.outerRadius),
+                        fullRadius),
+                        innerRadius = radiusToPixels(options.innerRadius),
+                        thickness = pick(radiusToPixels(options.thickness), 10);
                     // Polygonal plot bands
                     if (this.options.gridLineInterpolation === 'polygon') {
                         path = this.getPlotLinePath({ value: from }).concat(this.getPlotLinePath({ value: to, reverse: true }));
@@ -776,19 +786,14 @@
                         // Keep within bounds
                         from = Math.max(from, this.min);
                         to = Math.min(to, this.max);
-                        // Plot bands on Y axis (radial axis) - inner and outer radius
-                        // depend on to and from
+                        var transFrom = this.translate(from);
+                        var transTo = this.translate(to);
+                        // Plot bands on Y axis (radial axis) - inner and outer
+                        // radius depend on to and from
                         if (!isCircular) {
-                            radii[0] = this.translate(from);
-                            radii[1] = this.translate(to);
+                            outerRadius = transFrom || 0;
+                            innerRadius = transTo || 0;
                         }
-                        // Convert percentages to pixel values
-                        radii = radii.map(function (radius) {
-                            if (percentRegex.test(radius)) {
-                                radius = (pInt(radius, 10) * fullRadius) / 100;
-                            }
-                            return radius;
-                        });
                         // Handle full circle
                         if (options.shape === 'circle' || !isCircular) {
                             start = -Math.PI / 2;
@@ -796,16 +801,16 @@
                             open = true;
                         }
                         else {
-                            start = startAngleRad + this.translate(from);
-                            end = startAngleRad + this.translate(to);
+                            start = startAngleRad + (transFrom || 0);
+                            end = startAngleRad + (transTo || 0);
                         }
-                        radii[0] -= offset; // #5283
-                        radii[2] -= offset; // #5283
-                        path = this.chart.renderer.symbols.arc(this.left + center[0], this.top + center[1], radii[0], radii[0], {
+                        outerRadius -= offset; // #5283
+                        thickness -= offset; // #5283
+                        path = this.chart.renderer.symbols.arc(this.left + center[0], this.top + center[1], outerRadius, outerRadius, {
                             // Math is for reversed yAxis (#3606)
                             start: Math.min(start, end),
                             end: Math.max(start, end),
-                            innerR: pick(radii[1], radii[0] - radii[2]),
+                            innerR: pick(innerRadius, outerRadius - thickness),
                             open: open
                         });
                         // Provide positioning boxes for the label (#6406)
@@ -1129,6 +1134,12 @@
                         if (index >= 0) {
                             axis.chart.labelCollectors.splice(index, 1);
                         }
+                    }
+                });
+                addEvent(AxisClass, 'initialAxisTranslation', function () {
+                    var axis = this;
+                    if (axis.isRadial) {
+                        axis.beforeSetTickPositions();
                     }
                 });
                 // Add special cases within the Tick class' methods for radial axes.
@@ -1478,8 +1489,8 @@
              * @private
              */
             dataLabels: {
-                align: null,
-                verticalAlign: null,
+                align: void 0,
+                verticalAlign: void 0,
                 /**
                  * X offset of the lower data labels relative to the point value.
                  *
@@ -2151,7 +2162,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/ColumnRangeSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-more/ColumnRangeSeries.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (H, O, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2161,12 +2172,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var defaultOptions = O.defaultOptions;
         var clamp = U.clamp,
             merge = U.merge,
             pick = U.pick,
             seriesType = U.seriesType;
-        var defaultPlotOptions = H.defaultPlotOptions,
-            noop = H.noop,
+        var noop = H.noop,
             seriesTypes = H.seriesTypes;
         var colProto = seriesTypes.column.prototype;
         /**
@@ -2218,7 +2229,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('columnrange', 'arearange', merge(defaultPlotOptions.column, defaultPlotOptions.arearange, columnRangeOptions), {
+        seriesType('columnrange', 'arearange', merge(defaultOptions.plotOptions.column, defaultOptions.plotOptions.arearange, columnRangeOptions), {
             // eslint-disable-next-line valid-jsdoc
             /**
              * Translate data points from raw values x and y to plotX and plotY
@@ -4054,7 +4065,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/WaterfallSeries.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['parts/Stacking.js']], function (H, Point, U, StackItem) {
+    _registerModule(_modules, 'parts-more/WaterfallSeries.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Stacking.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, Point, StackItem, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4072,9 +4083,7 @@
             objectEach = U.objectEach,
             pick = U.pick,
             seriesType = U.seriesType;
-        var Axis = H.Axis,
-            Chart = H.Chart,
-            Series = H.Series,
+        var Series = H.Series,
             seriesTypes = H.seriesTypes;
         /**
          * Returns true if the key is a direct property of the object.
@@ -4086,71 +4095,143 @@
         function ownProp(obj, key) {
             return Object.hasOwnProperty.call(obj, key);
         }
-        /* eslint-disable no-invalid-this */
-        addEvent(Axis, 'afterInit', function () {
-            if (!this.isXAxis) {
-                this.waterfallStacks = {
-                    changed: false
-                };
-            }
-        });
-        addEvent(Axis, 'afterBuildStacks', function () {
-            this.waterfallStacks.changed = false;
-            delete this.waterfallStacks.alreadyChanged;
-        });
-        addEvent(Chart, 'beforeRedraw', function () {
-            var axes = this.axes,
-                series = this.series,
-                i = series.length;
-            while (i--) {
-                if (series[i].options.stacking) {
-                    axes.forEach(function (axis) {
-                        if (!axis.isXAxis) {
-                            axis.waterfallStacks.changed = true;
-                        }
+        /**
+         * @private
+         */
+        var WaterfallAxis;
+        (function (WaterfallAxis) {
+            /* *
+             *
+             *  Interfaces
+             *
+             * */
+            /* *
+             *
+             *  Classes
+             *
+             * */
+            /**
+             * @private
+             */
+            var Composition = /** @class */ (function () {
+                    /* *
+                     *
+                     *  Constructors
+                     *
+                     * */
+                    /**
+                     * @private
+                     */
+                    function Composition(axis) {
+                        this.axis = axis;
+                    this.stacks = {
+                        changed: false
+                    };
+                }
+                /* *
+                 *
+                 *  Functions
+                 *
+                 * */
+                /**
+                 * Calls StackItem.prototype.render function that creates and renders
+                 * stack total label for each waterfall stack item.
+                 *
+                 * @private
+                 * @function Highcharts.Axis#renderWaterfallStackTotals
+                 */
+                Composition.prototype.renderStackTotals = function () {
+                    var yAxis = this.axis,
+                        waterfallStacks = yAxis.waterfall.stacks,
+                        stackTotalGroup = yAxis.stacking && yAxis.stacking.stackTotalGroup,
+                        dummyStackItem = new StackItem(yAxis,
+                        yAxis.options.stackLabels,
+                        false, 0,
+                        void 0);
+                    this.dummyStackItem = dummyStackItem;
+                    // Render each waterfall stack total
+                    objectEach(waterfallStacks, function (type) {
+                        objectEach(type, function (stackItem) {
+                            dummyStackItem.total = stackItem.stackTotal;
+                            if (stackItem.label) {
+                                dummyStackItem.label = stackItem.label;
+                            }
+                            StackItem.prototype.render.call(dummyStackItem, stackTotalGroup);
+                            stackItem.label = dummyStackItem.label;
+                            delete dummyStackItem.label;
+                        });
                     });
-                    i = 0;
+                    dummyStackItem.total = null;
+                };
+                return Composition;
+            }());
+            WaterfallAxis.Composition = Composition;
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            function compose(AxisClass, ChartClass) {
+                addEvent(AxisClass, 'init', onInit);
+                addEvent(AxisClass, 'afterBuildStacks', onAfterBuildStacks);
+                addEvent(AxisClass, 'afterRender', onAfterRender);
+                addEvent(ChartClass, 'beforeRedraw', onBeforeRedraw);
+            }
+            WaterfallAxis.compose = compose;
+            /**
+             * @private
+             */
+            function onAfterBuildStacks() {
+                var axis = this;
+                var stacks = axis.waterfall.stacks;
+                if (stacks) {
+                    stacks.changed = false;
+                    delete stacks.alreadyChanged;
                 }
             }
-        });
-        addEvent(Axis, 'afterRender', function () {
-            var stackLabelOptions = this.options.stackLabels;
-            if (stackLabelOptions && stackLabelOptions.enabled &&
-                this.waterfallStacks) {
-                this.renderWaterfallStackTotals();
+            /**
+             * @private
+             */
+            function onAfterRender() {
+                var axis = this;
+                var stackLabelOptions = axis.options.stackLabels;
+                if (stackLabelOptions && stackLabelOptions.enabled &&
+                    axis.waterfall.stacks) {
+                    axis.waterfall.renderStackTotals();
+                }
             }
-        });
-        // eslint-disable-next-line valid-jsdoc
-        /**
-         * Calls StackItem.prototype.render function that creates and renders stack
-         * total label for each waterfall stack item.
-         *
-         * @private
-         * @function Highcharts.Axis#renderWaterfallStackTotals
-         */
-        Axis.prototype.renderWaterfallStackTotals = function () {
-            var yAxis = this,
-                waterfallStacks = yAxis.waterfallStacks,
-                stackTotalGroup = yAxis.stacking && yAxis.stacking.stackTotalGroup,
-                dummyStackItem = new StackItem(yAxis,
-                yAxis.options.stackLabels,
-                false, 0,
-                void 0);
-            yAxis.dummyStackItem = dummyStackItem;
-            // Render each waterfall stack total
-            objectEach(waterfallStacks, function (type) {
-                objectEach(type, function (stackItem) {
-                    dummyStackItem.total = stackItem.stackTotal;
-                    if (stackItem.label) {
-                        dummyStackItem.label = stackItem.label;
+            /**
+             * @private
+             */
+            function onBeforeRedraw() {
+                var axes = this.axes,
+                    series = this.series,
+                    i = series.length;
+                while (i--) {
+                    if (series[i].options.stacking) {
+                        axes.forEach(function (axis) {
+                            if (!axis.isXAxis) {
+                                axis.waterfall.stacks.changed = true;
+                            }
+                        });
+                        i = 0;
                     }
-                    StackItem.prototype.render.call(dummyStackItem, stackTotalGroup);
-                    stackItem.label = dummyStackItem.label;
-                    delete dummyStackItem.label;
-                });
-            });
-            dummyStackItem.total = null;
-        };
+                }
+            }
+            /**
+             * @private
+             */
+            function onInit() {
+                var axis = this;
+                if (!axis.waterfall) {
+                    axis.waterfall = new Composition(axis);
+                }
+            }
+        })(WaterfallAxis || (WaterfallAxis = {}));
+        // eslint-disable-next-line valid-jsdoc
         /**
          * A waterfall chart displays sequentially introduced positive or negative
          * values in cumulative columns.
@@ -4280,7 +4361,7 @@
                     threshold = options.threshold,
                     stacking = options.stacking,
                     tooltipY,
-                    actualStack = yAxis.waterfallStacks[series.stackKey],
+                    actualStack = yAxis.waterfall.stacks[series.stackKey],
                     actualStackX,
                     dummyStackItem,
                     total,
@@ -4362,7 +4443,7 @@
                             shapeArgs.height = Math.abs(shapeArgs.y -
                                 yAxis.translate(hPos, 0, 1, 0, 1));
                         }
-                        dummyStackItem = yAxis.dummyStackItem;
+                        dummyStackItem = yAxis.waterfall.dummyStackItem;
                         if (dummyStackItem) {
                             dummyStackItem.x = i;
                             dummyStackItem.label = actualStack[i].label;
@@ -4553,7 +4634,7 @@
                     pointArgs = data[i].shapeArgs;
                     prevPoint = data[i - 1];
                     prevArgs = data[i - 1].shapeArgs;
-                    prevStack = yAxis.waterfallStacks[this.stackKey];
+                    prevStack = yAxis.waterfall.stacks[this.stackKey];
                     isPos = prevPoint.y > 0 ? -prevArgs.height : 0;
                     if (prevStack && prevArgs && pointArgs) {
                         prevStackX = prevStack[i - 1];
@@ -4607,7 +4688,7 @@
             setStackedPoints: function () {
                 var series = this,
                     options = series.options,
-                    waterfallStacks = series.yAxis.waterfallStacks,
+                    waterfallStacks = series.yAxis.waterfall.stacks,
                     seriesThreshold = options.threshold,
                     stackThreshold = seriesThreshold || 0,
                     interSum = stackThreshold,
@@ -4737,7 +4818,7 @@
                     stackedYPos;
                 if (stacking) {
                     yAxis = this.yAxis;
-                    waterfallStacks = yAxis.waterfallStacks;
+                    waterfallStacks = yAxis.waterfall.stacks;
                     stackedYNeg = this.stackedYNeg = [];
                     stackedYPos = this.stackedYPos = [];
                     // the visible y range can be different when stacking is set to
@@ -4881,7 +4962,9 @@
          * @apioption series.waterfall.data.isSum
          */
         ''; // adds doclets above to transpiled file
+        WaterfallAxis.compose(Axis, Chart);
 
+        return WaterfallAxis;
     });
     _registerModule(_modules, 'parts-more/PolygonSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, U) {
         /* *
@@ -5025,7 +5108,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/BubbleLegend.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Legend.js'], _modules['parts/Utilities.js']], function (H, Color, Legend, U) {
+    _registerModule(_modules, 'parts-more/BubbleLegend.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, Legend, U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -5037,6 +5120,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            setOptions = U.setOptions,
+            stableSort = U.stableSort,
+            wrap = U.wrap;
         /**
          * @interface Highcharts.BubbleLegendFormatterContextObject
          */ /**
@@ -5053,20 +5147,8 @@
         * @type {number}
         */
         ''; // detach doclets above
-        var color = Color.parse;
-        var addEvent = U.addEvent,
-            arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            stableSort = U.stableSort,
-            wrap = U.wrap;
         var Series = H.Series,
-            Chart = H.Chart,
-            noop = H.noop,
-            setOptions = H.setOptions;
+            noop = H.noop;
         setOptions({
             legend: {
                 /**
@@ -6393,24 +6475,19 @@
                     this.points.length < this.options.animationLimit // #8099
                 ) {
                     this.points.forEach(function (point) {
-                        var graphic = point.graphic,
-                            animationTarget;
+                        var graphic = point.graphic;
                         if (graphic && graphic.width) { // URL symbols don't have width
-                            animationTarget = {
-                                x: graphic.x,
-                                y: graphic.y,
-                                width: graphic.width,
-                                height: graphic.height
-                            };
                             // Start values
-                            graphic.attr({
-                                x: point.plotX,
-                                y: point.plotY,
-                                width: 1,
-                                height: 1
-                            });
+                            if (!this.hasRendered) {
+                                graphic.attr({
+                                    x: point.plotX,
+                                    y: point.plotY,
+                                    width: 1,
+                                    height: 1
+                                });
+                            }
                             // Run animation
-                            graphic.animate(animationTarget, this.options.animation);
+                            graphic.animate(this.markerAttribs(point), this.options.animation);
                         }
                     }, this);
                 }
@@ -7392,7 +7469,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/layouts.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/networkgraph/layouts.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -7405,14 +7482,12 @@
          *
          * */
         var addEvent = U.addEvent,
-            merge = U.merge,
             clamp = U.clamp,
             defined = U.defined,
             extend = U.extend,
             isFunction = U.isFunction,
             pick = U.pick,
             setAnimation = U.setAnimation;
-        var Chart = H.Chart;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         H.layouts = {
             'reingold-fruchterman': function () {
@@ -7552,6 +7627,30 @@
                 this.setMaxIterations();
                 this.setTemperature();
                 this.setDiffTemperature();
+            },
+            restartSimulation: function () {
+                if (!this.simulation) {
+                    // When dragging nodes, we don't need to calculate
+                    // initial positions and rendering nodes:
+                    this.setInitialRendering(false);
+                    // Start new simulation:
+                    if (!this.enableSimulation) {
+                        // Run only one iteration to speed things up:
+                        this.setMaxIterations(1);
+                    }
+                    else {
+                        this.start();
+                    }
+                    if (this.chart) {
+                        this.chart.redraw();
+                    }
+                    // Restore defaults:
+                    this.setInitialRendering(true);
+                }
+                else {
+                    // Extend current simulation:
+                    this.resetSimulation();
+                }
             },
             setMaxIterations: function (maxIterations) {
                 this.maxIterations = pick(maxIterations, this.options.maxIterations);
@@ -7933,22 +8032,26 @@
         });
         // disable simulation before print if enabled
         addEvent(Chart, 'beforePrint', function () {
-            this.graphLayoutsLookup.forEach(function (layout) {
-                layout.updateSimulation(false);
-            });
-            this.redraw();
+            if (this.graphLayoutsLookup) {
+                this.graphLayoutsLookup.forEach(function (layout) {
+                    layout.updateSimulation(false);
+                });
+                this.redraw();
+            }
         });
         // re-enable simulation after print
         addEvent(Chart, 'afterPrint', function () {
-            this.graphLayoutsLookup.forEach(function (layout) {
-                // return to default simulation
-                layout.updateSimulation();
-            });
+            if (this.graphLayoutsLookup) {
+                this.graphLayoutsLookup.forEach(function (layout) {
+                    // return to default simulation
+                    layout.updateSimulation();
+                });
+            }
             this.redraw();
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/draggable-nodes.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/networkgraph/draggable-nodes.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -7961,7 +8064,6 @@
          *
          * */
         var addEvent = U.addEvent;
-        var Chart = H.Chart;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         H.dragNodesMixin = {
             /**
@@ -8000,7 +8102,8 @@
                         diffX = point.fixedPosition.chartX - normalizedEvent.chartX,
                         diffY = point.fixedPosition.chartY - normalizedEvent.chartY,
                         newPlotX,
-                        newPlotY;
+                        newPlotY,
+                        graphLayoutsLookup = chart.graphLayoutsLookup;
                     // At least 5px to apply change (avoids simple click):
                     if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
                         newPlotX = point.fixedPosition.plotX - diffX;
@@ -8010,26 +8113,9 @@
                             point.plotY = newPlotY;
                             point.hasDragged = true;
                             this.redrawHalo(point);
-                            if (!series.layout.simulation) {
-                                // When dragging nodes, we don't need to calculate
-                                // initial positions and rendering nodes:
-                                series.layout.setInitialRendering(false);
-                                // Start new simulation:
-                                if (!series.layout.enableSimulation) {
-                                    // Run only one iteration to speed things up:
-                                    series.layout.setMaxIterations(1);
-                                }
-                                else {
-                                    series.layout.start();
-                                }
-                                series.chart.redraw();
-                                // Restore defaults:
-                                series.layout.setInitialRendering(true);
-                            }
-                            else {
-                                // Extend current simulation:
-                                series.layout.resetSimulation();
-                            }
+                            graphLayoutsLookup.forEach(function (layout) {
+                                layout.restartSimulation();
+                            });
                         }
                     }
                 }
@@ -8108,7 +8194,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-more/PackedBubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
+    _registerModule(_modules, 'parts-more/PackedBubbleSeries.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, Point, U) {
         /* *
          *
          *  (c) 2010-2018 Grzegorz Blachlinski, Sebastian Bochan
@@ -8118,6 +8204,18 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
+            defined = U.defined,
+            extend = U.extend,
+            extendClass = U.extendClass,
+            fireEvent = U.fireEvent,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
+            seriesType = U.seriesType;
         /**
          * Formatter callback function.
          *
@@ -8153,23 +8251,21 @@
         * @type {string}
         * @since 7.0.0
         */
-        var color = Color.parse;
-        var addEvent = U.addEvent,
-            clamp = U.clamp,
-            defined = U.defined,
-            extend = U.extend,
-            extendClass = U.extendClass,
-            fireEvent = U.fireEvent,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
         var Series = H.Series,
-            Chart = H.Chart,
             Reingold = H.layouts['reingold-fruchterman'],
             NetworkPoint = H.seriesTypes.bubble.prototype.pointClass,
             dragNodesMixin = H.dragNodesMixin;
+        Chart.prototype.getSelectedParentNodes = function () {
+            var chart = this,
+                series = chart.series,
+                selectedParentsNodes = [];
+            series.forEach(function (series) {
+                if (series.parentNode && series.parentNode.selected) {
+                    selectedParentsNodes.push(series.parentNode);
+                }
+            });
+            return selectedParentsNodes;
+        };
         H.networkgraphIntegrations.packedbubble = {
             repulsiveForceFunction: function (d, k, node, repNode) {
                 return Math.min(d, (node.marker.radius + repNode.marker.radius) / 2);
@@ -8405,6 +8501,24 @@
              */
             useSimulation: true,
             /**
+             * Series options for parent nodes.
+             *
+             * @since 8.1.1
+             *
+             * @private
+             */
+            parentNode: {
+                /**
+                 * Allow this series' parent nodes to be selected
+                 * by clicking on the graph.
+                 *
+                 * @since 8.1.1
+                 */
+                allowPointSelect: false
+            },
+            /**
+            /**
+             *
              * @declare Highcharts.SeriesPackedBubbleDataLabelsOptionsObject
              *
              * @private
@@ -8440,10 +8554,6 @@
                  */
                 // eslint-disable-next-line valid-jsdoc
                 /**
-                 * Callback to format data labels for _parentNodes_. The
-                 * `parentNodeFormat` option takes precedence over the
-                 * `parentNodeFormatter`.
-                 *
                  * @type  {Highcharts.SeriesPackedBubbleDataLabelsFormatterCallbackFunction}
                  * @since 7.1.0
                  */
@@ -8451,10 +8561,6 @@
                     return this.name;
                 },
                 /**
-                 * Options for a _parentNode_ label text.
-                 *
-                 * **Note:** Only SVG-based renderer supports this option.
-                 *
                  * @sample {highcharts} highcharts/series-packedbubble/packed-dashboard
                  *         Dashboard with dataLabels on parentNodes
                  *
@@ -8634,6 +8740,7 @@
              */
             forces: ['barycenter', 'repulsive'],
             pointArrayMap: ['value'],
+            trackerGroups: ['group', 'dataLabelsGroup', 'parentNodesGroup'],
             pointValKey: 'value',
             isCartesian: false,
             requireSorting: false,
@@ -8656,7 +8763,8 @@
                     j;
                 for (i = 0; i < chart.series.length; i++) {
                     series = chart.series[i];
-                    if (series.visible ||
+                    if (series.is('packedbubble') && // #13574
+                        series.visible ||
                         !chart.options.chart.ignoreHiddenSeries) {
                         // add data to array only if series is visible
                         for (j = 0; j < series.yData.length; j++) {
@@ -8866,7 +8974,8 @@
                     chart = series.chart,
                     parentNodeLayout = series.parentNodeLayout,
                     nodeAdded,
-                    parentNode = series.parentNode;
+                    parentNode = series.parentNode,
+                    PackedBubblePoint = series.pointClass;
                 series.parentNodeMass = 0;
                 series.points.forEach(function (p) {
                     series.parentNodeMass +=
@@ -8881,7 +8990,7 @@
                 parentNodeLayout.setArea(0, 0, chart.plotWidth, chart.plotHeight);
                 if (!nodeAdded) {
                     if (!parentNode) {
-                        parentNode = (new NetworkPoint()).init(this, {
+                        parentNode = (new PackedBubblePoint()).init(this, {
                             mass: series.parentNodeRadius / 2,
                             marker: {
                                 radius: series.parentNodeRadius
@@ -8902,6 +9011,38 @@
                     series.parentNode = parentNode;
                     parentNodeLayout.addElementsToCollection([series], parentNodeLayout.series);
                     parentNodeLayout.addElementsToCollection([parentNode], parentNodeLayout.nodes);
+                }
+            },
+            drawTracker: function () {
+                var series = this,
+                    chart = series.chart,
+                    pointer = chart.pointer,
+                    onMouseOver = function (e) {
+                        var point = pointer.getPointFromEvent(e);
+                    // undefined on graph in scatterchart
+                    if (typeof point !== 'undefined') {
+                        pointer.isDirectTouch = true;
+                        point.onMouseOver(e);
+                    }
+                }, parentNode = series.parentNode;
+                var dataLabels;
+                H.TrackerMixin.drawTrackerPoint.call(this);
+                // Add reference to the point
+                if (parentNode) {
+                    dataLabels = (isArray(parentNode.dataLabels) ?
+                        parentNode.dataLabels :
+                        (parentNode.dataLabel ? [parentNode.dataLabel] : []));
+                    if (parentNode.graphic) {
+                        parentNode.graphic.element.point = parentNode;
+                    }
+                    dataLabels.forEach(function (dataLabel) {
+                        if (dataLabel.div) {
+                            dataLabel.div.point = parentNode;
+                        }
+                        else {
+                            dataLabel.element.point = parentNode;
+                        }
+                    });
                 }
             },
             /**
@@ -9432,6 +9573,33 @@
                     this.series.layout.removeElementFromCollection(this, this.series.layout.nodes);
                 }
                 return Point.prototype.destroy.apply(this, arguments);
+            },
+            firePointEvent: function (eventType, eventArgs, defaultFunction) {
+                var point = this,
+                    series = this.series,
+                    seriesOptions = series.options;
+                if (this.isParentNode && seriesOptions.parentNode) {
+                    var temp = seriesOptions.allowPointSelect;
+                    seriesOptions.allowPointSelect = seriesOptions.parentNode.allowPointSelect;
+                    Point.prototype.firePointEvent.apply(this, arguments);
+                    seriesOptions.allowPointSelect = temp;
+                }
+                else {
+                    Point.prototype.firePointEvent.apply(this, arguments);
+                }
+            },
+            select: function (selected, accumulate) {
+                var point = this,
+                    series = this.series,
+                    chart = series.chart;
+                if (point.isParentNode) {
+                    chart.getSelectedPoints = chart.getSelectedParentNodes;
+                    Point.prototype.select.apply(this, arguments);
+                    chart.getSelectedPoints = H.Chart.prototype.getSelectedPoints;
+                }
+                else {
+                    Point.prototype.select.apply(this, arguments);
+                }
             }
         });
         // Remove accumulated data points to redistribute all of them again
@@ -9501,7 +9669,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/Polar.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts-more/Pane.js']], function (H, U, Pane) {
+    _registerModule(_modules, 'parts-more/Polar.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts-more/Pane.js'], _modules['parts/Pointer.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, H, Pane, Pointer, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -9522,8 +9690,7 @@
             wrap = U.wrap;
         // Extensions for polar charts. Additionally, much of the geometry required for
         // polar charts is gathered in RadialAxes.js.
-        var Pointer = H.Pointer,
-            Series = H.Series,
+        var Series = H.Series,
             seriesTypes = H.seriesTypes,
             seriesProto = Series.prototype,
             pointerProto = Pointer.prototype,
@@ -10273,7 +10440,7 @@
             }
             return ret;
         });
-        H.SVGRenderer.prototype.clipCircle = function (x, y, r, innerR) {
+        SVGRenderer.prototype.clipCircle = function (x, y, r, innerR) {
             var wrapper,
                 id = uniqueKey(),
                 clipPath = this.createElement('clipPath').attr({
@@ -10286,7 +10453,7 @@
             wrapper.clipPath = clipPath;
             return wrapper;
         };
-        addEvent(H.Chart, 'getAxes', function () {
+        addEvent(Chart, 'getAxes', function () {
             if (!this.pane) {
                 this.pane = [];
             }
@@ -10295,7 +10462,7 @@
                 paneOptions, this);
             }, this);
         });
-        addEvent(H.Chart, 'afterDrawChartBox', function () {
+        addEvent(Chart, 'afterDrawChartBox', function () {
             this.pane.forEach(function (pane) {
                 pane.render();
             });
@@ -10315,7 +10482,7 @@
          * responsiveness and chart.update.
          * @private
          */
-        wrap(H.Chart.prototype, 'get', function (proceed, id) {
+        wrap(Chart.prototype, 'get', function (proceed, id) {
             return find(this.pane, function (pane) {
                 return pane.options.id === id;
             }) || proceed.call(this, id);

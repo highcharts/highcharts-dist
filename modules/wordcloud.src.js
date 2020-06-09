@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * (c) 2016-2019 Highsoft AS
  * Authors: Jon Arild Nygard

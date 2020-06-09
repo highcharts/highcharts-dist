@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
@@ -44,9 +44,10 @@
          *
          * */
         var addEvent = U.addEvent,
-            extend = U.extend;
+            extend = U.extend,
+            getOptions = U.getOptions;
         var chartPrototype = H.Chart.prototype,
-            defaultOptions = H.getOptions();
+            defaultOptions = getOptions();
         // Add language option
         extend(defaultOptions.lang, 
         /**

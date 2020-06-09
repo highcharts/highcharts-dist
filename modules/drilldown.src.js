@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Highcharts Drilldown module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/drilldown.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (H, Color, Point, Tick, U) {
+    _registerModule(_modules, 'modules/drilldown.src.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, O, Point, SVGRenderer, Tick, U) {
         /* *
          *
          *  Highcharts Drilldown module
@@ -40,6 +40,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var defaultOptions = O.defaultOptions;
+        var addEvent = U.addEvent,
+            removeEvent = U.removeEvent,
+            animObject = U.animObject,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            format = U.format,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            syncTimeout = U.syncTimeout;
         /**
          * Gets fired when a drilldown point is clicked, before the new series is added.
          * Note that when clicking a category label to trigger multiple series
@@ -74,7 +85,7 @@
         * @name Highcharts.DrilldownEventObject#point
         * @type {Highcharts.Point}
         */ /**
-        * If a category label was clicked, this array holds all points corresponing to
+        * If a category label was clicked, this array holds all points corresponding to
         * the category. Otherwise it is set to false.
         * @name Highcharts.DrilldownEventObject#points
         * @type {boolean|Array<Highcharts.Point>|undefined}
@@ -153,19 +164,7 @@
         * @name Highcharts.DrillupEventObject#type
         * @type {"drillup"}
         */
-        var addEvent = U.addEvent,
-            removeEvent = U.removeEvent,
-            animObject = U.animObject,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            format = U.format,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            syncTimeout = U.syncTimeout;
         var noop = H.noop,
-            defaultOptions = H.defaultOptions,
-            Chart = H.Chart,
             seriesTypes = H.seriesTypes,
             PieSeries = seriesTypes.pie,
             ColumnSeries = seriesTypes.column,
@@ -397,7 +396,7 @@
          * - `point`: The originating point.
          *
          * - `points`: If a category label was clicked, this array holds all points
-         *   corresponing to the category.
+         *   corresponding to the category.
          *
          * - `seriesOptions`: Options for the new series.
          *
@@ -455,7 +454,7 @@
          * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
          * The animation options for the element fade.
          */
-        H.SVGRenderer.prototype.Element.prototype.fadeIn = function (animation) {
+        SVGRenderer.prototype.Element.prototype.fadeIn = function (animation) {
             this
                 .attr({
                 opacity: 0.1,
@@ -927,7 +926,7 @@
                         group = group.destroy();
                     }
                 };
-                if (graphic) {
+                if (graphic && animateTo) {
                     delete point.graphic;
                     if (!series.chart.styledMode) {
                         animateTo.fill = level.color;
@@ -948,29 +947,35 @@
                 animateDrillupFrom: ColumnSeries.prototype.animateDrillupFrom,
                 animateDrilldown: function (init) {
                     var level = this.chart.drilldownLevels[this.chart.drilldownLevels.length - 1],
-                        animationOptions = this.chart.options.drilldown.animation,
-                        animateFrom = level.shapeArgs,
-                        start = animateFrom.start,
-                        angle = animateFrom.end - start,
-                        startAngle = angle / this.points.length,
-                        styledMode = this.chart.styledMode;
-                    if (!init) {
-                        this.points.forEach(function (point, i) {
-                            var animateTo = point.shapeArgs;
-                            if (!styledMode) {
-                                animateFrom.fill = level.color;
-                                animateTo.fill = point.color;
-                            }
-                            if (point.graphic) {
-                                point.graphic
-                                    .attr(merge(animateFrom, {
-                                    start: start + i * startAngle,
-                                    end: start + (i + 1) * startAngle
-                                }))[animationOptions ? 'animate' : 'attr'](animateTo, animationOptions);
-                            }
-                        });
-                        // Reset to prototype
-                        delete this.animate;
+                        animationOptions = this.chart.options.drilldown.animation;
+                    // Unable to drill down in the horizontal item series #13372
+                    if (this.is('item') && this.center) {
+                        var animateFrom = level.shapeArgs,
+                            start = animateFrom.start,
+                            angle = animateFrom.end - start,
+                            startAngle = angle / this.points.length,
+                            styledMode = this.chart.styledMode;
+                        if (!init) {
+                            this.points.forEach(function (point, i) {
+                                var animateTo = point.shapeArgs;
+                                if (!styledMode) {
+                                    animateFrom.fill = level.color;
+                                    animateTo.fill = point.color;
+                                }
+                                if (point.graphic) {
+                                    point.graphic
+                                        .attr(merge(animateFrom, {
+                                        start: start + i * startAngle,
+                                        end: start + (i + 1) * startAngle
+                                    }))[animationOptions ? 'animate' : 'attr'](animateTo, animationOptions);
+                                }
+                            });
+                            // Reset to prototype
+                            delete this.animate;
+                        }
+                    }
+                    else {
+                        animationOptions.duration = 0;
                     }
                 }
             });
@@ -1023,7 +1028,6 @@
          *        Tick position
          * @param {global.MouseEvent} e
          *        Click event
-         * @return {void}
          */
         H.Axis.prototype.drilldownCategory = function (x, e) {
             objectEach(this.getDDPoints(x), function (point) {
@@ -1054,7 +1058,6 @@
          *
          * @private
          * @function Highcharts.Axis#drillable
-         * @return {void}
          */
         Tick.prototype.drillable = function () {
             var pos = this.pos,

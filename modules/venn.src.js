@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * (c) 2017-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -676,7 +676,7 @@
 
         return content;
     });
-    _registerModule(_modules, 'modules/venn.src.js', [_modules['parts/Globals.js'], _modules['mixins/draw-point.js'], _modules['mixins/geometry.js'], _modules['mixins/geometry-circles.js'], _modules['mixins/nelder-mead.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, draw, geometry, geometryCirclesModule, nelderMeadModule, Color, U) {
+    _registerModule(_modules, 'modules/venn.src.js', [_modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/draw-point.js'], _modules['mixins/geometry.js'], _modules['mixins/geometry-circles.js'], _modules['mixins/nelder-mead.js']], function (Color, H, U, draw, geometry, geometryCirclesModule, nelderMeadModule) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a Venn
@@ -693,6 +693,16 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var color = Color.parse;
+        var addEvent = U.addEvent,
+            animObject = U.animObject,
+            extend = U.extend,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            isObject = U.isObject,
+            isString = U.isString,
+            merge = U.merge,
+            seriesType = U.seriesType;
         var getAreaOfCircle = geometryCirclesModule.getAreaOfCircle,
             getAreaOfIntersectionBetweenCircles = geometryCirclesModule.getAreaOfIntersectionBetweenCircles,
             getCircleCircleIntersection = geometryCirclesModule.getCircleCircleIntersection,
@@ -704,16 +714,6 @@
             isPointOutsideAllCircles = geometryCirclesModule.isPointOutsideAllCircles;
         // TODO: replace with individual imports
         var nelderMead = nelderMeadModule.nelderMead;
-        var color = Color.parse;
-        var addEvent = U.addEvent,
-            animObject = U.animObject,
-            extend = U.extend,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            isString = U.isString,
-            merge = U.merge,
-            seriesType = U.seriesType;
         var getCenterOfPoints = geometry.getCenterOfPoints,
             getDistanceBetweenPoints = geometry.getDistanceBetweenPoints,
             seriesTypes = H.seriesTypes;
@@ -1502,8 +1502,14 @@
                 axisTypes: [],
                 directTouch: true,
                 pointArrayMap: ['value'],
-                translate: function () {
-                    var chart = this.chart;
+                init: function () {
+                    seriesTypes.scatter.prototype.init.apply(this,
+            arguments);
+                // Venn's opacity is a different option from other series
+                delete this.opacity;
+            },
+            translate: function () {
+                var chart = this.chart;
                 this.processedXData = this.xData;
                 this.generatePoints();
                 // Process the data before passing it into the layout function.

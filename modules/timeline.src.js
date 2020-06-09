@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Timeline series
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/timeline.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, Point, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'modules/timeline.src.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/SVGElement.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, Point, SVGElement, U) {
         /* *
          *
          *  Timeline Series.
@@ -43,6 +43,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            defined = U.defined,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            seriesType = U.seriesType;
         /**
          * Callback JavaScript function to format the data label as a string. Note that
          * if a `format` is defined, the format takes precedence and the formatter is
@@ -69,15 +78,6 @@
         * @name Highcharts.TimelineDataLabelsFormatterContextObject#series
         * @type {Highcharts.Series}
         */
-        var addEvent = U.addEvent,
-            arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            defined = U.defined,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            seriesType = U.seriesType;
         var TrackerMixin = H.TrackerMixin,
             Series = H.Series,
             seriesTypes = H.seriesTypes;
@@ -293,7 +293,7 @@
                                 if (this.targetPosition) {
                                     this.targetPosition = params;
                                 }
-                                return H.SVGElement.prototype.animate.apply(this, arguments);
+                                return SVGElement.prototype.animate.apply(this, arguments);
                             };
                             // Initialize the targetPosition field within data label
                             // object. It's necessary because there is need to know

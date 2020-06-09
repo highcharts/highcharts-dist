@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Highcharts funnel module
  *
@@ -51,7 +51,7 @@
             seriesType = U.seriesType;
         var charts = H.charts,
             seriesTypes = H.seriesTypes, 
-            // Use H.Renderer instead of H.SVGRenderer for VML support.
+            // Use H.Renderer instead of SVGRenderer for VML support.
             RendererProto = H.Renderer.prototype, 
             //
             cuboidPath = RendererProto.cuboidPath,

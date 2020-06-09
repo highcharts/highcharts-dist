@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Dot plot series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/dotplot.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/dotplot.src.js', [_modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (SVGRenderer, U) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi
@@ -151,8 +151,8 @@
                 });
             }
         });
-        H.SVGRenderer.prototype.symbols.rect = function (x, y, w, h, options) {
-            return H.SVGRenderer.prototype.symbols.callout(x, y, w, h, options);
+        SVGRenderer.prototype.symbols.rect = function (x, y, w, h, options) {
+            return SVGRenderer.prototype.symbols.callout(x, y, w, h, options);
         };
 
     });

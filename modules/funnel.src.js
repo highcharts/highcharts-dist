@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -41,14 +41,13 @@
          *
          * */
         /* eslint indent: 0 */
-        var isArray = U.isArray,
+        var noop = H.noop,
+            seriesType = H.seriesType,
+            seriesTypes = H.seriesTypes;
+        var addEvent = U.addEvent,
+            fireEvent = U.fireEvent,
+            isArray = U.isArray,
             pick = U.pick;
-        // create shortcuts
-        var seriesType = Highcharts.seriesType,
-            seriesTypes = Highcharts.seriesTypes,
-            fireEvent = Highcharts.fireEvent,
-            addEvent = Highcharts.addEvent,
-            noop = Highcharts.noop;
         /**
          * @private
          * @class
@@ -463,7 +462,7 @@
             }
         });
         /* eslint-disable no-invalid-this */
-        addEvent(Highcharts.Chart, 'afterHideAllOverlappingLabels', function () {
+        addEvent(Chart, 'afterHideAllOverlappingLabels', function () {
             this.series.forEach(function (series) {
                 var dataLabelsOptions = series.options && series.options.dataLabels;
                 if (isArray(dataLabelsOptions)) {

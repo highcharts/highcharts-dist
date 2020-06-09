@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Exporting module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          * (c) 2009-2020 Rafal Sebestjanski
          *
@@ -37,7 +37,6 @@
          * License: www.highcharts.com/license
          */
         var addEvent = U.addEvent;
-        var Chart = H.Chart;
         /**
          * The module allows user to enable display chart in full screen mode.
          * Used in StockTools too.
@@ -305,7 +304,7 @@
 
         return chartNavigation;
     });
-    _registerModule(_modules, 'modules/exporting.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/navigation.js']], function (H, U, chartNavigationMixin) {
+    _registerModule(_modules, 'modules/exporting.src.js', [_modules['parts/Chart.js'], _modules['mixins/navigation.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, chartNavigationMixin, H, O, SVGRenderer, U) {
         /* *
          *
          *  Exporting module
@@ -317,6 +316,23 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var doc = H.doc,
+            isTouchDevice = H.isTouchDevice,
+            win = H.win;
+        var defaultOptions = O.defaultOptions;
+        var addEvent = U.addEvent,
+            css = U.css,
+            createElement = U.createElement,
+            discardElement = U.discardElement,
+            extend = U.extend,
+            find = U.find,
+            fireEvent = U.fireEvent,
+            isObject = U.isObject,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            removeEvent = U.removeEvent,
+            uniqueKey = U.uniqueKey;
         /**
          * Gets fired after a chart is printed through the context menu item or the
          * Chart.print method.
@@ -383,27 +399,8 @@
          *
          * @typedef {"image/png"|"image/jpeg"|"application/pdf"|"image/svg+xml"} Highcharts.ExportingMimeTypeValue
          */
-        var addEvent = U.addEvent,
-            css = U.css,
-            createElement = U.createElement,
-            discardElement = U.discardElement,
-            extend = U.extend,
-            find = U.find,
-            fireEvent = U.fireEvent,
-            isObject = U.isObject,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            removeEvent = U.removeEvent,
-            uniqueKey = U.uniqueKey;
         // create shortcuts
-        var defaultOptions = H.defaultOptions,
-            doc = H.doc,
-            Chart = H.Chart,
-            isTouchDevice = H.isTouchDevice,
-            win = H.win,
-            userAgent = win.navigator.userAgent,
-            SVGRenderer = H.SVGRenderer,
+        var userAgent = win.navigator.userAgent,
             symbols = H.Renderer.prototype.symbols,
             isMSBrowser = /Edge\/|Trident\/|MSIE /.test(userAgent),
             isFirefoxBrowser = /firefox/i.test(userAgent);
@@ -2178,8 +2175,11 @@
                         if ((parentStyles[prop] !== val || node.nodeName === 'svg') &&
                             defaultStyles[node.nodeName][prop] !== val) {
                             // Attributes
-                            if (inlineToAttributes.indexOf(prop) !== -1) {
-                                node.setAttribute(hyphenate(prop), val);
+                            if (!inlineToAttributes ||
+                                inlineToAttributes.indexOf(prop) !== -1) {
+                                if (val) {
+                                    node.setAttribute(hyphenate(prop), val);
+                                }
                                 // Styles
                             }
                             else {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/series-label.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/series-label.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, H, SVGRenderer, U) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi
@@ -36,6 +36,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var addEvent = U.addEvent,
+            animObject = U.animObject,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            format = U.format,
+            isNumber = U.isNumber,
+            pick = U.pick,
+            setOptions = U.setOptions,
+            syncTimeout = U.syncTimeout;
         /**
          * Containing the position of a box that should be avoided by labels.
          *
@@ -66,19 +75,10 @@
          * https://jsfiddle.net/highcharts/264Nm/
          * https://jsfiddle.net/highcharts/y5A37/
          */
-        var addEvent = U.addEvent,
-            animObject = U.animObject,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            format = U.format,
-            isNumber = U.isNumber,
-            pick = U.pick,
-            syncTimeout = U.syncTimeout;
+        ''; // detach doclets above
         var labelDistance = 3,
-            Series = H.Series,
-            SVGRenderer = H.SVGRenderer,
-            Chart = H.Chart;
-        H.setOptions({
+            Series = H.Series;
+        setOptions({
             /**
              * @optionparent plotOptions
              *
@@ -607,7 +607,7 @@
                             .label(labelText, 0, -9999, 'connector')
                             .addClass('highcharts-series-label ' +
                             'highcharts-series-label-' + series.index + ' ' +
-                            (series.options.className || '') +
+                            (series.options.className || '') + ' ' +
                             colorClass);
                         if (!chart.renderer.styledMode) {
                             label.css(extend({
@@ -712,8 +712,8 @@
                             bottom: best.y + bBox.height
                         });
                         // Move it if needed
-                        var dist = Math.sqrt(Math.pow(Math.abs(best.x - label.x), 2),
-                            Math.pow(Math.abs(best.y - label.y), 2));
+                        var dist = Math.sqrt(Math.pow(Math.abs(best.x - (label.x || 0)), 2) +
+                                Math.pow(Math.abs(best.y - (label.y || 0)), 2));
                         if (dist && series.labelBySeries) {
                             // Move fast and fade in - pure animation movement is
                             // distractive...

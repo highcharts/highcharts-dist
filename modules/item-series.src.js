@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Item series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/item-series.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/item-series.src.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (H, O, U) {
         /* *
          *
          *  (c) 2020 Torstein Honsi
@@ -40,6 +40,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var defaultOptions = O.defaultOptions;
         var defined = U.defined,
             extend = U.extend,
             fireEvent = U.fireEvent,
@@ -129,7 +130,7 @@
             /**
              * @extends plotOptions.series.marker
              */
-            marker: merge(H.defaultOptions.plotOptions.line.marker, {
+            marker: merge(defaultOptions.plotOptions.line.marker, {
                 radius: null
             }),
             /**
@@ -156,13 +157,17 @@
         // Prototype members
         {
             markerAttribs: void 0,
-            translate: function () {
+            translate: function (positions) {
+                // Initialize chart without setting data, #13379.
+                if (this.total === 0) {
+                    this.center = this.getCenter();
+                }
                 if (!this.slots) {
                     this.slots = [];
                 }
                 if (isNumber(this.options.startAngle) &&
                     isNumber(this.options.endAngle)) {
-                    H.seriesTypes.pie.prototype.translate.call(this);
+                    H.seriesTypes.pie.prototype.translate.apply(this, arguments);
                     this.slots = this.getSlots();
                 }
                 else {
@@ -194,9 +199,10 @@
                     testRows,
                     rowsOption = this.options.rows, 
                     // How many rows (arcs) should be used
-                    rowFraction = (diameter - innerSize) / diameter;
+                    rowFraction = (diameter - innerSize) / diameter,
+                    isCircle = fullAngle % (2 * Math.PI) === 0;
                 // Increase the itemSize until we find the best fit
-                while (itemCount > this.total) {
+                while (itemCount > this.total + (rows && isCircle ? rows.length : 0)) {
                     finalItemCount = itemCount;
                     // Reset
                     slots.length = 0;
@@ -244,7 +250,8 @@
                 // the rows and remove the last slot until the count is correct.
                 // For each iteration we sort the last slot by the angle, and
                 // remove those with the highest angles.
-                var overshoot = finalItemCount - this.total;
+                var overshoot = finalItemCount - this.total -
+                        (isCircle ? rows.length : 0);
                 /**
                  * @private
                  * @param {Highcharts.ItemRowContainerObject} item

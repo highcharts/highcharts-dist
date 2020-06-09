@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/pattern-fill.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'modules/pattern-fill.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, Point, SVGRenderer, U) {
         /* *
          *
          *  Module for using patterns or images as point fills.
@@ -42,6 +42,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var addEvent = U.addEvent,
+            animObject = U.animObject,
+            erase = U.erase,
+            getOptions = U.getOptions,
+            merge = U.merge,
+            pick = U.pick,
+            removeEvent = U.removeEvent,
+            wrap = U.wrap;
         /**
          * Pattern options
          *
@@ -150,17 +158,10 @@
         * @type {number|undefined}
         */
         ''; // detach doclets above
-        var addEvent = U.addEvent,
-            animObject = U.animObject,
-            erase = U.erase,
-            merge = U.merge,
-            pick = U.pick,
-            removeEvent = U.removeEvent,
-            wrap = U.wrap;
         // Add the predefined patterns
         H.patterns = (function () {
             var patterns = [],
-                colors = H.getOptions().colors;
+                colors = getOptions().colors;
             [
                 'M 0 0 L 10 10 M 9 -1 L 11 1 M -1 9 L 1 11',
                 'M 0 10 L 10 0 M -1 1 L 1 -1 M 9 11 L 11 9',
@@ -316,7 +317,7 @@
          *
          * @requires modules/pattern-fill
          */
-        H.SVGRenderer.prototype.addPattern = function (options, animation) {
+        SVGRenderer.prototype.addPattern = function (options, animation) {
             var pattern,
                 animate = pick(animation,
                 true),
@@ -478,7 +479,7 @@
             }
         });
         // Add functionality to SVG renderer to handle patterns as complex colors
-        addEvent(H.SVGRenderer, 'complexColor', function (args) {
+        addEvent(SVGRenderer, 'complexColor', function (args) {
             var color = args.args[0],
                 prop = args.args[1],
                 element = args.args[2],

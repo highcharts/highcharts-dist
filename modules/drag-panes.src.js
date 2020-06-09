@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.0 (2020-05-05)
+ * @license Highstock JS v8.1.1 (2020-06-09)
  *
  * Drag-panes module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/drag-panes.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/drag-panes.src.js', [_modules['parts/Globals.js'], _modules['parts/Axis.js'], _modules['parts/Pointer.js'], _modules['parts/Utilities.js']], function (H, Axis, Pointer, U) {
         /* *
          *
          *  Plugin for resizing axes / panes in a chart.
@@ -43,6 +43,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var hasTouch = H.hasTouch;
         var addEvent = U.addEvent,
             clamp = U.clamp,
             isNumber = U.isNumber,
@@ -50,9 +51,6 @@
             objectEach = U.objectEach,
             relativeLength = U.relativeLength,
             wrap = U.wrap;
-        var hasTouch = H.hasTouch,
-            Axis = H.Axis,
-            Pointer = H.Pointer;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * The AxisResizer class.

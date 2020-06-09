@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.1.0 (2020-05-05)
+ * @license Highcharts Gantt JS v8.1.1 (2020-06-09)
  *
  * Gantt series
  *
@@ -28,186 +28,6 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-gantt/CurrentDateIndicator.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts/PlotLineOrBand.js']], function (H, U, PlotLineOrBand) {
-        /* *
-         *
-         *  (c) 2016-2020 Highsoft AS
-         *
-         *  Author: Lars A. V. Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var addEvent = U.addEvent,
-            merge = U.merge,
-            wrap = U.wrap;
-        var Axis = H.Axis;
-        var defaultConfig = {
-                /**
-                 * Show an indicator on the axis for the current date and time. Can be a
-                 * boolean or a configuration object similar to
-                 * [xAxis.plotLines](#xAxis.plotLines).
-                 *
-                 * @sample gantt/current-date-indicator/demo
-                 *         Current date indicator enabled
-                 * @sample gantt/current-date-indicator/object-config
-                 *         Current date indicator with custom options
-                 *
-                 * @declare   Highcharts.AxisCurrentDateIndicatorOptions
-                 * @type      {boolean|*}
-                 * @default   true
-                 * @extends   xAxis.plotLines
-                 * @excluding value
-                 * @product   gantt
-                 * @apioption xAxis.currentDateIndicator
-                 */
-                currentDateIndicator: true,
-                color: '#ccd6eb',
-                width: 2,
-                /**
-                 * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
-                 */
-                label: {
-                    /**
-                     * Format of the label. This options is passed as the fist argument to
-                     * [dateFormat](/class-reference/Highcharts#dateFormat) function.
-                     *
-                     * @type      {string}
-                     * @default   '%a, %b %d %Y, %H:%M'
-                     * @product   gantt
-                     * @apioption xAxis.currentDateIndicator.label.format
-                     */
-                    format: '%a, %b %d %Y, %H:%M',
-                    formatter: function (value, format) {
-                        return H.dateFormat(format, value);
-                },
-                rotation: 0,
-                /**
-                 * @type {Highcharts.CSSObject}
-                 */
-                style: {
-                    /** @internal */
-                    fontSize: '10px'
-                }
-            }
-        };
-        /* eslint-disable no-invalid-this */
-        addEvent(Axis, 'afterSetOptions', function () {
-            var options = this.options,
-                cdiOptions = options.currentDateIndicator;
-            if (cdiOptions) {
-                cdiOptions = typeof cdiOptions === 'object' ?
-                    merge(defaultConfig, cdiOptions) : merge(defaultConfig);
-                cdiOptions.value = new Date();
-                if (!options.plotLines) {
-                    options.plotLines = [];
-                }
-                options.plotLines.push(cdiOptions);
-            }
-        });
-        addEvent(PlotLineOrBand, 'render', function () {
-            // If the label already exists, update its text
-            if (this.label) {
-                this.label.attr({
-                    text: this.getLabelText(this.options.label)
-                });
-            }
-        });
-        wrap(PlotLineOrBand.prototype, 'getLabelText', function (defaultMethod, defaultLabelOptions) {
-            var options = this.options;
-            if (options.currentDateIndicator && options.label &&
-                typeof options.label.formatter === 'function') {
-                options.value = new Date();
-                return options.label.formatter
-                    .call(this, options.value, options.label.format);
-            }
-            return defaultMethod.call(this, defaultLabelOptions);
-        });
-
-    });
-    _registerModule(_modules, 'modules/static-scale.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
-        /* *
-         *
-         *  (c) 2016-2020 Torstein Honsi, Lars Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            isNumber = U.isNumber,
-            pick = U.pick;
-        var Chart = H.Chart;
-        /* eslint-disable no-invalid-this */
-        /**
-         * For vertical axes only. Setting the static scale ensures that each tick unit
-         * is translated into a fixed pixel height. For example, setting the static
-         * scale to 24 results in each Y axis category taking up 24 pixels, and the
-         * height of the chart adjusts. Adding or removing items will make the chart
-         * resize.
-         *
-         * @sample gantt/xrange-series/demo/
-         *         X-range series with static scale
-         *
-         * @type      {number}
-         * @default   50
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption yAxis.staticScale
-         */
-        addEvent(H.Axis, 'afterSetOptions', function () {
-            var chartOptions = this.chart.options && this.chart.options.chart;
-            if (!this.horiz &&
-                isNumber(this.options.staticScale) &&
-                (!chartOptions.height ||
-                    (chartOptions.scrollablePlotArea &&
-                        chartOptions.scrollablePlotArea.minHeight))) {
-                this.staticScale = this.options.staticScale;
-            }
-        });
-        Chart.prototype.adjustHeight = function () {
-            if (this.redrawTrigger !== 'adjustHeight') {
-                (this.axes || []).forEach(function (axis) {
-                    var chart = axis.chart,
-                        animate = !!chart.initiatedScale &&
-                            chart.options.animation,
-                        staticScale = axis.options.staticScale,
-                        height,
-                        diff;
-                    if (axis.staticScale && defined(axis.min)) {
-                        height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
-                        // Minimum height is 1 x staticScale.
-                        height = Math.max(height, staticScale);
-                        diff = height - chart.plotHeight;
-                        if (Math.abs(diff) >= 1) {
-                            chart.plotHeight = height;
-                            chart.redrawTrigger = 'adjustHeight';
-                            chart.setSize(void 0, chart.chartHeight + diff, animate);
-                        }
-                        // Make sure clip rects have the right height before initial
-                        // animation.
-                        axis.series.forEach(function (series) {
-                            var clipRect = series.sharedClipKey &&
-                                    chart[series.sharedClipKey];
-                            if (clipRect) {
-                                clipRect.attr({
-                                    height: chart.plotHeight
-                                });
-                            }
-                        });
-                    }
-                });
-                this.initiatedScale = true;
-            }
-            this.redrawTrigger = null;
-        };
-        addEvent(Chart, 'render', Chart.prototype.adjustHeight);
-
-    });
     _registerModule(_modules, 'parts-gantt/Tree.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
@@ -923,7 +743,7 @@
 
         return result;
     });
-    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (Axis, H, Tick, U) {
+    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (Axis, H, O, Tick, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -934,6 +754,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var dateFormat = O.dateFormat;
         var addEvent = U.addEvent,
             defined = U.defined,
             erase = U.erase,
@@ -946,7 +767,7 @@
             wrap = U.wrap;
         var argsToArray = function (args) {
                 return Array.prototype.slice.call(args, 1);
-        }, dateFormat = H.dateFormat, isObject = function (x) {
+        }, isObject = function (x) {
             // Always use strict mode
             return U.isObject(x, true);
         }, Chart = H.Chart;
@@ -3130,6 +2951,187 @@
 
         return TreeGridAxis;
     });
+    _registerModule(_modules, 'parts-gantt/CurrentDateIndicator.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js'], _modules['parts/PlotLineOrBand.js']], function (H, O, U, PlotLineOrBand) {
+        /* *
+         *
+         *  (c) 2016-2020 Highsoft AS
+         *
+         *  Author: Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var dateFormat = O.dateFormat;
+        var addEvent = U.addEvent,
+            merge = U.merge,
+            wrap = U.wrap;
+        var Axis = H.Axis;
+        var defaultConfig = {
+                /**
+                 * Show an indicator on the axis for the current date and time. Can be a
+                 * boolean or a configuration object similar to
+                 * [xAxis.plotLines](#xAxis.plotLines).
+                 *
+                 * @sample gantt/current-date-indicator/demo
+                 *         Current date indicator enabled
+                 * @sample gantt/current-date-indicator/object-config
+                 *         Current date indicator with custom options
+                 *
+                 * @declare   Highcharts.AxisCurrentDateIndicatorOptions
+                 * @type      {boolean|*}
+                 * @default   true
+                 * @extends   xAxis.plotLines
+                 * @excluding value
+                 * @product   gantt
+                 * @apioption xAxis.currentDateIndicator
+                 */
+                currentDateIndicator: true,
+                color: '#ccd6eb',
+                width: 2,
+                /**
+                 * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
+                 */
+                label: {
+                    /**
+                     * Format of the label. This options is passed as the fist argument to
+                     * [dateFormat](/class-reference/Highcharts#dateFormat) function.
+                     *
+                     * @type      {string}
+                     * @default   '%a, %b %d %Y, %H:%M'
+                     * @product   gantt
+                     * @apioption xAxis.currentDateIndicator.label.format
+                     */
+                    format: '%a, %b %d %Y, %H:%M',
+                    formatter: function (value, format) {
+                        return dateFormat(format, value);
+                },
+                rotation: 0,
+                /**
+                 * @type {Highcharts.CSSObject}
+                 */
+                style: {
+                    /** @internal */
+                    fontSize: '10px'
+                }
+            }
+        };
+        /* eslint-disable no-invalid-this */
+        addEvent(Axis, 'afterSetOptions', function () {
+            var options = this.options,
+                cdiOptions = options.currentDateIndicator;
+            if (cdiOptions) {
+                cdiOptions = typeof cdiOptions === 'object' ?
+                    merge(defaultConfig, cdiOptions) : merge(defaultConfig);
+                cdiOptions.value = new Date();
+                if (!options.plotLines) {
+                    options.plotLines = [];
+                }
+                options.plotLines.push(cdiOptions);
+            }
+        });
+        addEvent(PlotLineOrBand, 'render', function () {
+            // If the label already exists, update its text
+            if (this.label) {
+                this.label.attr({
+                    text: this.getLabelText(this.options.label)
+                });
+            }
+        });
+        wrap(PlotLineOrBand.prototype, 'getLabelText', function (defaultMethod, defaultLabelOptions) {
+            var options = this.options;
+            if (options.currentDateIndicator && options.label &&
+                typeof options.label.formatter === 'function') {
+                options.value = new Date();
+                return options.label.formatter
+                    .call(this, options.value, options.label.format);
+            }
+            return defaultMethod.call(this, defaultLabelOptions);
+        });
+
+    });
+    _registerModule(_modules, 'modules/static-scale.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  (c) 2016-2020 Torstein Honsi, Lars Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            isNumber = U.isNumber,
+            pick = U.pick;
+        var Chart = H.Chart;
+        /* eslint-disable no-invalid-this */
+        /**
+         * For vertical axes only. Setting the static scale ensures that each tick unit
+         * is translated into a fixed pixel height. For example, setting the static
+         * scale to 24 results in each Y axis category taking up 24 pixels, and the
+         * height of the chart adjusts. Adding or removing items will make the chart
+         * resize.
+         *
+         * @sample gantt/xrange-series/demo/
+         *         X-range series with static scale
+         *
+         * @type      {number}
+         * @default   50
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption yAxis.staticScale
+         */
+        addEvent(H.Axis, 'afterSetOptions', function () {
+            var chartOptions = this.chart.options && this.chart.options.chart;
+            if (!this.horiz &&
+                isNumber(this.options.staticScale) &&
+                (!chartOptions.height ||
+                    (chartOptions.scrollablePlotArea &&
+                        chartOptions.scrollablePlotArea.minHeight))) {
+                this.staticScale = this.options.staticScale;
+            }
+        });
+        Chart.prototype.adjustHeight = function () {
+            if (this.redrawTrigger !== 'adjustHeight') {
+                (this.axes || []).forEach(function (axis) {
+                    var chart = axis.chart,
+                        animate = !!chart.initiatedScale &&
+                            chart.options.animation,
+                        staticScale = axis.options.staticScale,
+                        height,
+                        diff;
+                    if (axis.staticScale && defined(axis.min)) {
+                        height = pick(axis.brokenAxis && axis.brokenAxis.unitLength, axis.max + axis.tickInterval - axis.min) * staticScale;
+                        // Minimum height is 1 x staticScale.
+                        height = Math.max(height, staticScale);
+                        diff = height - chart.plotHeight;
+                        if (Math.abs(diff) >= 1) {
+                            chart.plotHeight = height;
+                            chart.redrawTrigger = 'adjustHeight';
+                            chart.setSize(void 0, chart.chartHeight + diff, animate);
+                        }
+                        // Make sure clip rects have the right height before initial
+                        // animation.
+                        axis.series.forEach(function (series) {
+                            var clipRect = series.sharedClipKey &&
+                                    chart[series.sharedClipKey];
+                            if (clipRect) {
+                                clipRect.attr({
+                                    height: chart.plotHeight
+                                });
+                            }
+                        });
+                    }
+                });
+                this.initiatedScale = true;
+            }
+            this.redrawTrigger = null;
+        };
+        addEvent(Chart, 'render', Chart.prototype.adjustHeight);
+
+    });
     _registerModule(_modules, 'parts-gantt/PathfinderAlgorithms.js', [_modules['parts/Utilities.js']], function (U) {
         /* *
          *
@@ -3857,7 +3859,7 @@
 
         return algorithms;
     });
-    _registerModule(_modules, 'parts-gantt/ArrowSymbols.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-gantt/ArrowSymbols.js', [_modules['parts/SVGRenderer.js']], function (SVGRenderer) {
         /* *
          *
          *  (c) 2017 Highsoft AS
@@ -3898,7 +3900,7 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        H.SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
+        SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
             return [
                 ['M', x, y + h / 2],
                 ['L', x + w, y],
@@ -3934,8 +3936,8 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        H.SVGRenderer.prototype.symbols['arrow-half'] = function (x, y, w, h) {
-            return H.SVGRenderer.prototype.symbols.arrow(x, y, w / 2, h);
+        SVGRenderer.prototype.symbols['arrow-half'] = function (x, y, w, h) {
+            return SVGRenderer.prototype.symbols.arrow(x, y, w / 2, h);
         };
         /**
          * Creates a left-oriented triangle.
@@ -3965,7 +3967,7 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        H.SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
+        SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
             return [
                 ['M', x + w, y],
                 ['L', x, y + h / 2],
@@ -3994,8 +3996,7 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        H.SVGRenderer.prototype.symbols['arrow-filled'] =
-            H.SVGRenderer.prototype.symbols['triangle-left'];
+        SVGRenderer.prototype.symbols['arrow-filled'] = SVGRenderer.prototype.symbols['triangle-left'];
         /**
          * Creates a half-width, left-oriented triangle.
          * ```
@@ -4024,8 +4025,8 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        H.SVGRenderer.prototype.symbols['triangle-left-half'] = function (x, y, w, h) {
-            return H.SVGRenderer.prototype.symbols['triangle-left'](x, y, w / 2, h);
+        SVGRenderer.prototype.symbols['triangle-left-half'] = function (x, y, w, h) {
+            return SVGRenderer.prototype.symbols['triangle-left'](x, y, w / 2, h);
         };
         /**
          * Alias function for triangle-left-half.
@@ -4048,11 +4049,10 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        H.SVGRenderer.prototype.symbols['arrow-filled-half'] =
-            H.SVGRenderer.prototype.symbols['triangle-left-half'];
+        SVGRenderer.prototype.symbols['arrow-filled-half'] = SVGRenderer.prototype.symbols['triangle-left-half'];
 
     });
-    _registerModule(_modules, 'parts-gantt/Pathfinder.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/PathfinderAlgorithms.js']], function (H, Point, U, pathfinderAlgorithms) {
+    _registerModule(_modules, 'parts-gantt/Pathfinder.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/PathfinderAlgorithms.js']], function (Chart, H, O, Point, U, pathfinderAlgorithms) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -4086,6 +4086,7 @@
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
         ''; // detach doclets above
+        var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             defined = U.defined,
             error = U.error,
@@ -4104,7 +4105,7 @@
                and rendering it
         */
         // Set default Pathfinder options
-        extend(H.defaultOptions, {
+        extend(defaultOptions, {
             /**
              * The Pathfinder module allows you to define connections between any two
              * points, represented as lines - optionally with markers for the start
@@ -5201,7 +5202,7 @@
             }
         }
         // Initialize Pathfinder for charts
-        H.Chart.prototype.callbacks.push(function (chart) {
+        Chart.prototype.callbacks.push(function (chart) {
             var options = chart.options;
             if (options.connectors.enabled !== false) {
                 warnLegacy(chart);
@@ -5211,7 +5212,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/xrange.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
+    _registerModule(_modules, 'modules/xrange.src.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, H, Color, Point, U) {
         /* *
          *
          *  X-range series module
@@ -5223,14 +5224,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* *
-         * @interface Highcharts.PointOptionsObject in parts/Point.ts
-         */ /**
-        * The ending X value of the range point.
-        * @name Highcharts.PointOptionsObject#x2
-        * @type {number|undefined}
-        * @requires modules/xrange
-        */
         var color = Color.parse;
         var addEvent = U.addEvent,
             clamp = U.clamp,
@@ -5242,9 +5235,16 @@
             merge = U.merge,
             pick = U.pick,
             seriesType = U.seriesType;
+        /* *
+         * @interface Highcharts.PointOptionsObject in parts/Point.ts
+         */ /**
+        * The ending X value of the range point.
+        * @name Highcharts.PointOptionsObject#x2
+        * @type {number|undefined}
+        * @requires modules/xrange
+        */
         var columnType = H.seriesTypes.column,
             seriesTypes = H.seriesTypes,
-            Axis = H.Axis,
             Series = H.Series;
         /**
          * Return color of a point based on its category.
@@ -5953,7 +5953,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-gantt/GanttSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-gantt/GanttSeries.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (H, O, U) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -5965,13 +5965,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var dateFormat = O.dateFormat;
         var isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
             seriesType = U.seriesType,
             splat = U.splat;
-        var dateFormat = H.dateFormat,
-            seriesTypes = H.seriesTypes,
+        var seriesTypes = H.seriesTypes,
             Series = H.Series,
             parent = seriesTypes.xrange;
         /**
@@ -6207,7 +6207,7 @@
          * @declare   Highcharts.GanttPointOptionsObject
          * @type      {Array<*>}
          * @extends   series.xrange.data
-         * @excluding className, color, colorIndex, connect, dataLabels, events, id,
+         * @excluding className, color, colorIndex, connect, dataLabels, events,
          *            partialFill, selected, x, x2
          * @product   gantt
          * @apioption series.gantt.data
@@ -6327,7 +6327,7 @@
         ''; // adds doclets above to the transpiled file
 
     });
-    _registerModule(_modules, 'parts-gantt/GanttChart.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts-gantt/GanttChart.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -6339,10 +6339,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
+        var getOptions = U.getOptions,
+            isArray = U.isArray,
             merge = U.merge,
             splat = U.splat;
-        var Chart = H.Chart;
         /**
          * Factory function for Gantt charts.
          *
@@ -6377,7 +6377,7 @@
         H.ganttChart = function (renderTo, options, callback) {
             var hasRenderToArg = typeof renderTo === 'string' || renderTo.nodeName,
                 seriesOptions = options.series,
-                defaultOptions = H.getOptions(),
+                defaultOptions = getOptions(),
                 defaultLinkedTo,
                 userOptions = options;
             options = arguments[hasRenderToArg ? 1 : 0];
@@ -6434,10 +6434,12 @@
                 isGantt: true
             });
             options.series = userOptions.series = seriesOptions;
-            options.series.forEach(function (series) {
-                series.data.forEach(function (point) {
-                    H.seriesTypes.gantt.prototype.setGanttPointAliases(point);
-                });
+            (options.series || []).forEach(function (series) {
+                if (series.data) {
+                    series.data.forEach(function (point) {
+                        H.seriesTypes.gantt.prototype.setGanttPointAliases(point);
+                    });
+                }
             });
             return hasRenderToArg ?
                 new Chart(renderTo, options, callback) :
@@ -6630,7 +6632,7 @@
 
         return ScrollbarAxis;
     });
-    _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/ScrollbarAxis.js'], _modules['parts/Utilities.js']], function (Axis, H, ScrollbarAxis, U) {
+    _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/ScrollbarAxis.js'], _modules['parts/Utilities.js'], _modules['parts/Options.js']], function (Axis, H, ScrollbarAxis, U, O) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6648,8 +6650,8 @@
             merge = U.merge,
             pick = U.pick,
             removeEvent = U.removeEvent;
-        var defaultOptions = H.defaultOptions,
-            hasTouch = H.hasTouch,
+        var defaultOptions = O.defaultOptions;
+        var hasTouch = H.hasTouch,
             isTouchDevice = H.isTouchDevice;
         /**
          * When we have vertical scrollbar, rifles and arrow in buttons should be
@@ -7494,7 +7496,7 @@
 
         return H.Scrollbar;
     });
-    _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, O, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -7504,6 +7506,21 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var defaultOptions = O.defaultOptions;
+        var addEvent = U.addEvent,
+            createElement = U.createElement,
+            css = U.css,
+            defined = U.defined,
+            destroyObjectProperties = U.destroyObjectProperties,
+            discardElement = U.discardElement,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            pInt = U.pInt,
+            splat = U.splat;
         /**
          * Define the time span for the button
          *
@@ -7532,23 +7549,6 @@
          * @return {number}
          *         Parsed JavaScript time value.
          */
-        var addEvent = U.addEvent,
-            createElement = U.createElement,
-            css = U.css,
-            defined = U.defined,
-            destroyObjectProperties = U.destroyObjectProperties,
-            discardElement = U.discardElement,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            pInt = U.pInt,
-            splat = U.splat;
-        var Axis = H.Axis,
-            Chart = H.Chart,
-            defaultOptions = H.defaultOptions;
         /* ************************************************************************** *
          * Start Range Selector code                                                  *
          * ************************************************************************** */
@@ -9431,7 +9431,7 @@
 
         return NavigatorAxis;
     });
-    _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Axis.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/NavigatorAxis.js'], _modules['parts/Scrollbar.js'], _modules['parts/Utilities.js']], function (Axis, Color, H, NavigatorAxis, Scrollbar, U) {
+    _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/NavigatorAxis.js'], _modules['parts/Options.js'], _modules['parts/Scrollbar.js'], _modules['parts/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, O, Scrollbar, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -9442,6 +9442,7 @@
          *
          * */
         var color = Color.parse;
+        var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             clamp = U.clamp,
             correctFloat = U.correctFloat,
@@ -9456,9 +9457,7 @@
             pick = U.pick,
             removeEvent = U.removeEvent,
             splat = U.splat;
-        var Chart = H.Chart,
-            defaultOptions = H.defaultOptions,
-            hasTouch = H.hasTouch,
+        var hasTouch = H.hasTouch,
             isTouchDevice = H.isTouchDevice,
             Series = H.Series,
             seriesTypes = H.seriesTypes,
@@ -9939,9 +9938,9 @@
          *         Path to be used in a handle
          */
         H.Renderer.prototype.symbols['navigator-handle'] = function (x, y, w, h, options) {
-            var halfWidth = options.width / 2,
+            var halfWidth = (options && options.width || 0) / 2,
                 markerPosition = Math.round(halfWidth / 3) + 0.5,
-                height = options.height || 0;
+                height = options && options.height || 0;
             return [
                 ['M', -halfWidth - 1, 0.5],
                 ['L', halfWidth, 0.5],
@@ -11427,6 +11426,7 @@
                                     0) -
                                 ((legendOptions &&
                                     legendOptions.verticalAlign === 'bottom' &&
+                                    legendOptions.layout !== 'proximate' && // #13392
                                     legendOptions.enabled &&
                                     !legendOptions.floating) ?
                                     legend.legendHeight +

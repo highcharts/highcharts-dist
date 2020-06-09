@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Marker clusters module for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/marker-clusters.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'modules/marker-clusters.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, H, O, Point, SVGRenderer, U) {
         /* *
          *
          *  Marker clusters module.
@@ -42,38 +42,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __read = (this && this.__read) || function (o,
-            n) {
-                var m = typeof Symbol === "function" && o[Symbol.iterator];
-            if (!m) return o;
-            var i = m.call(o),
-                r,
-                ar = [],
-                e;
-            try {
-                while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-            }
-            catch (error) { e = { error: error }; }
-            finally {
-                try {
-                    if (r && !r.done && (m = i["return"])) m.call(i);
-                }
-                finally { if (e) throw e.error; }
-            }
-            return ar;
-        };
-        /**
-         * Function callback when a cluster is clicked.
-         *
-         * @callback Highcharts.MarkerClusterDrillCallbackFunction
-         *
-         * @param {Highcharts.Point} this
-         *          The point where the event occured.
-         *
-         * @param {Highcharts.PointClickEventObject} event
-         *          Event arguments.
-         */
-        ''; // detach doclets from following code
+        var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             animObject = U.animObject,
             defined = U.defined,
@@ -86,10 +55,21 @@
             objectEach = U.objectEach,
             relativeLength = U.relativeLength,
             syncTimeout = U.syncTimeout;
+        /**
+         * Function callback when a cluster is clicked.
+         *
+         * @callback Highcharts.MarkerClusterDrillCallbackFunction
+         *
+         * @param {Highcharts.Point} this
+         *          The point where the event occured.
+         *
+         * @param {Highcharts.PointClickEventObject} event
+         *          Event arguments.
+         */
+        ''; // detach doclets from following code
         /* eslint-disable no-invalid-this */
         var Series = H.Series,
             Scatter = H.seriesTypes.scatter,
-            SvgRenderer = H.SVGRenderer,
             baseGeneratePoints = Series.prototype.generatePoints,
             stateIdCounter = 0, 
             // Points that ids are included in the oldPointsStateId array
@@ -396,7 +376,7 @@
                     inside: true
                 }
             };
-        (H.defaultOptions.plotOptions || {}).series = merge((H.defaultOptions.plotOptions || {}).series, {
+        (defaultOptions.plotOptions || {}).series = merge((defaultOptions.plotOptions || {}).series, {
             cluster: clusterDefaultOptions,
             tooltip: {
                 /**
@@ -604,7 +584,7 @@
         // }
         /* eslint-enable require-jsdoc */
         // Cluster symbol.
-        SvgRenderer.prototype.symbols.cluster = function (x, y, width, height) {
+        SVGRenderer.prototype.symbols.cluster = function (x, y, width, height) {
             var w = width / 2,
                 h = height / 2,
                 outerWidth = 1,
@@ -830,10 +810,10 @@
                 realMaxY = yAxis ?
                     yAxis.toValue(chart.plotTop + chart.plotHeight) : 0;
             if (realMinX > realMaxX) {
-                _a = __read([realMinX, realMaxX], 2), realMaxX = _a[0], realMinX = _a[1];
+                _a = [realMinX, realMaxX], realMaxX = _a[0], realMinX = _a[1];
             }
             if (realMinY > realMaxY) {
-                _b = __read([realMinY, realMaxY], 2), realMaxY = _b[0], realMinY = _b[1];
+                _b = [realMinY, realMaxY], realMaxY = _b[0], realMinY = _b[1];
             }
             return {
                 minX: realMinX,
@@ -879,10 +859,10 @@
                     chart.pointer.zoomY = true;
                     // Swap when minus values.
                     if (minX > maxX) {
-                        _a = __read([maxX, minX], 2), minX = _a[0], maxX = _a[1];
+                        _a = [maxX, minX], minX = _a[0], maxX = _a[1];
                     }
                     if (minY > maxY) {
-                        _b = __read([maxY, minY], 2), minY = _b[0], maxY = _b[1];
+                        _b = [maxY, minY], minY = _b[0], maxY = _b[1];
                     }
                     chart.zoom({
                         originalEvent: e,
@@ -1196,7 +1176,7 @@
             var series = this,
                 xAxis = series.xAxis,
                 yAxis = series.yAxis,
-                _a = __read(props.key.split('-').map(parseFloat), 2),
+                _a = props.key.split('-').map(parseFloat),
                 gridY = _a[0],
                 gridX = _a[1],
                 gridSize = props.gridSize,
@@ -1261,7 +1241,7 @@
                         gridOffset.plotLeft;
                     nextYPixel = yAxis.toPixels(groupedData[item].posY || 0) -
                         gridOffset.plotTop;
-                    _a = __read(item.split('-').map(parseFloat), 2), itemY = _a[0], itemX = _a[1];
+                    _a = item.split('-').map(parseFloat), itemY = _a[0], itemX = _a[1];
                     if (zoneOptions) {
                         pointsLen = groupedData[item].length;
                         for (i = 0; i < zoneOptions.length; i++) {
@@ -1690,7 +1670,7 @@
             }
         };
         // Handle animation.
-        addEvent(H.Chart, 'render', function () {
+        addEvent(Chart, 'render', function () {
             var chart = this;
             (chart.series || []).forEach(function (series) {
                 if (series.markerClusterInfo) {

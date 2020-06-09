@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Highcharts cylinder module
  *
@@ -49,7 +49,7 @@
         var charts = H.charts,
             deg2rad = H.deg2rad,
             perspective = H.perspective, 
-            // Work on H.Renderer instead of H.SVGRenderer for VML support.
+            // Work on H.Renderer instead of SVGRenderer for VML support.
             RendererProto = H.Renderer.prototype,
             cuboidPath = RendererProto.cuboidPath,
             cylinderMethods;

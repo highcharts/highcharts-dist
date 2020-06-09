@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.1.0 (2020-05-05)
+ * @license Highmaps JS v8.1.1 (2020-06-09)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -61,6 +61,7 @@
                         point[key][method]();
                     }
                 });
+                this.series.buildKDTree(); // rebuild kdtree #13195
             }
             /* eslint-enable valid-jsdoc */
         };
@@ -94,8 +95,11 @@
                             (colorAxis && typeof value !== 'undefined') ?
                                 colorAxis.toColor(value, point) :
                                 point.color || series.color);
-                    if (color) {
+                    if (color && point.color !== color) {
                         point.color = color;
+                        if (series.options.legendType === 'point' && point.legendItem) {
+                            series.chart.legend.colorizeItem(point, point.visible);
+                        }
                     }
                 });
             }
@@ -103,7 +107,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Axis.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, Color, H, Legend, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -130,6 +134,7 @@
             };
         })();
         var color = Color.parse;
+        var noop = H.noop;
         var addEvent = U.addEvent,
             erase = U.erase,
             extend = U.extend,
@@ -144,11 +149,9 @@
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
         ''; // detach doclet above
-        var Chart = H.Chart,
-            Series = H.Series,
+        var Series = H.Series,
             colorPointMixin = H.colorPointMixin,
-            colorSeriesMixin = H.colorSeriesMixin,
-            noop = H.noop;
+            colorSeriesMixin = H.colorSeriesMixin;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         Chart.prototype.collectionsWithUpdate.push('colorAxis');
@@ -629,21 +632,21 @@
              * @private
              */
             ColorAxis.prototype.getPlotLinePath = function (options) {
-                var axis = this;
-                var left = axis.left;
-                var pos = options.translatedValue;
-                var top = axis.top;
+                var axis = this,
+                    left = axis.left,
+                    pos = options.translatedValue,
+                    top = axis.top;
                 // crosshairs only
                 return isNumber(pos) ? // pos can be 0 (#3969)
                     (axis.horiz ? [
-                        ['M', pos - 4, this.top - 6],
-                        ['L', pos + 4, this.top - 6],
-                        ['L', pos, this.top],
+                        ['M', pos - 4, top - 6],
+                        ['L', pos + 4, top - 6],
+                        ['L', pos, top],
                         ['Z']
                     ] : [
-                        ['M', this.left, pos],
-                        ['L', this.left - 6, pos + 6],
-                        ['L', this.left - 6, pos - 6],
+                        ['M', left, pos],
+                        ['L', left - 6, pos + 6],
+                        ['L', left - 6, pos - 6],
                         ['Z']
                     ]) :
                     _super.prototype.getPlotLinePath.call(this, options);
@@ -665,10 +668,10 @@
              * and call {@link Highcharts.Chart#redraw} after.
              */
             ColorAxis.prototype.update = function (newOptions, redraw) {
-                var axis = this;
-                var chart = axis.chart;
-                var legend = chart.legend;
-                var updatedOptions = ColorAxis.buildOptions(chart, {},
+                var axis = this,
+                    chart = axis.chart,
+                    legend = chart.legend,
+                    updatedOptions = ColorAxis.buildOptions(chart, {},
                     newOptions);
                 this.series.forEach(function (series) {
                     // Needed for Axis.update when choropleth colors change
@@ -1400,7 +1403,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1410,6 +1413,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var clamp = U.clamp,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
+            seriesType = U.seriesType;
         /* *
          * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
@@ -1422,19 +1432,13 @@
         * @name Highcharts.PointOptionsObject#value
         * @type {number|null|undefined}
         */
-        var clamp = U.clamp,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
+        ''; // detach doclets above
         var colorMapPointMixin = H.colorMapPointMixin,
             colorMapSeriesMixin = H.colorMapSeriesMixin,
             noop = H.noop,
             Series = H.Series,
             seriesTypes = H.seriesTypes,
-            symbols = H.SVGRenderer.prototype.symbols;
+            symbols = SVGRenderer.prototype.symbols;
         /**
          * @private
          * @class
@@ -1544,6 +1548,7 @@
             },
             /**
              * @excluding radius, enabledThreshold
+             * @since     8.1
              */
             marker: {
                 /**
@@ -2203,11 +2208,13 @@
         /**
          * @excluding radius, enabledThreshold
          * @product   highcharts highmaps
+         * @since     8.1
          * @apioption series.heatmap.data.marker
          */
         /**
          * @excluding radius, enabledThreshold
          * @product   highcharts highmaps
+         * @since     8.1
          * @apioption series.heatmap.marker
          */
         /**

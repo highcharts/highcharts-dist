@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Old IE (v6, v7, v8) array polyfills for Highcharts v7+.
  *
@@ -45,6 +45,11 @@
          * */
         /* global document */
         /* eslint-disable no-extend-native */
+        if (!String.prototype.trim) {
+            String.prototype.trim = function () {
+                return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+            };
+        }
         if (!Array.prototype.forEach) {
             Array.prototype.forEach = function (fn, thisArg) {
                 var i = 0,

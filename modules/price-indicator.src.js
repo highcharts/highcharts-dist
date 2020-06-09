@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.0 (2020-05-05)
+ * @license Highstock JS v8.1.1 (2020-06-09)
  *
  * Advanced Highstock tools
  *
@@ -159,7 +159,9 @@
                     yAxis.drawCrosshair(null, lastPoint);
                     if (yAxis.cross) {
                         serie.lastVisiblePrice = yAxis.cross;
-                        serie.lastVisiblePrice.y = lastPoint.y;
+                        if (typeof lastPoint.y === 'number') {
+                            serie.lastVisiblePrice.y = lastPoint.y;
+                        }
                     }
                     serie.crossLabel = yAxis.crossLabel;
                 }

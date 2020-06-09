@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Boost module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/boost-canvas.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
+    _registerModule(_modules, 'modules/boost-canvas.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (Chart, H, Color, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -552,7 +552,7 @@
                 fill: true,
                 sampling: true
             });
-            H.Chart.prototype.callbacks.push(function (chart) {
+            Chart.prototype.callbacks.push(function (chart) {
                 /**
                  * @private
                  */

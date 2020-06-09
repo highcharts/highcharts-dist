@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Force directed graph module
  *
@@ -69,7 +69,7 @@
                     node.linksTo = [];
                     node.linksFrom = [];
                     node.formatPrefix = 'node';
-                    node.name = node.name || node.options.id; // for use in formats
+                    node.name = node.name || node.options.id || ''; // for use in formats
                     // Mass is used in networkgraph:
                     node.mass = pick(
                     // Node:
@@ -956,7 +956,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/layouts.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/networkgraph/layouts.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -969,14 +969,12 @@
          *
          * */
         var addEvent = U.addEvent,
-            merge = U.merge,
             clamp = U.clamp,
             defined = U.defined,
             extend = U.extend,
             isFunction = U.isFunction,
             pick = U.pick,
             setAnimation = U.setAnimation;
-        var Chart = H.Chart;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         H.layouts = {
             'reingold-fruchterman': function () {
@@ -1116,6 +1114,30 @@
                 this.setMaxIterations();
                 this.setTemperature();
                 this.setDiffTemperature();
+            },
+            restartSimulation: function () {
+                if (!this.simulation) {
+                    // When dragging nodes, we don't need to calculate
+                    // initial positions and rendering nodes:
+                    this.setInitialRendering(false);
+                    // Start new simulation:
+                    if (!this.enableSimulation) {
+                        // Run only one iteration to speed things up:
+                        this.setMaxIterations(1);
+                    }
+                    else {
+                        this.start();
+                    }
+                    if (this.chart) {
+                        this.chart.redraw();
+                    }
+                    // Restore defaults:
+                    this.setInitialRendering(true);
+                }
+                else {
+                    // Extend current simulation:
+                    this.resetSimulation();
+                }
             },
             setMaxIterations: function (maxIterations) {
                 this.maxIterations = pick(maxIterations, this.options.maxIterations);
@@ -1497,22 +1519,26 @@
         });
         // disable simulation before print if enabled
         addEvent(Chart, 'beforePrint', function () {
-            this.graphLayoutsLookup.forEach(function (layout) {
-                layout.updateSimulation(false);
-            });
-            this.redraw();
+            if (this.graphLayoutsLookup) {
+                this.graphLayoutsLookup.forEach(function (layout) {
+                    layout.updateSimulation(false);
+                });
+                this.redraw();
+            }
         });
         // re-enable simulation after print
         addEvent(Chart, 'afterPrint', function () {
-            this.graphLayoutsLookup.forEach(function (layout) {
-                // return to default simulation
-                layout.updateSimulation();
-            });
+            if (this.graphLayoutsLookup) {
+                this.graphLayoutsLookup.forEach(function (layout) {
+                    // return to default simulation
+                    layout.updateSimulation();
+                });
+            }
             this.redraw();
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/draggable-nodes.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/networkgraph/draggable-nodes.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -1525,7 +1551,6 @@
          *
          * */
         var addEvent = U.addEvent;
-        var Chart = H.Chart;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         H.dragNodesMixin = {
             /**
@@ -1564,7 +1589,8 @@
                         diffX = point.fixedPosition.chartX - normalizedEvent.chartX,
                         diffY = point.fixedPosition.chartY - normalizedEvent.chartY,
                         newPlotX,
-                        newPlotY;
+                        newPlotY,
+                        graphLayoutsLookup = chart.graphLayoutsLookup;
                     // At least 5px to apply change (avoids simple click):
                     if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
                         newPlotX = point.fixedPosition.plotX - diffX;
@@ -1574,26 +1600,9 @@
                             point.plotY = newPlotY;
                             point.hasDragged = true;
                             this.redrawHalo(point);
-                            if (!series.layout.simulation) {
-                                // When dragging nodes, we don't need to calculate
-                                // initial positions and rendering nodes:
-                                series.layout.setInitialRendering(false);
-                                // Start new simulation:
-                                if (!series.layout.enableSimulation) {
-                                    // Run only one iteration to speed things up:
-                                    series.layout.setMaxIterations(1);
-                                }
-                                else {
-                                    series.layout.start();
-                                }
-                                series.chart.redraw();
-                                // Restore defaults:
-                                series.layout.setInitialRendering(true);
-                            }
-                            else {
-                                // Extend current simulation:
-                                series.layout.resetSimulation();
-                            }
+                            graphLayoutsLookup.forEach(function (layout) {
+                                layout.restartSimulation();
+                            });
                         }
                     }
                 }
@@ -1684,6 +1693,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var addEvent = U.addEvent,
+            css = U.css,
+            defined = U.defined,
+            pick = U.pick,
+            seriesType = U.seriesType;
         /**
          * Formatter callback function.
          *
@@ -1720,11 +1734,6 @@
         * @since 7.0.0
         */
         ''; // detach doclets above
-        var addEvent = U.addEvent,
-            css = U.css,
-            defined = U.defined,
-            pick = U.pick,
-            seriesType = U.seriesType;
         var seriesTypes = H.seriesTypes,
             Series = H.Series,
             dragNodesMixin = H.dragNodesMixin;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/oldie.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
+    _registerModule(_modules, 'modules/oldie.src.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Pointer.js'], _modules['parts/SVGElement.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, Pointer, SVGElement, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -42,6 +42,11 @@
          *
          * */
         var color = Color.parse;
+        var deg2rad = H.deg2rad,
+            doc = H.doc,
+            noop = H.noop,
+            svg = H.svg,
+            win = H.win;
         var addEvent = U.addEvent,
             createElement = U.createElement,
             css = U.css,
@@ -50,6 +55,7 @@
             erase = U.erase,
             extend = U.extend,
             extendClass = U.extendClass,
+            getOptions = U.getOptions,
             isArray = U.isArray,
             isNumber = U.isNumber,
             isObject = U.isObject,
@@ -60,15 +66,7 @@
             uniqueKey = U.uniqueKey;
         var VMLRenderer,
             VMLRendererExtension,
-            VMLElement,
-            Chart = H.Chart,
-            deg2rad = H.deg2rad,
-            doc = H.doc,
-            noop = H.noop,
-            svg = H.svg,
-            SVGElement = H.SVGElement,
-            SVGRenderer = H.SVGRenderer,
-            win = H.win;
+            VMLElement;
         /**
          * Path to the pattern image required by VML browsers in order to
          * draw radial gradients.
@@ -79,8 +77,8 @@
          * @requires  modules/oldie
          * @apioption global.VMLRadialGradientURL
          */
-        H.getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/8.1.0/gfx/vml-radial-gradient.png';
+        getOptions().global.VMLRadialGradientURL =
+            'http://code.highcharts.com/8.1.1/gfx/vml-radial-gradient.png';
         // Utilites
         if (doc && !doc.defaultView) {
             H.getStyle = U.getStyle = function (el, prop) {
@@ -134,7 +132,7 @@
              * @param {boolean} [chartPosition=false]
              * @return {Highcharts.PointerEventObject}
              */
-            H.Pointer.prototype.normalize = function (e, chartPosition) {
+            Pointer.prototype.normalize = function (e, chartPosition) {
                 e = e || win.event;
                 if (!e.target) {
                     e.target = e.srcElement;
@@ -1006,7 +1004,7 @@
                                         sizey *= radialReference[2] / bBox.height;
                                     }
                                     fillAttr =
-                                        'src="' + H.getOptions().global.VMLRadialGradientURL +
+                                        'src="' + getOptions().global.VMLRadialGradientURL +
                                             '" ' +
                                             'size="' + sizex + ',' + sizey + '" ' +
                                             'origin="0.5,0.5" ' +

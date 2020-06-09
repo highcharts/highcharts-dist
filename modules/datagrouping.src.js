@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.0 (2020-05-05)
+ * @license Highstock JS v8.1.1 (2020-06-09)
  *
  * Data grouping module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/DateTimeAxis.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (DateTimeAxis, H, Point, Tooltip, U) {
+    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/DateTimeAxis.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (DateTimeAxis, H, O, Point, Tooltip, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -54,6 +54,7 @@
         * @type {number}
         */
         ''; // detach doclets above
+        var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
@@ -66,7 +67,6 @@
             merge = U.merge,
             pick = U.pick;
         var Axis = H.Axis,
-            defaultPlotOptions = H.defaultPlotOptions,
             Series = H.Series;
         /* ************************************************************************** *
          *  Start data grouping module                                                *
@@ -702,7 +702,7 @@
             var options = e.options,
                 type = this.type,
                 plotOptions = this.chart.options.plotOptions,
-                defaultOptions = defaultPlotOptions[type].dataGrouping, 
+                defaultOptions = O.defaultOptions.plotOptions[type].dataGrouping, 
                 // External series, for example technical indicators should also
                 // inherit commonOptions which are not available outside this module
                 baseOptions = this.useCommonDataGrouping && commonOptions;

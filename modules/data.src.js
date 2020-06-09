@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Data module
  *
@@ -177,7 +177,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/data.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts/Globals.js'], _modules['parts/Point.js']], function (Highcharts, U, H, Point) {
+    _registerModule(_modules, 'modules/data.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Chart, H, Point, U) {
         /* *
          *
          *  Data module
@@ -189,6 +189,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            splat = U.splat;
         /**
          * Callback function to modify the CSV before parsing it by the data module.
          *
@@ -261,18 +270,8 @@
          *         Return `false` to stop completion, or call `this.complete()` to
          *         continue async.
          */
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            splat = U.splat;
         // Utilities
-        var Chart = H.Chart,
-            win = H.win,
+        var win = H.win,
             doc = win.document;
         /**
          * The Data module provides a simplified interface for adding data to

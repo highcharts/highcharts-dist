@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * (c) 2014-2019 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -949,6 +949,8 @@
                     }
                 }));
                 Series.prototype.init.call(series, chart, options);
+                // Treemap's opacity is a different option from other series
+                delete series.opacity;
                 if (series.options.allowTraversingTree) {
                     series.eventsToUnbind.push(addEvent(series, 'click', series.onClickDrillToNode));
                 }
@@ -1648,7 +1650,8 @@
                     point = event.point,
                     drillId = point && point.drillId;
                 // If a drill id is returned, add click event and cursor.
-                if (isString(drillId)) {
+                if (isString(drillId) &&
+                    (series.isDrillAllowed ? series.isDrillAllowed(drillId) : true)) {
                     point.setState(''); // Remove hover
                     series.setRootNode(drillId, true, { trigger: 'click' });
                 }
@@ -1714,8 +1717,7 @@
             },
             // TODO remove this function at a suitable version.
             drillToNode: function (id, redraw) {
-                error('WARNING: treemap.drillToNode has been renamed to treemap.' +
-                    'setRootNode, and will be removed in the next major version.');
+                error(32, false, void 0, { 'treemap.drillToNode': 'treemap.setRootNode' });
                 this.setRootNode(id, redraw);
             },
             /**
@@ -1780,6 +1782,21 @@
                 // Fire setRootNode event.
                 fireEvent(series, 'setRootNode', eventArgs, defaultFn);
             },
+            /**
+             * Check if the drill up/down is allowed.
+             *
+             * @private
+             */
+            isDrillAllowed: function (targetNode) {
+                var tree = this.tree,
+                    firstChild = tree.children[0];
+                // The sunburst series looks exactly the same on the level ''
+                // and level 1 if there’s only one element on level 1. Disable
+                // drilling up/down when it doesn't perform any visual
+                // difference (#13388).
+                return !(tree.children.length === 1 && ((this.rootNode === '' && targetNode === firstChild.id) ||
+                    (this.rootNode === firstChild.id && targetNode === '')));
+            },
             renderTraverseUpButton: function (rootId) {
                 var series = this,
                     nodeMap = series.nodeMap,
@@ -1790,7 +1807,9 @@
                     name, '< Back'),
                     attr,
                     states;
-                if (rootId === '') {
+                if (rootId === '' ||
+                    (series.isDrillAllowed ?
+                        !(isString(node.parent) && series.isDrillAllowed(node.parent)) : false)) {
                     if (series.drillUpButton) {
                         series.drillUpButton =
                             series.drillUpButton.destroy();

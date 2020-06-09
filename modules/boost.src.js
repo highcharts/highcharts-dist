@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * Boost module
  *
@@ -1914,9 +1914,9 @@
                 vbuffer.destroy();
                 shader.destroy();
                 if (gl) {
-                    objectEach(textureHandles, function (key) {
-                        if (textureHandles[key].handle) {
-                            gl.deleteTexture(textureHandles[key].handle);
+                    objectEach(textureHandles, function (texture) {
+                        if (texture.handle) {
+                            gl.deleteTexture(texture.handle);
                         }
                     });
                     gl.canvas.width = 1;
@@ -1949,7 +1949,7 @@
 
         return GLRenderer;
     });
-    _registerModule(_modules, 'modules/boost/boost-attach.js', [_modules['parts/Globals.js'], _modules['modules/boost/wgl-renderer.js'], _modules['parts/Utilities.js']], function (H, GLRenderer, U) {
+    _registerModule(_modules, 'modules/boost/boost-attach.js', [_modules['modules/boost/wgl-renderer.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (GLRenderer, H, U) {
         /* *
          *
          *  Copyright (c) 2019-2020 Highsoft AS
@@ -1961,10 +1961,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var doc = H.doc;
         var error = U.error;
-        var win = H.win,
-            doc = win.document,
-            mainCanvas = doc.createElement('canvas');
+        var mainCanvas = doc.createElement('canvas');
         /**
          * Create a canvas + context and attach it to the target
          *
@@ -2109,9 +2108,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var pick = U.pick;
         var win = H.win,
-            doc = win.document;
+            doc = H.doc;
+        var pick = U.pick;
         // This should be a const.
         var CHUNK_SIZE = 3000;
         /**
@@ -2361,7 +2360,7 @@
 
         return funs;
     });
-    _registerModule(_modules, 'modules/boost/boost-init.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/boost/boost-utils.js'], _modules['modules/boost/boost-attach.js']], function (H, U, butils, createAndAttachRenderer) {
+    _registerModule(_modules, 'modules/boost/boost-init.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['modules/boost/boost-utils.js'], _modules['modules/boost/boost-attach.js']], function (Chart, H, U, butils, createAndAttachRenderer) {
         /* *
          *
          *  Copyright (c) 2019-2020 Highsoft AS
@@ -2616,7 +2615,7 @@
                 sampling: true
             });
             // Take care of the canvas blitting
-            H.Chart.prototype.callbacks.push(function (chart) {
+            Chart.prototype.callbacks.push(function (chart) {
                 /**
                  * Convert chart-level canvas to image.
                  * @private
@@ -2668,7 +2667,7 @@
 
         return init;
     });
-    _registerModule(_modules, 'modules/boost/boost-overrides.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['modules/boost/boost-utils.js'], _modules['modules/boost/boostables.js'], _modules['modules/boost/boostable-map.js']], function (H, Point, U, butils, boostable, boostableMap) {
+    _registerModule(_modules, 'modules/boost/boost-overrides.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['modules/boost/boost-utils.js'], _modules['modules/boost/boostables.js'], _modules['modules/boost/boostable-map.js']], function (Chart, H, Point, U, butils, boostable, boostableMap) {
         /* *
          *
          *  Copyright (c) 2019-2020 Highsoft AS
@@ -2682,16 +2681,16 @@
          * */
         var addEvent = U.addEvent,
             error = U.error,
+            getOptions = U.getOptions,
             isArray = U.isArray,
             isNumber = U.isNumber,
             pick = U.pick,
             wrap = U.wrap;
         var boostEnabled = butils.boostEnabled,
             shouldForceChartSeriesBoosting = butils.shouldForceChartSeriesBoosting,
-            Chart = H.Chart,
             Series = H.Series,
             seriesTypes = H.seriesTypes,
-            plotOptions = H.getOptions().plotOptions;
+            plotOptions = getOptions().plotOptions;
         /**
          * Returns true if the chart is in series boost mode.
          *
@@ -2972,6 +2971,8 @@
             this.allowDG = false;
             this.directTouch = false;
             this.stickyTracking = true;
+            // Prevent animation when zooming in on boosted series(#13421).
+            this.finishedAnimating = true;
             // Hide series label if any
             if (this.labelBySeries) {
                 this.labelBySeries = this.labelBySeries.destroy();

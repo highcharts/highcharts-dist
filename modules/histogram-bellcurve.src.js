@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.0 (2020-05-05)
+ * @license Highcharts JS v8.1.1 (2020-06-09)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -280,9 +280,12 @@
                     data = [],
                     x,
                     fitToBin;
-                binWidth = series.binWidth = series.options.pointRange = (correctFloat(isNumber(binWidth) ?
+                binWidth = series.binWidth = (correctFloat(isNumber(binWidth) ?
                     (binWidth || 1) :
                     (max - min) / binsNumber));
+                // #12077 negative pointRange causes wrong calculations,
+                // browser hanging.
+                series.options.pointRange = Math.max(binWidth, 0);
                 // If binWidth is 0 then max and min are equaled,
                 // increment the x with some positive value to quit the loop
                 for (x = min; 

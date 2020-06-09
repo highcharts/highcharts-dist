@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.0 (2020-05-05)
+ * @license Highstock JS v8.1.1 (2020-06-09)
  *
  * Highstock as a plugin for Highcharts
  *
@@ -389,7 +389,7 @@
 
         return ScrollbarAxis;
     });
-    _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/ScrollbarAxis.js'], _modules['parts/Utilities.js']], function (Axis, H, ScrollbarAxis, U) {
+    _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/ScrollbarAxis.js'], _modules['parts/Utilities.js'], _modules['parts/Options.js']], function (Axis, H, ScrollbarAxis, U, O) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -407,8 +407,8 @@
             merge = U.merge,
             pick = U.pick,
             removeEvent = U.removeEvent;
-        var defaultOptions = H.defaultOptions,
-            hasTouch = H.hasTouch,
+        var defaultOptions = O.defaultOptions;
+        var hasTouch = H.hasTouch,
             isTouchDevice = H.isTouchDevice;
         /**
          * When we have vertical scrollbar, rifles and arrow in buttons should be
@@ -1253,7 +1253,7 @@
 
         return H.Scrollbar;
     });
-    _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Axis.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/NavigatorAxis.js'], _modules['parts/Scrollbar.js'], _modules['parts/Utilities.js']], function (Axis, Color, H, NavigatorAxis, Scrollbar, U) {
+    _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/NavigatorAxis.js'], _modules['parts/Options.js'], _modules['parts/Scrollbar.js'], _modules['parts/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, O, Scrollbar, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1264,6 +1264,7 @@
          *
          * */
         var color = Color.parse;
+        var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             clamp = U.clamp,
             correctFloat = U.correctFloat,
@@ -1278,9 +1279,7 @@
             pick = U.pick,
             removeEvent = U.removeEvent,
             splat = U.splat;
-        var Chart = H.Chart,
-            defaultOptions = H.defaultOptions,
-            hasTouch = H.hasTouch,
+        var hasTouch = H.hasTouch,
             isTouchDevice = H.isTouchDevice,
             Series = H.Series,
             seriesTypes = H.seriesTypes,
@@ -1761,9 +1760,9 @@
          *         Path to be used in a handle
          */
         H.Renderer.prototype.symbols['navigator-handle'] = function (x, y, w, h, options) {
-            var halfWidth = options.width / 2,
+            var halfWidth = (options && options.width || 0) / 2,
                 markerPosition = Math.round(halfWidth / 3) + 0.5,
-                height = options.height || 0;
+                height = options && options.height || 0;
             return [
                 ['M', -halfWidth - 1, 0.5],
                 ['L', halfWidth, 0.5],
@@ -3249,6 +3248,7 @@
                                     0) -
                                 ((legendOptions &&
                                     legendOptions.verticalAlign === 'bottom' &&
+                                    legendOptions.layout !== 'proximate' && // #13392
                                     legendOptions.enabled &&
                                     !legendOptions.floating) ?
                                     legend.legendHeight +
@@ -3336,257 +3336,45 @@
         // Has a dependency on Navigator due to the use of Axis.toFixedRange
         var Chart = H.Chart,
             Series = H.Series;
-        /* eslint-disable valid-jsdoc */
-        var OrdinalAxisAdditions = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                /**
-                 * @private
-                 */
-                function OrdinalAxisAdditions(axis) {
-                    this.index = {};
-                this.axis = axis;
-            }
+        /**
+         * Extends the axis with ordinal support.
+         * @private
+         */
+        var OrdinalAxis;
+        (function (OrdinalAxis) {
             /* *
              *
-             *  Functions
+             *  Classes
              *
              * */
             /**
-             * Get the ordinal positions for the entire data set. This is necessary
-             * in chart panning because we need to find out what points or data
-             * groups are available outside the visible range. When a panning
-             * operation starts, if an index for the given grouping does not exists,
-             * it is created and cached. This index is deleted on updated data, so
-             * it will be regenerated the next time a panning operation starts.
-             *
              * @private
              */
-            OrdinalAxisAdditions.prototype.getExtendedPositions = function () {
-                var ordinal = this,
-                    axis = ordinal.axis,
-                    axisProto = axis.constructor.prototype,
-                    chart = axis.chart,
-                    grouping = axis.series[0].currentDataGrouping,
-                    ordinalIndex = ordinal.index,
-                    key = grouping ?
-                        grouping.count + grouping.unitName :
-                        'raw',
-                    overscroll = axis.options.overscroll,
-                    extremes = axis.getExtremes(),
-                    fakeAxis,
-                    fakeSeries;
-                // If this is the first time, or the ordinal index is deleted by
-                // updatedData,
-                // create it.
-                if (!ordinalIndex) {
-                    ordinalIndex = ordinal.index = {};
+            var Composition = /** @class */ (function () {
+                    /* *
+                     *
+                     *  Constructors
+                     *
+                     * */
+                    /**
+                     * @private
+                     */
+                    function Composition(axis) {
+                        this.index = {};
+                    this.axis = axis;
                 }
-                if (!ordinalIndex[key]) {
-                    // Create a fake axis object where the extended ordinal
-                    // positions are emulated
-                    fakeAxis = {
-                        series: [],
-                        chart: chart,
-                        getExtremes: function () {
-                            return {
-                                min: extremes.dataMin,
-                                max: extremes.dataMax + overscroll
-                            };
-                        },
-                        options: {
-                            ordinal: true
-                        },
-                        ordinal: {},
-                        ordinal2lin: axisProto.ordinal2lin,
-                        val2lin: axisProto.val2lin // #2590
-                    };
-                    fakeAxis.ordinal.axis = fakeAxis;
-                    // Add the fake series to hold the full data, then apply
-                    // processData to it
-                    axis.series.forEach(function (series) {
-                        fakeSeries = {
-                            xAxis: fakeAxis,
-                            xData: series.xData.slice(),
-                            chart: chart,
-                            destroyGroupedData: H.noop,
-                            getProcessedData: H.Series.prototype.getProcessedData
-                        };
-                        fakeSeries.xData = fakeSeries.xData.concat(ordinal.getOverscrollPositions());
-                        fakeSeries.options = {
-                            dataGrouping: grouping ? {
-                                enabled: true,
-                                forced: true,
-                                // doesn't matter which, use the fastest
-                                approximation: 'open',
-                                units: [[
-                                        grouping.unitName,
-                                        [grouping.count]
-                                    ]]
-                            } : {
-                                enabled: false
-                            }
-                        };
-                        series.processData.apply(fakeSeries);
-                        fakeAxis.series.push(fakeSeries);
-                    });
-                    // Run beforeSetTickPositions to compute the ordinalPositions
-                    axis.beforeSetTickPositions.apply(fakeAxis);
-                    // Cache it
-                    ordinalIndex[key] = fakeAxis.ordinal.positions;
-                }
-                return ordinalIndex[key];
-            };
-            /**
-             * Find the factor to estimate how wide the plot area would have been if
-             * ordinal gaps were included. This value is used to compute an imagined
-             * plot width in order to establish the data grouping interval.
-             *
-             * A real world case is the intraday-candlestick example. Without this
-             * logic, it would show the correct data grouping when viewing a range
-             * within each day, but once moving the range to include the gap between
-             * two days, the interval would include the cut-away night hours and the
-             * data grouping would be wrong. So the below method tries to compensate
-             * by identifying the most common point interval, in this case days.
-             *
-             * An opposite case is presented in issue #718. We have a long array of
-             * daily data, then one point is appended one hour after the last point.
-             * We expect the data grouping not to change.
-             *
-             * In the future, if we find cases where this estimation doesn't work
-             * optimally, we might need to add a second pass to the data grouping
-             * logic, where we do another run with a greater interval if the number
-             * of data groups is more than a certain fraction of the desired group
-             * count.
-             *
-             * @private
-             */
-            OrdinalAxisAdditions.prototype.getGroupIntervalFactor = function (xMin, xMax, series) {
-                var ordinal = this,
-                    axis = ordinal.axis,
-                    i,
-                    processedXData = series.processedXData,
-                    len = processedXData.length,
-                    distances = [],
-                    median,
-                    groupIntervalFactor = ordinal.groupIntervalFactor;
-                // Only do this computation for the first series, let the other
-                // inherit it (#2416)
-                if (!groupIntervalFactor) {
-                    // Register all the distances in an array
-                    for (i = 0; i < len - 1; i++) {
-                        distances[i] =
-                            processedXData[i + 1] - processedXData[i];
-                    }
-                    // Sort them and find the median
-                    distances.sort(function (a, b) {
-                        return a - b;
-                    });
-                    median = distances[Math.floor(len / 2)];
-                    // Compensate for series that don't extend through the entire
-                    // axis extent. #1675.
-                    xMin = Math.max(xMin, processedXData[0]);
-                    xMax = Math.min(xMax, processedXData[len - 1]);
-                    ordinal.groupIntervalFactor = groupIntervalFactor =
-                        (len * median) / (xMax - xMin);
-                }
-                // Return the factor needed for data grouping
-                return groupIntervalFactor;
-            };
-            /**
-             * Get ticks for an ordinal axis within a range where points don't
-             * exist. It is required when overscroll is enabled. We can't base on
-             * points, because we may not have any, so we use approximated
-             * pointRange and generate these ticks between Axis.dataMax,
-             * Axis.dataMax + Axis.overscroll evenly spaced. Used in panning and
-             * navigator scrolling.
-             *
-             * @private
-             */
-            OrdinalAxisAdditions.prototype.getOverscrollPositions = function () {
-                var ordinal = this,
-                    axis = ordinal.axis,
-                    extraRange = axis.options.overscroll,
-                    distance = ordinal.overscrollPointsRange,
-                    positions = [],
-                    max = axis.dataMax;
-                if (defined(distance)) {
-                    // Max + pointRange because we need to scroll to the last
-                    positions.push(max);
-                    while (max <= axis.dataMax + extraRange) {
-                        max += distance;
-                        positions.push(max);
-                    }
-                }
-                return positions;
-            };
-            /**
-             * Make the tick intervals closer because the ordinal gaps make the
-             * ticks spread out or cluster.
-             *
-             * @private
-             */
-            OrdinalAxisAdditions.prototype.postProcessTickInterval = function (tickInterval) {
-                // Problem: https://jsfiddle.net/highcharts/FQm4E/1/
-                // This is a case where this algorithm doesn't work optimally. In
-                // this case, the tick labels are spread out per week, but all the
-                // gaps reside within weeks. So we have a situation where the labels
-                // are courser than the ordinal gaps, and thus the tick interval
-                // should not be altered.
-                var ordinal = this,
-                    axis = ordinal.axis,
-                    ordinalSlope = ordinal.slope,
-                    ret;
-                if (ordinalSlope) {
-                    if (!axis.options.breaks) {
-                        ret = tickInterval / (ordinalSlope / axis.closestPointRange);
-                    }
-                    else {
-                        ret = axis.closestPointRange || tickInterval; // #7275
-                    }
-                }
-                else {
-                    ret = tickInterval;
-                }
-                return ret;
-            };
-            return OrdinalAxisAdditions;
-        }());
-        /**
-         * Extends the axis with ordinal support.
-         *
-         * @private
-         */
-        var OrdinalAxis = /** @class */ (function () {
-                function OrdinalAxis() {
-                }
-                /**
-                 * Extends the axis with ordinal support.
-                 *
-                 * @private
-                 *
-                 * @param AxisClass
-                 * Axis class to extend.
-                 *
-                 * @param ChartClass
-                 * Chart class to use.
-                 *
-                 * @param SeriesClass
-                 * Series class to use.
-                 */
-                OrdinalAxis.compose = function (AxisClass, ChartClass, SeriesClass) {
-                    AxisClass.keepProps.push('ordinal');
-                var axisProto = AxisClass.prototype;
+                /* *
+                *
+                *  Functions
+                *
+                * */
                 /**
                  * Calculate the ordinal positions before tick positions are calculated.
                  *
                  * @private
                  */
-                axisProto.beforeSetTickPositions = function () {
-                    var axis = this,
+                Composition.prototype.beforeSetTickPositions = function () {
+                    var axis = this.axis,
                         ordinal = axis.ordinal,
                         len,
                         ordinalPositions = [],
@@ -3720,6 +3508,229 @@
                     axis.isOrdinal = isOrdinal && useOrdinal; // #3818, #4196, #4926
                     ordinal.groupIntervalFactor = null; // reset for next run
                 };
+                /**
+                 * Get the ordinal positions for the entire data set. This is necessary
+                 * in chart panning because we need to find out what points or data
+                 * groups are available outside the visible range. When a panning
+                 * operation starts, if an index for the given grouping does not exists,
+                 * it is created and cached. This index is deleted on updated data, so
+                 * it will be regenerated the next time a panning operation starts.
+                 *
+                 * @private
+                 */
+                Composition.prototype.getExtendedPositions = function () {
+                    var ordinal = this,
+                        axis = ordinal.axis,
+                        axisProto = axis.constructor.prototype,
+                        chart = axis.chart,
+                        grouping = axis.series[0].currentDataGrouping,
+                        ordinalIndex = ordinal.index,
+                        key = grouping ?
+                            grouping.count + grouping.unitName :
+                            'raw',
+                        overscroll = axis.options.overscroll,
+                        extremes = axis.getExtremes(),
+                        fakeAxis,
+                        fakeSeries;
+                    // If this is the first time, or the ordinal index is deleted by
+                    // updatedData,
+                    // create it.
+                    if (!ordinalIndex) {
+                        ordinalIndex = ordinal.index = {};
+                    }
+                    if (!ordinalIndex[key]) {
+                        // Create a fake axis object where the extended ordinal
+                        // positions are emulated
+                        fakeAxis = {
+                            series: [],
+                            chart: chart,
+                            getExtremes: function () {
+                                return {
+                                    min: extremes.dataMin,
+                                    max: extremes.dataMax + overscroll
+                                };
+                            },
+                            options: {
+                                ordinal: true
+                            },
+                            ordinal: {},
+                            ordinal2lin: axisProto.ordinal2lin,
+                            val2lin: axisProto.val2lin // #2590
+                        };
+                        fakeAxis.ordinal.axis = fakeAxis;
+                        // Add the fake series to hold the full data, then apply
+                        // processData to it
+                        axis.series.forEach(function (series) {
+                            fakeSeries = {
+                                xAxis: fakeAxis,
+                                xData: series.xData.slice(),
+                                chart: chart,
+                                destroyGroupedData: H.noop,
+                                getProcessedData: H.Series.prototype.getProcessedData
+                            };
+                            fakeSeries.xData = fakeSeries.xData.concat(ordinal.getOverscrollPositions());
+                            fakeSeries.options = {
+                                dataGrouping: grouping ? {
+                                    enabled: true,
+                                    forced: true,
+                                    // doesn't matter which, use the fastest
+                                    approximation: 'open',
+                                    units: [[
+                                            grouping.unitName,
+                                            [grouping.count]
+                                        ]]
+                                } : {
+                                    enabled: false
+                                }
+                            };
+                            series.processData.apply(fakeSeries);
+                            fakeAxis.series.push(fakeSeries);
+                        });
+                        // Run beforeSetTickPositions to compute the ordinalPositions
+                        axis.ordinal.beforeSetTickPositions.apply({ axis: fakeAxis });
+                        // Cache it
+                        ordinalIndex[key] = fakeAxis.ordinal.positions;
+                    }
+                    return ordinalIndex[key];
+                };
+                /**
+                 * Find the factor to estimate how wide the plot area would have been if
+                 * ordinal gaps were included. This value is used to compute an imagined
+                 * plot width in order to establish the data grouping interval.
+                 *
+                 * A real world case is the intraday-candlestick example. Without this
+                 * logic, it would show the correct data grouping when viewing a range
+                 * within each day, but once moving the range to include the gap between
+                 * two days, the interval would include the cut-away night hours and the
+                 * data grouping would be wrong. So the below method tries to compensate
+                 * by identifying the most common point interval, in this case days.
+                 *
+                 * An opposite case is presented in issue #718. We have a long array of
+                 * daily data, then one point is appended one hour after the last point.
+                 * We expect the data grouping not to change.
+                 *
+                 * In the future, if we find cases where this estimation doesn't work
+                 * optimally, we might need to add a second pass to the data grouping
+                 * logic, where we do another run with a greater interval if the number
+                 * of data groups is more than a certain fraction of the desired group
+                 * count.
+                 *
+                 * @private
+                 */
+                Composition.prototype.getGroupIntervalFactor = function (xMin, xMax, series) {
+                    var ordinal = this,
+                        axis = ordinal.axis,
+                        i,
+                        processedXData = series.processedXData,
+                        len = processedXData.length,
+                        distances = [],
+                        median,
+                        groupIntervalFactor = ordinal.groupIntervalFactor;
+                    // Only do this computation for the first series, let the other
+                    // inherit it (#2416)
+                    if (!groupIntervalFactor) {
+                        // Register all the distances in an array
+                        for (i = 0; i < len - 1; i++) {
+                            distances[i] =
+                                processedXData[i + 1] - processedXData[i];
+                        }
+                        // Sort them and find the median
+                        distances.sort(function (a, b) {
+                            return a - b;
+                        });
+                        median = distances[Math.floor(len / 2)];
+                        // Compensate for series that don't extend through the entire
+                        // axis extent. #1675.
+                        xMin = Math.max(xMin, processedXData[0]);
+                        xMax = Math.min(xMax, processedXData[len - 1]);
+                        ordinal.groupIntervalFactor = groupIntervalFactor =
+                            (len * median) / (xMax - xMin);
+                    }
+                    // Return the factor needed for data grouping
+                    return groupIntervalFactor;
+                };
+                /**
+                 * Get ticks for an ordinal axis within a range where points don't
+                 * exist. It is required when overscroll is enabled. We can't base on
+                 * points, because we may not have any, so we use approximated
+                 * pointRange and generate these ticks between Axis.dataMax,
+                 * Axis.dataMax + Axis.overscroll evenly spaced. Used in panning and
+                 * navigator scrolling.
+                 *
+                 * @private
+                 */
+                Composition.prototype.getOverscrollPositions = function () {
+                    var ordinal = this,
+                        axis = ordinal.axis,
+                        extraRange = axis.options.overscroll,
+                        distance = ordinal.overscrollPointsRange,
+                        positions = [],
+                        max = axis.dataMax;
+                    if (defined(distance)) {
+                        // Max + pointRange because we need to scroll to the last
+                        positions.push(max);
+                        while (max <= axis.dataMax + extraRange) {
+                            max += distance;
+                            positions.push(max);
+                        }
+                    }
+                    return positions;
+                };
+                /**
+                 * Make the tick intervals closer because the ordinal gaps make the
+                 * ticks spread out or cluster.
+                 *
+                 * @private
+                 */
+                Composition.prototype.postProcessTickInterval = function (tickInterval) {
+                    // Problem: https://jsfiddle.net/highcharts/FQm4E/1/
+                    // This is a case where this algorithm doesn't work optimally. In
+                    // this case, the tick labels are spread out per week, but all the
+                    // gaps reside within weeks. So we have a situation where the labels
+                    // are courser than the ordinal gaps, and thus the tick interval
+                    // should not be altered.
+                    var ordinal = this,
+                        axis = ordinal.axis,
+                        ordinalSlope = ordinal.slope,
+                        ret;
+                    if (ordinalSlope) {
+                        if (!axis.options.breaks) {
+                            ret = tickInterval / (ordinalSlope / axis.closestPointRange);
+                        }
+                        else {
+                            ret = axis.closestPointRange || tickInterval; // #7275
+                        }
+                    }
+                    else {
+                        ret = tickInterval;
+                    }
+                    return ret;
+                };
+                return Composition;
+            }());
+            OrdinalAxis.Composition = Composition;
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Extends the axis with ordinal support.
+             *
+             * @private
+             *
+             * @param AxisClass
+             * Axis class to extend.
+             *
+             * @param ChartClass
+             * Chart class to use.
+             *
+             * @param SeriesClass
+             * Series class to use.
+             */
+            function compose(AxisClass, ChartClass, SeriesClass) {
+                AxisClass.keepProps.push('ordinal');
+                var axisProto = AxisClass.prototype;
                 /**
                  * In an ordinal axis, there might be areas with dense consentrations of
                  * points, then large gaps between some. Creating equally distributed
@@ -4025,7 +4036,7 @@
                 addEvent(AxisClass, 'afterInit', function () {
                     var axis = this;
                     if (!axis.ordinal) {
-                        axis.ordinal = new OrdinalAxisAdditions(axis);
+                        axis.ordinal = new OrdinalAxis.Composition(axis);
                     }
                 });
                 addEvent(AxisClass, 'foundExtremes', function () {
@@ -4057,6 +4068,13 @@
                         axis.isDirty = axis.isOrdinal &&
                             axis.chart.navigator &&
                             !axis.chart.navigator.adaptToUpdatedData;
+                    }
+                });
+                addEvent(AxisClass, 'initialAxisTranslation', function () {
+                    var axis = this;
+                    if (axis.ordinal) {
+                        axis.ordinal.beforeSetTickPositions();
+                        axis.tickInterval = axis.ordinal.postProcessTickInterval(axis.tickInterval);
                     }
                 });
                 // Extending the Chart.pan method for ordinal axes
@@ -4165,9 +4183,9 @@
                     }
                 });
                 /* eslint-enable no-invalid-this */
-            };
-            return OrdinalAxis;
-        }());
+            }
+            OrdinalAxis.compose = compose;
+        })(OrdinalAxis || (OrdinalAxis = {}));
         OrdinalAxis.compose(Axis, Chart, Series); // @todo move to StockChart, remove from master
 
         return OrdinalAxis;
@@ -4756,7 +4774,7 @@
 
 
     });
-    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/DateTimeAxis.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (DateTimeAxis, H, Point, Tooltip, U) {
+    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/DateTimeAxis.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (DateTimeAxis, H, O, Point, Tooltip, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4782,6 +4800,7 @@
         * @type {number}
         */
         ''; // detach doclets above
+        var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
@@ -4794,7 +4813,6 @@
             merge = U.merge,
             pick = U.pick;
         var Axis = H.Axis,
-            defaultPlotOptions = H.defaultPlotOptions,
             Series = H.Series;
         /* ************************************************************************** *
          *  Start data grouping module                                                *
@@ -5430,7 +5448,7 @@
             var options = e.options,
                 type = this.type,
                 plotOptions = this.chart.options.plotOptions,
-                defaultOptions = defaultPlotOptions[type].dataGrouping, 
+                defaultOptions = O.defaultOptions.plotOptions[type].dataGrouping, 
                 // External series, for example technical indicators should also
                 // inherit commonOptions which are not available outside this module
                 baseOptions = this.useCommonDataGrouping && commonOptions;
@@ -6117,7 +6135,7 @@
         ''; // adds doclets above to transpilat
 
     });
-    _registerModule(_modules, 'parts/CandlestickSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts/CandlestickSeries.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (H, O, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6127,10 +6145,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var defaultOptions = O.defaultOptions;
         var merge = U.merge,
             seriesType = U.seriesType;
-        var defaultPlotOptions = H.defaultPlotOptions,
-            seriesTypes = H.seriesTypes;
+        var seriesTypes = H.seriesTypes;
         /**
          * A candlestick chart is a style of financial chart used to describe price
          * movements over time.
@@ -6179,7 +6197,7 @@
                 /**
                  * @extends plotOptions.ohlc.tooltip
                  */
-                tooltip: defaultPlotOptions.ohlc.tooltip,
+                tooltip: defaultOptions.plotOptions.ohlc.tooltip,
                 /**
                  * @type    {number|null}
                  * @product highstock
@@ -6244,7 +6262,7 @@
          *
          * @augments Highcharts.seriesTypes.ohlc
          */
-        seriesType('candlestick', 'ohlc', merge(defaultPlotOptions.column, candlestickOptions), 
+        seriesType('candlestick', 'ohlc', merge(defaultOptions.plotOptions.column, candlestickOptions), 
         /**
          * @lends seriesTypes.candlestick
          */
@@ -6591,7 +6609,7 @@
 
         return onSeriesMixin;
     });
-    _registerModule(_modules, 'parts/FlagsSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/on-series.js']], function (H, U, onSeriesMixin) {
+    _registerModule(_modules, 'parts/FlagsSeries.js', [_modules['parts/Globals.js'], _modules['parts/SVGElement.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js'], _modules['mixins/on-series.js']], function (H, SVGElement, SVGRenderer, U, onSeriesMixin) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6601,9 +6619,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /**
-         * @typedef {"circlepin"|"flag"|"squarepin"} Highcharts.FlagsShapeValue
-         */
         var addEvent = U.addEvent,
             defined = U.defined,
             isNumber = U.isNumber,
@@ -6611,10 +6626,12 @@
             objectEach = U.objectEach,
             seriesType = U.seriesType,
             wrap = U.wrap;
+        /**
+         * @typedef {"circlepin"|"flag"|"squarepin"} Highcharts.FlagsShapeValue
+         */
         var noop = H.noop,
             Renderer = H.Renderer,
             Series = H.Series,
-            SVGRenderer = H.SVGRenderer,
             TrackerMixin = H.TrackerMixin,
             VMLRenderer = H.VMLRenderer,
             symbols = SVGRenderer.prototype.symbols;
@@ -7036,7 +7053,7 @@
                 // Can be a mix of SVG and HTML and we need events for both (#6303)
                 if (options.useHTML) {
                     wrap(series.markerGroup, 'on', function (proceed) {
-                        return H.SVGElement.prototype.on.apply(
+                        return SVGElement.prototype.on.apply(
                         // for HTML
                         proceed.apply(this, [].slice.call(arguments, 1)), 
                         // and for SVG
@@ -7275,7 +7292,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, O, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -7285,6 +7302,21 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var defaultOptions = O.defaultOptions;
+        var addEvent = U.addEvent,
+            createElement = U.createElement,
+            css = U.css,
+            defined = U.defined,
+            destroyObjectProperties = U.destroyObjectProperties,
+            discardElement = U.discardElement,
+            extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            pInt = U.pInt,
+            splat = U.splat;
         /**
          * Define the time span for the button
          *
@@ -7313,23 +7345,6 @@
          * @return {number}
          *         Parsed JavaScript time value.
          */
-        var addEvent = U.addEvent,
-            createElement = U.createElement,
-            css = U.css,
-            defined = U.defined,
-            destroyObjectProperties = U.destroyObjectProperties,
-            discardElement = U.discardElement,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick,
-            pInt = U.pInt,
-            splat = U.splat;
-        var Axis = H.Axis,
-            Chart = H.Chart,
-            defaultOptions = H.defaultOptions;
         /* ************************************************************************** *
          * Start Range Selector code                                                  *
          * ************************************************************************** */
@@ -9036,7 +9051,7 @@
         }
 
     });
-    _registerModule(_modules, 'parts/StockChart.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, H, Point, U) {
+    _registerModule(_modules, 'parts/StockChart.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, Point, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -9054,6 +9069,7 @@
             extend = U.extend,
             find = U.find,
             format = U.format,
+            getOptions = U.getOptions,
             isNumber = U.isNumber,
             isString = U.isString,
             merge = U.merge,
@@ -9065,10 +9081,7 @@
         // defaultOptions.scrollbar
         // Has a dependency on RangeSelector due to the use of
         // defaultOptions.rangeSelector
-        var Chart = H.Chart,
-            Renderer = H.Renderer,
-            Series = H.Series,
-            SVGRenderer = H.SVGRenderer,
+        var Series = H.Series,
             seriesProto = Series.prototype,
             seriesInit = seriesProto.init,
             seriesProcessData = seriesProto.processData,
@@ -9168,7 +9181,7 @@
                 userOptions = options, 
                 // to increase performance, don't merge the data
                 seriesOptions = options.series,
-                defaultOptions = H.getOptions(),
+                defaultOptions = getOptions(),
                 opposite, 
                 // Always disable startOnTick:true on the main axis when the navigator
                 // is enabled (#1090)
@@ -9574,13 +9587,15 @@
             });
             crossBox = crossLabel.getBBox();
             // now it is placed we can correct its position
-            if (horiz) {
-                if ((tickInside && !opposite) || (!tickInside && opposite)) {
-                    posy = crossLabel.y - crossBox.height;
+            if (isNumber(crossLabel.y)) {
+                if (horiz) {
+                    if ((tickInside && !opposite) || (!tickInside && opposite)) {
+                        posy = crossLabel.y - crossBox.height;
+                    }
                 }
-            }
-            else {
-                posy = crossLabel.y - (crossBox.height / 2);
+                else {
+                    posy = crossLabel.y - (crossBox.height / 2);
+                }
             }
             // check the edges
             if (horiz) {

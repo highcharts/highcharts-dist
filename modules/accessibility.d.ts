@@ -186,25 +186,6 @@ declare module "../highcharts" {
      */
     function i18nFormat(formatString: string, context: Dictionary<any>, chart: Chart): string;
     /**
-     * Add hook to destroy focus border if SVG element is destroyed, unless hook
-     * already exists.
-     *
-     * @param el
-     *        Element to add destroy hook to
-     */
-    function addDestroyFocusBorderHook(el: any): void;
-    /**
-     * Add hooks to update the focus border of an element when the element
-     * size/position is updated, unless already added.
-     *
-     * @param el
-     *        Element to add update hooks to
-     *
-     * @param updateParams
-     *        Parameters to pass through to addFocusBorder when updating.
-     */
-    function addUpdateFocusBorderHooks(el: any, updateParams: any): void;
-    /**
      * If we have a clear root option node for old and new options and a mapping
      * between, we can use this generic function for the copy and warn logic.
      */
@@ -218,22 +199,6 @@ declare module "../highcharts" {
     function describeSeries(series: Series): void;
     function getAxisDescription(axis: Axis): string;
     function getChartTitle(): string;
-    /**
-     * Remove hook from SVG element added by addDestroyFocusBorderHook, if
-     * existing.
-     *
-     * @param el
-     *        Element to remove destroy hook from
-     */
-    function removeDestroyFocusBorderHook(el: any): void;
-    /**
-     * Remove hooks from SVG element added by addUpdateFocusBorderHooks, if
-     * existing.
-     *
-     * @param el
-     *        Element to remove update hooks from
-     */
-    function removeUpdateFocusBorderHooks(el: any): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;
