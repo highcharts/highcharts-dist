@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.1 (2020-06-09)
+ * @license Highcharts JS v8.1.2 (2020-06-16)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -341,6 +341,9 @@
                 id = 'highcharts-pattern-' + this.idCounter + '-' + (this.chartIndex || 0);
                 ++this.idCounter;
             }
+            if (this.forExport) {
+                id += '-export';
+            }
             // Do nothing if ID already exists
             this.defIds = this.defIds || [];
             if (this.defIds.indexOf(id) > -1) {
@@ -526,7 +529,7 @@
                 // Add it. This function does nothing if an element with this ID
                 // already exists.
                 this.addPattern(pattern, !this.forExport && pick(pattern.animation, this.globalAnimation, { duration: 100 }));
-                value = "url(" + this.url + "#" + pattern.id + ")";
+                value = "url(" + this.url + "#" + (pattern.id + (this.forExport ? '-export' : '')) + ")";
             }
             else {
                 // Not a full pattern definition, just add color

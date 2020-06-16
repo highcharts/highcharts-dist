@@ -158,7 +158,7 @@ declare module "../highcharts" {
      *
      * @return An object ready for the `mapData` option.
      */
-    function geojson(geojson: any, hType?: string): Array<any>;
+    function geojson(geojson: GeoJSON, hType?: string): Array<any>;
     /**
      * The factory function for creating new map charts. Creates a new Chart
      * object with different default options than the basic Chart.

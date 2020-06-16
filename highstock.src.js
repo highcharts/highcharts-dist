@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.1 (2020-06-09)
+ * @license Highstock JS v8.1.2 (2020-06-16)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -62,7 +62,7 @@
             );
         var H = {
                 product: 'Highcharts',
-                version: '8.1.1',
+                version: '8.1.2',
                 deg2rad: Math.PI * 2 / 360,
                 doc: doc,
                 hasBidiBug: hasBidiBug,
@@ -290,7 +290,9 @@
          */
         /**
          * Generic dictionary in TypeScript notation.
+         * Use the native `Record<string, any>` instead.
          *
+         * @deprecated
          * @interface Highcharts.Dictionary<T>
          */ /**
         * @name Highcharts.Dictionary<T>#[key:string]
@@ -460,9 +462,13 @@
          * @return {void}
          */
         function error(code, stop, chart, params) {
+            var severity = stop ? 'Highcharts error' : 'Highcharts warning';
+            if (code === 32) {
+                code = severity + ": Deprecated member";
+            }
             var isCode = isNumber(code),
                 message = isCode ?
-                    "Highcharts error #" + code + ": www.highcharts.com/errors/" + code + "/" :
+                    severity + " #" + code + ": www.highcharts.com/errors/" + code + "/" :
                     code.toString(),
                 defaultHandler = function () {
                     if (stop) {
@@ -481,7 +487,7 @@
                     message += '?';
                 }
                 objectEach(params, function (value, key) {
-                    additionalMessages_1 += ('\n' + key + ': ' + value);
+                    additionalMessages_1 += "\n - " + key + ": " + value;
                     if (isCode) {
                         message += encodeURI(key) + '=' + encodeURI(value);
                     }
@@ -2065,7 +2071,7 @@
             fromIndex) {
                 error(32,
             false,
-            void 0, { 'Highcharts.inArray': 'Array.indexOf' });
+            void 0, { 'Highcharts.inArray': 'use Array.indexOf' });
             return arr.indexOf(item, fromIndex);
         };
         /* eslint-disable valid-jsdoc */
@@ -2113,9 +2119,9 @@
          * @return {Array<string>}
          *         An array of strings that represents all the properties.
          */
-        H.keys = function () {
-            error(32, false, void 0, { 'Highcharts.keys': 'Object.keys' });
-            return Object.keys.apply(arguments);
+        H.keys = function (obj) {
+            error(32, false, void 0, { 'Highcharts.keys': 'use Object.keys' });
+            return Object.keys(obj);
         };
         /**
          * Get the element's offset position, corrected for `overflow: auto`.
@@ -2306,7 +2312,7 @@
         }, function (val, key) {
             H[key] = function (arr) {
                 var _a;
-                error(32, false, void 0, (_a = {}, _a["Highcharts." + key] = "Array." + val, _a));
+                error(32, false, void 0, (_a = {}, _a["Highcharts." + key] = "use Array." + val, _a));
                 return Array.prototype[val].apply(arr, [].slice.call(arguments, 1));
             };
         });
@@ -6343,9 +6349,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * @private
-                 */
                 function SVGRenderer(container, width, height, style, forExport, allowHTML, styledMode) {
                     /* *
                      *
@@ -6353,11 +6356,29 @@
                      *
                      * */
                     this.alignedObjects = void 0;
+                /**
+                 * The root `svg` node of the renderer.
+                 *
+                 * @name Highcharts.SVGRenderer#box
+                 * @type {Highcharts.SVGDOMElement}
+                 */
                 this.box = void 0;
+                /**
+                 * The wrapper for the root `svg` node of the renderer.
+                 *
+                 * @name Highcharts.SVGRenderer#boxWrapper
+                 * @type {Highcharts.SVGElement}
+                 */
                 this.boxWrapper = void 0;
                 this.cache = void 0;
                 this.cacheKeys = void 0;
                 this.chartIndex = void 0;
+                /**
+                 * A pointer to the `defs` node of the root SVG.
+                 *
+                 * @name Highcharts.SVGRenderer#defs
+                 * @type {Highcharts.SVGElement}
+                 */
                 this.defs = void 0;
                 this.globalAnimation = void 0;
                 this.gradients = void 0;
@@ -6365,6 +6386,13 @@
                 this.imgCount = void 0;
                 this.isSVG = void 0;
                 this.style = void 0;
+                /**
+                 * Page url used for internal references.
+                 *
+                 * @private
+                 * @name Highcharts.SVGRenderer#url
+                 * @type {string}
+                 */
                 this.url = void 0;
                 this.width = void 0;
                 this.init(container, width, height, style, forExport, allowHTML, styledMode);
@@ -6428,28 +6456,9 @@
                 }
                 // object properties
                 renderer.isSVG = true;
-                /**
-                 * The root `svg` node of the renderer.
-                 *
-                 * @name Highcharts.SVGRenderer#box
-                 * @type {Highcharts.SVGDOMElement}
-                 */
                 this.box = element;
-                /**
-                 * The wrapper for the root `svg` node of the renderer.
-                 *
-                 * @name Highcharts.SVGRenderer#boxWrapper
-                 * @type {Highcharts.SVGElement}
-                 */
                 this.boxWrapper = boxWrapper;
                 renderer.alignedObjects = [];
-                /**
-                 * Page url used for internal references.
-                 *
-                 * @private
-                 * @name Highcharts.SVGRenderer#url
-                 * @type {string}
-                 */
                 // #24, #672, #1070
                 this.url = ((isFirefox || isWebKit) &&
                     doc.getElementsByTagName('base').length) ?
@@ -6463,13 +6472,7 @@
                     '';
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.1.1'));
-                /**
-                 * A pointer to the `defs` node of the root SVG.
-                 *
-                 * @name Highcharts.SVGRenderer#defs
-                 * @type {Highcharts.SVGElement}
-                 */
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.1.2'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;
@@ -10995,7 +10998,7 @@
                  * @sample    maps/chart/topojson
                  *            Loading topoJSON converted to geoJSON
                  *
-                 * @type      {string|Array<*>}
+                 * @type      {string|Array<*>|Highcharts.GeoJSON}
                  * @since     5.0.0
                  * @product   highmaps
                  * @apioption chart.map
@@ -14170,25 +14173,35 @@
          * @param {Highcharts.Axis} this
          */
         /**
-         * @interface Highcharts.AxisLabelsFormatterContextObject
+         * @callback Highcharts.AxisLabelsFormatterCallbackFunction
+         *
+         * @param {Highcharts.AxisLabelsFormatterContextObject<number>} this
+         *
+         * @param {Highcharts.AxisLabelsFormatterContextObject<string>} that
+         *
+         * @return {string}
+         */
+        /**
+         * @interface Highcharts.AxisLabelsFormatterContextObject<T>
          */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#axis
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#axis
         * @type {Highcharts.Axis}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#chart
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#chart
         * @type {Highcharts.Chart}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#isFirst
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#isFirst
         * @type {boolean}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#isLast
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#isLast
         * @type {boolean}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#pos
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#pos
         * @type {number}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#value
-        * @type {number}
+        * This can be either a numeric value or a category string.
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#value
+        * @type {T}
         */
         /**
          * Options for axes.
@@ -14648,7 +14661,7 @@
              *
              * @function Highcharts.Axis#defaultLabelFormatter
              *
-             * @param {Highcharts.AxisLabelsFormatterContextObject} this
+             * @param {Highcharts.AxisLabelsFormatterContextObject<number>|Highcharts.AxisLabelsFormatterContextObject<string>} this
              * Formatter context of axis label.
              *
              * @return {string}
@@ -14656,7 +14669,7 @@
              */
             Axis.prototype.defaultLabelFormatter = function () {
                 var axis = this.axis,
-                    value = this.value,
+                    value = isNumber(this.value) ? this.value : NaN,
                     time = axis.chart.time,
                     categories = axis.categories,
                     dateTimeLabelFormat = this.dateTimeLabelFormat,
@@ -14678,7 +14691,7 @@
                     ret = format(formatOption, this, chart);
                 }
                 else if (categories) {
-                    ret = value;
+                    ret = "" + this.value;
                 }
                 else if (dateTimeLabelFormat) { // datetime axis
                     ret = time.dateFormat(dateTimeLabelFormat, value);
@@ -14700,8 +14713,7 @@
                             (value * 10) % multi === 0 &&
                             numericSymbols[i] !== null &&
                             value !== 0) { // #5480
-                            ret = numberFormatter(value / multi, -1) +
-                                numericSymbols[i];
+                            ret = numberFormatter(value / multi, -1) + numericSymbols[i];
                         }
                     }
                 }
@@ -17485,7 +17497,7 @@
                  * @sample {highstock} stock/xaxis/alternategridcolor/
                  *         Alternate grid color on the Y axis
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @apioption xAxis.alternateGridColor
                  */
                 /**
@@ -17630,7 +17642,7 @@
                  * @sample {highcharts|highstock|highmaps} highcharts/xaxis/crosshair-customized/
                  *         Customized crosshairs
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @default   #cccccc
                  * @since     4.1
                  * @apioption xAxis.crosshair.color
@@ -17680,7 +17692,7 @@
                  * The background color for the label. Defaults to the related series
                  * color, or `#666666` if that is not available.
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @since     2.1
                  * @product   highstock
                  * @apioption xAxis.crosshair.label.backgroundColor
@@ -17688,7 +17700,7 @@
                 /**
                  * The border color for the crosshair label
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @since     2.1
                  * @product   highstock
                  * @apioption xAxis.crosshair.label.borderColor
@@ -18185,7 +18197,7 @@
                      * @sample {highstock} stock/xaxis/labels-formatter/
                      *         Added units on Y axis
                      *
-                     * @type      {Highcharts.FormatterCallbackFunction<Highcharts.AxisLabelsFormatterContextObject>}
+                     * @type      {Highcharts.AxisLabelsFormatterCallbackFunction}
                      * @apioption xAxis.labels.formatter
                      */
                     /**
@@ -19315,7 +19327,7 @@
                  * @sample {highstock} stock/xaxis/minorgridlinecolor/
                  *         Bright grey lines from Y axis
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #f2f2f2
                  */
                 minorGridLineColor: '#f2f2f2',
@@ -19341,7 +19353,7 @@
                  * @sample {highstock} stock/xaxis/minorticks/
                  *         Black tick marks on Y axis
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #999999
                  */
                 minorTickColor: '#999999',
@@ -19362,7 +19374,7 @@
                  * @sample {highstock} stock/xaxis/linecolor/
                  *         A red line on X axis
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #ccd6eb
                  */
                 lineColor: '#ccd6eb',
@@ -19399,7 +19411,7 @@
                  * @sample {highstock} stock/xaxis/gridlinecolor/
                  *         Green lines
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #e6e6e6
                  */
                 gridLineColor: '#e6e6e6',
@@ -19457,7 +19469,7 @@
                  * @sample {highstock} stock/xaxis/ticks/
                  *         Formatted ticks on X axis
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #ccd6eb
                  */
                 tickColor: '#ccd6eb'
@@ -19527,7 +19539,7 @@
                  * @sample {highcharts} highcharts/yaxis/mincolor-maxcolor/
                  *         Min and max colors
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @default   #003399
                  * @since     4.0
                  * @product   highcharts
@@ -19540,7 +19552,7 @@
                  * @sample {highcharts} highcharts/yaxis/mincolor-maxcolor/
                  *         Min and max color
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @default   #e6ebf5
                  * @since     4.0
                  * @product   highcharts
@@ -19763,7 +19775,7 @@
                  * In Highmaps, the axis line is hidden by default, because the axis is
                  * not visible by default.
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @apioption yAxis.lineColor
                  */
                 /**
@@ -20100,7 +20112,7 @@
                      *
                      * @sample {highcharts} highcharts/yaxis/stacklabels-box/
                      *          Stack labels box options
-                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @type      {Highcharts.ColorType}
                      * @since 8.1.0
                      * @apioption yAxis.stackLabels.backgroundColor
                      */
@@ -20109,7 +20121,7 @@
                      *
                      * @sample {highcharts} highcharts/yaxis/stacklabels-box/
                      *          Stack labels box options
-                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @type      {Highcharts.ColorType}
                      * @since 8.1.0
                      * @apioption yAxis.stackLabels.borderColor
                      */
@@ -26859,7 +26871,7 @@
                         // Don't do setScale again if we're only resizing. Regression
                         // #13507. But we need it after chart.update (responsive), as
                         // axis is initialized again (#12137).
-                        if (!chart.isResizing || !axis.tickPositions) {
+                        if (!chart.isResizing || !isNumber(axis.min)) {
                             axis.updateNames();
                             axis.setScale();
                         }
@@ -38961,6 +38973,12 @@
             dataLabels: {
                 align: void 0,
                 verticalAlign: void 0,
+                /**
+                 * The y position offset of the label relative to the point in
+                 * pixels.
+                 *
+                 * @type {number}
+                 */
                 y: void 0
             },
             /**
@@ -40187,8 +40205,9 @@
                     pick(size && size < 0 ? void 0 : options.size, '100%'),
                     pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
                 ];
-                // No need for inner size in angular (gauges) series
-                if (chart.angular) {
+                // No need for inner size in angular (gauges) series but still required
+                // for pie series
+                if (chart.angular && !(this instanceof H.Series)) {
                     positions[3] = 0;
                 }
                 for (i = 0; i < 4; ++i) {
@@ -43582,7 +43601,7 @@
                         xy = [0];
                     }
                     xy.forEach(function (isX) {
-                        var axis = chart[isX ? 'xAxis' : 'yAxis'][0], axisOpt = axis.options, horiz = axis.horiz, mousePos = e[horiz ? 'chartX' : 'chartY'], mouseDown = horiz ? 'mouseDownX' : 'mouseDownY', startPos = chart[mouseDown], halfPointRange = (axis.pointRange || 0) / 2, pointRangeDirection = (axis.reversed && !chart.inverted) ||
+                        var axis = chart[isX ? 'xAxis' : 'yAxis'][0], horiz = axis.horiz, mousePos = e[horiz ? 'chartX' : 'chartY'], mouseDown = horiz ? 'mouseDownX' : 'mouseDownY', startPos = chart[mouseDown], halfPointRange = (axis.pointRange || 0) / 2, pointRangeDirection = (axis.reversed && !chart.inverted) ||
                                 (!axis.reversed && chart.inverted) ?
                                 -1 :
                                 1, extremes = axis.getExtremes(), panMin = axis.toValue(startPos - mousePos, true) +
@@ -43638,12 +43657,15 @@
                             if (axis.series.length &&
                                 newMin !== extremes.min &&
                                 newMax !== extremes.max &&
-                                isX ? true : (panningState &&
                                 newMin >= paddedMin &&
-                                newMax <= paddedMax)) {
+                                newMax <= paddedMax) {
                                 axis.setExtremes(newMin, newMax, false, false, { trigger: 'pan' });
                                 if (!chart.resetZoomButton &&
                                     !hasMapNavigation &&
+                                    // Show reset zoom button only when both newMin and
+                                    // newMax values are between padded axis range.
+                                    newMin !== paddedMin &&
+                                    newMax !== paddedMax &&
                                     type.match('y')) {
                                     chart.showResetZoom();
                                     axis.displayBtn = false;
@@ -51863,7 +51885,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, O, U) {
+    _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/SVGElement.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, O, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -52396,11 +52418,20 @@
          * @name Highcharts.RangeSelector
          * @param {Highcharts.Chart} chart
          */
-        function RangeSelector(chart) {
-            // Run RangeSelector
-            this.init(chart);
-        }
-        RangeSelector.prototype = {
+        var RangeSelector = /** @class */ (function () {
+                function RangeSelector(chart) {
+                    /* *
+                     *
+                     * Properties
+                     *
+                     * */
+                    this.buttons = void 0;
+                this.buttonOptions = RangeSelector.prototype.defaultButtons;
+                this.options = void 0;
+                this.chart = chart;
+                // Run RangeSelector
+                this.init(chart);
+            }
             /**
              * The method to run when one of the buttons in the range selectors is
              * clicked
@@ -52412,7 +52443,7 @@
              * @param {boolean} [redraw]
              * @return {void}
              */
-            clickButton: function (i, redraw) {
+            RangeSelector.prototype.clickButton = function (i, redraw) {
                 var rangeSelector = this,
                     chart = rangeSelector.chart,
                     rangeOptions = rangeSelector.buttonOptions[i],
@@ -52532,7 +52563,7 @@
                         rangeSelectorButton: rangeOptions
                     });
                 }
-            },
+            };
             /**
              * Set the selected option. This method only sets the internal flag, it
              * doesn't update the buttons or the actual zoomed range.
@@ -52542,35 +52573,9 @@
              * @param {number} [selected]
              * @return {void}
              */
-            setSelected: function (selected) {
+            RangeSelector.prototype.setSelected = function (selected) {
                 this.selected = this.options.selected = selected;
-            },
-            /**
-             * The default buttons for pre-selecting time frames
-             */
-            defaultButtons: [{
-                    type: 'month',
-                    count: 1,
-                    text: '1m'
-                }, {
-                    type: 'month',
-                    count: 3,
-                    text: '3m'
-                }, {
-                    type: 'month',
-                    count: 6,
-                    text: '6m'
-                }, {
-                    type: 'ytd',
-                    text: 'YTD'
-                }, {
-                    type: 'year',
-                    count: 1,
-                    text: '1y'
-                }, {
-                    type: 'all',
-                    text: 'All'
-                }],
+            };
             /**
              * Initialize the range selector
              *
@@ -52579,11 +52584,10 @@
              * @param {Highcharts.Chart} chart
              * @return {void}
              */
-            init: function (chart) {
+            RangeSelector.prototype.init = function (chart) {
                 var rangeSelector = this,
                     options = chart.options.rangeSelector,
-                    buttonOptions = options.buttons ||
-                        [].concat(rangeSelector.defaultButtons),
+                    buttonOptions = options.buttons || rangeSelector.defaultButtons.slice(),
                     selectedOption = options.selected,
                     blurInputs = function () {
                         var minInput = rangeSelector.minInput,
@@ -52625,7 +52629,7 @@
                         });
                     }
                 });
-            },
+            };
             /**
              * Dynamically update the range selector buttons after a new range has been
              * set
@@ -52634,7 +52638,7 @@
              * @function Highcharts.RangeSelector#updateButtonStates
              * @return {void}
              */
-            updateButtonStates: function () {
+            RangeSelector.prototype.updateButtonStates = function () {
                 var rangeSelector = this,
                     chart = this.chart,
                     baseAxis = chart.xAxis[0],
@@ -52724,7 +52728,7 @@
                         }
                     }
                 });
-            },
+            };
             /**
              * Compute and cache the range for an individual button
              *
@@ -52733,7 +52737,7 @@
              * @param {Highcharts.RangeSelectorButtonsOptions} rangeOptions
              * @return {void}
              */
-            computeButtonRange: function (rangeOptions) {
+            RangeSelector.prototype.computeButtonRange = function (rangeOptions) {
                 var type = rangeOptions.type,
                     count = rangeOptions.count || 1, 
                     // these time intervals have a fixed number of milliseconds, as
@@ -52760,7 +52764,7 @@
                 rangeOptions._offsetMax = pick(rangeOptions.offsetMax, 0);
                 rangeOptions._range +=
                     rangeOptions._offsetMax - rangeOptions._offsetMin;
-            },
+            };
             /**
              * Set the internal and displayed value of a HTML input for the dates
              *
@@ -52770,7 +52774,7 @@
              * @param {number} [inputTime]
              * @return {void}
              */
-            setInputValue: function (name, inputTime) {
+            RangeSelector.prototype.setInputValue = function (name, inputTime) {
                 var options = this.chart.options.rangeSelector,
                     time = this.chart.time,
                     input = this[name + 'Input'];
@@ -52782,14 +52786,14 @@
                 this[name + 'DateBox'].attr({
                     text: time.dateFormat(options.inputDateFormat || '%b %e, %Y', input.HCTime)
                 });
-            },
+            };
             /**
              * @private
              * @function Highcharts.RangeSelector#showInput
              * @param {string} name
              * @return {void}
              */
-            showInput: function (name) {
+            RangeSelector.prototype.showInput = function (name) {
                 var inputGroup = this.inputGroup,
                     dateBox = this[name + 'DateBox'];
                 css(this[name + 'Input'], {
@@ -52799,21 +52803,21 @@
                     height: (dateBox.height - 2) + 'px',
                     border: '2px solid silver'
                 });
-            },
+            };
             /**
              * @private
              * @function Highcharts.RangeSelector#hideInput
              * @param {string} name
              * @return {void}
              */
-            hideInput: function (name) {
+            RangeSelector.prototype.hideInput = function (name) {
                 css(this[name + 'Input'], {
                     border: 0,
                     width: '1px',
                     height: '1px'
                 });
                 this.setInputValue(name);
-            },
+            };
             /**
              * Draw either the 'from' or the 'to' HTML input box of the range selector
              *
@@ -52822,7 +52826,7 @@
              * @param {string} name
              * @return {void}
              */
-            drawInput: function (name) {
+            RangeSelector.prototype.drawInput = function (name) {
                 var rangeSelector = this,
                     chart = rangeSelector.chart,
                     chartStyle = chart.renderer.style || {},
@@ -52972,7 +52976,7 @@
                         updateExtremes();
                     }
                 };
-            },
+            };
             /**
              * Get the position of the range selector buttons and inputs. This can be
              * overridden from outside for custom positioning.
@@ -52982,7 +52986,7 @@
              *
              * @return {Highcharts.Dictionary<number>}
              */
-            getPosition: function () {
+            RangeSelector.prototype.getPosition = function () {
                 var chart = this.chart,
                     options = chart.options.rangeSelector,
                     top = options.verticalAlign === 'top' ?
@@ -52992,7 +52996,7 @@
                         buttonTop: top + options.buttonPosition.y,
                         inputTop: top + options.inputPosition.y - 10
                     };
-            },
+            };
             /**
              * Get the extremes of YTD. Will choose dataMax if its value is lower than
              * the current timestamp. Will choose dataMin if its value is higher than
@@ -53008,7 +53012,7 @@
              * @return {*}
              *         Returns min and max for the YTD
              */
-            getYTDExtremes: function (dataMax, dataMin, useUTC) {
+            RangeSelector.prototype.getYTDExtremes = function (dataMax, dataMin, useUTC) {
                 var time = this.chart.time,
                     min,
                     now = new time.Date(dataMax),
@@ -53023,7 +53027,7 @@
                     max: Math.min(dataMax || now, now),
                     min: min
                 };
-            },
+            };
             /**
              * Render the range selector including the buttons and the inputs. The first
              * time render is called, the elements are created and positioned. On
@@ -53037,7 +53041,7 @@
              *        X axis maximum
              * @return {void}
              */
-            render: function (min, max) {
+            RangeSelector.prototype.render = function (min, max) {
                 var rangeSelector = this,
                     chart = rangeSelector.chart,
                     renderer = chart.renderer,
@@ -53307,7 +53311,7 @@
                         rangeSelector.group.translateY + 'px';
                 }
                 rangeSelector.rendered = true;
-            },
+            };
             /**
              * Extracts height of range selector
              *
@@ -53316,7 +53320,7 @@
              * @return {number}
              *         Returns rangeSelector height
              */
-            getHeight: function () {
+            RangeSelector.prototype.getHeight = function () {
                 var rangeSelector = this,
                     options = rangeSelector.options,
                     rangeSelectorGroup = rangeSelector.group,
@@ -53341,7 +53345,7 @@
                     rangeSelectorHeight += Math.abs(minPosition);
                 }
                 return rangeSelectorHeight;
-            },
+            };
             /**
              * Detect collision with title or subtitle
              *
@@ -53353,10 +53357,10 @@
              * @return {boolean}
              *         Returns collision status
              */
-            titleCollision: function (chart) {
+            RangeSelector.prototype.titleCollision = function (chart) {
                 return !(chart.options.title.text ||
                     chart.options.subtitle.text);
-            },
+            };
             /**
              * Update the range selector with new options
              *
@@ -53365,20 +53369,20 @@
              * @param {Highcharts.RangeSelectorOptions} options
              * @return {void}
              */
-            update: function (options) {
+            RangeSelector.prototype.update = function (options) {
                 var chart = this.chart;
                 merge(true, chart.options.rangeSelector, options);
                 this.destroy();
                 this.init(chart);
                 chart.rangeSelector.render();
-            },
+            };
             /**
              * Destroys allocated elements.
              *
              * @private
              * @function Highcharts.RangeSelector#destroy
              */
-            destroy: function () {
+            RangeSelector.prototype.destroy = function () {
                 var rSelector = this,
                     minInput = rSelector.minInput,
                     maxInput = rSelector.maxInput;
@@ -53396,21 +53400,48 @@
                 // Destroy HTML and SVG elements
                 objectEach(rSelector, function (val, key) {
                     if (val && key !== 'chart') {
-                        if (val.destroy) {
+                        if (val instanceof SVGElement) {
                             // SVGElement
                             val.destroy();
                         }
-                        else if (val.nodeType) {
+                        else if (val instanceof window.HTMLElement) {
                             // HTML element
-                            discardElement(this[key]);
+                            discardElement(val);
                         }
                     }
                     if (val !== RangeSelector.prototype[key]) {
                         rSelector[key] = null;
                     }
                 }, this);
-            }
-        };
+            };
+            return RangeSelector;
+        }());
+        /**
+         * The default buttons for pre-selecting time frames
+         */
+        RangeSelector.prototype.defaultButtons = [{
+                type: 'month',
+                count: 1,
+                text: '1m'
+            }, {
+                type: 'month',
+                count: 3,
+                text: '3m'
+            }, {
+                type: 'month',
+                count: 6,
+                text: '6m'
+            }, {
+                type: 'ytd',
+                text: 'YTD'
+            }, {
+                type: 'year',
+                count: 1,
+                text: '1y'
+            }, {
+                type: 'all',
+                text: 'All'
+            }];
         /**
          * Get the axis min value based on the range option and the current max. For
          * stock charts this is extended via the {@link RangeSelector} so that if the
@@ -53621,6 +53652,7 @@
             H.RangeSelector = RangeSelector;
         }
 
+        return H.RangeSelector;
     });
     _registerModule(_modules, 'parts/StockChart.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, Point, SVGRenderer, U) {
         /* *

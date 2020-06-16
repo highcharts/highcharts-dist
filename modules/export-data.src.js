@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.1 (2020-06-09)
+ * @license Highcharts JS v8.1.2 (2020-06-16)
  *
  * Exporting module
  *
@@ -278,7 +278,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/export-data.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'modules/export-data.src.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, U) {
         /* *
          *
          *  Experimental data export module for Highcharts
@@ -629,7 +629,7 @@
                 if (!item) {
                     return categoryHeader;
                 }
-                if (item instanceof Highcharts.Axis) {
+                if (item instanceof Axis) {
                     return (item.options.title && item.options.title.text) ||
                         (item.dateTime ? categoryDatetimeHeader : categoryHeader);
                 }

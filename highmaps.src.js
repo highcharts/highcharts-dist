@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.1.1 (2020-06-09)
+ * @license Highmaps JS v8.1.2 (2020-06-16)
  *
  * (c) 2011-2018 Torstein Honsi
  *
@@ -62,7 +62,7 @@
             );
         var H = {
                 product: 'Highcharts',
-                version: '8.1.1',
+                version: '8.1.2',
                 deg2rad: Math.PI * 2 / 360,
                 doc: doc,
                 hasBidiBug: hasBidiBug,
@@ -290,7 +290,9 @@
          */
         /**
          * Generic dictionary in TypeScript notation.
+         * Use the native `Record<string, any>` instead.
          *
+         * @deprecated
          * @interface Highcharts.Dictionary<T>
          */ /**
         * @name Highcharts.Dictionary<T>#[key:string]
@@ -460,9 +462,13 @@
          * @return {void}
          */
         function error(code, stop, chart, params) {
+            var severity = stop ? 'Highcharts error' : 'Highcharts warning';
+            if (code === 32) {
+                code = severity + ": Deprecated member";
+            }
             var isCode = isNumber(code),
                 message = isCode ?
-                    "Highcharts error #" + code + ": www.highcharts.com/errors/" + code + "/" :
+                    severity + " #" + code + ": www.highcharts.com/errors/" + code + "/" :
                     code.toString(),
                 defaultHandler = function () {
                     if (stop) {
@@ -481,7 +487,7 @@
                     message += '?';
                 }
                 objectEach(params, function (value, key) {
-                    additionalMessages_1 += ('\n' + key + ': ' + value);
+                    additionalMessages_1 += "\n - " + key + ": " + value;
                     if (isCode) {
                         message += encodeURI(key) + '=' + encodeURI(value);
                     }
@@ -2065,7 +2071,7 @@
             fromIndex) {
                 error(32,
             false,
-            void 0, { 'Highcharts.inArray': 'Array.indexOf' });
+            void 0, { 'Highcharts.inArray': 'use Array.indexOf' });
             return arr.indexOf(item, fromIndex);
         };
         /* eslint-disable valid-jsdoc */
@@ -2113,9 +2119,9 @@
          * @return {Array<string>}
          *         An array of strings that represents all the properties.
          */
-        H.keys = function () {
-            error(32, false, void 0, { 'Highcharts.keys': 'Object.keys' });
-            return Object.keys.apply(arguments);
+        H.keys = function (obj) {
+            error(32, false, void 0, { 'Highcharts.keys': 'use Object.keys' });
+            return Object.keys(obj);
         };
         /**
          * Get the element's offset position, corrected for `overflow: auto`.
@@ -2306,7 +2312,7 @@
         }, function (val, key) {
             H[key] = function (arr) {
                 var _a;
-                error(32, false, void 0, (_a = {}, _a["Highcharts." + key] = "Array." + val, _a));
+                error(32, false, void 0, (_a = {}, _a["Highcharts." + key] = "use Array." + val, _a));
                 return Array.prototype[val].apply(arr, [].slice.call(arguments, 1));
             };
         });
@@ -6343,9 +6349,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * @private
-                 */
                 function SVGRenderer(container, width, height, style, forExport, allowHTML, styledMode) {
                     /* *
                      *
@@ -6353,11 +6356,29 @@
                      *
                      * */
                     this.alignedObjects = void 0;
+                /**
+                 * The root `svg` node of the renderer.
+                 *
+                 * @name Highcharts.SVGRenderer#box
+                 * @type {Highcharts.SVGDOMElement}
+                 */
                 this.box = void 0;
+                /**
+                 * The wrapper for the root `svg` node of the renderer.
+                 *
+                 * @name Highcharts.SVGRenderer#boxWrapper
+                 * @type {Highcharts.SVGElement}
+                 */
                 this.boxWrapper = void 0;
                 this.cache = void 0;
                 this.cacheKeys = void 0;
                 this.chartIndex = void 0;
+                /**
+                 * A pointer to the `defs` node of the root SVG.
+                 *
+                 * @name Highcharts.SVGRenderer#defs
+                 * @type {Highcharts.SVGElement}
+                 */
                 this.defs = void 0;
                 this.globalAnimation = void 0;
                 this.gradients = void 0;
@@ -6365,6 +6386,13 @@
                 this.imgCount = void 0;
                 this.isSVG = void 0;
                 this.style = void 0;
+                /**
+                 * Page url used for internal references.
+                 *
+                 * @private
+                 * @name Highcharts.SVGRenderer#url
+                 * @type {string}
+                 */
                 this.url = void 0;
                 this.width = void 0;
                 this.init(container, width, height, style, forExport, allowHTML, styledMode);
@@ -6428,28 +6456,9 @@
                 }
                 // object properties
                 renderer.isSVG = true;
-                /**
-                 * The root `svg` node of the renderer.
-                 *
-                 * @name Highcharts.SVGRenderer#box
-                 * @type {Highcharts.SVGDOMElement}
-                 */
                 this.box = element;
-                /**
-                 * The wrapper for the root `svg` node of the renderer.
-                 *
-                 * @name Highcharts.SVGRenderer#boxWrapper
-                 * @type {Highcharts.SVGElement}
-                 */
                 this.boxWrapper = boxWrapper;
                 renderer.alignedObjects = [];
-                /**
-                 * Page url used for internal references.
-                 *
-                 * @private
-                 * @name Highcharts.SVGRenderer#url
-                 * @type {string}
-                 */
                 // #24, #672, #1070
                 this.url = ((isFirefox || isWebKit) &&
                     doc.getElementsByTagName('base').length) ?
@@ -6463,13 +6472,7 @@
                     '';
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.1.1'));
-                /**
-                 * A pointer to the `defs` node of the root SVG.
-                 *
-                 * @name Highcharts.SVGRenderer#defs
-                 * @type {Highcharts.SVGElement}
-                 */
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.1.2'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;
@@ -10995,7 +10998,7 @@
                  * @sample    maps/chart/topojson
                  *            Loading topoJSON converted to geoJSON
                  *
-                 * @type      {string|Array<*>}
+                 * @type      {string|Array<*>|Highcharts.GeoJSON}
                  * @since     5.0.0
                  * @product   highmaps
                  * @apioption chart.map
@@ -14170,25 +14173,35 @@
          * @param {Highcharts.Axis} this
          */
         /**
-         * @interface Highcharts.AxisLabelsFormatterContextObject
+         * @callback Highcharts.AxisLabelsFormatterCallbackFunction
+         *
+         * @param {Highcharts.AxisLabelsFormatterContextObject<number>} this
+         *
+         * @param {Highcharts.AxisLabelsFormatterContextObject<string>} that
+         *
+         * @return {string}
+         */
+        /**
+         * @interface Highcharts.AxisLabelsFormatterContextObject<T>
          */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#axis
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#axis
         * @type {Highcharts.Axis}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#chart
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#chart
         * @type {Highcharts.Chart}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#isFirst
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#isFirst
         * @type {boolean}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#isLast
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#isLast
         * @type {boolean}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#pos
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#pos
         * @type {number}
         */ /**
-        * @name Highcharts.AxisLabelsFormatterContextObject#value
-        * @type {number}
+        * This can be either a numeric value or a category string.
+        * @name Highcharts.AxisLabelsFormatterContextObject<T>#value
+        * @type {T}
         */
         /**
          * Options for axes.
@@ -14648,7 +14661,7 @@
              *
              * @function Highcharts.Axis#defaultLabelFormatter
              *
-             * @param {Highcharts.AxisLabelsFormatterContextObject} this
+             * @param {Highcharts.AxisLabelsFormatterContextObject<number>|Highcharts.AxisLabelsFormatterContextObject<string>} this
              * Formatter context of axis label.
              *
              * @return {string}
@@ -14656,7 +14669,7 @@
              */
             Axis.prototype.defaultLabelFormatter = function () {
                 var axis = this.axis,
-                    value = this.value,
+                    value = isNumber(this.value) ? this.value : NaN,
                     time = axis.chart.time,
                     categories = axis.categories,
                     dateTimeLabelFormat = this.dateTimeLabelFormat,
@@ -14678,7 +14691,7 @@
                     ret = format(formatOption, this, chart);
                 }
                 else if (categories) {
-                    ret = value;
+                    ret = "" + this.value;
                 }
                 else if (dateTimeLabelFormat) { // datetime axis
                     ret = time.dateFormat(dateTimeLabelFormat, value);
@@ -14700,8 +14713,7 @@
                             (value * 10) % multi === 0 &&
                             numericSymbols[i] !== null &&
                             value !== 0) { // #5480
-                            ret = numberFormatter(value / multi, -1) +
-                                numericSymbols[i];
+                            ret = numberFormatter(value / multi, -1) + numericSymbols[i];
                         }
                     }
                 }
@@ -17485,7 +17497,7 @@
                  * @sample {highstock} stock/xaxis/alternategridcolor/
                  *         Alternate grid color on the Y axis
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @apioption xAxis.alternateGridColor
                  */
                 /**
@@ -17630,7 +17642,7 @@
                  * @sample {highcharts|highstock|highmaps} highcharts/xaxis/crosshair-customized/
                  *         Customized crosshairs
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @default   #cccccc
                  * @since     4.1
                  * @apioption xAxis.crosshair.color
@@ -17680,7 +17692,7 @@
                  * The background color for the label. Defaults to the related series
                  * color, or `#666666` if that is not available.
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @since     2.1
                  * @product   highstock
                  * @apioption xAxis.crosshair.label.backgroundColor
@@ -17688,7 +17700,7 @@
                 /**
                  * The border color for the crosshair label
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @since     2.1
                  * @product   highstock
                  * @apioption xAxis.crosshair.label.borderColor
@@ -18185,7 +18197,7 @@
                      * @sample {highstock} stock/xaxis/labels-formatter/
                      *         Added units on Y axis
                      *
-                     * @type      {Highcharts.FormatterCallbackFunction<Highcharts.AxisLabelsFormatterContextObject>}
+                     * @type      {Highcharts.AxisLabelsFormatterCallbackFunction}
                      * @apioption xAxis.labels.formatter
                      */
                     /**
@@ -19315,7 +19327,7 @@
                  * @sample {highstock} stock/xaxis/minorgridlinecolor/
                  *         Bright grey lines from Y axis
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #f2f2f2
                  */
                 minorGridLineColor: '#f2f2f2',
@@ -19341,7 +19353,7 @@
                  * @sample {highstock} stock/xaxis/minorticks/
                  *         Black tick marks on Y axis
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #999999
                  */
                 minorTickColor: '#999999',
@@ -19362,7 +19374,7 @@
                  * @sample {highstock} stock/xaxis/linecolor/
                  *         A red line on X axis
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #ccd6eb
                  */
                 lineColor: '#ccd6eb',
@@ -19399,7 +19411,7 @@
                  * @sample {highstock} stock/xaxis/gridlinecolor/
                  *         Green lines
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #e6e6e6
                  */
                 gridLineColor: '#e6e6e6',
@@ -19457,7 +19469,7 @@
                  * @sample {highstock} stock/xaxis/ticks/
                  *         Formatted ticks on X axis
                  *
-                 * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type    {Highcharts.ColorType}
                  * @default #ccd6eb
                  */
                 tickColor: '#ccd6eb'
@@ -19527,7 +19539,7 @@
                  * @sample {highcharts} highcharts/yaxis/mincolor-maxcolor/
                  *         Min and max colors
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @default   #003399
                  * @since     4.0
                  * @product   highcharts
@@ -19540,7 +19552,7 @@
                  * @sample {highcharts} highcharts/yaxis/mincolor-maxcolor/
                  *         Min and max color
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @default   #e6ebf5
                  * @since     4.0
                  * @product   highcharts
@@ -19763,7 +19775,7 @@
                  * In Highmaps, the axis line is hidden by default, because the axis is
                  * not visible by default.
                  *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @type      {Highcharts.ColorType}
                  * @apioption yAxis.lineColor
                  */
                 /**
@@ -20100,7 +20112,7 @@
                      *
                      * @sample {highcharts} highcharts/yaxis/stacklabels-box/
                      *          Stack labels box options
-                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @type      {Highcharts.ColorType}
                      * @since 8.1.0
                      * @apioption yAxis.stackLabels.backgroundColor
                      */
@@ -20109,7 +20121,7 @@
                      *
                      * @sample {highcharts} highcharts/yaxis/stacklabels-box/
                      *          Stack labels box options
-                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @type      {Highcharts.ColorType}
                      * @since 8.1.0
                      * @apioption yAxis.stackLabels.borderColor
                      */
@@ -26859,7 +26871,7 @@
                         // Don't do setScale again if we're only resizing. Regression
                         // #13507. But we need it after chart.update (responsive), as
                         // axis is initialized again (#12137).
-                        if (!chart.isResizing || !axis.tickPositions) {
+                        if (!chart.isResizing || !isNumber(axis.min)) {
                             axis.updateNames();
                             axis.setScale();
                         }
@@ -38961,6 +38973,12 @@
             dataLabels: {
                 align: void 0,
                 verticalAlign: void 0,
+                /**
+                 * The y position offset of the label relative to the point in
+                 * pixels.
+                 *
+                 * @type {number}
+                 */
                 y: void 0
             },
             /**
@@ -40187,8 +40205,9 @@
                     pick(size && size < 0 ? void 0 : options.size, '100%'),
                     pick(innerSize && innerSize < 0 ? void 0 : options.innerSize || 0, '0%')
                 ];
-                // No need for inner size in angular (gauges) series
-                if (chart.angular) {
+                // No need for inner size in angular (gauges) series but still required
+                // for pie series
+                if (chart.angular && !(this instanceof H.Series)) {
                     positions[3] = 0;
                 }
                 for (i = 0; i < 4; ++i) {
@@ -43582,7 +43601,7 @@
                         xy = [0];
                     }
                     xy.forEach(function (isX) {
-                        var axis = chart[isX ? 'xAxis' : 'yAxis'][0], axisOpt = axis.options, horiz = axis.horiz, mousePos = e[horiz ? 'chartX' : 'chartY'], mouseDown = horiz ? 'mouseDownX' : 'mouseDownY', startPos = chart[mouseDown], halfPointRange = (axis.pointRange || 0) / 2, pointRangeDirection = (axis.reversed && !chart.inverted) ||
+                        var axis = chart[isX ? 'xAxis' : 'yAxis'][0], horiz = axis.horiz, mousePos = e[horiz ? 'chartX' : 'chartY'], mouseDown = horiz ? 'mouseDownX' : 'mouseDownY', startPos = chart[mouseDown], halfPointRange = (axis.pointRange || 0) / 2, pointRangeDirection = (axis.reversed && !chart.inverted) ||
                                 (!axis.reversed && chart.inverted) ?
                                 -1 :
                                 1, extremes = axis.getExtremes(), panMin = axis.toValue(startPos - mousePos, true) +
@@ -43638,12 +43657,15 @@
                             if (axis.series.length &&
                                 newMin !== extremes.min &&
                                 newMax !== extremes.max &&
-                                isX ? true : (panningState &&
                                 newMin >= paddedMin &&
-                                newMax <= paddedMax)) {
+                                newMax <= paddedMax) {
                                 axis.setExtremes(newMin, newMax, false, false, { trigger: 'pan' });
                                 if (!chart.resetZoomButton &&
                                     !hasMapNavigation &&
+                                    // Show reset zoom button only when both newMin and
+                                    // newMax values are between padded axis range.
+                                    newMin !== paddedMin &&
+                                    newMax !== paddedMax &&
                                     type.match('y')) {
                                     chart.showResetZoom();
                                     axis.displayBtn = false;
@@ -50895,6 +50917,110 @@
             merge = U.merge,
             wrap = U.wrap;
         /**
+         * Represents the loose structure of a geographic JSON file.
+         *
+         * @interface Highcharts.GeoJSON
+         */ /**
+        * Full copyright note of the geographic data.
+        * @name Highcharts.GeoJSON#copyright
+        * @type {string|undefined}
+        */ /**
+        * Short copyright note of the geographic data suitable for watermarks.
+        * @name Highcharts.GeoJSON#copyrightShort
+        * @type {string|undefined}
+        */ /**
+        * Additional meta information based on the coordinate reference system.
+        * @name Highcharts.GeoJSON#crs
+        * @type {Highcharts.Dictionary<any>|undefined}
+        */ /**
+        * Data sets of geographic features.
+        * @name Highcharts.GeoJSON#features
+        * @type {Array<Highcharts.GeoJSONFeature>}
+        */ /**
+        * Map projections and transformations to be used when calculating between
+        * lat/lon and chart values. Required for lat/lon support on maps. Allows
+        * resizing, rotating, and moving portions of a map within its projected
+        * coordinate system while still retaining lat/lon support. If using lat/lon
+        * on a portion of the map that does not match a `hitZone`, the definition with
+        * the key `default` is used.
+        * @name Highcharts.GeoJSON#hc-transform
+        * @type {Highcharts.Dictionary<Highcharts.GeoJSONTranslation>|undefined}
+        */ /**
+        * Title of the geographic data.
+        * @name Highcharts.GeoJSON#title
+        * @type {string|undefined}
+        */ /**
+        * Type of the geographic data. Type of an optimized map collection is
+        * `FeatureCollection`.
+        * @name Highcharts.GeoJSON#type
+        * @type {string|undefined}
+        */ /**
+        * Version of the geographic data.
+        * @name Highcharts.GeoJSON#version
+        * @type {string|undefined}
+        */
+        /**
+         * Data set of a geographic feature.
+         * @interface Highcharts.GeoJSONFeature
+         * @extends Highcharts.Dictionary<*>
+         */ /**
+        * Data type of the geographic feature.
+        * @name Highcharts.GeoJSONFeature#type
+        * @type {string}
+        */
+        /**
+         * Describes the map projection and transformations applied to a portion of
+         * a map.
+         * @interface Highcharts.GeoJSONTranslation
+         */ /**
+        * The coordinate reference system used to generate this portion of the map.
+        * @name Highcharts.GeoJSONTranslation#crs
+        * @type {string}
+        */ /**
+        * Define the portion of the map that this defintion applies to. Defined as a
+        * GeoJSON polygon feature object, with `type` and `coordinates` properties.
+        * @name Highcharts.GeoJSONTranslation#hitZone
+        * @type {Highcharts.Dictionary<*>|undefined}
+        */ /**
+        * Property for internal use for maps generated by Highsoft.
+        * @name Highcharts.GeoJSONTranslation#jsonmarginX
+        * @type {number|undefined}
+        */ /**
+        * Property for internal use for maps generated by Highsoft.
+        * @name Highcharts.GeoJSONTranslation#jsonmarginY
+        * @type {number|undefined}
+        */ /**
+        * Property for internal use for maps generated by Highsoft.
+        * @name Highcharts.GeoJSONTranslation#jsonres
+        * @type {number|undefined}
+        */ /**
+        * Specifies clockwise rotation of the coordinates after the projection, but
+        * before scaling and panning. Defined in radians, relative to the coordinate
+        * system origin.
+        * @name Highcharts.GeoJSONTranslation#rotation
+        * @type {number|undefined}
+        */ /**
+        * The scaling factor applied to the projected coordinates.
+        * @name Highcharts.GeoJSONTranslation#scale
+        * @type {number|undefined}
+        */ /**
+        * Property for internal use for maps generated by Highsoft.
+        * @name Highcharts.GeoJSONTranslation#xoffset
+        * @type {number|undefined}
+        */ /**
+        * X offset of projected coordinates after scaling.
+        * @name Highcharts.GeoJSONTranslation#xpan
+        * @type {number|undefined}
+        */ /**
+        * Property for internal use for maps generated by Highsoft.
+        * @name Highcharts.GeoJSONTranslation#yoffset
+        * @type {number|undefined}
+        */ /**
+        * Y offset of projected coordinates after scaling.
+        * @name Highcharts.GeoJSONTranslation#ypan
+        * @type {number|undefined}
+        */
+        /**
          * Result object of a map transformation.
          *
          * @interface Highcharts.MapCoordinateObject
@@ -51148,7 +51274,7 @@
          *
          * @function Highcharts.geojson
          *
-         * @param {*} geojson
+         * @param {Highcharts.GeoJSON} geojson
          *        The GeoJSON structure to parse, represented as a JavaScript object
          *        rather than a JSON string.
          *

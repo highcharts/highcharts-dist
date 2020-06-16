@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.1.1 (2020-06-09)
+ * @license Highcharts Gantt JS v8.1.2 (2020-06-16)
  *
  * Tree Grid
  *
@@ -2667,6 +2667,15 @@
                                     }
                                 }
                             });
+                        }
+                    });
+                    // If staticScale is not defined on the yAxis
+                    // and chart height is set, set axis.isDirty
+                    // to ensure collapsing works (#12012)
+                    addEvent(axis, 'afterBreaks', function () {
+                        var _a;
+                        if (axis.coll === 'yAxis' && !axis.staticScale && ((_a = axis.chart.options.chart) === null || _a === void 0 ? void 0 : _a.height)) {
+                            axis.isDirty = true;
                         }
                     });
                     userOptions = merge({

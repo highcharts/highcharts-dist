@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.1 (2020-06-09)
+ * @license Highcharts JS v8.1.2 (2020-06-16)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -1999,7 +1999,6 @@
                     positioner = val.handlePositioner,
                     pos,
                     handle,
-                    handleSide,
                     path, 
                     // Run validation function on whether or not we allow individual
                     // updating of this prop.
@@ -2025,8 +2024,6 @@
                     // Find position and path of handle
                     pos = positioner(point);
                     handleAttrs.d = path = pathFormatter(point);
-                    handleSide = typeof val.resizeSide === 'function' ?
-                        val.resizeSide(point.options, point) : val.resizeSide;
                     if (!path || pos.x < 0 || pos.y < 0) {
                         return;
                     }
@@ -2035,9 +2032,9 @@
                         (val.axis === 'x') !== !!chart.inverted ?
                         'ew-resize' : 'ns-resize';
                     // Create and add the handle element if it doesn't exist
-                    handle = chart.dragHandles[handleSide];
+                    handle = chart.dragHandles[val.optionName];
                     if (!handle) {
-                        handle = chart.dragHandles[handleSide] = renderer
+                        handle = chart.dragHandles[val.optionName] = renderer
                             .path()
                             .add(chart.dragHandles.group);
                     }

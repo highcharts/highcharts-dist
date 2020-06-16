@@ -32,7 +32,7 @@ var VMLRenderer, VMLRendererExtension, VMLElement;
  * @apioption global.VMLRadialGradientURL
  */
 getOptions().global.VMLRadialGradientURL =
-    'http://code.highcharts.com/8.1.1/gfx/vml-radial-gradient.png';
+    'http://code.highcharts.com/8.1.2/gfx/vml-radial-gradient.png';
 // Utilites
 if (doc && !doc.defaultView) {
     H.getStyle = U.getStyle = function (el, prop) {

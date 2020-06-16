@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.1 (2020-06-09)
+ * @license Highcharts JS v8.1.2 (2020-06-16)
  *
  * Accessibility module
  *
@@ -217,7 +217,8 @@
          * */
         var stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
         var defined = U.defined,
-            find = U.find;
+            find = U.find,
+            fireEvent = U.fireEvent;
         /* eslint-disable valid-jsdoc */
         /**
          * @return {string}
@@ -371,7 +372,7 @@
                 var pos = getRelativePointAxisPosition(axis,
                     point);
                 scrollbar.updatePosition(pos - range / 2, pos + range / 2);
-                Highcharts.fireEvent(scrollbar, 'changed', {
+                fireEvent(scrollbar, 'changed', {
                     from: scrollbar.from,
                     to: scrollbar.to,
                     trigger: 'scrollbar',
@@ -891,8 +892,11 @@
                     'click', 'touchstart', 'touchend', 'touchcancel', 'touchmove',
                     'mouseover', 'mouseenter', 'mouseleave', 'mouseout'
                 ].forEach(function (evtType) {
+                    var isTouchEvent = evtType.indexOf('touch') === 0;
                     component.addEvent(button, evtType, function (e) {
-                        var clonedEvent = component.cloneMouseEvent(e);
+                        var clonedEvent = isTouchEvent ?
+                                component.cloneTouchEvent(e) :
+                                component.cloneMouseEvent(e);
                         if (source) {
                             component.fireEventOnWrappedOrUnwrappedElement(source, clonedEvent);
                         }
@@ -909,15 +913,7 @@
              */
             cloneMouseEvent: function (e) {
                 if (typeof win.MouseEvent === 'function') {
-                    var evt_1 = new win.MouseEvent(e.type,
-                        e);
-                    // This is a quick fix to a bug with using the drill-up button on
-                    // touch devices. See highcharts/demo/column-drilldown. Without this
-                    // fix, the button doesn't work, and throws errors. A proper fix
-                    // would be to use the win.TouchEvent class with true type checking.
-                    evt_1.touches = e.touches;
-                    evt_1.changedTouches = e.changedTouches;
-                    return evt_1;
+                    return new win.MouseEvent(e.type, e);
                 }
                 // No MouseEvent support, try using initMouseEvent
                 if (doc.createEvent) {
@@ -929,6 +925,50 @@
                     }
                 }
                 return getFakeMouseEvent(e.type);
+            },
+            /**
+             * Utility function to clone a touch event for re-dispatching.
+             * @private
+             * @param {global.TouchEvent} e The event to clone.
+             * @return {global.TouchEvent} The cloned event
+             */
+            cloneTouchEvent: function (e) {
+                var touchListToTouchArray = function (l) {
+                        var touchArray = [];
+                    for (var i = 0; i < l.length; ++i) {
+                        var item = l.item(i);
+                        if (item) {
+                            touchArray.push(item);
+                        }
+                    }
+                    return touchArray;
+                };
+                if (typeof win.TouchEvent === 'function') {
+                    var newEvent = new win.TouchEvent(e.type, {
+                            touches: touchListToTouchArray(e.touches),
+                            targetTouches: touchListToTouchArray(e.targetTouches),
+                            changedTouches: touchListToTouchArray(e.changedTouches),
+                            ctrlKey: e.ctrlKey,
+                            shiftKey: e.shiftKey,
+                            altKey: e.altKey,
+                            metaKey: e.metaKey,
+                            bubbles: e.bubbles,
+                            cancelable: e.cancelable,
+                            composed: e.composed,
+                            detail: e.detail,
+                            view: e.view
+                        });
+                    if (e.defaultPrevented) {
+                        newEvent.preventDefault();
+                    }
+                    return newEvent;
+                }
+                // Fallback to mouse event
+                var fakeEvt = this.cloneMouseEvent(e);
+                fakeEvt.touches = e.touches;
+                fakeEvt.changedTouches = e.changedTouches;
+                fakeEvt.targetTouches = e.targetTouches;
+                return fakeEvt;
             },
             /**
              * Remove traces of the component.
@@ -1020,8 +1060,10 @@
                 this.components = components;
                 this.modules = [];
                 this.currentModuleIx = 0;
+                // Run an update to get all modules
+                this.update();
                 ep.addEvent(chart.renderTo, 'keydown', function (e) { return _this.onKeydown(e); });
-                ep.addEvent(chart.container, 'focus', function (e) { return _this.onFocus(e); });
+                ep.addEvent(this.tabindexContainer, 'focus', function (e) { return _this.onFocus(e); });
                 ep.addEvent(doc, 'mouseup', function () { return _this.onMouseUp(); });
                 ep.addEvent(chart.renderTo, 'mousedown', function () {
                     _this.isClickingChart = true;
@@ -1032,8 +1074,6 @@
                 ep.addEvent(chart.renderTo, 'mouseout', function () {
                     _this.pointerIsOverChart = false;
                 });
-                // Run an update to get all modules
-                this.update();
                 // Init first module
                 if (this.modules.length) {
                     this.modules[0].init(1);
@@ -1183,7 +1223,7 @@
                     this.exitAnchor.focus();
                 }
                 else {
-                    this.chart.container.focus();
+                    this.tabindexContainer.focus();
                 }
                 return false;
             },
@@ -1214,21 +1254,32 @@
                 var a11yOptions = this.chart.options.accessibility,
                     keyboardOptions = a11yOptions && a11yOptions.keyboardNavigation,
                     shouldHaveTabindex = !(keyboardOptions && keyboardOptions.enabled === false),
-                    container = this.chart.container,
-                    curTabindex = container.getAttribute('tabIndex');
-                if (shouldHaveTabindex && !curTabindex) {
-                    container.setAttribute('tabindex', '0');
-                }
-                else if (!shouldHaveTabindex && curTabindex === '0') {
+                    chart = this.chart,
+                    container = chart.container;
+                var tabindexContainer;
+                if (chart.renderTo.hasAttribute('tabindex')) {
                     container.removeAttribute('tabindex');
+                    tabindexContainer = chart.renderTo;
+                }
+                else {
+                    tabindexContainer = container;
+                }
+                this.tabindexContainer = tabindexContainer;
+                var curTabindex = tabindexContainer.getAttribute('tabindex');
+                if (shouldHaveTabindex && !curTabindex) {
+                    tabindexContainer.setAttribute('tabindex', '0');
+                }
+                else if (!shouldHaveTabindex) {
+                    chart.container.removeAttribute('tabindex');
                 }
             },
             /**
              * @private
              */
             makeElementAnExitAnchor: function (el) {
+                var chartTabindex = this.tabindexContainer.getAttribute('tabindex') || 0;
                 el.setAttribute('class', 'highcharts-exit-anchor');
-                el.setAttribute('tabindex', '0');
+                el.setAttribute('tabindex', chartTabindex);
                 el.setAttribute('aria-hidden', false);
                 // Handle focus
                 this.addExitAnchorEventsToEl(el);
@@ -1301,9 +1352,7 @@
             destroy: function () {
                 this.removeExitAnchor();
                 this.eventProvider.removeAddedEvents();
-                if (this.chart.container.getAttribute('tabindex') === '0') {
-                    this.chart.container.removeAttribute('tabindex');
-                }
+                this.chart.container.removeAttribute('tabindex');
             }
         };
 
@@ -4793,7 +4842,7 @@
                     if (this.viewDataTableButton) {
                         this.viewDataTableButton.setAttribute('aria-expanded', 'true');
                     }
-                    e.html = e.html.replace('<table ', '<table tabindex="0" summary="' + getTableSummary(chart) + '"');
+                    e.html = e.html.replace('<table ', '<table tabindex="-1" summary="' + getTableSummary(chart) + '"');
                 }
             },
             /**
@@ -6673,7 +6722,7 @@
                 var _a;
                 if (chartOptions[prop]) {
                     a11yOptions[prop] = chartOptions[prop];
-                    error(32, false, chart, (_a = {}, _a["chart." + prop] = "accessibility." + prop, _a));
+                    error(32, false, chart, (_a = {}, _a["chart." + prop] = "use accessibility." + prop, _a));
                 }
             });
         }
@@ -6686,7 +6735,7 @@
                 if (opts && opts.description) {
                     opts.accessibility = opts.accessibility || {};
                     opts.accessibility.description = opts.description;
-                    error(32, false, chart, { 'axis.description': 'axis.accessibility.description' });
+                    error(32, false, chart, { 'axis.description': 'use axis.accessibility.description' });
                 }
             });
         }

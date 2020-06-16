@@ -182,7 +182,7 @@ var NavigationBindings = /** @class */ (function () {
                 navigation.bindingsChartClick(this, e);
             }
         }));
-        navigation.eventsToUnbind.push(addEvent(chart.container, Highcharts.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+        navigation.eventsToUnbind.push(addEvent(chart.container, H.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
             navigation.bindingsContainerMouseMove(this, e);
         }));
     };
@@ -676,7 +676,7 @@ function selectableAnnotation(annotationType) {
     function selectAndshowPopup(event) {
         var annotation = this, navigation = annotation.chart.navigationBindings, prevAnnotation = navigation.activeAnnotation;
         if (originalClick) {
-            originalClick.click.call(annotation, event);
+            originalClick.call(annotation, event);
         }
         if (prevAnnotation !== annotation) {
             // Select current:
@@ -972,7 +972,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/8.1.1/gfx/stock-icons/
+         * @default   https://code.highcharts.com/8.1.2/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */

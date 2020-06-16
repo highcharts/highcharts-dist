@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.1 (2020-06-09)
+ * @license Highcharts JS v8.1.2 (2020-06-16)
  *
  * Annotations module
  *
@@ -60,7 +60,7 @@
                     var emitter = this,
             addMouseDownEvent = function (element) {
                         addEvent(element,
-            Highcharts.isTouchDevice ? 'touchstart' : 'mousedown',
+            H.isTouchDevice ? 'touchstart' : 'mousedown',
             function (e) {
                             emitter.onMouseDown(e);
                     });
@@ -88,7 +88,7 @@
                     }
                 });
                 if (emitter.options.draggable) {
-                    addEvent(emitter, Highcharts.isTouchDevice ? 'touchmove' : 'drag', emitter.onDrag);
+                    addEvent(emitter, H.isTouchDevice ? 'touchmove' : 'drag', emitter.onDrag);
                     if (!emitter.graphic.renderer.styledMode) {
                         var cssPointer_1 = {
                                 cursor: {
@@ -140,7 +140,7 @@
                 prevChartY = e.chartY;
                 emitter.cancelClick = false;
                 emitter.chart.hasDraggedAnnotation = true;
-                emitter.removeDrag = addEvent(H.doc, Highcharts.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+                emitter.removeDrag = addEvent(H.doc, H.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
                     emitter.hasDragged = true;
                     e = pointer.normalize(e);
                     e.prevChartX = prevChartX;
@@ -149,7 +149,7 @@
                     prevChartX = e.chartX;
                     prevChartY = e.chartY;
                 });
-                emitter.removeMouseUp = addEvent(H.doc, Highcharts.isTouchDevice ? 'touchend' : 'mouseup', function (e) {
+                emitter.removeMouseUp = addEvent(H.doc, H.isTouchDevice ? 'touchend' : 'mouseup', function (e) {
                     emitter.cancelClick = emitter.hasDragged;
                     emitter.hasDragged = false;
                     emitter.chart.hasDraggedAnnotation = false;
@@ -2294,9 +2294,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * @private
-                 */
                 function Annotation(chart, userOptions) {
                     /* *
                      *
@@ -3414,19 +3411,63 @@
 
         return Annotation;
     });
-    _registerModule(_modules, 'annotations/types/BasicAnnotation.js', [_modules['annotations/annotations.src.js'], _modules['parts/Globals.js'], _modules['annotations/MockPoint.js']], function (Annotation, H, MockPoint) {
+    _registerModule(_modules, 'annotations/types/BasicAnnotation.js', [_modules['annotations/annotations.src.js'], _modules['annotations/MockPoint.js'], _modules['parts/Utilities.js']], function (Annotation, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var merge = U.merge;
         /* eslint-disable no-invalid-this */
-        var BasicAnnotation = function () {
-                Annotation.apply(this,
-            arguments);
-        };
-        H.extendAnnotation(BasicAnnotation, null, {
-            basicControlPoints: {
+        var BasicAnnotation = /** @class */ (function (_super) {
+                __extends(BasicAnnotation, _super);
+            /* *
+             *
+             *  Constructors
+             *
+             * */
+            function BasicAnnotation(chart, options) {
+                return _super.call(this, chart, options) || this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            BasicAnnotation.prototype.addControlPoints = function () {
+                var options = this.options,
+                    controlPoints = BasicAnnotation.basicControlPoints,
+                    langKey = options.langKey,
+                    optionsGroup = options.labels || options.shapes;
+                optionsGroup.forEach(function (group) {
+                    if (langKey) {
+                        // @todo langKey === 'label' / 'circle' / 'rectangle' ???
+                        group.controlPoints = controlPoints[langKey];
+                    }
+                });
+            };
+            /* *
+             *
+             *  Static Properties
+             *
+             * */
+            BasicAnnotation.basicControlPoints = {
                 label: [{
                         symbol: 'triangle-down',
                         positioner: function (target) {
@@ -3537,56 +3578,73 @@
                             }
                         }
                     }]
-            },
-            addControlPoints: function () {
-                var options = this.options,
-                    controlPoints = this.basicControlPoints,
-                    langKey = options.langKey,
-                    optionsGroup = options.labels || options.shapes;
-                optionsGroup.forEach(function (group) {
-                    if (langKey) {
-                        group.controlPoints = controlPoints[langKey];
-                    }
-                });
-            }
-        });
+            };
+            return BasicAnnotation;
+        }(Annotation));
+        BasicAnnotation.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions, {});
         Annotation.types.basicAnnotation = BasicAnnotation;
 
         return BasicAnnotation;
     });
-    _registerModule(_modules, 'annotations/types/CrookedLine.js', [_modules['annotations/annotations.src.js'], _modules['annotations/ControlPoint.js'], _modules['parts/Globals.js'], _modules['annotations/MockPoint.js'], _modules['parts/Utilities.js']], function (Annotation, ControlPoint, H, MockPoint, U) {
+    _registerModule(_modules, 'annotations/types/CrookedLine.js', [_modules['annotations/annotations.src.js'], _modules['annotations/ControlPoint.js'], _modules['annotations/MockPoint.js'], _modules['parts/Utilities.js']], function (Annotation, ControlPoint, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var merge = U.merge;
         /* eslint-disable no-invalid-this, valid-jsdoc */
-        var CrookedLine = function () {
-                Annotation.apply(this,
-            arguments);
-        };
-        H.extendAnnotation(CrookedLine, null, {
+        var CrookedLine = /** @class */ (function (_super) {
+                __extends(CrookedLine, _super);
+            /* *
+             *
+             * Constructors
+             *
+             * */
+            function CrookedLine(chart, options) {
+                return _super.call(this, chart, options) || this;
+            }
+            /* *
+             *
+             * Functions
+             *
+             * */
             /**
              * Overrides default setter to get axes from typeOptions.
              * @private
              */
-            setClipAxes: function () {
+            CrookedLine.prototype.setClipAxes = function () {
                 this.clipXAxis = this.chart.xAxis[this.options.typeOptions.xAxis];
                 this.clipYAxis = this.chart.yAxis[this.options.typeOptions.yAxis];
-            },
-            getPointsOptions: function () {
+            };
+            CrookedLine.prototype.getPointsOptions = function () {
                 var typeOptions = this.options.typeOptions;
-                return typeOptions.points.map(function (pointOptions) {
+                return (typeOptions.points || []).map(function (pointOptions) {
                     pointOptions.xAxis = typeOptions.xAxis;
                     pointOptions.yAxis = typeOptions.yAxis;
                     return pointOptions;
                 });
-            },
-            getControlPointsOptions: function () {
+            };
+            CrookedLine.prototype.getControlPointsOptions = function () {
                 return this.getPointsOptions();
-            },
-            addControlPoints: function () {
+            };
+            CrookedLine.prototype.addControlPoints = function () {
                 this.getControlPointsOptions().forEach(function (pointOptions, i) {
                     var controlPoint = new ControlPoint(this.chart,
                         this,
@@ -3596,8 +3654,8 @@
                     this.controlPoints.push(controlPoint);
                     pointOptions.controlPoint = controlPoint.options;
                 }, this);
-            },
-            addShapes: function () {
+            };
+            CrookedLine.prototype.addShapes = function () {
                 var typeOptions = this.options.typeOptions,
                     shape = this.initShape(merge(typeOptions.line, {
                         type: 'path',
@@ -3609,8 +3667,10 @@
                     })
                 }), false);
                 typeOptions.line = shape.options;
-            }
-        }, 
+            };
+            return CrookedLine;
+        }(Annotation));
+        CrookedLine.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions, 
         /**
          * A crooked line annotation.
          *
@@ -3705,32 +3765,55 @@
 
         return CrookedLine;
     });
-    _registerModule(_modules, 'annotations/types/ElliottWave.js', [_modules['annotations/annotations.src.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Annotation, H, U) {
+    _registerModule(_modules, 'annotations/types/ElliottWave.js', [_modules['annotations/annotations.src.js'], _modules['annotations/types/CrookedLine.js'], _modules['parts/Utilities.js']], function (Annotation, CrookedLine, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var merge = U.merge;
-        var CrookedLine = Annotation.types.crookedLine;
         /* eslint-disable no-invalid-this, valid-jsdoc */
-        var ElliottWave = function () {
-                CrookedLine.apply(this,
-            arguments);
-        };
-        H.extendAnnotation(ElliottWave, CrookedLine, {
-            addLabels: function () {
+        var ElliottWave = /** @class */ (function (_super) {
+                __extends(ElliottWave, _super);
+            function ElliottWave(chart, options) {
+                return _super.call(this, chart, options) || this;
+            }
+            /* *
+             *
+             * Functions
+             *
+             * */
+            ElliottWave.prototype.addLabels = function () {
                 this.getPointsOptions().forEach(function (point, i) {
-                    var label = this.initLabel(merge(point.label, {
-                            text: this.options.typeOptions.labels[i],
+                    var typeOptions = this.options.typeOptions,
+                        label = this.initLabel(merge(point.label, {
+                            text: typeOptions.labels[i],
                             point: function (target) {
                                 return target.annotation.points[i];
                         }
                     }), false);
                     point.label = label.options;
                 }, this);
-            }
-        }, 
+            };
+            return ElliottWave;
+        }(CrookedLine));
+        ElliottWave.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, 
         /**
          * An elliott wave annotation.
          *
@@ -3770,14 +3853,29 @@
 
         return ElliottWave;
     });
-    _registerModule(_modules, 'annotations/types/Tunnel.js', [_modules['annotations/annotations.src.js'], _modules['annotations/ControlPoint.js'], _modules['annotations/MockPoint.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Annotation, ControlPoint, MockPoint, H, U) {
+    _registerModule(_modules, 'annotations/types/Tunnel.js', [_modules['annotations/annotations.src.js'], _modules['annotations/ControlPoint.js'], _modules['annotations/types/CrookedLine.js'], _modules['annotations/MockPoint.js'], _modules['parts/Utilities.js']], function (Annotation, ControlPoint, CrookedLine, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var merge = U.merge;
-        var CrookedLine = Annotation.types.crookedLine;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * @private
@@ -3785,40 +3883,52 @@
         function getSecondCoordinate(p1, p2, x) {
             return (p2.y - p1.y) / (p2.x - p1.x) * (x - p1.x) + p1.y;
         }
-        var Tunnel = function () {
-                CrookedLine.apply(this,
-            arguments);
-        };
-        H.extendAnnotation(Tunnel, CrookedLine, {
-            getPointsOptions: function () {
+        var Tunnel = /** @class */ (function (_super) {
+                __extends(Tunnel, _super);
+            /* *
+             *
+             * Constructors
+             *
+             * */
+            function Tunnel(chart, options) {
+                return _super.call(this, chart, options) || this;
+            }
+            /* *
+             *
+             * Functions
+             *
+             * */
+            Tunnel.prototype.getPointsOptions = function () {
                 var pointsOptions = CrookedLine.prototype.getPointsOptions.call(this);
                 pointsOptions[2] = this.heightPointOptions(pointsOptions[1]);
                 pointsOptions[3] = this.heightPointOptions(pointsOptions[0]);
                 return pointsOptions;
-            },
-            getControlPointsOptions: function () {
+            };
+            Tunnel.prototype.getControlPointsOptions = function () {
                 return this.getPointsOptions().slice(0, 2);
-            },
-            heightPointOptions: function (pointOptions) {
-                var heightPointOptions = merge(pointOptions);
-                heightPointOptions.y += this.options.typeOptions.height;
+            };
+            Tunnel.prototype.heightPointOptions = function (pointOptions) {
+                var heightPointOptions = merge(pointOptions),
+                    typeOptions = this.options.typeOptions;
+                heightPointOptions.y += typeOptions.height;
                 return heightPointOptions;
-            },
-            addControlPoints: function () {
+            };
+            Tunnel.prototype.addControlPoints = function () {
                 CrookedLine.prototype.addControlPoints.call(this);
                 var options = this.options,
+                    typeOptions = options.typeOptions,
                     controlPoint = new ControlPoint(this.chart,
                     this,
                     merge(options.controlPointOptions,
-                    options.typeOptions.heightControlPoint), 2);
+                    typeOptions.heightControlPoint), 2);
                 this.controlPoints.push(controlPoint);
-                options.typeOptions.heightControlPoint = controlPoint.options;
-            },
-            addShapes: function () {
+                typeOptions.heightControlPoint = controlPoint.options;
+            };
+            Tunnel.prototype.addShapes = function () {
                 this.addLine();
                 this.addBackground();
-            },
-            addLine: function () {
+            };
+            Tunnel.prototype.addLine = function () {
                 var line = this.initShape(merge(this.options.typeOptions.line, {
                         type: 'path',
                         points: [
@@ -3833,14 +3943,14 @@
                     ]
                 }), false);
                 this.options.typeOptions.line = line.options;
-            },
-            addBackground: function () {
+            };
+            Tunnel.prototype.addBackground = function () {
                 var background = this.initShape(merge(this.options.typeOptions.background, {
                         type: 'path',
                         points: this.points.slice()
                     }));
                 this.options.typeOptions.background = background.options;
-            },
+            };
             /**
              * Translate start or end ("left" or "right") side of the tunnel.
              * @private
@@ -3848,23 +3958,25 @@
              * @param {number} dy - the amount of y translation
              * @param {boolean} [end] - whether to translate start or end side
              */
-            translateSide: function (dx, dy, end) {
+            Tunnel.prototype.translateSide = function (dx, dy, end) {
                 var topIndex = Number(end),
                     bottomIndex = topIndex === 0 ? 3 : 2;
                 this.translatePoint(dx, dy, topIndex);
                 this.translatePoint(dx, dy, bottomIndex);
-            },
+            };
             /**
              * Translate height of the tunnel.
              * @private
              * @param {number} dh - the amount of height translation
              */
-            translateHeight: function (dh) {
+            Tunnel.prototype.translateHeight = function (dh) {
                 this.translatePoint(0, dh, 2);
                 this.translatePoint(0, dh, 3);
                 this.options.typeOptions.height = this.points[3].y - this.points[0].y;
-            }
-        }, 
+            };
+            return Tunnel;
+        }(CrookedLine));
+        Tunnel.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, 
         /**
          * A tunnel annotation.
          *
@@ -3944,107 +4056,134 @@
 
         return Tunnel;
     });
-    _registerModule(_modules, 'annotations/types/InfinityLine.js', [_modules['annotations/annotations.src.js'], _modules['annotations/MockPoint.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Annotation, MockPoint, H, U) {
+    _registerModule(_modules, 'annotations/types/InfinityLine.js', [_modules['annotations/annotations.src.js'], _modules['annotations/types/CrookedLine.js'], _modules['annotations/MockPoint.js'], _modules['parts/Utilities.js']], function (Annotation, CrookedLine, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var merge = U.merge;
-        var CrookedLine = Annotation.types.crookedLine;
         /* eslint-disable no-invalid-this, valid-jsdoc */
-        var InfinityLine = function () {
-                CrookedLine.apply(this,
-            arguments);
-        };
-        InfinityLine.findEdgeCoordinate = function (firstPoint, secondPoint, xOrY, edgePointFirstCoordinate) {
-            var xOrYOpposite = xOrY === 'x' ? 'y' : 'x';
-            // solves equation for x or y
-            // y - y1 = (y2 - y1) / (x2 - x1) * (x - x1)
-            return ((secondPoint[xOrY] - firstPoint[xOrY]) *
-                (edgePointFirstCoordinate - firstPoint[xOrYOpposite]) /
-                (secondPoint[xOrYOpposite] - firstPoint[xOrYOpposite]) +
-                firstPoint[xOrY]);
-        };
-        InfinityLine.findEdgePoint = function (firstPoint, secondPoint) {
-            var xAxis = firstPoint.series.xAxis,
-                yAxis = secondPoint.series.yAxis,
-                firstPointPixels = MockPoint.pointToPixels(firstPoint),
-                secondPointPixels = MockPoint.pointToPixels(secondPoint),
-                deltaX = secondPointPixels.x - firstPointPixels.x,
-                deltaY = secondPointPixels.y - firstPointPixels.y,
-                xAxisMin = xAxis.left,
-                xAxisMax = xAxisMin + xAxis.width,
-                yAxisMin = yAxis.top,
-                yAxisMax = yAxisMin + yAxis.height,
-                xLimit = deltaX < 0 ? xAxisMin : xAxisMax,
-                yLimit = deltaY < 0 ? yAxisMin : yAxisMax,
-                edgePoint = {
-                    x: deltaX === 0 ? firstPointPixels.x : xLimit,
-                    y: deltaY === 0 ? firstPointPixels.y : yLimit
-                },
-                edgePointX,
-                edgePointY,
-                swap;
-            if (deltaX !== 0 && deltaY !== 0) {
-                edgePointY = InfinityLine.findEdgeCoordinate(firstPointPixels, secondPointPixels, 'y', xLimit);
-                edgePointX = InfinityLine.findEdgeCoordinate(firstPointPixels, secondPointPixels, 'x', yLimit);
-                if (edgePointY >= yAxisMin && edgePointY <= yAxisMax) {
-                    edgePoint.x = xLimit;
-                    edgePoint.y = edgePointY;
-                }
-                else {
-                    edgePoint.x = edgePointX;
-                    edgePoint.y = yLimit;
-                }
+        var InfinityLine = /** @class */ (function (_super) {
+                __extends(InfinityLine, _super);
+            /* *
+             *
+             *  Constructors
+             *
+             * */
+            function InfinityLine(chart, options) {
+                return _super.call(this, chart, options) || this;
             }
-            edgePoint.x -= xAxisMin;
-            edgePoint.y -= yAxisMin;
-            if (firstPoint.series.chart.inverted) {
-                swap = edgePoint.x;
-                edgePoint.x = edgePoint.y;
-                edgePoint.y = swap;
-            }
-            return edgePoint;
-        };
-        var edgePoint = function (startIndex,
-            endIndex) {
+            /* *
+             *
+             * Static Functions
+             *
+             * */
+            InfinityLine.edgePoint = function (startIndex, endIndex) {
                 return function (target) {
                     var annotation = target.annotation,
-            points = annotation.points,
-            type = annotation.options.typeOptions.type;
-                if (type === 'horizontalLine') {
-                    // Horizontal line has only one point,
-                    // make a copy of it:
-                    points = [
-                        points[0],
-                        new MockPoint(annotation.chart, points[0].target, {
-                            x: points[0].x + 1,
-                            y: points[0].y,
-                            xAxis: points[0].options.xAxis,
-                            yAxis: points[0].options.yAxis
-                        })
-                    ];
-                }
-                else if (type === 'verticalLine') {
-                    // The same for verticalLine type:
-                    points = [
-                        points[0],
-                        new MockPoint(annotation.chart, points[0].target, {
-                            x: points[0].x,
-                            y: points[0].y + 1,
-                            xAxis: points[0].options.xAxis,
-                            yAxis: points[0].options.yAxis
-                        })
-                    ];
-                }
-                return InfinityLine.findEdgePoint(points[startIndex], points[endIndex]);
+                        points = annotation.points,
+                        type = annotation.options.typeOptions.type;
+                    if (type === 'horizontalLine') {
+                        // Horizontal line has only one point,
+                        // make a copy of it:
+                        points = [
+                            points[0],
+                            new MockPoint(annotation.chart, points[0].target, {
+                                x: points[0].x + 1,
+                                y: points[0].y,
+                                xAxis: points[0].options.xAxis,
+                                yAxis: points[0].options.yAxis
+                            })
+                        ];
+                    }
+                    else if (type === 'verticalLine') {
+                        // The same for verticalLine type:
+                        points = [
+                            points[0],
+                            new MockPoint(annotation.chart, points[0].target, {
+                                x: points[0].x,
+                                y: points[0].y + 1,
+                                xAxis: points[0].options.xAxis,
+                                yAxis: points[0].options.yAxis
+                            })
+                        ];
+                    }
+                    return InfinityLine.findEdgePoint(points[startIndex], points[endIndex]);
+                };
             };
-        };
-        InfinityLine.endEdgePoint = edgePoint(0, 1);
-        InfinityLine.startEdgePoint = edgePoint(1, 0);
-        H.extendAnnotation(InfinityLine, CrookedLine, {
-            addShapes: function () {
+            InfinityLine.findEdgeCoordinate = function (firstPoint, secondPoint, xOrY, edgePointFirstCoordinate) {
+                var xOrYOpposite = xOrY === 'x' ? 'y' : 'x';
+                // solves equation for x or y
+                // y - y1 = (y2 - y1) / (x2 - x1) * (x - x1)
+                return ((secondPoint[xOrY] - firstPoint[xOrY]) *
+                    (edgePointFirstCoordinate - firstPoint[xOrYOpposite]) /
+                    (secondPoint[xOrYOpposite] - firstPoint[xOrYOpposite]) +
+                    firstPoint[xOrY]);
+            };
+            InfinityLine.findEdgePoint = function (firstPoint, secondPoint) {
+                var xAxis = firstPoint.series.xAxis,
+                    yAxis = secondPoint.series.yAxis,
+                    firstPointPixels = MockPoint.pointToPixels(firstPoint),
+                    secondPointPixels = MockPoint.pointToPixels(secondPoint),
+                    deltaX = secondPointPixels.x - firstPointPixels.x,
+                    deltaY = secondPointPixels.y - firstPointPixels.y,
+                    xAxisMin = xAxis.left,
+                    xAxisMax = xAxisMin + xAxis.width,
+                    yAxisMin = yAxis.top,
+                    yAxisMax = yAxisMin + yAxis.height,
+                    xLimit = deltaX < 0 ? xAxisMin : xAxisMax,
+                    yLimit = deltaY < 0 ? yAxisMin : yAxisMax,
+                    edgePoint = {
+                        x: deltaX === 0 ? firstPointPixels.x : xLimit,
+                        y: deltaY === 0 ? firstPointPixels.y : yLimit
+                    },
+                    edgePointX,
+                    edgePointY,
+                    swap;
+                if (deltaX !== 0 && deltaY !== 0) {
+                    edgePointY = InfinityLine.findEdgeCoordinate(firstPointPixels, secondPointPixels, 'y', xLimit);
+                    edgePointX = InfinityLine.findEdgeCoordinate(firstPointPixels, secondPointPixels, 'x', yLimit);
+                    if (edgePointY >= yAxisMin && edgePointY <= yAxisMax) {
+                        edgePoint.x = xLimit;
+                        edgePoint.y = edgePointY;
+                    }
+                    else {
+                        edgePoint.x = edgePointX;
+                        edgePoint.y = yLimit;
+                    }
+                }
+                edgePoint.x -= xAxisMin;
+                edgePoint.y -= yAxisMin;
+                if (firstPoint.series.chart.inverted) {
+                    swap = edgePoint.x;
+                    edgePoint.x = edgePoint.y;
+                    edgePoint.y = swap;
+                }
+                return edgePoint;
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            InfinityLine.prototype.addShapes = function () {
                 var typeOptions = this.options.typeOptions,
                     points = [
                         this.points[0],
@@ -4059,8 +4198,17 @@
                     }),
                     false);
                 typeOptions.line = line.options;
-            }
-        });
+            };
+            /**
+             *
+             * Static Properties
+             *
+             */
+            InfinityLine.endEdgePoint = InfinityLine.edgePoint(0, 1);
+            InfinityLine.startEdgePoint = InfinityLine.edgePoint(1, 0);
+            return InfinityLine;
+        }(CrookedLine));
+        InfinityLine.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, {});
         /**
          * An infinity line annotation.
          *
@@ -4075,14 +4223,29 @@
 
         return InfinityLine;
     });
-    _registerModule(_modules, 'annotations/types/Fibonacci.js', [_modules['annotations/annotations.src.js'], _modules['parts/Globals.js'], _modules['annotations/MockPoint.js'], _modules['parts/Utilities.js']], function (Annotation, H, MockPoint, U) {
+    _registerModule(_modules, 'annotations/types/Fibonacci.js', [_modules['annotations/annotations.src.js'], _modules['annotations/MockPoint.js'], _modules['annotations/types/Tunnel.js'], _modules['parts/Utilities.js']], function (Annotation, MockPoint, Tunnel, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var merge = U.merge;
-        var Tunnel = Annotation.types.tunnel;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var createPathDGenerator = function (retracementIndex,
             isBackground) {
@@ -4108,19 +4271,27 @@
                 return d;
             };
         };
-        var Fibonacci = function () {
-                this.startRetracements = [];
-            this.endRetracements = [];
-            Tunnel.apply(this, arguments);
-        };
-        Fibonacci.levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
-        H.extendAnnotation(Fibonacci, Tunnel, {
-            linkPoints: function () {
-                Tunnel.prototype.linkPoints.call(this);
+        var Fibonacci = /** @class */ (function (_super) {
+                __extends(Fibonacci, _super);
+            /* *
+             *
+             * Constructors
+             *
+             * */
+            function Fibonacci(chart, options) {
+                return _super.call(this, chart, options) || this;
+            }
+            /* *
+             *
+             * Functions
+             *
+             * */
+            Fibonacci.prototype.linkPoints = function () {
+                _super.prototype.linkPoints.call(this);
                 this.linkRetracementsPoints();
                 return;
-            },
-            linkRetracementsPoints: function () {
+            };
+            Fibonacci.prototype.linkRetracementsPoints = function () {
                 var points = this.points,
                     startDiff = points[0].y - points[3].y,
                     endDiff = points[1].y - points[2].y,
@@ -4129,11 +4300,13 @@
                 Fibonacci.levels.forEach(function (level, i) {
                     var startRetracement = points[0].y - startDiff * level,
                         endRetracement = points[1].y - endDiff * level;
+                    this.startRetracements = this.startRetracements || [];
+                    this.endRetracements = this.endRetracements || [];
                     this.linkRetracementPoint(i, startX, startRetracement, this.startRetracements);
                     this.linkRetracementPoint(i, endX, endRetracement, this.endRetracements);
                 }, this);
-            },
-            linkRetracementPoint: function (pointIndex, x, y, retracements) {
+            };
+            Fibonacci.prototype.linkRetracementPoint = function (pointIndex, x, y, retracements) {
                 var point = retracements[pointIndex],
                     typeOptions = this.options.typeOptions;
                 if (!point) {
@@ -4149,8 +4322,8 @@
                     point.options.y = y;
                     point.refresh();
                 }
-            },
-            addShapes: function () {
+            };
+            Fibonacci.prototype.addShapes = function () {
                 Fibonacci.levels.forEach(function (_level, i) {
                     this.initShape({
                         type: 'path',
@@ -4165,8 +4338,8 @@
                         });
                     }
                 }, this);
-            },
-            addLabels: function () {
+            };
+            Fibonacci.prototype.addLabels = function () {
                 Fibonacci.levels.forEach(function (level, i) {
                     var options = this.options.typeOptions,
                         label = this.initLabel(merge(options.labels[i], {
@@ -4178,8 +4351,16 @@
                     }));
                     options.labels[i] = label.options;
                 }, this);
-            }
-        }, 
+            };
+            /* *
+             *
+             * Static properties
+             *
+             * */
+            Fibonacci.levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+            return Fibonacci;
+        }(Tunnel));
+        Fibonacci.prototype.defaultOptions = merge(Tunnel.prototype.defaultOptions, 
         /**
          * A fibonacci annotation.
          *
@@ -4254,44 +4435,72 @@
 
         return Fibonacci;
     });
-    _registerModule(_modules, 'annotations/types/Pitchfork.js', [_modules['annotations/annotations.src.js'], _modules['parts/Globals.js'], _modules['annotations/MockPoint.js'], _modules['parts/Utilities.js']], function (Annotation, H, MockPoint, U) {
+    _registerModule(_modules, 'annotations/types/Pitchfork.js', [_modules['annotations/annotations.src.js'], _modules['annotations/types/InfinityLine.js'], _modules['annotations/MockPoint.js'], _modules['parts/Utilities.js']], function (Annotation, InfinityLine, MockPoint, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var merge = U.merge;
-        var InfinityLine = Annotation.types.infinityLine;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        var Pitchfork = function () {
-                InfinityLine.apply(this,
-            arguments);
-        };
-        Pitchfork.findEdgePoint = function (point, firstAnglePoint, secondAnglePoint) {
-            var angle = Math.atan2(secondAnglePoint.plotY - firstAnglePoint.plotY,
-                secondAnglePoint.plotX - firstAnglePoint.plotX),
-                distance = 1e7;
-            return {
-                x: point.plotX + distance * Math.cos(angle),
-                y: point.plotY + distance * Math.sin(angle)
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
             };
-        };
-        Pitchfork.middleLineEdgePoint = function (target) {
-            var annotation = target.annotation,
-                points = annotation.points;
-            return InfinityLine.findEdgePoint(points[0], new MockPoint(annotation.chart, target, annotation.midPointOptions()));
-        };
-        var outerLineEdgePoint = function (firstPointIndex) {
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var merge = U.merge;
+        /* eslint-disable no-invalid-this, valid-jsdoc */
+        var Pitchfork = /** @class */ (function (_super) {
+                __extends(Pitchfork, _super);
+            /* *
+             *
+             * Constructors
+             *
+             * */
+            function Pitchfork(chart, options) {
+                return _super.call(this, chart, options) || this;
+            }
+            /* *
+             *
+             * Static Functions
+             *
+             * */
+            Pitchfork.outerLineEdgePoint = function (firstPointIndex) {
                 return function (target) {
                     var annotation = target.annotation,
-            points = annotation.points;
-                return Pitchfork.findEdgePoint(points[firstPointIndex], points[0], new MockPoint(annotation.chart, target, annotation.midPointOptions()));
+                        points = annotation.points;
+                    return Pitchfork.findEdgePoint(points[firstPointIndex], points[0], new MockPoint(annotation.chart, target, annotation.midPointOptions()));
+                };
             };
-        };
-        Pitchfork.topLineEdgePoint = outerLineEdgePoint(1);
-        Pitchfork.bottomLineEdgePoint = outerLineEdgePoint(0);
-        H.extendAnnotation(Pitchfork, InfinityLine, {
-            midPointOptions: function () {
+            Pitchfork.findEdgePoint = function (point, firstAnglePoint, secondAnglePoint) {
+                var angle = Math.atan2(secondAnglePoint.plotY - firstAnglePoint.plotY,
+                    secondAnglePoint.plotX - firstAnglePoint.plotX),
+                    distance = 1e7;
+                return {
+                    x: point.plotX + distance * Math.cos(angle),
+                    y: point.plotY + distance * Math.sin(angle)
+                };
+            };
+            Pitchfork.middleLineEdgePoint = function (target) {
+                var annotation = target.annotation,
+                    points = annotation.points;
+                return InfinityLine.findEdgePoint(points[0], new MockPoint(annotation.chart, target, annotation.midPointOptions()));
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            Pitchfork.prototype.midPointOptions = function () {
                 var points = this.points;
                 return {
                     x: (points[1].x + points[2].x) / 2,
@@ -4299,12 +4508,12 @@
                     xAxis: points[0].series.xAxis,
                     yAxis: points[0].series.yAxis
                 };
-            },
-            addShapes: function () {
+            };
+            Pitchfork.prototype.addShapes = function () {
                 this.addLines();
                 this.addBackgrounds();
-            },
-            addLines: function () {
+            };
+            Pitchfork.prototype.addLines = function () {
                 this.initShape({
                     type: 'path',
                     points: [
@@ -4326,8 +4535,8 @@
                         Pitchfork.bottomLineEdgePoint
                     ]
                 }, false);
-            },
-            addBackgrounds: function () {
+            };
+            Pitchfork.prototype.addBackgrounds = function () {
                 var shapes = this.shapes,
                     typeOptions = this.options.typeOptions;
                 var innerBackground = this.initShape(merge(typeOptions.innerBackground, {
@@ -4370,8 +4579,17 @@
                     }));
                 typeOptions.innerBackground = innerBackground.options;
                 typeOptions.outerBackground = outerBackground.options;
-            }
-        }, 
+            };
+            /**
+             *
+             * Static Properties
+             *
+             */
+            Pitchfork.topLineEdgePoint = Pitchfork.outerLineEdgePoint(1);
+            Pitchfork.bottomLineEdgePoint = Pitchfork.outerLineEdgePoint(0);
+            return Pitchfork;
+        }(InfinityLine));
+        Pitchfork.prototype.defaultOptions = merge(InfinityLine.prototype.defaultOptions, 
         /**
          * A pitchfork annotation.
          *
@@ -5628,7 +5846,7 @@
                         navigation.bindingsChartClick(this, e);
                     }
                 }));
-                navigation.eventsToUnbind.push(addEvent(chart.container, Highcharts.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+                navigation.eventsToUnbind.push(addEvent(chart.container, H.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
                     navigation.bindingsContainerMouseMove(this, e);
                 }));
             };
@@ -6145,7 +6363,7 @@
                     navigation = annotation.chart.navigationBindings,
                     prevAnnotation = navigation.activeAnnotation;
                 if (originalClick) {
-                    originalClick.click.call(annotation, event);
+                    originalClick.call(annotation, event);
                 }
                 if (prevAnnotation !== annotation) {
                     // Select current:
@@ -6454,7 +6672,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/8.1.1/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/8.1.2/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -7293,7 +7511,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/8.1.1/gfx/stock-icons/'));
+                    'https://code.highcharts.com/8.1.2/gfx/stock-icons/'));
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

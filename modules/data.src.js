@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.1 (2020-06-09)
+ * @license Highcharts JS v8.1.2 (2020-06-16)
  *
  * Data module
  *
@@ -270,6 +270,7 @@
          *         Return `false` to stop completion, or call `this.complete()` to
          *         continue async.
          */
+        var ajax = H.ajax;
         // Utilities
         var win = H.win,
             doc = win.document;
@@ -1451,7 +1452,7 @@
                                     setTimeout(performFetch, updateIntervalMs);
                             }
                         }
-                        Highcharts.ajax({
+                        ajax({
                             url: url,
                             dataType: tp || 'json',
                             success: function (res) {
@@ -1532,7 +1533,7 @@
                             worksheet,
                             'public/values?alt=json'
                         ].join('/');
-                    Highcharts.ajax({
+                    ajax({
                         url: url,
                         dataType: 'json',
                         success: function (json) {

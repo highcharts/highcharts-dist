@@ -288,8 +288,11 @@ AccessibilityComponent.prototype = {
             'click', 'touchstart', 'touchend', 'touchcancel', 'touchmove',
             'mouseover', 'mouseenter', 'mouseleave', 'mouseout'
         ].forEach(function (evtType) {
+            var isTouchEvent = evtType.indexOf('touch') === 0;
             component.addEvent(button, evtType, function (e) {
-                var clonedEvent = component.cloneMouseEvent(e);
+                var clonedEvent = isTouchEvent ?
+                    component.cloneTouchEvent(e) :
+                    component.cloneMouseEvent(e);
                 if (source) {
                     component.fireEventOnWrappedOrUnwrappedElement(source, clonedEvent);
                 }
@@ -306,14 +309,7 @@ AccessibilityComponent.prototype = {
      */
     cloneMouseEvent: function (e) {
         if (typeof win.MouseEvent === 'function') {
-            var evt_1 = new win.MouseEvent(e.type, e);
-            // This is a quick fix to a bug with using the drill-up button on
-            // touch devices. See highcharts/demo/column-drilldown. Without this
-            // fix, the button doesn't work, and throws errors. A proper fix
-            // would be to use the win.TouchEvent class with true type checking.
-            evt_1.touches = e.touches;
-            evt_1.changedTouches = e.changedTouches;
-            return evt_1;
+            return new win.MouseEvent(e.type, e);
         }
         // No MouseEvent support, try using initMouseEvent
         if (doc.createEvent) {
@@ -325,6 +321,50 @@ AccessibilityComponent.prototype = {
             }
         }
         return getFakeMouseEvent(e.type);
+    },
+    /**
+     * Utility function to clone a touch event for re-dispatching.
+     * @private
+     * @param {global.TouchEvent} e The event to clone.
+     * @return {global.TouchEvent} The cloned event
+     */
+    cloneTouchEvent: function (e) {
+        var touchListToTouchArray = function (l) {
+            var touchArray = [];
+            for (var i = 0; i < l.length; ++i) {
+                var item = l.item(i);
+                if (item) {
+                    touchArray.push(item);
+                }
+            }
+            return touchArray;
+        };
+        if (typeof win.TouchEvent === 'function') {
+            var newEvent = new win.TouchEvent(e.type, {
+                touches: touchListToTouchArray(e.touches),
+                targetTouches: touchListToTouchArray(e.targetTouches),
+                changedTouches: touchListToTouchArray(e.changedTouches),
+                ctrlKey: e.ctrlKey,
+                shiftKey: e.shiftKey,
+                altKey: e.altKey,
+                metaKey: e.metaKey,
+                bubbles: e.bubbles,
+                cancelable: e.cancelable,
+                composed: e.composed,
+                detail: e.detail,
+                view: e.view
+            });
+            if (e.defaultPrevented) {
+                newEvent.preventDefault();
+            }
+            return newEvent;
+        }
+        // Fallback to mouse event
+        var fakeEvt = this.cloneMouseEvent(e);
+        fakeEvt.touches = e.touches;
+        fakeEvt.changedTouches = e.changedTouches;
+        fakeEvt.targetTouches = e.targetTouches;
+        return fakeEvt;
     },
     /**
      * Remove traces of the component.

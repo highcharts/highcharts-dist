@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.1 (2020-06-09)
+ * @license Highstock JS v8.1.2 (2020-06-16)
  *
  * Advanced Highstock tools
  *
@@ -61,7 +61,7 @@
                     var emitter = this,
             addMouseDownEvent = function (element) {
                         addEvent(element,
-            Highcharts.isTouchDevice ? 'touchstart' : 'mousedown',
+            H.isTouchDevice ? 'touchstart' : 'mousedown',
             function (e) {
                             emitter.onMouseDown(e);
                     });
@@ -89,7 +89,7 @@
                     }
                 });
                 if (emitter.options.draggable) {
-                    addEvent(emitter, Highcharts.isTouchDevice ? 'touchmove' : 'drag', emitter.onDrag);
+                    addEvent(emitter, H.isTouchDevice ? 'touchmove' : 'drag', emitter.onDrag);
                     if (!emitter.graphic.renderer.styledMode) {
                         var cssPointer_1 = {
                                 cursor: {
@@ -141,7 +141,7 @@
                 prevChartY = e.chartY;
                 emitter.cancelClick = false;
                 emitter.chart.hasDraggedAnnotation = true;
-                emitter.removeDrag = addEvent(H.doc, Highcharts.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+                emitter.removeDrag = addEvent(H.doc, H.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
                     emitter.hasDragged = true;
                     e = pointer.normalize(e);
                     e.prevChartX = prevChartX;
@@ -150,7 +150,7 @@
                     prevChartX = e.chartX;
                     prevChartY = e.chartY;
                 });
-                emitter.removeMouseUp = addEvent(H.doc, Highcharts.isTouchDevice ? 'touchend' : 'mouseup', function (e) {
+                emitter.removeMouseUp = addEvent(H.doc, H.isTouchDevice ? 'touchend' : 'mouseup', function (e) {
                     emitter.cancelClick = emitter.hasDragged;
                     emitter.hasDragged = false;
                     emitter.chart.hasDraggedAnnotation = false;
@@ -2295,9 +2295,6 @@
                  *  Constructors
                  *
                  * */
-                /**
-                 * @private
-                 */
                 function Annotation(chart, userOptions) {
                     /* *
                      *
@@ -3680,7 +3677,7 @@
                         navigation.bindingsChartClick(this, e);
                     }
                 }));
-                navigation.eventsToUnbind.push(addEvent(chart.container, Highcharts.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
+                navigation.eventsToUnbind.push(addEvent(chart.container, H.isTouchDevice ? 'touchmove' : 'mousemove', function (e) {
                     navigation.bindingsContainerMouseMove(this, e);
                 }));
             };
@@ -4197,7 +4194,7 @@
                     navigation = annotation.chart.navigationBindings,
                     prevAnnotation = navigation.activeAnnotation;
                 if (originalClick) {
-                    originalClick.click.call(annotation, event);
+                    originalClick.call(annotation, event);
                 }
                 if (prevAnnotation !== annotation) {
                     // Select current:
@@ -4506,7 +4503,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/8.1.1/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/8.1.2/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -7661,7 +7658,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/8.1.1/gfx/stock-icons/';
+                    'https://code.highcharts.com/8.1.2/gfx/stock-icons/';
             };
             return Toolbar;
         }());
