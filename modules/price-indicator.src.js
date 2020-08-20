@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Advanced Highstock tools
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/price-indicator.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/PriceIndication.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
          * (c) 2009-2020 Sebastian Bochann
          *

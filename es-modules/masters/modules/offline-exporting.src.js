@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  * @module highcharts/modules/offline-exporting
  * @requires highcharts
  * @requires highcharts/modules/exporting
@@ -11,4 +11,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../modules/offline-exporting.src.js';
+import '../../Extensions/OfflineExporting.js';

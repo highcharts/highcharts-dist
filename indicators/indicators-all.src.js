@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * All technical indicators for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
         /**
          *
          *  (c) 2010-2020 Daniel Studencki
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'indicators/indicators.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
+    _registerModule(_modules, 'Stock/Indicators/Indicators.js', [_modules['Core/Globals.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (H, requiredIndicator, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -108,7 +108,7 @@
         var Series = H.Series,
             seriesTypes = H.seriesTypes,
             ohlcProto = H.seriesTypes.ohlc.prototype,
-            generateMessage = requiredIndicatorMixin.generateMessage;
+            generateMessage = requiredIndicator.generateMessage;
         /**
          * The parameter allows setting line series type and use OHLC indicators. Data
          * in OHLC format is required.
@@ -445,7 +445,7 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/accumulation-distribution.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/ADIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -572,7 +572,7 @@
         ''; // add doclet above to transpiled file
 
     });
-    _registerModule(_modules, 'indicators/ao.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/AOIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -760,7 +760,7 @@
         ''; // for including the above in the doclets
 
     });
-    _registerModule(_modules, 'mixins/multipe-lines.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Mixins/MultipleLines.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
          *
          *  (c) 2010-2020 Wojciech Chmiel
@@ -949,7 +949,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'indicators/aroon.src.js', [_modules['parts/Utilities.js'], _modules['mixins/multipe-lines.js']], function (U, multipleLinesMixin) {
+    _registerModule(_modules, 'Stock/Indicators/AroonIndicator.js', [_modules['Core/Utilities.js'], _modules['Mixins/MultipleLines.js']], function (U, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1119,7 +1119,7 @@
         ''; // to avoid removal of the above jsdoc
 
     });
-    _registerModule(_modules, 'indicators/aroon-oscillator.src.js', [_modules['parts/Globals.js'], _modules['mixins/multipe-lines.js'], _modules['mixins/indicator-required.js'], _modules['parts/Utilities.js']], function (H, multipleLinesMixin, requiredIndicatorMixin, U) {
+    _registerModule(_modules, 'Stock/Indicators/AroonOscillatorIndicator.js', [_modules['Core/Globals.js'], _modules['Mixins/MultipleLines.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (H, multipleLinesMixin, requiredIndicator, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1129,8 +1129,7 @@
          * */
         var merge = U.merge,
             seriesType = U.seriesType;
-        var AROON = H.seriesTypes.aroon,
-            requiredIndicator = requiredIndicatorMixin;
+        var AROON = H.seriesTypes.aroon;
         /**
          * The Aroon Oscillator series type.
          *
@@ -1241,7 +1240,7 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/atr.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/ATRIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1386,7 +1385,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/bollinger-bands.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/multipe-lines.js']], function (H, U, multipleLinesMixin) {
+    _registerModule(_modules, 'Stock/Indicators/BBIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/MultipleLines.js']], function (H, U, multipleLinesMixin) {
         /**
          *
          *  License: www.highcharts.com/license
@@ -1583,7 +1582,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/cci.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/CCIIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -1712,7 +1711,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/cmf.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/CMFIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -1914,7 +1913,7 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/dpo.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/DPOIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2049,7 +2048,7 @@
         ''; // to include the above in the js output'
 
     });
-    _registerModule(_modules, 'indicators/ema.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/EMAIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2182,7 +2181,7 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/chaikin.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
+    _registerModule(_modules, 'Stock/Indicators/ChaikinIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2194,8 +2193,7 @@
             error = U.error,
             seriesType = U.seriesType;
         var EMA = H.seriesTypes.ema,
-            AD = H.seriesTypes.ad,
-            requiredIndicator = requiredIndicatorMixin;
+            AD = H.seriesTypes.ad;
         /**
          * The Chaikin series type.
          *
@@ -2335,7 +2333,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/dema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
+    _registerModule(_modules, 'Stock/Indicators/DEMAIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2346,8 +2344,7 @@
         var correctFloat = U.correctFloat,
             isArray = U.isArray,
             seriesType = U.seriesType;
-        var EMAindicator = H.seriesTypes.ema,
-            requiredIndicator = requiredIndicatorMixin;
+        var EMAindicator = H.seriesTypes.ema;
         /**
          * The DEMA series Type
          *
@@ -2485,7 +2482,7 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/tema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
+    _registerModule(_modules, 'Stock/Indicators/TEMAIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2496,8 +2493,7 @@
         var correctFloat = U.correctFloat,
             isArray = U.isArray,
             seriesType = U.seriesType;
-        var EMAindicator = H.seriesTypes.ema,
-            requiredIndicator = requiredIndicatorMixin;
+        var EMAindicator = H.seriesTypes.ema;
         /**
          * The TEMA series type.
          *
@@ -2670,7 +2666,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/trix.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicator) {
+    _registerModule(_modules, 'Stock/Indicators/TRIXIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2751,7 +2747,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/apo.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
+    _registerModule(_modules, 'Stock/Indicators/APOIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -2761,8 +2757,7 @@
          * */
         var error = U.error,
             seriesType = U.seriesType;
-        var EMA = H.seriesTypes.ema,
-            requiredIndicator = requiredIndicatorMixin;
+        var EMA = H.seriesTypes.ema;
         /**
          * The APO series type.
          *
@@ -2889,7 +2884,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/ichimoku-kinko-hyo.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
+    _registerModule(_modules, 'Stock/Indicators/IKHIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Utilities.js']], function (H, Color, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -3602,7 +3597,7 @@
         ''; // add doclet above to transpiled file
 
     });
-    _registerModule(_modules, 'indicators/keltner-channels.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/multipe-lines.js']], function (H, U, multipleLinesMixin) {
+    _registerModule(_modules, 'Stock/Indicators/KeltnerChannelsIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/MultipleLines.js']], function (H, U, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -3792,7 +3787,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/macd.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/MACDIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4163,7 +4158,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/mfi.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/MFIIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  Money Flow Index indicator for Highstock
@@ -4340,7 +4335,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/momentum.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/MomentumIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4452,7 +4447,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/natr.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/NATRIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4530,7 +4525,7 @@
         ''; // to include the above in the js output'
 
     });
-    _registerModule(_modules, 'indicators/pivot-points.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/PivotPointsIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4863,7 +4858,7 @@
         ''; // to include the above in the js output'
 
     });
-    _registerModule(_modules, 'indicators/ppo.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
+    _registerModule(_modules, 'Stock/Indicators/PPOIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -4874,8 +4869,7 @@
         var correctFloat = U.correctFloat,
             error = U.error,
             seriesType = U.seriesType;
-        var EMA = H.seriesTypes.ema,
-            requiredIndicator = requiredIndicatorMixin;
+        var EMA = H.seriesTypes.ema;
         /**
          * The PPO series type.
          *
@@ -5003,7 +4997,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'mixins/reduce-array.js', [], function () {
+    _registerModule(_modules, 'Mixins/ReduceArray.js', [], function () {
         /**
          *
          *  (c) 2010-2020 Pawel Fus & Daniel Studencki
@@ -5061,7 +5055,7 @@
 
         return reduceArrayMixin;
     });
-    _registerModule(_modules, 'indicators/price-channel.src.js', [_modules['parts/Utilities.js'], _modules['mixins/reduce-array.js'], _modules['mixins/multipe-lines.js']], function (U, reduceArrayMixin, multipleLinesMixin) {
+    _registerModule(_modules, 'Stock/Indicators/PCIndicator.js', [_modules['Core/Utilities.js'], _modules['Mixins/ReduceArray.js'], _modules['Mixins/MultipleLines.js']], function (U, reduceArrayMixin, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -5209,7 +5203,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/price-envelopes.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/PriceEnvelopesIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -5445,7 +5439,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/psar.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/PSARIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  Parabolic SAR indicator for Highstock
@@ -5700,7 +5694,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/roc.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/ROCIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Kacper Madej
@@ -5844,7 +5838,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/rsi.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/RSIIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -5992,7 +5986,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/stochastic.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/reduce-array.js'], _modules['mixins/multipe-lines.js']], function (H, U, reduceArrayMixin, multipleLinesMixin) {
+    _registerModule(_modules, 'Stock/Indicators/StochasticIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/ReduceArray.js'], _modules['Mixins/MultipleLines.js']], function (H, U, reduceArrayMixin, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -6176,7 +6170,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/slow-stochastic.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicator) {
+    _registerModule(_modules, 'Stock/Indicators/SlowStochasticIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -6294,7 +6288,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/supertrend.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/SupertrendIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -6760,7 +6754,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/volume-by-price.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Stock/Indicators/VBPIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Paweł Dalek
@@ -7328,7 +7322,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/vwap.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/VWAPIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Paweł Dalek
@@ -7497,7 +7491,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/williams-r.src.js', [_modules['parts/Utilities.js'], _modules['mixins/reduce-array.js']], function (U, reduceArrayMixin) {
+    _registerModule(_modules, 'Stock/Indicators/WilliamsRIndicator.js', [_modules['Core/Utilities.js'], _modules['Mixins/ReduceArray.js']], function (U, reduceArrayMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -7616,7 +7610,7 @@
         ''; // adds doclets above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/wma.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/WMAIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Kacper Madej
@@ -7761,7 +7755,7 @@
         ''; // adds doclet above to the transpiled file
 
     });
-    _registerModule(_modules, 'indicators/zigzag.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/ZigzagIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Kacper Madej
@@ -7962,7 +7956,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/RegressionIndicators.js', [_modules['Core/Utilities.js']], function (U) {
         /**
          *
          *  (c) 2010-2020 Kamil Kulig
@@ -8355,7 +8349,7 @@
         ''; // to include the above in the js output
 
     });
-    _registerModule(_modules, 'indicators/acceleration-bands.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/multipe-lines.js']], function (H, U, multipleLinesMixin) {
+    _registerModule(_modules, 'Stock/Indicators/ABIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/MultipleLines.js']], function (H, U, multipleLinesMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -8558,7 +8552,7 @@
         ''; // to include the above in jsdoc
 
     });
-    _registerModule(_modules, 'indicators/trendline.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/TrendLineIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  License: www.highcharts.com/license

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Sankey diagram module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/nodes.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Mixins/Nodes.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -38,20 +38,22 @@
             extend = U.extend,
             find = U.find,
             pick = U.pick;
-        H.NodesMixin = {
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Create a single node that holds information on incoming and outgoing
-             * links.
-             * @private
-             */
-            createNode: function (id) {
+        var NodesMixin = H.NodesMixin = {
+                /* eslint-disable valid-jsdoc */
                 /**
+                 * Create a single node that holds information on incoming and outgoing
+                 * links.
                  * @private
                  */
-                function findById(nodes, id) {
-                    return find(nodes, function (node) {
-                        return node.id === id;
+                createNode: function (id) {
+                    /**
+                     * @private
+                     */
+                    function findById(nodes,
+            id) {
+                        return find(nodes,
+            function (node) {
+                            return node.id === id;
                     });
                 }
                 var node = findById(this.nodes,
@@ -215,8 +217,9 @@
             /* eslint-enable valid-jsdoc */
         };
 
+        return NodesMixin;
     });
-    _registerModule(_modules, 'mixins/tree-series.js', [_modules['parts/Color.js'], _modules['parts/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -444,7 +447,7 @@
 
         return result;
     });
-    _registerModule(_modules, 'modules/sankey.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['mixins/tree-series.js']], function (H, Color, Point, U, mixinTreeSeries) {
+    _registerModule(_modules, 'Series/SankeySeries.js', [_modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Mixins/TreeSeries.js']], function (H, NodesMixin, Color, Point, U, TreeSeriesMixin) {
         /* *
          *
          *  Sankey diagram module
@@ -542,7 +545,7 @@
             relativeLength = U.relativeLength,
             seriesType = U.seriesType,
             stableSort = U.stableSort;
-        var getLevelOptions = mixinTreeSeries.getLevelOptions;
+        var getLevelOptions = TreeSeriesMixin.getLevelOptions;
         // eslint-disable-next-line valid-jsdoc
         /**
          * @private
@@ -590,7 +593,7 @@
          *               pointInterval, pointIntervalUnit, pointPadding,
          *               pointPlacement, pointRange, pointStart, pointWidth,
          *               shadow, softThreshold, stacking, threshold, zoneAxis,
-         *               zones, minPointLength, dataSorting
+         *               zones, minPointLength, dataSorting, boostBlending
          * @requires     modules/sankey
          * @optionparent plotOptions.sankey
          */
@@ -791,7 +794,7 @@
                     /**
                      * Animation when not hovering over the marker.
                      *
-                     * @type      {boolean|Highcharts.AnimationOptionsObject}
+                     * @type      {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      * @apioption plotOptions.series.states.inactive.animation
                      */
                     animation: {
@@ -832,10 +835,10 @@
             pointArrayMap: ['from', 'to'],
             // Create a single node that holds information on incoming and outgoing
             // links.
-            createNode: H.NodesMixin.createNode,
+            createNode: NodesMixin.createNode,
             searchPoint: H.noop,
-            setData: H.NodesMixin.setData,
-            destroy: H.NodesMixin.destroy,
+            setData: NodesMixin.setData,
+            destroy: NodesMixin.destroy,
             /* eslint-disable valid-jsdoc */
             /**
              * Overridable function to get node padding, overridden in dependency
@@ -1007,7 +1010,7 @@
              * @private
              */
             generatePoints: function () {
-                H.NodesMixin.generatePoints.apply(this, arguments);
+                NodesMixin.generatePoints.apply(this, arguments);
                 /**
                  * Order the nodes, starting with the root node(s). (#9818)
                  * @private
@@ -1362,7 +1365,7 @@
                 }
                 return this;
             },
-            setState: H.NodesMixin.setNodeState,
+            setState: NodesMixin.setNodeState,
             getClassName: function () {
                 return (this.isNode ? 'highcharts-node ' : 'highcharts-link ') +
                     Point.prototype.getClassName.call(this);

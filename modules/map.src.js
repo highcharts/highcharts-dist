@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.1.2 (2020-06-16)
+ * @license Highmaps JS v8.2.0 (2020-08-20)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-map/MapAxis.js', [_modules['parts/Axis.js'], _modules['parts/Utilities.js']], function (Axis, U) {
+    _registerModule(_modules, 'Core/Axis/MapAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -193,7 +193,7 @@
 
         return MapAxis;
     });
-    _registerModule(_modules, 'parts-map/ColorSeriesMixin.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'Mixins/ColorSeries.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -274,7 +274,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'Core/Axis/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1224,7 +1224,7 @@
                      * Animation for the marker as it moves between values. Set to
                      * `false` to disable animation. Defaults to `{ duration: 50 }`.
                      *
-                     * @type    {boolean|Highcharts.AnimationOptionsObject}
+                     * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      * @product highcharts highstock highmaps
                      */
                     animation: {
@@ -1489,7 +1489,7 @@
 
         return ColorAxis;
     });
-    _registerModule(_modules, 'parts-map/ColorMapSeriesMixin.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Mixins/ColorMapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1570,7 +1570,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/MapNavigation.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Maps/MapNavigation.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1902,7 +1902,7 @@
         H.MapNavigation = MapNavigation;
 
     });
-    _registerModule(_modules, 'parts-map/MapPointer.js', [_modules['parts/Pointer.js'], _modules['parts/Utilities.js']], function (Pointer, U) {
+    _registerModule(_modules, 'Maps/MapPointer.js', [_modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (Pointer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1965,7 +1965,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-map/MapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, Point, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/MapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, Point, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3120,7 +3120,7 @@
         ''; // adds doclets above to the transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/MapLineSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/MapLineSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3248,7 +3248,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/MapPointSeries.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'Series/MapPointSeries.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3423,7 +3423,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/BubbleLegend.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, Legend, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Legend, U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -4439,7 +4439,7 @@
 
         return H.BubbleLegend;
     });
-    _registerModule(_modules, 'parts-more/BubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Color, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -5044,7 +5044,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/MapBubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/MapBubbleSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -5286,7 +5286,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/HeatmapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -5343,11 +5343,11 @@
          *         Heavy heatmap
          *
          * @extends      plotOptions.scatter
-         * @excluding    animationLimit, connectEnds, connectNulls, dashStyle,
-         *               findNearestPointBy, getExtremesFromAll, jitter, linecap,
-         *               lineWidth, pointInterval, pointIntervalUnit, pointRange,
-         *               pointStart, shadow, softThreshold, stacking, step,
-         *               threshold, cluster
+         * @excluding    animationLimit, connectEnds, connectNulls, cropThreshold,
+         *               dashStyle, findNearestPointBy, getExtremesFromAll, jitter,
+         *               linecap, lineWidth, pointInterval, pointIntervalUnit,
+         *               pointRange, pointStart, shadow, softThreshold, stacking,
+         *               step, threshold, cluster
          * @product      highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
@@ -5985,7 +5985,7 @@
          * Requires `modules/heatmap`.
          *
          * @extends   series,plotOptions.heatmap
-         * @excluding dataParser, dataURL, pointRange, stack,
+         * @excluding cropThreshold, dataParser, dataURL, pointRange, stack,
          * @product   highcharts highmaps
          * @apioption series.heatmap
          */
@@ -6307,7 +6307,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-map/GeoJSON.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6792,7 +6792,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-map/Map.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, H, O, SVGRenderer, U) {
+    _registerModule(_modules, 'Maps/Map.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, O, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Vector plot series module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/vector.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/VectorSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Vector plot series module
@@ -65,7 +65,8 @@
          * @extends      plotOptions.scatter
          * @excluding    boostThreshold, marker, connectEnds, connectNulls,
          *               cropThreshold, dashStyle, dragDrop, gapSize, gapUnit,
-         *               dataGrouping, linecap, shadow, stacking, step, jitter
+         *               dataGrouping, linecap, shadow, stacking, step, jitter,
+         *               boostBlending
          * @product      highcharts highstock
          * @requires     modules/vector
          * @optionparent plotOptions.vector
@@ -290,7 +291,7 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.vector
-         * @excluding dataParser, dataURL
+         * @excluding dataParser, dataURL, boostThreshold, boostBlending
          * @product   highcharts highstock
          * @requires  modules/vector
          * @apioption series.vector

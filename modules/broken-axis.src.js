@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/broken-axis.src.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts/Stacking.js']], function (Axis, H, U, StackItem) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Extensions/Stacking.js']], function (Axis, H, U, StackItem) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi

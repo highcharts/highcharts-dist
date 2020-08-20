@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-more/Pane.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Pointer.js'], _modules['parts/Utilities.js']], function (Chart, H, Pointer, U) {
+    _registerModule(_modules, 'Extensions/Pane.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js'], _modules['Mixins/CenteredSeries.js']], function (Chart, H, Pointer, U, centeredSeriesMixin) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -44,7 +44,6 @@
         /**
          * @typedef {"arc"|"circle"|"solid"} Highcharts.PaneBackgroundShapeValue
          */
-        var CenteredSeriesMixin = H.CenteredSeriesMixin;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         Chart.prototype.collectionsWithUpdate.push('pane');
         /**
@@ -335,7 +334,7 @@
             Pane.prototype.updateCenter = function (axis) {
                 this.center = (axis ||
                     this.axis ||
-                    {}).center = CenteredSeriesMixin.getCenter.call(this);
+                    {}).center = centeredSeriesMixin.getCenter.call(this);
             };
             /**
              * Destroy the pane item
@@ -386,7 +385,7 @@
          * @return {boolean}
          */
         function isInsidePane(x, y, center) {
-            return Math.sqrt(Math.pow(x - center[0], 2) + Math.pow(y - center[1], 2)) < center[2] / 2;
+            return Math.sqrt(Math.pow(x - center[0], 2) + Math.pow(y - center[1], 2)) <= center[2] / 2;
         }
         H.Chart.prototype.getHoverPane = function (eventArgs) {
             var chart = this;
@@ -438,7 +437,7 @@
 
         return H.Pane;
     });
-    _registerModule(_modules, 'parts-more/HiddenAxis.js', [], function () {
+    _registerModule(_modules, 'Core/Axis/HiddenAxis.js', [], function () {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -487,7 +486,7 @@
 
         return HiddenAxis;
     });
-    _registerModule(_modules, 'parts-more/RadialAxis.js', [_modules['parts/Axis.js'], _modules['parts/Tick.js'], _modules['parts-more/HiddenAxis.js'], _modules['parts/Utilities.js']], function (Axis, Tick, HiddenAxis, U) {
+    _registerModule(_modules, 'Core/Axis/RadialAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Axis/HiddenAxis.js'], _modules['Core/Utilities.js']], function (Axis, Tick, HiddenAxis, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1403,7 +1402,7 @@
 
         return RadialAxis;
     });
-    _registerModule(_modules, 'parts-more/AreaRangeSeries.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/AreaRangeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1602,28 +1601,34 @@
                     linePath,
                     lowerPath,
                     options = this.options,
-                    connectEnds = this.chart.polar && options.connectEnds !== false,
+                    polar = this.chart.polar,
+                    connectEnds = polar && options.connectEnds !== false,
                     connectNulls = options.connectNulls,
                     step = options.step,
                     higherPath,
                     higherAreaPath;
                 points = points || this.points;
-                i = points.length;
                 // Create the top line and the top part of the area fill. The area fill
                 // compensates for null points by drawing down to the lower graph,
                 // moving across the null gap and starting again at the lower graph.
                 i = points.length;
                 while (i--) {
                     point = points[i];
+                    // Support for polar
+                    var highAreaPoint = polar ? {
+                            plotX: point.rectPlotX,
+                            plotY: point.yBottom,
+                            doCurve: false // #5186, gaps in areasplinerange fill
+                        } : {
+                            plotX: point.plotX,
+                            plotY: point.plotY,
+                            doCurve: false // #5186, gaps in areasplinerange fill
+                        };
                     if (!point.isNull &&
                         !connectEnds &&
                         !connectNulls &&
                         (!points[i + 1] || points[i + 1].isNull)) {
-                        highAreaPoints.push({
-                            plotX: point.plotX,
-                            plotY: point.plotY,
-                            doCurve: false // #5186, gaps in areasplinerange fill
-                        });
+                        highAreaPoints.push(highAreaPoint);
                     }
                     pointShim = {
                         polarPlotY: point.polarPlotY,
@@ -1640,11 +1645,7 @@
                         !connectEnds &&
                         !connectNulls &&
                         (!points[i - 1] || points[i - 1].isNull)) {
-                        highAreaPoints.push({
-                            plotX: point.plotX,
-                            plotY: point.plotY,
-                            doCurve: false // #5186, gaps in areasplinerange fill
-                        });
+                        highAreaPoints.push(highAreaPoint);
                     }
                 }
                 // Get the paths
@@ -2065,7 +2066,7 @@
         ''; // adds doclets above to tranpiled file
 
     });
-    _registerModule(_modules, 'parts-more/AreaSplineRangeSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/AreaSplineRangeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2087,7 +2088,7 @@
          *
          * @extends   plotOptions.arearange
          * @since     2.3.0
-         * @excluding step
+         * @excluding step, boostThreshold, boostBlending
          * @product   highcharts highstock
          * @requires  highcharts-more
          * @apioption plotOptions.areasplinerange
@@ -2100,7 +2101,7 @@
          * option is not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.areasplinerange
-         * @excluding dataParser, dataURL, stack, step
+         * @excluding dataParser, dataURL, stack, step, boostThreshold, boostBlending
          * @product   highcharts highstock
          * @requires  highcharts-more
          * @apioption series.areasplinerange
@@ -2162,7 +2163,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/ColumnRangeSeries.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (H, O, U) {
+    _registerModule(_modules, 'Series/ColumnRangeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, O, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2421,7 +2422,7 @@
         ''; // adds doclets above into transpiled
 
     });
-    _registerModule(_modules, 'parts-more/ColumnPyramidSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/ColumnPyramidSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Sebastian Bochan
@@ -2463,7 +2464,7 @@
          * @product      highcharts highstock
          * @excluding    boostThreshold, borderRadius, crisp, depth, edgeColor,
          *               edgeWidth, groupZPadding, negativeColor, softThreshold,
-         *               threshold, zoneAxis, zones
+         *               threshold, zoneAxis, zones, boostBlending
          * @requires     highcharts-more
          * @optionparent plotOptions.columnpyramid
          */
@@ -2634,7 +2635,8 @@
          *
          * @extends   series,plotOptions.columnpyramid
          * @excluding connectEnds, connectNulls, dashStyle, dataParser, dataURL,
-         *            gapSize, gapUnit, linecap, lineWidth, marker, step
+         *            gapSize, gapUnit, linecap, lineWidth, marker, step,
+         *            boostThreshold, boostBlending
          * @product   highcharts highstock
          * @requires  highcharts-more
          * @apioption series.columnpyramid
@@ -2711,7 +2713,7 @@
         ''; // adds doclets above to transpiled file;
 
     });
-    _registerModule(_modules, 'parts-more/GaugeSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/GaugeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2742,7 +2744,8 @@
          *               connectEnds, connectNulls, cropThreshold, dashStyle, dragDrop,
          *               findNearestPointBy, getExtremesFromAll, marker, negativeColor,
          *               pointPlacement, shadow, softThreshold, stacking, states, step,
-         *               threshold, turboThreshold, xAxis, zoneAxis, zones, dataSorting
+         *               threshold, turboThreshold, xAxis, zoneAxis, zones, dataSorting,
+         *               boostBlending
          * @product      highcharts
          * @requires     highcharts-more
          * @optionparent plotOptions.gauge
@@ -3207,7 +3210,7 @@
          *            cropThreshold, dashStyle, dataParser, dataURL, findNearestPointBy,
          *            getExtremesFromAll, marker, negativeColor, pointPlacement, shadow,
          *            softThreshold, stack, stacking, states, step, threshold,
-         *            turboThreshold, zoneAxis, zones, dataSorting
+         *            turboThreshold, zoneAxis, zones, dataSorting, boostBlending
          * @product   highcharts
          * @requires  highcharts-more
          * @apioption series.gauge
@@ -3255,7 +3258,7 @@
         ''; // adds the doclets above in the transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/BoxPlotSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/BoxPlotSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3288,7 +3291,8 @@
          *         Box plot
          *
          * @extends      plotOptions.column
-         * @excluding    borderColor, borderRadius, borderWidth, groupZPadding, states
+         * @excluding    borderColor, borderRadius, borderWidth, groupZPadding, states,
+         *               boostThreshold, boostBlending
          * @product      highcharts
          * @requires     highcharts-more
          * @optionparent plotOptions.boxplot
@@ -3349,8 +3353,8 @@
              */
             lineWidth: 1,
             /**
-             * The color of the median line. If `undefined`, the general series color
-             * applies.
+             * The color of the median line. If `undefined`, the general series
+             * color applies.
              *
              * In styled mode, the median stroke width can be set with the
              * `.highcharts-boxplot-median` class.
@@ -3529,7 +3533,9 @@
              * @product highcharts
              */
             whiskerWidth: 2
-        }, /** @lends Highcharts.seriesTypes.boxplot */ {
+        }, 
+        /** @lends Highcharts.seriesTypes.boxplot */
+        {
             // array point configs are mapped to this
             pointArrayMap: ['low', 'q1', 'median', 'q3', 'high'],
             // return a plain array for speedy calculation
@@ -3736,7 +3742,8 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.boxplot
-         * @excluding dataParser, dataURL, marker, stack, stacking, states
+         * @excluding dataParser, dataURL, marker, stack, stacking, states,
+         *            boostThreshold, boostBlending
          * @product   highcharts
          * @requires  highcharts-more
          * @apioption series.boxplot
@@ -3900,7 +3907,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/ErrorBarSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/ErrorBarSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3924,6 +3931,7 @@
          *         Error bars on a scatter series
          *
          * @extends      plotOptions.boxplot
+         * @excluding    boostBlending, boostThreshold
          * @product      highcharts highstock
          * @requires     highcharts-more
          * @optionparent plotOptions.errorbar
@@ -4002,7 +4010,8 @@
          * is not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.errorbar
-         * @excluding dataParser, dataURL, stack, stacking
+         * @excluding dataParser, dataURL, stack, stacking, boostThreshold,
+         *            boostBlending
          * @product   highcharts
          * @requires  highcharts-more
          * @apioption series.errorbar
@@ -4065,7 +4074,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/WaterfallSeries.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Stacking.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, Point, StackItem, U) {
+    _registerModule(_modules, 'Series/WaterfallSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, Point, StackItem, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4244,6 +4253,7 @@
          *         Stacked waterfall chart
          *
          * @extends      plotOptions.column
+         * @excluding    boostThreshold, boostBlending
          * @product      highcharts
          * @requires     highcharts-more
          * @optionparent plotOptions.waterfall
@@ -4871,7 +4881,7 @@
          * is not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.waterfall
-         * @excluding dataParser, dataURL
+         * @excluding dataParser, dataURL, boostThreshold, boostBlending
          * @product   highcharts
          * @requires  highcharts-more
          * @apioption series.waterfall
@@ -4966,7 +4976,7 @@
 
         return WaterfallAxis;
     });
-    _registerModule(_modules, 'parts-more/PolygonSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'Series/PolygonSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4992,7 +5002,8 @@
          *
          * @extends      plotOptions.scatter
          * @since        4.1.0
-         * @excluding    jitter, softThreshold, threshold, cluster
+         * @excluding    jitter, softThreshold, threshold, cluster, boostThreshold,
+         *               boostBlending
          * @product      highcharts highstock
          * @requires     highcharts-more
          * @optionparent plotOptions.polygon
@@ -5041,7 +5052,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.polygon
-         * @excluding dataParser, dataURL, stack
+         * @excluding dataParser, dataURL, stack, boostThreshold, boostBlending
          * @product   highcharts highstock
          * @requires  highcharts-more
          * @apioption series.polygon
@@ -5108,7 +5119,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/BubbleLegend.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, Legend, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Legend, U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -6124,7 +6135,7 @@
 
         return H.BubbleLegend;
     });
-    _registerModule(_modules, 'parts-more/BubbleSeries.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Color, Point, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Color, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6729,7 +6740,150 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'modules/networkgraph/integrations.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'Series/Networkgraph/DraggableNodes.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+        /* *
+         *
+         *  Networkgraph series
+         *
+         *  (c) 2010-2020 Paweł Fus
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var addEvent = U.addEvent;
+        /* eslint-disable no-invalid-this, valid-jsdoc */
+        H.dragNodesMixin = {
+            /**
+             * Mouse down action, initializing drag&drop mode.
+             *
+             * @private
+             * @param {Highcharts.Point} point The point that event occured.
+             * @param {Highcharts.PointerEventObject} event Browser event, before normalization.
+             * @return {void}
+             */
+            onMouseDown: function (point, event) {
+                var normalizedEvent = this.chart.pointer.normalize(event);
+                point.fixedPosition = {
+                    chartX: normalizedEvent.chartX,
+                    chartY: normalizedEvent.chartY,
+                    plotX: point.plotX,
+                    plotY: point.plotY
+                };
+                point.inDragMode = true;
+            },
+            /**
+             * Mouse move action during drag&drop.
+             *
+             * @private
+             *
+             * @param {global.Event} event Browser event, before normalization.
+             * @param {Highcharts.Point} point The point that event occured.
+             *
+             * @return {void}
+             */
+            onMouseMove: function (point, event) {
+                if (point.fixedPosition && point.inDragMode) {
+                    var series = this,
+                        chart = series.chart,
+                        normalizedEvent = chart.pointer.normalize(event),
+                        diffX = point.fixedPosition.chartX - normalizedEvent.chartX,
+                        diffY = point.fixedPosition.chartY - normalizedEvent.chartY,
+                        newPlotX,
+                        newPlotY,
+                        graphLayoutsLookup = chart.graphLayoutsLookup;
+                    // At least 5px to apply change (avoids simple click):
+                    if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
+                        newPlotX = point.fixedPosition.plotX - diffX;
+                        newPlotY = point.fixedPosition.plotY - diffY;
+                        if (chart.isInsidePlot(newPlotX, newPlotY)) {
+                            point.plotX = newPlotX;
+                            point.plotY = newPlotY;
+                            point.hasDragged = true;
+                            this.redrawHalo(point);
+                            graphLayoutsLookup.forEach(function (layout) {
+                                layout.restartSimulation();
+                            });
+                        }
+                    }
+                }
+            },
+            /**
+             * Mouse up action, finalizing drag&drop.
+             *
+             * @private
+             * @param {Highcharts.Point} point The point that event occured.
+             * @return {void}
+             */
+            onMouseUp: function (point, event) {
+                if (point.fixedPosition && point.hasDragged) {
+                    if (this.layout.enableSimulation) {
+                        this.layout.start();
+                    }
+                    else {
+                        this.chart.redraw();
+                    }
+                    point.inDragMode = point.hasDragged = false;
+                    if (!this.options.fixedDraggable) {
+                        delete point.fixedPosition;
+                    }
+                }
+            },
+            // Draggable mode:
+            /**
+             * Redraw halo on mousemove during the drag&drop action.
+             *
+             * @private
+             * @param {Highcharts.Point} point The point that should show halo.
+             * @return {void}
+             */
+            redrawHalo: function (point) {
+                if (point && this.halo) {
+                    this.halo.attr({
+                        d: point.haloPath(this.options.states.hover.halo.size)
+                    });
+                }
+            }
+        };
+        /*
+         * Draggable mode:
+         */
+        addEvent(Chart, 'load', function () {
+            var chart = this,
+                mousedownUnbinder,
+                mousemoveUnbinder,
+                mouseupUnbinder;
+            if (chart.container) {
+                mousedownUnbinder = addEvent(chart.container, 'mousedown', function (event) {
+                    var point = chart.hoverPoint;
+                    if (point &&
+                        point.series &&
+                        point.series.hasDraggableNodes &&
+                        point.series.options.draggable) {
+                        point.series.onMouseDown(point, event);
+                        mousemoveUnbinder = addEvent(chart.container, 'mousemove', function (e) {
+                            return point &&
+                                point.series &&
+                                point.series.onMouseMove(point, e);
+                        });
+                        mouseupUnbinder = addEvent(chart.container.ownerDocument, 'mouseup', function (e) {
+                            mousemoveUnbinder();
+                            mouseupUnbinder();
+                            return point &&
+                                point.series &&
+                                point.series.onMouseUp(point, e);
+                        });
+                    }
+                });
+            }
+            addEvent(chart, 'destroy', function () {
+                mousedownUnbinder();
+            });
+        });
+
+    });
+    _registerModule(_modules, 'Series/Networkgraph/Integrations.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  Networkgraph series
@@ -7107,7 +7261,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/networkgraph/QuadTree.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/QuadTree.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Networkgraph series
@@ -7469,7 +7623,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/layouts.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/Layouts.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -8051,150 +8205,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/draggable-nodes.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
-        /* *
-         *
-         *  Networkgraph series
-         *
-         *  (c) 2010-2020 Paweł Fus
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var addEvent = U.addEvent;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        H.dragNodesMixin = {
-            /**
-             * Mouse down action, initializing drag&drop mode.
-             *
-             * @private
-             * @param {Highcharts.Point} point The point that event occured.
-             * @param {Highcharts.PointerEventObject} event Browser event, before normalization.
-             * @return {void}
-             */
-            onMouseDown: function (point, event) {
-                var normalizedEvent = this.chart.pointer.normalize(event);
-                point.fixedPosition = {
-                    chartX: normalizedEvent.chartX,
-                    chartY: normalizedEvent.chartY,
-                    plotX: point.plotX,
-                    plotY: point.plotY
-                };
-                point.inDragMode = true;
-            },
-            /**
-             * Mouse move action during drag&drop.
-             *
-             * @private
-             *
-             * @param {global.Event} event Browser event, before normalization.
-             * @param {Highcharts.Point} point The point that event occured.
-             *
-             * @return {void}
-             */
-            onMouseMove: function (point, event) {
-                if (point.fixedPosition && point.inDragMode) {
-                    var series = this,
-                        chart = series.chart,
-                        normalizedEvent = chart.pointer.normalize(event),
-                        diffX = point.fixedPosition.chartX - normalizedEvent.chartX,
-                        diffY = point.fixedPosition.chartY - normalizedEvent.chartY,
-                        newPlotX,
-                        newPlotY,
-                        graphLayoutsLookup = chart.graphLayoutsLookup;
-                    // At least 5px to apply change (avoids simple click):
-                    if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
-                        newPlotX = point.fixedPosition.plotX - diffX;
-                        newPlotY = point.fixedPosition.plotY - diffY;
-                        if (chart.isInsidePlot(newPlotX, newPlotY)) {
-                            point.plotX = newPlotX;
-                            point.plotY = newPlotY;
-                            point.hasDragged = true;
-                            this.redrawHalo(point);
-                            graphLayoutsLookup.forEach(function (layout) {
-                                layout.restartSimulation();
-                            });
-                        }
-                    }
-                }
-            },
-            /**
-             * Mouse up action, finalizing drag&drop.
-             *
-             * @private
-             * @param {Highcharts.Point} point The point that event occured.
-             * @return {void}
-             */
-            onMouseUp: function (point, event) {
-                if (point.fixedPosition && point.hasDragged) {
-                    if (this.layout.enableSimulation) {
-                        this.layout.start();
-                    }
-                    else {
-                        this.chart.redraw();
-                    }
-                    point.inDragMode = point.hasDragged = false;
-                    if (!this.options.fixedDraggable) {
-                        delete point.fixedPosition;
-                    }
-                }
-            },
-            // Draggable mode:
-            /**
-             * Redraw halo on mousemove during the drag&drop action.
-             *
-             * @private
-             * @param {Highcharts.Point} point The point that should show halo.
-             * @return {void}
-             */
-            redrawHalo: function (point) {
-                if (point && this.halo) {
-                    this.halo.attr({
-                        d: point.haloPath(this.options.states.hover.halo.size)
-                    });
-                }
-            }
-        };
-        /*
-         * Draggable mode:
-         */
-        addEvent(Chart, 'load', function () {
-            var chart = this,
-                mousedownUnbinder,
-                mousemoveUnbinder,
-                mouseupUnbinder;
-            if (chart.container) {
-                mousedownUnbinder = addEvent(chart.container, 'mousedown', function (event) {
-                    var point = chart.hoverPoint;
-                    if (point &&
-                        point.series &&
-                        point.series.hasDraggableNodes &&
-                        point.series.options.draggable) {
-                        point.series.onMouseDown(point, event);
-                        mousemoveUnbinder = addEvent(chart.container, 'mousemove', function (e) {
-                            return point &&
-                                point.series &&
-                                point.series.onMouseMove(point, e);
-                        });
-                        mouseupUnbinder = addEvent(chart.container.ownerDocument, 'mouseup', function (e) {
-                            mousemoveUnbinder();
-                            mouseupUnbinder();
-                            return point &&
-                                point.series &&
-                                point.series.onMouseUp(point, e);
-                        });
-                    }
-                });
-            }
-            addEvent(chart, 'destroy', function () {
-                mousedownUnbinder();
-            });
-        });
-
-    });
-    _registerModule(_modules, 'parts-more/PackedBubbleSeries.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, Point, U) {
+    _registerModule(_modules, 'Series/PackedBubbleSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Point, U) {
         /* *
          *
          *  (c) 2010-2018 Grzegorz Blachlinski, Sebastian Bochan
@@ -8253,7 +8264,6 @@
         */
         var Series = H.Series,
             Reingold = H.layouts['reingold-fruchterman'],
-            NetworkPoint = H.seriesTypes.bubble.prototype.pointClass,
             dragNodesMixin = H.dragNodesMixin;
         Chart.prototype.getSelectedParentNodes = function () {
             var chart = this,
@@ -8430,9 +8440,10 @@
          *         Split packed bubble chart
 
          * @extends      plotOptions.bubble
-         * @excluding    connectEnds, connectNulls, dragDrop, jitter, keys,
-         *               pointPlacement, sizeByAbsoluteValue, step, xAxis, yAxis,
-         *               zMax, zMin, dataSorting
+         * @excluding    connectEnds, connectNulls, cropThreshold, dragDrop, jitter,
+         *               keys, pointPlacement, sizeByAbsoluteValue, step, xAxis,
+         *               yAxis, zMax, zMin, dataSorting, boostThreshold,
+         *               boostBlending
          * @product      highcharts
          * @since        7.0.0
          * @requires     highcharts-more
@@ -9616,7 +9627,8 @@
          *
          * @type      {Object}
          * @extends   series,plotOptions.packedbubble
-         * @excluding dataParser, dataSorting, dataURL, dragDrop, stack
+         * @excluding cropThreshold, dataParser, dataSorting, dataURL, dragDrop, stack,
+         *            boostThreshold, boostBlending
          * @product   highcharts
          * @requires  highcharts-more
          * @apioption series.packedbubble
@@ -9669,7 +9681,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-more/Polar.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts-more/Pane.js'], _modules['parts/Pointer.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, H, Pane, Pointer, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/Polar.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Extensions/Pane.js'], _modules['Core/Pointer.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, Pane, Pointer, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
         /**
          *
          *  (c) 2010-2020 Daniel Studencki
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'indicators/indicators.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
+    _registerModule(_modules, 'Stock/Indicators/Indicators.js', [_modules['Core/Globals.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (H, requiredIndicator, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -108,7 +108,7 @@
         var Series = H.Series,
             seriesTypes = H.seriesTypes,
             ohlcProto = H.seriesTypes.ohlc.prototype,
-            generateMessage = requiredIndicatorMixin.generateMessage;
+            generateMessage = requiredIndicator.generateMessage;
         /**
          * The parameter allows setting line series type and use OHLC indicators. Data
          * in OHLC format is required.

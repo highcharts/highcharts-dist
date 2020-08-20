@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Data grouping module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts/DataGrouping.js', [_modules['parts/DateTimeAxis.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (DateTimeAxis, H, O, Point, Tooltip, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping.js', [_modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Tooltip.js'], _modules['Core/Utilities.js']], function (DateTimeAxis, H, O, Point, Tooltip, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1017,7 +1017,7 @@
 
         return dataGrouping;
     });
-    _registerModule(_modules, 'masters/modules/datagrouping.src.js', [_modules['parts/DataGrouping.js']], function (dataGrouping) {
+    _registerModule(_modules, 'masters/modules/datagrouping.src.js', [_modules['Extensions/DataGrouping.js']], function (dataGrouping) {
 
 
         return dataGrouping;

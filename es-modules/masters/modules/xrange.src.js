@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  * @module highcharts/modules/xrange
  * @requires highcharts
  *
@@ -10,4 +10,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../modules/xrange.src.js';
+import '../../Series/XRangeSeries.js';

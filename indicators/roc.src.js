@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/roc.src.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/ROCIndicator.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Kacper Madej

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'indicators/ichimoku-kinko-hyo.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
+    _registerModule(_modules, 'Stock/Indicators/IKHIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Utilities.js']], function (H, Color, U) {
         /* *
          *
          *  License: www.highcharts.com/license

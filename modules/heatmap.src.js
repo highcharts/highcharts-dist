@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.1.2 (2020-06-16)
+ * @license Highmaps JS v8.2.0 (2020-08-20)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-map/ColorSeriesMixin.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'Mixins/ColorSeries.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -107,7 +107,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'Core/Axis/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1057,7 +1057,7 @@
                      * Animation for the marker as it moves between values. Set to
                      * `false` to disable animation. Defaults to `{ duration: 50 }`.
                      *
-                     * @type    {boolean|Highcharts.AnimationOptionsObject}
+                     * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      * @product highcharts highstock highmaps
                      */
                     animation: {
@@ -1322,7 +1322,7 @@
 
         return ColorAxis;
     });
-    _registerModule(_modules, 'parts-map/ColorMapSeriesMixin.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Mixins/ColorMapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1403,7 +1403,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/HeatmapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1460,11 +1460,11 @@
          *         Heavy heatmap
          *
          * @extends      plotOptions.scatter
-         * @excluding    animationLimit, connectEnds, connectNulls, dashStyle,
-         *               findNearestPointBy, getExtremesFromAll, jitter, linecap,
-         *               lineWidth, pointInterval, pointIntervalUnit, pointRange,
-         *               pointStart, shadow, softThreshold, stacking, step,
-         *               threshold, cluster
+         * @excluding    animationLimit, connectEnds, connectNulls, cropThreshold,
+         *               dashStyle, findNearestPointBy, getExtremesFromAll, jitter,
+         *               linecap, lineWidth, pointInterval, pointIntervalUnit,
+         *               pointRange, pointStart, shadow, softThreshold, stacking,
+         *               step, threshold, cluster
          * @product      highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
@@ -2102,7 +2102,7 @@
          * Requires `modules/heatmap`.
          *
          * @extends   series,plotOptions.heatmap
-         * @excluding dataParser, dataURL, pointRange, stack,
+         * @excluding cropThreshold, dataParser, dataURL, pointRange, stack,
          * @product   highcharts highmaps
          * @apioption series.heatmap
          */

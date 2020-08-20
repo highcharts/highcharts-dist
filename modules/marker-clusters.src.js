@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Marker clusters module for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/marker-clusters.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, H, O, Point, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/MarkerClusters.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, O, Point, SVGRenderer, U) {
         /* *
          *
          *  Marker clusters module.
@@ -121,7 +121,7 @@
                 allowOverlap: true,
                 /**
                  * Options for the cluster marker animation.
-                 * @type    {boolean|Highcharts.AnimationOptionsObject}
+                 * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
                  * @default { "duration": 500 }
                  */
                 animation: {
@@ -656,8 +656,8 @@
                             y: oldPointObj.point.plotY - offset
                         });
                         newPointObj.point.graphic.animate({
-                            x: newX - newPointObj.point.graphic.radius,
-                            y: newY - newPointObj.point.graphic.radius
+                            x: newX - (newPointObj.point.graphic.radius || 0),
+                            y: newY - (newPointObj.point.graphic.radius || 0)
                         }, animation, function () {
                             isCbHandled = true;
                             // Destroy old point.
@@ -703,8 +703,8 @@
                                 isOldPointGrahic = true;
                                 oldPointObj.point.graphic.show();
                                 oldPointObj.point.graphic.animate({
-                                    x: newX - oldPointObj.point.graphic.radius,
-                                    y: newY - oldPointObj.point.graphic.radius,
+                                    x: newX - (oldPointObj.point.graphic.radius || 0),
+                                    y: newY - (oldPointObj.point.graphic.radius || 0),
                                     opacity: 0.4
                                 }, animation, function () {
                                     isCbHandled = true;

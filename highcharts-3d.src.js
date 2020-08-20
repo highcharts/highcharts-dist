@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * 3D features for Highcharts JS
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-3d/Math.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/Math3D.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -110,8 +110,10 @@
          *
          * @requires highcharts-3d
          */
-        H.perspective3D = function (coordinate, origin, distance) {
-            var projection = ((distance > 0) && (distance < Number.POSITIVE_INFINITY)) ?
+        var perspective3D = H.perspective3D = function (coordinate,
+            origin,
+            distance) {
+                var projection = ((distance > 0) && (distance < Number.POSITIVE_INFINITY)) ?
                     distance / (coordinate.z + origin.z + distance) :
                     1;
             return {
@@ -142,24 +144,27 @@
          *
          * @requires highcharts-3d
          */
-        H.perspective = function (points, chart, insidePlotArea, useInvertedPersp) {
-            var options3d = chart.options.chart.options3d, 
+        var perspective = H.perspective = function (points,
+            chart,
+            insidePlotArea,
+            useInvertedPersp) {
+                var options3d = chart.options.chart.options3d, 
                 /* The useInvertedPersp argument is used for
                  * inverted charts with already inverted elements,
                  * such as dataLabels or tooltip positions.
                  */
                 inverted = pick(useInvertedPersp,
-                insidePlotArea ? chart.inverted : false),
-                origin = {
+            insidePlotArea ? chart.inverted : false),
+            origin = {
                     x: chart.plotWidth / 2,
                     y: chart.plotHeight / 2,
                     z: options3d.depth / 2,
                     vd: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0)
                 },
-                scale = chart.scale3d || 1,
-                beta = deg2rad * options3d.beta * (inverted ? -1 : 1),
-                alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1),
-                angles = {
+            scale = chart.scale3d || 1,
+            beta = deg2rad * options3d.beta * (inverted ? -1 : 1),
+            alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1),
+            angles = {
                     cosA: Math.cos(alpha),
                     cosB: Math.cos(-beta),
                     sinA: Math.sin(alpha),
@@ -174,7 +179,7 @@
                 var rotated = rotate3D((inverted ? point.y : point.x) - origin.x, (inverted ? point.x : point.y) - origin.y, (point.z || 0) - origin.z,
                     angles), 
                     // Apply perspective
-                    coordinate = H.perspective3D(rotated,
+                    coordinate = perspective3D(rotated,
                     origin,
                     origin.vd);
                 // Apply translation
@@ -206,9 +211,10 @@
          *
          * @requires highcharts-3d
          */
-        H.pointCameraDistance = function (coordinates, chart) {
-            var options3d = chart.options.chart.options3d,
-                cameraPosition = {
+        var pointCameraDistance = H.pointCameraDistance = function (coordinates,
+            chart) {
+                var options3d = chart.options.chart.options3d,
+            cameraPosition = {
                     x: chart.plotWidth / 2,
                     y: chart.plotHeight / 2,
                     z: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0) +
@@ -216,11 +222,11 @@
                 }, 
                 // Added support for objects with plotX or x coordinates.
                 distance = Math.sqrt(Math.pow(cameraPosition.x - pick(coordinates.plotX,
-                coordinates.x), 2) +
+            coordinates.x), 2) +
                     Math.pow(cameraPosition.y - pick(coordinates.plotY,
-                coordinates.y), 2) +
+            coordinates.y), 2) +
                     Math.pow(cameraPosition.z - pick(coordinates.plotZ,
-                coordinates.z), 2));
+            coordinates.z), 2));
             return distance;
         };
         /**
@@ -238,10 +244,10 @@
          *
          * @requires highcharts-3d
          */
-        H.shapeArea = function (vertexes) {
-            var area = 0,
-                i,
-                j;
+        var shapeArea = H.shapeArea = function (vertexes) {
+                var area = 0,
+            i,
+            j;
             for (i = 0; i < vertexes.length; i++) {
                 j = (i + 1) % vertexes.length;
                 area += vertexes[i].x * vertexes[j].y - vertexes[j].x * vertexes[i].y;
@@ -268,12 +274,24 @@
          *
          * @requires highcharts-3d
          */
-        H.shapeArea3d = function (vertexes, chart, insidePlotArea) {
-            return H.shapeArea(H.perspective(vertexes, chart, insidePlotArea));
+        var shapeArea3D = H.shapeArea3d = function (vertexes,
+            chart,
+            insidePlotArea) {
+                return shapeArea(perspective(vertexes,
+            chart,
+            insidePlotArea));
         };
+        var mathModule = {
+                perspective: perspective,
+                perspective3D: perspective3D,
+                pointCameraDistance: pointCameraDistance,
+                shapeArea: shapeArea,
+                shapeArea3D: shapeArea3D
+            };
 
+        return mathModule;
     });
-    _registerModule(_modules, 'parts-3d/SVGRenderer.js', [_modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/SVGElement.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Color, H, SVGElement, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Renderer/SVG/SVGRenderer3D.js', [_modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, SVGElement, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -286,6 +304,8 @@
          *
          * */
         var color = Color.parse;
+        var perspective = Math3D.perspective,
+            shapeArea = Math3D.shapeArea;
         var animObject = U.animObject,
             defined = U.defined,
             extend = U.extend,
@@ -296,8 +316,7 @@
             PI = Math.PI,
             sin = Math.sin;
         var charts = H.charts,
-            deg2rad = H.deg2rad,
-            perspective = H.perspective, 
+            deg2rad = H.deg2rad, 
             // internal:
             dFactor,
             element3dMethods,
@@ -390,7 +409,7 @@
                         this.insidePlotArea),
                         path = renderer.toLinePath(vertexes2d,
                         true),
-                        area = H.shapeArea(vertexes2d),
+                        area = shapeArea(vertexes2d),
                         visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
                     hash.d = path;
                     hash.visibility = visibility;
@@ -414,7 +433,7 @@
                         this.insidePlotArea),
                         path = renderer.toLinePath(vertexes2d,
                         true),
-                        area = H.shapeArea(vertexes2d),
+                        area = shapeArea(vertexes2d),
                         visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
                     params.d = path;
                     this.attr('visibility', visibility);
@@ -785,18 +804,18 @@
                     // possible to use this vertices array for visible face calculation
                     dummyFace1 = verticesIndex1.map(mapSidePath),
                     dummyFace2 = verticesIndex2.map(mapSidePath);
-                if (H.shapeArea(face1) < 0) {
+                if (shapeArea(face1) < 0) {
                     ret = [face1, 0];
                 }
-                else if (H.shapeArea(face2) < 0) {
+                else if (shapeArea(face2) < 0) {
                     ret = [face2, 1];
                 }
                 else if (side) {
                     forcedSides.push(side);
-                    if (H.shapeArea(dummyFace1) < 0) {
+                    if (shapeArea(dummyFace1) < 0) {
                         ret = [face1, 0];
                     }
-                    else if (H.shapeArea(dummyFace2) < 0) {
+                    else if (shapeArea(dummyFace2) < 0) {
                         ret = [face2, 1];
                     }
                     else {
@@ -1256,7 +1275,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-3d/Tick3D.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/Tick3D.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1332,7 +1351,7 @@
 
         return Tick3D;
     });
-    _registerModule(_modules, 'parts-3d/Axis3D.js', [_modules['parts/Globals.js'], _modules['parts/Tick.js'], _modules['parts-3d/Tick3D.js'], _modules['parts/Utilities.js']], function (H, Tick, Tick3D, U) {
+    _registerModule(_modules, 'Core/Axis/Axis3D.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Axis/Tick3D.js'], _modules['Core/Utilities.js']], function (H, Math3D, Tick, Tick3D, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1344,14 +1363,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var perspective = Math3D.perspective,
+            perspective3D = Math3D.perspective3D,
+            shapeArea = Math3D.shapeArea;
         var addEvent = U.addEvent,
             merge = U.merge,
             pick = U.pick,
             wrap = U.wrap;
-        var deg2rad = H.deg2rad,
-            perspective = H.perspective,
-            perspective3D = H.perspective3D,
-            shapeArea = H.shapeArea;
+        var deg2rad = H.deg2rad;
         /* eslint-disable valid-jsdoc */
         /**
          * Adds 3D support to axes.
@@ -2002,7 +2021,7 @@
 
         return Axis3D;
     });
-    _registerModule(_modules, 'parts-3d/ZAxis.js', [_modules['parts/Axis.js'], _modules['parts/Utilities.js']], function (Axis, U) {
+    _registerModule(_modules, 'Core/Axis/ZAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2168,7 +2187,7 @@
 
         return ZAxis;
     });
-    _registerModule(_modules, 'parts-3d/Chart3D.js', [_modules['parts/Axis.js'], _modules['parts-3d/Axis3D.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js'], _modules['parts-3d/ZAxis.js']], function (Axis, Axis3D, Chart, H, O, U, ZAxis) {
+    _registerModule(_modules, 'Core/Chart/Chart3D.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Axis3D.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/ZAxis.js']], function (Axis, Axis3D, Chart, H, Math3D, O, U, ZAxis) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2180,6 +2199,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var perspective = Math3D.perspective,
+            shapeArea3D = Math3D.shapeArea3D;
         var genericDefaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             Fx = U.Fx,
@@ -2187,7 +2208,6 @@
             merge = U.merge,
             pick = U.pick,
             wrap = U.wrap;
-        var perspective = H.perspective;
         var Chart3D;
         (function (Chart3D) {
             /* *
@@ -2229,7 +2249,7 @@
                         zm = 0,
                         zp = options3d.depth,
                         faceOrientation = function (vertexes) {
-                            var area = H.shapeArea3d(vertexes,
+                            var area = shapeArea3D(vertexes,
                         chart);
                         // Give it 0.5 squared-pixel as a margin for rounding errors
                         if (area > 0.5) {
@@ -3903,7 +3923,7 @@
 
         return Chart3D;
     });
-    _registerModule(_modules, 'parts-3d/Series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Series/Series3D.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Utilities.js']], function (H, Math3D, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3915,9 +3935,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var perspective = Math3D.perspective;
         var addEvent = U.addEvent,
             pick = U.pick;
-        var perspective = H.perspective;
         /* eslint-disable no-invalid-this */
         // Wrap the translate method to post-translate points into 3D perspective
         addEvent(H.Series, 'afterTranslate', function () {
@@ -3972,7 +3992,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-3d/Column.js', [_modules['parts/Globals.js'], _modules['parts/Stacking.js'], _modules['parts/Utilities.js']], function (H, StackItem, U) {
+    _registerModule(_modules, 'Series/Column3DSeries.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (H, Math3D, StackItem, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3982,11 +4002,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var perspective = Math3D.perspective;
         var addEvent = U.addEvent,
             pick = U.pick,
             wrap = U.wrap;
-        var perspective = H.perspective,
-            Series = H.Series,
+        var Series = H.Series,
             seriesTypes = H.seriesTypes,
             svg = H.svg;
         /**
@@ -4062,7 +4082,7 @@
             }
         });
         // Don't use justifyDataLabel when point is outsidePlot
-        wrap(H.Series.prototype, 'justifyDataLabel', function (proceed) {
+        wrap(Series.prototype, 'justifyDataLabel', function (proceed) {
             return !(arguments[2].outside3dPlot) ?
                 proceed.apply(this, [].slice.call(arguments, 1)) :
                 false;
@@ -4436,7 +4456,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-3d/Pie.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/Pie3DSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4605,7 +4625,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts-3d/Scatter.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/Scatter3DSeries.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Math3D, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4617,6 +4637,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var pointCameraDistance = Math3D.pointCameraDistance;
         var seriesType = U.seriesType;
         var seriesTypes = H.seriesTypes;
         /**
@@ -4637,7 +4658,7 @@
          *         Draggable 3d scatter
          *
          * @extends      plotOptions.scatter
-         * @excluding    dragDrop, cluster
+         * @excluding    dragDrop, cluster, boostThreshold, boostBlending
          * @product      highcharts
          * @requires     highcharts-3d
          * @optionparent plotOptions.scatter3d
@@ -4654,7 +4675,7 @@
                     arguments);
                 if (this.chart.is3d() && point) {
                     attribs.zIndex =
-                        H.pointCameraDistance(point, this.chart);
+                        pointCameraDistance(point, this.chart);
                 }
                 return attribs;
             },
@@ -4682,6 +4703,7 @@
          * scatter3d](#plotOptions.scatter3d).
          *
          * @extends   series,plotOptions.scatter3d
+         * @excluding boostThreshold, boostBlending
          * @product   highcharts
          * @requires  highcharts-3d
          * @apioption series.scatter3d
@@ -4750,7 +4772,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-3d/VMLAxis3D.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/VMLAxis3D.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4828,7 +4850,7 @@
 
         return VMLAxis3D;
     });
-    _registerModule(_modules, 'parts-3d/VMLRenderer.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js'], _modules['parts-3d/VMLAxis3D.js']], function (Axis, H, SVGRenderer, U, VMLAxis3D) {
+    _registerModule(_modules, 'Core/Renderer/VML/VMLRenderer3D.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/VMLAxis3D.js']], function (Axis, H, SVGRenderer, U, VMLAxis3D) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi

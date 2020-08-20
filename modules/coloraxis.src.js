@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * ColorAxis module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-map/ColorSeriesMixin.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'Mixins/ColorSeries.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -109,7 +109,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'Core/Axis/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1059,7 +1059,7 @@
                      * Animation for the marker as it moves between values. Set to
                      * `false` to disable animation. Defaults to `{ duration: 50 }`.
                      *
-                     * @type    {boolean|Highcharts.AnimationOptionsObject}
+                     * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      * @product highcharts highstock highmaps
                      */
                     animation: {

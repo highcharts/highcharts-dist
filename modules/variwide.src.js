@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Highcharts variwide module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/variwide.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/VariwideSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Highcharts variwide module
@@ -69,7 +69,7 @@
          * @since        6.0.0
          * @product      highcharts
          * @excluding    boostThreshold, crisp, depth, edgeColor, edgeWidth,
-         *               groupZPadding
+         *               groupZPadding, boostBlending
          * @requires     modules/variwide
          * @optionparent plotOptions.variwide
          */
@@ -297,6 +297,7 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.variwide
+         * @excluding boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/variwide
          * @apioption series.variwide

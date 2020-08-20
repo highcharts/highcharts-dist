@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Debugger module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'error-messages.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'error-messages.js', [_modules['Core/Globals.js']], function (H) {
         /* eslint-disable */
         /* *
          * Error information for the debugger module
@@ -167,7 +167,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/debugger.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/Debugger.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi

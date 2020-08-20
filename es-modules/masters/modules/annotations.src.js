@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  * @module highcharts/modules/annotations
  * @requires highcharts
  *
@@ -10,6 +10,6 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../annotations/annotations.src.js';
-import '../../annotations/navigationBindings.js';
-import '../../annotations/popup.js';
+import '../../Extensions/Annotations/Annotations.js';
+import '../../Extensions/Annotations/NavigationBindings.js';
+import '../../Extensions/Annotations/Popup.js';

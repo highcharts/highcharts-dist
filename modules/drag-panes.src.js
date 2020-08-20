@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Drag-panes module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/drag-panes.src.js', [_modules['parts/Globals.js'], _modules['parts/Axis.js'], _modules['parts/Pointer.js'], _modules['parts/Utilities.js']], function (H, Axis, Pointer, U) {
+    _registerModule(_modules, 'Extensions/DragPanes.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, Axis, Pointer, U) {
         /* *
          *
          *  Plugin for resizing axes / panes in a chart.

@@ -13,15 +13,6 @@ import * as _Highcharts from "../highcharts";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
-    interface AjaxSettingsObject {
-        data: (string|Dictionary<any>);
-        dataType: ("json"|"octet"|"text"|"xml");
-        error: Function;
-        headers: Dictionary<string>;
-        success: Function;
-        type: ("DELETE"|"GET"|"POST"|"UPDATE");
-        url: string;
-    }
     interface Chart {
         /**
          * Generates a data URL of CSV for local download in the browser. This
@@ -79,6 +70,10 @@ declare module "../highcharts" {
          */
         getTable(useLocalDecimalPoint?: boolean): string;
         /**
+         * Export-data module required. Hide the data table when visible.
+         */
+        hideData(): void;
+        /**
          * Export-data module required. View the data in a table below the
          * chart.
          *
@@ -86,26 +81,6 @@ declare module "../highcharts" {
          */
         viewData(): void;
     }
-    /**
-     * Perform an Ajax call.
-     *
-     * @param attr
-     *        The Ajax settings to use.
-     *
-     * @return Returns false, if error occured.
-     */
-    function ajax(attr: Partial<AjaxSettingsObject>): (false|undefined);
-    /**
-     * Get a JSON resource over XHR, also supporting CORS without preflight.
-     *
-     * @param url
-     *        The URL to load.
-     *
-     * @param success
-     *        The success callback. For error handling, use the
-     *        `Highcharts.ajax` function instead.
-     */
-    function getJSON(url: string, success: Function): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

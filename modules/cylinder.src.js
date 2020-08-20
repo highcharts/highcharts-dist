@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Highcharts cylinder module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/cylinder.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
+    _registerModule(_modules, 'Series/CylinderSeries.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Extensions/Math3D.js'], _modules['Core/Utilities.js']], function (H, Color, Math3D, U) {
         /* *
          *
          *  Highcharts cylinder - a 3D series
@@ -43,12 +43,12 @@
          *
          * */
         var color = Color.parse;
+        var perspective = Math3D.perspective;
         var merge = U.merge,
             pick = U.pick,
             seriesType = U.seriesType;
         var charts = H.charts,
-            deg2rad = H.deg2rad,
-            perspective = H.perspective, 
+            deg2rad = H.deg2rad, 
             // Work on H.Renderer instead of SVGRenderer for VML support.
             RendererProto = H.Renderer.prototype,
             cuboidPath = RendererProto.cuboidPath,
@@ -82,7 +82,7 @@
          * @since        7.0.0
          * @product      highcharts
          * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
-         *               dragDrop
+         *               dragDrop, boostBlending
          * @requires     modules/cylinder
          * @optionparent plotOptions.cylinder
          */
@@ -102,7 +102,8 @@
          * @extends   series,plotOptions.cylinder
          * @since     7.0.0
          * @product   highcharts
-         * @excluding allAreas, boostThreshold, colorAxis, compare, compareBase
+         * @excluding allAreas, boostThreshold, colorAxis, compare, compareBase,
+         *            boostBlending
          * @requires  modules/cylinder
          * @apioption series.cylinder
          */

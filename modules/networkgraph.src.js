@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Force directed graph module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/nodes.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Mixins/Nodes.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -38,20 +38,22 @@
             extend = U.extend,
             find = U.find,
             pick = U.pick;
-        H.NodesMixin = {
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Create a single node that holds information on incoming and outgoing
-             * links.
-             * @private
-             */
-            createNode: function (id) {
+        var NodesMixin = H.NodesMixin = {
+                /* eslint-disable valid-jsdoc */
                 /**
+                 * Create a single node that holds information on incoming and outgoing
+                 * links.
                  * @private
                  */
-                function findById(nodes, id) {
-                    return find(nodes, function (node) {
-                        return node.id === id;
+                createNode: function (id) {
+                    /**
+                     * @private
+                     */
+                    function findById(nodes,
+            id) {
+                        return find(nodes,
+            function (node) {
+                            return node.id === id;
                     });
                 }
                 var node = findById(this.nodes,
@@ -215,8 +217,9 @@
             /* eslint-enable valid-jsdoc */
         };
 
+        return NodesMixin;
     });
-    _registerModule(_modules, 'modules/networkgraph/integrations.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'Series/Networkgraph/Integrations.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  Networkgraph series
@@ -594,7 +597,7 @@
         };
 
     });
-    _registerModule(_modules, 'modules/networkgraph/QuadTree.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/QuadTree.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Networkgraph series
@@ -956,7 +959,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/layouts.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/Layouts.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -1538,7 +1541,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/draggable-nodes.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/DraggableNodes.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -1681,7 +1684,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/networkgraph/networkgraph.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/Networkgraph/Networkgraph.js', [_modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, NodesMixin, Point, U) {
         /* *
          *
          *  Networkgraph series
@@ -1755,11 +1758,12 @@
          *               Networkgraph
          * @since        7.0.0
          * @excluding    boostThreshold, animation, animationLimit, connectEnds,
-         *               colorAxis, colorKey, connectNulls, dragDrop,
+         *               colorAxis, colorKey, connectNulls, cropThreshold, dragDrop,
          *               getExtremesFromAll, label, linecap, negativeColor,
          *               pointInterval, pointIntervalUnit, pointPlacement,
          *               pointStart, softThreshold, stack, stacking, step,
-         *               threshold, xAxis, yAxis, zoneAxis, dataSorting
+         *               threshold, xAxis, yAxis, zoneAxis, dataSorting,
+         *               boostBlending
          * @requires     modules/networkgraph
          * @optionparent plotOptions.networkgraph
          */
@@ -1787,7 +1791,7 @@
                         /**
                          * Animation when not hovering over the node.
                          *
-                         * @type {boolean|Highcharts.AnimationOptionsObject}
+                         * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
                          */
                         animation: {
                             /** @internal */
@@ -1811,7 +1815,7 @@
                     /**
                      * Animation when not hovering over the node.
                      *
-                     * @type {boolean|Highcharts.AnimationOptionsObject}
+                     * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      */
                     animation: {
                         /** @internal */
@@ -2135,10 +2139,12 @@
              * links.
              * @private
              */
-            createNode: H.NodesMixin.createNode,
+            createNode: NodesMixin.createNode,
             destroy: function () {
-                this.layout.removeElementFromCollection(this, this.layout.series);
-                H.NodesMixin.destroy.call(this);
+                if (this.layout) {
+                    this.layout.removeElementFromCollection(this, this.layout.series);
+                }
+                NodesMixin.destroy.call(this);
             },
             /* eslint-disable no-invalid-this, valid-jsdoc */
             /**
@@ -2163,7 +2169,7 @@
             generatePoints: function () {
                 var node,
                     i;
-                H.NodesMixin.generatePoints.apply(this, arguments);
+                NodesMixin.generatePoints.apply(this, arguments);
                 // In networkgraph, it's fine to define stanalone nodes, create
                 // them:
                 if (this.options.nodes) {
@@ -2405,7 +2411,7 @@
                 }
             }
         }, {
-            setState: H.NodesMixin.setNodeState,
+            setState: NodesMixin.setNodeState,
             /**
              * Basic `point.init()` and additional styles applied when
              * `series.draggable` is enabled.
@@ -2569,7 +2575,7 @@
              *        doing more operations on the chart, for example running
              *        `point.remove()` in a loop, it is best practice to set
              *        `redraw` to false and call `chart.redraw()` after.
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation=false]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=false]
              *        Whether to apply animation, and optionally animation
              *        configuration.
              * @return {void}
@@ -2655,10 +2661,11 @@
          *
          * @extends   series,plotOptions.networkgraph
          * @excluding boostThreshold, animation, animationLimit, connectEnds,
-         *            connectNulls, dragDrop, getExtremesFromAll, label, linecap,
-         *            negativeColor, pointInterval, pointIntervalUnit,
+         *            connectNulls, cropThreshold, dragDrop, getExtremesFromAll, label,
+         *            linecap, negativeColor, pointInterval, pointIntervalUnit,
          *            pointPlacement, pointStart, softThreshold, stack, stacking,
-         *            step, threshold, xAxis, yAxis, zoneAxis, dataSorting
+         *            step, threshold, xAxis, yAxis, zoneAxis, dataSorting,
+         *            boostBlending
          * @product   highcharts
          * @requires  modules/networkgraph
          * @apioption series.networkgraph

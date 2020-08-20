@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
         /**
          *
          *  (c) 2010-2020 Daniel Studencki
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'indicators/tema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
+    _registerModule(_modules, 'Stock/Indicators/TEMAIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -101,8 +101,7 @@
         var correctFloat = U.correctFloat,
             isArray = U.isArray,
             seriesType = U.seriesType;
-        var EMAindicator = H.seriesTypes.ema,
-            requiredIndicator = requiredIndicatorMixin;
+        var EMAindicator = H.seriesTypes.ema;
         /**
          * The TEMA series type.
          *

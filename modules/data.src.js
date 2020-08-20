@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Data module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/ajax.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/Ajax.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2017 Christer Vasseng, Torstein Honsi
@@ -64,9 +64,9 @@
         * @name Highcharts.AjaxSettingsObject#success
         * @type {Function}
         */ /**
-        * The verb to use.
+        * The HTTP method to use. For example GET or POST.
         * @name Highcharts.AjaxSettingsObject#type
-        * @type {"GET"|"POST"|"UPDATE"|"DELETE"}
+        * @type {string}
         */ /**
         * The URL to call.
         * @name Highcharts.AjaxSettingsObject#url
@@ -175,9 +175,14 @@
                 }
             });
         };
+        var exports = {
+                ajax: H.ajax,
+                getJSON: H.getJSON
+            };
 
+        return exports;
     });
-    _registerModule(_modules, 'modules/data.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Chart, H, Point, U) {
+    _registerModule(_modules, 'Extensions/Data.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Extensions/Ajax.js']], function (Chart, H, Point, U, Ajax) {
         /* *
          *
          *  Data module
@@ -270,7 +275,7 @@
          *         Return `false` to stop completion, or call `this.complete()` to
          *         continue async.
          */
-        var ajax = H.ajax;
+        var ajax = Ajax.ajax;
         // Utilities
         var win = H.win,
             doc = win.document;

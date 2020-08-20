@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Item series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/item-series.src.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (H, O, U) {
+    _registerModule(_modules, 'Series/ItemSeries.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, O, U) {
         /* *
          *
          *  (c) 2020 Torstein Honsi
@@ -477,7 +477,8 @@
          * it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.item
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting
+         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+         *            boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/item-series
          * @apioption series.item

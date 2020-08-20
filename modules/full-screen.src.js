@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Advanced Highstock tools
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/full-screen.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Extensions/FullScreen.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          * (c) 2009-2020 Rafal Sebestjanski
          *
@@ -47,6 +47,8 @@
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Handles displaying chart's container in the fullscreen mode.
+         *
+         * **Note**: Fullscreen is not supported on iPhone due to iOS limitations.
          *
          * @class
          * @name Highcharts.Fullscreen

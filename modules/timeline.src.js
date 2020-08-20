@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Timeline series
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/timeline.src.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/SVGElement.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, Point, SVGElement, U) {
+    _registerModule(_modules, 'Series/TimelineSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, Point, SVGElement, U) {
         /* *
          *
          *  Timeline Series.
@@ -78,6 +78,7 @@
         * @name Highcharts.TimelineDataLabelsFormatterContextObject#series
         * @type {Highcharts.Series}
         */
+        ''; // dettach doclets above
         var TrackerMixin = H.TrackerMixin,
             Series = H.Series,
             seriesTypes = H.seriesTypes;
@@ -109,7 +110,8 @@
          *               getExtremesFromAll, lineWidth, negativeColor,
          *               pointInterval, pointIntervalUnit, pointPlacement,
          *               pointStart, softThreshold, stacking, step, threshold,
-         *               turboThreshold, zoneAxis, zones, dataSorting
+         *               turboThreshold, zoneAxis, zones, dataSorting,
+         *               boostBlending
          * @requires     modules/timeline
          * @optionparent plotOptions.timeline
          */
@@ -614,7 +616,7 @@
          *            getExtremesFromAll, lineWidth, negativeColor,
          *            pointInterval, pointIntervalUnit, pointPlacement, pointStart,
          *            softThreshold, stacking, stack, step, threshold, turboThreshold,
-         *            zoneAxis, zones, dataSorting
+         *            zoneAxis, zones, dataSorting, boostBlending
          * @product   highcharts
          * @requires  modules/timeline
          * @apioption series.timeline

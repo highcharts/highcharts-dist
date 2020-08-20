@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.1.2 (2020-06-16)
+ * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
  *
  * CurrentDateIndicator
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-gantt/CurrentDateIndicator.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js'], _modules['parts/PlotLineOrBand.js']], function (H, O, U, PlotLineOrBand) {
+    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (H, O, U, PlotLineOrBand) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS

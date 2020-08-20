@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/funnel.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/FunnelSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -481,7 +481,8 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.funnel
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting
+         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+         *            boostBlending, boostThreshold
          * @product   highcharts
          * @requires  modules/funnel
          * @apioption series.funnel
@@ -581,7 +582,8 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.pyramid
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting
+         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+         *            boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/funnel
          * @apioption series.pyramid

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Client side exporting module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/download-url.js', [_modules['parts/Globals.js']], function (Highcharts) {
+    _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (Highcharts) {
         /* *
          *
          *  (c) 2015-2020 Oystein Moseng
@@ -54,8 +54,8 @@
          * @return {string|undefined}
          *         Blob
          */
-        Highcharts.dataURLtoBlob = function (dataURL) {
-            var parts = dataURL.match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+        var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
+                var parts = dataURL.match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
             if (parts &&
                 parts.length > 3 &&
                 win.atob &&
@@ -86,9 +86,10 @@
          *        The name of the resulting file (w/extension)
          * @return {void}
          */
-        Highcharts.downloadURL = function (dataURL, filename) {
-            var a = doc.createElement('a'),
-                windowRef;
+        var downloadURL = Highcharts.downloadURL = function (dataURL,
+            filename) {
+                var a = doc.createElement('a'),
+            windowRef;
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -97,10 +98,11 @@
                 nav.msSaveOrOpenBlob(dataURL, filename);
                 return;
             }
+            dataURL = "" + dataURL;
             // Some browsers have limitations for data URL lengths. Try to convert to
             // Blob or fall back. Edge always needs that blob.
             if (isEdgeBrowser || dataURL.length > 2000000) {
-                dataURL = Highcharts.dataURLtoBlob(dataURL);
+                dataURL = dataURLtoBlob(dataURL) || '';
                 if (!dataURL) {
                     throw new Error('Failed to convert to blob');
                 }
@@ -127,9 +129,14 @@
                 }
             }
         };
+        var exports = {
+                dataURLtoBlob: dataURLtoBlob,
+                downloadURL: downloadURL
+            };
 
+        return exports;
     });
-    _registerModule(_modules, 'modules/offline-exporting.src.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, H, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/OfflineExporting.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Extensions/DownloadURL.js']], function (Chart, H, SVGRenderer, U, DownloadURL) {
         /* *
          *
          *  Client side exporting module
@@ -149,6 +156,7 @@
             extend = U.extend,
             getOptions = U.getOptions,
             merge = U.merge;
+        var downloadURL = DownloadURL.downloadURL;
         var domurl = win.URL || win.webkitURL || win,
             nav = win.navigator,
             isMSBrowser = /Edge\/|Trident\/|MSIE /.test(nav.userAgent), 
@@ -392,7 +400,7 @@
                 });
                 svgData = svgToPdf(dummySVGContainer.firstChild, 0);
                 try {
-                    H.downloadURL(svgData, filename);
+                    downloadURL(svgData, filename);
                     if (successCallback) {
                         successCallback();
                     }
@@ -415,7 +423,7 @@
                     else {
                         svgurl = H.svgToDataUrl(svg);
                     }
-                    H.downloadURL(svgurl, filename);
+                    downloadURL(svgurl, filename);
                     if (successCallback) {
                         successCallback();
                     }
@@ -455,7 +463,7 @@
                 H.imageToDataUrl(svgurl, imageType, {}, scale, function (imageURL) {
                     // Success
                     try {
-                        H.downloadURL(imageURL, filename);
+                        downloadURL(imageURL, filename);
                         if (successCallback) {
                             successCallback();
                         }
@@ -469,7 +477,7 @@
                     var canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), imageWidth = svg.match(/^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, imageHeight = svg.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, downloadWithCanVG = function () {
                             ctx.drawSvg(svg, 0, 0, imageWidth, imageHeight);
                         try {
-                            H.downloadURL(nav.msSaveOrOpenBlob ?
+                            downloadURL(nav.msSaveOrOpenBlob ?
                                 canvas.msToBlob() :
                                 canvas.toDataURL(imageType), filename);
                             if (successCallback) {
@@ -708,7 +716,7 @@
         };
         // Extend the default options to use the local exporter logic
         merge(true, getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/8.1.2/lib/',
+            libURL: 'https://code.highcharts.com/8.2.0/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {

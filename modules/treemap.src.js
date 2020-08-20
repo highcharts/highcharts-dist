@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * (c) 2014-2019 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/tree-series.js', [_modules['parts/Color.js'], _modules['parts/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -255,7 +255,7 @@
 
         return result;
     });
-    _registerModule(_modules, 'mixins/draw-point.js', [], function () {
+    _registerModule(_modules, 'Mixins/DrawPoint.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -331,10 +331,15 @@
             // Call draw to render component
             draw.call(point, params);
         };
+        var drawPointModule = {
+                draw: draw,
+                drawPoint: drawPoint,
+                isFn: isFn
+            };
 
-        return drawPoint;
+        return drawPointModule;
     });
-    _registerModule(_modules, 'modules/treemap.src.js', [_modules['parts/Globals.js'], _modules['mixins/tree-series.js'], _modules['mixins/draw-point.js'], _modules['parts/Color.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, mixinTreeSeries, drawPoint, Color, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'Series/TreemapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/TreeSeries.js'], _modules['Mixins/DrawPoint.js'], _modules['Core/Color.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, mixinTreeSeries, drawPointModule, Color, LegendSymbolMixin, Point, U) {
         /* *
          *
          *  (c) 2014-2020 Highsoft AS
@@ -346,6 +351,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var getColor = mixinTreeSeries.getColor,
+            getLevelOptions = mixinTreeSeries.getLevelOptions,
+            updateRootId = mixinTreeSeries.updateRootId;
+        var drawPoint = drawPointModule.drawPoint;
         var color = Color.parse;
         var addEvent = U.addEvent,
             correctFloat = U.correctFloat,
@@ -365,9 +374,7 @@
         /* eslint-disable no-invalid-this */
         var AXIS_MAX = 100;
         var seriesTypes = H.seriesTypes,
-            noop = H.noop,
-            getColor = mixinTreeSeries.getColor,
-            getLevelOptions = mixinTreeSeries.getLevelOptions, 
+            noop = H.noop, 
             // @todo Similar to eachObject, this function is likely redundant
             isBoolean = function (x) {
                 return typeof x === 'boolean';
@@ -388,7 +395,7 @@
             if (next !== false) {
                 recursive(next, func, context);
             }
-        }, updateRootId = mixinTreeSeries.updateRootId, treemapAxisDefaultValues = false;
+        }, treemapAxisDefaultValues = false;
         /* eslint-enable no-invalid-this */
         /**
          * @private
@@ -929,13 +936,13 @@
             },
             init: function (chart, options) {
                 var series = this,
-                    colorMapSeriesMixin = H.colorMapSeriesMixin;
+                    colorMapSeriesMixin = H.colorMapSeriesMixin,
+                    setOptionsEvent;
                 // If color series logic is loaded, add some properties
                 if (colorMapSeriesMixin) {
                     this.colorAttribs = colorMapSeriesMixin.colorAttribs;
                 }
-                // Handle deprecated options.
-                series.eventsToUnbind.push(addEvent(series, 'setOptions', function (event) {
+                setOptionsEvent = addEvent(series, 'setOptions', function (event) {
                     var options = event.userOptions;
                     if (defined(options.allowDrillToNode) &&
                         !defined(options.allowTraversingTree)) {
@@ -947,10 +954,12 @@
                         options.traverseUpButton = options.drillUpButton;
                         delete options.drillUpButton;
                     }
-                }));
+                });
                 Series.prototype.init.call(series, chart, options);
                 // Treemap's opacity is a different option from other series
                 delete series.opacity;
+                // Handle deprecated options.
+                series.eventsToUnbind.push(setOptionsEvent);
                 if (series.options.allowTraversingTree) {
                     series.eventsToUnbind.push(addEvent(series, 'click', series.onClickDrillToNode));
                 }

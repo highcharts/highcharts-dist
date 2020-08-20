@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/multipe-lines.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Mixins/MultipleLines.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
          *
          *  (c) 2010-2020 Wojciech Chmiel
@@ -217,7 +217,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
         /**
          *
          *  (c) 2010-2020 Daniel Studencki
@@ -279,7 +279,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'indicators/aroon-oscillator.src.js', [_modules['parts/Globals.js'], _modules['mixins/multipe-lines.js'], _modules['mixins/indicator-required.js'], _modules['parts/Utilities.js']], function (H, multipleLinesMixin, requiredIndicatorMixin, U) {
+    _registerModule(_modules, 'Stock/Indicators/AroonOscillatorIndicator.js', [_modules['Core/Globals.js'], _modules['Mixins/MultipleLines.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (H, multipleLinesMixin, requiredIndicator, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -289,8 +289,7 @@
          * */
         var merge = U.merge,
             seriesType = U.seriesType;
-        var AROON = H.seriesTypes.aroon,
-            requiredIndicator = requiredIndicatorMixin;
+        var AROON = H.seriesTypes.aroon;
         /**
          * The Aroon Oscillator series type.
          *

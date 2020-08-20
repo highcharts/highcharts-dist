@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'themes/skies.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'Extensions/Themes/Skies.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Highcharts, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -46,7 +46,7 @@
                 className: 'skies',
                 borderWidth: 0,
                 plotShadow: true,
-                plotBackgroundImage: 'https://www.highcharts.com/demo/gfx/skies.jpg',
+                plotBackgroundImage: 'https://www.highcharts.com/samples/graphics/skies.jpg',
                 plotBackgroundColor: {
                     linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },
                     stops: [

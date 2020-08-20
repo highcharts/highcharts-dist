@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  * Organization chart series type
  *
  * (c) 2019-2019 Torstein Honsi
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/organization.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/OrganizationSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Organization chart module
@@ -469,7 +469,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.organization
-         * @exclude   dataSorting
+         * @exclude   dataSorting, boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/organization
          * @apioption series.organization

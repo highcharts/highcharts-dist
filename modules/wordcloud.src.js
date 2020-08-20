@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * (c) 2016-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/draw-point.js', [], function () {
+    _registerModule(_modules, 'Mixins/DrawPoint.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -103,10 +103,15 @@
             // Call draw to render component
             draw.call(point, params);
         };
+        var drawPointModule = {
+                draw: draw,
+                drawPoint: drawPoint,
+                isFn: isFn
+            };
 
-        return drawPoint;
+        return drawPointModule;
     });
-    _registerModule(_modules, 'mixins/polygon.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Mixins/Polygon.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -428,7 +433,7 @@
 
         return collision;
     });
-    _registerModule(_modules, 'modules/wordcloud.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/draw-point.js'], _modules['mixins/polygon.js']], function (H, U, drawPoint, polygon) {
+    _registerModule(_modules, 'Series/WordcloudSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/DrawPoint.js'], _modules['Mixins/Polygon.js']], function (H, U, drawPointModule, polygonMixin) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
@@ -447,11 +452,14 @@
             isObject = U.isObject,
             merge = U.merge,
             seriesType = U.seriesType;
+        var drawPoint = drawPointModule.drawPoint;
+        var getBoundingBoxFromPolygon = polygonMixin.getBoundingBoxFromPolygon,
+            getPolygon = polygonMixin.getPolygon,
+            isPolygonsColliding = polygonMixin.isPolygonsColliding,
+            movePolygon = polygonMixin.movePolygon,
+            rotate2DToOrigin = polygonMixin.rotate2DToOrigin,
+            rotate2DToPoint = polygonMixin.rotate2DToPoint;
         var noop = H.noop,
-            getBoundingBoxFromPolygon = polygon.getBoundingBoxFromPolygon,
-            getPolygon = polygon.getPolygon,
-            isPolygonsColliding = polygon.isPolygonsColliding,
-            movePolygon = polygon.movePolygon,
             Series = H.Series;
         /**
          * Detects if there is a collision between two rectangles.
@@ -992,7 +1000,7 @@
          *               pointPlacement, pointRange, pointStart, pointWidth, pointStart,
          *               pointWidth, shadow, showCheckbox, showInNavigator,
          *               softThreshold, stacking, threshold, zoneAxis, zones,
-         *               dataSorting
+         *               dataSorting, boostBlending
          * @product      highcharts
          * @since        6.0.0
          * @requires     modules/wordcloud
@@ -1352,8 +1360,8 @@
                 extendPlayingField: extendPlayingField,
                 getRotation: getRotation,
                 isPolygonsColliding: isPolygonsColliding,
-                rotate2DToOrigin: polygon.rotate2DToOrigin,
-                rotate2DToPoint: polygon.rotate2DToPoint
+                rotate2DToOrigin: rotate2DToOrigin,
+                rotate2DToPoint: rotate2DToPoint
             },
             getPlotBox: function () {
                 var series = this, chart = series.chart, inverted = chart.inverted, 
@@ -1384,7 +1392,7 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.wordcloud
-         * @exclude   dataSorting
+         * @exclude   dataSorting, boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/wordcloud
          * @apioption series.wordcloud

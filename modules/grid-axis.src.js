@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.1.2 (2020-06-16)
+ * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
  *
  * GridAxis
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (Axis, H, O, Tick, U) {
+    _registerModule(_modules, 'Core/Axis/GridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (Axis, H, O, Tick, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -77,6 +77,43 @@
             axis.labelRotation = 0;
             options.labels.rotation = 0;
         };
+        /**
+         * For a datetime axis, the scale will automatically adjust to the
+         * appropriate unit. This member gives the default string
+         * representations used for each unit. For intermediate values,
+         * different units may be used, for example the `day` unit can be used
+         * on midnight and `hour` unit be used for intermediate values on the
+         * same axis.
+         * For grid axes (like in Gantt charts),
+         * it is possible to declare as a list to provide different
+         * formats depending on available space.
+         * For an overview of the replacement codes, see
+         * [dateFormat](/class-reference/Highcharts#dateFormat).
+         *
+         * Defaults to:
+         * ```js
+         * {
+                hour: {
+                    list: ['%H:%M', '%H']
+                },
+                day: {
+                    list: ['%A, %e. %B', '%a, %e. %b', '%E']
+                },
+                week: {
+                    list: ['Week %W', 'W%W']
+                },
+                month: {
+                    list: ['%B', '%b', '%o']
+                }
+            },
+         * ```
+         *
+         * @sample {gantt} gantt/demo/left-axis-table
+         *         Gantt Chart with custom axis date format.
+         *
+         * @product gantt
+         * @apioption xAxis.dateTimeLabelFormats
+         */
         /**
          * Set grid options for the axis labels. Requires Highcharts Gantt.
          *
@@ -158,13 +195,11 @@
                     label = isObject(tick.label) ? tick.label : {};
                     // Find width and height of tick
                     tickHeight = label.getBBox ? label.getBBox().height : 0;
-                    if (label.textStr && !isNumber(label.textPxLength)) {
-                        label.textPxLength = label.getBBox().width;
+                    if (label.textStr) {
+                        // Set the tickWidth same as the label width after ellipsis
+                        // applied #10281
+                        tickWidth = Math.round(label.getBBox().width);
                     }
-                    tickWidth = isNumber(label.textPxLength) ?
-                        // Math.round ensures crisp lines
-                        Math.round(label.textPxLength) :
-                        0;
                     // Update the result if width and/or height are larger
                     dimensions.height = Math.max(tickHeight, dimensions.height);
                     dimensions.width = Math.max(tickWidth, dimensions.width);
@@ -494,7 +529,11 @@
                             gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
                                 linkedTo: 0,
                                 // Force to behave like category axis
-                                type: 'category'
+                                type: 'category',
+                                // Disable by default the scrollbar on the grid axis
+                                scrollbar: {
+                                    enabled: false
+                                }
                             });
                         delete columnOptions.grid.columns; // Prevent recursion
                         var column = new Axis(axis.chart,

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  * @module highcharts/indicators/cmf
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -10,4 +10,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../indicators/cmf.src.js';
+import '../../Stock/Indicators/CMFIndicator.js';

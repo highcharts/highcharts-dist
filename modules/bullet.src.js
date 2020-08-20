@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Bullet graph series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/bullet.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/BulletSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Kacper Madej
@@ -67,7 +67,7 @@
          * @since        6.0.0
          * @product      highcharts
          * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
-         *               dataSorting
+         *               dataSorting, boostBlending
          * @requires     modules/bullet
          * @optionparent plotOptions.bullet
          */
@@ -278,7 +278,8 @@
          * @extends   series,plotOptions.bullet
          * @since     6.0.0
          * @product   highcharts
-         * @excluding dataParser, dataURL, marker, dataSorting
+         * @excluding dataParser, dataURL, marker, dataSorting, boostThreshold,
+         *            boostBlending
          * @requires  modules/bullet
          * @apioption series.bullet
          */

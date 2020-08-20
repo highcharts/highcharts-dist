@@ -39,9 +39,9 @@ declare module "../highcharts" {
          */
         success: Function;
         /**
-         * The verb to use.
+         * The HTTP method to use. For example GET or POST.
          */
-        type: ("DELETE"|"GET"|"POST"|"UPDATE");
+        type: string;
         /**
          * The URL to call.
          */

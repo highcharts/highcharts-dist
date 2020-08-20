@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/funnel3d.src.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Color, U) {
+    _registerModule(_modules, 'Series/Funnel3DSeries.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Color.js'], _modules['Core/Utilities.js']], function (H, Math3D, Color, U) {
         /* *
          *
          *  Highcharts funnel3d series module
@@ -42,6 +42,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var perspective = Math3D.perspective;
         var color = Color.parse;
         var error = U.error,
             extend = U.extend,
@@ -79,7 +80,7 @@
          *
          * @extends      plotOptions.column
          * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
-         *               dataSorting
+         *               dataSorting, boostBlending
          * @product      highcharts
          * @since        7.1.0
          * @requires     highcharts-3d
@@ -307,7 +308,7 @@
                         point.plotY = (y1 + (y5 || y3)) / 2;
                     }
                     // Placement of tooltips and data labels in 3D
-                    tooltipPos = H.perspective([{
+                    tooltipPos = perspective([{
                             x: centerX,
                             y: point.plotY,
                             z: reversed ?
@@ -385,7 +386,7 @@
          *         Funnel3d demo
          *
          * @since     7.1.0
-         * @extends   series,plotOptions.funnel3d
+         * @extends   series.funnel,plotOptions.funnel3d
          * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase
          * @product   highcharts
          * @requires  highcharts-3d

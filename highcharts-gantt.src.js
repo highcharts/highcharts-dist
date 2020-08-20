@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.1.2 (2020-06-16)
+ * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
  *
  * (c) 2017-2018 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'parts/Globals.js', [], function () {
+    _registerModule(_modules, 'Core/Globals.js', [], function () {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -62,7 +62,7 @@
             );
         var H = {
                 product: 'Highcharts',
-                version: '8.1.2',
+                version: '8.2.0',
                 deg2rad: Math.PI * 2 / 360,
                 doc: doc,
                 hasBidiBug: hasBidiBug,
@@ -81,6 +81,14 @@
                 win: glob,
                 marginNames: ['plotTop', 'marginRight', 'marginBottom', 'plotLeft'],
                 noop: function () { },
+                /**
+                 * Theme options that should get applied to the chart. In module mode it
+                 * might not be possible to change this property because of read-only
+                 * restrictions, instead use {@link Highcharts.setOptions}.
+                 *
+                 * @name Highcharts.theme
+                 * @type {Highcharts.Options}
+                 */
                 /**
                  * An array containing the current chart objects in the page. A chart's
                  * position in the array is preserved throughout the page's lifetime. When
@@ -108,7 +116,7 @@
 
         return H;
     });
-    _registerModule(_modules, 'parts/Utilities.js', [_modules['parts/Globals.js']], function (H) {
+    _registerModule(_modules, 'Core/Utilities.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -121,13 +129,17 @@
         /**
          * An animation configuration. Animation configurations can also be defined as
          * booleans, where `false` turns off animation and `true` defaults to a duration
-         * of 500ms.
+         * of 500ms and defer of 0ms.
          *
          * @interface Highcharts.AnimationOptionsObject
          */ /**
         * A callback function to exectute when the animation finishes.
         * @name Highcharts.AnimationOptionsObject#complete
         * @type {Function|undefined}
+        */ /**
+        * The animation defer in milliseconds.
+        * @name Highcharts.AnimationOptionsObject#defer
+        * @type {number|undefined}
         */ /**
         * The animation duration in milliseconds.
         * @name Highcharts.AnimationOptionsObject#duration
@@ -531,7 +543,7 @@
                  * @param {Highcharts.HTMLDOMElement|Highcharts.SVGElement} elem
                  *        The element to animate.
                  *
-                 * @param {Highcharts.AnimationOptionsObject} options
+                 * @param {Partial<Highcharts.AnimationOptionsObject>} options
                  *        Animation options.
                  *
                  * @param {string} prop
@@ -1791,7 +1803,7 @@
          *
          * @function Highcharts.setAnimation
          *
-         * @param {boolean|Highcharts.AnimationOptionsObject|undefined} animation
+         * @param {boolean|Partial<Highcharts.AnimationOptionsObject>|undefined} animation
          *        The animation object.
          *
          * @param {Highcharts.Chart} chart
@@ -1824,8 +1836,11 @@
          */
         var animObject = H.animObject = function animObject(animation) {
                 return isObject(animation) ?
-                    merge(animation) :
-                    { duration: animation ? 500 : 0 };
+                    H.merge({ duration: 500,
+            defer: 0 },
+            animation) :
+                    { duration: animation ? 500 : 0,
+            defer: 0 };
         };
         /**
          * The time unit lookup
@@ -2046,6 +2061,43 @@
                 }
             }
             return style;
+        };
+        /**
+         * Get the defer as a number value from series animation options.
+         *
+         * @function Highcharts.getDeferredAnimation
+         *
+         * @param {Highcharts.Chart} chart
+         *        The chart instance.
+         *
+         * @return {number}
+         *        The numeric value.
+         */
+        var getDeferredAnimation = H.getDeferredAnimation = function (chart,
+            animation,
+            series) {
+                var labelAnimation = animObject(animation);
+            var s = series ? [series] : chart.series;
+            var defer = 0;
+            var duration = 0;
+            s.forEach(function (series) {
+                var seriesAnim = animObject(series.options.animation);
+                defer = animation && defined(animation.defer) ?
+                    labelAnimation.defer :
+                    Math.max(defer, seriesAnim.duration + seriesAnim.defer);
+                duration = Math.min(labelAnimation.duration, seriesAnim.duration);
+            });
+            // Disable defer for exporting
+            if (chart.renderer.forExport) {
+                defer = 0;
+            }
+            var anim = {
+                    defer: Math.max(0,
+                defer - duration),
+                    duration: Math.min(defer,
+                duration)
+                };
+            return anim;
         };
         /**
          * Search for an item in an array.
@@ -2575,7 +2627,7 @@
          *        Supports numeric as pixel-based CSS properties for HTML objects and
          *        attributes for SVGElements.
          *
-         * @param {Highcharts.AnimationOptionsObject} [opt]
+         * @param {Partial<Highcharts.AnimationOptionsObject>} [opt]
          *        Animation options.
          *
          * @return {void}
@@ -2846,6 +2898,7 @@
                 find: find,
                 fireEvent: fireEvent,
                 format: format,
+                getDeferredAnimation: getDeferredAnimation,
                 getMagnitude: getMagnitude,
                 getNestedProperty: getNestedProperty,
                 getOptions: getOptions,
@@ -2883,7 +2936,7 @@
 
         return utilitiesModule;
     });
-    _registerModule(_modules, 'parts/Color.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Color.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2953,7 +3006,7 @@
         * @name Highcharts.GradientColorStopObject#1
         * @type {Highcharts.ColorString}
         */ /**
-        * @name Highcharts.GradoentColorStopObject#color
+        * @name Highcharts.GradientColorStopObject#color
         * @type {Highcharts.Color|undefined}
         */
         /**
@@ -3300,7 +3353,7 @@
 
         return H.Color;
     });
-    _registerModule(_modules, 'parts/SVGElement.js', [_modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Color, H, U) {
+    _registerModule(_modules, 'Core/Renderer/SVG/SVGElement.js', [_modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Color, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3327,7 +3380,6 @@
             erase = U.erase,
             extend = U.extend,
             fireEvent = U.fireEvent,
-            inArray = U.inArray,
             isArray = U.isArray,
             isFunction = U.isFunction,
             isNumber = U.isNumber,
@@ -3337,6 +3389,7 @@
             pick = U.pick,
             pInt = U.pInt,
             stop = U.stop,
+            syncTimeout = U.syncTimeout,
             uniqueKey = U.uniqueKey;
         /**
          * The horizontal alignment of an element.
@@ -3797,7 +3850,7 @@
              * @param {Highcharts.SVGAttributes} params
              *        SVG attributes or CSS to animate.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [options]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [options]
              *        Animation options.
              *
              * @param {Function} [complete]
@@ -3807,9 +3860,11 @@
              *         Returns the SVGElement for chaining.
              */
             SVGElement.prototype.animate = function (params, options, complete) {
+                var _this = this;
                 var animOptions = animObject(pick(options,
                     this.renderer.globalAnimation,
-                    true));
+                    true)),
+                    deferTime = animOptions.defer;
                 // When the page is hidden save resources in the background by not
                 // running animation at all (#9749).
                 if (pick(doc.hidden, doc.msHidden, doc.webkitHidden, false)) {
@@ -3821,7 +3876,12 @@
                     if (complete) {
                         animOptions.complete = complete;
                     }
-                    animate(this, params, animOptions);
+                    // If defer option is defined delay the animation #12901
+                    syncTimeout(function () {
+                        if (_this.element) {
+                            animate(_this, params, animOptions);
+                        }
+                    }, deferTime);
                 }
                 else {
                     this.attr(params, void 0, complete);
@@ -5617,7 +5677,7 @@
 
         return H.SVGElement;
     });
-    _registerModule(_modules, 'parts/SVGLabel.js', [_modules['parts/SVGElement.js'], _modules['parts/Utilities.js']], function (SVGElement, U) {
+    _registerModule(_modules, 'Core/Renderer/SVG/SVGLabel.js', [_modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (SVGElement, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6039,7 +6099,7 @@
 
         return SVGLabel;
     });
-    _registerModule(_modules, 'parts/SVGRenderer.js', [_modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/SVGElement.js'], _modules['parts/SVGLabel.js'], _modules['parts/Utilities.js']], function (Color, H, SVGElement, SVGLabel, U) {
+    _registerModule(_modules, 'Core/Renderer/SVG/SVGRenderer.js', [_modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGLabel.js'], _modules['Core/Utilities.js']], function (Color, H, SVGElement, SVGLabel, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6055,7 +6115,6 @@
             css = U.css,
             defined = U.defined,
             destroyObjectProperties = U.destroyObjectProperties,
-            erase = U.erase,
             extend = U.extend,
             isArray = U.isArray,
             isNumber = U.isNumber,
@@ -6065,9 +6124,7 @@
             objectEach = U.objectEach,
             pick = U.pick,
             pInt = U.pInt,
-            removeEvent = U.removeEvent,
             splat = U.splat,
-            stop = U.stop,
             uniqueKey = U.uniqueKey;
         /**
          * A clipping rectangle that can be applied to one or more {@link SVGElement}
@@ -6202,7 +6259,7 @@
          * Array of path commands, that will go into the `d` attribute of an SVG
          * element.
          *
-         * @typedef {Array<Array<Highcharts.SVGPathCommand,number?,number?,number?,number?,number?,number?,number?>>} Highcharts.SVGPathArray
+         * @typedef {Array<(Array<Highcharts.SVGPathCommand>|Array<Highcharts.SVGPathCommand,number>|Array<Highcharts.SVGPathCommand,number,number>|Array<Highcharts.SVGPathCommand,number,number,number,number>|Array<Highcharts.SVGPathCommand,number,number,number,number,number,number>|Array<Highcharts.SVGPathCommand,number,number,number,number,number,number,number>)>} Highcharts.SVGPathArray
          */
         /**
          * Possible path commands in an SVG path array. Valid values are `A`, `C`, `H`,
@@ -6472,7 +6529,7 @@
                     '';
                 // Add description
                 desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.1.2'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 8.2.0'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;
@@ -7104,7 +7161,10 @@
                     useHTML,
                     void 0, 'button'),
                     curState = 0,
-                    styledMode = this.styledMode,
+                    styledMode = this.styledMode, 
+                    // Make a copy of normalState (#13798)
+                    // (reference to options.rangeSelector.buttonTheme)
+                    normalState = normalState ? merge(normalState) : normalState,
                     userNormalStyle = normalState && normalState.style || {};
                 // Remove stylable attributes
                 if (normalState && normalState.style) {
@@ -7485,7 +7545,7 @@
              * @param {number} height
              * The new pixel height.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animate=true]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animate=true]
              * Whether and how to animate.
              */
             SVGRenderer.prototype.setSize = function (width, height, animate) {
@@ -8465,7 +8525,7 @@
 
         return H.Renderer;
     });
-    _registerModule(_modules, 'parts/Html.js', [_modules['parts/Globals.js'], _modules['parts/SVGElement.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, SVGElement, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Renderer/HTML/HTML.js', [_modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, SVGElement, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -8781,9 +8841,11 @@
                                 function (value, key) {
                                     if (key === 'align') {
                                         // Do not overwrite the SVGElement.align method. Same as VML.
-                                        key = 'textAlign';
+                                        wrapper.alignValue = wrapper.textAlign = value;
                                     }
-                                    wrapper[key] = value;
+                                    else {
+                                        wrapper[key] = value;
+                                    }
                                     wrapper.doTransform = true;
                                 };
                 // Runs at the end of .attr()
@@ -8919,7 +8981,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts/Tick.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Axis/Tick.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -9114,7 +9176,7 @@
                     };
                 }
                 // Call only after first render
-                if (animateLabels && axis._addedPlotLB && axis.isXAxis) {
+                if (animateLabels && axis._addedPlotLB) {
                     tick.moveLabel(str, labelOptions);
                 }
                 // First call
@@ -9430,11 +9492,9 @@
                 var tick = this,
                     label = tick.label,
                     moved = false,
-                    xAxis = tick.axis,
-                    chart = xAxis.chart,
+                    axis = tick.axis,
                     labelPos,
-                    reversed = xAxis.reversed,
-                    inverted = chart.inverted,
+                    reversed = axis.reversed,
                     xPos,
                     yPos;
                 if (label && label.textStr === str) {
@@ -9443,7 +9503,7 @@
                     delete tick.label;
                 }
                 else { // Find a label with the same string
-                    objectEach(xAxis.ticks, function (currentTick) {
+                    objectEach(axis.ticks, function (currentTick) {
                         if (!moved &&
                             !currentTick.isNew &&
                             currentTick !== tick &&
@@ -9459,10 +9519,10 @@
                 // Create new label if the actual one is moved
                 if (!moved && (tick.labelPos || label)) {
                     labelPos = tick.labelPos || label.xy;
-                    xPos = inverted ?
-                        labelPos.x : (reversed ? 0 : xAxis.width + xAxis.left);
-                    yPos = inverted ?
-                        (reversed ? (xAxis.width + xAxis.left) : 0) : labelPos.y;
+                    xPos = axis.horiz ?
+                        (reversed ? 0 : axis.width + axis.left) : labelPos.x;
+                    yPos = axis.horiz ?
+                        labelPos.y : (reversed ? (axis.width + axis.left) : 0);
                     tick.movedLabel = tick.createLabel({ x: xPos, y: yPos }, str, labelOptions);
                     if (tick.movedLabel) {
                         tick.movedLabel.attr({ opacity: 0 });
@@ -9673,16 +9733,14 @@
                     label = tick.label,
                     axis = tick.axis,
                     reversed = axis.reversed,
-                    chart = tick.axis.chart,
-                    inverted = chart.inverted,
                     x,
                     y;
                 // Animate and destroy
                 if (label && !tick.isNew) {
-                    x = inverted ? label.xy.x : (reversed ? axis.left : axis.width + axis.left);
-                    y = inverted ?
-                        (reversed ? axis.width + axis.top : axis.top) :
-                        label.xy.y;
+                    x = axis.horiz ? (reversed ? axis.left : axis.width + axis.left) : label.xy.x;
+                    y = axis.horiz ?
+                        label.xy.y :
+                        (reversed ? axis.width + axis.top : axis.top);
                     label.animate({ x: x, y: y, opacity: 0 }, void 0, label.destroy);
                     delete tick.label;
                 }
@@ -9696,7 +9754,7 @@
 
         return H.Tick;
     });
-    _registerModule(_modules, 'parts/Time.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'Core/Time.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Highcharts, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -9767,6 +9825,16 @@
          *
          * @return {number}
          * Timezone offset in minutes.
+         */
+        /**
+         * Allows to manually load the `moment.js` library from Highcharts options
+         * instead of the `window`.
+         * In case of loading the library from a `script` tag,
+         * this option is not needed, it will be loaded from there by default.
+         *
+         * @type {function}
+         * @since 8.2.0
+         * @apioption time.moment
          */
         var defined = U.defined,
             error = U.error,
@@ -10038,7 +10106,7 @@
             Time.prototype.timezoneOffsetFunction = function () {
                 var time = this,
                     options = this.options,
-                    moment = win.moment;
+                    moment = options.moment || win.moment;
                 if (!this.useUTC) {
                     return function (timestamp) {
                         return new Date(timestamp.toString()).getTimezoneOffset() * 60000;
@@ -10367,7 +10435,7 @@
 
         return H.Time;
     });
-    _registerModule(_modules, 'parts/Options.js', [_modules['parts/Globals.js'], _modules['parts/Time.js'], _modules['parts/Color.js'], _modules['parts/Utilities.js']], function (H, Time, Color, U) {
+    _registerModule(_modules, 'Core/Options.js', [_modules['Core/Globals.js'], _modules['Core/Time.js'], _modules['Core/Color.js'], _modules['Core/Utilities.js']], function (H, Time, Color, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -11053,9 +11121,11 @@
                  * duration of 500 ms. If used as a configuration object, the following
                  * properties are supported:
                  *
-                 * - **duration**: The duration of the animation in milliseconds.
+                 * - `defer`: The animation delay time in milliseconds.
                  *
-                 * - **easing**: A string reference to an easing function set on the
+                 * - `duration`: The duration of the animation in milliseconds.
+                 *
+                 * - `easing`: A string reference to an easing function set on the
                  *   `Math` object. See
                  *   [the easing demo](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-animation-easing/).
                  *
@@ -11074,7 +11144,7 @@
                  * @sample {highmaps} maps/chart/animation-duration/
                  *         With a longer duration
                  *
-                 * @type      {boolean|Highcharts.AnimationOptionsObject}
+                 * @type      {boolean|Partial<Highcharts.AnimationOptionsObject>}
                  * @default   undefined
                  * @apioption chart.animation
                  */
@@ -12735,7 +12805,7 @@
                      * @sample {highstock} highcharts/legend/navigation/
                      *         Legend page navigation demonstrated
                      *
-                     * @type      {boolean|Highcharts.AnimationOptionsObject}
+                     * @type      {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      * @default   true
                      * @since     2.2.4
                      * @apioption legend.navigation.animation
@@ -13063,7 +13133,7 @@
                  * pixels. Since v7.0.2 it allows setting a percent string of the full
                  * chart width, for example `40%`.
                  *
-                 * Defaults to the full chart width from legends below or above the
+                 * Defaults to the full chart width for legends below or above the
                  * chart, half the chart width for legends to the left and right.
                  *
                  * @sample {highcharts} highcharts/legend/width/
@@ -14085,7 +14155,7 @@
 
         return optionsModule;
     });
-    _registerModule(_modules, 'parts/Axis.js', [_modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js'], _modules['parts/Options.js']], function (Color, H, Tick, U, O) {
+    _registerModule(_modules, 'Core/Axis/Axis.js', [_modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js'], _modules['Core/Options.js']], function (Color, H, Tick, U, O) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -14541,7 +14611,7 @@
                 // Placeholder for plotlines and plotbands groups
                 axis.plotLinesAndBandsGroups = {};
                 // Shorthand types
-                axis.positiveValuesOnly = !!(axis.logarithmic && !options.allowNegativeLog);
+                axis.positiveValuesOnly = !!axis.logarithmic;
                 // Flag, if axis is linked to another axis
                 axis.isLinked = defined(options.linkedTo);
                 /**
@@ -14767,6 +14837,10 @@
                             if (axis.isXAxis) {
                                 xData = series.xData;
                                 if (xData.length) {
+                                    var isPositive = function (number) { return number > 0; };
+                                    xData = axis.logarithmic ?
+                                        xData.filter(axis.validatePositiveValue) :
+                                        xData;
                                     xExtremes = series.getXExtremes(xData);
                                     // If xData contains values which is not numbers,
                                     // then filter them out. To prevent performance hit,
@@ -15511,7 +15585,7 @@
                 }
                 else {
                     // Adjust to hard threshold
-                    if (!softThreshold && defined(threshold)) {
+                    if (softThreshold && defined(threshold)) {
                         if (axis.dataMin >= threshold) {
                             thresholdMin = threshold;
                             minPadding = 0;
@@ -15685,8 +15759,9 @@
                 this.setTickPositions();
             };
             /**
-             * Now we have computed the normalized tickInterval, get the tick positions
+             * Now we have computed the normalized tickInterval, get the tick positions.
              *
+             * @private
              * @function Highcharts.Axis#setTickPositions
              *
              * @fires Highcharts.Axis#event:afterSetTickPositions
@@ -16090,7 +16165,7 @@
              *        Whether to redraw the chart or wait for an explicit call to
              *        {@link Highcharts.Chart#redraw}
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation=true]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=true]
              *        Enable or modify animations.
              *
              * @param {*} [eventArguments]
@@ -17428,6 +17503,20 @@
                     _b;
                 return /y/.test(((_b = (_a = this.chart.options.chart) === null || _a === void 0 ? void 0 : _a.panning) === null || _b === void 0 ? void 0 : _b.type) || '');
             };
+            /**
+            * Check whether the given value is a positive valid axis value.
+            *
+            * @private
+            * @function Highcharts.Axis#validatePositiveValue
+            *
+            * @param {unknown} value
+            * The axis value
+            * @return {boolean}
+            *
+            */
+            Axis.prototype.validatePositiveValue = function (value) {
+                return isNumber(value) && value > 0;
+            };
             /* *
              *
              *  Static Properties
@@ -17859,7 +17948,7 @@
                  *         More information in x axis labels
                  *
                  * @declare Highcharts.AxisDateTimeLabelFormatsOptions
-                 * @product highcharts highstock gantt
+                 * @product highcharts highstock
                  */
                 dateTimeLabelFormats: {
                     /**
@@ -18324,17 +18413,17 @@
                      * @apioption xAxis.labels.useHTML
                      */
                     /**
-                     * The x position offset of the label relative to the tick position
-                     * on the axis.
+                     * The x position offset of all labels relative to the tick
+                     * positions on the axis.
                      *
                      * @sample {highcharts} highcharts/xaxis/labels-x/
                      *         Y axis labels placed on grid lines
                      */
                     x: 0,
                     /**
-                     * The y position offset of the label relative to the tick position
-                     * on the axis. The default makes it adapt to the font size on
-                     * bottom axis.
+                     * The y position offset of all labels relative to the tick
+                     * positions on the axis. The default makes it adapt to the font
+                     * size of the bottom axis.
                      *
                      * @sample {highcharts} highcharts/xaxis/labels-x/
                      *         Y axis labels placed on grid lines
@@ -19607,7 +19696,7 @@
                  * @sample {highcharts} highcharts/demo/gauge-solid/
                  *         True by default
                  *
-                 * @type      {Array<Highcharts.GradientColorStopObject>}
+                 * @type      {Array<Array<number,Highcharts.ColorType>>}
                  * @since     4.0
                  * @product   highcharts
                  * @apioption yAxis.stops
@@ -19622,35 +19711,6 @@
                  * @default   0
                  * @product   highcharts highstock gantt
                  * @apioption yAxis.tickWidth
-                 */
-                /**
-                 * Angular gauges and solid gauges only.
-                 * The label's pixel distance from the perimeter of the plot area.
-                 *
-                 * Since v7.1.2: If it's a percentage string, it is interpreted the
-                 * same as [series.radius](#plotOptions.gauge.radius), so label can be
-                 * aligned under the gauge's shape.
-                 *
-                 * @sample {highcharts} highcharts/yaxis/labels-distance/
-                 *                      Labels centered under the arc
-                 *
-                 * @type      {number|string}
-                 * @default   -25
-                 * @product   highcharts
-                 * @apioption yAxis.labels.distance
-                 */
-                /**
-                 * The y position offset of the label relative to the tick position
-                 * on the axis.
-                 *
-                 * @sample {highcharts} highcharts/xaxis/labels-x/
-                 *         Y axis labels placed on grid lines
-                 *
-                 * @type      {number}
-                 * @default   {highcharts} 3
-                 * @default   {highstock} -2
-                 * @default   {highmaps} 3
-                 * @apioption yAxis.labels.y
                  */
                 /**
                  * Whether to force the axis to end on a tick. Use this option with
@@ -19741,6 +19801,36 @@
                  */
                 labels: {
                     /**
+                     * Angular gauges and solid gauges only.
+                     * The label's pixel distance from the perimeter of the plot area.
+                     *
+                     * Since v7.1.2: If it's a percentage string, it is interpreted the
+                     * same as [series.radius](#plotOptions.gauge.radius), so label can be
+                     * aligned under the gauge's shape.
+                     *
+                     * @sample {highcharts} highcharts/yaxis/labels-distance/
+                     *         Labels centered under the arc
+                     *
+                     * @type      {number|string}
+                     * @default   -25
+                     * @product   highcharts
+                     * @apioption yAxis.labels.distance
+                     */
+                    /**
+                     * The y position offset of all labels relative to the tick
+                     * positions on the axis. For polar and radial axis consider the use
+                     * of the [distance](#yAxis.labels.distance) option.
+                     *
+                     * @sample {highcharts} highcharts/xaxis/labels-x/
+                     *         Y axis labels placed on grid lines
+                     *
+                     * @type      {number}
+                     * @default   {highcharts} 3
+                     * @default   {highstock} -2
+                     * @default   {highmaps} 3
+                     * @apioption yAxis.labels.y
+                     */
+                    /**
                      * What part of the string the given position is anchored to. Can
                      * be one of `"left"`, `"center"` or `"right"`. The exact position
                      * also depends on the `labels.x` setting.
@@ -19762,8 +19852,9 @@
                      * @apioption  yAxis.labels.align
                      */
                     /**
-                     * The x position offset of the label relative to the tick position
-                     * on the axis. Defaults to -15 for left axis, 15 for right axis.
+                     * The x position offset of all labels relative to the tick
+                     * positions on the axis. Defaults to -15 for left axis, 15 for
+                     * right axis.
                      *
                      * @sample {highcharts} highcharts/xaxis/labels-x/
                      *         Y axis labels placed on grid lines
@@ -20098,6 +20189,33 @@
                  */
                 stackLabels: {
                     /**
+                     * Enable or disable the initial animation when a series is
+                     * displayed for the `stackLabels`. The animation can also be set as
+                     * a configuration object. Please note that this option only
+                     * applies to the initial animation.
+                     * For other animations, see [chart.animation](#chart.animation)
+                     * and the animation parameter under the API methods.
+                     * The following properties are supported:
+                     *
+                     * - `defer`: The animation delay time in milliseconds.
+                     *
+                     * @sample {highcharts} highcharts/plotoptions/animation-defer/
+                     *          Animation defer settings
+                     * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
+                     * @since 8.2.0
+                     * @apioption yAxis.stackLabels.animation
+                     */
+                    animation: {},
+                    /**
+                     * The animation delay time in milliseconds.
+                     * Set to `0` renders stackLabel immediately.
+                     * As `undefined` inherits defer time from the [series.animation.defer](#plotOptions.series.animation.defer).
+                     *
+                     * @type      {number}
+                     * @since 8.2.0
+                     * @apioption yAxis.stackLabels.animation.defer
+                     */
+                    /**
                      * Allow the stack labels to overlap.
                      *
                      * @sample {highcharts} highcharts/yaxis/stacklabels-allowoverlap-false/
@@ -20302,7 +20420,7 @@
 
         return H.Axis;
     });
-    _registerModule(_modules, 'parts/DateTimeAxis.js', [_modules['parts/Axis.js'], _modules['parts/Utilities.js']], function (Axis, U) {
+    _registerModule(_modules, 'Core/Axis/DateTimeAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -20493,7 +20611,7 @@
 
         return DateTimeAxis;
     });
-    _registerModule(_modules, 'parts/LogarithmicAxis.js', [_modules['parts/Axis.js'], _modules['parts/Utilities.js']], function (Axis, U) {
+    _registerModule(_modules, 'Core/Axis/LogarithmicAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -20684,7 +20802,7 @@
 
         return LogarithmicAxis;
     });
-    _registerModule(_modules, 'parts/PlotLineOrBand.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Axis, H, U) {
+    _registerModule(_modules, 'Core/Axis/PlotLineOrBand.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Axis, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -20720,7 +20838,6 @@
             destroyObjectProperties = U.destroyObjectProperties,
             erase = U.erase,
             extend = U.extend,
-            fireEvent = U.fireEvent,
             merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick;
@@ -21768,7 +21885,7 @@
 
         return H.PlotLineOrBand;
     });
-    _registerModule(_modules, 'parts/Tooltip.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Tooltip.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -23236,7 +23353,7 @@
 
         return H.Tooltip;
     });
-    _registerModule(_modules, 'parts/Pointer.js', [_modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Tooltip.js'], _modules['parts/Utilities.js']], function (Color, H, Tooltip, U) {
+    _registerModule(_modules, 'Core/Pointer.js', [_modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Tooltip.js'], _modules['Core/Utilities.js']], function (Color, H, Tooltip, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -23377,6 +23494,7 @@
                 this.hasDragged = false;
                 this.options = options;
                 this.unbindContainerMouseLeave = function () { };
+                this.unbindContainerMouseEnter = function () { };
                 this.init(chart, options);
             }
             /* *
@@ -24097,6 +24215,7 @@
              * @param {global.MouseEvent} e
              */
             Pointer.prototype.onContainerMouseDown = function (e) {
+                var isPrimaryButton = ((e.buttons || e.button) & 1) === 1;
                 // Normalize before the 'if' for the legacy IE (#7850)
                 e = this.normalize(e);
                 // #11635, Firefox does not reliable fire move event after click scroll
@@ -24106,8 +24225,13 @@
                 }
                 // #11635, limiting to primary button (incl. IE 8 support)
                 if (typeof e.button === 'undefined' ||
-                    ((e.buttons || e.button) & 1) === 1) {
+                    isPrimaryButton) {
                     this.zoomOption(e);
+                    // #295, #13737 solve conflict between container drag and chart zoom
+                    if (isPrimaryButton &&
+                        e.preventDefault) {
+                        e.preventDefault();
+                    }
                     this.dragStart(e);
                 }
             };
@@ -24137,6 +24261,19 @@
                     !tooltip.isHidden) {
                     this.reset();
                 }
+            };
+            /**
+             * When mouse enters the container, delete pointer's chartPosition.
+             *
+             * @private
+             * @function Highcharts.Pointer#onContainerMouseEnter
+             *
+             * @param {global.MouseEvent} e
+             *
+             * @return {void}
+             */
+            Pointer.prototype.onContainerMouseEnter = function (e) {
+                delete this.chartPosition;
             };
             /**
              * The mousemove, touchmove and touchstart event handler
@@ -24732,6 +24869,7 @@
                 container.onmousedown = this.onContainerMouseDown.bind(this);
                 container.onmousemove = this.onContainerMouseMove.bind(this);
                 container.onclick = this.onContainerClick.bind(this);
+                this.unbindContainerMouseEnter = addEvent(container, 'mouseenter', this.onContainerMouseEnter.bind(this));
                 this.unbindContainerMouseLeave = addEvent(container, 'mouseleave', this.onContainerMouseLeave.bind(this));
                 if (!H.unbindDocumentMouseUp) {
                     H.unbindDocumentMouseUp = addEvent(ownerDoc, 'mouseup', this.onDocumentMouseUp.bind(this));
@@ -24849,7 +24987,7 @@
 
         return Pointer;
     });
-    _registerModule(_modules, 'parts/MSPointer.js', [_modules['parts/Globals.js'], _modules['parts/Pointer.js'], _modules['parts/Utilities.js']], function (H, Pointer, U) {
+    _registerModule(_modules, 'Core/MSPointer.js', [_modules['Core/Globals.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, Pointer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -25017,7 +25155,7 @@
 
         return MSPointer;
     });
-    _registerModule(_modules, 'parts/Legend.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Legend.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -25369,7 +25507,7 @@
                             fireEvent(_this, 'afterPositionItem', { item: item });
                     };
                     if (defined(legendGroup.translateY)) {
-                        legendGroup.animate(attribs, { complete: complete });
+                        legendGroup.animate(attribs, void 0, complete);
                     }
                     else {
                         legendGroup.attr(attribs);
@@ -25779,15 +25917,17 @@
                         useFirstPoint = alignLeft,
                         target,
                         top;
-                    if (item.yAxis && item.points) {
+                    if (item.yAxis) {
                         if (item.xAxis.options.reversed) {
                             useFirstPoint = !useFirstPoint;
                         }
-                        lastPoint = find(useFirstPoint ?
-                            item.points :
-                            item.points.slice(0).reverse(), function (item) {
-                            return isNumber(item.plotY);
-                        });
+                        if (item.points) {
+                            lastPoint = find(useFirstPoint ?
+                                item.points :
+                                item.points.slice(0).reverse(), function (item) {
+                                return isNumber(item.plotY);
+                            });
+                        }
                         height = this.itemMarginTop +
                             item.legendItem.getBBox().height +
                             this.itemMarginBottom;
@@ -26145,7 +26285,7 @@
              * @param {number} scrollBy
              *        The number of pages to scroll.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Whether and how to apply animation.
              *
              * @return {void}
@@ -26228,7 +26368,7 @@
                         true));
                     syncTimeout(function () {
                         fireEvent(_this, 'afterScroll', { currentPage: currentPage });
-                    }, animOptions.duration || 0);
+                    }, animOptions.duration);
                 }
             };
             return Legend;
@@ -26261,7 +26401,7 @@
 
         return H.Legend;
     });
-    _registerModule(_modules, 'parts/Chart.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['parts/MSPointer.js'], _modules['parts/Options.js'], _modules['parts/Pointer.js'], _modules['parts/Time.js'], _modules['parts/Utilities.js']], function (Axis, H, Legend, MSPointer, O, Pointer, Time, U) {
+    _registerModule(_modules, 'Core/Chart/Chart.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/MSPointer.js'], _modules['Core/Options.js'], _modules['Core/Pointer.js'], _modules['Core/Time.js'], _modules['Core/Utilities.js']], function (Axis, H, Legend, MSPointer, O, Pointer, Time, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -26774,7 +26914,7 @@
              *
              * @function Highcharts.Chart#redraw
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
              * If or how to apply animation to the redraw.
              *
              * @fires Highcharts.Chart#event:afterSetExtremes
@@ -27633,7 +27773,7 @@
              *        be `undefined` in order to preserve the current value, or `null`
              *        in order to adapt to the height of the containing element.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation=true]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=true]
              *        Whether and how to apply animation.
              *
              * @return {void}
@@ -27689,7 +27829,7 @@
                             chart.isResizing -= 1;
                         });
                     }
-                }, animObject(globalAnimation).duration || 0);
+                }, animObject(globalAnimation).duration);
             };
             /**
              * Set the public chart properties. This is done before and after the
@@ -28454,7 +28594,7 @@
 
         return Chart;
     });
-    _registerModule(_modules, 'parts/ScrollablePlotArea.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Extensions/ScrollablePlotArea.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -28646,10 +28786,17 @@
             if (this.scrollablePixelsY) {
                 attribs.overflowY = 'auto';
             }
+            // Insert a container with position relative
+            // that scrolling and fixed container renders to (#10555)
+            this.scrollingParent = createElement('div', {
+                className: 'highcharts-scrolling-parent'
+            }, {
+                position: 'relative'
+            }, this.renderTo);
             // Add the necessary divs to provide scrolling
             this.scrollingContainer = createElement('div', {
                 'className': 'highcharts-scrolling'
-            }, attribs, this.renderTo);
+            }, attribs, this.scrollingParent);
             // On scroll, reset the chart position because it applies to the scrolled
             // container
             addEvent(this.scrollingContainer, 'scroll', function () {
@@ -28716,7 +28863,8 @@
          * @return {void}
          */
         Chart.prototype.applyFixed = function () {
-            var _a;
+            var _a,
+                _b;
             var fixedRenderer,
                 scrollableWidth,
                 scrollableHeight,
@@ -28730,11 +28878,12 @@
                     position: 'absolute',
                     overflow: 'hidden',
                     pointerEvents: 'none',
-                    zIndex: 2
+                    zIndex: 2,
+                    top: 0
                 }, null, true);
-                this.renderTo.insertBefore(this.fixedDiv, this.renderTo.firstChild);
+                (_a = this.scrollingContainer) === null || _a === void 0 ? void 0 : _a.parentNode.insertBefore(this.fixedDiv, this.scrollingContainer);
                 this.renderTo.style.overflow = 'visible';
-                this.fixedRenderer = fixedRenderer = new H.Renderer(this.fixedDiv, this.chartWidth, this.chartHeight, (_a = this.options.chart) === null || _a === void 0 ? void 0 : _a.style);
+                this.fixedRenderer = fixedRenderer = new H.Renderer(this.fixedDiv, this.chartWidth, this.chartHeight, (_b = this.options.chart) === null || _b === void 0 ? void 0 : _b.style);
                 // Mask
                 this.scrollableMask = fixedRenderer
                     .path()
@@ -28834,7 +28983,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts/StackingAxis.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/StackingAxis.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -28847,6 +28996,7 @@
         var addEvent = U.addEvent,
             destroyObjectProperties = U.destroyObjectProperties,
             fireEvent = U.fireEvent,
+            getDeferredAnimation = U.getDeferredAnimation,
             objectEach = U.objectEach,
             pick = U.pick;
         /* eslint-disable valid-jsdoc */
@@ -28953,12 +29103,16 @@
                 var chart = axis.chart;
                 var renderer = chart.renderer;
                 var stacks = stacking.stacks;
+                var stackLabelsAnim = axis.options.stackLabels.animation;
+                var animationConfig = getDeferredAnimation(chart,
+                    stackLabelsAnim);
                 var stackTotalGroup = stacking.stackTotalGroup = (stacking.stackTotalGroup ||
                         renderer
                             .g('stack-labels')
                             .attr({
                             visibility: 'visible',
-                            zIndex: 6
+                            zIndex: 6,
+                            opacity: 0
                         })
                             .add());
                 // plotLeft/Top will change when y axis gets wider so we need to
@@ -28971,6 +29125,9 @@
                         stack.render(stackTotalGroup);
                     });
                 });
+                stackTotalGroup.animate({
+                    opacity: 1
+                }, animationConfig);
             };
             return StackingAxisAdditions;
         }());
@@ -29029,7 +29186,7 @@
 
         return StackingAxis;
     });
-    _registerModule(_modules, 'mixins/legend-symbol.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Mixins/LegendSymbol.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -29048,24 +29205,25 @@
          * @private
          * @mixin Highcharts.LegendSymbolMixin
          */
-        H.LegendSymbolMixin = {
-            /**
-             * Get the series' symbol in the legend
-             *
-             * @private
-             * @function Highcharts.LegendSymbolMixin.drawRectangle
-             *
-             * @param {Highcharts.Legend} legend
-             * The legend object
-             *
-             * @param {Highcharts.Point|Highcharts.Series} item
-             * The series (this) or point
-             */
-            drawRectangle: function (legend, item) {
-                var options = legend.options,
-                    symbolHeight = legend.symbolHeight,
-                    square = options.squareSymbol,
-                    symbolWidth = square ? symbolHeight : legend.symbolWidth;
+        var LegendSymbolMixin = H.LegendSymbolMixin = {
+                /**
+                 * Get the series' symbol in the legend
+                 *
+                 * @private
+                 * @function Highcharts.LegendSymbolMixin.drawRectangle
+                 *
+                 * @param {Highcharts.Legend} legend
+                 * The legend object
+                 *
+                 * @param {Highcharts.Point|Highcharts.Series} item
+                 * The series (this) or point
+                 */
+                drawRectangle: function (legend,
+            item) {
+                    var options = legend.options,
+            symbolHeight = legend.symbolHeight,
+            square = options.squareSymbol,
+            symbolWidth = square ? symbolHeight : legend.symbolWidth;
                 item.legendSymbol = this.chart.renderer.rect(square ? (legend.symbolWidth - symbolHeight) / 2 : 0, legend.baseline - symbolHeight + 1, // #3988
                 symbolWidth, symbolHeight, pick(legend.options.symbolRadius, symbolHeight / 2))
                     .addClass('highcharts-point')
@@ -29108,12 +29266,8 @@
                 }
                 this.legendLine = renderer
                     .path([
-                    'M',
-                    0,
-                    verticalCenter,
-                    'L',
-                    symbolWidth,
-                    verticalCenter
+                    ['M', 0, verticalCenter],
+                    ['L', symbolWidth, verticalCenter]
                 ])
                     .addClass('highcharts-graph')
                     .attr(attr)
@@ -29138,9 +29292,9 @@
             }
         };
 
-        return H.LegendSymbolMixin;
+        return LegendSymbolMixin;
     });
-    _registerModule(_modules, 'parts/Point.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Series/Point.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -29992,7 +30146,7 @@
 
         return Point;
     });
-    _registerModule(_modules, 'parts/Series.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/SVGElement.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, O, Point, SVGElement, U) {
+    _registerModule(_modules, 'Core/Series/Series.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, O, Point, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -30554,6 +30708,8 @@
              * #chart.animation) and the animation parameter under the API methods.
              * The following properties are supported:
              *
+             * - `defer`: The animation delay time in milliseconds.
+             *
              * - `duration`: The duration of the animation in milliseconds.
              *
              * - `easing`: Can be a string reference to an easing function set on
@@ -30578,7 +30734,7 @@
              * @sample {highmaps} maps/plotoptions/mapbubble-animation-false/
              *         Disabled on mapbubble series
              *
-             * @type    {boolean|Highcharts.AnimationOptionsObject}
+             * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
              * @default {highcharts} true
              * @default {highstock} true
              * @default {highmaps} false
@@ -30589,6 +30745,12 @@
                 /** @internal */
                 duration: 1000
             },
+            /**
+             * @default   0
+             * @type      {number}
+             * @since 8.2.0
+             * @apioption plotOptions.series.animation.defer
+             */
             /**
              * An additional class name to apply to the series' graphical elements.
              * This option does not replace default class names of the graphical
@@ -31435,7 +31597,7 @@
                         /**
                          * Animation when returning to normal state after hovering.
                          *
-                         * @type {boolean|Highcharts.AnimationOptionsObject}
+                         * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
                          */
                         animation: true
                     },
@@ -31448,7 +31610,7 @@
                         /**
                          * Animation when hovering over the marker.
                          *
-                         * @type {boolean|Highcharts.AnimationOptionsObject}
+                         * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
                          */
                         animation: {
                             /** @internal */
@@ -31729,6 +31891,33 @@
              */
             dataLabels: {
                 /**
+                 * Enable or disable the initial animation when a series is
+                 * displayed for the `dataLabels`. The animation can also be set as
+                 * a configuration object. Please note that this option only
+                 * applies to the initial animation.
+                 * For other animations, see [chart.animation](#chart.animation)
+                 * and the animation parameter under the API methods.
+                 * The following properties are supported:
+                 *
+                 * - `defer`: The animation delay time in milliseconds.
+                 *
+                 * @sample {highcharts} highcharts/plotoptions/animation-defer/
+                 *          Animation defer settings
+                 * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
+                 * @since 8.2.0
+                 * @apioption plotOptions.series.dataLabels.animation
+                 */
+                animation: {},
+                /**
+                 * The animation delay time in milliseconds.
+                 * Set to `0` renders dataLabel immediately.
+                 * As `undefined` inherits defer time from the [series.animation.defer](#plotOptions.series.animation.defer).
+                 *
+                 * @type      {number}
+                 * @since 8.2.0
+                 * @apioption plotOptions.series.dataLabels.animation.defer
+                 */
+                /**
                  * The alignment of the data label compared to the point. If
                  * `right`, the right side of the label should be touching the
                  * point. For points with an extent, like columns, the alignments
@@ -31851,14 +32040,17 @@
                  */
                 /**
                  * Whether to defer displaying the data labels until the initial
-                 * series animation has finished.
+                 * series animation has finished. Setting to `false` renders the
+                 * data label immediately. If set to `true` inherits the defer
+                 * time set in [plotOptions.series.animation](#plotOptions.series.animation).
                  *
-                 * @type      {boolean}
-                 * @default   true
+                 * @sample highcharts/plotoptions/animation-defer
+                 *         Set defer time
+                 *
                  * @since     4.0.0
                  * @product   highcharts highstock gantt
-                 * @apioption plotOptions.series.dataLabels.defer
                  */
+                defer: true,
                 /**
                  * Enable or disable the data labels.
                  *
@@ -32243,7 +32435,7 @@
                     /**
                      * Animation when returning to normal state after hovering.
                      *
-                     * @type {boolean|Highcharts.AnimationOptionsObject}
+                         * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      */
                     animation: true
                 },
@@ -32273,7 +32465,7 @@
                     /**
                      * Animation setting for hovering the graph in line-type series.
                      *
-                     * @type    {boolean|Highcharts.AnimationOptionsObject}
+                     * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      * @since   5.0.8
                      * @product highcharts highstock
                      */
@@ -32422,7 +32614,7 @@
                     /**
                      * The animation for entering the inactive state.
                      *
-                     * @type {boolean|Highcharts.AnimationOptionsObject}
+                     * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
                      */
                     animation: {
                         /** @internal */
@@ -32640,7 +32832,6 @@
             colorCounter: 0,
             cropShoulder: 1,
             directTouch: false,
-            eventsToUnbind: [],
             isCartesian: true,
             // each point's x and y values are stored in this.xData and this.yData
             parallelArrays: ['x', 'y'],
@@ -32657,6 +32848,10 @@
                 // programmatically). These are updated through Series.update()
                 // (#10861).
                 this.eventOptions = this.eventOptions || {};
+                // The 'eventsToUnbind' property moved from prototype into the
+                // Series init to avoid reference to the same array between
+                // the different series and charts. #12959, #13937
+                this.eventsToUnbind = [];
                 /**
                  * Read only. The chart that the series belongs to.
                  *
@@ -33396,7 +33591,7 @@
              *        doing more operations on the chart, it is a good idea to set
              *        redraw to false and call {@link Chart#redraw} after.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        When the updated data is the same length as the existing data,
              *        points will be updated by default, and animation visualizes
              *        how the points are changed. Set false to disable animation, or
@@ -34017,16 +34212,20 @@
             applyExtremes: function () {
                 var dataExtremes = this.getExtremes();
                 /**
-                 * Contains the minimum value of the series' data point.
+                 * Contains the minimum value of the series' data point. Some series
+                 * types like `networkgraph` do not support this property as they
+                 * lack a `y`-value.
                  * @name Highcharts.Series#dataMin
-                 * @type {number}
+                 * @type {number|undefined}
                  * @readonly
                  */
                 this.dataMin = dataExtremes.dataMin;
-                /* *
-                 * Contains the maximum value of the series' data point.
+                /**
+                 * Contains the maximum value of the series' data point. Some series
+                 * types like `networkgraph` do not support this property as they
+                 * lack a `y`-value.
                  * @name Highcharts.Series#dataMax
-                 * @type {number}
+                 * @type {number|undefined}
                  * @readonly
                  */
                 this.dataMax = dataExtremes.dataMax;
@@ -34109,10 +34308,8 @@
                             '') + series.stackKey],
                         pointStack,
                         stackValues;
-                    // Discard disallowed y values for log axes (#3434)
-                    if (yAxis.positiveValuesOnly &&
-                        yValue !== null &&
-                        yValue <= 0) {
+                    if (yAxis.positiveValuesOnly && !yAxis.validatePositiveValue(yValue) ||
+                        xAxis.positiveValuesOnly && !xAxis.validatePositiveValue(xValue)) {
                         point.isNull = true;
                     }
                     // Get the plotX translation
@@ -34240,7 +34437,7 @@
              *
              * @private
              * @function Highcharts.Series#getClip
-             * @param  {boolean|Highcharts.AnimationOptionsObject} [animation]
+             * @param  {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
              *         Initialize the animation.
              * @param  {boolean} [finalBox]
              *         Final size for the clip - end state for the animation.
@@ -35159,7 +35356,8 @@
                     };
                 // Avoid setting undefined opacity, or in styled mode
                 if (typeof this.opacity !== 'undefined' &&
-                    !this.chart.styledMode) {
+                    !this.chart.styledMode && this.state !== 'inactive' // #13719
+                ) {
                     attrs.opacity = this.opacity;
                 }
                 // Generate it on first call
@@ -35245,12 +35443,13 @@
                 var series = this,
                     chart = series.chart,
                     group,
-                    options = series.options, 
+                    options = series.options,
+                    animOptions = animObject(options.animation), 
                     // Animation doesn't work in IE8 quirks when the group div is
                     // hidden, and looks bad in other oldIE
                     animDuration = (!series.finishedAnimating &&
                         chart.renderer.isSVG &&
-                        animObject(options.animation).duration),
+                        animOptions.duration),
                     visibility = series.visible ? 'inherit' : 'hidden', // #2597
                     zIndex = options.zIndex,
                     hasRendered = series.hasRendered,
@@ -35313,6 +35512,11 @@
                 // overwrite the animation.complete option which should be available
                 // to the user).
                 if (!hasRendered) {
+                    // Additional time if defer is defined before afterAnimate
+                    // will be triggered
+                    if (animDuration && animOptions.defer) {
+                        animDuration += animOptions.defer;
+                    }
                     series.animationTimeout = syncTimeout(function () {
                         series.afterAnimate();
                     }, animDuration || 0);
@@ -35794,7 +35998,7 @@
         ''; // include precedent doclets in transpilat
 
     });
-    _registerModule(_modules, 'parts/Stacking.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/StackingAxis.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, StackingAxis, U) {
+    _registerModule(_modules, 'Extensions/Stacking.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Axis/StackingAxis.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, StackingAxis, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -36347,7 +36551,7 @@
 
         return H.StackItem;
     });
-    _registerModule(_modules, 'parts/Dynamics.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/Time.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, O, Point, Time, U) {
+    _registerModule(_modules, 'Core/Dynamics.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Time.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, O, Point, Time, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -36428,7 +36632,7 @@
              * @param {boolean} [redraw=true]
              *        Whether to redraw the chart after adding.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Whether to apply animation, and optionally animation
              *        configuration.
              *
@@ -36480,7 +36684,7 @@
              * @param {boolean} [redraw=true]
              *        Whether to redraw the chart after adding.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation=true]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=true]
              *        Whether and how to apply animation in the redraw.
              *
              * @return {Highcharts.Axis}
@@ -36507,7 +36711,7 @@
              * @param {boolean} [redraw=true]
              *        Whether to redraw the chart after adding.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation=true]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=true]
              *        Whether and how to apply animation in the redraw.
              *
              * @return {Highcharts.ColorAxis}
@@ -36771,7 +36975,7 @@
              *        series have id's, the new series options will be matched by id,
              *        and the remaining ones removed.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation=true]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=true]
              *        Whether to apply animation, and optionally animation
              *        configuration.
              *
@@ -37074,7 +37278,7 @@
              *        more operations on the chart, it is best practice to set
              *        `redraw` to false and call `chart.redraw()` after.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation=true]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=true]
              *        Whether to apply animation, and optionally animation
              *        configuration.
              *
@@ -37168,7 +37372,7 @@
              *        `point.remove()` in a loop, it is best practice to set `redraw`
              *        to false and call `chart.redraw()` after.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation=false]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=false]
              *        Whether to apply animation, and optionally animation
              *        configuration.
              *
@@ -37220,7 +37424,7 @@
              *        If true, a point is shifted off the start of the series as one is
              *        appended to the end.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Whether to apply animation, and optionally animation
              *        configuration.
              *
@@ -37320,7 +37524,7 @@
              *        Highcharts.Chart#redraw} is explicitly called after the adding of
              *        points is finished.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Whether and optionally how the series should be animated.
              *
              * @return {void}
@@ -37372,7 +37576,7 @@
              *        Whether to redraw the chart or wait for an explicit call to
              *        {@link Highcharts.Chart#redraw}.
              *
-             * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Whether to apply animation, and optionally animation
              *        configuration.
              *
@@ -37734,7 +37938,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts/AreaSeries.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, Color, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'Series/AreaSeries.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Utilities.js']], function (H, Color, LegendSymbolMixin, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -37852,20 +38056,6 @@
              * @product   highcharts highstock
              * @apioption plotOptions.area.trackByArea
              */
-            /**
-             * When this is true, the series will not cause the Y axis to cross
-             * the zero plane (or [threshold](#plotOptions.series.threshold) option)
-             * unless the data actually crosses the plane.
-             *
-             * For example, if `softThreshold` is `false`, a series of 0, 1, 2,
-             * 3 will make the Y axis show negative values according to the
-             * `minPadding` option. If `softThreshold` is `true`, the Y axis starts
-             * at 0.
-             *
-             * @since   4.1.9
-             * @product highcharts highstock
-             */
-            softThreshold: false,
             /**
              * The Y axis value to serve as the base for the area, for
              * distinguishing between values above and below a threshold. The area
@@ -38086,7 +38276,7 @@
                     }
                     isNull = points[i].isNull;
                     plotX = pick(points[i].rectPlotX, points[i].plotX);
-                    yBottom = pick(points[i].yBottom, translatedThreshold);
+                    yBottom = stacking ? points[i].yBottom : translatedThreshold;
                     if (!isNull || connectNulls) {
                         if (!connectNulls) {
                             addDummyPoints(i, i - 1, 'left');
@@ -38257,7 +38447,7 @@
         ''; // adds doclets above to transpilat
 
     });
-    _registerModule(_modules, 'parts/SplineSeries.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/SplineSeries.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -38289,7 +38479,7 @@
          *         Spline chart
          *
          * @extends      plotOptions.series
-         * @excluding    step
+         * @excluding    step, boostThreshold, boostBlending
          * @product      highcharts highstock
          * @optionparent plotOptions.spline
          */
@@ -38451,7 +38641,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.spline
-         * @excluding dataParser, dataURL, step
+         * @excluding dataParser, dataURL, step, boostThreshold, boostBlending
          * @product   highcharts highstock
          * @apioption series.spline
          */
@@ -38517,7 +38707,7 @@
         ''; // adds doclets above intro transpilat
 
     });
-    _registerModule(_modules, 'parts/AreaSplineSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, O, U) {
+    _registerModule(_modules, 'Series/AreaSplineSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, O, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -38550,7 +38740,7 @@
          *         Area spline chart
          *
          * @extends   plotOptions.area
-         * @excluding step
+         * @excluding step, boostThreshold, boostBlending
          * @product   highcharts highstock
          * @apioption plotOptions.areaspline
          */
@@ -38566,7 +38756,7 @@
          *
          *
          * @extends   series,plotOptions.areaspline
-         * @excluding dataParser, dataURL, step
+         * @excluding dataParser, dataURL, step, boostThreshold, boostBlending
          * @product   highcharts highstock
          * @apioption series.areaspline
          */
@@ -38632,7 +38822,7 @@
         ''; // adds doclets above into transpilat
 
     });
-    _registerModule(_modules, 'parts/ColumnSeries.js', [_modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Utilities.js']], function (H, Color, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'Series/ColumnSeries.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Utilities.js']], function (H, Color, LegendSymbolMixin, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -38665,7 +38855,8 @@
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
-            seriesType = U.seriesType;
+            seriesType = U.seriesType,
+            objectEach = U.objectEach;
         var noop = H.noop,
             Series = H.Series,
             svg = H.svg;
@@ -38819,9 +39010,11 @@
              */
             pointPadding: 0.1,
             /**
-             * A pixel value specifying a fixed width for each column or bar. When
-             * `null`, the width is calculated from the `pointPadding` and
-             * `groupPadding`.
+             * A pixel value specifying a fixed width for each column or bar point.
+             * When `null`, the width is calculated from the `pointPadding` and
+             * `groupPadding`. The width effects the dimension that is not based on
+             * the point value. For column series it is the hoizontal length and for
+             * bar series it is the vertical length.
              *
              * @see [maxPointWidth](#plotOptions.column.maxPointWidth)
              *
@@ -38981,22 +39174,6 @@
                  */
                 y: void 0
             },
-            /**
-             * When this is true, the series will not cause the Y axis to cross
-             * the zero plane (or [threshold](#plotOptions.series.threshold) option)
-             * unless the data actually crosses the plane.
-             *
-             * For example, if `softThreshold` is `false`, a series of 0, 1, 2,
-             * 3 will make the Y axis show negative values according to the
-             * `minPadding` option. If `softThreshold` is `true`, the Y axis starts
-             * at 0.
-             *
-             * @since   4.1.9
-             * @product highcharts highstock
-             *
-             * @private
-             */
-            softThreshold: false,
             // false doesn't work well: https://jsfiddle.net/highcharts/hz8fopan/14/
             /**
              * @ignore-option
@@ -39245,7 +39422,7 @@
                     // enabled, but `centerInCategory` is true, there is one stack
                     // handling the grouping of points in each category. This is
                     // done in the `setGroupedPoints` function.
-                    Highcharts.objectEach(this.yAxis.stacking && this.yAxis.stacking.stacks, function (stack) {
+                    objectEach(this.yAxis.stacking && this.yAxis.stacking.stacks, function (stack) {
                         if (typeof point.x === 'number') {
                             var stackItem = stack[point.x.toString()];
                             if (stackItem) {
@@ -39741,7 +39918,8 @@
          */
         /**
          * A pixel value specifying a fixed width for the column or bar. Overrides
-         * pointWidth on the series.
+         * pointWidth on the series. The width effects the dimension that is not based
+         * on the point value.
          *
          * @see [series.pointWidth](#plotOptions.column.pointWidth)
          *
@@ -39761,7 +39939,7 @@
         ''; // includes above doclets in transpilat
 
     });
-    _registerModule(_modules, 'parts/BarSeries.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/BarSeries.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -39881,7 +40059,7 @@
         ''; // gets doclets above into transpilat
 
     });
-    _registerModule(_modules, 'parts/ScatterSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/ScatterSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -39912,7 +40090,7 @@
          *         Scatter plot
          *
          * @extends      plotOptions.line
-         * @excluding    pointPlacement, shadow, useOhlcData
+         * @excluding    cropThreshold, pointPlacement, shadow, useOhlcData
          * @product      highcharts highstock
          * @optionparent plotOptions.scatter
          */
@@ -40072,7 +40250,7 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.scatter
-         * @excluding dataParser, dataURL, useOhlcData
+         * @excluding cropThreshold, dataParser, dataURL, useOhlcData
          * @product   highcharts highstock
          * @apioption series.scatter
          */
@@ -40138,7 +40316,7 @@
         ''; // adds doclets above to transpilat
 
     });
-    _registerModule(_modules, 'mixins/centered-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Mixins/CenteredSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -40167,31 +40345,31 @@
          * @private
          * @mixin Highcharts.CenteredSeriesMixin
          */
-        H.CenteredSeriesMixin = {
-            /**
-             * Get the center of the pie based on the size and center options relative
-             * to the plot area. Borrowed by the polar and gauge series types.
-             *
-             * @private
-             * @function Highcharts.CenteredSeriesMixin.getCenter
-             *
-             * @return {Array<number>}
-             */
-            getCenter: function () {
-                var options = this.options,
-                    chart = this.chart,
-                    slicingRoom = 2 * (options.slicedOffset || 0),
-                    handleSlicingRoom,
-                    plotWidth = chart.plotWidth - 2 * slicingRoom,
-                    plotHeight = chart.plotHeight - 2 * slicingRoom,
-                    centerOption = options.center,
-                    smallestSize = Math.min(plotWidth,
-                    plotHeight),
-                    size = options.size,
-                    innerSize = options.innerSize || 0,
-                    positions,
-                    i,
-                    value;
+        var centeredSeriesMixin = H.CenteredSeriesMixin = {
+                /**
+                 * Get the center of the pie based on the size and center options relative
+                 * to the plot area. Borrowed by the polar and gauge series types.
+                 *
+                 * @private
+                 * @function Highcharts.CenteredSeriesMixin.getCenter
+                 *
+                 * @return {Array<number>}
+                 */
+                getCenter: function () {
+                    var options = this.options,
+            chart = this.chart,
+            slicingRoom = 2 * (options.slicedOffset || 0),
+            handleSlicingRoom,
+            plotWidth = chart.plotWidth - 2 * slicingRoom,
+            plotHeight = chart.plotHeight - 2 * slicingRoom,
+            centerOption = options.center,
+            smallestSize = Math.min(plotWidth,
+            plotHeight),
+            size = options.size,
+            innerSize = options.innerSize || 0,
+            positions,
+            i,
+            value;
                 if (typeof size === 'string') {
                     size = parseFloat(size);
                 }
@@ -40257,8 +40435,9 @@
             }
         };
 
+        return centeredSeriesMixin;
     });
-    _registerModule(_modules, 'parts/PieSeries.js', [_modules['parts/Globals.js'], _modules['mixins/legend-symbol.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (H, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'Series/PieSeries.js', [_modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Mixins/CenteredSeries.js']], function (H, SVGRenderer, LegendSymbolMixin, Point, U, centeredSeriesMixin) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -40278,8 +40457,7 @@
             relativeLength = U.relativeLength,
             seriesType = U.seriesType,
             setAnimation = U.setAnimation;
-        var CenteredSeriesMixin = H.CenteredSeriesMixin,
-            getStartAndEndRadians = CenteredSeriesMixin.getStartAndEndRadians,
+        var getStartAndEndRadians = centeredSeriesMixin.getStartAndEndRadians,
             noop = H.noop,
             Series = H.Series,
             seriesTypes = H.seriesTypes;
@@ -40306,7 +40484,8 @@
          *               findNearestPointBy, getExtremesFromAll, label, lineWidth,
          *               marker, negativeColor, pointInterval, pointIntervalUnit,
          *               pointPlacement, pointStart, softThreshold, stacking, step,
-         *               threshold, turboThreshold, zoneAxis, zones, dataSorting
+         *               threshold, turboThreshold, zoneAxis, zones, dataSorting,
+         *               boostBlending
          * @product      highcharts
          * @optionparent plotOptions.pie
          */
@@ -41074,7 +41253,7 @@
                     end = this.endAngleRad,
                     options = this.options;
                 // Draw auxiliary graph if there're no visible points.
-                if (this.total === 0) {
+                if (this.total === 0 && this.center) {
                     centerX = this.center[0];
                     centerY = this.center[1];
                     if (!this.graph) {
@@ -41084,7 +41263,7 @@
                             .add(this.group);
                     }
                     this.graph.attr({
-                        d: Highcharts.SVGRenderer.prototype.symbols.arc(centerX, centerY, this.center[2] / 2, 0, {
+                        d: SVGRenderer.prototype.symbols.arc(centerX, centerY, this.center[2] / 2, 0, {
                             start: start,
                             end: end,
                             innerR: this.center[3] / 2
@@ -41234,7 +41413,7 @@
              * @private
              * @borrows Highcharts.CenteredSeriesMixin.getCenter as Highcharts.seriesTypes.pie#getCenter
              */
-            getCenter: CenteredSeriesMixin.getCenter,
+            getCenter: centeredSeriesMixin.getCenter,
             /**
              * Pies don't have point marker symbols.
              *
@@ -41340,7 +41519,7 @@
              *        When undefined, the slice state is toggled.
              * @param {boolean} redraw
              *        Whether to redraw the chart. True by default.
-             * @param {boolean|Highcharts.AnimationOptionsObject}
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>}
              *        Animation options.
              * @return {void}
              */
@@ -41503,7 +41682,8 @@
          * it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.pie
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting, step
+         * @excluding cropThreshold, dataParser, dataURL, stack, xAxis, yAxis,
+         *            dataSorting, step, boostThreshold, boostBlending
          * @product   highcharts
          * @apioption series.pie
          */
@@ -41581,7 +41761,7 @@
         ''; // placeholder for transpiled doclets above
 
     });
-    _registerModule(_modules, 'parts/DataLabels.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Series/DataLabels.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -41593,13 +41773,13 @@
          * */
         var noop = H.noop,
             seriesTypes = H.seriesTypes;
-        var animObject = U.animObject,
-            arrayMax = U.arrayMax,
+        var arrayMax = U.arrayMax,
             clamp = U.clamp,
             defined = U.defined,
             extend = U.extend,
             fireEvent = U.fireEvent,
             format = U.format,
+            getDeferredAnimation = U.getDeferredAnimation,
             isArray = U.isArray,
             merge = U.merge,
             objectEach = U.objectEach,
@@ -41778,10 +41958,13 @@
                 pointOptions,
                 hasRendered = series.hasRendered || 0,
                 dataLabelsGroup,
-                seriesAnimDuration = animObject(seriesOptions.animation).duration,
-                fadeInDuration = Math.min(seriesAnimDuration, 200),
-                defer = !chart.renderer.forExport && pick(seriesDlOptions.defer,
-                fadeInDuration > 0),
+                dataLabelAnim = seriesDlOptions.animation,
+                animationConfig = seriesDlOptions.defer ?
+                    getDeferredAnimation(chart,
+                dataLabelAnim,
+                series) :
+                    { defer: 0,
+                duration: 0 },
                 renderer = chart.renderer;
             /**
              * Handle the dataLabels.filter option.
@@ -41849,20 +42032,16 @@
                 seriesDlOptions.enabled ||
                 series._hasPointLabels) {
                 // Create a separate group for the data labels to avoid rotation
-                dataLabelsGroup = series.plotGroup('dataLabelsGroup', 'data-labels', defer && !hasRendered ? 'hidden' : 'inherit', // #5133, #10220
+                dataLabelsGroup = series.plotGroup('dataLabelsGroup', 'data-labels', !hasRendered ? 'hidden' : 'inherit', // #5133, #10220
                 seriesDlOptions.zIndex || 6);
-                if (defer) {
-                    dataLabelsGroup.attr({ opacity: +hasRendered }); // #3300
-                    if (!hasRendered) {
-                        setTimeout(function () {
-                            var group = series.dataLabelsGroup;
-                            if (group) {
-                                if (series.visible) { // #2597, #3023, #3024
-                                    dataLabelsGroup.show(true);
-                                }
-                                group[seriesOptions.animation ? 'animate' : 'attr']({ opacity: 1 }, { duration: fadeInDuration });
-                            }
-                        }, seriesAnimDuration - fadeInDuration);
+                dataLabelsGroup.attr({ opacity: +hasRendered }); // #3300
+                if (!hasRendered) {
+                    var group = series.dataLabelsGroup;
+                    if (group) {
+                        if (series.visible) { // #2597, #3023, #3024
+                            dataLabelsGroup.show(true);
+                        }
+                        group[seriesOptions.animation ? 'animate' : 'attr']({ opacity: 1 }, animationConfig);
                     }
                 }
                 // Make the labels for each point
@@ -42849,7 +43028,7 @@
         }
 
     });
-    _registerModule(_modules, 'modules/overlapping-datalabels.src.js', [_modules['parts/Chart.js'], _modules['parts/Utilities.js']], function (Chart, U) {
+    _registerModule(_modules, 'Extensions/OverlappingDataLabels.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Chart, U) {
         /* *
          *
          *  Highcharts module to hide overlapping data labels.
@@ -42935,10 +43114,10 @@
                 isLabelAffected = false,
                 isIntersectRect = function (box1,
                 box2) {
-                    return !(box2.x > box1.x + box1.width ||
-                        box2.x + box2.width < box1.x ||
-                        box2.y > box1.y + box1.height ||
-                        box2.y + box2.height < box1.y);
+                    return !(box2.x >= box1.x + box1.width ||
+                        box2.x + box2.width <= box1.x ||
+                        box2.y >= box1.y + box1.height ||
+                        box2.y + box2.height <= box1.y);
             }, 
             // Get the box with its position inside the chart, as opposed to getBBox
             // that only reports the position relative to the parent.
@@ -42982,7 +43161,8 @@
                         xOffset = label.x - label.translateX;
                     }
                     return {
-                        x: pos.x + (parent.translateX || 0) + padding - xOffset,
+                        x: pos.x + (parent.translateX || 0) + padding -
+                            (xOffset || 0),
                         y: pos.y + (parent.translateY || 0) + padding -
                             lineHeightCorrection,
                         width: label.width - 2 * padding,
@@ -43039,7 +43219,6 @@
                                     label.css({ pointerEvents: newOpacity ? 'auto' : 'none' });
                                 }
                                 label.visibility = newOpacity ? 'inherit' : 'hidden';
-                                label.placed = !!newOpacity;
                             };
                             isLabelAffected = true;
                             // Animate or set the opacity
@@ -43062,7 +43241,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts/Interaction.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Legend.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Chart, H, Legend, O, Point, U) {
+    _registerModule(_modules, 'Core/Interaction.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Chart, H, Legend, O, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -44331,7 +44510,7 @@
         });
 
     });
-    _registerModule(_modules, 'parts/Responsive.js', [_modules['parts/Chart.js'], _modules['parts/Utilities.js']], function (Chart, U) {
+    _registerModule(_modules, 'Core/Responsive.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Chart, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -44616,12 +44795,12 @@
         };
 
     });
-    _registerModule(_modules, 'masters/highcharts.src.js', [_modules['parts/Globals.js']], function (Highcharts) {
+    _registerModule(_modules, 'masters/highcharts.src.js', [_modules['Core/Globals.js']], function (Highcharts) {
 
 
         return Highcharts;
     });
-    _registerModule(_modules, 'parts-gantt/Tree.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Gantt/Tree.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -44755,7 +44934,7 @@
 
         return Tree;
     });
-    _registerModule(_modules, 'parts-gantt/TreeGridTick.js', [_modules['parts/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Core/Axis/TreeGridTick.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -45108,7 +45287,7 @@
 
         return TreeGridTick;
     });
-    _registerModule(_modules, 'mixins/tree-series.js', [_modules['parts/Color.js'], _modules['parts/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -45336,7 +45515,7 @@
 
         return result;
     });
-    _registerModule(_modules, 'parts-gantt/GridAxis.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Tick.js'], _modules['parts/Utilities.js']], function (Axis, H, O, Tick, U) {
+    _registerModule(_modules, 'Core/Axis/GridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (Axis, H, O, Tick, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -45385,6 +45564,43 @@
             axis.labelRotation = 0;
             options.labels.rotation = 0;
         };
+        /**
+         * For a datetime axis, the scale will automatically adjust to the
+         * appropriate unit. This member gives the default string
+         * representations used for each unit. For intermediate values,
+         * different units may be used, for example the `day` unit can be used
+         * on midnight and `hour` unit be used for intermediate values on the
+         * same axis.
+         * For grid axes (like in Gantt charts),
+         * it is possible to declare as a list to provide different
+         * formats depending on available space.
+         * For an overview of the replacement codes, see
+         * [dateFormat](/class-reference/Highcharts#dateFormat).
+         *
+         * Defaults to:
+         * ```js
+         * {
+                hour: {
+                    list: ['%H:%M', '%H']
+                },
+                day: {
+                    list: ['%A, %e. %B', '%a, %e. %b', '%E']
+                },
+                week: {
+                    list: ['Week %W', 'W%W']
+                },
+                month: {
+                    list: ['%B', '%b', '%o']
+                }
+            },
+         * ```
+         *
+         * @sample {gantt} gantt/demo/left-axis-table
+         *         Gantt Chart with custom axis date format.
+         *
+         * @product gantt
+         * @apioption xAxis.dateTimeLabelFormats
+         */
         /**
          * Set grid options for the axis labels. Requires Highcharts Gantt.
          *
@@ -45466,13 +45682,11 @@
                     label = isObject(tick.label) ? tick.label : {};
                     // Find width and height of tick
                     tickHeight = label.getBBox ? label.getBBox().height : 0;
-                    if (label.textStr && !isNumber(label.textPxLength)) {
-                        label.textPxLength = label.getBBox().width;
+                    if (label.textStr) {
+                        // Set the tickWidth same as the label width after ellipsis
+                        // applied #10281
+                        tickWidth = Math.round(label.getBBox().width);
                     }
-                    tickWidth = isNumber(label.textPxLength) ?
-                        // Math.round ensures crisp lines
-                        Math.round(label.textPxLength) :
-                        0;
                     // Update the result if width and/or height are larger
                     dimensions.height = Math.max(tickHeight, dimensions.height);
                     dimensions.width = Math.max(tickWidth, dimensions.width);
@@ -45802,7 +46016,11 @@
                             gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
                                 linkedTo: 0,
                                 // Force to behave like category axis
-                                type: 'category'
+                                type: 'category',
+                                // Disable by default the scrollbar on the grid axis
+                                scrollbar: {
+                                    enabled: false
+                                }
                             });
                         delete columnOptions.grid.columns; // Prevent recursion
                         var column = new Axis(axis.chart,
@@ -46251,7 +46469,7 @@
 
         return GridAxis;
     });
-    _registerModule(_modules, 'modules/broken-axis.src.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['parts/Stacking.js']], function (Axis, H, U, StackItem) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Extensions/Stacking.js']], function (Axis, H, U, StackItem) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi
@@ -46831,7 +47049,7 @@
 
         return BrokenAxis;
     });
-    _registerModule(_modules, 'parts-gantt/TreeGridAxis.js', [_modules['parts/Axis.js'], _modules['parts/Tick.js'], _modules['parts-gantt/Tree.js'], _modules['parts-gantt/TreeGridTick.js'], _modules['mixins/tree-series.js'], _modules['parts/Utilities.js']], function (Axis, Tick, Tree, TreeGridTick, TreeSeriesMixin, U) {
+    _registerModule(_modules, 'Core/Axis/TreeGridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Tick.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGridTick.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Axis, Tick, Tree, TreeGridTick, mixinTreeSeries, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -46842,6 +47060,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var getLevelOptions = mixinTreeSeries.getLevelOptions;
         var addEvent = U.addEvent,
             find = U.find,
             fireEvent = U.fireEvent,
@@ -47080,7 +47299,8 @@
                         numberOfSeries = 0,
                         isDirty,
                         data,
-                        treeGrid;
+                        treeGrid,
+                        max = options.max;
                     // Check whether any of series is rendering for the first time,
                     // visibility has changed, or its data is dirty,
                     // and only then update. #10570, #10580
@@ -47111,6 +47331,17 @@
                             }
                             return arr;
                         }, []);
+                        // If max is higher than set data - add a
+                        // dummy data to render categories #10779
+                        if (max && data.length < max) {
+                            for (var i = data.length; i <= max; i++) {
+                                data.push({
+                                    // Use the zero-width character
+                                    // to avoid conflict with uniqueNames
+                                    name: i + '\u200B'
+                                });
+                            }
+                        }
                         // setScale is fired after all the series is initialized,
                         // which is an ideal time to update the axis.categories.
                         treeGrid = getTreeGridFromData(data, uniqueNames || false, (uniqueNames === true) ? numberOfSeries : 1);
@@ -47132,7 +47363,7 @@
                         });
                         // Calculate the label options for each level in the tree.
                         axis.treeGrid.mapOptionsToLevel =
-                            TreeSeriesMixin.getLevelOptions({
+                            getLevelOptions({
                                 defaults: labelOptions,
                                 from: 1,
                                 levels: labelOptions && labelOptions.levels,
@@ -47553,7 +47784,7 @@
 
         return TreeGridAxis;
     });
-    _registerModule(_modules, 'parts-gantt/CurrentDateIndicator.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js'], _modules['parts/PlotLineOrBand.js']], function (H, O, U, PlotLineOrBand) {
+    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (H, O, U, PlotLineOrBand) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -47653,7 +47884,7 @@
         });
 
     });
-    _registerModule(_modules, 'modules/static-scale.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2016-2020 Torstein Honsi, Lars Cabrera
@@ -47734,734 +47965,7 @@
         addEvent(Chart, 'render', Chart.prototype.adjustHeight);
 
     });
-    _registerModule(_modules, 'parts-gantt/PathfinderAlgorithms.js', [_modules['parts/Utilities.js']], function (U) {
-        /* *
-         *
-         *  (c) 2016 Highsoft AS
-         *  Author: Øystein Moseng
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var extend = U.extend,
-            pick = U.pick;
-        var min = Math.min,
-            max = Math.max,
-            abs = Math.abs;
-        /**
-         * Get index of last obstacle before xMin. Employs a type of binary search, and
-         * thus requires that obstacles are sorted by xMin value.
-         *
-         * @private
-         * @function findLastObstacleBefore
-         *
-         * @param {Array<object>} obstacles
-         *        Array of obstacles to search in.
-         *
-         * @param {number} xMin
-         *        The xMin threshold.
-         *
-         * @param {number} [startIx]
-         *        Starting index to search from. Must be within array range.
-         *
-         * @return {number}
-         *         The index of the last obstacle element before xMin.
-         */
-        function findLastObstacleBefore(obstacles, xMin, startIx) {
-            var left = startIx || 0, // left limit
-                right = obstacles.length - 1, // right limit
-                min = xMin - 0.0000001, // Make sure we include all obstacles at xMin
-                cursor,
-                cmp;
-            while (left <= right) {
-                cursor = (right + left) >> 1;
-                cmp = min - obstacles[cursor].xMin;
-                if (cmp > 0) {
-                    left = cursor + 1;
-                }
-                else if (cmp < 0) {
-                    right = cursor - 1;
-                }
-                else {
-                    return cursor;
-                }
-            }
-            return left > 0 ? left - 1 : 0;
-        }
-        /**
-         * Test if a point lays within an obstacle.
-         *
-         * @private
-         * @function pointWithinObstacle
-         *
-         * @param {object} obstacle
-         *        Obstacle to test.
-         *
-         * @param {Highcharts.Point} point
-         *        Point with x/y props.
-         *
-         * @return {boolean}
-         *         Whether point is within the obstacle or not.
-         */
-        function pointWithinObstacle(obstacle, point) {
-            return (point.x <= obstacle.xMax &&
-                point.x >= obstacle.xMin &&
-                point.y <= obstacle.yMax &&
-                point.y >= obstacle.yMin);
-        }
-        /**
-         * Find the index of an obstacle that wraps around a point.
-         * Returns -1 if not found.
-         *
-         * @private
-         * @function findObstacleFromPoint
-         *
-         * @param {Array<object>} obstacles
-         *        Obstacles to test.
-         *
-         * @param {Highcharts.Point} point
-         *        Point with x/y props.
-         *
-         * @return {number}
-         *         Ix of the obstacle in the array, or -1 if not found.
-         */
-        function findObstacleFromPoint(obstacles, point) {
-            var i = findLastObstacleBefore(obstacles,
-                point.x + 1) + 1;
-            while (i--) {
-                if (obstacles[i].xMax >= point.x &&
-                    // optimization using lazy evaluation
-                    pointWithinObstacle(obstacles[i], point)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-        /**
-         * Get SVG path array from array of line segments.
-         *
-         * @private
-         * @function pathFromSegments
-         *
-         * @param {Array<object>} segments
-         *        The segments to build the path from.
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         SVG path array as accepted by the SVG Renderer.
-         */
-        function pathFromSegments(segments) {
-            var path = [];
-            if (segments.length) {
-                path.push(['M', segments[0].start.x, segments[0].start.y]);
-                for (var i = 0; i < segments.length; ++i) {
-                    path.push(['L', segments[i].end.x, segments[i].end.y]);
-                }
-            }
-            return path;
-        }
-        /**
-         * Limits obstacle max/mins in all directions to bounds. Modifies input
-         * obstacle.
-         *
-         * @private
-         * @function limitObstacleToBounds
-         *
-         * @param {object} obstacle
-         *        Obstacle to limit.
-         *
-         * @param {object} bounds
-         *        Bounds to use as limit.
-         *
-         * @return {void}
-         */
-        function limitObstacleToBounds(obstacle, bounds) {
-            obstacle.yMin = max(obstacle.yMin, bounds.yMin);
-            obstacle.yMax = min(obstacle.yMax, bounds.yMax);
-            obstacle.xMin = max(obstacle.xMin, bounds.xMin);
-            obstacle.xMax = min(obstacle.xMax, bounds.xMax);
-        }
-        // Define the available pathfinding algorithms.
-        // Algorithms take up to 3 arguments: starting point, ending point, and an
-        // options object.
-        var algorithms = {
-                /**
-                 * Get an SVG path from a starting coordinate to an ending coordinate.
-                 * Draws a straight line.
-                 *
-                 * @function Highcharts.Pathfinder.algorithms.straight
-                 *
-                 * @param {Highcharts.PositionObject} start
-                 *        Starting coordinate,
-            object with x/y props.
-                 *
-                 * @param {Highcharts.PositionObject} end
-                 *        Ending coordinate,
-            object with x/y props.
-                 *
-                 * @return {object}
-                 *         An object with the SVG path in Array form as accepted by the SVG
-                 *         renderer,
-            as well as an array of new obstacles making up this
-                 *         path.
-                 */
-                straight: function (start,
-            end) {
-                    return {
-                        path: [
-                            ['M',
-            start.x,
-            start.y],
-                            ['L',
-            end.x,
-            end.y]
-                        ],
-                        obstacles: [{ start: start,
-            end: end }]
-                    };
-            },
-            /**
-             * Find a path from a starting coordinate to an ending coordinate, using
-             * right angles only, and taking only starting/ending obstacle into
-             * consideration.
-             *
-             * @function Highcharts.Pathfinder.algorithms.simpleConnect
-             *
-             * @param {Highcharts.PositionObject} start
-             *        Starting coordinate, object with x/y props.
-             *
-             * @param {Highcharts.PositionObject} end
-             *        Ending coordinate, object with x/y props.
-             *
-             * @param {object} options
-             *        Options for the algorithm:
-             *        - chartObstacles: Array of chart obstacles to avoid
-             *        - startDirectionX: Optional. True if starting in the X direction.
-             *          If not provided, the algorithm starts in the direction that is
-             *          the furthest between start/end.
-             *
-             * @return {object}
-             *         An object with the SVG path in Array form as accepted by the SVG
-             *         renderer, as well as an array of new obstacles making up this
-             *         path.
-             */
-            simpleConnect: extend(function (start, end, options) {
-                var segments = [],
-                    endSegment,
-                    dir = pick(options.startDirectionX,
-                    abs(end.x - start.x) > abs(end.y - start.y)) ? 'x' : 'y',
-                    chartObstacles = options.chartObstacles,
-                    startObstacleIx = findObstacleFromPoint(chartObstacles,
-                    start),
-                    endObstacleIx = findObstacleFromPoint(chartObstacles,
-                    end),
-                    startObstacle,
-                    endObstacle,
-                    prevWaypoint,
-                    waypoint,
-                    waypoint2,
-                    useMax,
-                    endPoint;
-                // eslint-disable-next-line valid-jsdoc
-                /**
-                 * Return a clone of a point with a property set from a target object,
-                 * optionally with an offset
-                 * @private
-                 */
-                function copyFromPoint(from, fromKey, to, toKey, offset) {
-                    var point = {
-                            x: from.x,
-                            y: from.y
-                        };
-                    point[fromKey] = to[toKey || fromKey] + (offset || 0);
-                    return point;
-                }
-                // eslint-disable-next-line valid-jsdoc
-                /**
-                 * Return waypoint outside obstacle.
-                 * @private
-                 */
-                function getMeOut(obstacle, point, direction) {
-                    var useMax = abs(point[direction] - obstacle[direction + 'Min']) >
-                            abs(point[direction] - obstacle[direction + 'Max']);
-                    return copyFromPoint(point, direction, obstacle, direction + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1);
-                }
-                // Pull out end point
-                if (endObstacleIx > -1) {
-                    endObstacle = chartObstacles[endObstacleIx];
-                    waypoint = getMeOut(endObstacle, end, dir);
-                    endSegment = {
-                        start: waypoint,
-                        end: end
-                    };
-                    endPoint = waypoint;
-                }
-                else {
-                    endPoint = end;
-                }
-                // If an obstacle envelops the start point, add a segment to get out,
-                // and around it.
-                if (startObstacleIx > -1) {
-                    startObstacle = chartObstacles[startObstacleIx];
-                    waypoint = getMeOut(startObstacle, start, dir);
-                    segments.push({
-                        start: start,
-                        end: waypoint
-                    });
-                    // If we are going back again, switch direction to get around start
-                    // obstacle.
-                    if (
-                    // Going towards max from start:
-                    waypoint[dir] >= start[dir] ===
-                        // Going towards min to end:
-                        waypoint[dir] >= endPoint[dir]) {
-                        dir = dir === 'y' ? 'x' : 'y';
-                        useMax = start[dir] < end[dir];
-                        segments.push({
-                            start: waypoint,
-                            end: copyFromPoint(waypoint, dir, startObstacle, dir + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1)
-                        });
-                        // Switch direction again
-                        dir = dir === 'y' ? 'x' : 'y';
-                    }
-                }
-                // We are around the start obstacle. Go towards the end in one
-                // direction.
-                prevWaypoint = segments.length ?
-                    segments[segments.length - 1].end :
-                    start;
-                waypoint = copyFromPoint(prevWaypoint, dir, endPoint);
-                segments.push({
-                    start: prevWaypoint,
-                    end: waypoint
-                });
-                // Final run to end point in the other direction
-                dir = dir === 'y' ? 'x' : 'y';
-                waypoint2 = copyFromPoint(waypoint, dir, endPoint);
-                segments.push({
-                    start: waypoint,
-                    end: waypoint2
-                });
-                // Finally add the endSegment
-                segments.push(endSegment);
-                return {
-                    path: pathFromSegments(segments),
-                    obstacles: segments
-                };
-            }, {
-                requiresObstacles: true
-            }),
-            /**
-             * Find a path from a starting coordinate to an ending coordinate, taking
-             * obstacles into consideration. Might not always find the optimal path,
-             * but is fast, and usually good enough.
-             *
-             * @function Highcharts.Pathfinder.algorithms.fastAvoid
-             *
-             * @param {Highcharts.PositionObject} start
-             *        Starting coordinate, object with x/y props.
-             *
-             * @param {Highcharts.PositionObject} end
-             *        Ending coordinate, object with x/y props.
-             *
-             * @param {object} options
-             *        Options for the algorithm.
-             *        - chartObstacles:  Array of chart obstacles to avoid
-             *        - lineObstacles:   Array of line obstacles to jump over
-             *        - obstacleMetrics: Object with metrics of chartObstacles cached
-             *        - hardBounds:      Hard boundaries to not cross
-             *        - obstacleOptions: Options for the obstacles, including margin
-             *        - startDirectionX: Optional. True if starting in the X direction.
-             *                           If not provided, the algorithm starts in the
-             *                           direction that is the furthest between
-             *                           start/end.
-             *
-             * @return {object}
-             *         An object with the SVG path in Array form as accepted by the SVG
-             *         renderer, as well as an array of new obstacles making up this
-             *         path.
-             */
-            fastAvoid: extend(function (start, end, options) {
-                /*
-                    Algorithm rules/description
-                    - Find initial direction
-                    - Determine soft/hard max for each direction.
-                    - Move along initial direction until obstacle.
-                    - Change direction.
-                    - If hitting obstacle, first try to change length of previous line
-                      before changing direction again.
-
-                    Soft min/max x = start/destination x +/- widest obstacle + margin
-                    Soft min/max y = start/destination y +/- tallest obstacle + margin
-
-                    @todo:
-                        - Make retrospective, try changing prev segment to reduce
-                          corners
-                        - Fix logic for breaking out of end-points - not always picking
-                          the best direction currently
-                        - When going around the end obstacle we should not always go the
-                          shortest route, rather pick the one closer to the end point
-                */
-                var dirIsX = pick(options.startDirectionX,
-                    abs(end.x - start.x) > abs(end.y - start.y)),
-                    dir = dirIsX ? 'x' : 'y',
-                    segments,
-                    useMax,
-                    extractedEndPoint,
-                    endSegments = [],
-                    forceObstacleBreak = false, // Used in clearPathTo to keep track of
-                    // when to force break through an obstacle.
-                    // Boundaries to stay within. If beyond soft boundary, prefer to
-                    // change direction ASAP. If at hard max, always change immediately.
-                    metrics = options.obstacleMetrics,
-                    softMinX = min(start.x,
-                    end.x) - metrics.maxWidth - 10,
-                    softMaxX = max(start.x,
-                    end.x) + metrics.maxWidth + 10,
-                    softMinY = min(start.y,
-                    end.y) - metrics.maxHeight - 10,
-                    softMaxY = max(start.y,
-                    end.y) + metrics.maxHeight + 10, 
-                    // Obstacles
-                    chartObstacles = options.chartObstacles,
-                    startObstacleIx = findLastObstacleBefore(chartObstacles,
-                    softMinX),
-                    endObstacleIx = findLastObstacleBefore(chartObstacles,
-                    softMaxX);
-                // eslint-disable-next-line valid-jsdoc
-                /**
-                 * How far can you go between two points before hitting an obstacle?
-                 * Does not work for diagonal lines (because it doesn't have to).
-                 * @private
-                 */
-                function pivotPoint(fromPoint, toPoint, directionIsX) {
-                    var firstPoint,
-                        lastPoint,
-                        highestPoint,
-                        lowestPoint,
-                        i,
-                        searchDirection = fromPoint.x < toPoint.x ? 1 : -1;
-                    if (fromPoint.x < toPoint.x) {
-                        firstPoint = fromPoint;
-                        lastPoint = toPoint;
-                    }
-                    else {
-                        firstPoint = toPoint;
-                        lastPoint = fromPoint;
-                    }
-                    if (fromPoint.y < toPoint.y) {
-                        lowestPoint = fromPoint;
-                        highestPoint = toPoint;
-                    }
-                    else {
-                        lowestPoint = toPoint;
-                        highestPoint = fromPoint;
-                    }
-                    // Go through obstacle range in reverse if toPoint is before
-                    // fromPoint in the X-dimension.
-                    i = searchDirection < 0 ?
-                        // Searching backwards, start at last obstacle before last point
-                        min(findLastObstacleBefore(chartObstacles, lastPoint.x), chartObstacles.length - 1) :
-                        // Forwards. Since we're not sorted by xMax, we have to look
-                        // at all obstacles.
-                        0;
-                    // Go through obstacles in this X range
-                    while (chartObstacles[i] && (searchDirection > 0 && chartObstacles[i].xMin <= lastPoint.x ||
-                        searchDirection < 0 && chartObstacles[i].xMax >= firstPoint.x)) {
-                        // If this obstacle is between from and to points in a straight
-                        // line, pivot at the intersection.
-                        if (chartObstacles[i].xMin <= lastPoint.x &&
-                            chartObstacles[i].xMax >= firstPoint.x &&
-                            chartObstacles[i].yMin <= highestPoint.y &&
-                            chartObstacles[i].yMax >= lowestPoint.y) {
-                            if (directionIsX) {
-                                return {
-                                    y: fromPoint.y,
-                                    x: fromPoint.x < toPoint.x ?
-                                        chartObstacles[i].xMin - 1 :
-                                        chartObstacles[i].xMax + 1,
-                                    obstacle: chartObstacles[i]
-                                };
-                            }
-                            // else ...
-                            return {
-                                x: fromPoint.x,
-                                y: fromPoint.y < toPoint.y ?
-                                    chartObstacles[i].yMin - 1 :
-                                    chartObstacles[i].yMax + 1,
-                                obstacle: chartObstacles[i]
-                            };
-                        }
-                        i += searchDirection;
-                    }
-                    return toPoint;
-                }
-                /**
-                 * Decide in which direction to dodge or get out of an obstacle.
-                 * Considers desired direction, which way is shortest, soft and hard
-                 * bounds.
-                 *
-                 * (? Returns a string, either xMin, xMax, yMin or yMax.)
-                 *
-                 * @private
-                 * @function
-                 *
-                 * @param {object} obstacle
-                 *        Obstacle to dodge/escape.
-                 *
-                 * @param {object} fromPoint
-                 *        Point with x/y props that's dodging/escaping.
-                 *
-                 * @param {object} toPoint
-                 *        Goal point.
-                 *
-                 * @param {boolean} dirIsX
-                 *        Dodge in X dimension.
-                 *
-                 * @param {object} bounds
-                 *        Hard and soft boundaries.
-                 *
-                 * @return {boolean}
-                 *         Use max or not.
-                 */
-                function getDodgeDirection(obstacle, fromPoint, toPoint, dirIsX, bounds) {
-                    var softBounds = bounds.soft, hardBounds = bounds.hard, dir = dirIsX ? 'x' : 'y', toPointMax = { x: fromPoint.x, y: fromPoint.y }, toPointMin = { x: fromPoint.x, y: fromPoint.y }, minPivot, maxPivot, maxOutOfSoftBounds = obstacle[dir + 'Max'] >=
-                            softBounds[dir + 'Max'], minOutOfSoftBounds = obstacle[dir + 'Min'] <=
-                            softBounds[dir + 'Min'], maxOutOfHardBounds = obstacle[dir + 'Max'] >=
-                            hardBounds[dir + 'Max'], minOutOfHardBounds = obstacle[dir + 'Min'] <=
-                            hardBounds[dir + 'Min'], 
-                        // Find out if we should prefer one direction over the other if
-                        // we can choose freely
-                        minDistance = abs(obstacle[dir + 'Min'] - fromPoint[dir]), maxDistance = abs(obstacle[dir + 'Max'] - fromPoint[dir]), 
-                        // If it's a small difference, pick the one leading towards dest
-                        // point. Otherwise pick the shortest distance
-                        useMax = abs(minDistance - maxDistance) < 10 ?
-                            fromPoint[dir] < toPoint[dir] :
-                            maxDistance < minDistance;
-                    // Check if we hit any obstacles trying to go around in either
-                    // direction.
-                    toPointMin[dir] = obstacle[dir + 'Min'];
-                    toPointMax[dir] = obstacle[dir + 'Max'];
-                    minPivot = pivotPoint(fromPoint, toPointMin, dirIsX)[dir] !==
-                        toPointMin[dir];
-                    maxPivot = pivotPoint(fromPoint, toPointMax, dirIsX)[dir] !==
-                        toPointMax[dir];
-                    useMax = minPivot ?
-                        (maxPivot ? useMax : true) :
-                        (maxPivot ? false : useMax);
-                    // useMax now contains our preferred choice, bounds not taken into
-                    // account. If both or neither direction is out of bounds we want to
-                    // use this.
-                    // Deal with soft bounds
-                    useMax = minOutOfSoftBounds ?
-                        (maxOutOfSoftBounds ? useMax : true) : // Out on min
-                        (maxOutOfSoftBounds ? false : useMax); // Not out on min
-                    // Deal with hard bounds
-                    useMax = minOutOfHardBounds ?
-                        (maxOutOfHardBounds ? useMax : true) : // Out on min
-                        (maxOutOfHardBounds ? false : useMax); // Not out on min
-                    return useMax;
-                }
-                // eslint-disable-next-line valid-jsdoc
-                /**
-                 * Find a clear path between point.
-                 * @private
-                 */
-                function clearPathTo(fromPoint, toPoint, dirIsX) {
-                    // Don't waste time if we've hit goal
-                    if (fromPoint.x === toPoint.x && fromPoint.y === toPoint.y) {
-                        return [];
-                    }
-                    var dir = dirIsX ? 'x' : 'y',
-                        pivot,
-                        segments,
-                        waypoint,
-                        waypointUseMax,
-                        envelopingObstacle,
-                        secondEnvelopingObstacle,
-                        envelopWaypoint,
-                        obstacleMargin = options.obstacleOptions.margin,
-                        bounds = {
-                            soft: {
-                                xMin: softMinX,
-                                xMax: softMaxX,
-                                yMin: softMinY,
-                                yMax: softMaxY
-                            },
-                            hard: options.hardBounds
-                        };
-                    // If fromPoint is inside an obstacle we have a problem. Break out
-                    // by just going to the outside of this obstacle. We prefer to go to
-                    // the nearest edge in the chosen direction.
-                    envelopingObstacle =
-                        findObstacleFromPoint(chartObstacles, fromPoint);
-                    if (envelopingObstacle > -1) {
-                        envelopingObstacle = chartObstacles[envelopingObstacle];
-                        waypointUseMax = getDodgeDirection(envelopingObstacle, fromPoint, toPoint, dirIsX, bounds);
-                        // Cut obstacle to hard bounds to make sure we stay within
-                        limitObstacleToBounds(envelopingObstacle, options.hardBounds);
-                        envelopWaypoint = dirIsX ? {
-                            y: fromPoint.y,
-                            x: envelopingObstacle[waypointUseMax ? 'xMax' : 'xMin'] +
-                                (waypointUseMax ? 1 : -1)
-                        } : {
-                            x: fromPoint.x,
-                            y: envelopingObstacle[waypointUseMax ? 'yMax' : 'yMin'] +
-                                (waypointUseMax ? 1 : -1)
-                        };
-                        // If we crashed into another obstacle doing this, we put the
-                        // waypoint between them instead
-                        secondEnvelopingObstacle = findObstacleFromPoint(chartObstacles, envelopWaypoint);
-                        if (secondEnvelopingObstacle > -1) {
-                            secondEnvelopingObstacle = chartObstacles[secondEnvelopingObstacle];
-                            // Cut obstacle to hard bounds
-                            limitObstacleToBounds(secondEnvelopingObstacle, options.hardBounds);
-                            // Modify waypoint to lay between obstacles
-                            envelopWaypoint[dir] = waypointUseMax ? max(envelopingObstacle[dir + 'Max'] - obstacleMargin + 1, (secondEnvelopingObstacle[dir + 'Min'] +
-                                envelopingObstacle[dir + 'Max']) / 2) :
-                                min((envelopingObstacle[dir + 'Min'] + obstacleMargin - 1), ((secondEnvelopingObstacle[dir + 'Max'] +
-                                    envelopingObstacle[dir + 'Min']) / 2));
-                            // We are not going anywhere. If this happens for the first
-                            // time, do nothing. Otherwise, try to go to the extreme of
-                            // the obstacle pair in the current direction.
-                            if (fromPoint.x === envelopWaypoint.x &&
-                                fromPoint.y === envelopWaypoint.y) {
-                                if (forceObstacleBreak) {
-                                    envelopWaypoint[dir] = waypointUseMax ?
-                                        max(envelopingObstacle[dir + 'Max'], secondEnvelopingObstacle[dir + 'Max']) + 1 :
-                                        min(envelopingObstacle[dir + 'Min'], secondEnvelopingObstacle[dir + 'Min']) - 1;
-                                }
-                                // Toggle on if off, and the opposite
-                                forceObstacleBreak = !forceObstacleBreak;
-                            }
-                            else {
-                                // This point is not identical to previous.
-                                // Clear break trigger.
-                                forceObstacleBreak = false;
-                            }
-                        }
-                        segments = [{
-                                start: fromPoint,
-                                end: envelopWaypoint
-                            }];
-                    }
-                    else { // If not enveloping, use standard pivot calculation
-                        pivot = pivotPoint(fromPoint, {
-                            x: dirIsX ? toPoint.x : fromPoint.x,
-                            y: dirIsX ? fromPoint.y : toPoint.y
-                        }, dirIsX);
-                        segments = [{
-                                start: fromPoint,
-                                end: {
-                                    x: pivot.x,
-                                    y: pivot.y
-                                }
-                            }];
-                        // Pivot before goal, use a waypoint to dodge obstacle
-                        if (pivot[dirIsX ? 'x' : 'y'] !== toPoint[dirIsX ? 'x' : 'y']) {
-                            // Find direction of waypoint
-                            waypointUseMax = getDodgeDirection(pivot.obstacle, pivot, toPoint, !dirIsX, bounds);
-                            // Cut waypoint to hard bounds
-                            limitObstacleToBounds(pivot.obstacle, options.hardBounds);
-                            waypoint = {
-                                x: dirIsX ?
-                                    pivot.x :
-                                    pivot.obstacle[waypointUseMax ? 'xMax' : 'xMin'] +
-                                        (waypointUseMax ? 1 : -1),
-                                y: dirIsX ?
-                                    pivot.obstacle[waypointUseMax ? 'yMax' : 'yMin'] +
-                                        (waypointUseMax ? 1 : -1) :
-                                    pivot.y
-                            };
-                            // We're changing direction here, store that to make sure we
-                            // also change direction when adding the last segment array
-                            // after handling waypoint.
-                            dirIsX = !dirIsX;
-                            segments = segments.concat(clearPathTo({
-                                x: pivot.x,
-                                y: pivot.y
-                            }, waypoint, dirIsX));
-                        }
-                    }
-                    // Get segments for the other direction too
-                    // Recursion is our friend
-                    segments = segments.concat(clearPathTo(segments[segments.length - 1].end, toPoint, !dirIsX));
-                    return segments;
-                }
-                // eslint-disable-next-line valid-jsdoc
-                /**
-                 * Extract point to outside of obstacle in whichever direction is
-                 * closest. Returns new point outside obstacle.
-                 * @private
-                 */
-                function extractFromObstacle(obstacle, point, goalPoint) {
-                    var dirIsX = min(obstacle.xMax - point.x,
-                        point.x - obstacle.xMin) <
-                            min(obstacle.yMax - point.y,
-                        point.y - obstacle.yMin),
-                        bounds = {
-                            soft: options.hardBounds,
-                            hard: options.hardBounds
-                        },
-                        useMax = getDodgeDirection(obstacle,
-                        point,
-                        goalPoint,
-                        dirIsX,
-                        bounds);
-                    return dirIsX ? {
-                        y: point.y,
-                        x: obstacle[useMax ? 'xMax' : 'xMin'] + (useMax ? 1 : -1)
-                    } : {
-                        x: point.x,
-                        y: obstacle[useMax ? 'yMax' : 'yMin'] + (useMax ? 1 : -1)
-                    };
-                }
-                // Cut the obstacle array to soft bounds for optimization in large
-                // datasets.
-                chartObstacles =
-                    chartObstacles.slice(startObstacleIx, endObstacleIx + 1);
-                // If an obstacle envelops the end point, move it out of there and add
-                // a little segment to where it was.
-                if ((endObstacleIx = findObstacleFromPoint(chartObstacles, end)) > -1) {
-                    extractedEndPoint = extractFromObstacle(chartObstacles[endObstacleIx], end, start);
-                    endSegments.push({
-                        end: end,
-                        start: extractedEndPoint
-                    });
-                    end = extractedEndPoint;
-                }
-                // If it's still inside one or more obstacles, get out of there by
-                // force-moving towards the start point.
-                while ((endObstacleIx = findObstacleFromPoint(chartObstacles, end)) > -1) {
-                    useMax = end[dir] - start[dir] < 0;
-                    extractedEndPoint = {
-                        x: end.x,
-                        y: end.y
-                    };
-                    extractedEndPoint[dir] = chartObstacles[endObstacleIx][useMax ? dir + 'Max' : dir + 'Min'] + (useMax ? 1 : -1);
-                    endSegments.push({
-                        end: end,
-                        start: extractedEndPoint
-                    });
-                    end = extractedEndPoint;
-                }
-                // Find the path
-                segments = clearPathTo(start, end, dirIsX);
-                // Add the end-point segments
-                segments = segments.concat(endSegments.reverse());
-                return {
-                    path: pathFromSegments(segments),
-                    obstacles: segments
-                };
-            }, {
-                requiresObstacles: true
-            })
-        };
-
-        return algorithms;
-    });
-    _registerModule(_modules, 'parts-gantt/ArrowSymbols.js', [_modules['parts/SVGRenderer.js']], function (SVGRenderer) {
+    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
         /* *
          *
          *  (c) 2017 Highsoft AS
@@ -48654,7 +48158,7 @@
         SVGRenderer.prototype.symbols['arrow-filled-half'] = SVGRenderer.prototype.symbols['triangle-left-half'];
 
     });
-    _registerModule(_modules, 'parts-gantt/Pathfinder.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js'], _modules['parts-gantt/PathfinderAlgorithms.js']], function (Chart, H, O, Point, U, pathfinderAlgorithms) {
+    _registerModule(_modules, 'Gantt/Connection.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, O, Point, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -49066,10 +48570,20 @@
          * @param {Highcharts.ConnectorsOptions} [options]
          *        Connection options.
          */
-        function Connection(from, to, options) {
-            this.init(from, to, options);
-        }
-        Connection.prototype = {
+        var Connection = /** @class */ (function () {
+                function Connection(from, to, options) {
+                    /* *
+                    *
+                    * Properties
+                    *
+                    * */
+                    this.chart = void 0;
+                this.fromPoint = void 0;
+                this.graphics = void 0;
+                this.pathfinder = void 0;
+                this.toPoint = void 0;
+                this.init(from, to, options);
+            }
             /**
              * Initialize the Connection object. Used as constructor only.
              *
@@ -49084,13 +48598,13 @@
              * @param {Highcharts.ConnectorsOptions} [options]
              *        Connection options.
              */
-            init: function (from, to, options) {
+            Connection.prototype.init = function (from, to, options) {
                 this.fromPoint = from;
                 this.toPoint = to;
                 this.options = options;
                 this.chart = from.series.chart;
                 this.pathfinder = this.chart.pathfinder;
-            },
+            };
             /**
              * Add (or update) this connection's path on chart. Stores reference to the
              * created element on this.graphics.path.
@@ -49103,10 +48617,10 @@
              * @param {Highcharts.SVGAttributes} [attribs]
              *        SVG attributes for the path.
              *
-             * @param {Highcharts.AnimationOptionsObject} [animation]
+             * @param {Partial<Highcharts.AnimationOptionsObject>} [animation]
              *        Animation options for the rendering.
              */
-            renderPath: function (path, attribs, animation) {
+            Connection.prototype.renderPath = function (path, attribs, animation) {
                 var connection = this,
                     chart = this.chart,
                     styledMode = chart.styledMode,
@@ -49145,7 +48659,7 @@
                 // Store reference on connection
                 this.graphics = this.graphics || {};
                 this.graphics.path = pathGraphic;
-            },
+            };
             /**
              * Calculate and add marker graphics for connection to the chart. The
              * created/updated elements are stored on this.graphics.start and
@@ -49164,7 +48678,7 @@
              *        Connection path in array format. This is used to calculate the
              *        rotation angle of the markers.
              */
-            addMarker: function (type, options, path) {
+            Connection.prototype.addMarker = function (type, options, path) {
                 var connection = this,
                     chart = connection.fromPoint.series.chart,
                     pathfinder = chart.pathfinder,
@@ -49247,7 +48761,7 @@
                         connection.graphics[type].animate(box);
                     }
                 }
-            },
+            };
             /**
              * Calculate and return connection path.
              * Note: Recalculates chart obstacles on demand if they aren't calculated.
@@ -49260,14 +48774,17 @@
              * @return {object|undefined}
              *         Calculated SVG path data in array format.
              */
-            getPath: function (options) {
+            Connection.prototype.getPath = function (options) {
                 var pathfinder = this.pathfinder,
                     chart = this.chart,
                     algorithm = pathfinder.algorithms[options.type],
                     chartObstacles = pathfinder.chartObstacles;
                 if (typeof algorithm !== 'function') {
                     error('"' + options.type + '" is not a Pathfinder algorithm.');
-                    return;
+                    return {
+                        path: [],
+                        obstacles: []
+                    };
                 }
                 // This function calculates obstacles on demand if they don't exist
                 if (algorithm.requiresObstacles && !chartObstacles) {
@@ -49302,13 +48819,13 @@
                     },
                     startDirectionX: pathfinder.getAlgorithmStartDirection(options.startMarker)
                 }, options));
-            },
+            };
             /**
              * (re)Calculate and (re)draw the connection.
              *
              * @function Highcharts.Connection#render
              */
-            render: function () {
+            Connection.prototype.render = function () {
                 var connection = this,
                     fromPoint = connection.fromPoint,
                     series = fromPoint.series,
@@ -49353,21 +48870,1322 @@
                 // Render the markers
                 connection.addMarker('start', merge(options.marker, options.startMarker), path);
                 connection.addMarker('end', merge(options.marker, options.endMarker), path);
-            },
+            };
             /**
              * Destroy connection by destroying the added graphics elements.
              *
              * @function Highcharts.Connection#destroy
              */
-            destroy: function () {
+            Connection.prototype.destroy = function () {
                 if (this.graphics) {
                     objectEach(this.graphics, function (val) {
                         val.destroy();
                     });
                     delete this.graphics;
                 }
+            };
+            return Connection;
+        }());
+        // Add to Highcharts namespace
+        H.Connection = Connection;
+        // Add pathfinding capabilities to Points
+        extend(Point.prototype, /** @lends Point.prototype */ {
+            /**
+             * Get coordinates of anchor point for pathfinder connection.
+             *
+             * @private
+             * @function Highcharts.Point#getPathfinderAnchorPoint
+             *
+             * @param {Highcharts.ConnectorsMarkerOptions} markerOptions
+             *        Connection options for position on point.
+             *
+             * @return {Highcharts.PositionObject}
+             *         An object with x/y properties for the position. Coordinates are
+             *         in plot values, not relative to point.
+             */
+            getPathfinderAnchorPoint: function (markerOptions) {
+                var bb = getPointBB(this),
+                    x,
+                    y;
+                switch (markerOptions.align) { // eslint-disable-line default-case
+                    case 'right':
+                        x = 'xMax';
+                        break;
+                    case 'left':
+                        x = 'xMin';
+                }
+                switch (markerOptions.verticalAlign) { // eslint-disable-line default-case
+                    case 'top':
+                        y = 'yMin';
+                        break;
+                    case 'bottom':
+                        y = 'yMax';
+                }
+                return {
+                    x: x ? bb[x] : (bb.xMin + bb.xMax) / 2,
+                    y: y ? bb[y] : (bb.yMin + bb.yMax) / 2
+                };
+            },
+            /**
+             * Utility to get the angle from one point to another.
+             *
+             * @private
+             * @function Highcharts.Point#getRadiansToVector
+             *
+             * @param {Highcharts.PositionObject} v1
+             *        The first vector, as an object with x/y properties.
+             *
+             * @param {Highcharts.PositionObject} v2
+             *        The second vector, as an object with x/y properties.
+             *
+             * @return {number}
+             *         The angle in degrees
+             */
+            getRadiansToVector: function (v1, v2) {
+                var box;
+                if (!defined(v2)) {
+                    box = getPointBB(this);
+                    if (box) {
+                        v2 = {
+                            x: (box.xMin + box.xMax) / 2,
+                            y: (box.yMin + box.yMax) / 2
+                        };
+                    }
+                }
+                return Math.atan2(v2.y - v1.y, v1.x - v2.x);
+            },
+            /**
+             * Utility to get the position of the marker, based on the path angle and
+             * the marker's radius.
+             *
+             * @private
+             * @function Highcharts.Point#getMarkerVector
+             *
+             * @param {number} radians
+             *        The angle in radians from the point center to another vector.
+             *
+             * @param {number} markerRadius
+             *        The radius of the marker, to calculate the additional distance to
+             *        the center of the marker.
+             *
+             * @param {object} anchor
+             *        The anchor point of the path and marker as an object with x/y
+             *        properties.
+             *
+             * @return {object}
+             *         The marker vector as an object with x/y properties.
+             */
+            getMarkerVector: function (radians, markerRadius, anchor) {
+                var twoPI = Math.PI * 2.0,
+                    theta = radians,
+                    bb = getPointBB(this),
+                    rectWidth = bb.xMax - bb.xMin,
+                    rectHeight = bb.yMax - bb.yMin,
+                    rAtan = Math.atan2(rectHeight,
+                    rectWidth),
+                    tanTheta = 1,
+                    leftOrRightRegion = false,
+                    rectHalfWidth = rectWidth / 2.0,
+                    rectHalfHeight = rectHeight / 2.0,
+                    rectHorizontalCenter = bb.xMin + rectHalfWidth,
+                    rectVerticalCenter = bb.yMin + rectHalfHeight,
+                    edgePoint = {
+                        x: rectHorizontalCenter,
+                        y: rectVerticalCenter
+                    },
+                    markerPoint = {},
+                    xFactor = 1,
+                    yFactor = 1;
+                while (theta < -Math.PI) {
+                    theta += twoPI;
+                }
+                while (theta > Math.PI) {
+                    theta -= twoPI;
+                }
+                tanTheta = Math.tan(theta);
+                if ((theta > -rAtan) && (theta <= rAtan)) {
+                    // Right side
+                    yFactor = -1;
+                    leftOrRightRegion = true;
+                }
+                else if (theta > rAtan && theta <= (Math.PI - rAtan)) {
+                    // Top side
+                    yFactor = -1;
+                }
+                else if (theta > (Math.PI - rAtan) || theta <= -(Math.PI - rAtan)) {
+                    // Left side
+                    xFactor = -1;
+                    leftOrRightRegion = true;
+                }
+                else {
+                    // Bottom side
+                    xFactor = -1;
+                }
+                // Correct the edgePoint according to the placement of the marker
+                if (leftOrRightRegion) {
+                    edgePoint.x += xFactor * (rectHalfWidth);
+                    edgePoint.y += yFactor * (rectHalfWidth) * tanTheta;
+                }
+                else {
+                    edgePoint.x += xFactor * (rectHeight / (2.0 * tanTheta));
+                    edgePoint.y += yFactor * (rectHalfHeight);
+                }
+                if (anchor.x !== rectHorizontalCenter) {
+                    edgePoint.x = anchor.x;
+                }
+                if (anchor.y !== rectVerticalCenter) {
+                    edgePoint.y = anchor.y;
+                }
+                markerPoint.x = edgePoint.x + (markerRadius * Math.cos(theta));
+                markerPoint.y = edgePoint.y - (markerRadius * Math.sin(theta));
+                return markerPoint;
             }
-        };
+        });
+        /**
+         * Warn if using legacy options. Copy the options over. Note that this will
+         * still break if using the legacy options in chart.update, addSeries etc.
+         * @private
+         */
+        function warnLegacy(chart) {
+            if (chart.options.pathfinder ||
+                chart.series.reduce(function (acc, series) {
+                    if (series.options) {
+                        merge(true, (series.options.connectors = series.options.connectors ||
+                            {}), series.options.pathfinder);
+                    }
+                    return acc || series.options && series.options.pathfinder;
+                }, false)) {
+                merge(true, (chart.options.connectors = chart.options.connectors || {}), chart.options.pathfinder);
+                error('WARNING: Pathfinder options have been renamed. ' +
+                    'Use "chart.connectors" or "series.connectors" instead.');
+            }
+        }
+
+        return Connection;
+    });
+    _registerModule(_modules, 'Gantt/PathfinderAlgorithms.js', [_modules['Core/Utilities.js']], function (U) {
+        /* *
+         *
+         *  (c) 2016 Highsoft AS
+         *  Author: Øystein Moseng
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var extend = U.extend,
+            pick = U.pick;
+        var min = Math.min,
+            max = Math.max,
+            abs = Math.abs;
+        /**
+         * Get index of last obstacle before xMin. Employs a type of binary search, and
+         * thus requires that obstacles are sorted by xMin value.
+         *
+         * @private
+         * @function findLastObstacleBefore
+         *
+         * @param {Array<object>} obstacles
+         *        Array of obstacles to search in.
+         *
+         * @param {number} xMin
+         *        The xMin threshold.
+         *
+         * @param {number} [startIx]
+         *        Starting index to search from. Must be within array range.
+         *
+         * @return {number}
+         *         The index of the last obstacle element before xMin.
+         */
+        function findLastObstacleBefore(obstacles, xMin, startIx) {
+            var left = startIx || 0, // left limit
+                right = obstacles.length - 1, // right limit
+                min = xMin - 0.0000001, // Make sure we include all obstacles at xMin
+                cursor,
+                cmp;
+            while (left <= right) {
+                cursor = (right + left) >> 1;
+                cmp = min - obstacles[cursor].xMin;
+                if (cmp > 0) {
+                    left = cursor + 1;
+                }
+                else if (cmp < 0) {
+                    right = cursor - 1;
+                }
+                else {
+                    return cursor;
+                }
+            }
+            return left > 0 ? left - 1 : 0;
+        }
+        /**
+         * Test if a point lays within an obstacle.
+         *
+         * @private
+         * @function pointWithinObstacle
+         *
+         * @param {object} obstacle
+         *        Obstacle to test.
+         *
+         * @param {Highcharts.Point} point
+         *        Point with x/y props.
+         *
+         * @return {boolean}
+         *         Whether point is within the obstacle or not.
+         */
+        function pointWithinObstacle(obstacle, point) {
+            return (point.x <= obstacle.xMax &&
+                point.x >= obstacle.xMin &&
+                point.y <= obstacle.yMax &&
+                point.y >= obstacle.yMin);
+        }
+        /**
+         * Find the index of an obstacle that wraps around a point.
+         * Returns -1 if not found.
+         *
+         * @private
+         * @function findObstacleFromPoint
+         *
+         * @param {Array<object>} obstacles
+         *        Obstacles to test.
+         *
+         * @param {Highcharts.Point} point
+         *        Point with x/y props.
+         *
+         * @return {number}
+         *         Ix of the obstacle in the array, or -1 if not found.
+         */
+        function findObstacleFromPoint(obstacles, point) {
+            var i = findLastObstacleBefore(obstacles,
+                point.x + 1) + 1;
+            while (i--) {
+                if (obstacles[i].xMax >= point.x &&
+                    // optimization using lazy evaluation
+                    pointWithinObstacle(obstacles[i], point)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        /**
+         * Get SVG path array from array of line segments.
+         *
+         * @private
+         * @function pathFromSegments
+         *
+         * @param {Array<object>} segments
+         *        The segments to build the path from.
+         *
+         * @return {Highcharts.SVGPathArray}
+         *         SVG path array as accepted by the SVG Renderer.
+         */
+        function pathFromSegments(segments) {
+            var path = [];
+            if (segments.length) {
+                path.push(['M', segments[0].start.x, segments[0].start.y]);
+                for (var i = 0; i < segments.length; ++i) {
+                    path.push(['L', segments[i].end.x, segments[i].end.y]);
+                }
+            }
+            return path;
+        }
+        /**
+         * Limits obstacle max/mins in all directions to bounds. Modifies input
+         * obstacle.
+         *
+         * @private
+         * @function limitObstacleToBounds
+         *
+         * @param {object} obstacle
+         *        Obstacle to limit.
+         *
+         * @param {object} bounds
+         *        Bounds to use as limit.
+         *
+         * @return {void}
+         */
+        function limitObstacleToBounds(obstacle, bounds) {
+            obstacle.yMin = max(obstacle.yMin, bounds.yMin);
+            obstacle.yMax = min(obstacle.yMax, bounds.yMax);
+            obstacle.xMin = max(obstacle.xMin, bounds.xMin);
+            obstacle.xMax = min(obstacle.xMax, bounds.xMax);
+        }
+        /**
+         * Get an SVG path from a starting coordinate to an ending coordinate.
+         * Draws a straight line.
+         *
+         * @function Highcharts.Pathfinder.algorithms.straight
+         *
+         * @param {Highcharts.PositionObject} start
+         *        Starting coordinate, object with x/y props.
+         *
+         * @param {Highcharts.PositionObject} end
+         *        Ending coordinate, object with x/y props.
+         *
+         * @return {object}
+         *         An object with the SVG path in Array form as accepted by the SVG
+         *         renderer, as well as an array of new obstacles making up this
+         *         path.
+         */
+        function straight(start, end) {
+            return {
+                path: [
+                    ['M', start.x, start.y],
+                    ['L', end.x, end.y]
+                ],
+                obstacles: [{ start: start, end: end }]
+            };
+        }
+        /**
+         * Find a path from a starting coordinate to an ending coordinate, using
+         * right angles only, and taking only starting/ending obstacle into
+         * consideration.
+         *
+         * @function Highcharts.Pathfinder.algorithms.simpleConnect
+         *
+         * @param {Highcharts.PositionObject} start
+         *        Starting coordinate, object with x/y props.
+         *
+         * @param {Highcharts.PositionObject} end
+         *        Ending coordinate, object with x/y props.
+         *
+         * @param {object} options
+         *        Options for the algorithm:
+         *        - chartObstacles: Array of chart obstacles to avoid
+         *        - startDirectionX: Optional. True if starting in the X direction.
+         *          If not provided, the algorithm starts in the direction that is
+         *          the furthest between start/end.
+         *
+         * @return {object}
+         *         An object with the SVG path in Array form as accepted by the SVG
+         *         renderer, as well as an array of new obstacles making up this
+         *         path.
+         */
+        var simpleConnect = extend(function (start,
+            end,
+            options) {
+                var segments = [],
+            endSegment,
+            dir = pick(options.startDirectionX,
+            abs(end.x - start.x) > abs(end.y - start.y)) ? 'x' : 'y',
+            chartObstacles = options.chartObstacles,
+            startObstacleIx = findObstacleFromPoint(chartObstacles,
+            start),
+            endObstacleIx = findObstacleFromPoint(chartObstacles,
+            end),
+            startObstacle,
+            endObstacle,
+            prevWaypoint,
+            waypoint,
+            waypoint2,
+            useMax,
+            endPoint;
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Return a clone of a point with a property set from a target object,
+             * optionally with an offset
+             * @private
+             */
+            function copyFromPoint(from, fromKey, to, toKey, offset) {
+                var point = {
+                        x: from.x,
+                        y: from.y
+                    };
+                point[fromKey] = to[toKey || fromKey] + (offset || 0);
+                return point;
+            }
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Return waypoint outside obstacle.
+             * @private
+             */
+            function getMeOut(obstacle, point, direction) {
+                var useMax = abs(point[direction] - obstacle[direction + 'Min']) >
+                        abs(point[direction] - obstacle[direction + 'Max']);
+                return copyFromPoint(point, direction, obstacle, direction + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1);
+            }
+            // Pull out end point
+            if (endObstacleIx > -1) {
+                endObstacle = chartObstacles[endObstacleIx];
+                waypoint = getMeOut(endObstacle, end, dir);
+                endSegment = {
+                    start: waypoint,
+                    end: end
+                };
+                endPoint = waypoint;
+            }
+            else {
+                endPoint = end;
+            }
+            // If an obstacle envelops the start point, add a segment to get out,
+            // and around it.
+            if (startObstacleIx > -1) {
+                startObstacle = chartObstacles[startObstacleIx];
+                waypoint = getMeOut(startObstacle, start, dir);
+                segments.push({
+                    start: start,
+                    end: waypoint
+                });
+                // If we are going back again, switch direction to get around start
+                // obstacle.
+                if (
+                // Going towards max from start:
+                waypoint[dir] >= start[dir] ===
+                    // Going towards min to end:
+                    waypoint[dir] >= endPoint[dir]) {
+                    dir = dir === 'y' ? 'x' : 'y';
+                    useMax = start[dir] < end[dir];
+                    segments.push({
+                        start: waypoint,
+                        end: copyFromPoint(waypoint, dir, startObstacle, dir + (useMax ? 'Max' : 'Min'), useMax ? 1 : -1)
+                    });
+                    // Switch direction again
+                    dir = dir === 'y' ? 'x' : 'y';
+                }
+            }
+            // We are around the start obstacle. Go towards the end in one
+            // direction.
+            prevWaypoint = segments.length ?
+                segments[segments.length - 1].end :
+                start;
+            waypoint = copyFromPoint(prevWaypoint, dir, endPoint);
+            segments.push({
+                start: prevWaypoint,
+                end: waypoint
+            });
+            // Final run to end point in the other direction
+            dir = dir === 'y' ? 'x' : 'y';
+            waypoint2 = copyFromPoint(waypoint, dir, endPoint);
+            segments.push({
+                start: waypoint,
+                end: waypoint2
+            });
+            // Finally add the endSegment
+            segments.push(endSegment);
+            return {
+                path: pathFromSegments(segments),
+                obstacles: segments
+            };
+        }, {
+            requiresObstacles: true
+        });
+        /**
+         * Find a path from a starting coordinate to an ending coordinate, taking
+         * obstacles into consideration. Might not always find the optimal path,
+         * but is fast, and usually good enough.
+         *
+         * @function Highcharts.Pathfinder.algorithms.fastAvoid
+         *
+         * @param {Highcharts.PositionObject} start
+         *        Starting coordinate, object with x/y props.
+         *
+         * @param {Highcharts.PositionObject} end
+         *        Ending coordinate, object with x/y props.
+         *
+         * @param {object} options
+         *        Options for the algorithm.
+         *        - chartObstacles:  Array of chart obstacles to avoid
+         *        - lineObstacles:   Array of line obstacles to jump over
+         *        - obstacleMetrics: Object with metrics of chartObstacles cached
+         *        - hardBounds:      Hard boundaries to not cross
+         *        - obstacleOptions: Options for the obstacles, including margin
+         *        - startDirectionX: Optional. True if starting in the X direction.
+         *                           If not provided, the algorithm starts in the
+         *                           direction that is the furthest between
+         *                           start/end.
+         *
+         * @return {object}
+         *         An object with the SVG path in Array form as accepted by the SVG
+         *         renderer, as well as an array of new obstacles making up this
+         *         path.
+         */
+        var fastAvoid = extend(function (start,
+            end,
+            options) {
+                /*
+                    Algorithm rules/description
+                    - Find initial direction
+                    - Determine soft/hard max for each direction.
+                    - Move along initial direction until obstacle.
+                    - Change direction.
+                    - If hitting obstacle,
+            first try to change length of previous line
+                        before changing direction again.
+    
+                    Soft min/max x = start/destination x +/- widest obstacle + margin
+                    Soft min/max y = start/destination y +/- tallest obstacle + margin
+    
+                    @todo:
+                        - Make retrospective,
+            try changing prev segment to reduce
+                            corners
+                        - Fix logic for breaking out of end-points - not always picking
+                            the best direction currently
+                        - When going around the end obstacle we should not always go the
+                            shortest route,
+            rather pick the one closer to the end point
+                */
+                var dirIsX = pick(options.startDirectionX,
+            abs(end.x - start.x) > abs(end.y - start.y)),
+            dir = dirIsX ? 'x' : 'y',
+            segments,
+            useMax,
+            extractedEndPoint,
+            endSegments = [],
+            forceObstacleBreak = false, // Used in clearPathTo to keep track of
+                // when to force break through an obstacle.
+                // Boundaries to stay within. If beyond soft boundary, prefer to
+                // change direction ASAP. If at hard max, always change immediately.
+                metrics = options.obstacleMetrics,
+            softMinX = min(start.x,
+            end.x) - metrics.maxWidth - 10,
+            softMaxX = max(start.x,
+            end.x) + metrics.maxWidth + 10,
+            softMinY = min(start.y,
+            end.y) - metrics.maxHeight - 10,
+            softMaxY = max(start.y,
+            end.y) + metrics.maxHeight + 10, 
+                // Obstacles
+                chartObstacles = options.chartObstacles,
+            startObstacleIx = findLastObstacleBefore(chartObstacles,
+            softMinX),
+            endObstacleIx = findLastObstacleBefore(chartObstacles,
+            softMaxX);
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * How far can you go between two points before hitting an obstacle?
+             * Does not work for diagonal lines (because it doesn't have to).
+             * @private
+             */
+            function pivotPoint(fromPoint, toPoint, directionIsX) {
+                var firstPoint,
+                    lastPoint,
+                    highestPoint,
+                    lowestPoint,
+                    i,
+                    searchDirection = fromPoint.x < toPoint.x ? 1 : -1;
+                if (fromPoint.x < toPoint.x) {
+                    firstPoint = fromPoint;
+                    lastPoint = toPoint;
+                }
+                else {
+                    firstPoint = toPoint;
+                    lastPoint = fromPoint;
+                }
+                if (fromPoint.y < toPoint.y) {
+                    lowestPoint = fromPoint;
+                    highestPoint = toPoint;
+                }
+                else {
+                    lowestPoint = toPoint;
+                    highestPoint = fromPoint;
+                }
+                // Go through obstacle range in reverse if toPoint is before
+                // fromPoint in the X-dimension.
+                i = searchDirection < 0 ?
+                    // Searching backwards, start at last obstacle before last point
+                    min(findLastObstacleBefore(chartObstacles, lastPoint.x), chartObstacles.length - 1) :
+                    // Forwards. Since we're not sorted by xMax, we have to look
+                    // at all obstacles.
+                    0;
+                // Go through obstacles in this X range
+                while (chartObstacles[i] && (searchDirection > 0 && chartObstacles[i].xMin <= lastPoint.x ||
+                    searchDirection < 0 && chartObstacles[i].xMax >= firstPoint.x)) {
+                    // If this obstacle is between from and to points in a straight
+                    // line, pivot at the intersection.
+                    if (chartObstacles[i].xMin <= lastPoint.x &&
+                        chartObstacles[i].xMax >= firstPoint.x &&
+                        chartObstacles[i].yMin <= highestPoint.y &&
+                        chartObstacles[i].yMax >= lowestPoint.y) {
+                        if (directionIsX) {
+                            return {
+                                y: fromPoint.y,
+                                x: fromPoint.x < toPoint.x ?
+                                    chartObstacles[i].xMin - 1 :
+                                    chartObstacles[i].xMax + 1,
+                                obstacle: chartObstacles[i]
+                            };
+                        }
+                        // else ...
+                        return {
+                            x: fromPoint.x,
+                            y: fromPoint.y < toPoint.y ?
+                                chartObstacles[i].yMin - 1 :
+                                chartObstacles[i].yMax + 1,
+                            obstacle: chartObstacles[i]
+                        };
+                    }
+                    i += searchDirection;
+                }
+                return toPoint;
+            }
+            /**
+             * Decide in which direction to dodge or get out of an obstacle.
+             * Considers desired direction, which way is shortest, soft and hard
+             * bounds.
+             *
+             * (? Returns a string, either xMin, xMax, yMin or yMax.)
+             *
+             * @private
+             * @function
+             *
+             * @param {object} obstacle
+             *        Obstacle to dodge/escape.
+             *
+             * @param {object} fromPoint
+             *        Point with x/y props that's dodging/escaping.
+             *
+             * @param {object} toPoint
+             *        Goal point.
+             *
+             * @param {boolean} dirIsX
+             *        Dodge in X dimension.
+             *
+             * @param {object} bounds
+             *        Hard and soft boundaries.
+             *
+             * @return {boolean}
+             *         Use max or not.
+             */
+            function getDodgeDirection(obstacle, fromPoint, toPoint, dirIsX, bounds) {
+                var softBounds = bounds.soft, hardBounds = bounds.hard, dir = dirIsX ? 'x' : 'y', toPointMax = { x: fromPoint.x, y: fromPoint.y }, toPointMin = { x: fromPoint.x, y: fromPoint.y }, minPivot, maxPivot, maxOutOfSoftBounds = obstacle[dir + 'Max'] >=
+                        softBounds[dir + 'Max'], minOutOfSoftBounds = obstacle[dir + 'Min'] <=
+                        softBounds[dir + 'Min'], maxOutOfHardBounds = obstacle[dir + 'Max'] >=
+                        hardBounds[dir + 'Max'], minOutOfHardBounds = obstacle[dir + 'Min'] <=
+                        hardBounds[dir + 'Min'], 
+                    // Find out if we should prefer one direction over the other if
+                    // we can choose freely
+                    minDistance = abs(obstacle[dir + 'Min'] - fromPoint[dir]), maxDistance = abs(obstacle[dir + 'Max'] - fromPoint[dir]), 
+                    // If it's a small difference, pick the one leading towards dest
+                    // point. Otherwise pick the shortest distance
+                    useMax = abs(minDistance - maxDistance) < 10 ?
+                        fromPoint[dir] < toPoint[dir] :
+                        maxDistance < minDistance;
+                // Check if we hit any obstacles trying to go around in either
+                // direction.
+                toPointMin[dir] = obstacle[dir + 'Min'];
+                toPointMax[dir] = obstacle[dir + 'Max'];
+                minPivot = pivotPoint(fromPoint, toPointMin, dirIsX)[dir] !==
+                    toPointMin[dir];
+                maxPivot = pivotPoint(fromPoint, toPointMax, dirIsX)[dir] !==
+                    toPointMax[dir];
+                useMax = minPivot ?
+                    (maxPivot ? useMax : true) :
+                    (maxPivot ? false : useMax);
+                // useMax now contains our preferred choice, bounds not taken into
+                // account. If both or neither direction is out of bounds we want to
+                // use this.
+                // Deal with soft bounds
+                useMax = minOutOfSoftBounds ?
+                    (maxOutOfSoftBounds ? useMax : true) : // Out on min
+                    (maxOutOfSoftBounds ? false : useMax); // Not out on min
+                // Deal with hard bounds
+                useMax = minOutOfHardBounds ?
+                    (maxOutOfHardBounds ? useMax : true) : // Out on min
+                    (maxOutOfHardBounds ? false : useMax); // Not out on min
+                return useMax;
+            }
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Find a clear path between point.
+             * @private
+             */
+            function clearPathTo(fromPoint, toPoint, dirIsX) {
+                // Don't waste time if we've hit goal
+                if (fromPoint.x === toPoint.x && fromPoint.y === toPoint.y) {
+                    return [];
+                }
+                var dir = dirIsX ? 'x' : 'y',
+                    pivot,
+                    segments,
+                    waypoint,
+                    waypointUseMax,
+                    envelopingObstacle,
+                    secondEnvelopingObstacle,
+                    envelopWaypoint,
+                    obstacleMargin = options.obstacleOptions.margin,
+                    bounds = {
+                        soft: {
+                            xMin: softMinX,
+                            xMax: softMaxX,
+                            yMin: softMinY,
+                            yMax: softMaxY
+                        },
+                        hard: options.hardBounds
+                    };
+                // If fromPoint is inside an obstacle we have a problem. Break out
+                // by just going to the outside of this obstacle. We prefer to go to
+                // the nearest edge in the chosen direction.
+                envelopingObstacle =
+                    findObstacleFromPoint(chartObstacles, fromPoint);
+                if (envelopingObstacle > -1) {
+                    envelopingObstacle = chartObstacles[envelopingObstacle];
+                    waypointUseMax = getDodgeDirection(envelopingObstacle, fromPoint, toPoint, dirIsX, bounds);
+                    // Cut obstacle to hard bounds to make sure we stay within
+                    limitObstacleToBounds(envelopingObstacle, options.hardBounds);
+                    envelopWaypoint = dirIsX ? {
+                        y: fromPoint.y,
+                        x: envelopingObstacle[waypointUseMax ? 'xMax' : 'xMin'] +
+                            (waypointUseMax ? 1 : -1)
+                    } : {
+                        x: fromPoint.x,
+                        y: envelopingObstacle[waypointUseMax ? 'yMax' : 'yMin'] +
+                            (waypointUseMax ? 1 : -1)
+                    };
+                    // If we crashed into another obstacle doing this, we put the
+                    // waypoint between them instead
+                    secondEnvelopingObstacle = findObstacleFromPoint(chartObstacles, envelopWaypoint);
+                    if (secondEnvelopingObstacle > -1) {
+                        secondEnvelopingObstacle = chartObstacles[secondEnvelopingObstacle];
+                        // Cut obstacle to hard bounds
+                        limitObstacleToBounds(secondEnvelopingObstacle, options.hardBounds);
+                        // Modify waypoint to lay between obstacles
+                        envelopWaypoint[dir] = waypointUseMax ? max(envelopingObstacle[dir + 'Max'] - obstacleMargin + 1, (secondEnvelopingObstacle[dir + 'Min'] +
+                            envelopingObstacle[dir + 'Max']) / 2) :
+                            min((envelopingObstacle[dir + 'Min'] + obstacleMargin - 1), ((secondEnvelopingObstacle[dir + 'Max'] +
+                                envelopingObstacle[dir + 'Min']) / 2));
+                        // We are not going anywhere. If this happens for the first
+                        // time, do nothing. Otherwise, try to go to the extreme of
+                        // the obstacle pair in the current direction.
+                        if (fromPoint.x === envelopWaypoint.x &&
+                            fromPoint.y === envelopWaypoint.y) {
+                            if (forceObstacleBreak) {
+                                envelopWaypoint[dir] = waypointUseMax ?
+                                    max(envelopingObstacle[dir + 'Max'], secondEnvelopingObstacle[dir + 'Max']) + 1 :
+                                    min(envelopingObstacle[dir + 'Min'], secondEnvelopingObstacle[dir + 'Min']) - 1;
+                            }
+                            // Toggle on if off, and the opposite
+                            forceObstacleBreak = !forceObstacleBreak;
+                        }
+                        else {
+                            // This point is not identical to previous.
+                            // Clear break trigger.
+                            forceObstacleBreak = false;
+                        }
+                    }
+                    segments = [{
+                            start: fromPoint,
+                            end: envelopWaypoint
+                        }];
+                }
+                else { // If not enveloping, use standard pivot calculation
+                    pivot = pivotPoint(fromPoint, {
+                        x: dirIsX ? toPoint.x : fromPoint.x,
+                        y: dirIsX ? fromPoint.y : toPoint.y
+                    }, dirIsX);
+                    segments = [{
+                            start: fromPoint,
+                            end: {
+                                x: pivot.x,
+                                y: pivot.y
+                            }
+                        }];
+                    // Pivot before goal, use a waypoint to dodge obstacle
+                    if (pivot[dirIsX ? 'x' : 'y'] !== toPoint[dirIsX ? 'x' : 'y']) {
+                        // Find direction of waypoint
+                        waypointUseMax = getDodgeDirection(pivot.obstacle, pivot, toPoint, !dirIsX, bounds);
+                        // Cut waypoint to hard bounds
+                        limitObstacleToBounds(pivot.obstacle, options.hardBounds);
+                        waypoint = {
+                            x: dirIsX ?
+                                pivot.x :
+                                pivot.obstacle[waypointUseMax ? 'xMax' : 'xMin'] +
+                                    (waypointUseMax ? 1 : -1),
+                            y: dirIsX ?
+                                pivot.obstacle[waypointUseMax ? 'yMax' : 'yMin'] +
+                                    (waypointUseMax ? 1 : -1) :
+                                pivot.y
+                        };
+                        // We're changing direction here, store that to make sure we
+                        // also change direction when adding the last segment array
+                        // after handling waypoint.
+                        dirIsX = !dirIsX;
+                        segments = segments.concat(clearPathTo({
+                            x: pivot.x,
+                            y: pivot.y
+                        }, waypoint, dirIsX));
+                    }
+                }
+                // Get segments for the other direction too
+                // Recursion is our friend
+                segments = segments.concat(clearPathTo(segments[segments.length - 1].end, toPoint, !dirIsX));
+                return segments;
+            }
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Extract point to outside of obstacle in whichever direction is
+             * closest. Returns new point outside obstacle.
+             * @private
+             */
+            function extractFromObstacle(obstacle, point, goalPoint) {
+                var dirIsX = min(obstacle.xMax - point.x,
+                    point.x - obstacle.xMin) <
+                        min(obstacle.yMax - point.y,
+                    point.y - obstacle.yMin),
+                    bounds = {
+                        soft: options.hardBounds,
+                        hard: options.hardBounds
+                    },
+                    useMax = getDodgeDirection(obstacle,
+                    point,
+                    goalPoint,
+                    dirIsX,
+                    bounds);
+                return dirIsX ? {
+                    y: point.y,
+                    x: obstacle[useMax ? 'xMax' : 'xMin'] + (useMax ? 1 : -1)
+                } : {
+                    x: point.x,
+                    y: obstacle[useMax ? 'yMax' : 'yMin'] + (useMax ? 1 : -1)
+                };
+            }
+            // Cut the obstacle array to soft bounds for optimization in large
+            // datasets.
+            chartObstacles =
+                chartObstacles.slice(startObstacleIx, endObstacleIx + 1);
+            // If an obstacle envelops the end point, move it out of there and add
+            // a little segment to where it was.
+            if ((endObstacleIx = findObstacleFromPoint(chartObstacles, end)) > -1) {
+                extractedEndPoint = extractFromObstacle(chartObstacles[endObstacleIx], end, start);
+                endSegments.push({
+                    end: end,
+                    start: extractedEndPoint
+                });
+                end = extractedEndPoint;
+            }
+            // If it's still inside one or more obstacles, get out of there by
+            // force-moving towards the start point.
+            while ((endObstacleIx = findObstacleFromPoint(chartObstacles, end)) > -1) {
+                useMax = end[dir] - start[dir] < 0;
+                extractedEndPoint = {
+                    x: end.x,
+                    y: end.y
+                };
+                extractedEndPoint[dir] = chartObstacles[endObstacleIx][useMax ? dir + 'Max' : dir + 'Min'] + (useMax ? 1 : -1);
+                endSegments.push({
+                    end: end,
+                    start: extractedEndPoint
+                });
+                end = extractedEndPoint;
+            }
+            // Find the path
+            segments = clearPathTo(start, end, dirIsX);
+            // Add the end-point segments
+            segments = segments.concat(endSegments.reverse());
+            return {
+                path: pathFromSegments(segments),
+                obstacles: segments
+            };
+        }, {
+            requiresObstacles: true
+        });
+        // Define the available pathfinding algorithms.
+        // Algorithms take up to 3 arguments: starting point, ending point, and an
+        // options object.
+        var algorithms = {
+                fastAvoid: fastAvoid,
+                straight: straight,
+                simpleConnect: simpleConnect
+            };
+
+        return algorithms;
+    });
+    _registerModule(_modules, 'Gantt/Pathfinder.js', [_modules['Gantt/Connection.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Gantt/PathfinderAlgorithms.js']], function (Connection, Chart, H, O, Point, U, pathfinderAlgorithms) {
+        /* *
+         *
+         *  (c) 2016 Highsoft AS
+         *  Authors: Øystein Moseng, Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /**
+         * The default pathfinder algorithm to use for a chart. It is possible to define
+         * your own algorithms by adding them to the
+         * `Highcharts.Pathfinder.prototype.algorithms`
+         * object before the chart has been created.
+         *
+         * The default algorithms are as follows:
+         *
+         * `straight`:      Draws a straight line between the connecting
+         *                  points. Does not avoid other points when drawing.
+         *
+         * `simpleConnect`: Finds a path between the points using right angles
+         *                  only. Takes only starting/ending points into
+         *                  account, and will not avoid other points.
+         *
+         * `fastAvoid`:     Finds a path between the points using right angles
+         *                  only. Will attempt to avoid other points, but its
+         *                  focus is performance over accuracy. Works well with
+         *                  less dense datasets.
+         *
+         * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
+         */
+        ''; // detach doclets above
+        var defaultOptions = O.defaultOptions;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            error = U.error,
+            extend = U.extend,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick,
+            splat = U.splat;
+        var deg2rad = H.deg2rad,
+            max = Math.max,
+            min = Math.min;
+        /*
+         @todo:
+             - Document how to write your own algorithms
+             - Consider adding a Point.pathTo method that wraps creating a connection
+               and rendering it
+        */
+        // Set default Pathfinder options
+        extend(defaultOptions, {
+            /**
+             * The Pathfinder module allows you to define connections between any two
+             * points, represented as lines - optionally with markers for the start
+             * and/or end points. Multiple algorithms are available for calculating how
+             * the connecting lines are drawn.
+             *
+             * Connector functionality requires Highcharts Gantt to be loaded. In Gantt
+             * charts, the connectors are used to draw dependencies between tasks.
+             *
+             * @see [dependency](series.gantt.data.dependency)
+             *
+             * @sample gantt/pathfinder/demo
+             *         Pathfinder connections
+             *
+             * @declare      Highcharts.ConnectorsOptions
+             * @product      gantt
+             * @optionparent connectors
+             */
+            connectors: {
+                /**
+                 * Enable connectors for this chart. Requires Highcharts Gantt.
+                 *
+                 * @type      {boolean}
+                 * @default   true
+                 * @since     6.2.0
+                 * @apioption connectors.enabled
+                 */
+                /**
+                 * Set the default dash style for this chart's connecting lines.
+                 *
+                 * @type      {string}
+                 * @default   solid
+                 * @since     6.2.0
+                 * @apioption connectors.dashStyle
+                 */
+                /**
+                 * Set the default color for this chart's Pathfinder connecting lines.
+                 * Defaults to the color of the point being connected.
+                 *
+                 * @type      {Highcharts.ColorString}
+                 * @since     6.2.0
+                 * @apioption connectors.lineColor
+                 */
+                /**
+                 * Set the default pathfinder margin to use, in pixels. Some Pathfinder
+                 * algorithms attempt to avoid obstacles, such as other points in the
+                 * chart. These algorithms use this margin to determine how close lines
+                 * can be to an obstacle. The default is to compute this automatically
+                 * from the size of the obstacles in the chart.
+                 *
+                 * To draw connecting lines close to existing points, set this to a low
+                 * number. For more space around existing points, set this number
+                 * higher.
+                 *
+                 * @sample gantt/pathfinder/algorithm-margin
+                 *         Small algorithmMargin
+                 *
+                 * @type      {number}
+                 * @since     6.2.0
+                 * @apioption connectors.algorithmMargin
+                 */
+                /**
+                 * Set the default pathfinder algorithm to use for this chart. It is
+                 * possible to define your own algorithms by adding them to the
+                 * Highcharts.Pathfinder.prototype.algorithms object before the chart
+                 * has been created.
+                 *
+                 * The default algorithms are as follows:
+                 *
+                 * `straight`:      Draws a straight line between the connecting
+                 *                  points. Does not avoid other points when drawing.
+                 *
+                 * `simpleConnect`: Finds a path between the points using right angles
+                 *                  only. Takes only starting/ending points into
+                 *                  account, and will not avoid other points.
+                 *
+                 * `fastAvoid`:     Finds a path between the points using right angles
+                 *                  only. Will attempt to avoid other points, but its
+                 *                  focus is performance over accuracy. Works well with
+                 *                  less dense datasets.
+                 *
+                 * Default value: `straight` is used as default for most series types,
+                 * while `simpleConnect` is used as default for Gantt series, to show
+                 * dependencies between points.
+                 *
+                 * @sample gantt/pathfinder/demo
+                 *         Different types used
+                 *
+                 * @type    {Highcharts.PathfinderTypeValue}
+                 * @default undefined
+                 * @since   6.2.0
+                 */
+                type: 'straight',
+                /**
+                 * Set the default pixel width for this chart's Pathfinder connecting
+                 * lines.
+                 *
+                 * @since 6.2.0
+                 */
+                lineWidth: 1,
+                /**
+                 * Marker options for this chart's Pathfinder connectors. Note that
+                 * this option is overridden by the `startMarker` and `endMarker`
+                 * options.
+                 *
+                 * @declare Highcharts.ConnectorsMarkerOptions
+                 * @since   6.2.0
+                 */
+                marker: {
+                    /**
+                     * Set the radius of the connector markers. The default is
+                     * automatically computed based on the algorithmMargin setting.
+                     *
+                     * Setting marker.width and marker.height will override this
+                     * setting.
+                     *
+                     * @type      {number}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.radius
+                     */
+                    /**
+                     * Set the width of the connector markers. If not supplied, this
+                     * is inferred from the marker radius.
+                     *
+                     * @type      {number}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.width
+                     */
+                    /**
+                     * Set the height of the connector markers. If not supplied, this
+                     * is inferred from the marker radius.
+                     *
+                     * @type      {number}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.height
+                     */
+                    /**
+                     * Set the color of the connector markers. By default this is the
+                     * same as the connector color.
+                     *
+                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.color
+                     */
+                    /**
+                     * Set the line/border color of the connector markers. By default
+                     * this is the same as the marker color.
+                     *
+                     * @type      {Highcharts.ColorString}
+                     * @since     6.2.0
+                     * @apioption connectors.marker.lineColor
+                     */
+                    /**
+                     * Enable markers for the connectors.
+                     */
+                    enabled: false,
+                    /**
+                     * Horizontal alignment of the markers relative to the points.
+                     *
+                     * @type {Highcharts.AlignValue}
+                     */
+                    align: 'center',
+                    /**
+                     * Vertical alignment of the markers relative to the points.
+                     *
+                     * @type {Highcharts.VerticalAlignValue}
+                     */
+                    verticalAlign: 'middle',
+                    /**
+                     * Whether or not to draw the markers inside the points.
+                     */
+                    inside: false,
+                    /**
+                     * Set the line/border width of the pathfinder markers.
+                     */
+                    lineWidth: 1
+                },
+                /**
+                 * Marker options specific to the start markers for this chart's
+                 * Pathfinder connectors. Overrides the generic marker options.
+                 *
+                 * @declare Highcharts.ConnectorsStartMarkerOptions
+                 * @extends connectors.marker
+                 * @since   6.2.0
+                 */
+                startMarker: {
+                    /**
+                     * Set the symbol of the connector start markers.
+                     */
+                    symbol: 'diamond'
+                },
+                /**
+                 * Marker options specific to the end markers for this chart's
+                 * Pathfinder connectors. Overrides the generic marker options.
+                 *
+                 * @declare Highcharts.ConnectorsEndMarkerOptions
+                 * @extends connectors.marker
+                 * @since   6.2.0
+                 */
+                endMarker: {
+                    /**
+                     * Set the symbol of the connector end markers.
+                     */
+                    symbol: 'arrow-filled'
+                }
+            }
+        });
+        /**
+         * Override Pathfinder connector options for a series. Requires Highcharts Gantt
+         * to be loaded.
+         *
+         * @declare   Highcharts.SeriesConnectorsOptionsObject
+         * @extends   connectors
+         * @since     6.2.0
+         * @excluding enabled, algorithmMargin
+         * @product   gantt
+         * @apioption plotOptions.series.connectors
+         */
+        /**
+         * Connect to a point. This option can be either a string, referring to the ID
+         * of another point, or an object, or an array of either. If the option is an
+         * array, each element defines a connection.
+         *
+         * @sample gantt/pathfinder/demo
+         *         Different connection types
+         *
+         * @declare   Highcharts.XrangePointConnectorsOptionsObject
+         * @type      {string|Array<string|*>|*}
+         * @extends   plotOptions.series.connectors
+         * @since     6.2.0
+         * @excluding enabled
+         * @product   gantt
+         * @requires  highcharts-gantt
+         * @apioption series.xrange.data.connect
+         */
+        /**
+         * The ID of the point to connect to.
+         *
+         * @type      {string}
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption series.xrange.data.connect.to
+         */
+        /**
+         * Get point bounding box using plotX/plotY and shapeArgs. If using
+         * graphic.getBBox() directly, the bbox will be affected by animation.
+         *
+         * @private
+         * @function
+         *
+         * @param {Highcharts.Point} point
+         *        The point to get BB of.
+         *
+         * @return {Highcharts.Dictionary<number>|null}
+         *         Result xMax, xMin, yMax, yMin.
+         */
+        function getPointBB(point) {
+            var shapeArgs = point.shapeArgs,
+                bb;
+            // Prefer using shapeArgs (columns)
+            if (shapeArgs) {
+                return {
+                    xMin: shapeArgs.x,
+                    xMax: shapeArgs.x + shapeArgs.width,
+                    yMin: shapeArgs.y,
+                    yMax: shapeArgs.y + shapeArgs.height
+                };
+            }
+            // Otherwise use plotX/plotY and bb
+            bb = point.graphic && point.graphic.getBBox();
+            return bb ? {
+                xMin: point.plotX - bb.width / 2,
+                xMax: point.plotX + bb.width / 2,
+                yMin: point.plotY - bb.height / 2,
+                yMax: point.plotY + bb.height / 2
+            } : null;
+        }
+        /**
+         * Calculate margin to place around obstacles for the pathfinder in pixels.
+         * Returns a minimum of 1 pixel margin.
+         *
+         * @private
+         * @function
+         *
+         * @param {Array<object>} obstacles
+         *        Obstacles to calculate margin from.
+         *
+         * @return {number}
+         *         The calculated margin in pixels. At least 1.
+         */
+        function calculateObstacleMargin(obstacles) {
+            var len = obstacles.length,
+                i = 0,
+                j,
+                obstacleDistance,
+                distances = [], 
+                // Compute smallest distance between two rectangles
+                distance = function (a,
+                b,
+                bbMargin) {
+                    // Count the distance even if we are slightly off
+                    var margin = pick(bbMargin, 10),
+                yOverlap = a.yMax + margin > b.yMin - margin &&
+                        a.yMin - margin < b.yMax + margin,
+                xOverlap = a.xMax + margin > b.xMin - margin &&
+                        a.xMin - margin < b.xMax + margin,
+                xDistance = yOverlap ? (a.xMin > b.xMax ? a.xMin - b.xMax : b.xMin - a.xMax) : Infinity,
+                yDistance = xOverlap ? (a.yMin > b.yMax ? a.yMin - b.yMax : b.yMin - a.yMax) : Infinity;
+                // If the rectangles collide, try recomputing with smaller margin.
+                // If they collide anyway, discard the obstacle.
+                if (xOverlap && yOverlap) {
+                    return (margin ?
+                        distance(a, b, Math.floor(margin / 2)) :
+                        Infinity);
+                }
+                return min(xDistance, yDistance);
+            };
+            // Go over all obstacles and compare them to the others.
+            for (; i < len; ++i) {
+                // Compare to all obstacles ahead. We will already have compared this
+                // obstacle to the ones before.
+                for (j = i + 1; j < len; ++j) {
+                    obstacleDistance = distance(obstacles[i], obstacles[j]);
+                    // TODO: Magic number 80
+                    if (obstacleDistance < 80) { // Ignore large distances
+                        distances.push(obstacleDistance);
+                    }
+                }
+            }
+            // Ensure we always have at least one value, even in very spaceous charts
+            distances.push(80);
+            return max(Math.floor(distances.sort(function (a, b) {
+                return (a - b);
+            })[
+            // Discard first 10% of the relevant distances, and then grab
+            // the smallest one.
+            Math.floor(distances.length / 10)] / 2 - 1 // Divide the distance by 2 and subtract 1.
+            ), 1 // 1 is the minimum margin
+            );
+        }
+        /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * The Pathfinder class.
          *
@@ -49378,15 +50196,25 @@
          * @param {Highcharts.Chart} chart
          *        The chart to operate on.
          */
-        function Pathfinder(chart) {
-            this.init(chart);
-        }
-        Pathfinder.prototype = {
+        var Pathfinder = /** @class */ (function () {
+                function Pathfinder(chart) {
+                    /* *
+                     *
+                     * Properties
+                     *
+                     * */
+                    this.chart = void 0;
+                this.chartObstacles = void 0;
+                this.chartObstacleMetrics = void 0;
+                this.connections = void 0;
+                this.group = void 0;
+                this.lineObstacles = void 0;
+                this.init(chart);
+            }
             /**
              * @name Highcharts.Pathfinder#algorithms
              * @type {Highcharts.Dictionary<Function>}
              */
-            algorithms: pathfinderAlgorithms,
             /**
              * Initialize the Pathfinder object.
              *
@@ -49395,7 +50223,7 @@
              * @param {Highcharts.Chart} chart
              *        The chart context.
              */
-            init: function (chart) {
+            Pathfinder.prototype.init = function (chart) {
                 // Initialize pathfinder with chart context
                 this.chart = chart;
                 // Init connection reference list
@@ -49404,7 +50232,7 @@
                 addEvent(chart, 'redraw', function () {
                     this.pathfinder.update();
                 });
-            },
+            };
             /**
              * Update Pathfinder connections from scratch.
              *
@@ -49414,7 +50242,7 @@
              *        Whether or not to defer rendering of connections until
              *        series.afterAnimate event has fired. Used on first render.
              */
-            update: function (deferRender) {
+            Pathfinder.prototype.update = function (deferRender) {
                 var chart = this.chart,
                     pathfinder = this,
                     oldConnections = pathfinder.connections;
@@ -49472,7 +50300,7 @@
                 delete this.lineObstacles;
                 // Draw the pending connections
                 pathfinder.renderConnections(deferRender);
-            },
+            };
             /**
              * Draw the chart's connecting paths.
              *
@@ -49482,7 +50310,7 @@
              *        Whether or not to defer render until series animation is finished.
              *        Used on first render.
              */
-            renderConnections: function (deferRender) {
+            Pathfinder.prototype.renderConnections = function (deferRender) {
                 if (deferRender) {
                     // Render after series are done animating
                     this.chart.series.forEach(function (series) {
@@ -49516,7 +50344,7 @@
                         connection.render();
                     });
                 }
-            },
+            };
             /**
              * Get obstacles for the points in the chart. Does not include connecting
              * lines from Pathfinder. Applies algorithmMargin to the obstacles.
@@ -49531,7 +50359,7 @@
              *         An array of calculated obstacles. Each obstacle is defined as an
              *         object with xMin, xMax, yMin and yMax properties.
              */
-            getChartObstacles: function (options) {
+            Pathfinder.prototype.getChartObstacles = function (options) {
                 var obstacles = [],
                     series = this.chart.series,
                     margin = pick(options.algorithmMargin, 0),
@@ -49571,7 +50399,7 @@
                     });
                 }
                 return obstacles;
-            },
+            };
             /**
              * Utility function to get metrics for obstacles:
              * - Widest obstacle width
@@ -49586,7 +50414,7 @@
              *         The calculated metrics, as an object with maxHeight and maxWidth
              *         properties.
              */
-            getObstacleMetrics: function (obstacles) {
+            Pathfinder.prototype.getObstacleMetrics = function (obstacles) {
                 var maxWidth = 0,
                     maxHeight = 0,
                     width,
@@ -49606,7 +50434,7 @@
                     maxHeight: maxHeight,
                     maxWidth: maxWidth
                 };
-            },
+            };
             /**
              * Utility to get which direction to start the pathfinding algorithm
              * (X vs Y), calculated from a set of marker options.
@@ -49619,17 +50447,18 @@
              * @return {boolean}
              *         Returns true for X, false for Y, and undefined for autocalculate.
              */
-            getAlgorithmStartDirection: function (markerOptions) {
+            Pathfinder.prototype.getAlgorithmStartDirection = function (markerOptions) {
                 var xCenter = markerOptions.align !== 'left' &&
                         markerOptions.align !== 'right', yCenter = markerOptions.verticalAlign !== 'top' &&
                         markerOptions.verticalAlign !== 'bottom', undef;
                 return xCenter ?
                     (yCenter ? undef : false) : // x is centered
                     (yCenter ? true : undef); // x is off-center
-            }
-        };
+            };
+            return Pathfinder;
+        }());
+        Pathfinder.prototype.algorithms = pathfinderAlgorithms;
         // Add to Highcharts namespace
-        H.Connection = Connection;
         H.Pathfinder = Pathfinder;
         // Add pathfinding capabilities to Points
         extend(Point.prototype, /** @lends Point.prototype */ {
@@ -49813,8 +50642,9 @@
             }
         });
 
+        return Pathfinder;
     });
-    _registerModule(_modules, 'modules/xrange.src.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/Color.js'], _modules['parts/Point.js'], _modules['parts/Utilities.js']], function (Axis, H, Color, Point, U) {
+    _registerModule(_modules, 'Series/XRangeSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, H, Color, Point, U) {
         /* *
          *
          *  X-range series module
@@ -49901,7 +50731,7 @@
          *               edgeWidth, findNearestPointBy, getExtremesFromAll,
          *               negativeColor, pointInterval, pointIntervalUnit,
          *               pointPlacement, pointRange, pointStart, softThreshold,
-         *               stacking, threshold, data, dataSorting
+         *               stacking, threshold, data, dataSorting, boostBlending
          * @requires     modules/xrange
          * @optionparent plotOptions.xrange
          */
@@ -50458,7 +51288,8 @@
          * @excluding boostThreshold, crisp, cropThreshold, depth, edgeColor, edgeWidth,
          *            findNearestPointBy, getExtremesFromAll, negativeColor,
          *            pointInterval, pointIntervalUnit, pointPlacement, pointRange,
-         *            pointStart, softThreshold, stacking, threshold, dataSorting
+         *            pointStart, softThreshold, stacking, threshold, dataSorting,
+         *            boostBlending
          * @product   highcharts highstock gantt
          * @requires  modules/xrange
          * @apioption series.xrange
@@ -50555,7 +51386,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'parts-gantt/GanttSeries.js', [_modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/Utilities.js']], function (H, O, U) {
+    _registerModule(_modules, 'Series/GanttSeries.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, O, U) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -50929,7 +51760,7 @@
         ''; // adds doclets above to the transpiled file
 
     });
-    _registerModule(_modules, 'parts-gantt/GanttChart.js', [_modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Core/Chart/GanttChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -51029,6 +51860,9 @@
                 },
                 legend: {
                     enabled: false
+                },
+                navigator: {
+                    series: { type: 'gantt' }
                 }
             }, options, // user's options
             // forced options
@@ -51049,7 +51883,7 @@
         };
 
     });
-    _registerModule(_modules, 'parts/ScrollbarAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -51234,7 +52068,7 @@
 
         return ScrollbarAxis;
     });
-    _registerModule(_modules, 'parts/Scrollbar.js', [_modules['parts/Axis.js'], _modules['parts/Globals.js'], _modules['parts/ScrollbarAxis.js'], _modules['parts/Utilities.js'], _modules['parts/Options.js']], function (Axis, H, ScrollbarAxis, U, O) {
+    _registerModule(_modules, 'Core/Scrollbar.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Axis/ScrollbarAxis.js'], _modules['Core/Utilities.js'], _modules['Core/Options.js']], function (Axis, H, ScrollbarAxis, U, O) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -52098,7 +52932,7 @@
 
         return H.Scrollbar;
     });
-    _registerModule(_modules, 'parts/RangeSelector.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Globals.js'], _modules['parts/Options.js'], _modules['parts/SVGElement.js'], _modules['parts/Utilities.js']], function (Axis, Chart, H, O, SVGElement, U) {
+    _registerModule(_modules, 'Extensions/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, O, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -52457,6 +53291,8 @@
                 /**
                  * A custom callback function to parse values entered in the input boxes
                  * and return a valid JavaScript time as milliseconds since 1970.
+                 * The first argument passed is a value to parse,
+                 * second is a boolean indicating use of the UTC time.
                  *
                  * @sample {highstock} stock/rangeselector/input-format/
                  *         Milliseconds in the range selector
@@ -52751,8 +53587,12 @@
                     newMin = dataMin;
                     newMax = dataMax;
                 }
-                newMin += rangeOptions._offsetMin;
-                newMax += rangeOptions._offsetMax;
+                if (defined(newMin)) {
+                    newMin += rangeOptions._offsetMin;
+                }
+                if (defined(newMax)) {
+                    newMax += rangeOptions._offsetMax;
+                }
                 rangeSelector.setSelected(i);
                 // Update the chart
                 if (!baseAxis) {
@@ -53032,6 +53872,20 @@
                 this.setInputValue(name);
             };
             /**
+             * @private
+             * @function Highcharts.RangeSelector#defaultInputDateParser
+             */
+            RangeSelector.prototype.defaultInputDateParser = function (inputDate, useUTC) {
+                var date = new Date();
+                if (H.isSafari) {
+                    return Date.parse(inputDate.split(' ').join('T'));
+                }
+                if (useUTC) {
+                    return Date.parse(inputDate + 'Z');
+                }
+                return Date.parse(inputDate) - date.getTimezoneOffset() * 60 * 1000;
+            };
+            /**
              * Draw either the 'from' or the 'to' HTML input box of the range selector
              *
              * @private
@@ -53051,19 +53905,21 @@
                     input,
                     label,
                     dateBox,
-                    inputGroup = this.inputGroup;
+                    inputGroup = this.inputGroup,
+                    defaultInputDateParser = this.defaultInputDateParser;
                 /**
                  * @private
                  */
                 function updateExtremes() {
                     var inputValue = input.value,
-                        value = (options.inputDateParser || Date.parse)(inputValue),
+                        value,
                         chartAxis = chart.xAxis[0],
                         dataAxis = chart.scroller && chart.scroller.xAxis ?
                             chart.scroller.xAxis :
                             chartAxis,
                         dataMin = dataAxis.dataMin,
                         dataMax = dataAxis.dataMax;
+                    value = (options.inputDateParser || defaultInputDateParser)(inputValue, chart.time.useUTC);
                     if (value !== input.previousValue) {
                         input.previousValue = value;
                         // If the value isn't parsed directly to a value by the
@@ -53867,7 +54723,7 @@
 
         return H.RangeSelector;
     });
-    _registerModule(_modules, 'parts/NavigatorAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Axis/NavigatorAxis.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -54043,7 +54899,7 @@
 
         return NavigatorAxis;
     });
-    _registerModule(_modules, 'parts/Navigator.js', [_modules['parts/Axis.js'], _modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/NavigatorAxis.js'], _modules['parts/Options.js'], _modules['parts/Scrollbar.js'], _modules['parts/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, O, Scrollbar, U) {
+    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/Options.js'], _modules['Core/Scrollbar.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, O, Scrollbar, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -54335,8 +55191,7 @@
                  */
                 series: {
                     /**
-                     * The type of the navigator series. Defaults to `areaspline` if
-                     * defined, otherwise `line`.
+                     * The type of the navigator series.
                      *
                      * Heads up:
                      * In column-type navigator, zooming is limited to at least one
@@ -54346,7 +55201,8 @@
                      *         Column type navigator
                      *
                      * @type    {string}
-                     * @default areaspline
+                     * @default {highstock} `areaspline` if defined, otherwise `line`
+                     * @default {gantt} gantt
                      */
                     type: defaultSeriesType,
                     /**
@@ -55265,8 +56121,8 @@
                     inverted = chart.inverted,
                     verb = navigator.rendered && !navigator.hasDragged ?
                         'animate' : 'attr',
-                    zoomedMax = Math.round(navigator.zoomedMax),
-                    zoomedMin = Math.round(navigator.zoomedMin),
+                    zoomedMax,
+                    zoomedMin,
                     unionExtremes,
                     fixedMin,
                     fixedMax,
@@ -55317,7 +56173,11 @@
                                 navigator.hasDragged = navigator.dragOffset = null;
                 }
                 // Update position of navigator shades, outline and handles (#12573)
-                if (navigator.navigatorEnabled) {
+                if (navigator.navigatorEnabled &&
+                    isNumber(navigator.zoomedMin) &&
+                    isNumber(navigator.zoomedMax)) {
+                    zoomedMin = Math.round(navigator.zoomedMin);
+                    zoomedMax = Math.round(navigator.zoomedMax);
                     if (navigator.shades) {
                         navigator.drawMasks(zoomedMin, zoomedMax, inverted, verb);
                     }

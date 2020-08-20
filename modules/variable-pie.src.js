@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Variable Pie module for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/variable-pie.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/VariablePieSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Variable Pie module for Highcharts
@@ -391,7 +391,8 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.variablepie
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting
+         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
+         *            boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/variable-pie.js
          * @apioption series.variablepie

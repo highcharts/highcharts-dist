@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.1.2 (2020-06-16)
+ * @license Highstock JS v8.2.0 (2020-08-20)
  * @module highcharts/modules/datagrouping
  * @requires highcharts
  *
@@ -10,5 +10,5 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import dataGrouping from '../../parts/DataGrouping.js';
+import dataGrouping from '../../Extensions/DataGrouping.js';
 export default dataGrouping;

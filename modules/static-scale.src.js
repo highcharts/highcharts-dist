@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.1.2 (2020-06-16)
+ * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
  *
  * StaticScale
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/static-scale.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2016-2020 Torstein Honsi, Lars Cabrera

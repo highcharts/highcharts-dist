@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Dependency wheel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/dependency-wheel.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/DependencyWheelSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/Nodes.js']], function (H, U, NodesMixin) {
         /* *
          *
          *  Dependency wheel module
@@ -293,7 +293,7 @@
         }, 
         // Point class
         {
-            setState: H.NodesMixin.setNodeState,
+            setState: NodesMixin.setNodeState,
             /* eslint-disable valid-jsdoc */
             /**
              * Return a text path that the data label uses.

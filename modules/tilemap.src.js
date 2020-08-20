@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.1.2 (2020-06-16)
+ * @license Highmaps JS v8.2.0 (2020-08-20)
  *
  * Tilemap module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/tilemap.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/TilemapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  Tilemaps module
@@ -411,7 +411,7 @@
          * @extends      plotOptions.heatmap
          * @since        6.0.0
          * @excluding    jitter, joinBy, shadow, allAreas, mapData, marker, data,
-         *               dataSorting
+         *               dataSorting, boostThreshold, boostBlending
          * @product      highcharts highmaps
          * @requires     modules/tilemap.js
          * @optionparent plotOptions.tilemap
@@ -562,7 +562,8 @@
          *
          * @extends   series,plotOptions.tilemap
          * @excluding allAreas, dataParser, dataURL, joinBy, mapData, marker,
-         *            pointRange, shadow, stack, dataSorting
+         *            pointRange, shadow, stack, dataSorting, boostThreshold,
+         *            boostBlending
          * @product   highcharts highmaps
          * @requires  modules/tilemap.js
          * @apioption series.tilemap

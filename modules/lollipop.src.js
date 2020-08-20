@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * (c) 2009-2019 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/lollipop.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/LollipopSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Sebastian Bochan, Rafal Sebestjanski
@@ -107,7 +107,8 @@
          * The `lollipop` series. If the [type](#series.lollipop.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
          *
-         * @extends   series,plotOptions.lollipop
+         * @extends   series,plotOptions.lollipop,
+         * @excluding boostThreshold, boostBlending
          * @product   highcharts highstock
          * @requires  highcharts-more
          * @requires  modules/dumbbell

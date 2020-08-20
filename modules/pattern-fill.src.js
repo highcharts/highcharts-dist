@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/pattern-fill.src.js', [_modules['parts/Globals.js'], _modules['parts/Point.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (H, Point, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/PatternFill.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, Point, SVGRenderer, U) {
         /* *
          *
          *  Module for using patterns or images as point fills.
@@ -148,7 +148,7 @@
         */ /**
         * Animation options for the image pattern loading.
         * @name Highcharts.PatternObject#animation
-        * @type {boolean|Highcharts.AnimationOptionsObject|undefined}
+        * @type {boolean|Partial<Highcharts.AnimationOptionsObject>|undefined}
         */ /**
         * Optionally an index referencing which pattern to use. Highcharts adds
         * 10 default patterns to the `Highcharts.patterns` array. Additional
@@ -309,7 +309,7 @@
          * @param {Highcharts.PatternObject} options
          * The pattern options.
          *
-         * @param {boolean|Highcharts.AnimationOptionsObject} [animation]
+         * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
          * The animation options.
          *
          * @return {Highcharts.SVGElement|undefined}

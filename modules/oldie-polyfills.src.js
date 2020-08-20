@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Old IE (v6, v7, v8) array polyfills for Highcharts v7+.
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/oldie-polyfills.src.js', [], function () {
+    _registerModule(_modules, 'Extensions/OldiePolyfills.js', [], function () {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi

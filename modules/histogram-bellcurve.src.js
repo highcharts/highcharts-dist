@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/derived-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Mixins/DerivedSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -152,7 +152,7 @@
 
         return derivedSeriesMixin;
     });
-    _registerModule(_modules, 'modules/histogram.src.js', [_modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (U, derivedSeriesMixin) {
+    _registerModule(_modules, 'Series/HistogramSeries.js', [_modules['Core/Utilities.js'], _modules['Mixins/DerivedSeries.js']], function (U, derivedSeriesMixin) {
         /* *
          *
          *  Copyright (c) 2010-2017 Highsoft AS
@@ -221,7 +221,7 @@
          *
          * @extends      plotOptions.column
          * @excluding    boostThreshold, dragDrop, pointInterval, pointIntervalUnit,
-         *               stacking
+         *               stacking, boostBlending
          * @product      highcharts
          * @since        6.0.0
          * @requires     modules/histogram
@@ -343,7 +343,7 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.histogram
-         * @excluding data, dataParser, dataURL
+         * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
          * @product   highcharts
          * @since     6.0.0
          * @requires  modules/histogram
@@ -359,7 +359,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'modules/bellcurve.src.js', [_modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (U, derivedSeriesMixin) {
+    _registerModule(_modules, 'Series/BellcurveSeries.js', [_modules['Core/Utilities.js'], _modules['Mixins/DerivedSeries.js']], function (U, derivedSeriesMixin) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -501,7 +501,7 @@
          * @extends   series,plotOptions.bellcurve
          * @since     6.0.0
          * @product   highcharts
-         * @excluding dataParser, dataURL, data
+         * @excluding dataParser, dataURL, data, boostThreshold, boostBlending
          * @requires  modules/bellcurve
          * @apioption series.bellcurve
          */

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'modules/oldie.src.js', [_modules['parts/Chart.js'], _modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Pointer.js'], _modules['parts/SVGElement.js'], _modules['parts/SVGRenderer.js'], _modules['parts/Utilities.js']], function (Chart, Color, H, Pointer, SVGElement, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/Oldie.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Pointer.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Pointer, SVGElement, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -78,7 +78,7 @@
          * @apioption global.VMLRadialGradientURL
          */
         getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/8.1.2/gfx/vml-radial-gradient.png';
+            'http://code.highcharts.com/8.2.0/gfx/vml-radial-gradient.png';
         // Utilites
         if (doc && !doc.defaultView) {
             H.getStyle = U.getStyle = function (el, prop) {

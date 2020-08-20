@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.1.2 (2020-06-16)
+ * @license Highcharts JS v8.2.0 (2020-08-20)
  *
  * (c) 2017-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'mixins/draw-point.js', [], function () {
+    _registerModule(_modules, 'Mixins/DrawPoint.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -103,10 +103,15 @@
             // Call draw to render component
             draw.call(point, params);
         };
+        var drawPointModule = {
+                draw: draw,
+                drawPoint: drawPoint,
+                isFn: isFn
+            };
 
-        return drawPoint;
+        return drawPointModule;
     });
-    _registerModule(_modules, 'mixins/geometry.js', [], function () {
+    _registerModule(_modules, 'Mixins/Geometry.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -168,15 +173,15 @@
 
         return geometry;
     });
-    _registerModule(_modules, 'mixins/geometry-circles.js', [_modules['mixins/geometry.js']], function (geometry) {
+    _registerModule(_modules, 'Mixins/GeometryCircles.js', [_modules['Mixins/Geometry.js']], function (Geometry) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getAngleBetweenPoints = geometry.getAngleBetweenPoints,
-            getCenterOfPoints = geometry.getCenterOfPoints,
-            getDistanceBetweenPoints = geometry.getDistanceBetweenPoints;
+        var getAngleBetweenPoints = Geometry.getAngleBetweenPoints,
+            getCenterOfPoints = Geometry.getCenterOfPoints,
+            getDistanceBetweenPoints = Geometry.getDistanceBetweenPoints;
         /**
          * @private
          * @param {number} x
@@ -517,7 +522,7 @@
 
         return geometryCircles;
     });
-    _registerModule(_modules, 'mixins/nelder-mead.js', [], function () {
+    _registerModule(_modules, 'Mixins/NelderMead.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -669,14 +674,14 @@
             }
             return simplex[0];
         };
-        var content = {
+        var nelderMeadMixin = {
                 getCentroid: getCentroid,
                 nelderMead: nelderMead
             };
 
-        return content;
+        return nelderMeadMixin;
     });
-    _registerModule(_modules, 'modules/venn.src.js', [_modules['parts/Color.js'], _modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/draw-point.js'], _modules['mixins/geometry.js'], _modules['mixins/geometry-circles.js'], _modules['mixins/nelder-mead.js']], function (Color, H, U, draw, geometry, geometryCirclesModule, nelderMeadModule) {
+    _registerModule(_modules, 'Series/VennSeries.js', [_modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/DrawPoint.js'], _modules['Mixins/Geometry.js'], _modules['Mixins/GeometryCircles.js'], _modules['Mixins/NelderMead.js']], function (Color, H, U, drawPointModule, geometry, geometryCirclesModule, nelderMeadMixin) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a Venn
@@ -703,6 +708,7 @@
             isString = U.isString,
             merge = U.merge,
             seriesType = U.seriesType;
+        var draw = drawPointModule.draw;
         var getAreaOfCircle = geometryCirclesModule.getAreaOfCircle,
             getAreaOfIntersectionBetweenCircles = geometryCirclesModule.getAreaOfIntersectionBetweenCircles,
             getCircleCircleIntersection = geometryCirclesModule.getCircleCircleIntersection,
@@ -712,8 +718,7 @@
             isPointInsideAllCircles = geometryCirclesModule.isPointInsideAllCircles,
             isPointInsideCircle = geometryCirclesModule.isPointInsideCircle,
             isPointOutsideAllCircles = geometryCirclesModule.isPointOutsideAllCircles;
-        // TODO: replace with individual imports
-        var nelderMead = nelderMeadModule.nelderMead;
+        var nelderMead = nelderMeadMixin.nelderMead;
         var getCenterOfPoints = geometry.getCenterOfPoints,
             getDistanceBetweenPoints = geometry.getDistanceBetweenPoints,
             seriesTypes = H.seriesTypes;
@@ -1446,7 +1451,7 @@
          *               lineWidth, linkedTo, marker, negativeColor, pointInterval,
          *               pointIntervalUnit, pointPlacement, pointStart, softThreshold,
          *               stacking, steps, threshold, xAxis, yAxis, zoneAxis, zones,
-         *               dataSorting
+         *               dataSorting, boostThreshold, boostBlending
          * @product      highcharts
          * @requires     modules/venn
          * @optionparent plotOptions.venn
@@ -1701,7 +1706,7 @@
                 getDistanceBetweenCirclesByOverlap: getDistanceBetweenCirclesByOverlap,
                 layoutGreedyVenn: layoutGreedyVenn,
                 loss: loss,
-                nelderMead: nelderMeadModule,
+                nelderMead: nelderMeadMixin,
                 processVennData: processVennData,
                 sortByTotalOverlap: sortByTotalOverlap
             }
@@ -1726,7 +1731,8 @@
          *            findNearestPointBy, getExtremesFromAll, label, linecap, lineWidth,
          *            linkedTo, marker, negativeColor, pointInterval, pointIntervalUnit,
          *            pointPlacement, pointStart, softThreshold, stack, stacking, steps,
-         *            threshold, xAxis, yAxis, zoneAxis, zones, dataSorting
+         *            threshold, xAxis, yAxis, zoneAxis, zones, dataSorting,
+         *            boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/venn
          * @apioption series.venn
