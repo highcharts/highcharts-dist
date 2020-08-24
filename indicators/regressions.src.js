@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,18 +28,18 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/RegressionIndicators.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/regressions.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /**
          *
-         *  (c) 2010-2020 Kamil Kulig
+         *  (c) 2010-2019 Kamil Kulig
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
+        var seriesType = H.seriesType;
         /**
          * Linear regression series type.
          *
@@ -95,9 +95,9 @@
                  * // base series:
                  *
                  * data: [
-                 *   [Date.UTC(2020, 0, 1), 1],
-                 *   [Date.UTC(2020, 0, 2), 3],
-                 *   [Date.UTC(2020, 0, 3), 5]
+                 *   [Date.UTC(2019, 0, 1), 1],
+                 *   [Date.UTC(2019, 0, 2), 3],
+                 *   [Date.UTC(2019, 0, 3), 5]
                  * ]
                  *
                  * // This will produce one point in the indicator series that has a
@@ -109,7 +109,7 @@
                  * @type    {number}
                  * @product highstock
                  */
-                xAxisUnit: void 0
+                xAxisUnit: undefined
             },
             tooltip: {
                 valueDecimals: 4
@@ -132,10 +132,8 @@
              */
             getRegressionLineParameters: function (xData, yData) {
                 // least squares method
-                var yIndex = this.options.params.index,
-                    getSingleYValue = function (yValue,
-                    yIndex) {
-                        return isArray(yValue) ? yValue[yIndex] : yValue;
+                var yIndex = this.options.params.index, getSingleYValue = function (yValue, yIndex) {
+                    return isArray(yValue) ? yValue[yIndex] : yValue;
                 }, xSum = xData.reduce(function (accX, val) {
                     return val + accX;
                 }, 0), ySum = yData.reduce(function (accY, val) {
@@ -188,14 +186,11 @@
              * @return {number} - closest distance between points in the base series
              */
             findClosestDistance: function (xData) {
-                var distance,
-                    closestDistance,
-                    i;
+                var distance, closestDistance, i;
                 for (i = 1; i < xData.length - 1; i++) {
                     distance = xData[i] - xData[i - 1];
-                    if (distance > 0 &&
-                        (typeof closestDistance === 'undefined' ||
-                            distance < closestDistance)) {
+                    if (distance > 0 && (closestDistance === undefined ||
+                        distance < closestDistance)) {
                         closestDistance = distance;
                     }
                 }
@@ -203,26 +198,14 @@
             },
             // Required to be implemented - starting point for indicator's logic
             getValues: function (baseSeries, regressionSeriesParams) {
-                var xData = baseSeries.xData,
-                    yData = baseSeries.yData,
-                    period = regressionSeriesParams.period,
-                    lineParameters,
-                    i,
-                    periodStart,
-                    periodEnd, 
-                    // format required to be returned
-                    indicatorData = {
-                        xData: [],
-                        yData: [],
-                        values: []
-                    },
-                    endPointX,
-                    endPointY,
-                    periodXData,
-                    periodYData,
-                    periodTransformedXData,
-                    xAxisUnit = this.options.params.xAxisUnit ||
-                        this.findClosestDistance(xData);
+                var xData = baseSeries.xData, yData = baseSeries.yData, period = regressionSeriesParams.period, lineParameters, i, periodStart, periodEnd, 
+                // format required to be returned
+                indicatorData = {
+                    xData: [],
+                    yData: [],
+                    values: []
+                }, endPointX, endPointY, periodXData, periodYData, periodTransformedXData, xAxisUnit = this.options.params.xAxisUnit ||
+                    this.findClosestDistance(xData);
                 // Iteration logic: x value of the last point within the period
                 // (end point) is used to represent the y value (regression)
                 // of the entire period.

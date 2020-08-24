@@ -73,10 +73,9 @@ declare module "../highcharts" {
          * Sonify a chart.
          *
          * @param options
-         *        The options for sonifying this chart. If not provided, uses
-         *        options set on chart and series.
+         *        The options for sonifying this chart.
          */
-        sonify(options?: SonificationOptions): void;
+        sonify(options: SonifyChartOptionsObject): void;
     }
     /**
      * An Earcon configuration, specifying an Earcon and when to play it.
@@ -111,7 +110,7 @@ declare module "../highcharts" {
         /**
          * The options to pass to Instrument.play.
          */
-        playOptions: InstrumentPlayOptionsObject;
+        playOptions: object;
     }
     /**
      * Options for an Earcon.
@@ -191,11 +190,6 @@ declare module "../highcharts" {
          */
         frequency: (number|Function);
         /**
-         * The master volume multiplier to apply to the instrument, regardless
-         * of other volume changes. Defaults to 1.
-         */
-        masterVolume?: number;
-        /**
          * The maximum frequency to allow. If the instrument has a set of
          * allowed frequencies, the closest frequency is used by default. Use
          * this option to stop too high frequencies from being used.
@@ -263,13 +257,10 @@ declare module "../highcharts" {
          * string with a data property name, e.g. `'y'`, in which case this data
          * property is used to define the duration relative to the `y`-values of
          * the other points. A higher `y` value would then result in a longer
-         * duration. Alternatively, `'-y'` can be used, in which case the
-         * polarity is inverted, and a higher `y` value would result in a
-         * shorter duration. This option can also be a fixed number or a
-         * function. If it is a function, this function is called once before
-         * the note starts playing, and should return the duration in
-         * milliseconds. It receives two arguments: The point, and the
-         * dataExtremes.
+         * duration. This option can also be a fixed number or a function. If it
+         * is a function, this function is called once before the note starts
+         * playing, and should return the duration in milliseconds. It receives
+         * two arguments: The point, and the dataExtremes.
          */
         duration: (number|string|Function);
         /**
@@ -277,8 +268,6 @@ declare module "../highcharts" {
          * data property name, e.g. `'y'`, in which case this data property is
          * used to define the frequency relative to the `y`-values of the other
          * points. A higher `y` value would then result in a higher frequency.
-         * Alternatively, `'-y'` can be used, in which case the polarity is
-         * inverted, and a higher `y` value would result in a lower frequency.
          * This option can also be a fixed number or a function. If it is a
          * function, this function is called in regular intervals while the note
          * is playing. It receives three arguments: The point, the dataExtremes,
@@ -292,25 +281,20 @@ declare module "../highcharts" {
          * data property name, e.g. `'x'`, in which case this data property is
          * used to define the panning relative to the `x`-values of the other
          * points. A higher `x` value would then result in a higher panning
-         * value (panned further to the right). Alternatively, `'-x'` can be
-         * used, in which case the polarity is inverted, and a higher `x` value
-         * would result in a lower panning value (panned further to the left).
-         * This option can also be a fixed number or a function. If it is a
-         * function, this function is called in regular intervals while the note
-         * is playing. It receives three arguments: The point, the dataExtremes,
-         * and the current relative time - where 0 is the beginning of the note
-         * and 1 is the end. The function should return the panning of the note
-         * as a number between -1 and 1.
+         * value (panned further to the right). This option can also be a fixed
+         * number or a function. If it is a function, this function is called in
+         * regular intervals while the note is playing. It receives three
+         * arguments: The point, the dataExtremes, and the current relative time
+         * - where 0 is the beginning of the note and 1 is the end. The function
+         * should return the panning of the note as a number between -1 and 1.
          */
         pan?: (number|string|Function);
         /**
          * Define the volume of the instrument. This can be a string with a data
          * property name, e.g. `'y'`, in which case this data property is used
          * to define the volume relative to the `y`-values of the other points.
-         * A higher `y` value would then result in a higher volume.
-         * Alternatively, `'-y'` can be used, which inverts the polarity, so
-         * that a higher `y` value results in a lower volume. This option can
-         * also be a fixed number or a function. If it is a function, this
+         * A higher `y` value would then result in a higher volume. This option
+         * can also be a fixed number or a function. If it is a function, this
          * function is called in regular intervals while the note is playing. It
          * receives three arguments: The point, the dataExtremes, and the
          * current relative time - where 0 is the beginning of the note and 1 is
@@ -418,10 +402,9 @@ declare module "../highcharts" {
          * Sonify a series.
          *
          * @param options
-         *        The options for sonifying this series. If not provided, uses
-         *        options set on chart and series.
+         *        The options for sonifying this series.
          */
-        sonify(options?: SonifySeriesOptionsObject): void;
+        sonify(options: SonifySeriesOptionsObject): void;
     }
     /**
      * Global classes and objects related to sonification.
@@ -450,7 +433,7 @@ declare module "../highcharts" {
     /**
      * Options for sonifying a chart.
      */
-    interface SonificationOptions {
+    interface SonifyChartOptionsObject {
         /**
          * Milliseconds of silent waiting to add between series. Note that
          * waiting time is considered part of the sonify duration.
@@ -463,7 +446,7 @@ declare module "../highcharts" {
          * of point data properties to objects with min/max values: (see online
          * documentation for example)
          */
-        dataExtremes?: Dictionary<RangeObject>;
+        dataExtremes?: object;
         /**
          * Duration for sonifying the entire chart. The duration is distributed
          * across the different series intelligently, but does not take earcons
@@ -536,7 +519,7 @@ declare module "../highcharts" {
          * of point data properties to objects with min/max values: (see online
          * documentation for example)
          */
-        dataExtremes?: Dictionary<RangeObject>;
+        dataExtremes?: object;
         /**
          * The duration for playing the points. Note that points might continue
          * to play after the duration has passed, but no new points will start
@@ -651,7 +634,7 @@ declare module "../highcharts" {
          * @param callbackData
          *        Data to send to the onEnd callback functions.
          */
-        stop(immediately: boolean, onStopped?: Function, callbackData?: any): void;
+        stop(immediately: boolean, onStopped: Function, callbackData: any): void;
     }
     /**
      * Global classes and objects related to sonification.

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * (c) 2009-2019 Highsoft AS
  *
@@ -26,10 +26,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/HighContrastDark.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'themes/high-contrast-dark.js', [_modules['parts/Globals.js']], function (Highcharts) {
         /* *
          *
-         *  (c) 2010-2020 Highsoft AS
+         *  (c) 2010-2019 Highsoft AS
          *
          *  Author: Øystein Moseng
          *
@@ -42,7 +42,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var setOptions = U.setOptions;
         var textBright = '#F0F0F3';
         Highcharts.theme = {
             colors: [
@@ -234,7 +233,7 @@
             }
         };
         // Apply the theme
-        setOptions(Highcharts.theme);
+        Highcharts.setOptions(Highcharts.theme);
 
     });
     _registerModule(_modules, 'masters/themes/high-contrast-dark.src.js', [], function () {

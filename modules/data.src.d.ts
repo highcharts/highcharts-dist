@@ -39,9 +39,9 @@ declare module "../highcharts.src" {
          */
         success: Function;
         /**
-         * The HTTP method to use. For example GET or POST.
+         * The verb to use.
          */
-        type: string;
+        type: ("DELETE"|"GET"|"POST"|"UPDATE");
         /**
          * The URL to call.
          */
@@ -132,7 +132,7 @@ declare module "../highcharts.src" {
         /**
          * Parse a HTML table
          */
-        parseTable(): Array<Array<DataValueType>>;
+        parseTable(): (Array<Array<DataValueType>>|undefined);
         /**
          * Parse numeric cells in to number types and date types in to true
          * dates.
@@ -141,7 +141,7 @@ declare module "../highcharts.src" {
         /**
          * Reorganize rows into columns.
          */
-        rowsToColumns(rows: Array<Array<DataValueType>>): (Array<Array<DataValueType>>|undefined);
+        rowsToColumns(rows: Array<Array<(number|string)>>): Array<Array<(number|string)>>;
         /**
          * Trim a string from whitespaces.
          *

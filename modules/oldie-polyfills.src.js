@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Old IE (v6, v7, v8) array polyfills for Highcharts v7+.
  *
@@ -29,10 +29,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/OldiePolyfills.js', [], function () {
+    _registerModule(_modules, 'modules/oldie-polyfills.src.js', [], function () {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -45,17 +45,11 @@
          * */
         /* global document */
         /* eslint-disable no-extend-native */
-        if (!String.prototype.trim) {
-            String.prototype.trim = function () {
-                return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
-            };
-        }
         if (!Array.prototype.forEach) {
             Array.prototype.forEach = function (fn, thisArg) {
-                var i = 0,
-                    len = this.length;
+                var i = 0, len = this.length;
                 for (; i < len; i++) {
-                    if (typeof this[i] !== 'undefined' && // added check
+                    if (this[i] !== undefined && // added check
                         fn.call(thisArg, this[i], i, this) === false) {
                         return i;
                     }
@@ -66,9 +60,7 @@
             Array.prototype.map = function (fn
             // @todo support optional ctx
             ) {
-                var results = [],
-                    i = 0,
-                    len = this.length;
+                var results = [], i = 0, len = this.length;
                 for (; i < len; i++) {
                     results[i] = fn.call(this[i], this[i], i, this);
                 }
@@ -78,10 +70,9 @@
         if (!Array.prototype.indexOf) {
             Array.prototype.indexOf = function (member, fromIndex) {
                 var arr = this, // #8874
-                    len,
-                    i = fromIndex || 0; // #8346
-                    if (arr) {
-                        len = arr.length;
+                len, i = fromIndex || 0; // #8346
+                if (arr) {
+                    len = arr.length;
                     for (; i < len; i++) {
                         if (arr[i] === member) {
                             return i;
@@ -95,9 +86,7 @@
             Array.prototype.filter = function (fn
             // @todo support optional ctx
             ) {
-                var ret = [],
-                    i = 0,
-                    length = this.length;
+                var ret = [], i = 0, length = this.length;
                 for (; i < length; i++) {
                     if (fn(this[i], i)) {
                         ret.push(this[i]);
@@ -108,8 +97,7 @@
         }
         if (!Array.prototype.some) {
             Array.prototype.some = function (fn, thisArg) {
-                var i = 0,
-                    len = this.length;
+                var i = 0, len = this.length;
                 for (; i < len; i++) {
                     if (fn.call(thisArg, this[i], i, this) === true) {
                         return true;
@@ -120,37 +108,16 @@
         }
         if (!Array.prototype.reduce) {
             Array.prototype.reduce = function (func, initialValue) {
-                var context = this,
-                    i = arguments.length > 1 ? 0 : 1,
-                    accumulator = arguments.length > 1 ? initialValue : this[0],
-                    len = this.length;
+                var context = this, i = arguments.length > 1 ? 0 : 1, accumulator = arguments.length > 1 ? initialValue : this[0], len = this.length;
                 for (; i < len; ++i) {
                     accumulator = func.call(context, accumulator, this[i], i, this);
                 }
                 return accumulator;
             };
         }
-        if (!Function.prototype.bind) {
-            Function.prototype.bind = function () {
-                var thatFunc = this;
-                var thatArg = arguments[0];
-                var args = Array.prototype.slice.call(arguments, 1);
-                if (typeof thatFunc !== 'function') {
-                    // closest thing possible to the ECMAScript 5
-                    // internal IsCallable function
-                    throw new TypeError('Function.prototype.bind - ' +
-                        'what is trying to be bound is not callable');
-                }
-                return function () {
-                    var funcArgs = args.concat(Array.prototype.slice.call(arguments));
-                    return thatFunc.apply(thatArg, funcArgs);
-                };
-            };
-        }
         if (!Object.keys) {
             Object.keys = function (obj) {
-                var result = [],
-                    prop;
+                var result = [], prop;
                 for (prop in obj) {
                     if (Object.hasOwnProperty.call(obj, prop)) {
                         result.push(prop);
@@ -161,15 +128,11 @@
         }
         // Add a getElementsByClassName function if the browser doesn't have one
         // Limitation: only works with one class name
-        // Copyright: Eike Send https://eike.se/nd
+        // Copyright: Eike Send http://eike.se/nd
         // License: MIT License
         if (!document.getElementsByClassName) {
             document.getElementsByClassName = function (search) {
-                var d = document,
-                    elements,
-                    pattern,
-                    i,
-                    results = [];
+                var d = document, elements, pattern, i, results = [];
                 if (d.querySelectorAll) { // IE8
                     return d.querySelectorAll('.' + search);
                 }

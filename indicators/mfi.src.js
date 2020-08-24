@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Money Flow Index indicator for Highstock
  *
@@ -28,21 +28,19 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/MFIIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/mfi.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  Money Flow Index indicator for Highstock
          *
-         *  (c) 2010-2020 Grzegorz Blachliński
+         *  (c) 2010-2019 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = U.error,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
         /* eslint-disable require-jsdoc */
         // Utils:
         function sumArray(array) {
@@ -69,7 +67,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('mfi', 'sma', 
+        H.seriesType('mfi', 'sma', 
         /**
          * Money Flow Index. This series requires `linkedTo` option to be set and
          * should be loaded after the `stock/indicators/indicators.js` file.
@@ -108,41 +106,20 @@
         {
             nameBase: 'Money Flow Index',
             getValues: function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    decimals = params.decimals, 
-                    // MFI starts calculations from the second point
-                    // Cause we need to calculate change between two points
-                    range = 1,
-                    volumeSeries = series.chart.get(params.volumeSeriesID),
-                    yValVolume = (volumeSeries && volumeSeries.yData),
-                    MFI = [],
-                    isUp = false,
-                    xData = [],
-                    yData = [],
-                    positiveMoneyFlow = [],
-                    negativeMoneyFlow = [],
-                    newTypicalPrice,
-                    oldTypicalPrice,
-                    rawMoneyFlow,
-                    negativeMoneyFlowSum,
-                    positiveMoneyFlowSum,
-                    moneyFlowRatio,
-                    MFIPoint,
-                    i;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, 
+                // MFI starts calculations from the second point
+                // Cause we need to calculate change between two points
+                range = 1, volumeSeries = series.chart.get(params.volumeSeriesID), yValVolume = (volumeSeries && volumeSeries.yData), MFI = [], isUp = false, xData = [], yData = [], positiveMoneyFlow = [], negativeMoneyFlow = [], newTypicalPrice, oldTypicalPrice, rawMoneyFlow, negativeMoneyFlowSum, positiveMoneyFlowSum, moneyFlowRatio, MFIPoint, i;
                 if (!volumeSeries) {
-                    error('Series ' +
+                    return H.error('Series ' +
                         params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, series.chart);
-                    return;
                 }
                 // MFI requires high low and close values
                 if ((xVal.length <= period) || !isArray(yVal[0]) ||
                     yVal[0].length !== 4 ||
                     !yValVolume) {
-                    return;
+                    return false;
                 }
                 // Calculate first typical price
                 newTypicalPrice = calculateTypicalPrice(yVal[range]);

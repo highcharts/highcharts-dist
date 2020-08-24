@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Highcharts variwide module
  *
@@ -28,24 +28,20 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/VariwideSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/variwide.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  Highcharts variwide module
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            isNumber = U.isNumber,
-            pick = U.pick,
-            seriesType = U.seriesType,
-            wrap = U.wrap;
-        var seriesTypes = H.seriesTypes;
+        var isNumber = U.isNumber, pick = U.pick;
+        var addEvent = H.addEvent, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * @private
          * @class
@@ -69,7 +65,7 @@
          * @since        6.0.0
          * @product      highcharts
          * @excluding    boostThreshold, crisp, depth, edgeColor, edgeWidth,
-         *               groupZPadding, boostBlending
+         *               groupZPadding
          * @requires     modules/variwide
          * @optionparent plotOptions.variwide
          */
@@ -125,20 +121,7 @@
              *         Distorted X position
              */
             postTranslate: function (index, x, point) {
-                var axis = this.xAxis,
-                    relZ = this.relZ,
-                    i = axis.reversed ? relZ.length - index : index,
-                    goRight = axis.reversed ? -1 : 1,
-                    len = axis.len,
-                    totalZ = this.totalZ,
-                    linearSlotLeft = i / relZ.length * len,
-                    linearSlotRight = (i + goRight) / relZ.length * len,
-                    slotLeft = (pick(relZ[i],
-                    totalZ) / totalZ) * len,
-                    slotRight = (pick(relZ[i + goRight],
-                    totalZ) / totalZ) * len,
-                    xInsideLinearSlot = x - linearSlotLeft,
-                    ret;
+                var axis = this.xAxis, relZ = this.relZ, i = axis.reversed ? relZ.length - index : index, goRight = axis.reversed ? -1 : 1, len = axis.len, totalZ = this.totalZ, linearSlotLeft = i / relZ.length * len, linearSlotRight = (i + goRight) / relZ.length * len, slotLeft = (pick(relZ[i], totalZ) / totalZ) * len, slotRight = (pick(relZ[i + goRight], totalZ) / totalZ) * len, xInsideLinearSlot = x - linearSlotLeft, ret;
                 // Set crosshairWidth for every point (#8173)
                 if (point) {
                     point.crosshairWidth = slotRight - slotLeft;
@@ -152,18 +135,15 @@
             // Extend translation by distoring X position based on Z.
             translate: function () {
                 // Temporarily disable crisping when computing original shapeArgs
-                var crispOption = this.options.crisp,
-                    xAxis = this.xAxis;
+                var crispOption = this.options.crisp, xAxis = this.xAxis;
                 this.options.crisp = false;
                 seriesTypes.column.prototype.translate.call(this);
                 // Reset option
                 this.options.crisp = crispOption;
-                var inverted = this.chart.inverted,
-                    crisp = this.borderWidth % 2 / 2;
+                var inverted = this.chart.inverted, crisp = this.borderWidth % 2 / 2;
                 // Distort the points to reflect z dimension
                 this.points.forEach(function (point, i) {
-                    var left,
-                        right;
+                    var left, right;
                     if (xAxis.variwide) {
                         left = this.postTranslate(i, point.shapeArgs.x, point);
                         right = this.postTranslate(i, point.shapeArgs.x +
@@ -202,27 +182,19 @@
             },
             // Function that corrects stack labels positions
             correctStackLabels: function () {
-                var series = this,
-                    options = series.options,
-                    yAxis = series.yAxis,
-                    pointStack,
-                    pointWidth,
-                    stack,
-                    xValue;
+                var series = this, options = series.options, yAxis = series.yAxis, pointStack, pointWidth, stack, xValue;
                 series.points.forEach(function (point) {
                     xValue = point.x;
                     pointWidth = point.shapeArgs.width;
-                    stack = yAxis.stacking.stacks[(series.negStacks &&
+                    stack = yAxis.stacks[(series.negStacks &&
                         point.y < (options.startFromThreshold ?
                             0 :
                             options.threshold) ?
                         '-' :
                         '') + series.stackKey];
-                    if (stack) {
-                        pointStack = stack[xValue];
-                        if (pointStack && !point.isNull) {
-                            pointStack.setOffset(-(pointWidth / 2) || 0, pointWidth || 0, void 0, void 0, point.plotX);
-                        }
+                    pointStack = stack[xValue];
+                    if (stack && pointStack && !point.isNull) {
+                        pointStack.setOffset(-(pointWidth / 2) || 0, pointWidth || 0, undefined, undefined, point.plotX);
                     }
                 });
             }
@@ -233,8 +205,7 @@
             }
         });
         H.Tick.prototype.postTranslate = function (xy, xOrY, index) {
-            var axis = this.axis,
-                pos = xy[xOrY] - axis.pos;
+            var axis = this.axis, pos = xy[xOrY] - axis.pos;
             if (!axis.horiz) {
                 pos = axis.len - pos;
             }
@@ -269,17 +240,14 @@
             }
         });
         addEvent(H.Tick, 'afterGetPosition', function (e) {
-            var axis = this.axis,
-                xOrY = axis.horiz ? 'x' : 'y';
+            var axis = this.axis, xOrY = axis.horiz ? 'x' : 'y';
             if (axis.variwide) {
                 this[xOrY + 'Orig'] = e.pos[xOrY];
                 this.postTranslate(e.pos, xOrY, this.pos);
             }
         });
-        wrap(H.Tick.prototype, 'getLabelPosition', function (proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index) {
-            var args = Array.prototype.slice.call(arguments, 1),
-                xy,
-                xOrY = horiz ? 'x' : 'y';
+        H.wrap(H.Tick.prototype, 'getLabelPosition', function (proceed, x, y, label, horiz, labelOptions, tickmarkOffset, index) {
+            var args = Array.prototype.slice.call(arguments, 1), xy, xOrY = horiz ? 'x' : 'y';
             // Replace the x with the original x
             if (this.axis.variwide &&
                 typeof this[xOrY + 'Orig'] === 'number') {
@@ -297,7 +265,6 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.variwide
-         * @excluding boostThreshold, boostBlending
          * @product   highcharts
          * @requires  modules/variwide
          * @apioption series.variwide

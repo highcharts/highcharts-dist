@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Variable Pie module for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/VariablePieSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'modules/variable-pie.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  Variable Pie module for Highcharts
@@ -43,13 +43,8 @@
         /**
          * @typedef {"area"|"radius"} Highcharts.VariablePieSizeByValue
          */
-        var arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            clamp = U.clamp,
-            fireEvent = U.fireEvent,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var pieProto = H.seriesTypes.pie.prototype;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, pick = U.pick;
+        var fireEvent = H.fireEvent, seriesType = H.seriesType, pieProto = H.seriesTypes.pie.prototype;
         /**
          * The variablepie series type.
          *
@@ -114,7 +109,7 @@
              * @type  {number}
              * @since 6.0.0
              */
-            zMin: void 0,
+            zMin: undefined,
             /**
              * The maximum possible z value for the point's radius calculation. If
              * the point's Z value is bigger than zMax, the slice will be drawn
@@ -126,7 +121,7 @@
              * @type  {number}
              * @since 6.0.0
              */
-            zMax: void 0,
+            zMax: undefined,
             /**
              * Whether the pie slice's value should be represented by the area or
              * the radius of the slice. Can be either `area` or `radius`. The
@@ -164,32 +159,21 @@
             // Before standard translate method for pie chart it is needed to
             // calculate min/max radius of each pie slice based on its Z value.
             calculateExtremes: function () {
-                var series = this,
-                    chart = series.chart,
-                    plotWidth = chart.plotWidth,
-                    plotHeight = chart.plotHeight,
-                    seriesOptions = series.options,
-                    slicingRoom = 2 * (seriesOptions.slicedOffset || 0),
-                    zMin,
-                    zMax,
-                    zData = series.zData,
-                    smallestSize = Math.min(plotWidth,
-                    plotHeight) - slicingRoom, 
-                    // Min and max size of pie slice:
-                    extremes = {}, 
-                    // In pie charts size of a pie is changed to make space for
-                    // dataLabels, then series.center is changing.
-                    positions = series.center || series.getCenter();
+                var series = this, chart = series.chart, plotWidth = chart.plotWidth, plotHeight = chart.plotHeight, seriesOptions = series.options, slicingRoom = 2 * (seriesOptions.slicedOffset || 0), zMin, zMax, zData = series.zData, smallestSize = Math.min(plotWidth, plotHeight) - slicingRoom, 
+                // Min and max size of pie slice:
+                extremes = {}, 
+                // In pie charts size of a pie is changed to make space for
+                // dataLabels, then series.center is changing.
+                positions = series.center || series.getCenter();
                 ['minPointSize', 'maxPointSize'].forEach(function (prop) {
-                    var length = seriesOptions[prop],
-                        isPercent = /%$/.test(length);
+                    var length = seriesOptions[prop], isPercent = /%$/.test(length);
                     length = parseInt(length, 10);
                     extremes[prop] = isPercent ?
                         smallestSize * length / 100 :
                         length * 2; // Because it should be radius, not diameter.
                 });
                 series.minPxSize = positions[3] + extremes.minPointSize;
-                series.maxPxSize = clamp(positions[2], positions[3] + extremes.minPointSize, extremes.maxPointSize);
+                series.maxPxSize = Math.max(Math.min(positions[2], extremes.maxPointSize), positions[3] + extremes.minPointSize);
                 if (zData.length) {
                     zMin = pick(seriesOptions.zMin, arrayMin(zData.filter(series.zValEval)));
                     zMax = pick(seriesOptions.zMax, arrayMax(zData.filter(series.zValEval)));
@@ -221,16 +205,7 @@
              * @return {void}
              */
             getRadii: function (zMin, zMax, minSize, maxSize) {
-                var i = 0,
-                    pos,
-                    zData = this.zData,
-                    len = zData.length,
-                    radii = [],
-                    options = this.options,
-                    sizeByArea = options.sizeBy !== 'radius',
-                    zRange = zMax - zMin,
-                    value,
-                    radius;
+                var i = 0, pos, zData = this.zData, len = zData.length, radii = [], options = this.options, sizeByArea = options.sizeBy !== 'radius', zRange = zMax - zMin, value, radius;
                 // Calculate radius for all pie slice's based on their Z values
                 for (i; i < len; i++) {
                     // if zData[i] is null/undefined/string we need to take zMin for
@@ -259,33 +234,11 @@
             // using one global radius.
             translate: function (positions) {
                 this.generatePoints();
-                var series = this,
-                    cumulative = 0,
-                    precision = 1000, // issue #172
-                    options = series.options,
-                    slicedOffset = options.slicedOffset,
-                    connectorOffset = slicedOffset + (options.borderWidth || 0),
-                    finalConnectorOffset,
-                    start,
-                    end,
-                    angle,
-                    startAngle = options.startAngle || 0,
-                    startAngleRad = Math.PI / 180 * (startAngle - 90),
-                    endAngleRad = Math.PI / 180 * (pick(options.endAngle,
-                    startAngle + 360) - 90),
-                    circ = endAngleRad - startAngleRad, // 2 * Math.PI,
-                    points = series.points, 
-                    // the x component of the radius vector for a given point
-                    radiusX,
-                    radiusY,
-                    labelDistance = options.dataLabels.distance,
-                    ignoreHiddenPoint = options.ignoreHiddenPoint,
-                    i,
-                    len = points.length,
-                    point,
-                    pointRadii,
-                    pointRadiusX,
-                    pointRadiusY;
+                var series = this, cumulative = 0, precision = 1000, // issue #172
+                options = series.options, slicedOffset = options.slicedOffset, connectorOffset = slicedOffset + (options.borderWidth || 0), finalConnectorOffset, start, end, angle, startAngle = options.startAngle || 0, startAngleRad = Math.PI / 180 * (startAngle - 90), endAngleRad = Math.PI / 180 * (pick(options.endAngle, startAngle + 360) - 90), circ = endAngleRad - startAngleRad, // 2 * Math.PI,
+                points = series.points, 
+                // the x component of the radius vector for a given point
+                radiusX, radiusY, labelDistance = options.dataLabels.distance, ignoreHiddenPoint = options.ignoreHiddenPoint, i, len = points.length, point, pointRadii, pointRadiusX, pointRadiusY;
                 series.startAngleRad = startAngleRad;
                 series.endAngleRad = endAngleRad;
                 // Use calculateExtremes to get series.radii array.
@@ -391,8 +344,7 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.variablepie
-         * @excluding dataParser, dataURL, stack, xAxis, yAxis, dataSorting,
-         *            boostThreshold, boostBlending
+         * @excluding dataParser, dataURL, stack, xAxis, yAxis
          * @product   highcharts
          * @requires  modules/variable-pie.js
          * @apioption series.variablepie

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,10 +28,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/VWAPIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/vwap.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2020 Paweł Dalek
+         *  (c) 2010-2019 Paweł Dalek
          *
          *  Volume Weighted Average Price (VWAP) indicator for Highstock
          *
@@ -40,9 +40,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = U.error,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
+        var seriesType = H.seriesType;
         /**
          * The Volume Weighted Average Price (VWAP) series type.
          *
@@ -96,19 +95,12 @@
              * @return {object} - computed VWAP
              **/
             getValues: function (series, params) {
-                var indicator = this,
-                    chart = series.chart,
-                    xValues = series.xData,
-                    yValues = series.yData,
-                    period = params.period,
-                    isOHLC = true,
-                    volumeSeries;
+                var indicator = this, chart = series.chart, xValues = series.xData, yValues = series.yData, period = params.period, isOHLC = true, volumeSeries;
                 // Checks if volume series exists
                 if (!(volumeSeries = (chart.get(params.volumeSeriesID)))) {
-                    error('Series ' +
+                    return H.error('Series ' +
                         params.volumeSeriesID +
                         ' not found! Check `volumeSeriesID`.', true, chart);
-                    return;
                 }
                 // Checks if series data fits the OHLC format
                 if (!(isArray(yValues[0]))) {
@@ -130,20 +122,7 @@
              * @return {object} - Object contains computed VWAP
              **/
             calculateVWAPValues: function (isOHLC, xValues, yValues, volumeSeries, period) {
-                var volumeValues = volumeSeries.yData,
-                    volumeLength = volumeSeries.xData.length,
-                    pointsLength = xValues.length,
-                    cumulativePrice = [],
-                    cumulativeVolume = [],
-                    xData = [],
-                    yData = [],
-                    VWAP = [],
-                    commonLength,
-                    typicalPrice,
-                    cPrice,
-                    cVolume,
-                    i,
-                    j;
+                var volumeValues = volumeSeries.yData, volumeLength = volumeSeries.xData.length, pointsLength = xValues.length, cumulativePrice = [], cumulativeVolume = [], xData = [], yData = [], VWAP = [], commonLength, typicalPrice, cPrice, cVolume, i, j;
                 if (pointsLength <= volumeLength) {
                     commonLength = pointsLength;
                 }

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,44 +28,39 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Globals.js']], function (H) {
         /**
          *
-         *  (c) 2010-2020 Daniel Studencki
+         *  (c) 2010-2019 Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = U.error;
+        var error = H.error;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
-                /**
-                 * Check whether given indicator is loaded,
-            else throw error.
-                 * @private
-                 * @param {Highcharts.Indicator} indicator
-                 *        Indicator constructor function.
-                 * @param {string} requiredIndicator
-                 *        Required indicator type.
-                 * @param {string} type
-                 *        Type of indicator where function was called (parent).
-                 * @param {Highcharts.IndicatorCallbackFunction} callback
-                 *        Callback which is triggered if the given indicator is loaded.
-                 *        Takes indicator as an argument.
-                 * @param {string} errMessage
-                 *        Error message that will be logged in console.
-                 * @return {boolean}
-                 *         Returns false when there is no required indicator loaded.
-                 */
-                isParentLoaded: function (indicator,
-            requiredIndicator,
-            type,
-            callback,
-            errMessage) {
-                    if (indicator) {
-                        return callback ? callback(indicator) : true;
+            /**
+             * Check whether given indicator is loaded, else throw error.
+             * @private
+             * @param {Highcharts.Indicator} indicator
+             *        Indicator constructor function.
+             * @param {string} requiredIndicator
+             *        Required indicator type.
+             * @param {string} type
+             *        Type of indicator where function was called (parent).
+             * @param {Highcharts.IndicatorCallbackFunction} callback
+             *        Callback which is triggered if the given indicator is loaded.
+             *        Takes indicator as an argument.
+             * @param {string} errMessage
+             *        Error message that will be logged in console.
+             * @return {boolean}
+             *         Returns false when there is no required indicator loaded.
+             */
+            isParentLoaded: function (indicator, requiredIndicator, type, callback, errMessage) {
+                if (indicator) {
+                    return callback ? callback(indicator) : true;
                 }
                 error(errMessage || this.generateMessage(type, requiredIndicator));
                 return false;
@@ -90,7 +85,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/DEMAIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
+    _registerModule(_modules, 'indicators/dema.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,10 +93,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
-        var EMAindicator = H.seriesTypes.ema;
+        var isArray = U.isArray;
+        var EMAindicator = H.seriesTypes.ema, requiredIndicator = requiredIndicatorMixin, correctFloat = H.correctFloat;
         /**
          * The DEMA series Type
          *
@@ -111,7 +104,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('dema', 'ema', 
+        H.seriesType('dema', 'ema', 
         /**
          * Double exponential moving average (DEMA) indicator. This series requires
          * `linkedTo` option to be set and should be loaded after the
@@ -138,42 +131,27 @@
          */
         {
             init: function () {
-                var args = arguments,
-                    ctx = this;
+                var args = arguments, ctx = this;
                 requiredIndicator.isParentLoaded(EMAindicator, 'ema', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
                 });
             },
             getEMA: function (yVal, prevEMA, SMA, index, i, xVal) {
-                return EMAindicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.chart.series[0].EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
+                return EMAindicator.prototype.calculateEma(xVal || [], yVal, i === undefined ? 1 : i, this.chart.series[0].EMApercent, prevEMA, index === undefined ? -1 : index, SMA);
             },
             getValues: function (series, params) {
-                var period = params.period,
-                    doubledPeriod = 2 * period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    index = -1,
-                    accumulatePeriodPoints = 0,
-                    SMA = 0,
-                    DEMA = [],
-                    xDataDema = [],
-                    yDataDema = [],
-                    EMA = 0, 
-                    // EMA(EMA)
-                    EMAlevel2, 
-                    // EMA of previous point
-                    prevEMA,
-                    prevEMAlevel2, 
-                    // EMA values array
-                    EMAvalues = [],
-                    i,
-                    DEMAPoint;
+                var period = params.period, doubledPeriod = 2 * period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, index = -1, accumulatePeriodPoints = 0, SMA = 0, DEMA = [], xDataDema = [], yDataDema = [], EMA = 0, 
+                // EMA(EMA)
+                EMAlevel2, 
+                // EMA of previous point
+                prevEMA, prevEMAlevel2, 
+                // EMA values array
+                EMAvalues = [], i, DEMAPoint;
                 series.EMApercent = (2 / (period + 1));
                 // Check period, if bigger than EMA points length, skip
                 if (yValLen < 2 * period - 1) {
-                    return;
+                    return false;
                 }
                 // Switch index for OHLC / Candlestick / Arearange
                 if (isArray(yVal[0])) {

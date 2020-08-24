@@ -39,7 +39,7 @@ declare module "../highcharts.src" {
          *        Whether to redraw the chart or wait for a later call to
          *        Chart#redraw.
          */
-        setDataGrouping(dataGrouping?: (boolean|DataGroupingOptionsObject), redraw?: boolean): void;
+        setDataGrouping(dataGrouping?: (boolean|PlotSeriesDataGroupingOptions), redraw?: boolean): void;
     }
     interface Series {
         /**
@@ -108,6 +108,20 @@ declare module "../highcharts.src" {
      * @return Rotated path.
      */
     function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
+    /**
+     * Returns the first break found where the x is larger then break.from and
+     * smaller then break.to.
+     *
+     * @param x
+     *        The number which should be within a break.
+     *
+     * @param breaks
+     *        The array of breaks to search within.
+     *
+     * @return Returns the first break found that matches, returns false if no
+     *         break is found.
+     */
+    function findBreakAt(x: number, breaks: Array<XAxisBreaksOptions>): (XAxisBreaksOptions|undefined);
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

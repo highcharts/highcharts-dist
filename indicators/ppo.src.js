@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,44 +28,39 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Globals.js']], function (H) {
         /**
          *
-         *  (c) 2010-2020 Daniel Studencki
+         *  (c) 2010-2019 Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = U.error;
+        var error = H.error;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
-                /**
-                 * Check whether given indicator is loaded,
-            else throw error.
-                 * @private
-                 * @param {Highcharts.Indicator} indicator
-                 *        Indicator constructor function.
-                 * @param {string} requiredIndicator
-                 *        Required indicator type.
-                 * @param {string} type
-                 *        Type of indicator where function was called (parent).
-                 * @param {Highcharts.IndicatorCallbackFunction} callback
-                 *        Callback which is triggered if the given indicator is loaded.
-                 *        Takes indicator as an argument.
-                 * @param {string} errMessage
-                 *        Error message that will be logged in console.
-                 * @return {boolean}
-                 *         Returns false when there is no required indicator loaded.
-                 */
-                isParentLoaded: function (indicator,
-            requiredIndicator,
-            type,
-            callback,
-            errMessage) {
-                    if (indicator) {
-                        return callback ? callback(indicator) : true;
+            /**
+             * Check whether given indicator is loaded, else throw error.
+             * @private
+             * @param {Highcharts.Indicator} indicator
+             *        Indicator constructor function.
+             * @param {string} requiredIndicator
+             *        Required indicator type.
+             * @param {string} type
+             *        Type of indicator where function was called (parent).
+             * @param {Highcharts.IndicatorCallbackFunction} callback
+             *        Callback which is triggered if the given indicator is loaded.
+             *        Takes indicator as an argument.
+             * @param {string} errMessage
+             *        Error message that will be logged in console.
+             * @return {boolean}
+             *         Returns false when there is no required indicator loaded.
+             */
+            isParentLoaded: function (indicator, requiredIndicator, type, callback, errMessage) {
+                if (indicator) {
+                    return callback ? callback(indicator) : true;
                 }
                 error(errMessage || this.generateMessage(type, requiredIndicator));
                 return false;
@@ -90,7 +85,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/PPOIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
+    _registerModule(_modules, 'indicators/ppo.src.js', [_modules['parts/Globals.js'], _modules['mixins/indicator-required.js']], function (H, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,10 +93,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat,
-            error = U.error,
-            seriesType = U.seriesType;
-        var EMA = H.seriesTypes.ema;
+        var EMA = H.seriesTypes.ema, error = H.error, correctFloat = H.correctFloat, requiredIndicator = requiredIndicatorMixin;
         /**
          * The PPO series type.
          *
@@ -111,7 +103,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('ppo', 'ema', 
+        H.seriesType('ppo', 'ema', 
         /**
          * Percentage Price Oscillator. This series requires the
          * `linkedTo` option to be set and should be loaded after the
@@ -155,32 +147,25 @@
             nameBase: 'PPO',
             nameComponents: ['periods'],
             init: function () {
-                var args = arguments,
-                    ctx = this;
+                var args = arguments, ctx = this;
                 requiredIndicator.isParentLoaded(EMA, 'ema', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
                 });
             },
             getValues: function (series, params) {
-                var periods = params.periods,
-                    index = params.index, 
-                    // 0- date, 1- Percentage Price Oscillator
-                    PPO = [],
-                    xData = [],
-                    yData = [],
-                    periodsOffset, 
-                    // Shorter Period EMA
-                    SPE, 
-                    // Longer Period EMA
-                    LPE,
-                    oscillator,
-                    i;
+                var periods = params.periods, index = params.index, 
+                // 0- date, 1- Percentage Price Oscillator
+                PPO = [], xData = [], yData = [], periodsOffset, 
+                // Shorter Period EMA
+                SPE, 
+                // Longer Period EMA
+                LPE, oscillator, i;
                 // Check if periods are correct
                 if (periods.length !== 2 || periods[1] <= periods[0]) {
                     error('Error: "PPO requires two periods. Notice, first period ' +
                         'should be lower than the second one."');
-                    return;
+                    return false;
                 }
                 SPE = EMA.prototype.getValues.call(this, series, {
                     index: index,
@@ -192,7 +177,7 @@
                 });
                 // Check if ema is calculated properly, if not skip
                 if (!SPE || !LPE) {
-                    return;
+                    return false;
                 }
                 periodsOffset = periods[1] - periods[0];
                 for (i = 0; i < LPE.yData.length; i++) {

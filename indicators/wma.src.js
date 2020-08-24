@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,26 +28,25 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/WMAIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/wma.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2020 Kacper Madej
+         *  (c) 2010-2019 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
+        var seriesType = H.seriesType;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
          * @private
          */
         function accumulateAverage(points, xVal, yVal, i, index) {
-            var xValue = xVal[i],
-                yValue = index < 0 ? yVal[i] : yVal[i][index];
+            var xValue = xVal[i], yValue = index < 0 ? yVal[i] : yVal[i][index];
             points.push([xValue, yValue]);
         }
         /**
@@ -67,10 +66,7 @@
          * @private
          */
         function populateAverage(points, xVal, yVal, i) {
-            var pLen = points.length,
-                wmaY = weightedSumArray(points,
-                pLen),
-                wmaX = xVal[i - 1];
+            var pLen = points.length, wmaY = weightedSumArray(points, pLen), wmaX = xVal[i - 1];
             points.shift(); // remove point until range < period
             return [wmaX, wmaY];
         }
@@ -110,22 +106,9 @@
          */
         {
             getValues: function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    range = 1,
-                    xValue = xVal[0],
-                    yValue = yVal[0],
-                    WMA = [],
-                    xData = [],
-                    yData = [],
-                    index = -1,
-                    i,
-                    points,
-                    WMAPoint;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, range = 1, xValue = xVal[0], yValue = yVal[0], WMA = [], xData = [], yData = [], index = -1, i, points, WMAPoint;
                 if (xVal.length < period) {
-                    return;
+                    return false;
                 }
                 // Switch index for OHLC / Candlestick
                 if (isArray(yVal[0])) {

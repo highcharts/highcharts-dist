@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Sankey diagram module
  *
@@ -28,38 +28,31 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/Nodes.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'mixins/nodes.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
-            extend = U.extend,
-            find = U.find,
-            pick = U.pick;
-        var NodesMixin = H.NodesMixin = {
-                /* eslint-disable valid-jsdoc */
+        var defined = U.defined, extend = U.extend, pick = U.pick;
+        var Point = H.Point;
+        H.NodesMixin = {
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Create a single node that holds information on incoming and outgoing
+             * links.
+             * @private
+             */
+            createNode: function (id) {
                 /**
-                 * Create a single node that holds information on incoming and outgoing
-                 * links.
                  * @private
                  */
-                createNode: function (id) {
-                    /**
-                     * @private
-                     */
-                    function findById(nodes,
-            id) {
-                        return find(nodes,
-            function (node) {
-                            return node.id === id;
+                function findById(nodes, id) {
+                    return H.find(nodes, function (node) {
+                        return node.id === id;
                     });
                 }
-                var node = findById(this.nodes,
-                    id),
-                    PointClass = this.pointClass,
-                    options;
+                var node = findById(this.nodes, id), PointClass = this.pointClass, options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
                     node = (new PointClass()).init(this, extend({
@@ -71,7 +64,7 @@
                     node.linksTo = [];
                     node.linksFrom = [];
                     node.formatPrefix = 'node';
-                    node.name = node.name || node.options.id || ''; // for use in formats
+                    node.name = node.name || node.options.id; // for use in formats
                     // Mass is used in networkgraph:
                     node.mass = pick(
                     // Node:
@@ -85,8 +78,7 @@
                      * @private
                      */
                     node.getSum = function () {
-                        var sumTo = 0,
-                            sumFrom = 0;
+                        var sumTo = 0, sumFrom = 0;
                         node.linksTo.forEach(function (link) {
                             sumTo += link.weight;
                         });
@@ -129,8 +121,7 @@
              * but pushed to the this.nodes array.
              */
             generatePoints: function () {
-                var chart = this.chart,
-                    nodeLookup = {};
+                var chart = this.chart, nodeLookup = {};
                 H.Series.prototype.generatePoints.call(this);
                 if (!this.nodes) {
                     this.nodes = []; // List of Point-like node items
@@ -140,7 +131,7 @@
                 this.nodes.forEach(function (node) {
                     node.linksFrom.length = 0;
                     node.linksTo.length = 0;
-                    node.level = node.options.level;
+                    node.level = undefined;
                 });
                 // Create the node list and set up links
                 this.points.forEach(function (point) {
@@ -193,19 +184,17 @@
              * highlight all connected nodes.
              */
             setNodeState: function (state) {
-                var args = arguments,
-                    others = this.isNode ? this.linksTo.concat(this.linksFrom) :
-                        [this.fromNode,
-                    this.toNode];
+                var args = arguments, others = this.isNode ? this.linksTo.concat(this.linksFrom) :
+                    [this.fromNode, this.toNode];
                 if (state !== 'select') {
                     others.forEach(function (linkOrNode) {
-                        if (linkOrNode && linkOrNode.series) {
+                        if (linkOrNode.series) {
                             Point.prototype.setState.apply(linkOrNode, args);
                             if (!linkOrNode.isNode) {
                                 if (linkOrNode.fromNode.graphic) {
                                     Point.prototype.setState.apply(linkOrNode.fromNode, args);
                                 }
-                                if (linkOrNode.toNode && linkOrNode.toNode.graphic) {
+                                if (linkOrNode.toNode.graphic) {
                                     Point.prototype.setState.apply(linkOrNode.toNode, args);
                                 }
                             }
@@ -217,46 +206,29 @@
             /* eslint-enable valid-jsdoc */
         };
 
-        return NodesMixin;
     });
-    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'mixins/tree-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            isObject = U.isObject,
-            merge = U.merge,
-            pick = U.pick;
+        var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, pick = U.pick;
         var isBoolean = function (x) {
-                return typeof x === 'boolean';
+            return typeof x === 'boolean';
         }, isFn = function (x) {
             return typeof x === 'function';
-        };
+        }, merge = H.merge;
         /* eslint-disable valid-jsdoc */
         /**
          * @todo Combine buildTree and buildNode with setTreeValues
          * @todo Remove logic from Treemap and make it utilize this mixin.
          * @private
          */
-        var setTreeValues = function setTreeValues(tree,
-            options) {
-                var before = options.before,
-            idRoot = options.idRoot,
-            mapIdToNode = options.mapIdToNode,
-            nodeRoot = mapIdToNode[idRoot],
-            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                    options.levelIsConstant :
-                    true),
-            points = options.points,
-            point = points[tree.i],
-            optionsPoint = point && point.options || {},
-            childrenTotal = 0,
-            children = [],
-            value;
+        var setTreeValues = function setTreeValues(tree, options) {
+            var before = options.before, idRoot = options.idRoot, mapIdToNode = options.mapIdToNode, nodeRoot = mapIdToNode[idRoot], levelIsConstant = (isBoolean(options.levelIsConstant) ?
+                options.levelIsConstant :
+                true), points = options.points, point = points[tree.i], optionsPoint = point && point.options || {}, childrenTotal = 0, children = [], value;
             extend(tree, {
                 levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
                 name: pick(point && point.name, ''),
@@ -268,8 +240,7 @@
             }
             // First give the children some values
             tree.children.forEach(function (child, i) {
-                var newOptions = extend({},
-                    options);
+                var newOptions = extend({}, options);
                 extend(newOptions, {
                     index: i,
                     siblings: tree.children.length,
@@ -295,24 +266,8 @@
         /**
          * @private
          */
-        var getColor = function getColor(node,
-            options) {
-                var index = options.index,
-            mapOptionsToLevel = options.mapOptionsToLevel,
-            parentColor = options.parentColor,
-            parentColorIndex = options.parentColorIndex,
-            series = options.series,
-            colors = options.colors,
-            siblings = options.siblings,
-            points = series.points,
-            getColorByPoint,
-            chartOptionsChart = series.chart.options.chart,
-            point,
-            level,
-            colorByPoint,
-            colorIndexByPoint,
-            color,
-            colorIndex;
+        var getColor = function getColor(node, options) {
+            var index = options.index, mapOptionsToLevel = options.mapOptionsToLevel, parentColor = options.parentColor, parentColorIndex = options.parentColorIndex, series = options.series, colors = options.colors, siblings = options.siblings, points = series.points, getColorByPoint, chartOptionsChart = series.chart.options.chart, point, level, colorByPoint, colorIndexByPoint, color, colorIndex;
             /**
              * @private
              */
@@ -320,7 +275,7 @@
                 var colorVariation = level && level.colorVariation;
                 if (colorVariation) {
                     if (colorVariation.key === 'brightness') {
-                        return Color.parse(color).brighten(colorVariation.to * (index / siblings)).get();
+                        return H.color(color).brighten(colorVariation.to * (index / siblings)).get();
                     }
                 }
                 return color;
@@ -363,13 +318,7 @@
          *         Returns a map from level number to its given options.
          */
         var getLevelOptions = function getLevelOptions(params) {
-                var result = null,
-            defaults,
-            converted,
-            i,
-            from,
-            to,
-            levels;
+            var result = null, defaults, converted, i, from, to, levels;
             if (isObject(params)) {
                 result = {};
                 from = isNumber(params.from) ? params.from : 1;
@@ -378,9 +327,7 @@
                 defaults = isObject(params.defaults) ? params.defaults : {};
                 if (isArray(levels)) {
                     converted = levels.reduce(function (obj, item) {
-                        var level,
-                            levelIsConstant,
-                            options;
+                        var level, levelIsConstant, options;
                         if (isObject(item) && isNumber(item.level)) {
                             options = merge({}, item);
                             levelIsConstant = (isBoolean(options.levelIsConstant) ?
@@ -422,8 +369,7 @@
          *         Returns the resulting rootId after update.
          */
         var updateRootId = function (series) {
-                var rootId,
-            options;
+            var rootId, options;
             if (isObject(series)) {
                 // Get the series options.
                 options = isObject(series.options) ? series.options : {};
@@ -439,20 +385,20 @@
             return rootId;
         };
         var result = {
-                getColor: getColor,
-                getLevelOptions: getLevelOptions,
-                setTreeValues: setTreeValues,
-                updateRootId: updateRootId
-            };
+            getColor: getColor,
+            getLevelOptions: getLevelOptions,
+            setTreeValues: setTreeValues,
+            updateRootId: updateRootId
+        };
 
         return result;
     });
-    _registerModule(_modules, 'Series/SankeySeries.js', [_modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Mixins/TreeSeries.js']], function (H, NodesMixin, Color, Point, U, TreeSeriesMixin) {
+    _registerModule(_modules, 'modules/sankey.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/tree-series.js']], function (H, U, mixinTreeSeries) {
         /* *
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -520,7 +466,7 @@
          *
          * @callback Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction
          *
-         * @param {Highcharts.SeriesSankeyDataLabelsFormatterContextObject|Highcharts.PointLabelObject} this
+         * @param {Highcharts.SeriesSankeyDataLabelsFormatterContextObject|Highcharts.DataLabelsFormatterContextObject} this
          *        Data label context to format
          *
          * @return {string|undefined}
@@ -530,38 +476,66 @@
          * Context for the node formatter function.
          *
          * @interface Highcharts.SeriesSankeyDataLabelsFormatterContextObject
-         * @extends Highcharts.PointLabelObject
+         * @extends Highcharts.DataLabelsFormatterContextObject
          */ /**
         * The node object. The node name, if defined, is available through
         * `this.point.name`.
         * @name Highcharts.SeriesSankeyDataLabelsFormatterContextObject#point
         * @type {Highcharts.SankeyNodeObject}
         */
-        var defined = U.defined,
-            find = U.find,
-            isObject = U.isObject,
-            merge = U.merge,
-            pick = U.pick,
-            relativeLength = U.relativeLength,
-            seriesType = U.seriesType,
-            stableSort = U.stableSort;
-        var getLevelOptions = TreeSeriesMixin.getLevelOptions;
+        /**
+         * Options for the series data labels, appearing next to each data point.
+         *
+         * Since v6.2.0, multiple data labels can be applied to each single point by
+         * defining them as an array of configs.
+         *
+         * In styled mode, the data labels can be styled with the
+         * `.highcharts-data-label-box` and `.highcharts-data-label` class names.
+         *
+         * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-datalabels-enabled|Highcharts-Demo:}
+         *      Data labels enabled
+         * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/series-datalabels-multiple|Highcharts-Demo:}
+         *      Multiple data labels on a bar series
+         * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/series-datalabels|Highcharts-Demo:}
+         *      Style mode example
+         *
+         * @interface Highcharts.SeriesSankeyDataLabelsOptionsObject
+         * @extends Highcharts.DataLabelsOptionsObject
+         */ /**
+        * The
+        * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+        * specifying what to show for _nodes_ in the sankey diagram. By default the
+        * `nodeFormatter` returns `{point.name}`.
+        *
+        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-link-datalabels|Highcharts-Demo:}
+        *      Node and link data labels
+        *
+        * @name Highcharts.SeriesSankeyDataLabelsOptionsObject#nodeFormat
+        * @type {string|undefined}
+        */ /**
+        * Callback to format data labels for _nodes_ in the sankey diagram. The
+        * `nodeFormat` option takes precedence over the `nodeFormatter`.
+        *
+        * @name Highcharts.SeriesSankeyDataLabelsOptionsObject#nodeFormatter
+        * @type {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction|undefined}
+        * @default function () { return this.point.name; }
+        * @since 6.0.2
+        */
+        var defined = U.defined, isObject = U.isObject, pick = U.pick;
+        var getLevelOptions = mixinTreeSeries.getLevelOptions;
+        var find = H.find, merge = H.merge, seriesType = H.seriesType, Point = H.Point;
         // eslint-disable-next-line valid-jsdoc
         /**
          * @private
          */
         var getDLOptions = function getDLOptions(params) {
-                var optionsPoint = (isObject(params.optionsPoint) ?
-                    params.optionsPoint.dataLabels :
-                    {}),
-            optionsLevel = (isObject(params.level) ?
-                    params.level.dataLabels :
-                    {}),
-            options = merge({
-                    style: {}
-                },
-            optionsLevel,
-            optionsPoint);
+            var optionsPoint = (isObject(params.optionsPoint) ?
+                params.optionsPoint.dataLabels :
+                {}), optionsLevel = (isObject(params.level) ?
+                params.level.dataLabels :
+                {}), options = merge({
+                style: {}
+            }, optionsLevel, optionsPoint);
             return options;
         };
         /**
@@ -593,7 +567,7 @@
          *               pointInterval, pointIntervalUnit, pointPadding,
          *               pointPlacement, pointRange, pointStart, pointWidth,
          *               shadow, softThreshold, stacking, threshold, zoneAxis,
-         *               zones, minPointLength, dataSorting, boostBlending
+         *               zones, minPointLength
          * @requires     modules/sankey
          * @optionparent plotOptions.sankey
          */
@@ -615,46 +589,36 @@
              * `nodeFormat`, and the `format` that applies to links and is an empty
              * string by default.
              *
-             * @declare Highcharts.SeriesSankeyDataLabelsOptionsObject
+             * @type    {Highcharts.SeriesSankeyDataLabelsOptionsObject|Array<Highcharts.SeriesSankeyDataLabelsOptionsObject>}
+             * @default {"enabled": true, "backgroundColor": "none", "crop": false, "nodeFormatter": function () { return this.point.name; }, "inside": true}
              *
              * @private
              */
             dataLabels: {
+                /** @ignore-option */
                 enabled: true,
+                /**
+                 * enable padding
+                 * @ignore-option
+                 */
                 backgroundColor: 'none',
+                /** @ignore-option */
                 crop: false,
-                /**
-                 * The
-                 * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
-                 * specifying what to show for _nodes_ in the sankey diagram. By
-                 * default the `nodeFormatter` returns `{point.name}`.
-                 *
-                 * @sample highcharts/plotoptions/sankey-link-datalabels/
-                 *         Node and link data labels
-                 *
-                 * @type {string}
-                 */
-                nodeFormat: void 0,
+                /** @ignore-option */
+                nodeFormat: undefined,
                 // eslint-disable-next-line valid-jsdoc
-                /**
-                 * Callback to format data labels for _nodes_ in the sankey diagram.
-                 * The `nodeFormat` option takes precedence over the
-                 * `nodeFormatter`.
-                 *
-                 * @type  {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
-                 * @since 6.0.2
-                 */
+                /** @ignore-option */
                 nodeFormatter: function () {
                     return this.point.name;
                 },
-                format: void 0,
+                /** @ignore-option */
+                format: undefined,
                 // eslint-disable-next-line valid-jsdoc
-                /**
-                 * @type {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
-                 */
+                /** @ignore-option */
                 formatter: function () {
                     return;
                 },
+                /** @ignore-option */
                 inside: true
             },
             /**
@@ -702,7 +666,7 @@
             /**
              * Can set `dataLabels` on all points which lay on the same level.
              *
-             * @extends   plotOptions.sankey.dataLabels
+             * @type      {Highcharts.SeriesSankeyDataLabelsOptionsObject}
              * @apioption plotOptions.sankey.levels.dataLabels
              */
             /**
@@ -722,7 +686,7 @@
             /**
              * Can set `states` on all nodes and points which lay on the same level.
              *
-             * @extends   plotOptions.sankey.states
+             * @type      {Highcharts.PointStatesOptionsObject}
              * @apioption plotOptions.sankey.levels.states
              */
             /**
@@ -757,10 +721,6 @@
              * The padding between nodes in a sankey diagram or dependency wheel, in
              * pixels.
              *
-             * If the number of nodes is so great that it is possible to lay them
-             * out within the plot area with the given `nodePadding`, they will be
-             * rendered with a smaller padding as a strategy to avoid overflow.
-             *
              * @private
              */
             nodePadding: 10,
@@ -775,8 +735,6 @@
                 },
                 /**
                  * The opposite state of a hover for a single point node/link.
-                 *
-                 * @declare Highcharts.SeriesStatesInactiveOptionsObject
                  */
                 inactive: {
                     /**
@@ -788,17 +746,16 @@
                      * Opacity of inactive markers.
                      *
                      * @type      {number}
-                     * @apioption plotOptions.series.states.inactive.opacity
+                     * @apioption plotOptions.series.marker.states.inactive.opacity
                      */
                     opacity: 0.1,
                     /**
                      * Animation when not hovering over the marker.
                      *
-                     * @type      {boolean|Partial<Highcharts.AnimationOptionsObject>}
-                     * @apioption plotOptions.series.states.inactive.animation
+                     * @type {boolean|Highcharts.AnimationOptionsObject}
+                     * @apioption plotOptions.series.marker.states.inactive.animation
                      */
                     animation: {
-                        /** @internal */
                         duration: 50
                     }
                 }
@@ -835,10 +792,9 @@
             pointArrayMap: ['from', 'to'],
             // Create a single node that holds information on incoming and outgoing
             // links.
-            createNode: NodesMixin.createNode,
-            searchPoint: H.noop,
-            setData: NodesMixin.setData,
-            destroy: NodesMixin.destroy,
+            createNode: H.NodesMixin.createNode,
+            setData: H.NodesMixin.setData,
+            destroy: H.NodesMixin.destroy,
             /* eslint-disable valid-jsdoc */
             /**
              * Overridable function to get node padding, overridden in dependency
@@ -846,28 +802,14 @@
              * @private
              */
             getNodePadding: function () {
-                var nodePadding = this.options.nodePadding || 0;
-                // If the number of columns is so great that they will overflow with
-                // the given nodePadding, we sacrifice the padding in order to
-                // render all nodes within the plot area (#11917).
-                if (this.nodeColumns) {
-                    var maxLength = this.nodeColumns.reduce(function (acc,
-                        col) { return Math.max(acc,
-                        col.length); }, 0);
-                    if (maxLength * nodePadding > this.chart.plotSizeY) {
-                        nodePadding = this.chart.plotSizeY / maxLength;
-                    }
-                }
-                return nodePadding;
+                return this.options.nodePadding;
             },
             /**
              * Create a node column.
              * @private
              */
             createNodeColumn: function () {
-                var series = this,
-                    chart = this.chart,
-                    column = [];
+                var chart = this.chart, column = [], nodePadding = this.getNodePadding();
                 column.sum = function () {
                     return this.reduce(function (sum, node) {
                         return sum + node.getSum();
@@ -875,39 +817,24 @@
                 };
                 // Get the offset in pixels of a node inside the column.
                 column.offset = function (node, factor) {
-                    var offset = 0,
-                        totalNodeOffset,
-                        nodePadding = series.nodePadding;
+                    var offset = 0, totalNodeOffset;
                     for (var i = 0; i < column.length; i++) {
-                        var sum = column[i].getSum();
-                        var height = Math.max(sum * factor,
-                            series.options.minLinkWidth);
-                        if (sum) {
-                            totalNodeOffset = height + nodePadding;
-                        }
-                        else {
-                            // If node sum equals 0 nodePadding is missed #12453
-                            totalNodeOffset = 0;
-                        }
+                        totalNodeOffset = column[i].getSum() * factor + nodePadding;
                         if (column[i] === node) {
                             return {
-                                relativeTop: offset + relativeLength(node.options.offset || 0, totalNodeOffset)
+                                relativeTop: offset + H.relativeLength(node.options.offset || 0, totalNodeOffset)
                             };
                         }
                         offset += totalNodeOffset;
                     }
                 };
-                // Get the top position of the column in pixels.
+                // Get the column height in pixels.
                 column.top = function (factor) {
-                    var nodePadding = series.nodePadding;
-                    var height = this.reduce(function (height,
-                        node) {
-                            if (height > 0) {
-                                height += nodePadding;
+                    var height = this.reduce(function (height, node) {
+                        if (height > 0) {
+                            height += nodePadding;
                         }
-                        var nodeHeight = Math.max(node.getSum() * factor,
-                            series.options.minLinkWidth);
-                        height += nodeHeight;
+                        height += node.getSum() * factor;
                         return height;
                     }, 0);
                     return (chart.plotSizeY - height) / 2;
@@ -922,10 +849,7 @@
             createNodeColumns: function () {
                 var columns = [];
                 this.nodes.forEach(function (node) {
-                    var fromColumn = -1,
-                        fromNode,
-                        i,
-                        point;
+                    var fromColumn = -1, fromNode, i, point;
                     if (!defined(node.options.column)) {
                         // No links to this node, place it left
                         if (node.linksTo.length === 0) {
@@ -965,7 +889,7 @@
                 }, this);
                 // Fill in empty columns (#8865)
                 for (var i = 0; i < columns.length; i++) {
-                    if (typeof columns[i] === 'undefined') {
+                    if (columns[i] === undefined) {
                         columns[i] = this.createNodeColumn();
                     }
                 }
@@ -986,9 +910,9 @@
              */
             pointAttribs: function (point, state) {
                 var series = this, level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states && levelOptions.states[state]) || {}, values = [
-                        'colorByPoint', 'borderColor', 'borderWidth', 'linkOpacity'
-                    ].reduce(function (obj, key) {
-                        obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
+                    'colorByPoint', 'borderColor', 'borderWidth', 'linkOpacity'
+                ].reduce(function (obj, key) {
+                    obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
                     return obj;
                 }, {}), color = pick(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
                 // Node attributes
@@ -1001,7 +925,7 @@
                 }
                 // Link attributes
                 return {
-                    fill: Color.parse(color).setOpacity(values.linkOpacity).get()
+                    fill: H.color(color).setOpacity(values.linkOpacity).get()
                 };
             },
             /**
@@ -1010,19 +934,16 @@
              * @private
              */
             generatePoints: function () {
-                NodesMixin.generatePoints.apply(this, arguments);
+                H.NodesMixin.generatePoints.apply(this, arguments);
                 /**
                  * Order the nodes, starting with the root node(s). (#9818)
                  * @private
                  */
                 function order(node, level) {
-                    // Prevents circular recursion:
-                    if (typeof node.level === 'undefined') {
+                    if (node.level === undefined) { // Prevents circular recursion
                         node.level = level;
                         node.linksFrom.forEach(function (link) {
-                            if (link.toNode) {
-                                order(link.toNode, level + 1);
-                            }
+                            order(link.toNode, level + 1);
                         });
                     }
                 }
@@ -1037,7 +958,7 @@
                         .forEach(function (node) {
                         order(node, 0);
                     });
-                    stableSort(this.nodes, function (a, b) {
+                    H.stableSort(this.nodes, function (a, b) {
                         return a.level - b.level;
                     });
                 }
@@ -1047,90 +968,56 @@
              * @private
              */
             translateNode: function (node, column) {
-                var translationFactor = this.translationFactor,
-                    chart = this.chart,
-                    options = this.options,
-                    sum = node.getSum(),
-                    height = Math.max(Math.round(sum * translationFactor),
-                    this.options.minLinkWidth),
-                    crisp = Math.round(options.borderWidth) % 2 / 2,
-                    nodeOffset = column.offset(node,
-                    translationFactor),
-                    fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.top(translationFactor) +
-                        nodeOffset.relativeTop))) + crisp,
-                    left = Math.floor(this.colDistance * node.column +
-                        options.borderWidth / 2) + crisp,
-                    nodeLeft = chart.inverted ?
-                        chart.plotSizeX - left :
-                        left,
-                    nodeWidth = Math.round(this.nodeWidth);
+                var translationFactor = this.translationFactor, chart = this.chart, options = this.options, sum = node.getSum(), height = Math.round(sum * translationFactor), crisp = Math.round(options.borderWidth) % 2 / 2, nodeOffset = column.offset(node, translationFactor), fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.top(translationFactor) +
+                    nodeOffset.relativeTop))) + crisp, left = Math.floor(this.colDistance * node.column +
+                    options.borderWidth / 2) + crisp, nodeLeft = chart.inverted ?
+                    chart.plotSizeX - left :
+                    left, nodeWidth = Math.round(this.nodeWidth);
                 node.sum = sum;
-                // If node sum is 0, don't render the rect #12453
-                if (sum) {
-                    // Draw the node
-                    node.shapeType = 'rect';
-                    node.nodeX = nodeLeft;
-                    node.nodeY = fromNodeTop;
-                    if (!chart.inverted) {
-                        node.shapeArgs = {
-                            x: nodeLeft,
-                            y: fromNodeTop,
-                            width: node.options.width || options.width || nodeWidth,
-                            height: node.options.height || options.height || height
-                        };
-                    }
-                    else {
-                        node.shapeArgs = {
-                            x: nodeLeft - nodeWidth,
-                            y: chart.plotSizeY - fromNodeTop - height,
-                            width: node.options.height || options.height || nodeWidth,
-                            height: node.options.width || options.width || height
-                        };
-                    }
-                    node.shapeArgs.display = node.hasShape() ? '' : 'none';
-                    // Calculate data label options for the point
-                    node.dlOptions = getDLOptions({
-                        level: this.mapOptionsToLevel[node.level],
-                        optionsPoint: node.options
-                    });
-                    // Pass test in drawPoints
-                    node.plotY = 1;
-                    // Set the anchor position for tooltips
-                    node.tooltipPos = chart.inverted ? [
-                        chart.plotSizeY - node.shapeArgs.y - node.shapeArgs.height / 2,
-                        chart.plotSizeX - node.shapeArgs.x - node.shapeArgs.width / 2
-                    ] : [
-                        node.shapeArgs.x + node.shapeArgs.width / 2,
-                        node.shapeArgs.y + node.shapeArgs.height / 2
-                    ];
-                }
-                else {
-                    node.dlOptions = {
-                        enabled: false
+                // Draw the node
+                node.shapeType = 'rect';
+                node.nodeX = nodeLeft;
+                node.nodeY = fromNodeTop;
+                if (!chart.inverted) {
+                    node.shapeArgs = {
+                        x: nodeLeft,
+                        y: fromNodeTop,
+                        width: node.options.width || options.width || nodeWidth,
+                        height: node.options.height || options.height || height
                     };
                 }
+                else {
+                    node.shapeArgs = {
+                        x: nodeLeft - nodeWidth,
+                        y: chart.plotSizeY - fromNodeTop - height,
+                        width: node.options.height || options.height || nodeWidth,
+                        height: node.options.width || options.width || height
+                    };
+                }
+                node.shapeArgs.display = node.hasShape() ? '' : 'none';
+                // Calculate data label options for the point
+                node.dlOptions = getDLOptions({
+                    level: this.mapOptionsToLevel[node.level],
+                    optionsPoint: node.options
+                });
+                // Pass test in drawPoints
+                node.plotY = 1;
             },
             /**
              * Run translation operations for one link.
              * @private
              */
             translateLink: function (point) {
-                var getY = function (node,
-                    fromOrTo) {
-                        var _a;
-                    var linkTop = (node.offset(point,
-                        fromOrTo) *
-                            translationFactor);
-                    var y = Math.min(node.nodeY + linkTop, 
-                        // Prevent links from spilling below the node (#12014)
-                        node.nodeY + ((_a = node.shapeArgs) === null || _a === void 0 ? void 0 : _a.height) - linkHeight);
-                    return y;
-                };
-                var fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
-                        options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.column * this.colDistance, outgoing = point.outgoing, straight = right > nodeLeft + nodeW;
+                var fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, fromLinkTop = (fromNode.offset(point, 'linksFrom') *
+                    translationFactor), curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
+                    options.curveFactor), fromY = fromNode.nodeY + fromLinkTop, nodeLeft = fromNode.nodeX, toColTop = this.nodeColumns[toNode.column]
+                    .top(translationFactor), toY = (toColTop +
+                    (toNode.offset(point, 'linksTo') *
+                        translationFactor) +
+                    this.nodeColumns[toNode.column].offset(toNode, translationFactor).relativeTop), nodeW = this.nodeWidth, right = toNode.column * this.colDistance, outgoing = point.outgoing, straight = right > nodeLeft;
                 if (chart.inverted) {
                     fromY = chart.plotSizeY - fromY;
-                    toY = (chart.plotSizeY || 0) - toY;
+                    toY = chart.plotSizeY - toY;
                     right = chart.plotSizeX - right;
                     nodeW = -nodeW;
                     linkHeight = -linkHeight;
@@ -1144,30 +1031,24 @@
                     toY + linkHeight
                 ];
                 // Links going from left to right
-                if (straight && typeof toY === 'number') {
+                if (straight) {
                     point.shapeArgs = {
                         d: [
-                            ['M', nodeLeft + nodeW, fromY],
-                            [
-                                'C',
-                                nodeLeft + nodeW + curvy,
-                                fromY,
-                                right - curvy,
-                                toY,
-                                right,
-                                toY
-                            ],
-                            ['L', right + (outgoing ? nodeW : 0), toY + linkHeight / 2],
-                            ['L', right, toY + linkHeight],
-                            [
-                                'C',
-                                right - curvy,
-                                toY + linkHeight,
-                                nodeLeft + nodeW + curvy,
-                                fromY + linkHeight,
-                                nodeLeft + nodeW, fromY + linkHeight
-                            ],
-                            ['Z']
+                            'M', nodeLeft + nodeW, fromY,
+                            'C', nodeLeft + nodeW + curvy, fromY,
+                            right - curvy, toY,
+                            right, toY,
+                            'L',
+                            right + (outgoing ? nodeW : 0),
+                            toY + linkHeight / 2,
+                            'L',
+                            right,
+                            toY + linkHeight,
+                            'C', right - curvy, toY + linkHeight,
+                            nodeLeft + nodeW + curvy,
+                            fromY + linkHeight,
+                            nodeLeft + nodeW, fromY + linkHeight,
+                            'z'
                         ]
                     };
                     // Experimental: Circular links pointing backwards. In
@@ -1178,48 +1059,27 @@
                     // - Automatically determine if the link should go up or
                     //   down.
                 }
-                else if (typeof toY === 'number') {
-                    var bend = 20,
-                        vDist = chart.plotHeight - fromY - linkHeight,
-                        x1 = right - bend - linkHeight,
-                        x2 = right - bend,
-                        x3 = right,
-                        x4 = nodeLeft + nodeW,
-                        x5 = x4 + bend,
-                        x6 = x5 + linkHeight,
-                        fy1 = fromY,
-                        fy2 = fromY + linkHeight,
-                        fy3 = fy2 + bend,
-                        y4 = fy3 + vDist,
-                        y5 = y4 + bend,
-                        y6 = y5 + linkHeight,
-                        ty1 = toY,
-                        ty2 = ty1 + linkHeight,
-                        ty3 = ty2 + bend,
-                        cfy1 = fy2 - linkHeight * 0.7,
-                        cy2 = y5 + linkHeight * 0.7,
-                        cty1 = ty2 - linkHeight * 0.7,
-                        cx1 = x3 - linkHeight * 0.7,
-                        cx2 = x4 + linkHeight * 0.7;
+                else {
+                    var bend = 20, vDist = chart.plotHeight - fromY - linkHeight, x1 = right - bend - linkHeight, x2 = right - bend, x3 = right, x4 = nodeLeft + nodeW, x5 = x4 + bend, x6 = x5 + linkHeight, fy1 = fromY, fy2 = fromY + linkHeight, fy3 = fy2 + bend, y4 = fy3 + vDist, y5 = y4 + bend, y6 = y5 + linkHeight, ty1 = toY, ty2 = ty1 + linkHeight, ty3 = ty2 + bend, cfy1 = fy2 - linkHeight * 0.7, cy2 = y5 + linkHeight * 0.7, cty1 = ty2 - linkHeight * 0.7, cx1 = x3 - linkHeight * 0.7, cx2 = x4 + linkHeight * 0.7;
                     point.shapeArgs = {
                         d: [
-                            ['M', x4, fy1],
-                            ['C', cx2, fy1, x6, cfy1, x6, fy3],
-                            ['L', x6, y4],
-                            ['C', x6, cy2, cx2, y6, x4, y6],
-                            ['L', x3, y6],
-                            ['C', cx1, y6, x1, cy2, x1, y4],
-                            ['L', x1, ty3],
-                            ['C', x1, cty1, cx1, ty1, x3, ty1],
-                            ['L', x3, ty2],
-                            ['C', x2, ty2, x2, ty2, x2, ty3],
-                            ['L', x2, y4],
-                            ['C', x2, y5, x2, y5, x3, y5],
-                            ['L', x4, y5],
-                            ['C', x5, y5, x5, y5, x5, y4],
-                            ['L', x5, fy3],
-                            ['C', x5, fy2, x5, fy2, x4, fy2],
-                            ['Z']
+                            'M', x4, fy1,
+                            'C', cx2, fy1, x6, cfy1, x6, fy3,
+                            'L', x6, y4,
+                            'C', x6, cy2, cx2, y6, x4, y6,
+                            'L', x3, y6,
+                            'C', cx1, y6, x1, cy2, x1, y4,
+                            'L', x1, ty3,
+                            'C', x1, cty1, cx1, ty1, x3, ty1,
+                            'L', x3, ty2,
+                            'C', x2, ty2, x2, ty2, x2, ty3,
+                            'L', x2, y4,
+                            'C', x2, y5, x2, y5, x3, y5,
+                            'L', x4, y5,
+                            'C', x5, y5, x5, y5, x5, y4,
+                            'L', x5, fy3,
+                            'C', x5, fy2, x5, fy2, x4, fy2,
+                            'z'
                         ]
                     };
                 }
@@ -1230,14 +1090,6 @@
                     height: linkHeight,
                     width: 0
                 };
-                // And set the tooltip anchor in the middle
-                point.tooltipPos = chart.inverted ? [
-                    chart.plotSizeY - point.dlBox.y - linkHeight / 2,
-                    chart.plotSizeX - point.dlBox.x
-                ] : [
-                    point.dlBox.x,
-                    point.dlBox.y + linkHeight / 2
-                ];
                 // Pass test in drawPoints
                 point.y = point.plotY = 1;
                 if (!point.color) {
@@ -1249,56 +1101,21 @@
              * @private
              */
             translate: function () {
-                var _this = this;
-                // Get the translation factor needed for each column to fill up the
-                // plot height
-                var getColumnTranslationFactor = function (column) {
-                        var nodes = column.slice();
-                    var minLinkWidth = _this.options.minLinkWidth || 0;
-                    var exceedsMinLinkWidth;
-                    var factor = 0;
-                    var i;
-                    var remainingHeight = chart.plotSizeY -
-                            options.borderWidth - (column.length - 1) * series.nodePadding;
-                    // Because the minLinkWidth option doesn't obey the direct
-                    // translation, we need to run translation iteratively, check
-                    // node heights, remove those nodes affected by minLinkWidth,
-                    // check again, etc.
-                    while (column.length) {
-                        factor = remainingHeight / column.sum();
-                        exceedsMinLinkWidth = false;
-                        i = column.length;
-                        while (i--) {
-                            if (column[i].getSum() * factor < minLinkWidth) {
-                                column.splice(i, 1);
-                                remainingHeight -= minLinkWidth;
-                                exceedsMinLinkWidth = true;
-                            }
-                        }
-                        if (!exceedsMinLinkWidth) {
-                            break;
-                        }
-                    }
-                    // Re-insert original nodes
-                    column.length = 0;
-                    nodes.forEach(function (node) { return column.push(node); });
-                    return factor;
-                };
                 if (!this.processedXData) {
                     this.processData();
                 }
                 this.generatePoints();
                 this.nodeColumns = this.createNodeColumns();
-                this.nodeWidth = relativeLength(this.options.nodeWidth, this.chart.plotSizeX);
-                var series = this,
-                    chart = this.chart,
-                    options = this.options,
-                    nodeWidth = this.nodeWidth,
-                    nodeColumns = this.nodeColumns;
-                this.nodePadding = this.getNodePadding();
+                this.nodeWidth = H.relativeLength(this.options.nodeWidth, this.chart.plotSizeX);
+                var series = this, chart = this.chart, options = this.options, nodeWidth = this.nodeWidth, nodeColumns = this.nodeColumns, nodePadding = this.getNodePadding();
                 // Find out how much space is needed. Base it on the translation
                 // factor of the most spaceous column.
-                this.translationFactor = nodeColumns.reduce(function (translationFactor, column) { return Math.min(translationFactor, getColumnTranslationFactor(column)); }, Infinity);
+                this.translationFactor = nodeColumns.reduce(function (translationFactor, column) {
+                    var height = chart.plotSizeY -
+                        options.borderWidth -
+                        (column.length - 1) * nodePadding;
+                    return Math.min(translationFactor, height / column.sum());
+                }, Infinity);
                 this.colDistance =
                     (chart.plotSizeX - nodeWidth -
                         options.borderWidth) / Math.max(1, nodeColumns.length - 1);
@@ -1334,12 +1151,8 @@
                 this.nodes.forEach(function (node) {
                     // Translate the links from this node
                     node.linksFrom.forEach(function (linkPoint) {
-                        // If weight is 0 - don't render the link path #12453,
-                        // render null points (for organization chart)
-                        if ((linkPoint.weight || linkPoint.isNull) && linkPoint.to) {
-                            series.translateLink(linkPoint);
-                            linkPoint.allowShadow = false;
-                        }
+                        series.translateLink(linkPoint);
+                        linkPoint.allowShadow = false;
                     });
                 });
             },
@@ -1365,7 +1178,7 @@
                 }
                 return this;
             },
-            setState: NodesMixin.setNodeState,
+            setState: H.NodesMixin.setNodeState,
             getClassName: function () {
                 return (this.isNode ? 'highcharts-node ' : 'highcharts-link ') +
                     Point.prototype.getClassName.call(this);
@@ -1386,7 +1199,7 @@
          *            groupZPadding, label, maxPointWidth, negativeColor, pointInterval,
          *            pointIntervalUnit, pointPadding, pointPlacement, pointRange,
          *            pointStart, pointWidth, shadow, softThreshold, stacking,
-         *            threshold, zoneAxis, zones, dataSorting
+         *            threshold, zoneAxis, zones
          * @product   highcharts
          * @requires  modules/sankey
          * @apioption series.sankey
@@ -1399,7 +1212,6 @@
          * @sample highcharts/css/sankey/
          *         Sankey diagram with node options
          *
-         * @declare   Highcharts.SeriesSankeyNodesOptionsObject
          * @type      {Array<*>}
          * @product   highcharts
          * @apioption series.sankey.nodes
@@ -1445,7 +1257,8 @@
          * Individual data label for each node. The options are the same as
          * the ones for [series.sankey.dataLabels](#series.sankey.dataLabels).
          *
-         * @extends   plotOptions.sankey.dataLabels
+         * @type    {Highcharts.SeriesSankeyDataLabelsOptionsObject|Array<Highcharts.SeriesSankeyDataLabelsOptionsObject>}
+         *
          * @apioption series.sankey.nodes.dataLabels
          */
         /**
@@ -1511,7 +1324,6 @@
          * @sample {highcharts} highcharts/series/data-array-of-objects/
          *         Config objects
          *
-         * @declare   Highcharts.SeriesSankeyPointOptionsObject
          * @type      {Array<*>}
          * @extends   series.line.data
          * @excluding dragDrop, drilldown, marker, x, y

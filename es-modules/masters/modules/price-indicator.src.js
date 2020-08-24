@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  * @module highcharts/modules/price-indicator
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,4 +12,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/PriceIndication.js';
+import '../../modules/price-indicator.src.js';

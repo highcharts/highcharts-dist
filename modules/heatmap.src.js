@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.2.0 (2020-08-20)
+ * @license Highmaps JS v7.2.2 (2020-08-24)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,10 +26,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/ColorSeries.js', [_modules['Core/Globals.js']], function (H) {
+    _registerModule(_modules, 'parts-map/ColorSeriesMixin.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -52,16 +52,14 @@
              * @return {void}
              */
             setVisible: function (vis) {
-                var point = this,
-                    method = vis ? 'show' : 'hide';
-                point.visible = point.options.visible = Boolean(vis);
+                var point = this, method = vis ? 'show' : 'hide';
+                point.visible = Boolean(vis);
                 // Show and hide associated elements
                 ['graphic', 'dataLabel'].forEach(function (key) {
                     if (point[key]) {
                         point[key][method]();
                     }
                 });
-                this.series.buildKDTree(); // rebuild kdtree #13195
             }
             /* eslint-enable valid-jsdoc */
         };
@@ -81,25 +79,17 @@
              * @return {void}
              */
             translateColors: function () {
-                var series = this,
-                    points = this.data.length ? this.data : this.points,
-                    nullColor = this.options.nullColor,
-                    colorAxis = this.colorAxis,
-                    colorKey = this.colorKey;
+                var series = this, points = this.data.length ? this.data : this.points, nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;
                 points.forEach(function (point) {
-                    var value = point.getNestedProperty(colorKey),
-                        color;
+                    var value = point[colorKey], color;
                     color = point.options.color ||
-                        (point.isNull || point.value === null ?
+                        (point.isNull ?
                             nullColor :
-                            (colorAxis && typeof value !== 'undefined') ?
+                            (colorAxis && value !== undefined) ?
                                 colorAxis.toColor(value, point) :
                                 point.color || series.color);
-                    if (color && point.color !== color) {
+                    if (color) {
                         point.color = color;
-                        if (series.options.legendType === 'point' && point.legendItem) {
-                            series.chart.legend.colorizeItem(point, point.visible);
-                        }
                     }
                 });
             }
@@ -107,55 +97,25 @@
         };
 
     });
-    _registerModule(_modules, 'Core/Axis/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'parts-map/ColorAxis.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var color = Color.parse;
-        var noop = H.noop;
-        var addEvent = U.addEvent,
-            erase = U.erase,
-            extend = U.extend,
-            Fx = U.Fx,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            splat = U.splat;
         /**
          * Color axis types
          *
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
-        ''; // detach doclet above
-        var Series = H.Series,
-            colorPointMixin = H.colorPointMixin,
-            colorSeriesMixin = H.colorSeriesMixin;
+        var erase = U.erase, extend = U.extend, isNumber = U.isNumber, pick = U.pick, splat = U.splat;
+        var addEvent = H.addEvent, Axis = H.Axis, Chart = H.Chart, Series = H.Series, Point = H.Point, color = H.color, ColorAxis, Legend = H.Legend, LegendSymbolMixin = H.LegendSymbolMixin, colorPointMixin = H.colorPointMixin, colorSeriesMixin = H.colorSeriesMixin, noop = H.noop, merge = H.merge;
         extend(Series.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
-        Chart.prototype.collectionsWithUpdate.push('colorAxis');
-        Chart.prototype.collectionsWithInit.colorAxis = [Chart.prototype.addColorAxis];
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * The ColorAxis object for inclusion in gradient legends.
@@ -170,624 +130,12 @@
          * @param {Highcharts.ColorAxisOptions} userOptions
          * The color axis options for initialization.
          */
-        var ColorAxis = /** @class */ (function (_super) {
-                __extends(ColorAxis, _super);
-            /* *
-             *
-             *  Constructors
-             *
-             * */
-            /**
-             * @private
-             */
-            function ColorAxis(chart, userOptions) {
-                var _this = _super.call(this,
-                    chart,
-                    userOptions) || this;
-                _this.beforePadding = false; // Prevents unnecessary padding with `hc-more`
-                _this.chart = void 0;
-                _this.coll = 'colorAxis';
-                _this.dataClasses = void 0;
-                _this.legendItem = void 0;
-                _this.legendItems = void 0;
-                _this.name = ''; // Prevents 'undefined' in legend in IE8
-                _this.options = void 0;
-                _this.stops = void 0;
-                _this.visible = true;
-                _this.init(chart, userOptions);
-                return _this;
-            }
-            /* *
-             *
-             *  Static Functions
-             *
-             * */
-            /**
-             * Build options to keep layout params on init and update.
-             * @private
-             */
-            ColorAxis.buildOptions = function (chart, options, userOptions) {
-                var legend = chart.options.legend || {},
-                    horiz = userOptions.layout ?
-                        userOptions.layout !== 'vertical' :
-                        legend.layout !== 'vertical';
-                return merge(options, {
-                    side: horiz ? 2 : 1,
-                    reversed: !horiz
-                }, userOptions, {
-                    opposite: !horiz,
-                    showEmpty: false,
-                    title: null,
-                    visible: legend.enabled &&
-                        (userOptions ? userOptions.visible !== false : true)
-                });
-            };
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Initializes the color axis.
-             *
-             * @function Highcharts.ColorAxis#init
-             *
-             * @param {Highcharts.Chart} chart
-             * The related chart of the color axis.
-             *
-             * @param {Highcharts.ColorAxisOptions} userOptions
-             * The color axis options for initialization.
-             */
-            ColorAxis.prototype.init = function (chart, userOptions) {
-                var axis = this;
-                var options = ColorAxis.buildOptions(// Build the options
-                    chart,
-                    ColorAxis.defaultOptions,
-                    userOptions);
-                axis.coll = 'colorAxis';
-                _super.prototype.init.call(this, chart, options);
-                // Base init() pushes it to the xAxis array, now pop it again
-                // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
-                // Prepare data classes
-                if (userOptions.dataClasses) {
-                    axis.initDataClasses(userOptions);
-                }
-                axis.initStops();
-                // Override original axis properties
-                axis.horiz = !options.opposite;
-                axis.zoomEnabled = false;
-            };
-            /**
-             * @private
-             */
-            ColorAxis.prototype.initDataClasses = function (userOptions) {
-                var axis = this;
-                var chart = axis.chart,
-                    dataClasses,
-                    colorCounter = 0,
-                    colorCount = chart.options.chart.colorCount,
-                    options = axis.options,
-                    len = userOptions.dataClasses.length;
-                axis.dataClasses = dataClasses = [];
-                axis.legendItems = [];
-                userOptions.dataClasses.forEach(function (dataClass, i) {
-                    var colors;
-                    dataClass = merge(dataClass);
-                    dataClasses.push(dataClass);
-                    if (!chart.styledMode && dataClass.color) {
-                        return;
-                    }
-                    if (options.dataClassColor === 'category') {
-                        if (!chart.styledMode) {
-                            colors = chart.options.colors;
-                            colorCount = colors.length;
-                            dataClass.color = colors[colorCounter];
-                        }
-                        dataClass.colorIndex = colorCounter;
-                        // increase and loop back to zero
-                        colorCounter++;
-                        if (colorCounter === colorCount) {
-                            colorCounter = 0;
-                        }
-                    }
-                    else {
-                        dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), len < 2 ? 0.5 : i / (len - 1) // #3219
-                        );
-                    }
-                });
-            };
-            /**
-             * Returns true if the series has points at all.
-             *
-             * @function Highcharts.ColorAxis#hasData
-             *
-             * @return {boolean}
-             * True, if the series has points, otherwise false.
-             */
-            ColorAxis.prototype.hasData = function () {
-                return !!(this.tickPositions || []).length;
-            };
-            /**
-             * Override so that ticks are not added in data class axes (#6914)
-             * @private
-             */
-            ColorAxis.prototype.setTickPositions = function () {
-                if (!this.dataClasses) {
-                    return _super.prototype.setTickPositions.call(this);
-                }
-            };
-            /**
-             * @private
-             */
-            ColorAxis.prototype.initStops = function () {
-                var axis = this;
-                axis.stops = axis.options.stops || [
-                    [0, axis.options.minColor],
-                    [1, axis.options.maxColor]
-                ];
-                axis.stops.forEach(function (stop) {
-                    stop.color = color(stop[1]);
-                });
-            };
-            /**
-             * Extend the setOptions method to process extreme colors and color stops.
-             * @private
-             */
-            ColorAxis.prototype.setOptions = function (userOptions) {
-                var axis = this;
-                _super.prototype.setOptions.call(this, userOptions);
-                axis.options.crosshair = axis.options.marker;
-            };
-            /**
-             * @private
-             */
-            ColorAxis.prototype.setAxisSize = function () {
-                var axis = this;
-                var symbol = axis.legendSymbol;
-                var chart = axis.chart;
-                var legendOptions = chart.options.legend || {};
-                var x,
-                    y,
-                    width,
-                    height;
-                if (symbol) {
-                    this.left = x = symbol.attr('x');
-                    this.top = y = symbol.attr('y');
-                    this.width = width = symbol.attr('width');
-                    this.height = height = symbol.attr('height');
-                    this.right = chart.chartWidth - x - width;
-                    this.bottom = chart.chartHeight - y - height;
-                    this.len = this.horiz ? width : height;
-                    this.pos = this.horiz ? x : y;
-                }
-                else {
-                    // Fake length for disabled legend to avoid tick issues
-                    // and such (#5205)
-                    this.len = (this.horiz ?
-                        legendOptions.symbolWidth :
-                        legendOptions.symbolHeight) || ColorAxis.defaultLegendLength;
-                }
-            };
-            /**
-             * @private
-             */
-            ColorAxis.prototype.normalizedValue = function (value) {
-                var axis = this;
-                if (axis.logarithmic) {
-                    value = axis.logarithmic.log2lin(value);
-                }
-                return 1 - ((axis.max - value) /
-                    ((axis.max - axis.min) || 1));
-            };
-            /**
-             * Translate from a value to a color.
-             * @private
-             */
-            ColorAxis.prototype.toColor = function (value, point) {
-                var axis = this;
-                var dataClasses = axis.dataClasses;
-                var stops = axis.stops;
-                var pos,
-                    from,
-                    to,
-                    color,
-                    dataClass,
-                    i;
-                if (dataClasses) {
-                    i = dataClasses.length;
-                    while (i--) {
-                        dataClass = dataClasses[i];
-                        from = dataClass.from;
-                        to = dataClass.to;
-                        if ((typeof from === 'undefined' || value >= from) &&
-                            (typeof to === 'undefined' || value <= to)) {
-                            color = dataClass.color;
-                            if (point) {
-                                point.dataClass = i;
-                                point.colorIndex = dataClass.colorIndex;
-                            }
-                            break;
-                        }
-                    }
-                }
-                else {
-                    pos = axis.normalizedValue(value);
-                    i = stops.length;
-                    while (i--) {
-                        if (pos > stops[i][0]) {
-                            break;
-                        }
-                    }
-                    from = stops[i] || stops[i + 1];
-                    to = stops[i + 1] || from;
-                    // The position within the gradient
-                    pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
-                    color = from.color.tweenTo(to.color, pos);
-                }
-                return color;
-            };
-            /**
-             * Override the getOffset method to add the whole axis groups inside the
-             * legend.
-             * @private
-             */
-            ColorAxis.prototype.getOffset = function () {
-                var axis = this;
-                var group = axis.legendGroup;
-                var sideOffset = axis.chart.axisOffset[axis.side];
-                if (group) {
-                    // Hook for the getOffset method to add groups to this parent
-                    // group
-                    axis.axisParent = group;
-                    // Call the base
-                    _super.prototype.getOffset.call(this);
-                    // First time only
-                    if (!axis.added) {
-                        axis.added = true;
-                        axis.labelLeft = 0;
-                        axis.labelRight = axis.width;
-                    }
-                    // Reset it to avoid color axis reserving space
-                    axis.chart.axisOffset[axis.side] = sideOffset;
-                }
-            };
-            /**
-             * Create the color gradient.
-             * @private
-             */
-            ColorAxis.prototype.setLegendColor = function () {
-                var axis = this;
-                var horiz = axis.horiz;
-                var reversed = axis.reversed;
-                var one = reversed ? 1 : 0;
-                var zero = reversed ? 0 : 1;
-                var grad = horiz ? [one, 0,
-                    zero, 0] : [0,
-                    zero, 0,
-                    one]; // #3190
-                    axis.legendColor = {
-                        linearGradient: {
-                            x1: grad[0],
-                            y1: grad[1],
-                            x2: grad[2],
-                            y2: grad[3]
-                        },
-                        stops: axis.stops
-                    };
-            };
-            /**
-             * The color axis appears inside the legend and has its own legend symbol.
-             * @private
-             */
-            ColorAxis.prototype.drawLegendSymbol = function (legend, item) {
-                var axis = this;
-                var padding = legend.padding;
-                var legendOptions = legend.options;
-                var horiz = axis.horiz;
-                var width = pick(legendOptions.symbolWidth,
-                    horiz ? ColorAxis.defaultLegendLength : 12);
-                var height = pick(legendOptions.symbolHeight,
-                    horiz ? 12 : ColorAxis.defaultLegendLength);
-                var labelPadding = pick(legendOptions.labelPadding,
-                    horiz ? 16 : 30);
-                var itemDistance = pick(legendOptions.itemDistance, 10);
-                this.setLegendColor();
-                // Create the gradient
-                item.legendSymbol = this.chart.renderer.rect(0, legend.baseline - 11, width, height).attr({
-                    zIndex: 1
-                }).add(item.legendGroup);
-                // Set how much space this legend item takes up
-                axis.legendItemWidth = width + padding + (horiz ? itemDistance : labelPadding);
-                axis.legendItemHeight = height + padding + (horiz ? labelPadding : 0);
-            };
-            /**
-             * Fool the legend.
-             * @private
-             */
-            ColorAxis.prototype.setState = function (state) {
-                this.series.forEach(function (series) {
-                    series.setState(state);
-                });
-            };
-            /**
-             * @private
-             */
-            ColorAxis.prototype.setVisible = function () {
-            };
-            /**
-             * @private
-             */
-            ColorAxis.prototype.getSeriesExtremes = function () {
-                var axis = this;
-                var series = axis.series;
-                var colorValArray,
-                    colorKey,
-                    colorValIndex,
-                    pointArrayMap,
-                    calculatedExtremes,
-                    cSeries,
-                    i = series.length,
-                    yData,
-                    j;
-                this.dataMin = Infinity;
-                this.dataMax = -Infinity;
-                while (i--) { // x, y, value, other
-                    cSeries = series[i];
-                    colorKey = cSeries.colorKey = pick(cSeries.options.colorKey, cSeries.colorKey, cSeries.pointValKey, cSeries.zoneAxis, 'y');
-                    pointArrayMap = cSeries.pointArrayMap;
-                    calculatedExtremes = cSeries[colorKey + 'Min'] &&
-                        cSeries[colorKey + 'Max'];
-                    if (cSeries[colorKey + 'Data']) {
-                        colorValArray = cSeries[colorKey + 'Data'];
-                    }
-                    else {
-                        if (!pointArrayMap) {
-                            colorValArray = cSeries.yData;
-                        }
-                        else {
-                            colorValArray = [];
-                            colorValIndex = pointArrayMap.indexOf(colorKey);
-                            yData = cSeries.yData;
-                            if (colorValIndex >= 0 && yData) {
-                                for (j = 0; j < yData.length; j++) {
-                                    colorValArray.push(pick(yData[j][colorValIndex], yData[j]));
-                                }
-                            }
-                        }
-                    }
-                    // If color key extremes are already calculated, use them.
-                    if (calculatedExtremes) {
-                        cSeries.minColorValue = cSeries[colorKey + 'Min'];
-                        cSeries.maxColorValue = cSeries[colorKey + 'Max'];
-                    }
-                    else {
-                        var cExtremes = Series.prototype.getExtremes.call(cSeries,
-                            colorValArray);
-                        cSeries.minColorValue = cExtremes.dataMin;
-                        cSeries.maxColorValue = cExtremes.dataMax;
-                    }
-                    if (typeof cSeries.minColorValue !== 'undefined') {
-                        this.dataMin =
-                            Math.min(this.dataMin, cSeries.minColorValue);
-                        this.dataMax =
-                            Math.max(this.dataMax, cSeries.maxColorValue);
-                    }
-                    if (!calculatedExtremes) {
-                        Series.prototype.applyExtremes.call(cSeries);
-                    }
-                }
-            };
-            /**
-             * Internal function to draw a crosshair.
-             *
-             * @function Highcharts.ColorAxis#drawCrosshair
-             *
-             * @param {Highcharts.PointerEventObject} [e]
-             *        The event arguments from the modified pointer event, extended with
-             *        `chartX` and `chartY`
-             *
-             * @param {Highcharts.Point} [point]
-             *        The Point object if the crosshair snaps to points.
-             *
-             * @fires Highcharts.ColorAxis#event:afterDrawCrosshair
-             * @fires Highcharts.ColorAxis#event:drawCrosshair
-             */
-            ColorAxis.prototype.drawCrosshair = function (e, point) {
-                var axis = this;
-                var plotX = point && point.plotX;
-                var plotY = point && point.plotY;
-                var axisPos = axis.pos;
-                var axisLen = axis.len;
-                var crossPos;
-                if (point) {
-                    crossPos = axis.toPixels(point.getNestedProperty(point.series.colorKey));
-                    if (crossPos < axisPos) {
-                        crossPos = axisPos - 2;
-                    }
-                    else if (crossPos > axisPos + axisLen) {
-                        crossPos = axisPos + axisLen + 2;
-                    }
-                    point.plotX = crossPos;
-                    point.plotY = axis.len - crossPos;
-                    _super.prototype.drawCrosshair.call(this, e, point);
-                    point.plotX = plotX;
-                    point.plotY = plotY;
-                    if (axis.cross &&
-                        !axis.cross.addedToColorAxis &&
-                        axis.legendGroup) {
-                        axis.cross
-                            .addClass('highcharts-coloraxis-marker')
-                            .add(axis.legendGroup);
-                        axis.cross.addedToColorAxis = true;
-                        if (!axis.chart.styledMode &&
-                            axis.crosshair) {
-                            axis.cross.attr({
-                                fill: axis.crosshair.color
-                            });
-                        }
-                    }
-                }
-            };
-            /**
-             * @private
-             */
-            ColorAxis.prototype.getPlotLinePath = function (options) {
-                var axis = this,
-                    left = axis.left,
-                    pos = options.translatedValue,
-                    top = axis.top;
-                // crosshairs only
-                return isNumber(pos) ? // pos can be 0 (#3969)
-                    (axis.horiz ? [
-                        ['M', pos - 4, top - 6],
-                        ['L', pos + 4, top - 6],
-                        ['L', pos, top],
-                        ['Z']
-                    ] : [
-                        ['M', left, pos],
-                        ['L', left - 6, pos + 6],
-                        ['L', left - 6, pos - 6],
-                        ['Z']
-                    ]) :
-                    _super.prototype.getPlotLinePath.call(this, options);
-            };
-            /**
-             * Updates a color axis instance with a new set of options. The options are
-             * merged with the existing options, so only new or altered options need to
-             * be specified.
-             *
-             * @function Highcharts.ColorAxis#update
-             *
-             * @param {Highcharts.ColorAxisOptions} newOptions
-             * The new options that will be merged in with existing options on the color
-             * axis.
-             *
-             * @param {boolean} [redraw]
-             * Whether to redraw the chart after the color axis is altered. If doing
-             * more operations on the chart, it is a good idea to set redraw to `false`
-             * and call {@link Highcharts.Chart#redraw} after.
-             */
-            ColorAxis.prototype.update = function (newOptions, redraw) {
-                var axis = this,
-                    chart = axis.chart,
-                    legend = chart.legend,
-                    updatedOptions = ColorAxis.buildOptions(chart, {},
-                    newOptions);
-                this.series.forEach(function (series) {
-                    // Needed for Axis.update when choropleth colors change
-                    series.isDirtyData = true;
-                });
-                // When updating data classes, destroy old items and make sure new
-                // ones are created (#3207)
-                if (newOptions.dataClasses && legend.allItems || axis.dataClasses) {
-                    axis.destroyItems();
-                }
-                // Keep the options structure updated for export. Unlike xAxis and
-                // yAxis, the colorAxis is not an array. (#3207)
-                chart.options[axis.coll] =
-                    merge(axis.userOptions, updatedOptions);
-                _super.prototype.update.call(this, updatedOptions, redraw);
-                if (axis.legendItem) {
-                    axis.setLegendColor();
-                    legend.colorizeItem(this, true);
-                }
-            };
-            /**
-             * Destroy color axis legend items.
-             * @private
-             */
-            ColorAxis.prototype.destroyItems = function () {
-                var axis = this;
-                var chart = axis.chart;
-                if (axis.legendItem) {
-                    chart.legend.destroyItem(axis);
-                }
-                else if (axis.legendItems) {
-                    axis.legendItems.forEach(function (item) {
-                        chart.legend.destroyItem(item);
-                    });
-                }
-                chart.isDirtyLegend = true;
-            };
-            /**
-             * Removes the color axis and the related legend item.
-             *
-             * @function Highcharts.ColorAxis#remove
-             *
-             * @param {boolean} [redraw=true]
-             *        Whether to redraw the chart following the remove.
-             */
-            ColorAxis.prototype.remove = function (redraw) {
-                this.destroyItems();
-                _super.prototype.remove.call(this, redraw);
-            };
-            /**
-             * Get the legend item symbols for data classes.
-             * @private
-             */
-            ColorAxis.prototype.getDataClassLegendSymbols = function () {
-                var axis = this;
-                var chart = axis.chart;
-                var legendItems = axis.legendItems;
-                var legendOptions = chart.options.legend;
-                var valueDecimals = legendOptions.valueDecimals;
-                var valueSuffix = legendOptions.valueSuffix || '';
-                var name;
-                if (!legendItems.length) {
-                    axis.dataClasses.forEach(function (dataClass, i) {
-                        var vis = true,
-                            from = dataClass.from,
-                            to = dataClass.to;
-                        var numberFormatter = chart.numberFormatter;
-                        // Assemble the default name. This can be overridden
-                        // by legend.options.labelFormatter
-                        name = '';
-                        if (typeof from === 'undefined') {
-                            name = '< ';
-                        }
-                        else if (typeof to === 'undefined') {
-                            name = '> ';
-                        }
-                        if (typeof from !== 'undefined') {
-                            name += numberFormatter(from, valueDecimals) + valueSuffix;
-                        }
-                        if (typeof from !== 'undefined' && typeof to !== 'undefined') {
-                            name += ' - ';
-                        }
-                        if (typeof to !== 'undefined') {
-                            name += numberFormatter(to, valueDecimals) + valueSuffix;
-                        }
-                        // Add a mock object to the legend items
-                        legendItems.push(extend({
-                            chart: chart,
-                            name: name,
-                            options: {},
-                            drawLegendSymbol: LegendSymbolMixin.drawRectangle,
-                            visible: true,
-                            setState: noop,
-                            isDataClass: true,
-                            setVisible: function () {
-                                vis = axis.visible = !vis;
-                                axis.series.forEach(function (series) {
-                                    series.points.forEach(function (point) {
-                                        if (point.dataClass === i) {
-                                            point.setVisible(vis);
-                                        }
-                                    });
-                                });
-                                chart.legend.colorizeItem(this, vis);
-                            }
-                        }, dataClass));
-                    });
-                }
-                return legendItems;
-            };
-            /* *
-             *
-             *  Static Functions
-             *
-             * */
-            ColorAxis.defaultLegendLength = 200;
+        ColorAxis = H.ColorAxis = function () {
+            this.init.apply(this, arguments);
+        };
+        /* eslint-enable no-invalid-this, valid-jsdoc */
+        extend(ColorAxis.prototype, Axis.prototype);
+        extend(ColorAxis.prototype, {
             /**
              * A color axis for series. Visually, the color
              * axis will appear as a gradient or as separate items inside the
@@ -833,16 +181,16 @@
              *
              * @extends      xAxis
              * @excluding    alignTicks, allowDecimals, alternateGridColor, breaks,
-             *               categories, crosshair, dateTimeLabelFormats, height, left,
-             *               lineWidth, linkedTo, maxZoom, minRange, minTickInterval,
-             *               offset, opposite, pane, plotBands, plotLines,
-             *               reversedStacks, showEmpty, title, top, width, zoomEnabled
+             *               categories, crosshair, dateTimeLabelFormats, lineWidth,
+             *               linkedTo, maxZoom, minRange, minTickInterval, offset,
+             *               opposite, pane, plotBands, plotLines, reversedStacks,
+             *               showEmpty, title, zoomEnabled
              * @product      highcharts highstock highmaps
              * @type         {*|Array<*>}
              * @optionparent colorAxis
              * @ignore
              */
-            ColorAxis.defaultOptions = {
+            defaultColorAxisOptions: {
                 /**
                  * Whether to allow decimals on the color axis.
                  * @type      {boolean}
@@ -1049,7 +397,6 @@
                  * @sample {highmaps} maps/coloraxis/marker/
                  *         Black marker
                  *
-                 * @declare Highcharts.PointMarkerOptionsObject
                  * @product highcharts highstock highmaps
                  */
                 marker: {
@@ -1057,14 +404,15 @@
                      * Animation for the marker as it moves between values. Set to
                      * `false` to disable animation. Defaults to `{ duration: 50 }`.
                      *
-                     * @type    {boolean|Partial<Highcharts.AnimationOptionsObject>}
+                     * @type    {boolean|Highcharts.AnimationOptionsObject}
+                     * @default {"duration": 50}
                      * @product highcharts highstock highmaps
                      */
                     animation: {
-                        /** @internal */
+                        /** @ignore */
                         duration: 50
                     },
-                    /** @internal */
+                    /** @ignore */
                     width: 0.01,
                     /**
                      * The color of the marker.
@@ -1085,10 +433,10 @@
                  */
                 labels: {
                     /**
-                     * How to handle overflowing labels on horizontal color axis. If set
-                     * to `"allow"`, it will not be aligned at all. By default it
-                     * `"justify"` labels inside the chart area. If there is room to
-                     * move it, it will be aligned to the edge, else it will be removed.
+                     * How to handle overflowing labels on horizontal color axis.
+                     * Can be undefined or "justify". If "justify", labels will not
+                     * render outside the legend area. If there is room to move it,
+                     * it will be aligned to the edge, else it will be removed.
                      *
                      * @validvalue ["allow", "justify"]
                      * @product    highcharts highstock highmaps
@@ -1200,22 +548,567 @@
                  * @product highcharts highstock highmaps
                  */
                 showInLegend: true
-            };
-            /**
-             * @private
-             */
-            ColorAxis.keepProps = [
+            },
+            // Properties to preserve after destroy, for Axis.update (#5881, #6025)
+            keepProps: [
                 'legendGroup',
                 'legendItemHeight',
                 'legendItemWidth',
                 'legendItem',
                 'legendSymbol'
-            ];
-            return ColorAxis;
-        }(Axis));
-        // Properties to preserve after destroy, for Axis.update (#5881, #6025).
-        Array.prototype.push.apply(Axis.keepProps, ColorAxis.keepProps);
-        H.ColorAxis = ColorAxis;
+            ].concat(Axis.prototype.keepProps),
+            /* eslint-disable no-invalid-this, valid-jsdoc */
+            /**
+             * Initializes the color axis.
+             *
+             * @function Highcharts.ColorAxis#init
+             *
+             * @param {Highcharts.Chart} chart
+             * The related chart of the color axis.
+             *
+             * @param {Highcharts.ColorAxisOptions} userOptions
+             * The color axis options for initialization.
+             *
+             * @return {void}
+             */
+            init: function (chart, userOptions) {
+                var options;
+                this.coll = 'colorAxis';
+                // Build the options
+                options = this.buildOptions.call(chart, this.defaultColorAxisOptions, userOptions);
+                Axis.prototype.init.call(this, chart, options);
+                // Base init() pushes it to the xAxis array, now pop it again
+                // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
+                // Prepare data classes
+                if (userOptions.dataClasses) {
+                    this.initDataClasses(userOptions);
+                }
+                this.initStops();
+                // Override original axis properties
+                this.horiz = !options.opposite;
+                this.zoomEnabled = false;
+                // Add default values
+                this.defaultLegendLength = 200;
+            },
+            /**
+             * @private
+             */
+            initDataClasses: function (userOptions) {
+                var chart = this.chart, dataClasses, colorCounter = 0, colorCount = chart.options.chart.colorCount, options = this.options, len = userOptions.dataClasses.length;
+                this.dataClasses = dataClasses =
+                    [];
+                this.legendItems = [];
+                userOptions.dataClasses.forEach(function (dataClass, i) {
+                    var colors;
+                    dataClass = merge(dataClass);
+                    dataClasses.push(dataClass);
+                    if (!chart.styledMode && dataClass.color) {
+                        return;
+                    }
+                    if (options.dataClassColor === 'category') {
+                        if (!chart.styledMode) {
+                            colors = chart.options.colors;
+                            colorCount = colors.length;
+                            dataClass.color = colors[colorCounter];
+                        }
+                        dataClass.colorIndex = colorCounter;
+                        // increase and loop back to zero
+                        colorCounter++;
+                        if (colorCounter === colorCount) {
+                            colorCounter = 0;
+                        }
+                    }
+                    else {
+                        dataClass.color = color(options.minColor).tweenTo(color(options.maxColor), len < 2 ? 0.5 : i / (len - 1) // #3219
+                        );
+                    }
+                });
+            },
+            /**
+             * Returns true if the series has points at all.
+             *
+             * @function Highcharts.ColorAxis#hasData
+             *
+             * @return {boolean}
+             * True, if the series has points, otherwise false.
+             */
+            hasData: function () {
+                return !!(this.tickPositions && this.tickPositions.length);
+            },
+            /**
+             * Override so that ticks are not added in data class axes (#6914)
+             *
+             * @private
+             * @function Highcharts.ColorAxis#setTickPositions
+             * @return {void}
+             */
+            setTickPositions: function () {
+                if (!this.dataClasses) {
+                    return Axis.prototype.setTickPositions.call(this);
+                }
+            },
+            /**
+             * @private
+             */
+            initStops: function () {
+                this.stops = this.options.stops || [
+                    [0, this.options.minColor],
+                    [1, this.options.maxColor]
+                ];
+                this.stops.forEach(function (stop) {
+                    stop.color = color(stop[1]);
+                });
+            },
+            /**
+             * Build options to keep layout params on init and update.
+             *
+             * @private
+             * @param {Highcharts.ColorAxisOptions} options
+             * @param {Highcharts.ColorAxisOptions} [userOptions]
+             * @return {Highcharts.ColorAxisOptions}
+             */
+            buildOptions: function (options, userOptions) {
+                var legend = this.options.legend, horiz = userOptions.layout ?
+                    userOptions.layout !== 'vertical' :
+                    legend.layout !== 'vertical';
+                return merge(options, {
+                    side: horiz ? 2 : 1,
+                    reversed: !horiz
+                }, userOptions, {
+                    opposite: !horiz,
+                    showEmpty: false,
+                    title: null,
+                    visible: legend.enabled &&
+                        (userOptions ? userOptions.visible !== false : true)
+                });
+            },
+            /**
+             * Extend the setOptions method to process extreme colors and color
+             * stops.
+             *
+             * @private
+             * @function Highcharts.ColorAxis#setOptions
+             * @param {Highcharts.ColorAxisOptions} userOptions
+             * @return {void}
+             */
+            setOptions: function (userOptions) {
+                Axis.prototype.setOptions.call(this, userOptions);
+                this.options.crosshair = this.options.marker;
+            },
+            /**
+             * @private
+             */
+            setAxisSize: function () {
+                var symbol = this.legendSymbol, chart = this.chart, legendOptions = chart.options.legend || {}, x, y, width, height;
+                if (symbol) {
+                    this.left = x = symbol.attr('x');
+                    this.top = y = symbol.attr('y');
+                    this.width = width = symbol.attr('width');
+                    this.height = height = symbol.attr('height');
+                    this.right = chart.chartWidth - x - width;
+                    this.bottom = chart.chartHeight - y - height;
+                    this.len = this.horiz ? width : height;
+                    this.pos = this.horiz ? x : y;
+                }
+                else {
+                    // Fake length for disabled legend to avoid tick issues
+                    // and such (#5205)
+                    this.len = (this.horiz ?
+                        legendOptions.symbolWidth :
+                        legendOptions.symbolHeight) || this.defaultLegendLength;
+                }
+            },
+            /**
+             * @private
+             */
+            normalizedValue: function (value) {
+                if (this.isLog) {
+                    value = this.val2lin(value);
+                }
+                return 1 - ((this.max - value) /
+                    ((this.max - this.min) || 1));
+            },
+            /**
+             * Translate from a value to a color.
+             *
+             * @private
+             * @function Highcharts.ColorAxis#toColor
+             * @param {number} value
+             * @param {Highcharts.Point} point
+             * @return {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
+             */
+            toColor: function (value, point) {
+                var pos, stops = this.stops, from, to, color, dataClasses = this.dataClasses, dataClass, i;
+                if (dataClasses) {
+                    i = dataClasses.length;
+                    while (i--) {
+                        dataClass = dataClasses[i];
+                        from = dataClass.from;
+                        to = dataClass.to;
+                        if ((from === undefined || value >= from) &&
+                            (to === undefined || value <= to)) {
+                            color = dataClass.color;
+                            if (point) {
+                                point.dataClass = i;
+                                point.colorIndex = dataClass.colorIndex;
+                            }
+                            break;
+                        }
+                    }
+                }
+                else {
+                    pos = this.normalizedValue(value);
+                    i = stops.length;
+                    while (i--) {
+                        if (pos > stops[i][0]) {
+                            break;
+                        }
+                    }
+                    from = stops[i] || stops[i + 1];
+                    to = stops[i + 1] || from;
+                    // The position within the gradient
+                    pos = 1 - (to[0] - pos) / ((to[0] - from[0]) || 1);
+                    color = from.color.tweenTo(to.color, pos);
+                }
+                return color;
+            },
+            /**
+             * Override the getOffset method to add the whole axis groups inside
+             * the legend.
+             *
+             * @private
+             * @function Highcharts.ColorAxis#getOffset
+             * @return {void}
+             */
+            getOffset: function () {
+                var group = this.legendGroup, sideOffset = this.chart.axisOffset[this.side];
+                if (group) {
+                    // Hook for the getOffset method to add groups to this parent
+                    // group
+                    this.axisParent = group;
+                    // Call the base
+                    Axis.prototype.getOffset.call(this);
+                    // First time only
+                    if (!this.added) {
+                        this.added = true;
+                        this.labelLeft = 0;
+                        this.labelRight = this.width;
+                    }
+                    // Reset it to avoid color axis reserving space
+                    this.chart.axisOffset[this.side] = sideOffset;
+                }
+            },
+            /**
+             * Create the color gradient.
+             *
+             * @private
+             * @function Highcharts.ColorAxis#setLegendColor
+             */
+            setLegendColor: function () {
+                var grad, horiz = this.horiz, reversed = this.reversed, one = reversed ? 1 : 0, zero = reversed ? 0 : 1;
+                grad = horiz ? [one, 0, zero, 0] : [0, zero, 0, one]; // #3190
+                this.legendColor = {
+                    linearGradient: {
+                        x1: grad[0],
+                        y1: grad[1],
+                        x2: grad[2],
+                        y2: grad[3]
+                    },
+                    stops: this.stops
+                };
+            },
+            /**
+             * The color axis appears inside the legend and has its own legend
+             * symbol.
+             *
+             * @private
+             * @function Highcharts.ColorAxis#drawLegendSymbol
+             * @param {Highcharts.Legend} legend
+             * @param {Highcharts.ColorAxis} item
+             * @return {void}
+             */
+            drawLegendSymbol: function (legend, item) {
+                var padding = legend.padding, legendOptions = legend.options, horiz = this.horiz, width = pick(legendOptions.symbolWidth, horiz ? this.defaultLegendLength : 12), height = pick(legendOptions.symbolHeight, horiz ? 12 : this.defaultLegendLength), labelPadding = pick(legendOptions.labelPadding, horiz ? 16 : 30), itemDistance = pick(legendOptions.itemDistance, 10);
+                this.setLegendColor();
+                // Create the gradient
+                item.legendSymbol = this.chart.renderer.rect(0, legend.baseline - 11, width, height).attr({
+                    zIndex: 1
+                }).add(item.legendGroup);
+                // Set how much space this legend item takes up
+                this.legendItemWidth = width + padding +
+                    (horiz ? itemDistance : labelPadding);
+                this.legendItemHeight = height + padding +
+                    (horiz ? labelPadding : 0);
+            },
+            /**
+             * Fool the legend
+             *
+             * @private
+             * @function Highcharts.ColorAxis#setState
+             * @param {string} [state]
+             * @return {void}
+             */
+            setState: function (state) {
+                this.series.forEach(function (series) {
+                    series.setState(state);
+                });
+            },
+            visible: true,
+            setVisible: noop,
+            /**
+             * @private
+             */
+            getSeriesExtremes: function () {
+                var series = this.series, colorValArray, colorKey, colorValIndex, pointArrayMap, calculatedExtremes, cSeries, i = series.length, yData, j;
+                this.dataMin = Infinity;
+                this.dataMax = -Infinity;
+                while (i--) { // x, y, value, other
+                    cSeries = series[i];
+                    colorKey = cSeries.colorKey = pick(cSeries.options.colorKey, cSeries.colorKey, cSeries.pointValKey, cSeries.zoneAxis, 'y');
+                    pointArrayMap = cSeries.pointArrayMap;
+                    calculatedExtremes = cSeries[colorKey + 'Min'] &&
+                        cSeries[colorKey + 'Max'];
+                    if (cSeries[colorKey + 'Data']) {
+                        colorValArray = cSeries[colorKey + 'Data'];
+                    }
+                    else {
+                        if (!pointArrayMap) {
+                            colorValArray = cSeries.yData;
+                        }
+                        else {
+                            colorValArray = [];
+                            colorValIndex = pointArrayMap.indexOf(colorKey);
+                            yData = cSeries.yData;
+                            if (colorValIndex >= 0 && yData) {
+                                for (j = 0; j < yData.length; j++) {
+                                    colorValArray.push(pick(yData[j][colorValIndex], yData[j]));
+                                }
+                            }
+                        }
+                    }
+                    // If color key extremes are already calculated, use them.
+                    if (calculatedExtremes) {
+                        cSeries.minColorValue = cSeries[colorKey + 'Min'];
+                        cSeries.maxColorValue = cSeries[colorKey + 'Max'];
+                    }
+                    else {
+                        Series.prototype.getExtremes.call(cSeries, colorValArray);
+                        cSeries.minColorValue = cSeries.dataMin;
+                        cSeries.maxColorValue = cSeries.dataMax;
+                    }
+                    if (cSeries.minColorValue !== undefined) {
+                        this.dataMin =
+                            Math.min(this.dataMin, cSeries.minColorValue);
+                        this.dataMax =
+                            Math.max(this.dataMax, cSeries.maxColorValue);
+                    }
+                    if (!calculatedExtremes) {
+                        Series.prototype.getExtremes.call(cSeries);
+                    }
+                }
+            },
+            /**
+             * Internal function to draw a crosshair.
+             *
+             * @function Highcharts.ColorAxis#drawCrosshair
+             *
+             * @param {Highcharts.PointerEventObject} [e]
+             *        The event arguments from the modified pointer event, extended with
+             *        `chartX` and `chartY`
+             *
+             * @param {Highcharts.Point} [point]
+             *        The Point object if the crosshair snaps to points.
+             *
+             * @return {void}
+             *
+             * @fires Highcharts.ColorAxis#event:afterDrawCrosshair
+             * @fires Highcharts.ColorAxis#event:drawCrosshair
+             */
+            drawCrosshair: function (e, point) {
+                var plotX = point && point.plotX, plotY = point && point.plotY, crossPos, axisPos = this.pos, axisLen = this.len;
+                if (point) {
+                    crossPos = this.toPixels(point[point.series.colorKey]);
+                    if (crossPos < axisPos) {
+                        crossPos = axisPos - 2;
+                    }
+                    else if (crossPos > axisPos + axisLen) {
+                        crossPos = axisPos + axisLen + 2;
+                    }
+                    point.plotX = crossPos;
+                    point.plotY = this.len - crossPos;
+                    Axis.prototype.drawCrosshair.call(this, e, point);
+                    point.plotX = plotX;
+                    point.plotY = plotY;
+                    if (this.cross &&
+                        !this.cross.addedToColorAxis &&
+                        this.legendGroup) {
+                        this.cross
+                            .addClass('highcharts-coloraxis-marker')
+                            .add(this.legendGroup);
+                        this.cross.addedToColorAxis = true;
+                        if (!this.chart.styledMode) {
+                            this.cross.attr({
+                                fill: this.crosshair.color
+                            });
+                        }
+                    }
+                }
+            },
+            /**
+             * @private
+             */
+            getPlotLinePath: function (options) {
+                var pos = options.translatedValue;
+                // crosshairs only
+                return isNumber(pos) ? // pos can be 0 (#3969)
+                    (this.horiz ? [
+                        'M',
+                        pos - 4, this.top - 6,
+                        'L',
+                        pos + 4, this.top - 6,
+                        pos, this.top,
+                        'Z'
+                    ] : [
+                        'M',
+                        this.left, pos,
+                        'L',
+                        this.left - 6, pos + 6,
+                        this.left - 6, pos - 6,
+                        'Z'
+                    ]) :
+                    Axis.prototype.getPlotLinePath.apply(this, arguments);
+            },
+            /**
+             * Updates a color axis instance with a new set of options. The options are
+             * merged with the existing options, so only new or altered options need to
+             * be specified.
+             *
+             * @function Highcharts.ColorAxis#update
+             *
+             * @param {Highcharts.ColorAxisOptions} newOptions
+             * The new options that will be merged in with existing options on the color
+             * axis.
+             *
+             * @param {boolean} [redraw]
+             * Whether to redraw the chart after the color axis is altered. If doing
+             * more operations on the chart, it is a good idea to set redraw to `false`
+             * and call {@link Highcharts.Chart#redraw} after.
+             *
+             * @return {void}
+             */
+            update: function (newOptions, redraw) {
+                var chart = this.chart, legend = chart.legend, updatedOptions = this.buildOptions.call(chart, {}, newOptions);
+                this.series.forEach(function (series) {
+                    // Needed for Axis.update when choropleth colors change
+                    series.isDirtyData = true;
+                });
+                // When updating data classes, destroy old items and make sure new
+                // ones are created (#3207)
+                if (newOptions.dataClasses && legend.allItems || this.dataClasses) {
+                    this.destroyItems();
+                }
+                // Keep the options structure updated for export. Unlike xAxis and
+                // yAxis, the colorAxis is not an array. (#3207)
+                chart.options[this.coll] =
+                    merge(this.userOptions, updatedOptions);
+                Axis.prototype.update.call(this, updatedOptions, redraw);
+                if (this.legendItem) {
+                    this.setLegendColor();
+                    legend.colorizeItem(this, true);
+                }
+            },
+            /**
+             * Destroy color axis legend items.
+             *
+             * @private
+             * @function Highcharts.ColorAxis#destroyItems
+             * @return {void}
+             */
+            destroyItems: function () {
+                var chart = this.chart;
+                if (this.legendItem) {
+                    chart.legend.destroyItem(this);
+                }
+                else if (this.legendItems) {
+                    this.legendItems.forEach(function (item) {
+                        chart.legend.destroyItem(item);
+                    });
+                }
+                chart.isDirtyLegend = true;
+            },
+            /**
+             * Removes the color axis and the related legend item.
+             *
+             * @function Highcharts.ColorAxis#remove
+             *
+             * @param {boolean} [redraw=true]
+             *        Whether to redraw the chart following the remove.
+             *
+             * @return {void}
+             */
+            remove: function (redraw) {
+                this.destroyItems();
+                Axis.prototype.remove.call(this, redraw);
+            },
+            /**
+             * Get the legend item symbols for data classes.
+             *
+             * @private
+             * @function Highcharts.ColorAxis#getDataClassLegendSymbols
+             * @return {Array<Highcharts.ColorAxisLegendItemObject>}
+             */
+            getDataClassLegendSymbols: function () {
+                var axis = this, chart = this.chart, legendItems = this.legendItems, legendOptions = chart.options.legend, valueDecimals = legendOptions.valueDecimals, valueSuffix = legendOptions.valueSuffix || '', name;
+                if (!legendItems.length) {
+                    this.dataClasses.forEach(function (dataClass, i) {
+                        var vis = true, from = dataClass.from, to = dataClass.to;
+                        // Assemble the default name. This can be overridden
+                        // by legend.options.labelFormatter
+                        name = '';
+                        if (from === undefined) {
+                            name = '< ';
+                        }
+                        else if (to === undefined) {
+                            name = '> ';
+                        }
+                        if (from !== undefined) {
+                            name += H.numberFormat(from, valueDecimals) +
+                                valueSuffix;
+                        }
+                        if (from !== undefined && to !== undefined) {
+                            name += ' - ';
+                        }
+                        if (to !== undefined) {
+                            name += H.numberFormat(to, valueDecimals) + valueSuffix;
+                        }
+                        // Add a mock object to the legend items
+                        legendItems.push(extend({
+                            chart: chart,
+                            name: name,
+                            options: {},
+                            drawLegendSymbol: LegendSymbolMixin.drawRectangle,
+                            visible: true,
+                            setState: noop,
+                            isDataClass: true,
+                            setVisible: function () {
+                                vis = this.visible = !vis;
+                                axis.series.forEach(function (series) {
+                                    series.points.forEach(function (point) {
+                                        if (point.dataClass === i) {
+                                            point.setVisible(vis);
+                                        }
+                                    });
+                                });
+                                chart.legend.colorizeItem(this, vis);
+                            }
+                        }, dataClass));
+                    });
+                }
+                return legendItems;
+            },
+            beforePadding: false,
+            name: '' // Prevents 'undefined' in legend in IE8
+        });
         /**
          * Handle animation of the color attributes directly
          *
@@ -1228,14 +1121,13 @@
         * @function Highcharts.Fx#strokeSetter
         */
         ['fill', 'stroke'].forEach(function (prop) {
-            Fx.prototype[prop + 'Setter'] = function () {
+            H.Fx.prototype[prop + 'Setter'] = function () {
                 this.elem.attr(prop, color(this.start).tweenTo(color(this.end), this.pos), null, true);
             };
         });
         // Extend the chart getAxes method to also get the color axis
         addEvent(Chart, 'afterGetAxes', function () {
-            var chart = this,
-                options = chart.options;
+            var chart = this, options = chart.options;
             this.colorAxis = [];
             if (options.colorAxis) {
                 options.colorAxis = splat(options.colorAxis);
@@ -1258,10 +1150,7 @@
         // Add the color axis. This also removes the axis' own series to prevent
         // them from showing up individually.
         addEvent(Legend, 'afterGetAllItems', function (e) {
-            var colorAxisItems = [],
-                colorAxes = this.chart.colorAxis || [],
-                options,
-                i;
+            var colorAxisItems = [], colorAxes = this.chart.colorAxis || [], options, i;
             colorAxes.forEach(function (colorAxis) {
                 options = colorAxis.options;
                 if (options && options.showInLegend) {
@@ -1320,12 +1209,11 @@
             }
         });
 
-        return ColorAxis;
     });
-    _registerModule(_modules, 'Mixins/ColorMapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'parts-map/ColorMapSeriesMixin.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1333,8 +1221,7 @@
          *
          * */
         var defined = U.defined;
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes;
+        var noop = H.noop, seriesTypes = H.seriesTypes;
         /**
          * Mixin for maps and heatmaps
          *
@@ -1364,7 +1251,7 @@
              * @return {void}
              */
             setState: function (state) {
-                Point.prototype.setState.call(this, state);
+                H.Point.prototype.setState.call(this, state);
                 if (this.graphic) {
                     this.graphic.attr({
                         zIndex: state === 'hover' ? 1 : 0
@@ -1403,23 +1290,16 @@
         };
 
     });
-    _registerModule(_modules, 'Series/HeatmapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
+    _registerModule(_modules, 'parts-map/HeatmapSeries.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var clamp = U.clamp,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
         /* *
          * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
@@ -1432,13 +1312,8 @@
         * @name Highcharts.PointOptionsObject#value
         * @type {number|null|undefined}
         */
-        ''; // detach doclets above
-        var colorMapPointMixin = H.colorMapPointMixin,
-            colorMapSeriesMixin = H.colorMapSeriesMixin,
-            noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            symbols = SVGRenderer.prototype.symbols;
+        var extend = U.extend, pick = U.pick;
+        var colorMapPointMixin = H.colorMapPointMixin, colorMapSeriesMixin = H.colorMapSeriesMixin, LegendSymbolMixin = H.LegendSymbolMixin, merge = H.merge, noop = H.noop, fireEvent = H.fireEvent, Series = H.Series, seriesType = H.seriesType, seriesTypes = H.seriesTypes;
         /**
          * @private
          * @class
@@ -1460,11 +1335,11 @@
          *         Heavy heatmap
          *
          * @extends      plotOptions.scatter
-         * @excluding    animationLimit, connectEnds, connectNulls, cropThreshold,
-         *               dashStyle, findNearestPointBy, getExtremesFromAll, jitter,
-         *               linecap, lineWidth, pointInterval, pointIntervalUnit,
+         * @excluding    animationLimit, connectEnds, connectNulls, dashStyle,
+         *               findNearestPointBy, getExtremesFromAll, jitter, linecap,
+         *               lineWidth, marker, pointInterval, pointIntervalUnit,
          *               pointRange, pointStart, shadow, softThreshold, stacking,
-         *               step, threshold, cluster
+         *               step, threshold
          * @product      highcharts highmaps
          * @optionparent plotOptions.heatmap
          */
@@ -1537,159 +1412,24 @@
              */
             nullColor: '#f7f7f7',
             dataLabels: {
+                // eslint-disable-next-line valid-jsdoc
+                /** @ignore-option */
                 formatter: function () {
                     return this.point.value;
                 },
+                /** @ignore-option */
                 inside: true,
+                /** @ignore-option */
                 verticalAlign: 'middle',
+                /** @ignore-option */
                 crop: false,
+                /** @ignore-option */
                 overflow: false,
+                /** @ignore-option */
                 padding: 0 // #3837
             },
-            /**
-             * @excluding radius, enabledThreshold
-             * @since     8.1
-             */
-            marker: {
-                /**
-                 * A predefined shape or symbol for the marker. When undefined, the
-                 * symbol is pulled from options.symbols. Other possible values are
-                 * `'circle'`, `'square'`,`'diamond'`, `'triangle'`,
-                 * `'triangle-down'`, `'rect'`, and `'ellipse'`.
-                 *
-                 * Additionally, the URL to a graphic can be given on this form:
-                 * `'url(graphic.png)'`. Note that for the image to be applied to
-                 * exported charts, its URL needs to be accessible by the export
-                 * server.
-                 *
-                 * Custom callbacks for symbol path generation can also be added to
-                 * `Highcharts.SVGRenderer.prototype.symbols`. The callback is then
-                 * used by its method name, as shown in the demo.
-                 *
-                 * @sample {highcharts} highcharts/plotoptions/series-marker-symbol/
-                 *         Predefined, graphic and custom markers
-                 * @sample {highstock} highcharts/plotoptions/series-marker-symbol/
-                 *         Predefined, graphic and custom markers
-                 */
-                symbol: 'rect',
-                /** @ignore-option */
-                radius: 0,
-                lineColor: void 0,
-                states: {
-                    /**
-                     * @excluding radius, radiusPlus
-                     */
-                    hover: {
-                        /**
-                         * Set the marker's fixed width on hover state.
-                         *
-                         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-                         *         70px fixed marker's width and height on hover
-                         *
-                         * @type      {number|undefined}
-                         * @default   undefined
-                         * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.hover.width
-                         */
-                        /**
-                         * Set the marker's fixed height on hover state.
-                         *
-                         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-                         *         70px fixed marker's width and height on hover
-                         *
-                         * @type      {number|undefined}
-                         * @default   undefined
-                         * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.hover.height
-                         */
-                        /**
-                         * The number of pixels to increase the width of the
-                         * selected point.
-                         *
-                         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-                         *         20px greater width and height on hover
-                         *
-                         * @type      {number|undefined}
-                         * @default   undefined
-                         * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.hover.widthPlus
-                         */
-                        /**
-                         * The number of pixels to increase the height of the
-                         * selected point.
-                         *
-                         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-                        *          20px greater width and height on hover
-                         *
-                         * @type      {number|undefined}
-                         * @default   undefined
-                         * @product   highcharts highmaps
-                         * @apioption plotOptions.heatmap.marker.states.hover.heightPlus
-                         */
-                        /**
-                         * The additional line width for a hovered point.
-                         *
-                         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-linewidthplus
-                         *         5 pixels wider lineWidth on hover
-                         * @sample {highmaps} maps/plotoptions/heatmap-marker-states-hover-linewidthplus
-                         *         5 pixels wider lineWidth on hover
-                         */
-                        lineWidthPlus: 0
-                    },
-                    /**
-                     * @excluding radius
-                     */
-                    select: {
-                    /**
-                     * Set the marker's fixed width on select state.
-                     *
-                     * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-                     *         70px fixed marker's width and height on hover
-                     *
-                     * @type      {number|undefined}
-                     * @default   undefined
-                     * @product   highcharts highmaps
-                     * @apioption plotOptions.heatmap.marker.states.select.width
-                     */
-                    /**
-                     * Set the marker's fixed height on select state.
-                     *
-                     * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-                     *         70px fixed marker's width and height on hover
-                     *
-                     * @type      {number|undefined}
-                     * @default   undefined
-                     * @product   highcharts highmaps
-                     * @apioption plotOptions.heatmap.marker.states.select.height
-                     */
-                    /**
-                     * The number of pixels to increase the width of the
-                     * selected point.
-                     *
-                     * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-                     *         20px greater width and height on hover
-                     *
-                     * @type      {number|undefined}
-                     * @default   undefined
-                     * @product   highcharts highmaps
-                     * @apioption plotOptions.heatmap.marker.states.select.widthPlus
-                     */
-                    /**
-                     * The number of pixels to increase the height of the
-                     * selected point.
-                     *
-                     * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-                     *         20px greater width and height on hover
-                     *
-                     * @type      {number|undefined}
-                     * @default   undefined
-                     * @product   highcharts highmaps
-                     * @apioption plotOptions.heatmap.marker.states.select.heightPlus
-                     */
-                    }
-                }
-            },
-            clip: true,
+            /** @ignore-option */
+            marker: null,
             /** @ignore-option */
             pointRange: null,
             tooltip: {
@@ -1725,34 +1465,12 @@
              */
             init: function () {
                 var options;
-                Series.prototype.init.apply(this, arguments);
+                seriesTypes.scatter.prototype.init.apply(this, arguments);
                 options = this.options;
                 // #3758, prevent resetting in setData
                 options.pointRange = pick(options.pointRange, options.colsize || 1);
                 // general point range
                 this.yAxis.axisPointRange = options.rowsize || 1;
-                // Bind new symbol names
-                extend(symbols, {
-                    ellipse: symbols.circle,
-                    rect: symbols.square
-                });
-            },
-            getSymbol: Series.prototype.getSymbol,
-            /**
-             * @private
-             * @function Highcharts.seriesTypes.heatmap#setClip
-             * @return {void}
-             */
-            setClip: function (animation) {
-                var series = this,
-                    chart = series.chart;
-                Series.prototype.setClip.apply(series, arguments);
-                if (series.options.clip !== false || animation) {
-                    series.markerGroup
-                        .clip((animation || series.clipBox) && series.sharedClipKey ?
-                        chart[series.sharedClipKey] :
-                        chart.clipRect);
-                }
             },
             /**
              * @private
@@ -1760,139 +1478,26 @@
              * @return {void}
              */
             translate: function () {
-                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || '', shape = symbols[symbol] ? symbol : 'rect', options = series.options, hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+                var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, seriesPointPadding = options.pointPadding || 0, between = function (x, a, b) {
+                    return Math.min(Math.max(a, x), b);
+                }, pointPlacement = series.pointPlacementToXValue(); // #7860
                 series.generatePoints();
                 series.points.forEach(function (point) {
-                    var pointAttr,
-                        sizeDiff,
-                        hasImage,
-                        cellAttr = point.getCellAttributes(),
-                        shapeArgs = {
-                            x: Math.min(cellAttr.x1,
-                        cellAttr.x2),
-                            y: Math.min(cellAttr.y1,
-                        cellAttr.y2),
-                            width: Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0),
-                            height: Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0)
-                        };
-                    hasImage = point.hasImage =
-                        (point.marker && point.marker.symbol || symbol || '')
-                            .indexOf('url') === 0;
-                    // If marker shape is regular (symetric), find shorter
-                    // cell's side.
-                    if (hasRegularShape) {
-                        sizeDiff = Math.abs(shapeArgs.width - shapeArgs.height);
-                        shapeArgs.x = Math.min(cellAttr.x1, cellAttr.x2) +
-                            (shapeArgs.width < shapeArgs.height ? 0 : sizeDiff / 2);
-                        shapeArgs.y = Math.min(cellAttr.y1, cellAttr.y2) +
-                            (shapeArgs.width < shapeArgs.height ? sizeDiff / 2 : 0);
-                        shapeArgs.width = shapeArgs.height =
-                            Math.min(shapeArgs.width, shapeArgs.height);
-                    }
-                    pointAttr = {
-                        plotX: (cellAttr.x1 + cellAttr.x2) / 2,
-                        plotY: (cellAttr.y1 + cellAttr.y2) / 2,
-                        clientX: (cellAttr.x1 + cellAttr.x2) / 2,
-                        shapeType: 'path',
-                        shapeArgs: merge(true, shapeArgs, {
-                            d: symbols[shape](shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height)
-                        })
+                    var xPad = (options.colsize || 1) / 2, yPad = (options.rowsize || 1) / 2, x1 = between(Math.round(xAxis.len -
+                        xAxis.translate(point.x - xPad, 0, 1, 0, 1, -pointPlacement)), -xAxis.len, 2 * xAxis.len), x2 = between(Math.round(xAxis.len -
+                        xAxis.translate(point.x + xPad, 0, 1, 0, 1, -pointPlacement)), -xAxis.len, 2 * xAxis.len), y1 = between(Math.round(yAxis.translate(point.y - yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), y2 = between(Math.round(yAxis.translate(point.y + yPad, 0, 1, 0, 1)), -yAxis.len, 2 * yAxis.len), pointPadding = pick(point.pointPadding, seriesPointPadding);
+                    // Set plotX and plotY for use in K-D-Tree and more
+                    point.plotX = point.clientX = (x1 + x2) / 2;
+                    point.plotY = (y1 + y2) / 2;
+                    point.shapeType = 'rect';
+                    point.shapeArgs = {
+                        x: Math.min(x1, x2) + pointPadding,
+                        y: Math.min(y1, y2) + pointPadding,
+                        width: Math.max(Math.abs(x2 - x1) - pointPadding * 2, 0),
+                        height: Math.max(Math.abs(y2 - y1) - pointPadding * 2, 0)
                     };
-                    if (hasImage) {
-                        point.marker = {
-                            width: shapeArgs.width,
-                            height: shapeArgs.height
-                        };
-                    }
-                    extend(point, pointAttr);
                 });
                 fireEvent(series, 'afterTranslate');
-            },
-            /**
-             * @private
-             * @function Highcharts.seriesTypes.heatmap#pointAttribs
-             * @param {Highcharts.HeatmapPoint} point
-             * @param {string} state
-             * @return {Highcharts.SVGAttributes}
-             */
-            pointAttribs: function (point, state) {
-                var series = this,
-                    attr = Series.prototype.pointAttribs
-                        .call(series,
-                    point,
-                    state),
-                    seriesOptions = series.options || {},
-                    plotOptions = series.chart.options.plotOptions || {},
-                    seriesPlotOptions = plotOptions.series || {},
-                    heatmapPlotOptions = plotOptions.heatmap || {},
-                    stateOptions,
-                    brightness, 
-                    // Get old properties in order to keep backward compatibility
-                    borderColor = seriesOptions.borderColor ||
-                        heatmapPlotOptions.borderColor ||
-                        seriesPlotOptions.borderColor,
-                    borderWidth = seriesOptions.borderWidth ||
-                        heatmapPlotOptions.borderWidth ||
-                        seriesPlotOptions.borderWidth ||
-                        attr['stroke-width'];
-                // Apply lineColor, or set it to default series color.
-                attr.stroke = ((point && point.marker && point.marker.lineColor) ||
-                    (seriesOptions.marker && seriesOptions.marker.lineColor) ||
-                    borderColor ||
-                    this.color);
-                // Apply old borderWidth property if exists.
-                attr['stroke-width'] = borderWidth;
-                if (state) {
-                    stateOptions =
-                        merge(seriesOptions.states[state], seriesOptions.marker &&
-                            seriesOptions.marker.states[state], point.options.states &&
-                            point.options.states[state] || {});
-                    brightness = stateOptions.brightness;
-                    attr.fill =
-                        stateOptions.color ||
-                            H.color(attr.fill).brighten(brightness || 0).get();
-                    attr.stroke = stateOptions.lineColor;
-                }
-                return attr;
-            },
-            /**
-             * @private
-             * @function Highcharts.seriesTypes.heatmap#markerAttribs
-             * @param {Highcharts.HeatmapPoint} point
-             * @return {Highcharts.SVGAttributes}
-             */
-            markerAttribs: function (point, state) {
-                var pointMarkerOptions = point.marker || {},
-                    seriesMarkerOptions = this.options.marker || {},
-                    seriesStateOptions,
-                    pointStateOptions,
-                    shapeArgs = point.shapeArgs || {},
-                    hasImage = point.hasImage,
-                    attribs = {};
-                if (hasImage) {
-                    return {
-                        x: point.plotX,
-                        y: point.plotY
-                    };
-                }
-                // Setting width and height attributes on image does not affect
-                // on its dimensions.
-                if (state) {
-                    seriesStateOptions = seriesMarkerOptions.states[state] || {};
-                    pointStateOptions = pointMarkerOptions.states &&
-                        pointMarkerOptions.states[state] || {};
-                    [['width', 'x'], ['height', 'y']].forEach(function (dimension) {
-                        // Set new width and height basing on state options.
-                        attribs[dimension[0]] = (pointStateOptions[dimension[0]] ||
-                            seriesStateOptions[dimension[0]] ||
-                            shapeArgs[dimension[0]]) + (pointStateOptions[dimension[0] + 'Plus'] ||
-                            seriesStateOptions[dimension[0] + 'Plus'] || 0);
-                        // Align marker by a new size.
-                        attribs[dimension[1]] = shapeArgs[dimension[1]] +
-                            (shapeArgs[dimension[0]] - attribs[dimension[0]]) / 2;
-                    });
-                }
-                return state ? attribs : shapeArgs;
             },
             /**
              * @private
@@ -1900,17 +1505,13 @@
              * @return {void}
              */
             drawPoints: function () {
-                var _this = this;
                 // In styled mode, use CSS, otherwise the fill used in the style
                 // sheet will take precedence over the fill attribute.
-                var seriesMarkerOptions = this.options.marker || {};
-                if (seriesMarkerOptions.enabled || this._hasPointMarkers) {
-                    Series.prototype.drawPoints.call(this);
-                    this.points.forEach(function (point) {
-                        point.graphic &&
-                            point.graphic[_this.chart.styledMode ? 'css' : 'animate'](_this.colorAttribs(point));
-                    });
-                }
+                var func = this.chart.styledMode ? 'css' : 'animate';
+                seriesTypes.column.prototype.drawPoints.call(this);
+                this.points.forEach(function (point) {
+                    point.graphic[func](this.colorAttribs(point));
+                }, this);
             },
             // Define hasData function for non-cartesian series.
             // Returns true if the series has points at all.
@@ -1922,6 +1523,12 @@
             getValidPoints: function (points, insideOnly) {
                 return Series.prototype.getValidPoints.call(this, points, insideOnly, true);
             },
+            /**
+             * @ignore
+             * @deprecated
+             * @function Highcharts.seriesTypes.heatmap#animate
+             */
+            animate: noop,
             /**
              * @ignore
              * @deprecated
@@ -1945,22 +1552,14 @@
              */
             getExtremes: function () {
                 // Get the extremes from the value data
-                var _a = Series.prototype.getExtremes
-                        .call(this,
-                    this.valueData),
-                    dataMin = _a.dataMin,
-                    dataMax = _a.dataMax;
-                if (isNumber(dataMin)) {
-                    this.valueMin = dataMin;
-                }
-                if (isNumber(dataMax)) {
-                    this.valueMax = dataMax;
-                }
+                Series.prototype.getExtremes.call(this, this.valueData);
+                this.valueMin = this.dataMin;
+                this.valueMax = this.dataMax;
                 // Get the extremes from the y data
-                return Series.prototype.getExtremes.call(this);
+                Series.prototype.getExtremes.call(this);
             }
             /* eslint-enable valid-jsdoc */
-        }), merge(colorMapPointMixin, {
+        }), extend({
             /**
              * Heatmap series only. Padding between the points in the heatmap.
              * @name Highcharts.Point#pointPadding
@@ -1973,35 +1572,6 @@
              * @type {number|null|undefined}
              */
             /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             * @function Highcharts.Point#applyOptions
-             * @param {Highcharts.HeatmapPointOptions} options
-             * @param {number} x
-             * @return {Highcharts.SVGPathArray}
-             */
-            applyOptions: function (options, x) {
-                var point = H.Point.prototype
-                        .applyOptions.call(this,
-                    options,
-                    x);
-                point.formatPrefix =
-                    point.isNull || point.value === null ?
-                        'null' : 'point';
-                return point;
-            },
-            /**
-             * Color points have a value option that determines whether or not it is
-             * a null point
-             * @private
-             * @function Highcharts.HeatmapPoint.isValid
-             * @return {boolean}
-             */
-            isValid: function () {
-                // undefined is allowed
-                return (this.value !== Infinity &&
-                    this.value !== -Infinity);
-            },
             /**
              * @private
              * @function Highcharts.Point#haloPath
@@ -2026,74 +1596,9 @@
                     rect.y - size,
                     'Z'
                 ];
-            },
-            getCellAttributes: function () {
-                var point = this,
-                    series = point.series,
-                    seriesOptions = series.options,
-                    xPad = (seriesOptions.colsize || 1) / 2,
-                    yPad = (seriesOptions.rowsize || 1) / 2,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    markerOptions = point.options.marker || series.options.marker,
-                    pointPlacement = series.pointPlacementToXValue(), // #7860
-                    pointPadding = pick(point.pointPadding,
-                    seriesOptions.pointPadding, 0),
-                    cellAttr = {
-                        x1: clamp(Math.round(xAxis.len -
-                            (xAxis.translate(point.x - xPad,
-                    false,
-                    true,
-                    false,
-                    true, -pointPlacement) || 0)), -xAxis.len, 2 * xAxis.len),
-                        x2: clamp(Math.round(xAxis.len -
-                            (xAxis.translate(point.x + xPad,
-                    false,
-                    true,
-                    false,
-                    true, -pointPlacement) || 0)), -xAxis.len, 2 * xAxis.len),
-                        y1: clamp(Math.round((yAxis.translate(point.y - yPad,
-                    false,
-                    true,
-                    false,
-                    true) || 0)), -yAxis.len, 2 * yAxis.len),
-                        y2: clamp(Math.round((yAxis.translate(point.y + yPad,
-                    false,
-                    true,
-                    false,
-                    true) || 0)), -yAxis.len, 2 * yAxis.len)
-                    };
-                // Handle marker's fixed width, and height values including border
-                // and pointPadding while calculating cell attributes.
-                [['width', 'x'], ['height', 'y']].forEach(function (dimension) {
-                    var prop = dimension[0],
-                        direction = dimension[1];
-                    var start = direction + '1', end = direction + '2';
-                    var side = Math.abs(cellAttr[start] - cellAttr[end]),
-                        borderWidth = markerOptions &&
-                            markerOptions.lineWidth || 0,
-                        plotPos = Math.abs(cellAttr[start] + cellAttr[end]) / 2;
-                    if (markerOptions[prop] &&
-                        markerOptions[prop] < side) {
-                        cellAttr[start] = plotPos - (markerOptions[prop] / 2) -
-                            (borderWidth / 2);
-                        cellAttr[end] = plotPos + (markerOptions[prop] / 2) +
-                            (borderWidth / 2);
-                    }
-                    // Handle pointPadding
-                    if (pointPadding) {
-                        if (direction === 'y') {
-                            start = end;
-                            end = direction + '1';
-                        }
-                        cellAttr[start] += pointPadding;
-                        cellAttr[end] -= pointPadding;
-                    }
-                });
-                return cellAttr;
             }
             /* eslint-enable valid-jsdoc */
-        }));
+        }, colorMapPointMixin));
         /**
          * A `heatmap` series. If the [type](#series.heatmap.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).
@@ -2102,7 +1607,7 @@
          * Requires `modules/heatmap`.
          *
          * @extends   series,plotOptions.heatmap
-         * @excluding cropThreshold, dataParser, dataURL, pointRange, stack,
+         * @excluding dataParser, dataURL, marker, pointRange, stack
          * @product   highcharts highmaps
          * @apioption series.heatmap
          */
@@ -2160,6 +1665,7 @@
          *
          * @type      {Array<Array<number>|*>}
          * @extends   series.line.data
+         * @excluding marker
          * @product   highcharts highmaps
          * @apioption series.heatmap.data
          */
@@ -2204,222 +1710,6 @@
          * @type      {number}
          * @product   highcharts highmaps
          * @apioption series.heatmap.data.pointPadding
-         */
-        /**
-         * @excluding radius, enabledThreshold
-         * @product   highcharts highmaps
-         * @since     8.1
-         * @apioption series.heatmap.data.marker
-         */
-        /**
-         * @excluding radius, enabledThreshold
-         * @product   highcharts highmaps
-         * @since     8.1
-         * @apioption series.heatmap.marker
-         */
-        /**
-         * @excluding radius, radiusPlus
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.marker.states.hover
-         */
-        /**
-         * @excluding radius
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.marker.states.select
-         */
-        /**
-         * @excluding radius, radiusPlus
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.data.marker.states.hover
-         */
-        /**
-         * @excluding radius
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.data.marker.states.select
-         */
-        /**
-        * Set the marker's fixed width on hover state.
-        *
-        * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-linewidthplus
-        *         5 pixels wider lineWidth on hover
-        *
-        * @type      {number|undefined}
-        * @default   0
-        * @product   highcharts highmaps
-        * @apioption series.heatmap.marker.states.hover.lineWidthPlus
-        */
-        /**
-        * Set the marker's fixed width on hover state.
-        *
-        * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-        *         70px fixed marker's width and height on hover
-        *
-        * @type      {number|undefined}
-        * @default   undefined
-        * @product   highcharts highmaps
-        * @apioption series.heatmap.marker.states.hover.width
-        */
-        /**
-         * Set the marker's fixed height on hover state.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-         *         70px fixed marker's width and height on hover
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.marker.states.hover.height
-         */
-        /**
-        * The number of pixels to increase the width of the
-        * hovered point.
-        *
-        * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-        *         One day
-        *
-        * @type      {number|undefined}
-        * @default   undefined
-        * @product   highcharts highmaps
-        * @apioption series.heatmap.marker.states.hover.widthPlus
-        */
-        /**
-         * The number of pixels to increase the height of the
-         * hovered point.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-         *         One day
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.marker.states.hover.heightPlus
-         */
-        /**
-         * The number of pixels to increase the width of the
-         * hovered point.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-         *         One day
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.marker.states.select.widthPlus
-         */
-        /**
-         * The number of pixels to increase the height of the
-         * hovered point.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-         *         One day
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.marker.states.select.heightPlus
-         */
-        /**
-        * Set the marker's fixed width on hover state.
-        *
-        * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-linewidthplus
-        *         5 pixels wider lineWidth on hover
-        *
-        * @type      {number|undefined}
-        * @default   0
-        * @product   highcharts highmaps
-        * @apioption series.heatmap.data.marker.states.hover.lineWidthPlus
-        */
-        /**
-         * Set the marker's fixed width on hover state.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-         *         70px fixed marker's width and height on hover
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.data.marker.states.hover.width
-         */
-        /**
-         * Set the marker's fixed height on hover state.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-         *         70px fixed marker's width and height on hover
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.data.marker.states.hover.height
-         */
-        /**
-         * The number of pixels to increase the width of the
-         * hovered point.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-         *         One day
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highstock
-         * @apioption series.heatmap.data.marker.states.hover.widthPlus
-         */
-        /**
-         * The number of pixels to increase the height of the
-         * hovered point.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-         *         One day
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highstock
-         * @apioption series.heatmap.data.marker.states.hover.heightPlus
-         */
-        /**
-        * Set the marker's fixed width on select state.
-        *
-        * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-        *         70px fixed marker's width and height on hover
-        *
-        * @type      {number|undefined}
-        * @default   undefined
-        * @product   highcharts highmaps
-        * @apioption series.heatmap.data.marker.states.select.width
-        */
-        /**
-         * Set the marker's fixed height on select state.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-width
-         *         70px fixed marker's width and height on hover
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highmaps
-         * @apioption series.heatmap.data.marker.states.select.height
-         */
-        /**
-         * The number of pixels to increase the width of the
-         * hovered point.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-         *         One day
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highstock
-         * @apioption series.heatmap.data.marker.states.select.widthPlus
-         */
-        /**
-         * The number of pixels to increase the height of the
-         * hovered point.
-         *
-         * @sample {highcharts} maps/plotoptions/heatmap-marker-states-hover-widthplus
-         *         One day
-         *
-         * @type      {number|undefined}
-         * @default   undefined
-         * @product   highcharts highstock
-         * @apioption series.heatmap.data.marker.states.select.heightPlus
          */
         ''; // adds doclets above to transpiled file
 

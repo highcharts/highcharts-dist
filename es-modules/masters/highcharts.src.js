@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  * @module highcharts/highcharts
  *
  * (c) 2009-2018 Torstein Honsi
@@ -7,30 +7,56 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import Highcharts from '../Core/Globals.js';
-import '../Core/Renderer/SVG/SVGRenderer.js';
-import '../Core/Renderer/HTML/HTML.js';
-import '../Core/Axis/Axis.js';
-import '../Core/Axis/DateTimeAxis.js';
-import '../Core/Axis/LogarithmicAxis.js';
-import '../Core/Axis/PlotLineOrBand.js';
-import '../Core/Tooltip.js';
-import '../Core/Pointer.js';
-import '../Core/MSPointer.js';
-import '../Core/Legend.js';
-import '../Core/Chart/Chart.js';
-import '../Extensions/ScrollablePlotArea.js';
-import '../Extensions/Stacking.js';
-import '../Core/Dynamics.js';
-import '../Series/AreaSeries.js';
-import '../Series/SplineSeries.js';
-import '../Series/AreaSplineSeries.js';
-import '../Series/ColumnSeries.js';
-import '../Series/BarSeries.js';
-import '../Series/ScatterSeries.js';
-import '../Series/PieSeries.js';
-import '../Core/Series/DataLabels.js';
-import '../Extensions/OverlappingDataLabels.js';
-import '../Core/Interaction.js';
-import '../Core/Responsive.js';
+import Highcharts from '../parts/Globals.js';
+import U from '../parts/Utilities.js';
+var extend = U.extend;
+
+import '../parts/SvgRenderer.js';
+import '../parts/Html.js';
+import '../parts/Axis.js';
+import '../parts/DateTimeAxis.js';
+import '../parts/LogarithmicAxis.js';
+import '../parts/PlotLineOrBand.js';
+import '../parts/Tooltip.js';
+import '../parts/Pointer.js';
+import '../parts/TouchPointer.js';
+import '../parts/MSPointer.js';
+import '../parts/Legend.js';
+import '../parts/Chart.js';
+import '../parts/ScrollablePlotArea.js';
+import '../parts/Stacking.js';
+import '../parts/Dynamics.js';
+import '../parts/AreaSeries.js';
+import '../parts/SplineSeries.js';
+import '../parts/AreaSplineSeries.js';
+import '../parts/ColumnSeries.js';
+import '../parts/BarSeries.js';
+import '../parts/ScatterSeries.js';
+import '../parts/PieSeries.js';
+import '../parts/DataLabels.js';
+import '../modules/overlapping-datalabels.src.js';
+import '../parts/Interaction.js';
+import '../parts/Responsive.js';
+
+extend(Highcharts, {
+    arrayMax: U.arrayMax,
+    arrayMin: U.arrayMin,
+    attr: U.attr,
+    defined: U.defined,
+    erase: U.erase,
+    extend: U.extend,
+    isArray: U.isArray,
+    isClass: U.isClass,
+    isDOMElement: U.isDOMElement,
+    isNumber: U.isNumber,
+    isObject: U.isObject,
+    isString: U.isString,
+    objectEach: U.objectEach,
+    pick: U.pick,
+    pInt: U.pInt,
+    setAnimation: U.setAnimation,
+    splat: U.splat,
+    syncTimeout: U.syncTimeout
+});
+
 export default Highcharts;

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  * @module highcharts/indicators/mfi
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -11,4 +11,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Stock/Indicators/MFIIndicator.js';
+import '../../indicators/mfi.src.js';

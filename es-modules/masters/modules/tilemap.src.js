@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.2.0 (2020-08-20)
+ * @license Highmaps JS v7.2.2 (2020-08-24)
  * @module highcharts/modules/tilemap
  * @requires highcharts
  * @requires highcharts/modules/map
@@ -11,4 +11,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/TilemapSeries.js';
+import '../../modules/tilemap.src.js';

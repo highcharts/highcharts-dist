@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Boost module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Chart, H, Color, U) {
+    _registerModule(_modules, 'modules/boost-canvas.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -44,21 +44,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var color = Color.parse;
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            wrap = U.wrap;
-        var win = H.win,
-            doc = win.document,
-            noop = function () { },
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            CHUNK_SIZE = 50000,
-            destroyLoadingDiv;
+        var extend = U.extend, isNumber = U.isNumber;
+        var win = H.win, doc = win.document, noop = function () { }, Color = H.Color, Series = H.Series, seriesTypes = H.seriesTypes, addEvent = H.addEvent, fireEvent = H.fireEvent, merge = H.merge, pick = H.pick, wrap = H.wrap, CHUNK_SIZE = 50000, destroyLoadingDiv;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Initialize the canvas boost.
@@ -67,19 +54,13 @@
          */
         H.initCanvasBoost = function () {
             if (H.seriesTypes.heatmap) {
-                wrap(H.seriesTypes.heatmap.prototype, 'drawPoints', function () {
-                    var chart = this.chart,
-                        ctx = this.getContext(),
-                        inverted = this.chart.inverted,
-                        xAxis = this.xAxis,
-                        yAxis = this.yAxis;
+                H.wrap(H.seriesTypes.heatmap.prototype, 'drawPoints', function () {
+                    var chart = this.chart, ctx = this.getContext(), inverted = this.chart.inverted, xAxis = this.xAxis, yAxis = this.yAxis;
                     if (ctx) {
                         // draw the columns
                         this.points.forEach(function (point) {
-                            var plotY = point.plotY,
-                                shapeArgs,
-                                pointAttr;
-                            if (typeof plotY !== 'undefined' &&
+                            var plotY = point.plotY, shapeArgs, pointAttr;
+                            if (plotY !== undefined &&
                                 !isNaN(plotY) &&
                                 point.y !== null) {
                                 shapeArgs = point.shapeArgs;
@@ -119,26 +100,8 @@
                  * @function Highcharts.Series#getContext
                  */
                 getContext: function () {
-                    var chart = this.chart,
-                        width = chart.chartWidth,
-                        height = chart.chartHeight,
-                        targetGroup = chart.seriesGroup || this.group,
-                        target = this,
-                        ctx,
-                        swapXY = function (proceed,
-                        x,
-                        y,
-                        a,
-                        b,
-                        c,
-                        d) {
-                            proceed.call(this,
-                        y,
-                        x,
-                        a,
-                        b,
-                        c,
-                        d);
+                    var chart = this.chart, width = chart.chartWidth, height = chart.chartHeight, targetGroup = chart.seriesGroup || this.group, target = this, ctx, swapXY = function (proceed, x, y, a, b, c, d) {
+                        proceed.call(this, y, x, a, b, c, d);
                     };
                     if (chart.isChartSeriesBoosting()) {
                         target = chart;
@@ -214,21 +177,21 @@
                 },
                 renderCanvas: function () {
                     var series = this, options = series.options, chart = series.chart, xAxis = this.xAxis, yAxis = this.yAxis, activeBoostSettings = chart.options.boost || {}, boostSettings = {
-                            timeRendering: activeBoostSettings.timeRendering || false,
-                            timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
-                            timeSetup: activeBoostSettings.timeSetup || false
-                        }, ctx, c = 0, xData = series.processedXData, yData = series.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, lastClientX, sampling = !!series.sampling, points, r = options.marker && options.marker.radius, cvsDrawPoint = this.cvsDrawPoint, cvsLineTo = options.lineWidth ? this.cvsLineTo : void 0, cvsMarker = (r && r <= 1 ?
-                            this.cvsMarkerSquare :
-                            this.cvsMarkerCircle), strokeBatch = this.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking !== false, lastPoint, threshold = options.threshold, yBottom = yAxis.getThreshold(threshold), hasThreshold = isNumber(threshold), translatedThreshold = yBottom, doFill = this.fill, isRange = (series.pointArrayMap &&
-                            series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, wasNull, connectNulls = options.connectNulls, useRaw = !xData, minVal, maxVal, minI, maxI, index, sdata = (isStacked ?
-                            series.data :
-                            (xData || rawData)), fillColor = (series.fillOpacity ?
-                            new Color(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
-                            series.color), 
-                        //
-                        stroke = function () {
-                            if (doFill) {
-                                ctx.fillStyle = fillColor;
+                        timeRendering: activeBoostSettings.timeRendering || false,
+                        timeSeriesProcessing: activeBoostSettings.timeSeriesProcessing || false,
+                        timeSetup: activeBoostSettings.timeSetup || false
+                    }, ctx, c = 0, xData = series.processedXData, yData = series.processedYData, rawData = options.data, xExtremes = xAxis.getExtremes(), xMin = xExtremes.min, xMax = xExtremes.max, yExtremes = yAxis.getExtremes(), yMin = yExtremes.min, yMax = yExtremes.max, pointTaken = {}, lastClientX, sampling = !!series.sampling, points, r = options.marker && options.marker.radius, cvsDrawPoint = this.cvsDrawPoint, cvsLineTo = options.lineWidth ? this.cvsLineTo : void 0, cvsMarker = (r && r <= 1 ?
+                        this.cvsMarkerSquare :
+                        this.cvsMarkerCircle), strokeBatch = this.cvsStrokeBatch || 1000, enableMouseTracking = options.enableMouseTracking !== false, lastPoint, threshold = options.threshold, yBottom = yAxis.getThreshold(threshold), hasThreshold = isNumber(threshold), translatedThreshold = yBottom, doFill = this.fill, isRange = (series.pointArrayMap &&
+                        series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, wasNull, connectNulls = options.connectNulls, useRaw = !xData, minVal, maxVal, minI, maxI, index, sdata = (isStacked ?
+                        series.data :
+                        (xData || rawData)), fillColor = (series.fillOpacity ?
+                        new Color(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
+                        series.color), 
+                    //
+                    stroke = function () {
+                        if (doFill) {
+                            ctx.fillStyle = fillColor;
                             ctx.fill();
                         }
                         else {
@@ -352,7 +315,8 @@
                     if (rawData.length > 99999) {
                         chart.options.loading = merge(loadingOptions, {
                             labelStyle: {
-                                backgroundColor: color('#ffffff').setOpacity(0.75).get(),
+                                backgroundColor: H.color('#ffffff')
+                                    .setOpacity(0.75).get(),
                                 padding: '1em',
                                 borderRadius: '0.5em'
                             },
@@ -361,7 +325,7 @@
                                 opacity: 1
                             }
                         });
-                        U.clearTimeout(destroyLoadingDiv);
+                        H.clearTimeout(destroyLoadingDiv);
                         chart.showLoading('Drawing...');
                         chart.options.loading = loadingOptions; // reset
                     }
@@ -370,18 +334,7 @@
                     }
                     // Loop over the points
                     H.eachAsync(sdata, function (d, i) {
-                        var x,
-                            y,
-                            clientX,
-                            plotY,
-                            isNull,
-                            low,
-                            isNextInside = false,
-                            isPrevInside = false,
-                            nx = false,
-                            px = false,
-                            chartDestroyed = typeof chart.index === 'undefined',
-                            isYInside = true;
+                        var x, y, clientX, plotY, isNull, low, isNextInside = false, isPrevInside = false, nx = false, px = false, chartDestroyed = typeof chart.index === 'undefined', isYInside = true;
                         if (!chartDestroyed) {
                             if (useRaw) {
                                 x = d[0];
@@ -432,16 +385,15 @@
                                     (isNextInside || isPrevInside))) {
                                 clientX = Math.round(xAxis.toPixels(x, true));
                                 if (sampling) {
-                                    if (typeof minI === 'undefined' ||
-                                        clientX === lastClientX) {
+                                    if (minI === undefined || clientX === lastClientX) {
                                         if (!isRange) {
                                             low = y;
                                         }
-                                        if (typeof maxI === 'undefined' || y > maxVal) {
+                                        if (maxI === undefined || y > maxVal) {
                                             maxVal = y;
                                             maxI = i;
                                         }
-                                        if (typeof minI === 'undefined' ||
+                                        if (minI === undefined ||
                                             low < minVal) {
                                             minVal = low;
                                             minI = i;
@@ -449,8 +401,7 @@
                                     }
                                     // Add points and reset
                                     if (clientX !== lastClientX) {
-                                        // maxI also a number:
-                                        if (typeof minI !== 'undefined') {
+                                        if (minI !== undefined) { // maxI also a number
                                             plotY = yAxis.toPixels(maxVal, true);
                                             yBottom = yAxis.toPixels(minVal, true);
                                             drawPoint(clientX, hasThreshold ?
@@ -461,7 +412,7 @@
                                                 addKDPoint(clientX, yBottom, minI);
                                             }
                                         }
-                                        minI = maxI = void 0;
+                                        minI = maxI = undefined;
                                         lastClientX = clientX;
                                     }
                                 }
@@ -480,8 +431,7 @@
                         }
                         return !chartDestroyed;
                     }, function () {
-                        var loadingDiv = chart.loadingDiv,
-                            loadingShown = chart.loadingShown;
+                        var loadingDiv = chart.loadingDiv, loadingShown = chart.loadingShown;
                         stroke();
                         // if (series.boostCopy || series.chart.boostCopy) {
                         //     (series.boostCopy || series.chart.boostCopy)();
@@ -513,7 +463,7 @@
                         series.buildKDTree();
                         // Don't do async on export, the exportChart, getSVGForExport and
                         // getSVG methods are not chained for it.
-                    }, chart.renderer.forExport ? Number.MAX_VALUE : void 0);
+                    }, chart.renderer.forExport ? Number.MAX_VALUE : undefined);
                 }
             });
             seriesTypes.scatter.prototype.cvsMarkerCircle = function (ctx, clientX, plotY, r) {
@@ -552,7 +502,7 @@
                 fill: true,
                 sampling: true
             });
-            Chart.prototype.callbacks.push(function (chart) {
+            H.Chart.prototype.callbacks.push(function (chart) {
                 /**
                  * @private
                  */

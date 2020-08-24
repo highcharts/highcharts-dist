@@ -41,7 +41,7 @@ declare module "../highcharts" {
          * @param animation
          *        The animation options for the element fade.
          */
-        fadeIn(animation?: (boolean|Partial<AnimationOptionsObject>)): void;
+        fadeIn(animation?: (boolean|AnimationOptionsObject)): void;
     }
 }
 export default factory;

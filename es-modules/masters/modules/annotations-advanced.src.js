@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  * @module highcharts/modules/annotations-advanced
  * @requires highcharts
  *
@@ -10,15 +10,14 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/Annotations/Annotations.js';
-import '../../Extensions/Annotations/Types/BasicAnnotation.js';
-import '../../Extensions/Annotations/Types/CrookedLine.js';
-import '../../Extensions/Annotations/Types/ElliottWave.js';
-import '../../Extensions/Annotations/Types/Tunnel.js';
-import '../../Extensions/Annotations/Types/InfinityLine.js';
-import '../../Extensions/Annotations/Types/Fibonacci.js';
-import '../../Extensions/Annotations/Types/Pitchfork.js';
-import '../../Extensions/Annotations/Types/VerticalLine.js';
-import '../../Extensions/Annotations/Types/Measure.js';
-import '../../Extensions/Annotations/NavigationBindings.js';
-import '../../Extensions/Annotations/Popup.js';
+import '../../annotations/annotations.src.js';
+import '../../annotations/types/CrookedLine.js';
+import '../../annotations/types/ElliottWave.js';
+import '../../annotations/types/Tunnel.js';
+import '../../annotations/types/InfinityLine.js';
+import '../../annotations/types/Fibonacci.js';
+import '../../annotations/types/Pitchfork.js';
+import '../../annotations/types/VerticalLine.js';
+import '../../annotations/types/Measure.js';
+import '../../annotations/navigationBindings.js';
+import '../../annotations/popup.js';

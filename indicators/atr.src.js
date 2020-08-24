@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/ATRIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/atr.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,41 +36,29 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
-        var UNDEFINED;
+        var isArray = U.isArray;
+        var seriesType = H.seriesType, UNDEFINED;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
          * @private
          */
         function accumulateAverage(points, xVal, yVal, i) {
-            var xValue = xVal[i],
-                yValue = yVal[i];
+            var xValue = xVal[i], yValue = yVal[i];
             points.push([xValue, yValue]);
         }
         /**
          * @private
          */
         function getTR(currentPoint, prevPoint) {
-            var pointY = currentPoint,
-                prevY = prevPoint,
-                HL = pointY[1] - pointY[2],
-                HCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[1] - prevY[3]),
-                LCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[2] - prevY[3]),
-                TR = Math.max(HL,
-                HCp,
-                LCp);
+            var pointY = currentPoint, prevY = prevPoint, HL = pointY[1] - pointY[2], HCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[1] - prevY[3]), LCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[2] - prevY[3]), TR = Math.max(HL, HCp, LCp);
             return TR;
         }
         /**
          * @private
          */
         function populateAverage(points, xVal, yVal, i, period, prevATR) {
-            var x = xVal[i - 1],
-                TR = getTR(yVal[i - 1],
-                yVal[i - 2]),
-                y;
+            var x = xVal[i - 1], TR = getTR(yVal[i - 1], yVal[i - 2]), y;
             y = (((prevATR * (period - 1)) + TR) / period);
             return [x, y];
         }
@@ -109,26 +97,12 @@
          */
         {
             getValues: function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    xValue = xVal[0],
-                    yValue = yVal[0],
-                    range = 1,
-                    prevATR = 0,
-                    TR = 0,
-                    ATR = [],
-                    xData = [],
-                    yData = [],
-                    point,
-                    i,
-                    points;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], yValue = yVal[0], range = 1, prevATR = 0, TR = 0, ATR = [], xData = [], yData = [], point, i, points;
                 points = [[xValue, yValue]];
                 if ((xVal.length <= period) ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return;
+                    return false;
                 }
                 for (i = 1; i <= yValLen; i++) {
                     accumulateAverage(points, xVal, yVal, i);

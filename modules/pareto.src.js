@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Pareto series type for Highcharts
  *
@@ -28,16 +28,14 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/DerivedSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'mixins/derived-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            defined = U.defined;
-        var Series = H.Series,
-            noop = H.noop;
+        var defined = U.defined;
+        var Series = H.Series, addEvent = H.addEvent, noop = H.noop;
         /* ************************************************************************** *
          *
          * DERIVED SERIES MIXIN
@@ -51,18 +49,17 @@
          * @mixin derivedSeriesMixin
          */
         var derivedSeriesMixin = {
-                hasDerivedData: true,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Initialise series
-                 *
-                 * @private
-                 * @function derivedSeriesMixin.init
-                 * @return {void}
-                 */
-                init: function () {
-                    Series.prototype.init.apply(this,
-            arguments);
+            hasDerivedData: true,
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Initialise series
+             *
+             * @private
+             * @function derivedSeriesMixin.init
+             * @return {void}
+             */
+            init: function () {
+                Series.prototype.init.apply(this, arguments);
                 this.initialised = false;
                 this.baseSeries = null;
                 this.eventRemovers = [];
@@ -88,11 +85,9 @@
              * @return {void}
              */
             setBaseSeries: function () {
-                var chart = this.chart,
-                    baseSeriesOptions = this.options.baseSeries,
-                    baseSeries = (defined(baseSeriesOptions) &&
-                        (chart.series[baseSeriesOptions] ||
-                            chart.get(baseSeriesOptions)));
+                var chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
+                    (chart.series[baseSeriesOptions] ||
+                        chart.get(baseSeriesOptions)));
                 this.baseSeries = baseSeries || null;
             },
             /**
@@ -103,8 +98,7 @@
              * @return {void}
              */
             addEvents: function () {
-                var derivedSeries = this,
-                    chartSeriesLinked;
+                var derivedSeries = this, chartSeriesLinked;
                 chartSeriesLinked = addEvent(this.chart, 'afterLinkSeries', function () {
                     derivedSeries.setBaseSeries();
                     if (derivedSeries.baseSeries && !derivedSeries.initialised) {
@@ -124,9 +118,7 @@
              * @return {void}
              */
             addBaseSeriesEvents: function () {
-                var derivedSeries = this,
-                    updatedDataRemover,
-                    destroyRemover;
+                var derivedSeries = this, updatedDataRemover, destroyRemover;
                 updatedDataRemover = addEvent(derivedSeries.baseSeries, 'updatedData', function () {
                     derivedSeries.setDerivedData();
                 });
@@ -153,7 +145,7 @@
 
         return derivedSeriesMixin;
     });
-    _registerModule(_modules, 'Series/ParetoSeries.js', [_modules['Core/Utilities.js'], _modules['Mixins/DerivedSeries.js']], function (U, derivedSeriesMixin) {
+    _registerModule(_modules, 'modules/pareto.src.js', [_modules['parts/Globals.js'], _modules['mixins/derived-series.js']], function (H, derivedSeriesMixin) {
         /* *
          *
          *  (c) 2010-2017 Sebastian Bochan
@@ -163,9 +155,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat,
-            merge = U.merge,
-            seriesType = U.seriesType;
+        var correctFloat = H.correctFloat, seriesType = H.seriesType, merge = H.merge;
         /**
          * The pareto series type.
          *
@@ -194,7 +184,7 @@
          *               negativeColor, pointInterval, pointIntervalUnit,
          *               pointPadding, pointPlacement, pointRange, pointStart,
          *               pointWidth, shadow, step, softThreshold, stacking,
-         *               threshold, zoneAxis, zones, boostBlending
+         *               threshold, zoneAxis, zones
          * @requires     modules/pareto
          * @optionparent plotOptions.pareto
          */
@@ -214,12 +204,7 @@
              * @requires modules/pareto
              */
             setDerivedData: function () {
-                var xValues = this.baseSeries.xData,
-                    yValues = this.baseSeries.yData,
-                    sum = this.sumPointsPercents(yValues,
-                    xValues,
-                    null,
-                    true);
+                var xValues = this.baseSeries.xData, yValues = this.baseSeries.yData, sum = this.sumPointsPercents(yValues, xValues, null, true);
                 this.setData(this.sumPointsPercents(yValues, xValues, sum, false), false);
             },
             /**
@@ -246,10 +231,7 @@
              * @requires modules/pareto
              */
             sumPointsPercents: function (yValues, xValues, sum, isSum) {
-                var sumY = 0,
-                    sumPercent = 0,
-                    percentPoints = [],
-                    percentPoint;
+                var sumY = 0, sumPercent = 0, percentPoints = [], percentPoint;
                 yValues.forEach(function (point, i) {
                     if (point !== null) {
                         if (isSum) {
@@ -277,7 +259,7 @@
          * @extends   series,plotOptions.pareto
          * @since     6.0.0
          * @product   highcharts
-         * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
+         * @excluding data, dataParser, dataURL
          * @requires  modules/pareto
          * @apioption series.pareto
          */

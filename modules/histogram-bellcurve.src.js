@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -27,16 +27,14 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/DerivedSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'mixins/derived-series.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            defined = U.defined;
-        var Series = H.Series,
-            noop = H.noop;
+        var defined = U.defined;
+        var Series = H.Series, addEvent = H.addEvent, noop = H.noop;
         /* ************************************************************************** *
          *
          * DERIVED SERIES MIXIN
@@ -50,18 +48,17 @@
          * @mixin derivedSeriesMixin
          */
         var derivedSeriesMixin = {
-                hasDerivedData: true,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Initialise series
-                 *
-                 * @private
-                 * @function derivedSeriesMixin.init
-                 * @return {void}
-                 */
-                init: function () {
-                    Series.prototype.init.apply(this,
-            arguments);
+            hasDerivedData: true,
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Initialise series
+             *
+             * @private
+             * @function derivedSeriesMixin.init
+             * @return {void}
+             */
+            init: function () {
+                Series.prototype.init.apply(this, arguments);
                 this.initialised = false;
                 this.baseSeries = null;
                 this.eventRemovers = [];
@@ -87,11 +84,9 @@
              * @return {void}
              */
             setBaseSeries: function () {
-                var chart = this.chart,
-                    baseSeriesOptions = this.options.baseSeries,
-                    baseSeries = (defined(baseSeriesOptions) &&
-                        (chart.series[baseSeriesOptions] ||
-                            chart.get(baseSeriesOptions)));
+                var chart = this.chart, baseSeriesOptions = this.options.baseSeries, baseSeries = (defined(baseSeriesOptions) &&
+                    (chart.series[baseSeriesOptions] ||
+                        chart.get(baseSeriesOptions)));
                 this.baseSeries = baseSeries || null;
             },
             /**
@@ -102,8 +97,7 @@
              * @return {void}
              */
             addEvents: function () {
-                var derivedSeries = this,
-                    chartSeriesLinked;
+                var derivedSeries = this, chartSeriesLinked;
                 chartSeriesLinked = addEvent(this.chart, 'afterLinkSeries', function () {
                     derivedSeries.setBaseSeries();
                     if (derivedSeries.baseSeries && !derivedSeries.initialised) {
@@ -123,9 +117,7 @@
              * @return {void}
              */
             addBaseSeriesEvents: function () {
-                var derivedSeries = this,
-                    updatedDataRemover,
-                    destroyRemover;
+                var derivedSeries = this, updatedDataRemover, destroyRemover;
                 updatedDataRemover = addEvent(derivedSeries.baseSeries, 'updatedData', function () {
                     derivedSeries.setDerivedData();
                 });
@@ -152,7 +144,7 @@
 
         return derivedSeriesMixin;
     });
-    _registerModule(_modules, 'Series/HistogramSeries.js', [_modules['Core/Utilities.js'], _modules['Mixins/DerivedSeries.js']], function (U, derivedSeriesMixin) {
+    _registerModule(_modules, 'modules/histogram.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (H, U, derivedSeriesMixin) {
         /* *
          *
          *  Copyright (c) 2010-2017 Highsoft AS
@@ -163,13 +155,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
-            correctFloat = U.correctFloat,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            seriesType = U.seriesType;
+        var arrayMax = U.arrayMax, arrayMin = U.arrayMin, isNumber = U.isNumber, objectEach = U.objectEach;
+        var seriesType = H.seriesType, correctFloat = H.correctFloat, merge = H.merge;
         /* ************************************************************************** *
          *  HISTOGRAM
          * ************************************************************************** */
@@ -178,8 +165,8 @@
          * base series
          **/
         var binsNumberFormulas = {
-                'square-root': function (baseSeries) {
-                    return Math.ceil(Math.sqrt(baseSeries.options.data.length));
+            'square-root': function (baseSeries) {
+                return Math.ceil(Math.sqrt(baseSeries.options.data.length));
             },
             'sturges': function (baseSeries) {
                 return Math.ceil(Math.log(baseSeries.options.data.length) * Math.LOG2E);
@@ -221,7 +208,7 @@
          *
          * @extends      plotOptions.column
          * @excluding    boostThreshold, dragDrop, pointInterval, pointIntervalUnit,
-         *               stacking, boostBlending
+         *               stacking
          * @product      highcharts
          * @since        6.0.0
          * @requires     modules/histogram
@@ -246,7 +233,7 @@
              *
              * @type {number}
              */
-            binWidth: void 0,
+            binWidth: undefined,
             pointPadding: 0,
             groupPadding: 0,
             grouping: false,
@@ -264,28 +251,17 @@
                 if (!yData.length) {
                     return;
                 }
-                var data = this.derivedData(yData,
-                    this.binsNumber(),
-                    this.options.binWidth);
+                var data = this.derivedData(yData, this.binsNumber(), this.options.binWidth);
                 this.setData(data, false);
             },
             derivedData: function (baseData, binsNumber, binWidth) {
-                var series = this,
-                    max = arrayMax(baseData), 
-                    // Float correction needed, because first frequency value is not
-                    // corrected when generating frequencies (within for loop).
-                    min = correctFloat(arrayMin(baseData)),
-                    frequencies = [],
-                    bins = {},
-                    data = [],
-                    x,
-                    fitToBin;
-                binWidth = series.binWidth = (correctFloat(isNumber(binWidth) ?
+                var series = this, max = arrayMax(baseData), 
+                // Float correction needed, because first frequency value is not
+                // corrected when generating frequencies (within for loop).
+                min = correctFloat(arrayMin(baseData)), frequencies = [], bins = {}, data = [], x, fitToBin;
+                binWidth = series.binWidth = series.options.pointRange = (correctFloat(isNumber(binWidth) ?
                     (binWidth || 1) :
                     (max - min) / binsNumber));
-                // #12077 negative pointRange causes wrong calculations,
-                // browser hanging.
-                series.options.pointRange = Math.max(binWidth, 0);
                 // If binWidth is 0 then max and min are equaled,
                 // increment the x with some positive value to quit the loop
                 for (x = min; 
@@ -296,11 +272,7 @@
                 x < max &&
                     (series.userOptions.binWidth ||
                         correctFloat(max - x) >= binWidth ||
-                        // #13069 - Every add and subtract operation should
-                        // be corrected, due to general problems with
-                        // operations on float numbers in JS.
-                        correctFloat(correctFloat(min + (frequencies.length * binWidth)) -
-                            x) <= 0); x = correctFloat(x + binWidth)) {
+                        correctFloat(min + (frequencies.length * binWidth) - x) <= 0); x = correctFloat(x + binWidth)) {
                     frequencies.push(x);
                     bins[x] = 0;
                 }
@@ -330,8 +302,8 @@
             binsNumber: function () {
                 var binsNumberOption = this.options.binsNumber;
                 var binsNumber = binsNumberFormulas[binsNumberOption] ||
-                        // #7457
-                        (typeof binsNumberOption === 'function' && binsNumberOption);
+                    // #7457
+                    (typeof binsNumberOption === 'function' && binsNumberOption);
                 return Math.ceil((binsNumber && binsNumber(this.baseSeries)) ||
                     (isNumber(binsNumberOption) ?
                         binsNumberOption :
@@ -343,7 +315,7 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.histogram
-         * @excluding data, dataParser, dataURL, boostThreshold, boostBlending
+         * @excluding data, dataParser, dataURL
          * @product   highcharts
          * @since     6.0.0
          * @requires  modules/histogram
@@ -359,10 +331,10 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/BellcurveSeries.js', [_modules['Core/Utilities.js'], _modules['Mixins/DerivedSeries.js']], function (U, derivedSeriesMixin) {
+    _registerModule(_modules, 'modules/bellcurve.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/derived-series.js']], function (H, U, derivedSeriesMixin) {
         /* *
          *
-         *  (c) 2010-2020 Highsoft AS
+         *  (c) 2010-2019 Highsoft AS
          *
          *  Author: Sebastian Domas
          *
@@ -371,10 +343,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            seriesType = U.seriesType;
+        var isNumber = U.isNumber;
+        var seriesType = H.seriesType, correctFloat = H.correctFloat, merge = H.merge;
         /* ************************************************************************** *
          *  BELL CURVE                                                                *
          * ************************************************************************** */
@@ -383,10 +353,8 @@
          * @private
          */
         function mean(data) {
-            var length = data.length,
-                sum = data.reduce(function (sum,
-                value) {
-                    return (sum += value);
+            var length = data.length, sum = data.reduce(function (sum, value) {
+                return (sum += value);
             }, 0);
             return length > 0 && sum / length;
         }
@@ -394,8 +362,7 @@
          * @private
          */
         function standardDeviation(data, average) {
-            var len = data.length,
-                sum;
+            var len = data.length, sum;
             average = isNumber(average) ? average : mean(data);
             sum = data.reduce(function (sum, value) {
                 var diff = value - average;
@@ -475,13 +442,7 @@
                 return (void 0);
             },
             derivedData: function (mean, standardDeviation) {
-                var intervals = this.options.intervals,
-                    pointsInInterval = this.options.pointsInInterval,
-                    x = mean - intervals * standardDeviation,
-                    stop = intervals * pointsInInterval * 2 + 1,
-                    increment = standardDeviation / pointsInInterval,
-                    data = [],
-                    i;
+                var intervals = this.options.intervals, pointsInInterval = this.options.pointsInInterval, x = mean - intervals * standardDeviation, stop = intervals * pointsInInterval * 2 + 1, increment = standardDeviation / pointsInInterval, data = [], i;
                 for (i = 0; i < stop; i++) {
                     data.push([x, normalDensity(x, mean, standardDeviation)]);
                     x += increment;
@@ -501,7 +462,7 @@
          * @extends   series,plotOptions.bellcurve
          * @since     6.0.0
          * @product   highcharts
-         * @excluding dataParser, dataURL, data, boostThreshold, boostBlending
+         * @excluding dataParser, dataURL, data
          * @requires  modules/bellcurve
          * @apioption series.bellcurve
          */

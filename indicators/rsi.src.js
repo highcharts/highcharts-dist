@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/RSIIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/rsi.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,8 +36,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
         /* eslint-disable require-jsdoc */
         // Utils:
         function toFixed(a, n) {
@@ -53,7 +52,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('rsi', 'sma', 
+        H.seriesType('rsi', 'sma', 
         /**
          * Relative strength index (RSI) technical indicator. This series
          * requires the `linkedTo` option to be set and should be loaded after
@@ -86,29 +85,14 @@
          */
         {
             getValues: function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    decimals = params.decimals, 
-                    // RSI starts calculations from the second point
-                    // Cause we need to calculate change between two points
-                    range = 1,
-                    RSI = [],
-                    xData = [],
-                    yData = [],
-                    index = 3,
-                    gain = 0,
-                    loss = 0,
-                    RSIPoint,
-                    change,
-                    avgGain,
-                    avgLoss,
-                    i;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, decimals = params.decimals, 
+                // RSI starts calculations from the second point
+                // Cause we need to calculate change between two points
+                range = 1, RSI = [], xData = [], yData = [], index = 3, gain = 0, loss = 0, RSIPoint, change, avgGain, avgLoss, i;
                 // RSI requires close value
                 if ((xVal.length < period) || !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return;
+                    return false;
                 }
                 // Calculate changes for first N points
                 while (range < period) {

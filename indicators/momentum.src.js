@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/MomentumIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/momentum.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,12 +36,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
+        var seriesType = H.seriesType;
         /* eslint-disable require-jsdoc */
         function populateAverage(points, xVal, yVal, i, period) {
-            var mmY = yVal[i - 1][3] - yVal[i - period - 1][3],
-                mmX = xVal[i - 1];
+            var mmY = yVal[i - 1][3] - yVal[i - period - 1][3], mmX = xVal[i - 1];
             points.shift(); // remove point until range < period
             return [mmX, mmY];
         }
@@ -80,28 +79,16 @@
         {
             nameBase: 'Momentum',
             getValues: function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    xValue = xVal[0],
-                    yValue = yVal[0],
-                    MM = [],
-                    xData = [],
-                    yData = [],
-                    index,
-                    i,
-                    points,
-                    MMPoint;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, xValue = xVal[0], yValue = yVal[0], MM = [], xData = [], yData = [], index, i, points, MMPoint;
                 if (xVal.length <= period) {
-                    return;
+                    return false;
                 }
                 // Switch index for OHLC / Candlestick / Arearange
                 if (isArray(yVal[0])) {
                     yValue = yVal[0][3];
                 }
                 else {
-                    return;
+                    return false;
                 }
                 // Starting point
                 points = [

@@ -158,7 +158,7 @@ declare module "../highcharts.src" {
      *
      * @return An object ready for the `mapData` option.
      */
-    function geojson(geojson: GeoJSON, hType?: string): Array<any>;
+    function geojson(geojson: any, hType?: string): Array<any>;
     /**
      * The factory function for creating new map charts. Creates a new Chart
      * object with different default options than the basic Chart.
@@ -205,7 +205,7 @@ declare module "../highcharts.src" {
     /**
      * Utility for reading SVG paths directly.
      */
-    function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
+    function splitPath(path: string): SVGPathArray;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

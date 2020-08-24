@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,10 +26,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/DarkUnica.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'themes/dark-unica.js', [_modules['parts/Globals.js']], function (Highcharts) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -40,7 +40,6 @@
          * */
         /* global document */
         // Load the fonts
-        var setOptions = U.setOptions;
         Highcharts.createElement('link', {
             href: 'https://fonts.googleapis.com/css?family=Unica+One',
             rel: 'stylesheet',
@@ -240,7 +239,7 @@
             }
         };
         // Apply the theme
-        setOptions(Highcharts.theme);
+        Highcharts.setOptions(Highcharts.theme);
 
     });
     _registerModule(_modules, 'masters/themes/dark-unica.src.js', [], function () {

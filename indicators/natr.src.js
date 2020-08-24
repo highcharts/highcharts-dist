@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/NATRIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/natr.src.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,7 +36,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
         var ATR = H.seriesTypes.atr;
         /**
          * The NATR series type.
@@ -47,7 +46,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('natr', 'sma', 
+        H.seriesType('natr', 'sma', 
         /**
          * Normalized average true range indicator (NATR). This series requires
          * `linkedTo` option to be set and should be loaded after the
@@ -74,17 +73,9 @@
         {
             requiredIndicators: ['atr'],
             getValues: function (series, params) {
-                var atrData = (ATR.prototype.getValues.apply(this,
-                    arguments)),
-                    atrLength = atrData.values.length,
-                    period = params.period - 1,
-                    yVal = series.yData,
-                    i = 0;
-                if (!atrData) {
-                    return;
-                }
+                var atrData = ATR.prototype.getValues.apply(this, arguments), atrLength = atrData.values.length, period = params.period - 1, yVal = series.yData, i = 0;
                 for (; i < atrLength; i++) {
-                    atrData.yData[i] = (atrData.values[i][1] / yVal[period][3] * 100);
+                    atrData.yData[i] = atrData.values[i][1] / yVal[period][3] * 100;
                     atrData.values[i][1] = atrData.yData[i];
                     period++;
                 }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
+ * @license Highcharts Gantt JS v7.2.2 (2020-08-24)
  * @module highcharts/modules/gantt
  * @requires highcharts
  *
@@ -10,8 +10,8 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/GanttSeries.js';
-import '../../Core/Chart/GanttChart.js';
-import '../../Core/Scrollbar.js';
-import '../../Extensions/RangeSelector.js';
-import '../../Core/Navigator.js';
+import '../../parts-gantt/GanttSeries.js';
+import '../../parts-gantt/GanttChart.js';
+import '../../parts/Scrollbar.js';
+import '../../parts/RangeSelector.js';
+import '../../parts/Navigator.js';

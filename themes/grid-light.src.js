@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,10 +26,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/GridLight.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'themes/grid-light.js', [_modules['parts/Globals.js']], function (Highcharts) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -39,7 +39,6 @@
          *
          * */
         /* global document */
-        var setOptions = U.setOptions;
         // Load the fonts
         Highcharts.createElement('link', {
             href: 'https://fonts.googleapis.com/css?family=Dosis:400,600',
@@ -102,7 +101,7 @@
             }
         };
         // Apply the theme
-        setOptions(Highcharts.theme);
+        Highcharts.setOptions(Highcharts.theme);
 
     });
     _registerModule(_modules, 'masters/themes/grid-light.src.js', [], function () {

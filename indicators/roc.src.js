@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,18 +28,18 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/ROCIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/roc.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2020 Kacper Madej
+         *  (c) 2010-2019 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
+        var seriesType = H.seriesType;
         /* eslint-disable require-jsdoc */
         // Utils:
         function populateAverage(xVal, yVal, i, period, index) {
@@ -49,8 +49,7 @@
                 Closing Price [n days ago] * 100
 
                Return y as null when avoiding division by zero */
-            var nDaysAgoY,
-                rocY;
+            var nDaysAgoY, rocY;
             if (index < 0) {
                 // y data given as an array of values
                 nDaysAgoY = yVal[i - period];
@@ -112,20 +111,11 @@
         {
             nameBase: 'Rate of Change',
             getValues: function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    ROC = [],
-                    xData = [],
-                    yData = [],
-                    i,
-                    index = -1,
-                    ROCPoint;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, ROC = [], xData = [], yData = [], i, index = -1, ROCPoint;
                 // Period is used as a number of time periods ago, so we need more
                 // (at least 1 more) data than the period value
                 if (xVal.length <= period) {
-                    return;
+                    return false;
                 }
                 // Switch index for OHLC / Candlestick / Arearange
                 if (isArray(yVal[0])) {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Arrow Symbols
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/ArrowSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
+    _registerModule(_modules, 'parts-gantt/ArrowSymbols.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
          *  (c) 2017 Highsoft AS
@@ -69,12 +69,12 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
+        H.SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
             return [
-                ['M', x, y + h / 2],
-                ['L', x + w, y],
-                ['L', x, y + h / 2],
-                ['L', x + w, y + h]
+                'M', x, y + h / 2,
+                'L', x + w, y,
+                'L', x, y + h / 2,
+                'L', x + w, y + h
             ];
         };
         /**
@@ -105,8 +105,8 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['arrow-half'] = function (x, y, w, h) {
-            return SVGRenderer.prototype.symbols.arrow(x, y, w / 2, h);
+        H.SVGRenderer.prototype.symbols['arrow-half'] = function (x, y, w, h) {
+            return H.SVGRenderer.prototype.symbols.arrow(x, y, w / 2, h);
         };
         /**
          * Creates a left-oriented triangle.
@@ -136,12 +136,12 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
+        H.SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
             return [
-                ['M', x + w, y],
-                ['L', x, y + h / 2],
-                ['L', x + w, y + h],
-                ['Z']
+                'M', x + w, y,
+                'L', x, y + h / 2,
+                'L', x + w, y + h,
+                'Z'
             ];
         };
         /**
@@ -165,7 +165,8 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['arrow-filled'] = SVGRenderer.prototype.symbols['triangle-left'];
+        H.SVGRenderer.prototype.symbols['arrow-filled'] =
+            H.SVGRenderer.prototype.symbols['triangle-left'];
         /**
          * Creates a half-width, left-oriented triangle.
          * ```
@@ -194,8 +195,8 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['triangle-left-half'] = function (x, y, w, h) {
-            return SVGRenderer.prototype.symbols['triangle-left'](x, y, w / 2, h);
+        H.SVGRenderer.prototype.symbols['triangle-left-half'] = function (x, y, w, h) {
+            return H.SVGRenderer.prototype.symbols['triangle-left'](x, y, w / 2, h);
         };
         /**
          * Alias function for triangle-left-half.
@@ -218,7 +219,8 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['arrow-filled-half'] = SVGRenderer.prototype.symbols['triangle-left-half'];
+        H.SVGRenderer.prototype.symbols['arrow-filled-half'] =
+            H.SVGRenderer.prototype.symbols['triangle-left-half'];
 
     });
     _registerModule(_modules, 'masters/modules/arrow-symbols.src.js', [], function () {

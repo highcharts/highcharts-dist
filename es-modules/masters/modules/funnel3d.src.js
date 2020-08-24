@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  * @module highcharts/modules/funnel3d
  * @requires highcharts
  * @requires highcharts/highcharts-3d
@@ -12,4 +12,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/Funnel3DSeries.js';
+import '../../modules/funnel3d.src.js';

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,44 +28,39 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'mixins/indicator-required.js', [_modules['parts/Globals.js']], function (H) {
         /**
          *
-         *  (c) 2010-2020 Daniel Studencki
+         *  (c) 2010-2019 Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = U.error;
+        var error = H.error;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var requiredIndicatorMixin = {
-                /**
-                 * Check whether given indicator is loaded,
-            else throw error.
-                 * @private
-                 * @param {Highcharts.Indicator} indicator
-                 *        Indicator constructor function.
-                 * @param {string} requiredIndicator
-                 *        Required indicator type.
-                 * @param {string} type
-                 *        Type of indicator where function was called (parent).
-                 * @param {Highcharts.IndicatorCallbackFunction} callback
-                 *        Callback which is triggered if the given indicator is loaded.
-                 *        Takes indicator as an argument.
-                 * @param {string} errMessage
-                 *        Error message that will be logged in console.
-                 * @return {boolean}
-                 *         Returns false when there is no required indicator loaded.
-                 */
-                isParentLoaded: function (indicator,
-            requiredIndicator,
-            type,
-            callback,
-            errMessage) {
-                    if (indicator) {
-                        return callback ? callback(indicator) : true;
+            /**
+             * Check whether given indicator is loaded, else throw error.
+             * @private
+             * @param {Highcharts.Indicator} indicator
+             *        Indicator constructor function.
+             * @param {string} requiredIndicator
+             *        Required indicator type.
+             * @param {string} type
+             *        Type of indicator where function was called (parent).
+             * @param {Highcharts.IndicatorCallbackFunction} callback
+             *        Callback which is triggered if the given indicator is loaded.
+             *        Takes indicator as an argument.
+             * @param {string} errMessage
+             *        Error message that will be logged in console.
+             * @return {boolean}
+             *         Returns false when there is no required indicator loaded.
+             */
+            isParentLoaded: function (indicator, requiredIndicator, type, callback, errMessage) {
+                if (indicator) {
+                    return callback ? callback(indicator) : true;
                 }
                 error(errMessage || this.generateMessage(type, requiredIndicator));
                 return false;
@@ -90,7 +85,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/Indicators.js', [_modules['Core/Globals.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (H, requiredIndicator, U) {
+    _registerModule(_modules, 'indicators/indicators.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js'], _modules['mixins/indicator-required.js']], function (H, U, requiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,17 +93,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            error = U.error,
-            extend = U.extend,
-            isArray = U.isArray,
-            pick = U.pick,
-            seriesType = U.seriesType,
-            splat = U.splat;
-        var Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            ohlcProto = H.seriesTypes.ohlc.prototype,
-            generateMessage = requiredIndicator.generateMessage;
+        var extend = U.extend, isArray = U.isArray, pick = U.pick, splat = U.splat;
+        var error = H.error, Series = H.Series, addEvent = H.addEvent, seriesType = H.seriesType, seriesTypes = H.seriesTypes, ohlcProto = H.seriesTypes.ohlc.prototype, generateMessage = requiredIndicatorMixin.generateMessage;
         /**
          * The parameter allows setting line series type and use OHLC indicators. Data
          * in OHLC format is required.
@@ -122,8 +108,7 @@
          */
         /* eslint-disable no-invalid-this */
         addEvent(H.Series, 'init', function (eventOptions) {
-            var series = this,
-                options = eventOptions.options;
+            var series = this, options = eventOptions.options;
             if (options.useOhlcData &&
                 options.id !== 'highcharts-navigator-series') {
                 extend(series, {
@@ -135,8 +120,7 @@
             }
         });
         addEvent(Series, 'afterSetOptions', function (e) {
-            var options = e.options,
-                dataGrouping = options.dataGrouping;
+            var options = e.options, dataGrouping = options.dataGrouping;
             if (dataGrouping &&
                 options.useOhlcData &&
                 options.id !== 'highcharts-navigator-series') {
@@ -179,7 +163,7 @@
              *
              * @type {string}
              */
-            name: void 0,
+            name: undefined,
             tooltip: {
                 /**
                  * Number of decimals in indicator series.
@@ -192,7 +176,7 @@
              *
              * @type {string}
              */
-            linkedTo: void 0,
+            linkedTo: undefined,
             /**
              * Whether to compare indicator to the main series values
              * or indicator values.
@@ -227,9 +211,7 @@
          */
         {
             processData: function () {
-                var series = this,
-                    compareToMain = series.options.compareToMain,
-                    linkedParent = series.linkedParent;
+                var series = this, compareToMain = series.options.compareToMain, linkedParent = series.linkedParent;
                 Series.prototype.processData.apply(series, arguments);
                 if (linkedParent && linkedParent.compareValue && compareToMain) {
                     series.compareValue = linkedParent.compareValue;
@@ -249,8 +231,8 @@
             requiredIndicators: [],
             requireIndicators: function () {
                 var obj = {
-                        allLoaded: true
-                    };
+                    allLoaded: true
+                };
                 // Check whether all required indicators are loaded, else return
                 // the object with missing indicator's name.
                 this.requiredIndicators.forEach(function (indicator) {
@@ -265,8 +247,7 @@
                 return obj;
             },
             init: function (chart, options) {
-                var indicator = this,
-                    requiredIndicators = indicator.requireIndicators();
+                var indicator = this, requiredIndicators = indicator.requireIndicators();
                 // Check whether all required indicators are loaded.
                 if (!requiredIndicators.allLoaded) {
                     return error(generateMessage(indicator.type, requiredIndicators.needed));
@@ -280,22 +261,11 @@
                  * @return {void}
                  */
                 function recalculateValues() {
-                    var oldData = indicator.points || [],
-                        oldDataLength = (indicator.xData || []).length,
-                        processedData = indicator.getValues(indicator.linkedParent,
-                        indicator.options.params) || {
-                            values: [],
-                            xData: [],
-                            yData: []
-                        },
-                        croppedDataValues = [],
-                        overwriteData = true,
-                        oldFirstPointIndex,
-                        oldLastPointIndex,
-                        croppedData,
-                        min,
-                        max,
-                        i;
+                    var oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, processedData = indicator.getValues(indicator.linkedParent, indicator.options.params) || {
+                        values: [],
+                        xData: [],
+                        yData: []
+                    }, croppedDataValues = [], overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
                     // We need to update points to reflect changes in all,
                     // x and y's, values. However, do it only for non-grouped
                     // data - grouping does it for us (#8572)
@@ -359,10 +329,8 @@
                     recalculateValues();
                 }
                 else {
-                    var unbinder = addEvent(indicator.chart,
-                        indicator.calculateOn,
-                        function () {
-                            recalculateValues();
+                    var unbinder = addEvent(indicator.chart, indicator.calculateOn, function () {
+                        recalculateValues();
                         // Call this just once, on init
                         unbinder();
                     });
@@ -370,8 +338,7 @@
                 return indicator;
             },
             getName: function () {
-                var name = this.name,
-                    params = [];
+                var name = this.name, params = [];
                 if (!name) {
                     (this.nameComponents || []).forEach(function (component, index) {
                         params.push(this.options.params[component] +
@@ -383,20 +350,9 @@
                 return name;
             },
             getValues: function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal.length,
-                    range = 0,
-                    sum = 0,
-                    SMA = [],
-                    xData = [],
-                    yData = [],
-                    index = -1,
-                    i,
-                    SMAPoint;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal.length, range = 0, sum = 0, SMA = [], xData = [], yData = [], index = -1, i, SMAPoint;
                 if (xVal.length < period) {
-                    return;
+                    return false;
                 }
                 // Switch index for OHLC / Candlestick / Arearange
                 if (isArray(yVal[0])) {
@@ -428,7 +384,7 @@
                 this.dataEventsToUnbind.forEach(function (unbinder) {
                     unbinder();
                 });
-                Series.prototype.destroy.apply(this, arguments);
+                Series.prototype.destroy.call(this);
             }
         });
         /**

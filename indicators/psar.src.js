@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Parabolic SAR Indicator for Highstock
  *
@@ -28,19 +28,18 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/PSARIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'indicators/psar.src.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
          *  Parabolic SAR indicator for Highstock
          *
-         *  (c) 2010-2020 Grzegorz Blachliński
+         *  (c) 2010-2019 Grzegorz Blachliński
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
         /* eslint-disable require-jsdoc */
         // Utils:
         function toFixed(a, n) {
@@ -122,7 +121,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('psar', 'sma', 
+        H.seriesType('psar', 'sma', 
         /**
          * Parabolic SAR. This series requires `linkedTo`
          * option to be set and should be loaded
@@ -190,37 +189,14 @@
         }, {
             nameComponents: false,
             getValues: function (series, params) {
-                var xVal = series.xData,
-                    yVal = series.yData, 
-                    // Extreme point is the lowest low for falling and highest high
-                    // for rising psar - and we are starting with falling
-                    extremePoint = yVal[0][1],
-                    accelerationFactor = params.initialAccelerationFactor,
-                    maxAccelerationFactor = params.maxAccelerationFactor,
-                    increment = params.increment, 
-                    // Set initial acc factor (for every new trend!)
-                    initialAccelerationFactor = params.initialAccelerationFactor,
-                    PSAR = yVal[0][2],
-                    decimals = params.decimals,
-                    index = params.index,
-                    PSARArr = [],
-                    xData = [],
-                    yData = [],
-                    previousDirection = 1,
-                    direction,
-                    EPMinusPSAR,
-                    accelerationFactorMultiply,
-                    newDirection,
-                    prevLow,
-                    prevPrevLow,
-                    prevHigh,
-                    prevPrevHigh,
-                    newExtremePoint,
-                    high,
-                    low,
-                    ind;
+                var xVal = series.xData, yVal = series.yData, 
+                // Extreme point is the lowest low for falling and highest high
+                // for rising psar - and we are starting with falling
+                extremePoint = yVal[0][1], accelerationFactor = params.initialAccelerationFactor, maxAccelerationFactor = params.maxAccelerationFactor, increment = params.increment, 
+                // Set initial acc factor (for every new trend!)
+                initialAccelerationFactor = params.initialAccelerationFactor, PSAR = yVal[0][2], decimals = params.decimals, index = params.index, PSARArr = [], xData = [], yData = [], previousDirection = 1, direction, EPMinusPSAR, accelerationFactorMultiply, newDirection, prevLow, prevPrevLow, prevHigh, prevPrevHigh, newExtremePoint, high, low, ind;
                 if (index >= yVal.length) {
-                    return;
+                    return false;
                 }
                 for (ind = 0; ind < index; ind++) {
                     extremePoint = Math.max(yVal[ind][1], extremePoint);

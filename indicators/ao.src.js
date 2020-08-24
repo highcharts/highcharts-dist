@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/AOIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/ao.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,10 +36,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
-        var noop = H.noop;
+        var isArray = U.isArray;
+        var correctFloat = H.correctFloat, noop = H.noop;
         /**
          * The AO series type
          *
@@ -49,7 +47,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('ao', 'sma', 
+        H.seriesType('ao', 'sma', 
         /**
          * Awesome Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -95,7 +93,6 @@
             threshold: 0,
             groupPadding: 0.2,
             pointPadding: 0.2,
-            crisp: false,
             states: {
                 hover: {
                     halo: {
@@ -117,14 +114,7 @@
             translate: H.seriesTypes.column.prototype.translate,
             drawPoints: H.seriesTypes.column.prototype.drawPoints,
             drawGraph: function () {
-                var indicator = this,
-                    options = indicator.options,
-                    points = indicator.points,
-                    userColor = indicator.userOptions.color,
-                    positiveColor = options.greaterBarColor,
-                    negativeColor = options.lowerBarColor,
-                    firstPoint = points[0],
-                    i;
+                var indicator = this, options = indicator.options, points = indicator.points, userColor = indicator.userOptions.color, positiveColor = options.greaterBarColor, negativeColor = options.lowerBarColor, firstPoint = points[0], i;
                 if (!userColor && firstPoint) {
                     firstPoint.color = positiveColor;
                     for (i = 1; i < points.length; i++) {
@@ -141,30 +131,14 @@
                 }
             },
             getValues: function (series) {
-                var shortPeriod = 5,
-                    longPeriod = 34,
-                    xVal = series.xData || [],
-                    yVal = series.yData || [],
-                    yValLen = yVal.length,
-                    AO = [], // 0- date, 1- Awesome Oscillator
-                    xData = [],
-                    yData = [],
-                    high = 1,
-                    low = 2,
-                    shortSum = 0,
-                    longSum = 0,
-                    shortSMA, // Shorter Period SMA
-                    longSMA, // Longer Period SMA
-                    awesome,
-                    shortLastIndex,
-                    longLastIndex,
-                    price,
-                    i,
-                    j;
+                var shortPeriod = 5, longPeriod = 34, xVal = series.xData || [], yVal = series.yData || [], yValLen = yVal.length, AO = [], // 0- date, 1- Awesome Oscillator
+                xData = [], yData = [], high = 1, low = 2, shortSum = 0, longSum = 0, shortSMA, // Shorter Period SMA
+                longSMA, // Longer Period SMA
+                awesome, shortLastIndex, longLastIndex, price, i, j;
                 if (xVal.length <= longPeriod ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return;
+                    return false;
                 }
                 for (i = 0; i < longPeriod - 1; i++) {
                     price = (yVal[i][high] + yVal[i][low]) / 2;

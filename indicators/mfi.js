@@ -1,5 +1,5 @@
 /*
- Highstock JS v8.2.0 (2020-08-20)
+ Highstock JS v7.2.2 (2020-08-24)
 
  Money Flow Index indicator for Highstock
 
@@ -7,7 +7,7 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/mfi",["highcharts","highcharts/modules/stock"],function(c){a(c);a.Highcharts=c;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function c(a,c,h,m){a.hasOwnProperty(c)||(a[c]=m.apply(null,h))}a=a?a._modules:{};c(a,"Stock/Indicators/MFIIndicator.js",[a["Core/Utilities.js"]],function(a){function c(a){return a.reduce(function(a,
-n){return a+n})}function h(a){return(a[1]+a[2]+a[3])/3}var m=a.error,v=a.isArray;a=a.seriesType;a("mfi","sma",{params:{period:14,volumeSeriesID:"volume",decimals:4}},{nameBase:"Money Flow Index",getValues:function(a,b){var e=b.period,p=a.xData,f=a.yData,n=f?f.length:0,w=b.decimals,g=1,d=a.chart.get(b.volumeSeriesID),q=d&&d.yData,r=[],t=[],u=[],k=[],l=[];if(!d)m("Series "+b.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,a.chart);else if(!(p.length<=e)&&v(f[0])&&4===f[0].length&&q){for(a=h(f[g]);g<
-e+1;)b=a,a=h(f[g]),b=a>=b,d=a*q[g],k.push(b?d:0),l.push(b?0:d),g++;for(e=g-1;e<n;e++)e>g-1&&(k.shift(),l.shift(),b=a,a=h(f[e]),b=a>b,d=a*q[e],k.push(b?d:0),l.push(b?0:d)),b=c(l),d=c(k),b=d/b,b=parseFloat((100-100/(1+b)).toFixed(w)),r.push([p[e],b]),t.push(p[e]),u.push(b);return{values:r,xData:t,yData:u}}}});""});c(a,"masters/indicators/mfi.src.js",[],function(){})});
+(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/mfi",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,b,k,h){a.hasOwnProperty(b)||(a[b]=h.apply(null,k))}a=a?a._modules:{};b(a,"indicators/mfi.src.js",[a["parts/Globals.js"],a["parts/Utilities.js"]],function(a,b){function k(a){return a.reduce(function(a,
+d){return a+d})}function h(a){return(a[1]+a[2]+a[3])/3}var u=b.isArray;a.seriesType("mfi","sma",{params:{period:14,volumeSeriesID:"volume",decimals:4}},{nameBase:"Money Flow Index",getValues:function(d,c){var b=c.period,n=d.xData,f=d.yData,v=f?f.length:0,w=c.decimals,g=1,e=d.chart.get(c.volumeSeriesID),p=e&&e.yData,q=[],r=[],t=[],l=[],m=[];if(!e)return a.error("Series "+c.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,d.chart);if(n.length<=b||!u(f[0])||4!==f[0].length||!p)return!1;for(d=
+h(f[g]);g<b+1;)c=d,d=h(f[g]),c=d>=c,e=d*p[g],l.push(c?e:0),m.push(c?0:e),g++;for(b=g-1;b<v;b++)b>g-1&&(l.shift(),m.shift(),c=d,d=h(f[b]),c=d>c,e=d*p[b],l.push(c?e:0),m.push(c?0:e)),c=k(m),e=k(l),c=e/c,c=parseFloat((100-100/(1+c)).toFixed(w)),q.push([n[b],c]),r.push(n[b]),t.push(c);return{values:q,xData:r,yData:t}}});""});b(a,"masters/indicators/mfi.src.js",[],function(){})});
 //# sourceMappingURL=mfi.js.map

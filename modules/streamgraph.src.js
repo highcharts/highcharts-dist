@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Streamgraph module
  *
@@ -28,19 +28,19 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/StreamgraphSeries.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'modules/streamgraph.src.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
          *  Streamgraph module
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2019 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
+        var seriesType = H.seriesType;
         /**
          * @private
          * @class
@@ -88,7 +88,7 @@
          * specified, it is inherited from [chart.type](#chart.type).
          *
          * @extends   series,plotOptions.streamgraph
-         * @excluding dataParser, dataURL, step, boostThreshold, boostBlending
+         * @excluding dataParser, dataURL
          * @product   highcharts highstock
          * @requires  modules/streamgraph
          * @apioption series.streamgraph

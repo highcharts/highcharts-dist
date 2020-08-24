@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * Highcharts 3D funnel module
  *
@@ -28,12 +28,12 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/Pyramid3DSeries.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'modules/pyramid3d.src.js', [_modules['parts/Globals.js']], function (H) {
         /* *
          *
          *  Highcharts pyramid3d series module
          *
-         *  (c) 2010-2020 Highsoft AS
+         *  (c) 2010-2019 Highsoft AS
          *  Author: Kacper Madej
          *
          *  License: www.highcharts.com/license
@@ -41,7 +41,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
+        var seriesType = H.seriesType;
         /**
          * The pyramid3d series type.
          *
@@ -62,7 +62,7 @@
          *         Pyramid3d
          *
          * @extends      plotOptions.funnel3d
-         * @excluding    neckHeight, neckWidth, dataSorting
+         * @excluding    neckHeight, neckWidth
          * @product      highcharts
          * @since        7.1.0
          * @requires     highcharts-3d
@@ -90,8 +90,8 @@
          * not specified, it is inherited from [chart.type](#chart.type).
          *
          * @since     7.1.0
-         * @extends   series.pyramid,plotOptions.pyramid3d
-         * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase,dataSorting
+         * @extends   series,plotOptions.pyramid3d
+         * @excluding allAreas,boostThreshold,colorAxis,compare,compareBase
          * @product   highcharts
          * @sample    {highcharts} highcharts/demo/pyramid3d/ Pyramid3d
          * @requires  modules/pyramid3d

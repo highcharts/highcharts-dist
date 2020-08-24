@@ -3,7 +3,7 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
-import H from '../Core/Globals.js';
+import H from '../parts/Globals.js';
 /**
  * @private
  * @interface Highcharts.PolygonPointObject
@@ -22,13 +22,13 @@ import H from '../Core/Globals.js';
 * @name Highcharts.PolygonObject#axes
 * @type {Array<PolygonPointObject>}
 */
-import U from '../Core/Utilities.js';
-var find = U.find, isArray = U.isArray, isNumber = U.isNumber;
-var deg2rad = H.deg2rad;
+import U from '../parts/Utilities.js';
+var isArray = U.isArray, isNumber = U.isNumber;
+var deg2rad = H.deg2rad, find = H.find;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * Alternative solution to correctFloat.
- * E.g Highcharts.correctFloat(123, 2) returns 120, when it should be 123.
+ * E.g H.correctFloat(123, 2) returns 120, when it should be 123.
  *
  * @private
  * @function correctFloat

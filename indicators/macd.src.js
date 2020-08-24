@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/MACDIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/macd.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,13 +36,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat,
-            defined = U.defined,
-            merge = U.merge,
-            seriesType = U.seriesType;
-        var noop = H.noop,
-            SMA = H.seriesTypes.sma,
-            EMA = H.seriesTypes.ema;
+        var defined = U.defined;
+        var seriesType = H.seriesType, noop = H.noop, merge = H.merge, SMA = H.seriesTypes.sma, EMA = H.seriesTypes.ema, correctFloat = H.correctFloat;
         /**
          * The MACD series type.
          *
@@ -105,7 +100,7 @@
                      *
                      * @type  {Highcharts.ColorString}
                      */
-                    lineColor: void 0
+                    lineColor: undefined
                 }
             },
             /**
@@ -129,13 +124,12 @@
                      *
                      * @type  {Highcharts.ColorString}
                      */
-                    lineColor: void 0
+                    lineColor: undefined
                 }
             },
             threshold: 0,
             groupPadding: 0.1,
             pointPadding: 0.1,
-            crisp: false,
             states: {
                 hover: {
                     halo: {
@@ -224,19 +218,11 @@
             },
             drawPoints: H.seriesTypes.column.prototype.drawPoints,
             drawGraph: function () {
-                var indicator = this,
-                    mainLinePoints = indicator.points,
-                    pointsLength = mainLinePoints.length,
-                    mainLineOptions = indicator.options,
-                    histogramZones = indicator.zones,
-                    gappedExtend = {
-                        options: {
-                            gapSize: mainLineOptions.gapSize
-                        }
-                    },
-                    otherSignals = [[],
-                    []],
-                    point;
+                var indicator = this, mainLinePoints = indicator.points, pointsLength = mainLinePoints.length, mainLineOptions = indicator.options, histogramZones = indicator.zones, gappedExtend = {
+                    options: {
+                        gapSize: mainLineOptions.gapSize
+                    }
+                }, otherSignals = [[], []], point;
                 // Generate points for top and bottom lines:
                 while (pointsLength--) {
                     point = mainLinePoints[pointsLength];
@@ -275,9 +261,7 @@
                 // indicator.graph = null;
             },
             getZonesGraphs: function (props) {
-                var allZones = SMA.prototype.getZonesGraphs.call(this,
-                    props),
-                    currentZones = allZones;
+                var allZones = SMA.prototype.getZonesGraphs.call(this, props), currentZones = allZones;
                 if (this.currentLineZone) {
                     currentZones = allZones.splice(this[this.currentLineZone].startIndex + 1);
                     if (!currentZones.length) {
@@ -305,17 +289,10 @@
                 this.zones = histogramZones;
             },
             getValues: function (series, params) {
-                var j = 0,
-                    MACD = [],
-                    xMACD = [],
-                    yMACD = [],
-                    signalLine = [],
-                    shortEMA,
-                    longEMA,
-                    i;
+                var j = 0, MACD = [], xMACD = [], yMACD = [], signalLine = [], shortEMA, longEMA, i;
                 if (series.xData.length <
                     params.longPeriod + params.signalPeriod) {
-                    return;
+                    return false;
                 }
                 // Calculating the short and long EMA used when calculating the MACD
                 shortEMA = EMA.prototype.getValues(series, {
@@ -360,8 +337,7 @@
                 // Setting the MACD Histogram. In comparison to the loop with pure
                 // MACD this loop uses MACD x value not xData.
                 for (i = 0; i < MACD.length; i++) {
-                    // detect the first point
-                    if (MACD[i][0] >= signalLine[0][0]) {
+                    if (MACD[i][0] >= signalLine[0][0]) { // detect the first point
                         MACD[i][2] = signalLine[j][1];
                         yMACD[i] = [0, signalLine[j][1], MACD[i][3]];
                         if (MACD[i][3] === null) {

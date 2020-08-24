@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v7.2.2 (2020-08-24)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/PivotPointsIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'indicators/pivot-points.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,18 +36,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
+        var defined = U.defined, isArray = U.isArray;
         var SMA = H.seriesTypes.sma;
         /* eslint-disable valid-jsdoc */
         /**
          * @private
          */
         function destroyExtraLabels(point, functionName) {
-            var props = point.series.pointArrayMap,
-                prop,
-                i = props.length;
+            var props = point.series.pointArrayMap, prop, i = props.length;
             SMA.prototype.pointClass.prototype[functionName].call(point);
             while (i--) {
                 prop = 'dataLabel' + props[i];
@@ -68,7 +64,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('pivotpoints', 'sma', 
+        H.seriesType('pivotpoints', 'sma', 
         /**
          * Pivot points indicator. This series requires the `linkedTo` option to be
          * set and should be loaded after `stock/indicators/indicators.js` file.
@@ -101,7 +97,9 @@
             },
             enableMouseTracking: false,
             dataLabels: {
+                /** @ignore-option */
                 enabled: true,
+                /** @ignore-option */
                 format: '{point.pivotLine}'
             },
             dataGrouping: {
@@ -134,23 +132,7 @@
                 indicator.plotEndPoint = indicator.xAxis.toPixels(indicator.endPoint, true);
             },
             getGraphPath: function (points) {
-                var indicator = this,
-                    pointsLength = points.length,
-                    allPivotPoints = ([[],
-                    [],
-                    [],
-                    [],
-                    [],
-                    [],
-                    [],
-                    [],
-                    []]),
-                    path = [],
-                    endPoint = indicator.plotEndPoint,
-                    pointArrayMapLength = indicator.pointArrayMap.length,
-                    position,
-                    point,
-                    i;
+                var indicator = this, pointsLength = points.length, allPivotPoints = ([[], [], [], [], [], [], [], [], []]), path = [], endPoint = indicator.plotEndPoint, pointArrayMapLength = indicator.pointArrayMap.length, position, point, i;
                 while (pointsLength--) {
                     point = points[pointsLength];
                     for (i = 0; i < pointArrayMapLength; i++) {
@@ -183,12 +165,7 @@
             },
             // TODO: Rewrite this logic to use multiple datalabels
             drawDataLabels: function () {
-                var indicator = this,
-                    pointMapping = indicator.pointArrayMap,
-                    currentLabel,
-                    pointsLength,
-                    point,
-                    i;
+                var indicator = this, pointMapping = indicator.pointArrayMap, currentLabel, pointsLength, point, i;
                 if (indicator.options.dataLabels.enabled) {
                     pointsLength = indicator.points.length;
                     // For every Ressitance/Support group we need to render labels.
@@ -227,28 +204,14 @@
                 }
             },
             getValues: function (series, params) {
-                var period = params.period,
-                    xVal = series.xData,
-                    yVal = series.yData,
-                    yValLen = yVal ? yVal.length : 0,
-                    placement = this[params.algorithm + 'Placement'], 
-                    // 0- from, 1- to, 2- R1, 3- R2, 4- pivot, 5- S1 etc.
-                    PP = [],
-                    endTimestamp,
-                    xData = [],
-                    yData = [],
-                    slicedXLen,
-                    slicedX,
-                    slicedY,
-                    lastPP,
-                    pivot,
-                    avg,
-                    i;
+                var period = params.period, xVal = series.xData, yVal = series.yData, yValLen = yVal ? yVal.length : 0, placement = this[params.algorithm + 'Placement'], 
+                // 0- from, 1- to, 2- R1, 3- R2, 4- pivot, 5- S1 etc.
+                PP = [], endTimestamp, xData = [], yData = [], slicedXLen, slicedX, slicedY, lastPP, pivot, avg, i;
                 // Pivot Points requires high, low and close values
                 if (xVal.length < period ||
                     !isArray(yVal[0]) ||
                     yVal[0].length !== 4) {
-                    return;
+                    return false;
                 }
                 for (i = period + 1; i <= yValLen + period; i += period) {
                     slicedX = xVal.slice(i - period - 1, i);
@@ -275,10 +238,7 @@
                 };
             },
             getPivotAndHLC: function (values) {
-                var high = -Infinity,
-                    low = Infinity,
-                    close = values[values.length - 1][3],
-                    pivot;
+                var high = -Infinity, low = Infinity, close = values[values.length - 1][3], pivot;
                 values.forEach(function (p) {
                     high = Math.max(high, p[1]);
                     low = Math.min(low, p[2]);
@@ -287,48 +247,45 @@
                 return [pivot, high, low, close];
             },
             standardPlacement: function (values) {
-                var diff = values[1] - values[2],
-                    avg = [
-                        null,
-                        null,
-                        values[0] + diff,
-                        values[0] * 2 - values[2],
-                        values[0],
-                        values[0] * 2 - values[1],
-                        values[0] - diff,
-                        null,
-                        null
-                    ];
+                var diff = values[1] - values[2], avg = [
+                    null,
+                    null,
+                    values[0] + diff,
+                    values[0] * 2 - values[2],
+                    values[0],
+                    values[0] * 2 - values[1],
+                    values[0] - diff,
+                    null,
+                    null
+                ];
                 return avg;
             },
             camarillaPlacement: function (values) {
-                var diff = values[1] - values[2],
-                    avg = [
-                        values[3] + diff * 1.5,
-                        values[3] + diff * 1.25,
-                        values[3] + diff * 1.1666,
-                        values[3] + diff * 1.0833,
-                        values[0],
-                        values[3] - diff * 1.0833,
-                        values[3] - diff * 1.1666,
-                        values[3] - diff * 1.25,
-                        values[3] - diff * 1.5
-                    ];
+                var diff = values[1] - values[2], avg = [
+                    values[3] + diff * 1.5,
+                    values[3] + diff * 1.25,
+                    values[3] + diff * 1.1666,
+                    values[3] + diff * 1.0833,
+                    values[0],
+                    values[3] - diff * 1.0833,
+                    values[3] - diff * 1.1666,
+                    values[3] - diff * 1.25,
+                    values[3] - diff * 1.5
+                ];
                 return avg;
             },
             fibonacciPlacement: function (values) {
-                var diff = values[1] - values[2],
-                    avg = [
-                        null,
-                        values[0] + diff,
-                        values[0] + diff * 0.618,
-                        values[0] + diff * 0.382,
-                        values[0],
-                        values[0] - diff * 0.382,
-                        values[0] - diff * 0.618,
-                        values[0] - diff,
-                        null
-                    ];
+                var diff = values[1] - values[2], avg = [
+                    null,
+                    values[0] + diff,
+                    values[0] + diff * 0.618,
+                    values[0] + diff * 0.382,
+                    values[0],
+                    values[0] - diff * 0.382,
+                    values[0] - diff * 0.618,
+                    values[0] - diff,
+                    null
+                ];
                 return avg;
             }
         }, 

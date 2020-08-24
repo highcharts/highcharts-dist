@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v7.2.2 (2020-08-24)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,10 +26,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/DraggablePoints.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'modules/draggable-points.src.js', [_modules['parts/Globals.js'], _modules['parts/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2020 Highsoft AS
+         *  (c) 2009-2019 Highsoft AS
          *
          *  Authors: Øystein Moseng, Torstein Hønsi, Jon A. Nygård
          *
@@ -38,11 +38,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var addEvent = U.addEvent,
-            clamp = U.clamp,
-            merge = U.merge,
-            objectEach = U.objectEach,
-            pick = U.pick;
         /**
          * Current drag and drop position.
          *
@@ -71,6 +66,34 @@
         * Delta of previous y position.
         * @name Highcharts.DragDropPositionObject#prevdY
         * @type {number|undefined}
+        */
+        /* *
+         * @interface Highcharts.PointOptionsObject in parts/Point.ts
+         */ /**
+        * Callback that fires while dragging a point. The mouse event is passed in as
+        * parameter. The original data can be accessed from `e.origin`, and the new
+        * point values can be accessed from `e.newPoints`. If there is only a single
+        * point being updated, it can be accessed from `e.newPoint` for simplicity, and
+        * its ID can be accessed from `e.newPointId`. The this context is the point
+        * being dragged. To stop the default drag action, return `false`.
+        * @name Highcharts.PointEventsOptionsObject#drag
+        * @type {Highcharts.PointDragCallbackFunction|undefined}
+        * @requires modules/dragable-points
+        */ /**
+        * Point specific options for the draggable-points module.
+        * @name Highcharts.PointEventsOptionsObject#dragDrop
+        * @type {Highcharts.SeriesLineDataDragDropOptions|Highcharts.SeriesXrangeDataDragDropOptions|undefined}
+        */ /**
+        * Callback that fires when starting to drag a point. The mouse event object is
+        * passed in as an argument. If a drag handle is used, `e.updateProp` is set to
+        * the data property being dragged. The `this` context is the point.
+        * @name Highcharts.PointEventsOptionsObject#dragStart
+        * @type {Highcharts.PointDragStartCallbackFunction|undefined}
+        */ /**
+        * Callback that fires when the point is dropped. The parameters passed are the
+        * same as for drag. To stop the default drop action, return `false`.
+        * @name Highcharts.PointEventsOptionsObject#drop
+        * @type {Highcharts.PointDropCallbackFunction|undefined}
         */
         /**
          * Function callback to execute while series points are dragged. Return false to
@@ -199,8 +222,8 @@
         * @name Highcharts.PointDropEventObject#type
         * @type {"drop"}
         */
-        ''; // detaches doclets above
-        var seriesTypes = H.seriesTypes;
+        var objectEach = U.objectEach, pick = U.pick;
+        var addEvent = H.addEvent, merge = H.merge, seriesTypes = H.seriesTypes;
         /**
          * Flip a side property, used with resizeRect. If input side is "left", return
          * "right" etc.
@@ -266,33 +289,31 @@
         */
         // 90deg rotated column handle path, used in multiple series types
         var horizHandleFormatter = function (point) {
-                var shapeArgs = point.shapeArgs || point.graphic.getBBox(),
-            top = shapeArgs.r || 0, // Rounding of bar corners
-                bottom = shapeArgs.height - top,
-            centerY = shapeArgs.height / 2;
+            var shapeArgs = point.shapeArgs || point.graphic.getBBox(), top = shapeArgs.r || 0, // Rounding of bar corners
+            bottom = shapeArgs.height - top, centerY = shapeArgs.height / 2;
             return [
                 // Top wick
-                ['M', 0, top],
-                ['L', 0, centerY - 5],
+                'M', 0, top,
+                'L', 0, centerY - 5,
                 // Circle
-                ['A', 1, 1, 0, 0, 0, 0, centerY + 5],
-                ['A', 1, 1, 0, 0, 0, 0, centerY - 5],
+                'A', 1, 1, 0, 0, 0, 0, centerY + 5,
+                'A', 1, 1, 0, 0, 0, 0, centerY - 5,
                 // Bottom wick
-                ['M', 0, centerY + 5],
-                ['L', 0, bottom]
+                'M', 0, centerY + 5,
+                'L', 0, bottom
             ];
         };
         // Line series - only draggableX/Y, no drag handles
         var lineDragDropProps = seriesTypes.line.prototype.dragDropProps = {
-                x: {
-                    axis: 'x',
-                    move: true
-                },
-                y: {
-                    axis: 'y',
-                    move: true
-                }
-            };
+            x: {
+                axis: 'x',
+                move: true
+            },
+            y: {
+                axis: 'y',
+                move: true
+            }
+        };
         // Flag series - same as line/scatter
         if (seriesTypes.flags) {
             seriesTypes.flags.prototype.dragDropProps = lineDragDropProps;
@@ -300,26 +321,21 @@
         // Column series - x can be moved, y can only be resized. Note extra
         // functionality for handling upside down columns (below threshold).
         var columnDragDropProps = seriesTypes.column.prototype.dragDropProps = {
-                x: {
-                    axis: 'x',
-                    move: true
-                },
-                y: {
-                    axis: 'y',
-                    move: false,
-                    resize: true,
-                    // Force guideBox start coordinates
-                    beforeResize: function (guideBox,
-            pointVals,
-            point) {
-                        // We need to ensure that guideBox always starts at threshold.
-                        // We flip whether or not we update the top or bottom of the guide
-                        // box at threshold, but if we drag the mouse fast, the top has not
-                        // reached threshold before we cross over and update the bottom.
-                        var threshold = point.series.translatedThreshold,
-            y = guideBox.attr('y'),
-            height,
-            diff;
+            x: {
+                axis: 'x',
+                move: true
+            },
+            y: {
+                axis: 'y',
+                move: false,
+                resize: true,
+                // Force guideBox start coordinates
+                beforeResize: function (guideBox, pointVals, point) {
+                    // We need to ensure that guideBox always starts at threshold.
+                    // We flip whether or not we update the top or bottom of the guide
+                    // box at threshold, but if we drag the mouse fast, the top has not
+                    // reached threshold before we cross over and update the bottom.
+                    var threshold = point.series.translatedThreshold, y = guideBox.attr('y'), height, diff;
                     if (pointVals.y >= point.series.options.threshold || 0) {
                         // Above threshold - always set height to hit the threshold
                         height = guideBox.attr('height');
@@ -340,11 +356,8 @@
                 // Flip the side of the resize handle if column is below threshold.
                 // Make sure we remove the handle on the other side.
                 resizeSide: function (pointVals, point) {
-                    var chart = point.series.chart,
-                        dragHandles = chart.dragHandles,
-                        side = pointVals.y >= (point.series.options.threshold || 0) ?
-                            'top' : 'bottom',
-                        flipSide = flipResizeSide(side);
+                    var chart = point.series.chart, dragHandles = chart.dragHandles, side = pointVals.y >= (point.series.options.threshold || 0) ?
+                        'top' : 'bottom', flipSide = flipResizeSide(side);
                     // Force remove handle on other side
                     if (dragHandles[flipSide]) {
                         dragHandles[flipSide].destroy();
@@ -363,20 +376,18 @@
                 },
                 // Horizontal handle
                 handleFormatter: function (point) {
-                    var shapeArgs = point.shapeArgs || {},
-                        radius = shapeArgs.r || 0, // Rounding of bar corners
-                        width = shapeArgs.width || 0,
-                        centerX = width / 2;
+                    var shapeArgs = point.shapeArgs, radius = shapeArgs.r || 0, // Rounding of bar corners
+                    centerX = shapeArgs.width / 2;
                     return [
                         // Left wick
-                        ['M', radius, 0],
-                        ['L', centerX - 5, 0],
+                        'M', radius, 0,
+                        'L', centerX - 5, 0,
                         // Circle
-                        ['A', 1, 1, 0, 0, 0, centerX + 5, 0],
-                        ['A', 1, 1, 0, 0, 0, centerX - 5, 0],
+                        'A', 1, 1, 0, 0, 0, centerX + 5, 0,
+                        'A', 1, 1, 0, 0, 0, centerX - 5, 0,
                         // Right wick
-                        ['M', centerX + 5, 0],
-                        ['L', width - radius, 0]
+                        'M', centerX + 5, 0,
+                        'L', shapeArgs.width - radius, 0
                     ];
                 }
             }
@@ -697,15 +708,15 @@
         // Arearange series - move x, resize or move low/high
         if (seriesTypes.arearange) {
             var columnrangeDragDropProps = seriesTypes.columnrange.prototype.dragDropProps, 
-                // Use a circle covering the marker as drag handle
-                arearangeHandleFormatter = function (point) {
-                    var radius = point.graphic ?
-                        point.graphic.getBBox().width / 2 + 1 :
-                        4;
+            // Use a circle covering the marker as drag handle
+            arearangeHandleFormatter = function (point) {
+                var radius = point.graphic ?
+                    point.graphic.getBBox().width / 2 + 1 :
+                    4;
                 return [
-                    ['M', 0 - radius, 0],
-                    ['a', radius, radius, 0, 1, 0, radius * 2, 0],
-                    ['a', radius, radius, 0, 1, 0, radius * -2, 0]
+                    'M', 0 - radius, 0,
+                    'a', radius, radius, 0, 1, 0, radius * 2, 0,
+                    'a', radius, radius, 0, 1, 0, radius * -2, 0
                 ];
             };
             seriesTypes.arearange.prototype.dragDropProps = {
@@ -777,26 +788,19 @@
             // Handle positioner logic is the same for x and x2 apart from the
             // x value. shapeArgs does not take yAxis reversed etc into account, so we
             // use axis.toPixels to handle positioning.
-            var xrangeHandlePositioner = function (point,
-                xProp) {
-                    var series = point.series,
-                xAxis = series.xAxis,
-                yAxis = series.yAxis,
-                inverted = series.chart.inverted, 
-                    // Using toPixels handles axis.reversed, but doesn't take
-                    // chart.inverted into account.
-                    newX = xAxis.toPixels(point[xProp],
-                true),
-                newY = yAxis.toPixels(point.y,
-                true),
-                offsetY = series.columnMetrics ? series.columnMetrics.offset :
-                        -point.shapeArgs.height / 2;
+            var xrangeHandlePositioner = function (point, xProp) {
+                var series = point.series, xAxis = series.xAxis, yAxis = series.yAxis, inverted = series.chart.inverted, 
+                // Using toPixels handles axis.reversed, but doesn't take
+                // chart.inverted into account.
+                newX = xAxis.toPixels(point[xProp], true), newY = yAxis.toPixels(point.y, true);
                 // Handle chart inverted
                 if (inverted) {
                     newX = xAxis.len - newX;
-                    newY = yAxis.len - newY;
+                    newY = yAxis.len - newY - point.shapeArgs.height / 2;
                 }
-                newY += offsetY; // (#12872)
+                else {
+                    newY -= point.shapeArgs.height / 2;
+                }
                 return {
                     x: Math.round(newX),
                     y: Math.round(newY)
@@ -933,7 +937,6 @@
          * @sample highcharts/dragdrop/drag-xrange
          *         Draggable X range series
          *
-         * @declare   Highcharts.SeriesDragDropOptionsObject
          * @since     6.2.0
          * @requires  modules/draggable-points
          * @apioption plotOptions.series.dragDrop
@@ -955,124 +958,122 @@
          * Style options for the guide box. The guide box has one state by default, the
          * `default` state.
          *
-         * @type         {Highcharts.Dictionary<Highcharts.DragDropGuideBoxOptionsObject>}
+         * @type         {Highcharts.Dictionary<Highcharts.PlotSeriesDragDropGuideBoxDefaultOptions>}
          * @since        6.2.0
          * @optionparent plotOptions.series.dragDrop.guideBox
          *
          * @private
          */
         var defaultGuideBoxOptions = {
+            /**
+             * Style options for the guide box default state.
+             *
+             * @since 6.2.0
+             */
+            'default': {
                 /**
-                 * Style options for the guide box default state.
+                 * CSS class name of the guide box in this state. Defaults to
+                 * `highcharts-drag-box-default`.
                  *
-                 * @declare Highcharts.DragDropGuideBoxOptionsObject
-                 * @since   6.2.0
+                 * @since 6.2.0
                  */
-                'default': {
-                    /**
-                     * CSS class name of the guide box in this state. Defaults to
-                     * `highcharts-drag-box-default`.
-                     *
-                     * @since 6.2.0
-                     */
-                    className: 'highcharts-drag-box-default',
-                    /**
-                     * Width of the line around the guide box.
-                     *
-                     * @since 6.2.0
-                     */
-                    lineWidth: 1,
-                    /**
-                     * Color of the border around the guide box.
-                     *
-                     * @type  {Highcharts.ColorString}
-                     * @since 6.2.0
-                     */
-                    lineColor: '#888',
-                    /**
-                     * Guide box fill color.
-                     *
-                     * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     * @since 6.2.0
-                     */
-                    color: 'rgba(0, 0, 0, 0.1)',
-                    /**
-                     * Guide box cursor.
-                     *
-                     * @since 6.2.0
-                     */
-                    cursor: 'move',
-                    /**
-                     * Guide box zIndex.
-                     *
-                     * @since 6.2.0
-                     */
-                    zIndex: 900
-                }
-            };
+                className: 'highcharts-drag-box-default',
+                /**
+                 * Width of the line around the guide box.
+                 *
+                 * @since 6.2.0
+                 */
+                lineWidth: 1,
+                /**
+                 * Color of the border around the guide box.
+                 *
+                 * @type  {Highcharts.ColorString}
+                 * @since 6.2.0
+                 */
+                lineColor: '#888',
+                /**
+                 * Guide box fill color.
+                 *
+                 * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @since 6.2.0
+                 */
+                color: 'rgba(0, 0, 0, 0.1)',
+                /**
+                 * Guide box cursor.
+                 *
+                 * @since 6.2.0
+                 */
+                cursor: 'move',
+                /**
+                 * Guide box zIndex.
+                 *
+                 * @since 6.2.0
+                 */
+                zIndex: 900
+            }
+        };
         /**
          * Options for the drag handles.
          *
-         * @declare      Highcharts.DragDropHandleOptionsObject
          * @since        6.2.0
          * @optionparent plotOptions.series.dragDrop.dragHandle
          *
          * @private
          */
         var defaultDragHandleOptions = {
-                /**
-                 * Function to define the SVG path to use for the drag handles. Takes the
-                 * point as argument. Should return an SVG path in array format. The SVG
-                 * path is automatically positioned on the point.
-                 *
-                 * @type      {Function}
-                 * @since     6.2.0
-                 * @apioption plotOptions.series.dragDrop.dragHandle.pathFormatter
-                 */
-                // pathFormatter: null,
-                /**
-                 * The mouse cursor to use for the drag handles. By default this is
-                 * intelligently switching between `ew-resize` and `ns-resize` depending on
-                 * the direction the point is being dragged.
-                 *
-                 * @type      {string}
-                 * @since     6.2.0
-                 * @apioption plotOptions.series.dragDrop.dragHandle.cursor
-                 */
-                // cursor: null,
-                /**
-                 * The class name of the drag handles. Defaults to `highcharts-drag-handle`.
-                 *
-                 * @since 6.2.0
-                 */
-                className: 'highcharts-drag-handle',
-                /**
-                 * The fill color of the drag handles.
-                 *
-                 * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @since 6.2.0
-                 */
-                color: '#fff',
-                /**
-                 * The line color of the drag handles.
-                 *
-                 * @type  {Highcharts.ColorString}
-                 * @since 6.2.0
-                 */
-                lineColor: 'rgba(0, 0, 0, 0.6)',
-                /**
-                 * The line width for the drag handles.
-                 *
-                 * @since 6.2.0
-                 */
-                lineWidth: 1,
-                /**
-                 * The z index for the drag handles.
-                 *
-                 * @since 6.2.0
-                 */
-                zIndex: 901
-            };
+            /**
+             * Function to define the SVG path to use for the drag handles. Takes the
+             * point as argument. Should return an SVG path in array format. The SVG
+             * path is automatically positioned on the point.
+             *
+             * @type      {Function}
+             * @since     6.2.0
+             * @apioption plotOptions.series.dragDrop.dragHandle.pathFormatter
+             */
+            // pathFormatter: null,
+            /**
+             * The mouse cursor to use for the drag handles. By default this is
+             * intelligently switching between `ew-resize` and `ns-resize` depending on
+             * the direction the point is being dragged.
+             *
+             * @type      {string}
+             * @since     6.2.0
+             * @apioption plotOptions.series.dragDrop.dragHandle.cursor
+             */
+            // cursor: null,
+            /**
+             * The class name of the drag handles. Defaults to `highcharts-drag-handle`.
+             *
+             * @since 6.2.0
+             */
+            className: 'highcharts-drag-handle',
+            /**
+             * The fill color of the drag handles.
+             *
+             * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @since 6.2.0
+             */
+            color: '#fff',
+            /**
+             * The line color of the drag handles.
+             *
+             * @type  {Highcharts.ColorString}
+             * @since 6.2.0
+             */
+            lineColor: 'rgba(0, 0, 0, 0.6)',
+            /**
+             * The line width for the drag handles.
+             *
+             * @since 6.2.0
+             */
+            lineWidth: 1,
+            /**
+             * The z index for the drag handles.
+             *
+             * @since 6.2.0
+             */
+            zIndex: 901
+        };
         /**
          * Set the minimum X value the points can be moved to.
          *
@@ -1241,7 +1242,6 @@
          * Point specific options for the draggable-points module. Overrides options on
          * `series.dragDrop`.
          *
-         * @declare   Highcharts.SeriesLineDataDragDropOptions
          * @extends   plotOptions.series.dragDrop
          * @since     6.2.0
          * @requires  modules/draggable-points
@@ -1309,12 +1309,7 @@
          *         True if the point is movable.
          */
         function isPointMovable(point) {
-            var series = point.series,
-                seriesDragDropOptions = series.options.dragDrop || {},
-                pointDragDropOptions = point.options && point.options.dragDrop,
-                updateProps = series.dragDropProps,
-                hasMovableX,
-                hasMovableY;
+            var series = point.series, seriesDragDropOptions = series.options.dragDrop || {}, pointDragDropOptions = point.options && point.options.dragDrop, updateProps = series.dragDropProps, hasMovableX, hasMovableY;
             objectEach(updateProps, function (p) {
                 if (p.axis === 'x' && p.move) {
                     hasMovableX = true;
@@ -1346,8 +1341,8 @@
          *         The normalized event.
          */
         function getNormalizedEvent(e, chart) {
-            return (typeof e.chartX === 'undefined' ||
-                typeof e.chartY === 'undefined' ?
+            return (e.chartX === undefined ||
+                e.chartY === undefined ?
                 chart.pointer.normalize(e) :
                 e);
         }
@@ -1373,10 +1368,7 @@
          */
         function addEvents(el, types, fn, options) {
             var removeFuncs = types.map(function (type) {
-                    return addEvent(el,
-                type,
-                fn,
-                options);
+                return addEvent(el, type, fn, options);
             });
             return function () {
                 removeFuncs.forEach(function (fn) {
@@ -1405,13 +1397,8 @@
          *         drag origin.
          */
         function hasDraggedPastSensitivity(e, chart, sensitivity) {
-            var orig = chart.dragDropData.origin,
-                oldX = orig.chartX,
-                oldY = orig.chartY,
-                newX = e.chartX,
-                newY = e.chartY,
-                distance = Math.sqrt((newX - oldX) * (newX - oldX) +
-                    (newY - oldY) * (newY - oldY));
+            var orig = chart.dragDropData.origin, oldX = orig.chartX, oldY = orig.chartY, newX = e.chartX, newY = e.chartY, distance = Math.sqrt((newX - oldX) * (newX - oldX) +
+                (newY - oldY) * (newY - oldY));
             return distance > sensitivity;
         }
         /**
@@ -1436,16 +1423,16 @@
          */
         function getPositionSnapshot(e, points, guideBox) {
             var res = {
-                    chartX: e.chartX,
-                    chartY: e.chartY,
-                    guideBox: guideBox && {
-                        x: guideBox.attr('x'),
-                        y: guideBox.attr('y'),
-                        width: guideBox.attr('width'),
-                        height: guideBox.attr('height')
-                    },
-                    points: {}
-                };
+                chartX: e.chartX,
+                chartY: e.chartY,
+                guideBox: guideBox && {
+                    x: guideBox.attr('x'),
+                    y: guideBox.attr('y'),
+                    width: guideBox.attr('width'),
+                    height: guideBox.attr('height')
+                },
+                points: {}
+            };
             // Loop over the points and add their props
             points.forEach(function (point) {
                 var pointProps = {};
@@ -1480,9 +1467,7 @@
          *         Array of points in this group.
          */
         function getGroupedPoints(point) {
-            var series = point.series,
-                points = [],
-                groupKey = series.options.dragDrop.groupBy;
+            var series = point.series, points = [], groupKey = series.options.dragDrop.groupBy;
             if (series.isSeriesBoosting) { // #11156
                 series.options.data.forEach(function (pointOptions, i) {
                     points.push((new series.pointClass()).init(// eslint-disable-line new-cap
@@ -1558,10 +1543,7 @@
          * @return {void}
          */
         function initDragDrop(e, point) {
-            var groupedPoints = getGroupedPoints(point),
-                series = point.series,
-                chart = series.chart,
-                guideBox;
+            var groupedPoints = getGroupedPoints(point), series = point.series, chart = series.chart, guideBox;
             // If liveRedraw is disabled, show the guide box with the default state
             if (!pick(series.options.dragDrop && series.options.dragDrop.liveRedraw, true)) {
                 chart.dragGuideBox = guideBox = series.getGuideBox(groupedPoints);
@@ -1595,13 +1577,7 @@
          *         reference, as well as the new data values.
          */
         function getNewPoints(dragDropData, newPos) {
-            var point = dragDropData.point,
-                series = point.series,
-                options = merge(series.options.dragDrop,
-                point.options.dragDrop),
-                updateProps = {},
-                resizeProp = dragDropData.updateProp,
-                hashmap = {};
+            var point = dragDropData.point, series = point.series, options = merge(series.options.dragDrop, point.options.dragDrop), updateProps = {}, resizeProp = dragDropData.updateProp, hashmap = {};
             // Go through the data props that can be updated on this series and find out
             // which ones we want to update.
             objectEach(point.series.dragDropProps, function (val, key) {
@@ -1643,13 +1619,12 @@
          *        A chart with dragDropData.newPoints.
          * @param {boolean} [animate=true]
          *        Animate updating points?
+         * @return {void}
          */
         function updatePoints(chart, animate) {
-            var newPoints = chart.dragDropData.newPoints,
-                animOptions = animate === false ? false : merge({
-                    duration: 400 // 400 is the default in animate
-                },
-                chart.options.chart.animation);
+            var newPoints = chart.dragDropData.newPoints, animOptions = animate === false ? false : merge({
+                duration: 400 // 400 is the default in H.animate
+            }, chart.options.chart.animation);
             chart.isDragDropAnimating = true;
             // Update the points
             objectEach(newPoints, function (newPoint) {
@@ -1678,14 +1653,10 @@
          *        Difference in X position.
          * @param {number} dY
          *        Difference in Y position.
+         * @return {void}
          */
         function resizeGuideBox(point, dX, dY) {
-            var series = point.series,
-                chart = series.chart,
-                dragDropData = chart.dragDropData,
-                resizeSide,
-                newPoint,
-                resizeProp = series.dragDropProps[dragDropData.updateProp];
+            var series = point.series, chart = series.chart, dragDropData = chart.dragDropData, resizeSide, newPoint, resizeProp = series.dragDropProps[dragDropData.updateProp];
             // dragDropProp.resizeSide holds info on which side to resize.
             newPoint = dragDropData.newPoints[point.id].newValues;
             resizeSide = typeof resizeProp.resizeSide === 'function' ?
@@ -1714,20 +1685,10 @@
          *        The mouse move event.
          * @param {Highcharts.Point} point
          *        The point that is dragged.
+         * @return {void}
          */
         function dragMove(e, point) {
-            var series = point.series,
-                chart = series.chart,
-                data = chart.dragDropData,
-                options = merge(series.options.dragDrop,
-                point.options.dragDrop),
-                draggableX = options.draggableX,
-                draggableY = options.draggableY,
-                origin = data.origin,
-                dX = e.chartX - origin.chartX,
-                dY = e.chartY - origin.chartY,
-                oldDx = dX,
-                updateProp = data.updateProp;
+            var series = point.series, chart = series.chart, data = chart.dragDropData, options = merge(series.options.dragDrop, point.options.dragDrop), draggableX = options.draggableX, draggableY = options.draggableY, origin = data.origin, dX = e.chartX - origin.chartX, dY = e.chartY - origin.chartY, oldDx = dX, updateProp = data.updateProp;
             // Handle inverted
             if (chart.inverted) {
                 dX = -dY;
@@ -1762,17 +1723,14 @@
          * @function Highcharts.Chart#setGuideBoxState
          * @param {string} state
          *        The state to set the guide box to.
-         * @param {Highcharts.Dictionary<Highcharts.DragDropGuideBoxOptionsObject>} [options]
+         * @param {Highcharts.Dictionary<Highcharts.PlotSeriesDragDropGuideBoxDefaultOptions>} [options]
          *        Additional overall guideBox options to consider.
          * @return {Highcharts.SVGElement}
          *         The modified guide box.
          */
         H.Chart.prototype.setGuideBoxState = function (state, options) {
-            var guideBox = this.dragGuideBox,
-                guideBoxOptions = merge(defaultGuideBoxOptions,
-                options),
-                stateOptions = merge(guideBoxOptions['default'], // eslint-disable-line dot-notation
-                guideBoxOptions[state]);
+            var guideBox = this.dragGuideBox, guideBoxOptions = merge(defaultGuideBoxOptions, options), stateOptions = merge(guideBoxOptions['default'], // eslint-disable-line dot-notation
+            guideBoxOptions[state]);
             return guideBox
                 .attr({
                 className: stateOptions.className,
@@ -1813,18 +1771,12 @@
          * @return {Highcharts.Dictionary<number>}
          *         An object with updated data values.
          */
-        Point.prototype.getDropValues = function (origin, newPos, updateProps) {
-            var point = this,
-                series = point.series,
-                options = merge(series.options.dragDrop,
-                point.options.dragDrop),
-                result = {},
-                updateSingleProp,
-                pointOrigin = origin.points[point.id];
+        H.Point.prototype.getDropValues = function (origin, newPos, updateProps) {
+            var point = this, series = point.series, options = merge(series.options.dragDrop, point.options.dragDrop), result = {}, updateSingleProp, pointOrigin = origin.points[point.id];
             // Find out if we only have one prop to update
             for (var key in updateProps) {
                 if (Object.hasOwnProperty.call(updateProps, key)) {
-                    if (typeof updateSingleProp !== 'undefined') {
+                    if (updateSingleProp !== undefined) {
                         updateSingleProp = false;
                         break;
                     }
@@ -1843,27 +1795,24 @@
              *         Limited value
              */
             var limitToRange = function (val, direction) {
-                    var defaultPrecision = series[direction.toLowerCase() + 'Axis']
-                        .categories ? 1 : 0, precision = pick(options['dragPrecision' + direction], defaultPrecision), min = pick(options['dragMin' + direction], -Infinity), max = pick(options['dragMax' + direction], Infinity), res = val;
+                var defaultPrecision = series[direction.toLowerCase() + 'Axis']
+                    .categories ? 1 : 0, precision = pick(options['dragPrecision' + direction], defaultPrecision), min = pick(options['dragMin' + direction], -Infinity), max = pick(options['dragMax' + direction], Infinity), res = val;
                 if (precision) {
                     res = Math.round(res / precision) * precision;
                 }
-                return clamp(res, min, max);
+                return Math.max(min, Math.min(max, res));
             };
             // Assign new value to property. Adds dX/YValue to the old value, limiting
             // it within min/max ranges.
             objectEach(updateProps, function (val, key) {
-                var oldVal = pointOrigin[key],
-                    axis = series[val.axis + 'Axis'],
-                    newVal = limitToRange(axis.toValue((axis.horiz ? newPos.chartX : newPos.chartY) +
-                        pointOrigin[key + 'Offset']),
-                    val.axis.toUpperCase());
+                var oldVal = pointOrigin[key], axis = series[val.axis + 'Axis'], newVal = limitToRange(axis.toValue((axis.horiz ? newPos.chartX : newPos.chartY) +
+                    pointOrigin[key + 'Offset']), val.axis.toUpperCase());
                 // If we are updating a single prop, and it has a validation function
                 // for the prop, run it. If it fails, don't update the value.
                 if (!(updateSingleProp &&
                     val.propValidate &&
                     !val.propValidate(newVal, point)) &&
-                    typeof oldVal !== 'undefined') {
+                    oldVal !== undefined) {
                     result[key] = newVal;
                 }
             });
@@ -1882,12 +1831,7 @@
          *         An SVG element for the guide box, not added to DOM.
          */
         H.Series.prototype.getGuideBox = function (points) {
-            var chart = this.chart,
-                minX = Infinity,
-                maxX = -Infinity,
-                minY = Infinity,
-                maxY = -Infinity,
-                changed;
+            var chart = this.chart, minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity, changed;
             // Find bounding box of all points
             points.forEach(function (point) {
                 var bBox = point.graphic && point.graphic.getBBox() || point.shapeArgs;
@@ -1908,10 +1852,10 @@
          * @function mouseOut
          * @param {Highcharts.Point} point
          *        The point mousing out of.
+         * @return {void}
          */
         function mouseOut(point) {
-            var chart = point.series && point.series.chart,
-                dragDropData = chart && chart.dragDropData;
+            var chart = point.series && point.series.chart, dragDropData = chart && chart.dragDropData;
             if (chart &&
                 chart.dragHandles &&
                 !(dragDropData &&
@@ -1928,6 +1872,7 @@
          * @function onResizeHandleMouseOut
          * @param {Highcharts.Point} point
          *        The point mousing out of.
+         * @return {void}
          */
         function onResizeHandleMouseOut(point) {
             var chart = point.series.chart;
@@ -1950,6 +1895,7 @@
          *        The point mousing down on.
          * @param {string} updateProp
          *        The data property this resize handle is attached to for this point.
+         * @return {void}
          */
         function onResizeHandleMouseDown(e, point, updateProp) {
             var chart = point.series.chart;
@@ -1976,34 +1922,21 @@
          * @function Highcharts.Point#showDragHandles
          * @return {void}
          */
-        Point.prototype.showDragHandles = function () {
-            var point = this,
-                series = point.series,
-                chart = series.chart,
-                renderer = chart.renderer,
-                options = merge(series.options.dragDrop,
-                point.options.dragDrop);
+        H.Point.prototype.showDragHandles = function () {
+            var point = this, series = point.series, chart = series.chart, renderer = chart.renderer, options = merge(series.options.dragDrop, point.options.dragDrop);
             // Go through each updateProp and see if we are supposed to create a handle
             // for it.
             objectEach(series.dragDropProps, function (val, key) {
-                var handleOptions = merge(defaultDragHandleOptions,
-                    val.handleOptions,
-                    options.dragHandle),
-                    handleAttrs = {
-                        className: handleOptions.className,
-                        'stroke-width': handleOptions.lineWidth,
-                        fill: handleOptions.color,
-                        stroke: handleOptions.lineColor
-                    },
-                    pathFormatter = handleOptions.pathFormatter || val.handleFormatter,
-                    positioner = val.handlePositioner,
-                    pos,
-                    handle,
-                    path, 
-                    // Run validation function on whether or not we allow individual
-                    // updating of this prop.
-                    validate = val.validateIndividualDrag ?
-                        val.validateIndividualDrag(point) : true;
+                var handleOptions = merge(defaultDragHandleOptions, val.handleOptions, options.dragHandle), handleAttrs = {
+                    className: handleOptions.className,
+                    'stroke-width': handleOptions.lineWidth,
+                    fill: handleOptions.color,
+                    stroke: handleOptions.lineColor
+                }, pathFormatter = handleOptions.pathFormatter || val.handleFormatter, positioner = val.handlePositioner, pos, handle, handleSide, path, 
+                // Run validation function on whether or not we allow individual
+                // updating of this prop.
+                validate = val.validateIndividualDrag ?
+                    val.validateIndividualDrag(point) : true;
                 if (val.resize &&
                     validate &&
                     val.resizeSide &&
@@ -2024,6 +1957,8 @@
                     // Find position and path of handle
                     pos = positioner(point);
                     handleAttrs.d = path = pathFormatter(point);
+                    handleSide = typeof val.resizeSide === 'function' ?
+                        val.resizeSide(point.options, point) : val.resizeSide;
                     if (!path || pos.x < 0 || pos.y < 0) {
                         return;
                     }
@@ -2032,9 +1967,9 @@
                         (val.axis === 'x') !== !!chart.inverted ?
                         'ew-resize' : 'ns-resize';
                     // Create and add the handle element if it doesn't exist
-                    handle = chart.dragHandles[val.optionName];
+                    handle = chart.dragHandles[handleSide];
                     if (!handle) {
-                        handle = chart.dragHandles[val.optionName] = renderer
+                        handle = chart.dragHandles[handleSide] = renderer
                             .path()
                             .add(chart.dragHandles.group);
                     }
@@ -2122,20 +2057,20 @@
          * @function mouseOver
          * @param {Highcharts.Point} point
          *        The point mousing over.
+         * @return {void}
          */
         function mouseOver(point) {
-            var series = point.series,
-                chart = series && series.chart,
-                dragDropData = chart && chart.dragDropData,
-                is3d = chart && chart.is3d && chart.is3d();
+            var series = point.series, chart = series && series.chart, dragDropData = chart && chart.dragDropData;
             if (chart &&
                 !(dragDropData &&
                     dragDropData.isDragging && // Ignore if dragging a point
                     dragDropData.draggedPastSensitivity) &&
                 !chart.isDragDropAnimating && // Ignore if animating
                 series.options.dragDrop && // No need to compute handles without this
-                !is3d // No 3D support
-            ) {
+                !(chart.options &&
+                    chart.options.chart &&
+                    chart.options.chart.options3d // No 3D support
+                )) {
                 // Hide the handles if they exist on another point already
                 if (chart.dragHandles) {
                     chart.hideDragHandles();
@@ -2152,18 +2087,14 @@
          *        The mouse move event.
          * @param {Highcharts.Chart} chart
          *        The chart we are moving across.
+         * @return {void}
          */
         function mouseMove(e, chart) {
             // Ignore if zoom/pan key is pressed
             if (chart.zoomOrPanKeyPressed(e)) {
                 return;
             }
-            var dragDropData = chart.dragDropData,
-                point,
-                seriesDragDropOpts,
-                newPoints,
-                numNewPoints = 0,
-                newPoint;
+            var dragDropData = chart.dragDropData, point, seriesDragDropOpts, newPoints, numNewPoints = 0, newPoint;
             if (dragDropData && dragDropData.isDragging) {
                 point = dragDropData.point;
                 seriesDragDropOpts = point.series.options.dragDrop;
@@ -2210,18 +2141,16 @@
          *        The mouse up event.
          * @param {Highcharts.Chart} chart
          *        The chart we were dragging in.
+         * @return {void}
          */
         function mouseUp(e, chart) {
             var dragDropData = chart.dragDropData;
             if (dragDropData &&
                 dragDropData.isDragging &&
                 dragDropData.draggedPastSensitivity) {
-                var point = dragDropData.point,
-                    newPoints = dragDropData.newPoints,
-                    numNewPoints = countProps(newPoints),
-                    newPoint = numNewPoints === 1 ?
-                        getFirstProp(newPoints) :
-                        null;
+                var point = dragDropData.point, newPoints = dragDropData.newPoints, numNewPoints = countProps(newPoints), newPoint = numNewPoints === 1 ?
+                    getFirstProp(newPoints) :
+                    null;
                 // Hide the drag handles
                 if (chart.dragHandles) {
                     chart.hideDragHandles();
@@ -2260,13 +2189,10 @@
          *        The mouse down event.
          * @param {Highcharts.Chart} chart
          *        The chart we are clicking.
+         * @return {void}
          */
         function mouseDown(e, chart) {
-            var dragPoint = chart.hoverPoint,
-                dragDropOptions = merge(dragPoint && dragPoint.series.options.dragDrop,
-                dragPoint && dragPoint.options.dragDrop),
-                draggableX = dragDropOptions.draggableX || false,
-                draggableY = dragDropOptions.draggableY || false;
+            var dragPoint = chart.hoverPoint, dragDropOptions = H.merge(dragPoint && dragPoint.series.options.dragDrop, dragPoint && dragPoint.options.dragDrop), draggableX = dragDropOptions.draggableX || false, draggableY = dragDropOptions.draggableY || false;
             // Reset cancel click
             chart.cancelClick = false;
             // Ignore if:
@@ -2297,14 +2223,14 @@
         // series are finicky since the markers are not individual points. This logic
         // should preferably be improved in the future. Notice that the mouseOut event
         // below must have a shorter timeout to ensure event order.
-        addEvent(Point, 'mouseOver', function () {
+        addEvent(H.Point, 'mouseOver', function () {
             var point = this;
             setTimeout(function () {
                 mouseOver(point);
             }, 12);
         });
         // Point mouseleave event. See above function for explanation of the timeout.
-        addEvent(Point, 'mouseOut', function () {
+        addEvent(H.Point, 'mouseOut', function () {
             var point = this;
             setTimeout(function () {
                 if (point.series) {
@@ -2313,9 +2239,8 @@
             }, 10);
         });
         // Hide drag handles on a point if it is removed
-        addEvent(Point, 'remove', function () {
-            var chart = this.series.chart,
-                dragHandles = chart.dragHandles;
+        addEvent(H.Point, 'remove', function () {
+            var chart = this.series.chart, dragHandles = chart.dragHandles;
             if (dragHandles && dragHandles.point === this.id) {
                 chart.hideDragHandles();
             }
@@ -2342,10 +2267,10 @@
          * @function addDragDropEvents
          * @param {Highcharts.Chart} chart
          *        The chart to add events to.
+         * @return {void}
          */
         function addDragDropEvents(chart) {
-            var container = chart.container,
-                doc = H.doc;
+            var container = chart.container, doc = H.doc;
             // Only enable if we have a draggable chart
             if (isChartDraggable(chart)) {
                 addEvents(container, ['mousedown', 'touchstart'], function (e) {
