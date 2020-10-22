@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Dependency wheel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/DependencyWheelSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/Nodes.js']], function (H, U, NodesMixin) {
+    _registerModule(_modules, 'Series/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Mixins/Nodes.js']], function (A, BaseSeries, H, NodesMixin) {
         /* *
          *
          *  Dependency wheel module
@@ -40,9 +40,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var animObject = U.animObject,
-            seriesType = U.seriesType;
-        var base = H.seriesTypes.sankey.prototype;
+        var animObject = A.animObject;
+        var base = BaseSeries.seriesTypes.sankey.prototype;
         /**
          * @private
          * @class
@@ -50,7 +49,7 @@
          *
          * @augments Highcharts.seriesTypes.sankey
          */
-        seriesType('dependencywheel', 'sankey', 
+        BaseSeries.seriesType('dependencywheel', 'sankey', 
         /**
          * A dependency wheel chart is a type of flow diagram, where all nodes are
          * laid out in a circle, and the flow between the are drawn as link bands.
@@ -62,7 +61,7 @@
          * @exclude      dataSorting
          * @since        7.1.0
          * @product      highcharts
-         * @requires     modules/dependencywheel
+         * @requires     modules/dependency-wheel
          * @optionparent plotOptions.dependencywheel
          */
         {
@@ -83,7 +82,7 @@
             startAngle: 0
         }, {
             orderNodes: false,
-            getCenter: H.seriesTypes.pie.prototype.getCenter,
+            getCenter: BaseSeries.seriesTypes.pie.prototype.getCenter,
             /* eslint-disable valid-jsdoc */
             /**
              * Dependency wheel has only one column, it runs along the perimeter.
@@ -336,7 +335,8 @@
          * @extends   series,plotOptions.dependencywheel
          * @exclude   dataSorting
          * @product   highcharts
-         * @requires  modules/dependencywheel
+         * @requires  modules/sankey
+         * @requires  modules/dependency-wheel
          * @apioption series.dependencywheel
          */
         /**

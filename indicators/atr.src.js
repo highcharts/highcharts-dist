@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/ATRIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/ATRIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,9 +36,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
-        var UNDEFINED;
+        var isArray = U.isArray;
+        // im port './SMAIndicator.js';
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -53,14 +52,7 @@
          * @private
          */
         function getTR(currentPoint, prevPoint) {
-            var pointY = currentPoint,
-                prevY = prevPoint,
-                HL = pointY[1] - pointY[2],
-                HCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[1] - prevY[3]),
-                LCp = prevY === UNDEFINED ? 0 : Math.abs(pointY[2] - prevY[3]),
-                TR = Math.max(HL,
-                HCp,
-                LCp);
+            var pointY = currentPoint, prevY = prevPoint, HL = pointY[1] - pointY[2], HCp = typeof prevY === 'undefined' ? 0 : Math.abs(pointY[1] - prevY[3]), LCp = typeof prevY === 'undefined' ? 0 : Math.abs(pointY[2] - prevY[3]), TR = Math.max(HL, HCp, LCp);
             return TR;
         }
         /**
@@ -84,7 +76,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('atr', 'sma', 
+        BaseSeries.seriesType('atr', 'sma', 
         /**
          * Average true range indicator (ATR). This series requires `linkedTo`
          * option to be set.

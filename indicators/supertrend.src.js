@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/SupertrendIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/SupertrendIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,13 +36,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = BaseSeries.seriesTypes;
         var correctFloat = U.correctFloat,
+            isArray = U.isArray,
             merge = U.merge,
-            seriesType = U.seriesType;
-        var isArray = U.isArray,
             objectEach = U.objectEach;
-        var ATR = H.seriesTypes.atr,
-            SMA = H.seriesTypes.sma;
+        // im port './ATRIndicator.js';
+        // im port './SMAIndicator.js';
+        var ATR = seriesTypes.atr,
+            SMA = seriesTypes.sma;
         /* eslint-disable require-jsdoc */
         // Utils:
         function createPointObj(mainSeries, index, close) {
@@ -62,7 +64,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('supertrend', 'sma', 
+        BaseSeries.seriesType('supertrend', 'sma', 
         /**
          * Supertrend indicator. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js` and

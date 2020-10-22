@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/WMAIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/WMAIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  (c) 2010-2020 Kacper Madej
@@ -38,8 +38,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
+        // im port './SMAIndicator.js';
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -84,7 +84,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('wma', 'sma', 
+        BaseSeries.seriesType('wma', 'sma', 
         /**
          * Weighted moving average indicator (WMA). This series requires `linkedTo`
          * option to be set.

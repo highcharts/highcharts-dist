@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Force directed graph module
  *
@@ -959,7 +959,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/Networkgraph/Layouts.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/Layouts.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, A, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -971,13 +971,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var setAnimation = A.setAnimation;
         var addEvent = U.addEvent,
             clamp = U.clamp,
             defined = U.defined,
             extend = U.extend,
             isFunction = U.isFunction,
-            pick = U.pick,
-            setAnimation = U.setAnimation;
+            pick = U.pick;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         H.layouts = {
             'reingold-fruchterman': function () {
@@ -1618,12 +1618,14 @@
              * @return {void}
              */
             onMouseUp: function (point, event) {
-                if (point.fixedPosition && point.hasDragged) {
-                    if (this.layout.enableSimulation) {
-                        this.layout.start();
-                    }
-                    else {
-                        this.chart.redraw();
+                if (point.fixedPosition) {
+                    if (point.hasDragged) {
+                        if (this.layout.enableSimulation) {
+                            this.layout.start();
+                        }
+                        else {
+                            this.chart.redraw();
+                        }
                     }
                     point.inDragMode = point.hasDragged = false;
                     if (!this.options.fixedDraggable) {
@@ -1684,7 +1686,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/Networkgraph/Networkgraph.js', [_modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, NodesMixin, Point, U) {
+    _registerModule(_modules, 'Series/Networkgraph/Networkgraph.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, NodesMixin, Point, U) {
         /* *
          *
          *  Networkgraph series
@@ -1699,8 +1701,10 @@
         var addEvent = U.addEvent,
             css = U.css,
             defined = U.defined,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes,
+            dragNodesMixin = H.dragNodesMixin;
         /**
          * Formatter callback function.
          *
@@ -1737,9 +1741,6 @@
         * @since 7.0.0
         */
         ''; // detach doclets above
-        var seriesTypes = H.seriesTypes,
-            Series = H.Series,
-            dragNodesMixin = H.dragNodesMixin;
         /**
          * @private
          * @class
@@ -1747,7 +1748,7 @@
          *
          * @extends Highcharts.Series
          */
-        seriesType('networkgraph', 'line', 
+        BaseSeries.seriesType('networkgraph', 'line', 
         /**
          * A networkgraph is a type of relationship chart, where connnections
          * (links) attracts nodes (points) and other nodes repulse each other.

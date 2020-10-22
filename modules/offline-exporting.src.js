@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Client side exporting module
  *
@@ -55,7 +55,9 @@
          *         Blob
          */
         var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-                var parts = dataURL.match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+                var parts = dataURL
+                    .replace(/filename=.*;/, '')
+                    .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
             if (parts &&
                 parts.length > 3 &&
                 win.atob &&
@@ -66,12 +68,11 @@
                 // Try to convert data URL to Blob
                 var binStr = win.atob(parts[3]),
                     buf = new win.ArrayBuffer(binStr.length),
-                    binary = new win.Uint8Array(buf),
-                    blob;
+                    binary = new win.Uint8Array(buf);
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
-                blob = new win.Blob([binary], { 'type': parts[1] });
+                var blob = new win.Blob([binary], { 'type': parts[1] });
                 return domurl.createObjectURL(blob);
             }
         };
@@ -148,7 +149,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* global MSBlobBuilder */
         var win = H.win,
             doc = H.doc;
         var addEvent = U.addEvent,
@@ -192,7 +192,7 @@
          * @param {string} svg
          * @return {string}
          */
-        H.svgToDataUrl = function (svg) {
+        function svgToDataUrl(svg) {
             // Webkit and not chrome
             var webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
                     nav.userAgent.indexOf('Chrome') < 0);
@@ -210,7 +210,7 @@
                 // Ignore
             }
             return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
-        };
+        }
         /**
          * Get data:URL from image URL. Pass in callbacks to handle results.
          *
@@ -245,7 +245,7 @@
          *
          * @return {void}
          */
-        H.imageToDataUrl = function (imageURL, imageType, callbackArgs, scale, successCallback, taintedCallback, noCanvasSupportCallback, failedLoadCallback, finallyCallback) {
+        function imageToDataUrl(imageURL, imageType, callbackArgs, scale, successCallback, taintedCallback, noCanvasSupportCallback, failedLoadCallback, finallyCallback) {
             var img = new win.Image(), taintedHandler, loadHandler = function () {
                     setTimeout(function () {
                         var canvas = doc.createElement('canvas'), ctx = canvas.getContext && canvas.getContext('2d'), dataURL;
@@ -297,7 +297,7 @@
             img.onload = loadHandler;
             img.onerror = errorHandler;
             img.src = imageURL;
-        };
+        }
         /* eslint-enable valid-jsdoc */
         /**
          * Get data URL to an image of an SVG and call download on it options object:
@@ -330,7 +330,7 @@
          *
          * @return {void}
          */
-        H.downloadSVGLocal = function (svg, options, failCallback, successCallback) {
+        function downloadSVGLocal(svg, options, failCallback, successCallback) {
             var svgurl, blob, objectURLRevoke = true, finallyHandler, libURL = (options.libURL || getOptions().exporting.libURL), dummySVGContainer = doc.createElement('div'), imageType = options.type || 'image/png', filename = ((options.filename || 'chart') +
                     '.' +
                     (imageType === 'image/svg+xml' ? 'svg' : imageType.split('/')[1])), scale = options.scale || 1;
@@ -421,7 +421,7 @@
                         svgurl = blob.getBlob('image/svg+xml');
                     }
                     else {
-                        svgurl = H.svgToDataUrl(svg);
+                        svgurl = svgToDataUrl(svg);
                     }
                     downloadURL(svgurl, filename);
                     if (successCallback) {
@@ -450,7 +450,7 @@
             }
             else {
                 // PNG/JPEG download - create bitmap from SVG
-                svgurl = H.svgToDataUrl(svg);
+                svgurl = svgToDataUrl(svg);
                 finallyHandler = function () {
                     try {
                         domurl.revokeObjectURL(svgurl);
@@ -460,7 +460,7 @@
                     }
                 };
                 // First, try to get PNG by rendering on canvas
-                H.imageToDataUrl(svgurl, imageType, {}, scale, function (imageURL) {
+                imageToDataUrl(svgurl, imageType, {}, scale, function (imageURL) {
                     // Success
                     try {
                         downloadURL(imageURL, filename);
@@ -521,7 +521,7 @@
                     }
                 });
             }
-        };
+        }
         /* eslint-disable valid-jsdoc */
         /**
          * Get SVG of chart prepared for client side export. This converts embedded
@@ -586,7 +586,7 @@
                     el = images[i];
                     href = el.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
                     if (href) {
-                        H.imageToDataUrl(href, 'image/png', { imageElement: el }, options.scale, embeddedSuccess, 
+                        imageToDataUrl(href, 'image/png', { imageElement: el }, options.scale, embeddedSuccess, 
                         // Tainted canvas
                         failCallback, 
                         // No canvas support
@@ -654,7 +654,7 @@
                         'for charts with embedded HTML');
                 }
                 else {
-                    H.downloadSVGLocal(svg, extend({ filename: chart.getFilename() }, options), fallbackToExportServer);
+                    downloadSVGLocal(svg, extend({ filename: chart.getFilename() }, options), fallbackToExportServer);
                 }
             }, 
             // Return true if the SVG contains images with external data. With the
@@ -716,7 +716,7 @@
         };
         // Extend the default options to use the local exporter logic
         merge(true, getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/8.2.0/lib/',
+            libURL: 'https://code.highcharts.com/8.2.2/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {
@@ -752,6 +752,8 @@
                 }
             }
         });
+        // Compatibility
+        H.downloadSVGLocal = downloadSVGLocal;
 
     });
     _registerModule(_modules, 'masters/modules/offline-exporting.src.js', [], function () {

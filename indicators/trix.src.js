@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/TRIXIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
+    _registerModule(_modules, 'Stock/Indicators/TRIXIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (BaseSeries, RequiredIndicatorMixin, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,9 +98,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var correctFloat = U.correctFloat,
-            seriesType = U.seriesType;
-        var TEMA = H.seriesTypes.tema;
+        var correctFloat = U.correctFloat;
+        // im port './TEMAIndicator.js';
+        var TEMA = BaseSeries.seriesTypes.tema;
         /**
          * The TRIX series type.
          *
@@ -110,7 +110,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('trix', 'tema', 
+        BaseSeries.seriesType('trix', 'tema', 
         /**
          * Triple exponential average (TRIX) oscillator. This series requires
          * `linkedTo` option to be set.
@@ -138,7 +138,7 @@
             init: function () {
                 var args = arguments,
                     ctx = this;
-                requiredIndicator.isParentLoaded(TEMA, 'tema', ctx.type, function (indicator) {
+                RequiredIndicatorMixin.isParentLoaded(TEMA, 'tema', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
                 });

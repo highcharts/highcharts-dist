@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -18,4 +18,3 @@ import '../Core/Series/Series3D.js';
 import '../Series/Column3DSeries.js';
 import '../Series/Pie3DSeries.js';
 import '../Series/Scatter3DSeries.js';
-import '../Core/Renderer/VML/VMLRenderer3D.js';

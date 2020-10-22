@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Solid angular gauge module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/SolidGaugeSeries.js', [_modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Utilities.js']], function (Color, H, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'Series/SolidGaugeSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Utilities.js']], function (BaseSeries, Color, H, LegendSymbolMixin, U) {
         /* *
          *
          *  Solid angular gauge module
@@ -41,13 +41,13 @@
          *
          * */
         var color = Color.parse;
+        var Renderer = H.Renderer;
         var clamp = U.clamp,
             extend = U.extend,
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
             pInt = U.pInt,
-            seriesType = U.seriesType,
             wrap = U.wrap;
         /**
          * Additional options, depending on the actual symbol drawn.
@@ -58,7 +58,6 @@
         * @name Highcharts.SymbolOptionsObject#rounded
         * @type {boolean|undefined}
         */
-        var Renderer = H.Renderer;
         /**
          * Symbol definition of an arc with round edges.
          *
@@ -318,7 +317,7 @@
                 }
             };
         // The solidgauge series type
-        seriesType('solidgauge', 'gauge', solidGaugeOptions, {
+        BaseSeries.seriesType('solidgauge', 'gauge', solidGaugeOptions, {
             drawLegendSymbol: LegendSymbolMixin.drawRectangle,
             // Extend the translate function to extend the Y axis with the necessary
             // decoration (#5895).

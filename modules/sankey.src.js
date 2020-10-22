@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Sankey diagram module
  *
@@ -219,7 +219,7 @@
 
         return NodesMixin;
     });
-    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -447,7 +447,7 @@
 
         return result;
     });
-    _registerModule(_modules, 'Series/SankeySeries.js', [_modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Mixins/TreeSeries.js']], function (H, NodesMixin, Color, Point, U, TreeSeriesMixin) {
+    _registerModule(_modules, 'Series/SankeySeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Series/CartesianSeries.js'], _modules['Core/Color/Color.js'], _modules['Series/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Series/Point.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Series, CartesianSeries, Color, ColumnSeries, H, NodesMixin, Point, TreeSeriesMixin, U) {
         /* *
          *
          *  Sankey diagram module
@@ -459,6 +459,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var getLevelOptions = TreeSeriesMixin.getLevelOptions;
+        var defined = U.defined,
+            find = U.find,
+            isObject = U.isObject,
+            merge = U.merge,
+            pick = U.pick,
+            relativeLength = U.relativeLength,
+            stableSort = U.stableSort;
         /**
          * A node in a sankey diagram.
          *
@@ -537,15 +545,7 @@
         * @name Highcharts.SeriesSankeyDataLabelsFormatterContextObject#point
         * @type {Highcharts.SankeyNodeObject}
         */
-        var defined = U.defined,
-            find = U.find,
-            isObject = U.isObject,
-            merge = U.merge,
-            pick = U.pick,
-            relativeLength = U.relativeLength,
-            seriesType = U.seriesType,
-            stableSort = U.stableSort;
-        var getLevelOptions = TreeSeriesMixin.getLevelOptions;
+        ''; // detach doclets above
         // eslint-disable-next-line valid-jsdoc
         /**
          * @private
@@ -571,7 +571,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('sankey', 'column', 
+        Series.seriesType('sankey', 'column', 
         /**
          * A sankey diagram is a type of flow diagram, in which the width of the
          * link between two nodes is shown proportionally to the flow quantity.
@@ -1351,11 +1351,11 @@
             render: function () {
                 var points = this.points;
                 this.points = this.points.concat(this.nodes || []);
-                H.seriesTypes.column.prototype.render.call(this);
+                ColumnSeries.prototype.render.call(this);
                 this.points = points;
             },
             /* eslint-enable valid-jsdoc */
-            animate: H.Series.prototype.animate
+            animate: CartesianSeries.prototype.animate
         }, {
             applyOptions: function (options, x) {
                 Point.prototype.applyOptions.call(this, options, x);

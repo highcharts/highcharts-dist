@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Parabolic SAR Indicator for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/PSARIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/PSARIndicator.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
         /* *
          *
          *  Parabolic SAR indicator for Highstock
@@ -40,7 +40,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
+        // im port './SMAIndicator.js';
         /* eslint-disable require-jsdoc */
         // Utils:
         function toFixed(a, n) {
@@ -122,7 +122,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('psar', 'sma', 
+        BaseSeries.seriesType('psar', 'sma', 
         /**
          * Parabolic SAR. This series requires `linkedTo`
          * option to be set and should be loaded

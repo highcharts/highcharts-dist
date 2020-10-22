@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Boost module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Chart, H, Color, U) {
+    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Series/LineSeries.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, LineSeries, Series, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -45,6 +45,8 @@
          *
          * */
         var color = Color.parse;
+        var doc = H.doc,
+            noop = H.noop;
         var addEvent = U.addEvent,
             extend = U.extend,
             fireEvent = U.fireEvent,
@@ -52,11 +54,7 @@
             merge = U.merge,
             pick = U.pick,
             wrap = U.wrap;
-        var win = H.win,
-            doc = win.document,
-            noop = function () { },
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
+        var seriesTypes = Series.seriesTypes,
             CHUNK_SIZE = 50000,
             destroyLoadingDiv;
         /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -65,14 +63,15 @@
          *
          * @function Highcharts.initCanvasBoost
          */
-        H.initCanvasBoost = function () {
-            if (H.seriesTypes.heatmap) {
-                wrap(H.seriesTypes.heatmap.prototype, 'drawPoints', function () {
-                    var chart = this.chart,
-                        ctx = this.getContext(),
-                        inverted = this.chart.inverted,
-                        xAxis = this.xAxis,
-                        yAxis = this.yAxis;
+        var initCanvasBoost = function () {
+                if (H.seriesTypes.heatmap) {
+                    wrap(H.seriesTypes.heatmap.prototype, 'drawPoints',
+            function () {
+                        var chart = this.chart,
+            ctx = this.getContext(),
+            inverted = this.chart.inverted,
+            xAxis = this.xAxis,
+            yAxis = this.yAxis;
                     if (ctx) {
                         // draw the columns
                         this.points.forEach(function (point) {
@@ -110,7 +109,7 @@
                     }
                 });
             }
-            extend(Series.prototype, {
+            extend(LineSeries.prototype, {
                 /**
                  * Create a hidden canvas to draw the graph on. The contents is later
                  * copied over to an SVG image element.
@@ -577,6 +576,7 @@
             });
         };
 
+        return initCanvasBoost;
     });
     _registerModule(_modules, 'masters/modules/boost-canvas.src.js', [], function () {
 

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/RSIIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/RSIIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,8 +36,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
+        // im port './SMAIndicator.js';
         /* eslint-disable require-jsdoc */
         // Utils:
         function toFixed(a, n) {
@@ -53,7 +53,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('rsi', 'sma', 
+        BaseSeries.seriesType('rsi', 'sma', 
         /**
          * Relative strength index (RSI) technical indicator. This series
          * requires the `linkedTo` option to be set and should be loaded after

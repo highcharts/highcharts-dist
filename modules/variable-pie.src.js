@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Variable Pie module for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/VariablePieSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/VariablePieSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  Variable Pie module for Highcharts
@@ -40,16 +40,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /**
-         * @typedef {"area"|"radius"} Highcharts.VariablePieSizeByValue
-         */
+        var seriesTypes = BaseSeries.seriesTypes;
         var arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             clamp = U.clamp,
             fireEvent = U.fireEvent,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var pieProto = H.seriesTypes.pie.prototype;
+            pick = U.pick;
+        var pieProto = seriesTypes.pie.prototype;
+        /**
+         * @typedef {"area"|"radius"} Highcharts.VariablePieSizeByValue
+         */
+        ''; // detach doclets above
         /**
          * The variablepie series type.
          *
@@ -59,7 +60,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('variablepie', 'pie', 
+        BaseSeries.seriesType('variablepie', 'pie', 
         /**
          * A variable pie series is a two dimensional series type, where each point
          * renders an Y and Z value.  Each point is drawn as a pie slice where the

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Extensions/Stacking.js']], function (Axis, H, U, StackItem) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Series/LineSeries.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, LineSeries, StackItem, U) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi
@@ -42,7 +42,6 @@
             isArray = U.isArray,
             isNumber = U.isNumber,
             pick = U.pick;
-        var Series = H.Series;
         /* eslint-disable valid-jsdoc */
         /**
          * Provides support for broken axes.
@@ -369,7 +368,7 @@
                  */
                 BrokenAxis.compose = function (AxisClass, SeriesClass) {
                     AxisClass.keepProps.push('brokenAxis');
-                var seriesProto = Series.prototype;
+                var seriesProto = LineSeries.prototype;
                 /**
                  * @private
                  */
@@ -602,7 +601,7 @@
             };
             return BrokenAxis;
         }());
-        BrokenAxis.compose(Axis, Series); // @todo remove automatism
+        BrokenAxis.compose(Axis, LineSeries); // @todo remove automatism
 
         return BrokenAxis;
     });

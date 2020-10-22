@@ -50,6 +50,10 @@ declare module "../highcharts" {
          */
         getPoint(boostPoint: (object|Point)): Point;
     }
+    /**
+     * Initialize the canvas boost.
+     */
+    function initCanvasBoost(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

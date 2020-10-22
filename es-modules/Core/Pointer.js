@@ -8,7 +8,7 @@
  *
  * */
 'use strict';
-import Color from './Color.js';
+import Color from './Color/Color.js';
 var color = Color.parse;
 import H from './Globals.js';
 var charts = H.charts, noop = H.noop;
@@ -993,7 +993,7 @@ var Pointer = /** @class */ (function () {
         }
         // On touch devices, only proceed to trigger click if a handler is
         // defined
-        if (hasZoom && self.initiated && !fireClickEvent) {
+        if (hasZoom && self.initiated && !fireClickEvent && e.cancelable !== false) {
             e.preventDefault();
         }
         // Normalize each touch

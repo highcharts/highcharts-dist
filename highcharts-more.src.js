@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2009-2018 Torstein Honsi
  *
@@ -387,7 +387,7 @@
         function isInsidePane(x, y, center) {
             return Math.sqrt(Math.pow(x - center[0], 2) + Math.pow(y - center[1], 2)) <= center[2] / 2;
         }
-        H.Chart.prototype.getHoverPane = function (eventArgs) {
+        Chart.prototype.getHoverPane = function (eventArgs) {
             var chart = this;
             var hoverPane;
             if (eventArgs) {
@@ -1402,7 +1402,7 @@
 
         return RadialAxis;
     });
-    _registerModule(_modules, 'Series/AreaRangeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/AreaRangeSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1412,17 +1412,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var noop = H.noop;
         var defined = U.defined,
             extend = U.extend,
             isArray = U.isArray,
             isNumber = U.isNumber,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            seriesProto = Series.prototype,
-            pointProto = Point.prototype;
+            pick = U.pick;
+        var Series = H.Series,
+            areaProto = BaseSeries.seriesTypes.area.prototype,
+            columnProto = BaseSeries.seriesTypes.column.prototype,
+            pointProto = Point.prototype,
+            seriesProto = Series.prototype;
         /**
          * The area range series is a carteseian series with higher and lower values for
          * each point along an X axis, where the area between the values is shaded.
@@ -1438,7 +1438,31 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.arearange
          */
-        seriesType('arearange', 'area', {
+        BaseSeries.seriesType('arearange', 'area', {
+            /**
+             * @see [fillColor](#plotOptions.arearange.fillColor)
+             * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
+             *
+             * @apioption plotOptions.arearange.color
+             */
+            /**
+             * @default   low
+             * @apioption plotOptions.arearange.colorKey
+             */
+            /**
+             * @see [color](#plotOptions.arearange.color)
+             * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
+             *
+             * @apioption plotOptions.arearange.fillColor
+             */
+            /**
+             * @see [color](#plotOptions.arearange.color)
+             * @see [fillColor](#plotOptions.arearange.fillColor)
+             *
+             * @default   {highcharts} 0.75
+             * @default   {highstock} 0.75
+             * @apioption plotOptions.arearange.fillOpacity
+             */
             /**
              * Whether to apply a drop shadow to the graph line. Since 2.3 the shadow
              * can be an object configuration containing `color`, `offsetX`, `offsetY`,
@@ -1447,10 +1471,6 @@
              * @type      {boolean|Highcharts.ShadowOptionsObject}
              * @product   highcharts
              * @apioption plotOptions.arearange.shadow
-             */
-            /**
-             * @default   low
-             * @apioption plotOptions.arearange.colorKey
              */
             /**
              * Pixel width of the arearange graph line.
@@ -1557,7 +1577,7 @@
                 var series = this,
                     yAxis = series.yAxis,
                     hasModifyValue = !!series.modifyValue;
-                seriesTypes.area.prototype.translate.apply(series);
+                areaProto.translate.apply(series);
                 // Set plotLow and plotHigh
                 series.points.forEach(function (point) {
                     var high = point.high,
@@ -1595,7 +1615,7 @@
                 var highPoints = [],
                     highAreaPoints = [],
                     i,
-                    getGraphPath = seriesTypes.area.prototype.getGraphPath,
+                    getGraphPath = areaProto.getGraphPath,
                     point,
                     pointShim,
                     linePath,
@@ -1706,14 +1726,8 @@
                 // since we now have to loop over all the points multiple times to work
                 // around the data label logic.
                 if (isArray(dataLabelOptions)) {
-                    if (dataLabelOptions.length > 1) {
-                        upperDataLabelOptions = dataLabelOptions[0];
-                        lowerDataLabelOptions = dataLabelOptions[1];
-                    }
-                    else {
-                        upperDataLabelOptions = dataLabelOptions[0];
-                        lowerDataLabelOptions = { enabled: false };
-                    }
+                    upperDataLabelOptions = dataLabelOptions[0] || { enabled: false };
+                    lowerDataLabelOptions = dataLabelOptions[1] || { enabled: false };
                 }
                 else {
                     // Make copies
@@ -1827,8 +1841,7 @@
                 this.options.dataLabels = dataLabelOptions;
             },
             alignDataLabel: function () {
-                seriesTypes.column.prototype.alignDataLabel
-                    .apply(this, arguments);
+                columnProto.alignDataLabel.apply(this, arguments);
             },
             drawPoints: function () {
                 var series = this,
@@ -1990,6 +2003,12 @@
          * @apioption series.arearange
          */
         /**
+         * @see [fillColor](#series.arearange.fillColor)
+         * @see [fillOpacity](#series.arearange.fillOpacity)
+         *
+         * @apioption series.arearange.color
+         */
+        /**
          * An array of data points for the series. For the `arearange` series type,
          * points can be given in the following ways:
          *
@@ -2050,6 +2069,20 @@
          * @apioption series.arearange.data.dataLabels
          */
         /**
+         * @see [color](#series.arearange.color)
+         * @see [fillOpacity](#series.arearange.fillOpacity)
+         *
+         * @apioption series.arearange.fillColor
+         */
+        /**
+         * @see [color](#series.arearange.color)
+         * @see [fillColor](#series.arearange.fillColor)
+         *
+         * @default   {highcharts} 0.75
+         * @default   {highstock} 0.75
+         * @apioption series.arearange.fillOpacity
+         */
+        /**
          * The high or maximum value for each data point.
          *
          * @type      {number}
@@ -2066,7 +2099,7 @@
         ''; // adds doclets above to tranpiled file
 
     });
-    _registerModule(_modules, 'Series/AreaSplineRangeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/AreaSplineRangeSeries.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2076,8 +2109,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
-        var seriesTypes = H.seriesTypes;
         /**
          * The area spline range is a cartesian series type with higher and
          * lower Y values along an X axis. The area inside the range is colored, and
@@ -2093,8 +2124,29 @@
          * @requires  highcharts-more
          * @apioption plotOptions.areasplinerange
          */
-        seriesType('areasplinerange', 'arearange', null, {
-            getPointSpline: seriesTypes.spline.prototype.getPointSpline
+        BaseSeries.seriesType('areasplinerange', 'arearange', 
+        /**
+         * @see [fillColor](#plotOptions.areasplinerange.fillColor)
+         * @see [fillOpacity](#plotOptions.areasplinerange.fillOpacity)
+         *
+         * @apioption plotOptions.areasplinerange.color
+         */
+        /**
+         * @see [color](#plotOptions.areasplinerange.color)
+         * @see [fillOpacity](#plotOptions.areasplinerange.fillOpacity)
+         *
+         * @apioption plotOptions.areasplinerange.fillColor
+         */
+        /**
+         * @see [color](#plotOptions.areasplinerange.color)
+         * @see [fillColor](#plotOptions.areasplinerange.fillColor)
+         *
+         * @default   {highcharts} 0.75
+         * @default   {highstock} 0.75
+         * @apioption plotOptions.areasplinerange.fillOpacity
+         */
+        null, {
+            getPointSpline: BaseSeries.seriesTypes.spline.prototype.getPointSpline
         });
         /**
          * A `areasplinerange` series. If the [type](#series.areasplinerange.type)
@@ -2105,6 +2157,12 @@
          * @product   highcharts highstock
          * @requires  highcharts-more
          * @apioption series.areasplinerange
+         */
+        /**
+         * @see [fillColor](#series.areasplinerange.fillColor)
+         * @see [fillOpacity](#series.areasplinerange.fillOpacity)
+         *
+         * @apioption series.areasplinerange.color
          */
         /**
          * An array of data points for the series. For the `areasplinerange`
@@ -2160,10 +2218,24 @@
          * @product   highcharts highstock
          * @apioption series.areasplinerange.data
          */
+        /**
+         * @see [color](#series.areasplinerange.color)
+         * @see [fillOpacity](#series.areasplinerange.fillOpacity)
+         *
+         * @apioption series.areasplinerange.fillColor
+         */
+        /**
+         * @see [color](#series.areasplinerange.color)
+         * @see [fillColor](#series.areasplinerange.fillColor)
+         *
+         * @default   {highcharts} 0.75
+         * @default   {highstock} 0.75
+         * @apioption series.areasplinerange.fillOpacity
+         */
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/ColumnRangeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, O, U) {
+    _registerModule(_modules, 'Series/ColumnRangeSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, O, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2173,14 +2245,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var noop = H.noop;
         var defaultOptions = O.defaultOptions;
         var clamp = U.clamp,
             merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes;
-        var colProto = seriesTypes.column.prototype;
+            pick = U.pick;
+        var columnProto = BaseSeries.seriesTypes.column.prototype;
         /**
          * The column range is a cartesian series type with higher and lower
          * Y values along an X axis. To display horizontal bars, set
@@ -2230,7 +2300,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('columnrange', 'arearange', merge(defaultOptions.plotOptions.column, defaultOptions.plotOptions.arearange, columnRangeOptions), {
+        BaseSeries.seriesType('columnrange', 'arearange', merge(defaultOptions.plotOptions.column, defaultOptions.plotOptions.arearange, columnRangeOptions), {
             // eslint-disable-next-line valid-jsdoc
             /**
              * Translate data points from raw values x and y to plotX and plotY
@@ -2255,7 +2325,7 @@
                 function safeBounds(pixelPos) {
                     return clamp(pixelPos, -safeDistance, safeDistance);
                 }
-                colProto.translate.apply(series);
+                columnProto.translate.apply(series);
                 // Set plotLow and plotHigh
                 series.points.forEach(function (point) {
                     var shapeArgs = point.shapeArgs,
@@ -2309,34 +2379,34 @@
             getSymbol: noop,
             // Overrides from modules that may be loaded after this module
             crispCol: function () {
-                return colProto.crispCol.apply(this, arguments);
+                return columnProto.crispCol.apply(this, arguments);
             },
             drawPoints: function () {
-                return colProto.drawPoints.apply(this, arguments);
+                return columnProto.drawPoints.apply(this, arguments);
             },
             drawTracker: function () {
-                return colProto.drawTracker.apply(this, arguments);
+                return columnProto.drawTracker.apply(this, arguments);
             },
             getColumnMetrics: function () {
-                return colProto.getColumnMetrics.apply(this, arguments);
+                return columnProto.getColumnMetrics.apply(this, arguments);
             },
             pointAttribs: function () {
-                return colProto.pointAttribs.apply(this, arguments);
+                return columnProto.pointAttribs.apply(this, arguments);
             },
             animate: function () {
-                return colProto.animate.apply(this, arguments);
+                return columnProto.animate.apply(this, arguments);
             },
             polarArc: function () {
-                return colProto.polarArc.apply(this, arguments);
+                return columnProto.polarArc.apply(this, arguments);
             },
             translate3dPoints: function () {
-                return colProto.translate3dPoints.apply(this, arguments);
+                return columnProto.translate3dPoints.apply(this, arguments);
             },
             translate3dShapes: function () {
-                return colProto.translate3dShapes.apply(this, arguments);
+                return columnProto.translate3dShapes.apply(this, arguments);
             }
         }, {
-            setState: colProto.pointClass.prototype.setState
+            setState: columnProto.pointClass.prototype.setState
         });
         /**
          * A `columnrange` series. If the [type](#series.columnrange.type)
@@ -2422,7 +2492,7 @@
         ''; // adds doclets above into transpiled
 
     });
-    _registerModule(_modules, 'Series/ColumnPyramidSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/ColumnPyramidSeries.js', [_modules['Core/Series/Series.js'], _modules['Series/ColumnSeries.js'], _modules['Core/Utilities.js']], function (BaseSeries, ColumnSeries, U) {
         /* *
          *
          *  (c) 2010-2020 Sebastian Bochan
@@ -2432,11 +2502,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var colProto = ColumnSeries.prototype;
         var clamp = U.clamp,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var seriesTypes = H.seriesTypes;
-        var colProto = seriesTypes.column.prototype;
+            pick = U.pick;
         /**
          * The ColumnPyramidSeries class
          *
@@ -2446,7 +2514,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('columnpyramid', 'column', 
+        BaseSeries.seriesType('columnpyramid', 'column', 
         /**
          * Column pyramid series display one pyramid per value along an X axis.
          * To display horizontal pyramids, set [chart.inverted](#chart.inverted) to
@@ -2713,7 +2781,7 @@
         ''; // adds doclets above to transpiled file;
 
     });
-    _registerModule(_modules, 'Series/GaugeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/GaugeSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -2723,14 +2791,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var noop = H.noop;
         var clamp = U.clamp,
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
-            pInt = U.pInt,
-            seriesType = U.seriesType;
-        var noop = H.noop,
-            Series = H.Series,
+            pInt = U.pInt;
+        var Series = H.Series,
             TrackerMixin = H.TrackerMixin;
         /**
          * Gauges are circular plots displaying one or more values with a dial pointing
@@ -2750,7 +2817,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.gauge
          */
-        seriesType('gauge', 'line', {
+        BaseSeries.seriesType('gauge', 'line', {
             /**
              * When this option is `true`, the dial will wrap around the axes. For
              * instance, in a full-range gauge going from 0 to 360, a value of 400
@@ -3258,7 +3325,7 @@
         ''; // adds the doclets above in the transpiled file
 
     });
-    _registerModule(_modules, 'Series/BoxPlotSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/BoxPlotSeries.js', [_modules['Core/Series/Series.js'], _modules['Series/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Series, ColumnSeries, H, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3268,10 +3335,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var pick = U.pick,
-            seriesType = U.seriesType;
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes;
+        var columnProto = ColumnSeries.prototype;
+        var noop = H.noop;
+        var pick = U.pick;
         /**
          * The boxplot series type.
          *
@@ -3297,7 +3363,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.boxplot
          */
-        seriesType('boxplot', 'column', {
+        Series.seriesType('boxplot', 'column', {
             threshold: null,
             tooltip: {
                 pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> ' +
@@ -3556,7 +3622,7 @@
                 var series = this,
                     yAxis = series.yAxis,
                     pointArrayMap = series.pointArrayMap;
-                seriesTypes.column.prototype.translate.apply(series);
+                columnProto.translate.apply(series);
                 // do the translation on each point dimension
                 series.points.forEach(function (point) {
                     pointArrayMap.forEach(function (key) {
@@ -3907,7 +3973,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/ErrorBarSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/ErrorBarSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js']], function (BaseSeries, H) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3917,9 +3983,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
         var noop = H.noop,
-            seriesTypes = H.seriesTypes;
+            seriesTypes = BaseSeries.seriesTypes;
         /**
          * Error bars are a graphical representation of the variability of data and are
          * used on graphs to indicate the error, or uncertainty in a reported
@@ -3936,7 +4001,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.errorbar
          */
-        seriesType('errorbar', 'boxplot', {
+        BaseSeries.seriesType('errorbar', 'boxplot', {
             /**
              * The main color of the bars. This can be overridden by
              * [stemColor](#plotOptions.errorbar.stemColor) and
@@ -4074,7 +4139,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/WaterfallSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, Point, StackItem, U) {
+    _registerModule(_modules, 'Series/WaterfallSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, BaseSeries, Chart, H, Point, StackItem, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4084,16 +4149,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = BaseSeries.seriesTypes;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             correctFloat = U.correctFloat,
             isNumber = U.isNumber,
             objectEach = U.objectEach,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var Series = H.Series,
-            seriesTypes = H.seriesTypes;
+            pick = U.pick;
+        var Series = H.Series;
         /**
          * Returns true if the key is a direct property of the object.
          * @private
@@ -4258,7 +4322,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.waterfall
          */
-        seriesType('waterfall', 'column', {
+        BaseSeries.seriesType('waterfall', 'column', {
             /**
              * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @apioption plotOptions.waterfall.color
@@ -4976,7 +5040,7 @@
 
         return WaterfallAxis;
     });
-    _registerModule(_modules, 'Series/PolygonSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'Series/PolygonSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js']], function (BaseSeries, H, LegendSymbolMixin) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4986,10 +5050,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
-        var noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes;
+        var seriesTypes = BaseSeries.seriesTypes;
+        var noop = H.noop;
+        var Series = H.Series;
         /**
          * A polygon series can be used to draw any freeform shape in the cartesian
          * coordinate system. A fill is applied with the `color` option, and
@@ -5008,7 +5071,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.polygon
          */
-        seriesType('polygon', 'scatter', {
+        BaseSeries.seriesType('polygon', 'scatter', {
             marker: {
                 enabled: false,
                 states: {
@@ -5119,7 +5182,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Legend, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Legend, U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -5180,7 +5243,7 @@
                      * individual range.
                      *
                      * @sample highcharts/bubble-legend/similartoseries/
-                     *         Similat look to the bubble series
+                     *         Similar look to the bubble series
                      * @sample highcharts/bubble-legend/bordercolor/
                      *         Individual bubble border color
                      *
@@ -5208,7 +5271,7 @@
                      * individual color is not defined.
                      *
                      * @sample highcharts/bubble-legend/similartoseries/
-                     *         Similat look to the bubble series
+                     *         Similar look to the bubble series
                      * @sample highcharts/bubble-legend/color/
                      *         Individual bubble color
                      *
@@ -6135,7 +6198,7 @@
 
         return H.BubbleLegend;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Color, Point, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, BaseSeries, Color, H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6145,22 +6208,21 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /**
-         * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
-         */
         var color = Color.parse;
+        var noop = H.noop;
         var arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             clamp = U.clamp,
             extend = U.extend,
             isNumber = U.isNumber,
             pick = U.pick,
-            pInt = U.pInt,
-            seriesType = U.seriesType;
-        var Axis = H.Axis,
-            noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes;
+            pInt = U.pInt;
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes;
+        /**
+         * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
+         */
+        ''; // detach doclets above
         /**
          * A bubble series is a three dimensional series type where each point renders
          * an X, Y and Z value. Each points is drawn as a bubble where the position
@@ -6176,7 +6238,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.bubble
          */
-        seriesType('bubble', 'scatter', {
+        BaseSeries.seriesType('bubble', 'scatter', {
             dataLabels: {
                 formatter: function () {
                     return this.point.z;
@@ -6817,12 +6879,14 @@
              * @return {void}
              */
             onMouseUp: function (point, event) {
-                if (point.fixedPosition && point.hasDragged) {
-                    if (this.layout.enableSimulation) {
-                        this.layout.start();
-                    }
-                    else {
-                        this.chart.redraw();
+                if (point.fixedPosition) {
+                    if (point.hasDragged) {
+                        if (this.layout.enableSimulation) {
+                            this.layout.start();
+                        }
+                        else {
+                            this.chart.redraw();
+                        }
                     }
                     point.inDragMode = point.hasDragged = false;
                     if (!this.options.fixedDraggable) {
@@ -7623,7 +7687,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/Networkgraph/Layouts.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/Networkgraph/Layouts.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, A, H, U) {
         /* *
          *
          *  Networkgraph series
@@ -7635,13 +7699,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var setAnimation = A.setAnimation;
         var addEvent = U.addEvent,
             clamp = U.clamp,
             defined = U.defined,
             extend = U.extend,
             isFunction = U.isFunction,
-            pick = U.pick,
-            setAnimation = U.setAnimation;
+            pick = U.pick;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         H.layouts = {
             'reingold-fruchterman': function () {
@@ -8205,7 +8269,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/PackedBubbleSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Point, U) {
+    _registerModule(_modules, 'Series/PackedBubbleSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (BaseSeries, Chart, Color, H, Point, U) {
         /* *
          *
          *  (c) 2010-2018 Grzegorz Blachlinski, Sebastian Bochan
@@ -8225,8 +8289,10 @@
             isArray = U.isArray,
             isNumber = U.isNumber,
             merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
+        var Series = H.Series,
+            Reingold = H.layouts['reingold-fruchterman'],
+            dragNodesMixin = H.dragNodesMixin;
         /**
          * Formatter callback function.
          *
@@ -8262,9 +8328,7 @@
         * @type {string}
         * @since 7.0.0
         */
-        var Series = H.Series,
-            Reingold = H.layouts['reingold-fruchterman'],
-            dragNodesMixin = H.dragNodesMixin;
+        ''; // detach doclets above
         Chart.prototype.getSelectedParentNodes = function () {
             var chart = this,
                 series = chart.series,
@@ -8427,7 +8491,7 @@
          *
          * @extends Highcharts.Series
          */
-        seriesType('packedbubble', 'bubble', 
+        BaseSeries.seriesType('packedbubble', 'bubble', 
         /**
          * A packed bubble series is a two dimensional series type, where each point
          * renders a value in X, Y position. Each point is drawn as a bubble
@@ -9606,7 +9670,7 @@
                 if (point.isParentNode) {
                     chart.getSelectedPoints = chart.getSelectedParentNodes;
                     Point.prototype.select.apply(this, arguments);
-                    chart.getSelectedPoints = H.Chart.prototype.getSelectedPoints;
+                    chart.getSelectedPoints = Chart.prototype.getSelectedPoints;
                 }
                 else {
                     Point.prototype.select.apply(this, arguments);
@@ -9681,7 +9745,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Extensions/Polar.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Extensions/Pane.js'], _modules['Core/Pointer.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, Pane, Pointer, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/Polar.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Extensions/Pane.js'], _modules['Core/Pointer.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, H, Pane, Pointer, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -9691,8 +9755,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var animObject = A.animObject;
         var addEvent = U.addEvent,
-            animObject = U.animObject,
             defined = U.defined,
             find = U.find,
             isNumber = U.isNumber,

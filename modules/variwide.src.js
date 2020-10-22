@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Highcharts variwide module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/VariwideSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/VariwideSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Axis, BaseSeries, H, U) {
         /* *
          *
          *  Highcharts variwide module
@@ -40,12 +40,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = BaseSeries.seriesTypes;
         var addEvent = U.addEvent,
             isNumber = U.isNumber,
             pick = U.pick,
-            seriesType = U.seriesType,
             wrap = U.wrap;
-        var seriesTypes = H.seriesTypes;
         /**
          * @private
          * @class
@@ -53,7 +52,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('variwide', 'column'
+        BaseSeries.seriesType('variwide', 'column'
         /**
          * A variwide chart (related to marimekko chart) is a column chart with a
          * variable width expressing a third dimension.
@@ -246,13 +245,13 @@
         };
         /* eslint-disable no-invalid-this */
         // Same width as the category (#8083)
-        addEvent(H.Axis, 'afterDrawCrosshair', function (e) {
+        addEvent(Axis, 'afterDrawCrosshair', function (e) {
             if (this.variwide && this.cross) {
                 this.cross.attr('stroke-width', (e.point && e.point.crosshairWidth));
             }
         });
         // On a vertical axis, apply anti-collision logic to the labels.
-        addEvent(H.Axis, 'afterRender', function () {
+        addEvent(Axis, 'afterRender', function () {
             var axis = this;
             if (!this.horiz && this.variwide) {
                 this.chart.labelCollectors.push(function () {

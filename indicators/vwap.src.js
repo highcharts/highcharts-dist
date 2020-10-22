@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/VWAPIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/VWAPIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  (c) 2010-2020 Paweł Dalek
@@ -41,8 +41,8 @@
          *
          * */
         var error = U.error,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
+            isArray = U.isArray;
+        // im port './SMAIndicator.js';
         /**
          * The Volume Weighted Average Price (VWAP) series type.
          *
@@ -52,7 +52,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('vwap', 'sma', 
+        BaseSeries.seriesType('vwap', 'sma', 
         /**
          * Volume Weighted Average Price indicator.
          *

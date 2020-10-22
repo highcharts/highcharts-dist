@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Highstock as a plugin for Highcharts
  *
@@ -1253,7 +1253,7 @@
 
         return H.Scrollbar;
     });
-    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/Options.js'], _modules['Core/Scrollbar.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, O, Scrollbar, U) {
+    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Series/LineSeries.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/Options.js'], _modules['Core/Scrollbar.js'], _modules['Core/Utilities.js']], function (Axis, BaseSeries, Chart, Color, H, LineSeries, NavigatorAxis, O, Scrollbar, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1263,7 +1263,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = BaseSeries.seriesTypes;
         var color = Color.parse;
+        var hasTouch = H.hasTouch,
+            isTouchDevice = H.isTouchDevice;
         var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             clamp = U.clamp,
@@ -1279,11 +1282,7 @@
             pick = U.pick,
             removeEvent = U.removeEvent,
             splat = U.splat;
-        var hasTouch = H.hasTouch,
-            isTouchDevice = H.isTouchDevice,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            defaultSeriesType, 
+        var defaultSeriesType, 
             // Finding the min or max of a set of variables where we don't know if they
             // are defined, is a pattern that is repeated several places in Highcharts.
             // Consider making this a global utility method.
@@ -2653,6 +2652,7 @@
                         offset: 0,
                         index: yAxisIndex,
                         isInternal: true,
+                        reversed: pick((navigatorOptions.yAxis && navigatorOptions.yAxis.reversed), (chart.yAxis[0] && chart.yAxis[0].reversed), false),
                         zoomEnabled: false
                     }, chart.inverted ? {
                         width: height
@@ -3303,7 +3303,7 @@
                 }
             });
             // Handle updating series
-            addEvent(Series, 'afterUpdate', function () {
+            addEvent(LineSeries, 'afterUpdate', function () {
                 if (this.chart.navigator && !this.options.isInternal) {
                     this.chart.navigator.setBaseSeries(null, false);
                 }
@@ -3322,7 +3322,7 @@
 
         return H.Navigator;
     });
-    _registerModule(_modules, 'Core/Axis/OrdinalAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Axis, H, U) {
+    _registerModule(_modules, 'Core/Axis/OrdinalAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Series/CartesianSeries.js'], _modules['Core/Utilities.js'], _modules['Core/Chart/Chart.js']], function (Axis, H, CartesianSeries, U, Chart) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3338,8 +3338,6 @@
             pick = U.pick,
             timeUnits = U.timeUnits;
         // Has a dependency on Navigator due to the use of Axis.toFixedRange
-        var Chart = H.Chart,
-            Series = H.Series;
         /**
          * Extends the axis with ordinal support.
          * @private
@@ -3570,7 +3568,7 @@
                                 xData: series.xData.slice(),
                                 chart: chart,
                                 destroyGroupedData: H.noop,
-                                getProcessedData: H.Series.prototype.getProcessedData
+                                getProcessedData: CartesianSeries.prototype.getProcessedData
                             };
                             fakeSeries.xData = fakeSeries.xData.concat(ordinal.getOverscrollPositions());
                             fakeSeries.options = {
@@ -4190,11 +4188,11 @@
             }
             OrdinalAxis.compose = compose;
         })(OrdinalAxis || (OrdinalAxis = {}));
-        OrdinalAxis.compose(Axis, Chart, Series); // @todo move to StockChart, remove from master
+        OrdinalAxis.compose(Axis, Chart, CartesianSeries); // @todo move to StockChart, remove from master
 
         return OrdinalAxis;
     });
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Extensions/Stacking.js']], function (Axis, H, U, StackItem) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Series/LineSeries.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, LineSeries, StackItem, U) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi
@@ -4210,7 +4208,6 @@
             isArray = U.isArray,
             isNumber = U.isNumber,
             pick = U.pick;
-        var Series = H.Series;
         /* eslint-disable valid-jsdoc */
         /**
          * Provides support for broken axes.
@@ -4537,7 +4534,7 @@
                  */
                 BrokenAxis.compose = function (AxisClass, SeriesClass) {
                     AxisClass.keepProps.push('brokenAxis');
-                var seriesProto = Series.prototype;
+                var seriesProto = LineSeries.prototype;
                 /**
                  * @private
                  */
@@ -4770,7 +4767,7 @@
             };
             return BrokenAxis;
         }());
-        BrokenAxis.compose(Axis, Series); // @todo remove automatism
+        BrokenAxis.compose(Axis, LineSeries); // @todo remove automatism
 
         return BrokenAxis;
     });
@@ -4778,7 +4775,7 @@
 
 
     });
-    _registerModule(_modules, 'Extensions/DataGrouping.js', [_modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Tooltip.js'], _modules['Core/Utilities.js']], function (DateTimeAxis, H, O, Point, Tooltip, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Tooltip.js'], _modules['Core/Utilities.js']], function (Axis, DateTimeAxis, H, O, Point, Tooltip, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4816,8 +4813,7 @@
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick;
-        var Axis = H.Axis,
-            Series = H.Series;
+        var Series = H.Series;
         /* ************************************************************************** *
          *  Start data grouping module                                                *
          * ************************************************************************** */
@@ -5767,7 +5763,7 @@
 
         return dataGrouping;
     });
-    _registerModule(_modules, 'Series/OHLCSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/OHLCSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Series/Point.js']], function (BaseSeries, Point) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -5777,8 +5773,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
-        var seriesTypes = H.seriesTypes;
+        var seriesTypes = BaseSeries.seriesTypes;
         /**
          * The ohlc series type.
          *
@@ -5788,7 +5783,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('ohlc', 'column'
+        BaseSeries.seriesType('ohlc', 'column'
         /**
          * An OHLC chart is a style of financial chart used to describe price
          * movements over time. It displays open, high, low and close values per
@@ -6139,7 +6134,7 @@
         ''; // adds doclets above to transpilat
 
     });
-    _registerModule(_modules, 'Series/CandlestickSeries.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, O, U) {
+    _registerModule(_modules, 'Series/CandlestickSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (BaseSeries, O, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6150,9 +6145,8 @@
          *
          * */
         var defaultOptions = O.defaultOptions;
-        var merge = U.merge,
-            seriesType = U.seriesType;
-        var seriesTypes = H.seriesTypes;
+        var merge = U.merge;
+        var columnProto = BaseSeries.seriesTypes.column.prototype;
         /**
          * A candlestick chart is a style of financial chart used to describe price
          * movements over time.
@@ -6266,7 +6260,7 @@
          *
          * @augments Highcharts.seriesTypes.ohlc
          */
-        seriesType('candlestick', 'ohlc', merge(defaultOptions.plotOptions.column, candlestickOptions), 
+        BaseSeries.seriesType('candlestick', 'ohlc', merge(defaultOptions.plotOptions.column, candlestickOptions), 
         /**
          * @lends seriesTypes.candlestick
          */
@@ -6282,7 +6276,7 @@
              * @return {Highcharts.SVGAttributes}
              */
             pointAttribs: function (point, state) {
-                var attribs = seriesTypes.column.prototype.pointAttribs.call(this,
+                var attribs = columnProto.pointAttribs.call(this,
                     point,
                     state),
                     options = this.options,
@@ -6613,7 +6607,7 @@
 
         return onSeriesMixin;
     });
-    _registerModule(_modules, 'Series/FlagsSeries.js', [_modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Mixins/OnSeries.js']], function (H, SVGElement, SVGRenderer, U, onSeriesMixin) {
+    _registerModule(_modules, 'Series/FlagsSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Mixins/OnSeries.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, OnSeriesMixin, SVGElement, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -6623,22 +6617,22 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var noop = H.noop;
         var addEvent = U.addEvent,
             defined = U.defined,
             isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach,
-            seriesType = U.seriesType,
             wrap = U.wrap;
+        var Renderer = H.Renderer,
+            Series = H.Series,
+            TrackerMixin = H.TrackerMixin, // Interaction
+            VMLRenderer = H.VMLRenderer,
+            symbols = SVGRenderer.prototype.symbols;
         /**
          * @typedef {"circlepin"|"flag"|"squarepin"} Highcharts.FlagsShapeValue
          */
-        var noop = H.noop,
-            Renderer = H.Renderer,
-            Series = H.Series,
-            TrackerMixin = H.TrackerMixin,
-            VMLRenderer = H.VMLRenderer,
-            symbols = SVGRenderer.prototype.symbols;
+        ''; // detach doclets above
         /**
          * The Flags series.
          *
@@ -6648,7 +6642,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('flags', 'column'
+        BaseSeries.seriesType('flags', 'column'
         /**
          * Flags are used to mark events in stock charts. They can be added on the
          * timeline, or attached to a specific series.
@@ -6905,8 +6899,8 @@
                     'stroke-width': lineWidth || options.lineWidth || 0
                 };
             },
-            translate: onSeriesMixin.translate,
-            getPlotBox: onSeriesMixin.getPlotBox,
+            translate: OnSeriesMixin.translate,
+            getPlotBox: OnSeriesMixin.getPlotBox,
             /**
              * Draw the markers.
              *
@@ -9087,7 +9081,7 @@
 
         return H.RangeSelector;
     });
-    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, Point, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Series/LineSeries.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, LineSeries, Point, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -9117,8 +9111,7 @@
         // defaultOptions.scrollbar
         // Has a dependency on RangeSelector due to the use of
         // defaultOptions.rangeSelector
-        var Series = H.Series,
-            seriesProto = Series.prototype,
+        var seriesProto = LineSeries.prototype,
             seriesInit = seriesProto.init,
             seriesProcessData = seriesProto.processData,
             pointTooltipFormatter = Point.prototype.tooltipFormatter;
@@ -9317,7 +9310,7 @@
         };
         // Handle som Stock-specific series defaults, override the plotOptions before
         // series options are handled.
-        addEvent(Series, 'setOptions', function (e) {
+        addEvent(LineSeries, 'setOptions', function (e) {
             var overrides;
             if (this.chart.options.isStock) {
                 if (this.is('column') || this.is('columnrange')) {
@@ -9775,7 +9768,7 @@
             return;
         };
         // Modify series extremes
-        addEvent(Series, 'afterGetExtremes', function (e) {
+        addEvent(LineSeries, 'afterGetExtremes', function (e) {
             var dataExtremes = e.dataExtremes;
             if (this.modifyValue && dataExtremes) {
                 var extremes = [
@@ -9836,7 +9829,7 @@
         // Extend the Series prototype to create a separate series clip box. This is
         // related to using multiple panes, and a future pane logic should incorporate
         // this feature (#2754).
-        addEvent(Series, 'render', function () {
+        addEvent(LineSeries, 'render', function () {
             var chart = this.chart,
                 clipHeight;
             // Only do this on not 3d (#2939, #5904) nor polar (#6057) charts, and only
@@ -9858,7 +9851,7 @@
                     }
                 }
                 // First render, initial clip box
-                if (!this.clipBox && this.animate) {
+                if (!this.clipBox && !chart.hasRendered) {
                     this.clipBox = merge(chart.clipBox);
                     this.clipBox.width = this.xAxis.len;
                     this.clipBox.height = clipHeight;

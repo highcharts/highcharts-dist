@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/MACDIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/MACDIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,12 +36,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var noop = H.noop;
         var correctFloat = U.correctFloat,
             defined = U.defined,
-            merge = U.merge,
-            seriesType = U.seriesType;
-        var noop = H.noop,
-            SMA = H.seriesTypes.sma,
+            merge = U.merge;
+        // im port './EMAIndicator.js';
+        // im port './SMAIndicator.js';
+        var SMA = H.seriesTypes.sma,
             EMA = H.seriesTypes.ema;
         /**
          * The MACD series type.
@@ -52,7 +53,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('macd', 'sma', 
+        BaseSeries.seriesType('macd', 'sma', 
         /**
          * Moving Average Convergence Divergence (MACD). This series requires
          * `linkedTo` option to be set and should be loaded after the

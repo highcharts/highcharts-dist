@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
+ * @license Highcharts Gantt JS v8.2.2 (2020-10-22)
  *
  * StaticScale
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Axis, Chart, U) {
         /* *
          *
          *  (c) 2016-2020 Torstein Honsi, Lars Cabrera
@@ -42,7 +42,6 @@
             defined = U.defined,
             isNumber = U.isNumber,
             pick = U.pick;
-        var Chart = H.Chart;
         /* eslint-disable no-invalid-this */
         /**
          * For vertical axes only. Setting the static scale ensures that each tick unit
@@ -60,7 +59,7 @@
          * @product   gantt
          * @apioption yAxis.staticScale
          */
-        addEvent(H.Axis, 'afterSetOptions', function () {
+        addEvent(Axis, 'afterSetOptions', function () {
             var chartOptions = this.chart.options && this.chart.options.chart;
             if (!this.horiz &&
                 isNumber(this.options.staticScale) &&

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -217,7 +217,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/AroonIndicator.js', [_modules['Core/Utilities.js'], _modules['Mixins/MultipleLines.js']], function (U, multipleLinesMixin) {
+    _registerModule(_modules, 'Stock/Indicators/AroonIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/MultipleLines.js'], _modules['Core/Utilities.js']], function (BaseSeries, MultipleLinesMixin, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -226,8 +226,8 @@
          *
          * */
         var merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
+        // im port './SMAIndicator.js';
         /* eslint-disable valid-jsdoc */
         // Utils
         // Index of element with extreme value from array (min or max)
@@ -257,7 +257,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('aroon', 'sma', 
+        BaseSeries.seriesType('aroon', 'sma', 
         /**
          * Aroon. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js`.
@@ -322,7 +322,7 @@
         /**
          * @lends Highcharts.Series#
          */
-        merge(multipleLinesMixin, {
+        merge(MultipleLinesMixin, {
             nameBase: 'Aroon',
             pointArrayMap: ['y', 'aroonDown'],
             pointValKey: 'y',

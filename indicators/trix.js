@@ -1,5 +1,5 @@
 /*
- Highstock JS v8.2.0 (2020-08-20)
+ Highstock JS v8.2.2 (2020-10-22)
 
  Indicator series type for Highstock
 
@@ -7,7 +7,7 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/trix",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,c,d,e){a.hasOwnProperty(c)||(a[c]=e.apply(null,d))}a=a?a._modules:{};b(a,"Mixins/IndicatorRequired.js",[a["Core/Utilities.js"]],function(a){var c=a.error;return{isParentLoaded:function(a,
-e,b,f,g){if(a)return f?f(a):!0;c(g||this.generateMessage(b,e));return!1},generateMessage:function(a,c){return'Error: "'+a+'" indicator type requires "'+c+'" indicator loaded before. Please read docs: https://api.highcharts.com/highstock/plotOptions.'+a}}});b(a,"Stock/Indicators/TRIXIndicator.js",[a["Core/Globals.js"],a["Core/Utilities.js"],a["Mixins/IndicatorRequired.js"]],function(a,c,b){var e=c.correctFloat;c=c.seriesType;var d=a.seriesTypes.tema;c("trix","tema",{},{init:function(){var a=arguments,
-c=this;b.isParentLoaded(d,"tema",c.type,function(b){b.prototype.init.apply(c,a)})},getTemaPoint:function(a,c,b,d){if(d>c)var f=[a[d-3],0!==b.prevLevel3?e(b.level3-b.prevLevel3)/b.prevLevel3*100:null];return f}});""});b(a,"masters/indicators/trix.src.js",[],function(){})});
+(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/trix",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,b,c,e){a.hasOwnProperty(b)||(a[b]=e.apply(null,c))}a=a?a._modules:{};b(a,"Mixins/IndicatorRequired.js",[a["Core/Utilities.js"]],function(a){var b=a.error;return{isParentLoaded:function(a,
+e,g,h,d){if(a)return h?h(a):!0;b(d||this.generateMessage(g,e));return!1},generateMessage:function(a,b){return'Error: "'+a+'" indicator type requires "'+b+'" indicator loaded before. Please read docs: https://api.highcharts.com/highstock/plotOptions.'+a}}});b(a,"Stock/Indicators/TRIXIndicator.js",[a["Core/Series/Series.js"],a["Mixins/IndicatorRequired.js"],a["Core/Utilities.js"]],function(a,b,c){var e=c.correctFloat,g=a.seriesTypes.tema;a.seriesType("trix","tema",{},{init:function(){var a=arguments,
+d=this;b.isParentLoaded(g,"tema",d.type,function(b){b.prototype.init.apply(d,a)})},getTemaPoint:function(a,b,f,c){if(c>b)var d=[a[c-3],0!==f.prevLevel3?e(f.level3-f.prevLevel3)/f.prevLevel3*100:null];return d}});""});b(a,"masters/indicators/trix.src.js",[],function(){})});
 //# sourceMappingURL=trix.js.map

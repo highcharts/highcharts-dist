@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,7 +12,7 @@
  */
 'use strict';
 
-import '../../Stock/Indicators/Indicators.js';
+import '../../Stock/Indicators/SMAIndicator.js';
 import '../../Stock/Indicators/ADIndicator.js';
 import '../../Stock/Indicators/AOIndicator.js';
 import '../../Stock/Indicators/AroonIndicator.js';

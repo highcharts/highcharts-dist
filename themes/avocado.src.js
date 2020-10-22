@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2009-2019 Highsoft AS
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/Avocado.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Highcharts, U) {
+    _registerModule(_modules, 'Extensions/Themes/Avocado.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -42,7 +42,7 @@
          *
          * */
         var setOptions = U.setOptions;
-        Highcharts.theme = {
+        H.theme = {
             colors: ['#F3E796', '#95C471', '#35729E', '#251735'],
             colorAxis: {
                 maxColor: '#05426E',
@@ -62,7 +62,7 @@
             }
         };
         // Apply the theme
-        setOptions(Highcharts.theme);
+        setOptions(H.theme);
 
     });
     _registerModule(_modules, 'masters/themes/avocado.src.js', [], function () {

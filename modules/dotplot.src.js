@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Dot plot series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/DotplotSeries.js', [_modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (SVGRenderer, U) {
+    _registerModule(_modules, 'Series/DotplotSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Series, SVGRenderer, U) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi
@@ -40,17 +40,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /**
-         * @private
-         * @todo
-         * - Check update, remove etc.
-         * - Custom icons like persons, carts etc. Either as images, font icons or
-         *   Highcharts symbols.
-         */
         var extend = U.extend,
             objectEach = U.objectEach,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
         /**
          * @private
          * @class
@@ -58,7 +50,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('dotplot', 'column', {
+        Series.seriesType('dotplot', 'column', {
             itemPadding: 0.2,
             marker: {
                 symbol: 'circle',

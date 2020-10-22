@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Highcharts cylinder module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/CylinderSeries.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Extensions/Math3D.js'], _modules['Core/Utilities.js']], function (H, Color, Math3D, U) {
+    _registerModule(_modules, 'Series/CylinderSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, Series, U) {
         /* *
          *
          *  Highcharts cylinder - a 3D series
@@ -43,16 +43,13 @@
          *
          * */
         var color = Color.parse;
+        var charts = H.charts,
+            deg2rad = H.deg2rad,
+            RendererProto = H.Renderer.prototype;
         var perspective = Math3D.perspective;
         var merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var charts = H.charts,
-            deg2rad = H.deg2rad, 
-            // Work on H.Renderer instead of SVGRenderer for VML support.
-            RendererProto = H.Renderer.prototype,
-            cuboidPath = RendererProto.cuboidPath,
-            cylinderMethods;
+            pick = U.pick;
+        var cuboidPath = RendererProto.cuboidPath;
         // Check if a path is simplified. The simplified path contains only lineTo
         // segments, whereas non-simplified contain curves.
         var isSimplified = function (path) {
@@ -70,7 +67,7 @@
           *
           * @augments Highcharts.Series
           */
-        seriesType('cylinder', 'column', 
+        Series.seriesType('cylinder', 'column', 
         /**
          * A cylinder graph is a variation of a 3d column graph. The cylinder graph
          * features cylindrical points.
@@ -168,16 +165,16 @@
          * @apioption series.cylinder.data
          */
         // cylinder extends cuboid
-        cylinderMethods = merge(RendererProto.elements3d.cuboid, {
-            parts: ['top', 'bottom', 'front', 'back'],
-            pathType: 'cylinder',
-            fillSetter: function (fill) {
-                this.singleSetterForParts('fill', null, {
-                    front: fill,
-                    back: fill,
-                    top: color(fill).brighten(0.1).get(),
-                    bottom: color(fill).brighten(-0.1).get()
-                });
+        var cylinderMethods = merge(RendererProto.elements3d.cuboid, {
+                parts: ['top', 'bottom', 'front', 'back'],
+                pathType: 'cylinder',
+                fillSetter: function (fill) {
+                    this.singleSetterForParts('fill', null, {
+                        front: fill,
+                        back: fill,
+                        top: color(fill).brighten(0.1).get(),
+                        bottom: color(fill).brighten(-0.1).get()
+                    });
                 // fill for animation getter (#6776)
                 this.color = this.fill = fill;
                 return this;

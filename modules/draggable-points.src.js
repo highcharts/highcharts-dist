@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/DraggablePoints.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Extensions/DraggablePoints.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Chart, H, Point, U) {
         /* *
          *
          *  (c) 2009-2020 Highsoft AS
@@ -1767,7 +1767,7 @@
          * @return {Highcharts.SVGElement}
          *         The modified guide box.
          */
-        H.Chart.prototype.setGuideBoxState = function (state, options) {
+        Chart.prototype.setGuideBoxState = function (state, options) {
             var guideBox = this.dragGuideBox,
                 guideBoxOptions = merge(defaultGuideBoxOptions,
                 options),
@@ -2061,7 +2061,7 @@
          * @function Highcharts.Chart#hideDragHandles
          * @return {void}
          */
-        H.Chart.prototype.hideDragHandles = function () {
+        Chart.prototype.hideDragHandles = function () {
             var chart = this;
             if (chart.dragHandles) {
                 objectEach(chart.dragHandles, function (val, key) {
@@ -2330,7 +2330,7 @@
          * @return {boolean}
          *         True if the zoom or pan keys are pressed. False otherwise.
          */
-        H.Chart.prototype.zoomOrPanKeyPressed = function (e) {
+        Chart.prototype.zoomOrPanKeyPressed = function (e) {
             // Check whether the panKey and zoomKey are set in chart.userOptions
             var chartOptions = this.userOptions.chart || {}, panKey = chartOptions.panKey && chartOptions.panKey + 'Key', zoomKey = chartOptions.zoomKey && chartOptions.zoomKey + 'Key';
             return (e[zoomKey] || e[panKey]);
@@ -2372,7 +2372,7 @@
         }
         // Add event listener to Chart.render that checks whether or not we should add
         // dragdrop.
-        addEvent(H.Chart, 'render', function () {
+        addEvent(Chart, 'render', function () {
             // If we don't have dragDrop events, see if we should add them
             if (!this.hasAddedDragDropEvents) {
                 addDragDropEvents(this);

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,15 +28,15 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/ADIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/ADIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
-        var error = U.error,
-            seriesType = U.seriesType;
+        var error = U.error;
+        // im port './SMAIndicator.js';
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -63,7 +63,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('ad', 'sma', 
+        BaseSeries.seriesType('ad', 'sma', 
         /**
          * Accumulation Distribution (AD). This series requires `linkedTo` option to
          * be set.

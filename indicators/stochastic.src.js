@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,64 +28,6 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/ReduceArray.js', [], function () {
-        /**
-         *
-         *  (c) 2010-2020 Pawel Fus & Daniel Studencki
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var reduceArrayMixin = {
-                /**
-                 * Get min value of array filled by OHLC data.
-                 * @private
-                 * @param {Array<*>} arr Array of OHLC points (arrays).
-                 * @param {string} index Index of "low" value in point array.
-                 * @return {number} Returns min value.
-                 */
-                minInArray: function (arr,
-            index) {
-                    return arr.reduce(function (min,
-            target) {
-                        return Math.min(min,
-            target[index]);
-                }, Number.MAX_VALUE);
-            },
-            /**
-             * Get max value of array filled by OHLC data.
-             * @private
-             * @param {Array<*>} arr Array of OHLC points (arrays).
-             * @param {string} index Index of "high" value in point array.
-             * @return {number} Returns max value.
-             */
-            maxInArray: function (arr, index) {
-                return arr.reduce(function (max, target) {
-                    return Math.max(max, target[index]);
-                }, -Number.MAX_VALUE);
-            },
-            /**
-             * Get extremes of array filled by OHLC data.
-             * @private
-             * @param {Array<*>} arr Array of OHLC points (arrays).
-             * @param {string} minIndex Index of "low" value in point array.
-             * @param {string} maxIndex Index of "high" value in point array.
-             * @return {Array<number,number>} Returns array with min and max value.
-             */
-            getArrayExtremes: function (arr, minIndex, maxIndex) {
-                return arr.reduce(function (prev, target) {
-                    return [
-                        Math.min(prev[0], target[minIndex]),
-                        Math.max(prev[1], target[maxIndex])
-                    ];
-                }, [Number.MAX_VALUE, -Number.MAX_VALUE]);
-            }
-        };
-
-        return reduceArrayMixin;
-    });
     _registerModule(_modules, 'Mixins/MultipleLines.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
          *
@@ -275,7 +217,65 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/StochasticIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/ReduceArray.js'], _modules['Mixins/MultipleLines.js']], function (H, U, reduceArrayMixin, multipleLinesMixin) {
+    _registerModule(_modules, 'Mixins/ReduceArray.js', [], function () {
+        /**
+         *
+         *  (c) 2010-2020 Pawel Fus & Daniel Studencki
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var reduceArrayMixin = {
+                /**
+                 * Get min value of array filled by OHLC data.
+                 * @private
+                 * @param {Array<*>} arr Array of OHLC points (arrays).
+                 * @param {string} index Index of "low" value in point array.
+                 * @return {number} Returns min value.
+                 */
+                minInArray: function (arr,
+            index) {
+                    return arr.reduce(function (min,
+            target) {
+                        return Math.min(min,
+            target[index]);
+                }, Number.MAX_VALUE);
+            },
+            /**
+             * Get max value of array filled by OHLC data.
+             * @private
+             * @param {Array<*>} arr Array of OHLC points (arrays).
+             * @param {string} index Index of "high" value in point array.
+             * @return {number} Returns max value.
+             */
+            maxInArray: function (arr, index) {
+                return arr.reduce(function (max, target) {
+                    return Math.max(max, target[index]);
+                }, -Number.MAX_VALUE);
+            },
+            /**
+             * Get extremes of array filled by OHLC data.
+             * @private
+             * @param {Array<*>} arr Array of OHLC points (arrays).
+             * @param {string} minIndex Index of "low" value in point array.
+             * @param {string} maxIndex Index of "high" value in point array.
+             * @return {Array<number,number>} Returns array with min and max value.
+             */
+            getArrayExtremes: function (arr, minIndex, maxIndex) {
+                return arr.reduce(function (prev, target) {
+                    return [
+                        Math.min(prev[0], target[minIndex]),
+                        Math.max(prev[1], target[maxIndex])
+                    ];
+                }, [Number.MAX_VALUE, -Number.MAX_VALUE]);
+            }
+        };
+
+        return reduceArrayMixin;
+    });
+    _registerModule(_modules, 'Stock/Indicators/StochasticIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/MultipleLines.js'], _modules['Mixins/ReduceArray.js'], _modules['Core/Utilities.js']], function (BaseSeries, MultipleLinesMixin, ReduceArrayMixin, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -284,10 +284,10 @@
          *
          * */
         var isArray = U.isArray,
-            merge = U.merge,
-            seriesType = U.seriesType;
-        var SMA = H.seriesTypes.sma,
-            getArrayExtremes = reduceArrayMixin.getArrayExtremes;
+            merge = U.merge;
+        // im port './SMAIndicator.js';
+        var SMA = BaseSeries.seriesTypes.sma,
+            getArrayExtremes = ReduceArrayMixin.getArrayExtremes;
         /**
          * The Stochastic series type.
          *
@@ -297,7 +297,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('stochastic', 'sma', 
+        BaseSeries.seriesType('stochastic', 'sma', 
         /**
          * Stochastic oscillator. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js` file.
@@ -363,7 +363,7 @@
         /**
          * @lends Highcharts.Series#
          */
-        merge(multipleLinesMixin, {
+        merge(MultipleLinesMixin, {
             nameComponents: ['periods'],
             nameBase: 'Stochastic',
             pointArrayMap: ['y', 'smoothed'],

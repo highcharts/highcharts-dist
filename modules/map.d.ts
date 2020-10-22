@@ -138,7 +138,7 @@ declare module "../highcharts" {
     /**
      * Contains all loaded map data for Highmaps.
      */
-    let maps: Dictionary<any>;
+    let maps: Record<string, any>;
     /**
      * Highmaps only. Restructure a GeoJSON object in preparation to be read
      * directly by the series.mapData option. The GeoJSON will be broken down to

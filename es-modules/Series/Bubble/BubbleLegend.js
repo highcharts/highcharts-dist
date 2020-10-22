@@ -11,7 +11,7 @@
  * */
 'use strict';
 import Chart from '../../Core/Chart/Chart.js';
-import Color from '../../Core/Color.js';
+import Color from '../../Core/Color/Color.js';
 var color = Color.parse;
 import H from '../../Core/Globals.js';
 import Legend from '../../Core/Legend.js';
@@ -55,7 +55,7 @@ setOptions({
              * individual range.
              *
              * @sample highcharts/bubble-legend/similartoseries/
-             *         Similat look to the bubble series
+             *         Similar look to the bubble series
              * @sample highcharts/bubble-legend/bordercolor/
              *         Individual bubble border color
              *
@@ -83,7 +83,7 @@ setOptions({
              * individual color is not defined.
              *
              * @sample highcharts/bubble-legend/similartoseries/
-             *         Similat look to the bubble series
+             *         Similar look to the bubble series
              * @sample highcharts/bubble-legend/color/
              *         Individual bubble color
              *

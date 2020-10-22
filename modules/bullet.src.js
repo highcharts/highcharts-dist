@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Bullet graph series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/BulletSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/BulletSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  (c) 2010-2020 Kacper Madej
@@ -41,9 +41,8 @@
         var isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
-            relativeLength = U.relativeLength,
-            seriesType = U.seriesType;
-        var columnProto = H.seriesTypes.column.prototype;
+            relativeLength = U.relativeLength;
+        var columnProto = BaseSeries.seriesTypes.column.prototype;
         /**
          * The bullet series type.
          *
@@ -53,7 +52,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('bullet', 'column'
+        BaseSeries.seriesType('bullet', 'column'
         /**
          * A bullet graph is a variation of a bar graph. The bullet graph features
          * a single measure, compares it to a target, and displays it in the context

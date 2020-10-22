@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Data module
  *
@@ -182,7 +182,7 @@
 
         return exports;
     });
-    _registerModule(_modules, 'Extensions/Data.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Extensions/Ajax.js']], function (Chart, H, Point, U, Ajax) {
+    _registerModule(_modules, 'Extensions/Data.js', [_modules['Extensions/Ajax.js'], _modules['Core/Series/Series.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Ajax, BaseSeries, Chart, H, Point, U) {
         /* *
          *
          *  Data module
@@ -194,6 +194,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var ajax = Ajax.ajax;
+        var doc = H.doc;
         var addEvent = U.addEvent,
             defined = U.defined,
             extend = U.extend,
@@ -203,6 +205,7 @@
             objectEach = U.objectEach,
             pick = U.pick,
             splat = U.splat;
+        var seriesTypes = BaseSeries.seriesTypes;
         /**
          * Callback function to modify the CSV before parsing it by the data module.
          *
@@ -275,10 +278,6 @@
          *         Return `false` to stop completion, or call `this.complete()` to
          *         continue async.
          */
-        var ajax = Ajax.ajax;
-        // Utilities
-        var win = H.win,
-            doc = win.document;
         /**
          * The Data module provides a simplified interface for adding data to
          * a chart from sources like CVS, HTML tables or grid views. See also
@@ -806,12 +805,9 @@
                     options = this.options,
                     xColumns = [],
                     getValueCount = function (type) {
-                        return (H.seriesTypes[type || 'line'].prototype
-                            .pointArrayMap ||
-                            [0]).length;
+                        return (seriesTypes[type || 'line'].prototype.pointArrayMap || [0]).length;
                 }, getPointArrayMap = function (type) {
-                    return H.seriesTypes[type || 'line']
-                        .prototype.pointArrayMap;
+                    return seriesTypes[type || 'line'].prototype.pointArrayMap;
                 }, globalType = (chartOptions &&
                     chartOptions.chart &&
                     chartOptions.chart.type), individualCounts = [], seriesBuilders = [], seriesIndex = 0, 

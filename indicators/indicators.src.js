@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/Indicators.js', [_modules['Core/Globals.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (H, requiredIndicator, U) {
+    _registerModule(_modules, 'Stock/Indicators/SMAIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, requiredIndicator, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,16 +98,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = BaseSeries.seriesTypes;
         var addEvent = U.addEvent,
             error = U.error,
             extend = U.extend,
             isArray = U.isArray,
             pick = U.pick,
-            seriesType = U.seriesType,
             splat = U.splat;
         var Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            ohlcProto = H.seriesTypes.ohlc.prototype,
+            ohlcProto = seriesTypes.ohlc.prototype,
             generateMessage = requiredIndicator.generateMessage;
         /**
          * The parameter allows setting line series type and use OHLC indicators. Data
@@ -153,7 +152,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('sma', 'line', 
+        BaseSeries.seriesType('sma', 'line', 
         /**
          * Simple moving average indicator (SMA). This series requires `linkedTo`
          * option to be set.
@@ -354,7 +353,8 @@
                         ' not found! Check `linkedTo`.', false, chart);
                 }
                 indicator.dataEventsToUnbind.push(addEvent(indicator.bindTo.series ?
-                    indicator.linkedParent : indicator.linkedParent.xAxis, indicator.bindTo.eventName, recalculateValues));
+                    indicator.linkedParent :
+                    indicator.linkedParent.xAxis, indicator.bindTo.eventName, recalculateValues));
                 if (indicator.calculateOn === 'init') {
                     recalculateValues();
                 }

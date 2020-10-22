@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Accessibility module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Accessibility/Utils/HTMLUtilities.js', [_modules['Core/Utilities.js'], _modules['Core/Globals.js']], function (U, H) {
+    _registerModule(_modules, 'Accessibility/Utils/HTMLUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -41,9 +41,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var doc = H.doc,
+            win = H.win;
         var merge = U.merge;
-        var win = H.win,
-            doc = win.document;
         /* eslint-disable valid-jsdoc */
         /**
          * @private
@@ -249,10 +249,12 @@
          * The DOM element for the point.
          */
         function getSeriesFirstPointElement(series) {
-            if (series.points &&
-                series.points.length &&
-                series.points[0].graphic) {
-                return series.points[0].graphic.element;
+            var _a,
+                _b;
+            if ((_a = series.points) === null || _a === void 0 ? void 0 : _a.length) {
+                var firstPointWithGraphic = find(series.points,
+                    function (p) { return !!p.graphic; });
+                return (_b = firstPointWithGraphic === null || firstPointWithGraphic === void 0 ? void 0 : firstPointWithGraphic.graphic) === null || _b === void 0 ? void 0 : _b.element;
             }
         }
         /**
@@ -497,6 +499,56 @@
 
         return KeyboardNavigationHandler;
     });
+    _registerModule(_modules, 'Accessibility/Utils/DOMElementProvider.js', [_modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (H, HTMLUtilities, U) {
+        /* *
+         *
+         *  (c) 2009-2020 Øystein Moseng
+         *
+         *  Class that can keep track of elements added to DOM and clean them up on
+         *  destroy.
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var doc = H.doc;
+        var removeElement = HTMLUtilities.removeElement;
+        var extend = U.extend;
+        /* eslint-disable no-invalid-this, valid-jsdoc */
+        /**
+         * @private
+         * @class
+         */
+        var DOMElementProvider = function () {
+                this.elements = [];
+        };
+        extend(DOMElementProvider.prototype, {
+            /**
+             * Create an element and keep track of it for later removal.
+             * Same args as document.createElement
+             * @private
+             */
+            createElement: function () {
+                var el = doc.createElement.apply(doc,
+                    arguments);
+                this.elements.push(el);
+                return el;
+            },
+            /**
+             * Destroy all created elements, removing them from the DOM.
+             * @private
+             */
+            destroyCreatedElements: function () {
+                this.elements.forEach(function (element) {
+                    removeElement(element);
+                });
+                this.elements = [];
+            }
+        });
+
+        return DOMElementProvider;
+    });
     _registerModule(_modules, 'Accessibility/Utils/EventProvider.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
@@ -547,57 +599,7 @@
 
         return EventProvider;
     });
-    _registerModule(_modules, 'Accessibility/Utils/DOMElementProvider.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, U, HTMLUtilities) {
-        /* *
-         *
-         *  (c) 2009-2020 Øystein Moseng
-         *
-         *  Class that can keep track of elements added to DOM and clean them up on
-         *  destroy.
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var doc = H.win.document;
-        var extend = U.extend;
-        var removeElement = HTMLUtilities.removeElement;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * @private
-         * @class
-         */
-        var DOMElementProvider = function () {
-                this.elements = [];
-        };
-        extend(DOMElementProvider.prototype, {
-            /**
-             * Create an element and keep track of it for later removal.
-             * Same args as document.createElement
-             * @private
-             */
-            createElement: function () {
-                var el = doc.createElement.apply(doc,
-                    arguments);
-                this.elements.push(el);
-                return el;
-            },
-            /**
-             * Destroy all created elements, removing them from the DOM.
-             * @private
-             */
-            destroyCreatedElements: function () {
-                this.elements.forEach(function (element) {
-                    removeElement(element);
-                });
-                this.elements = [];
-            }
-        });
-
-        return DOMElementProvider;
-    });
-    _registerModule(_modules, 'Accessibility/AccessibilityComponent.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/DOMElementProvider.js']], function (H, U, HTMLUtilities, ChartUtilities, EventProvider, DOMElementProvider) {
+    _registerModule(_modules, 'Accessibility/AccessibilityComponent.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/DOMElementProvider.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (ChartUtilities, DOMElementProvider, EventProvider, H, HTMLUtilities, U) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -609,14 +611,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var win = H.win,
-            doc = win.document;
+        var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
+        var doc = H.doc,
+            win = H.win;
+        var removeElement = HTMLUtilities.removeElement,
+            getFakeMouseEvent = HTMLUtilities.getFakeMouseEvent;
         var extend = U.extend,
             fireEvent = U.fireEvent,
             merge = U.merge;
-        var removeElement = HTMLUtilities.removeElement,
-            getFakeMouseEvent = HTMLUtilities.getFakeMouseEvent;
-        var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
         /* eslint-disable valid-jsdoc */
         /** @lends Highcharts.AccessibilityComponent */
         var functionsToOverrideByDerivedClasses = {
@@ -1064,9 +1066,13 @@
                 this.update();
                 ep.addEvent(this.tabindexContainer, 'keydown', function (e) { return _this.onKeydown(e); });
                 ep.addEvent(this.tabindexContainer, 'focus', function (e) { return _this.onFocus(e); });
-                ep.addEvent(doc, 'mouseup', function () { return _this.onMouseUp(); });
-                ep.addEvent(chart.renderTo, 'mousedown', function () {
-                    _this.isClickingChart = true;
+                ['mouseup', 'touchend'].forEach(function (eventName) {
+                    return ep.addEvent(doc, eventName, function () { return _this.onMouseUp(); });
+                });
+                ['mousedown', 'touchstart'].forEach(function (eventName) {
+                    return ep.addEvent(chart.renderTo, eventName, function () {
+                        _this.isClickingChart = true;
+                    });
                 });
                 ep.addEvent(chart.renderTo, 'mouseover', function () {
                     _this.pointerIsOverChart = true;
@@ -2053,7 +2059,7 @@
 
         return MenuComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesKeyboardNavigation.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/ChartUtilities.js']], function (Chart, H, Point, U, KeyboardNavigationHandler, EventProvider, ChartUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesKeyboardNavigation.js', [_modules['Core/Series/Series.js'], _modules['Core/Series/CartesianSeries.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/ChartUtilities.js']], function (Series, CartesianSeries, Chart, Point, U, KeyboardNavigationHandler, EventProvider, ChartUtilities) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -2065,6 +2071,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = Series.seriesTypes;
         var defined = U.defined,
             extend = U.extend;
         var getPointFromXY = ChartUtilities.getPointFromXY,
@@ -2075,10 +2082,10 @@
          * Set for which series types it makes sense to move to the closest point with
          * up/down arrows, and which series types should just move to next series.
          */
-        H.Series.prototype.keyboardMoveVertical = true;
+        CartesianSeries.prototype.keyboardMoveVertical = true;
         ['column', 'pie'].forEach(function (type) {
-            if (H.seriesTypes[type]) {
-                H.seriesTypes[type].prototype.keyboardMoveVertical = false;
+            if (seriesTypes[type]) {
+                seriesTypes[type].prototype.keyboardMoveVertical = false;
             }
         });
         /**
@@ -2301,7 +2308,7 @@
          *
          * @return {boolean|Highcharts.Point}
          */
-        H.Series.prototype.highlightFirstValidPoint = function () {
+        CartesianSeries.prototype.highlightFirstValidPoint = function () {
             var curPoint = this.chart.highlightedPoint,
                 start = (curPoint && curPoint.series) === this ?
                     getPointIndex(curPoint) :
@@ -2484,7 +2491,7 @@
                 var keyboardNavigation = this,
                     chart = this.chart,
                     e = this.eventProvider = new EventProvider();
-                e.addEvent(H.Series, 'destroy', function () {
+                e.addEvent(CartesianSeries, 'destroy', function () {
                     return keyboardNavigation.onSeriesDestroy(this);
                 });
                 e.addEvent(chart, 'afterDrilldown', function () {
@@ -2810,7 +2817,7 @@
 
         return AnnotationsA11y;
     });
-    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesDescriber.js', [_modules['Core/Utilities.js'], _modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Tooltip.js']], function (U, AnnotationsA11y, HTMLUtilities, ChartUtilities, Tooltip) {
+    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesDescriber.js', [_modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Tooltip.js'], _modules['Core/Utilities.js']], function (AnnotationsA11y, ChartUtilities, HTMLUtilities, Tooltip, U) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -2822,20 +2829,20 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var getPointAnnotationTexts = AnnotationsA11y.getPointAnnotationTexts;
+        var getAxisDescription = ChartUtilities.getAxisDescription,
+            getSeriesFirstPointElement = ChartUtilities.getSeriesFirstPointElement,
+            getSeriesA11yElement = ChartUtilities.getSeriesA11yElement,
+            unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
+        var escapeStringForHTML = HTMLUtilities.escapeStringForHTML,
+            reverseChildNodes = HTMLUtilities.reverseChildNodes,
+            stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
         var find = U.find,
             format = U.format,
             isNumber = U.isNumber,
             numberFormat = U.numberFormat,
             pick = U.pick,
             defined = U.defined;
-        var getPointAnnotationTexts = AnnotationsA11y.getPointAnnotationTexts;
-        var escapeStringForHTML = HTMLUtilities.escapeStringForHTML,
-            reverseChildNodes = HTMLUtilities.reverseChildNodes,
-            stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
-        var getAxisDescription = ChartUtilities.getAxisDescription,
-            getSeriesFirstPointElement = ChartUtilities.getSeriesFirstPointElement,
-            getSeriesA11yElement = ChartUtilities.getSeriesA11yElement,
-            unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
         /* eslint-disable valid-jsdoc */
         /**
          * @private
@@ -3314,7 +3321,7 @@
 
         return Announcer;
     });
-    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/NewDataAnnouncer.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Components/SeriesComponent/SeriesDescriber.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Utils/EventProvider.js']], function (H, U, ChartUtilities, SeriesDescriber, Announcer, EventProvider) {
+    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/NewDataAnnouncer.js', [_modules['Core/Globals.js'], _modules['Core/Series/CartesianSeries.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Components/SeriesComponent/SeriesDescriber.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Utils/EventProvider.js']], function (H, CartesianSeries, U, ChartUtilities, SeriesDescriber, Announcer, EventProvider) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -3407,13 +3414,13 @@
                 e.addEvent(chart, 'afterDrilldown', function () {
                     announcer.lastAnnouncementTime = 0;
                 });
-                e.addEvent(H.Series, 'updatedData', function () {
+                e.addEvent(CartesianSeries, 'updatedData', function () {
                     announcer.onSeriesUpdatedData(this);
                 });
                 e.addEvent(chart, 'afterAddSeries', function (e) {
                     announcer.onSeriesAdded(e.series);
                 });
-                e.addEvent(H.Series, 'addPoint', function (e) {
+                e.addEvent(CartesianSeries, 'addPoint', function (e) {
                     announcer.onPointAdded(e.point);
                 });
                 e.addEvent(chart, 'redraw', function () {
@@ -3577,7 +3584,7 @@
 
         return NewDataAnnouncer;
     });
-    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/ForcedMarkers.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Accessibility/Components/SeriesComponent/ForcedMarkers.js', [_modules['Core/Series/CartesianSeries.js'], _modules['Core/Utilities.js']], function (CartesianSeries, U) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -3701,7 +3708,7 @@
              * Keep track of forcing markers.
              * @private
              */
-            addEvent(H.Series, 'render', function () {
+            addEvent(CartesianSeries, 'render', function () {
                 var series = this,
                     options = series.options;
                 if (shouldForceMarkers(series)) {
@@ -3722,14 +3729,14 @@
              * Keep track of options to reset markers to if no longer forced.
              * @private
              */
-            addEvent(H.Series, 'afterSetOptions', function (e) {
+            addEvent(CartesianSeries, 'afterSetOptions', function (e) {
                 this.resetA11yMarkerOptions = merge(e.options.marker || {}, this.userOptions.marker || {});
             });
             /**
              * Process marker graphics after render
              * @private
              */
-            addEvent(H.Series, 'afterRender', function () {
+            addEvent(CartesianSeries, 'afterRender', function () {
                 var series = this;
                 // For styled mode the rendered graphic does not reflect the style
                 // options, and we need to add/remove classes to achieve the same.
@@ -3854,7 +3861,7 @@
 
         return SeriesComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/ZoomComponent.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler, ChartUtilities, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/ZoomComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, ChartUtilities, H, HTMLUtilities, KeyboardNavigationHandler, U) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -3866,11 +3873,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
+        var noop = H.noop;
+        var removeElement = HTMLUtilities.removeElement,
+            setElAttrs = HTMLUtilities.setElAttrs;
         var extend = U.extend,
             pick = U.pick;
-        var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
-        var setElAttrs = HTMLUtilities.setElAttrs,
-            removeElement = HTMLUtilities.removeElement;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * @private
@@ -3914,7 +3922,7 @@
          * @class
          * @name Highcharts.ZoomComponent
          */
-        var ZoomComponent = function () { };
+        var ZoomComponent = noop;
         ZoomComponent.prototype = new AccessibilityComponent();
         extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
             /**
@@ -4162,7 +4170,7 @@
 
         return ZoomComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/RangeSelectorComponent.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler, ChartUtilities, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/RangeSelectorComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, ChartUtilities, H, HTMLUtilities, KeyboardNavigationHandler, U) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -4174,9 +4182,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend;
         var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
         var setElAttrs = HTMLUtilities.setElAttrs;
+        var extend = U.extend;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * @private
@@ -5048,7 +5056,7 @@
 
         return InfoRegionsComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/ContainerComponent.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/AccessibilityComponent.js']], function (H, U, HTMLUtilities, ChartUtilities, AccessibilityComponent) {
+    _registerModule(_modules, 'Accessibility/Components/ContainerComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (AccessibilityComponent, ChartUtilities, H, HTMLUtilities, U) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -5060,11 +5068,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var doc = H.win.document;
-        var extend = U.extend;
-        var stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
         var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT,
             getChartTitle = ChartUtilities.getChartTitle;
+        var doc = H.doc;
+        var stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
+        var extend = U.extend;
         /* eslint-disable valid-jsdoc */
         /**
          * The ContainerComponent class
@@ -5541,7 +5549,7 @@
                  * [accessibility module](https://code.highcharts.com/modules/accessibility.js)
                  * to be loaded. For a description of the module and information
                  * on its features, see
-                 * [Highcharts Accessibility](https://www.highcharts.com/docs/chart-concepts/accessibility).
+                 * [Highcharts Accessibility](https://www.highcharts.com/docs/accessibility/accessibility-module).
                  *
                  * @since        5.0.0
                  * @requires     modules/accessibility
@@ -7358,7 +7366,7 @@
         };
 
     });
-    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/Options.js'], _modules['Accessibility/Options/LangOptions.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (ChartUtilities, H, KeyboardNavigationHandler, O, Point, U, AccessibilityComponent, KeyboardNavigation, LegendComponent, MenuComponent, SeriesComponent, ZoomComponent, RangeSelectorComponent, InfoRegionsComponent, ContainerComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
+    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Series/CartesianSeries.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/Options.js'], _modules['Accessibility/Options/LangOptions.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (ChartUtilities, H, KeyboardNavigationHandler, CartesianSeries, O, Point, U, AccessibilityComponent, KeyboardNavigation, LegendComponent, MenuComponent, SeriesComponent, ZoomComponent, RangeSelectorComponent, InfoRegionsComponent, ContainerComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
         /* *
          *
          *  (c) 2009-2020 Øystein Moseng
@@ -7370,12 +7378,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var doc = H.doc;
         var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             extend = U.extend,
             fireEvent = U.fireEvent,
             merge = U.merge;
-        var doc = H.win.document;
         // Add default options
         merge(true, defaultOptions, defaultOptionsA11Y, {
             accessibility: {
@@ -7603,7 +7611,7 @@
             });
         });
         ['update', 'updatedData', 'remove'].forEach(function (event) {
-            addEvent(H.Series, event, function () {
+            addEvent(CartesianSeries, event, function () {
                 if (this.chart.accessibility) {
                     this.chart.a11yDirty = true;
                 }

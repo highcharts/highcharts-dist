@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/FunnelSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Series/FunnelSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BaseSeries, Chart, H, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -40,10 +40,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* eslint indent: 0 */
-        var noop = H.noop,
-            seriesType = H.seriesType,
-            seriesTypes = H.seriesTypes;
+        var seriesTypes = BaseSeries.seriesTypes;
+        var noop = H.noop;
         var addEvent = U.addEvent,
             fireEvent = U.fireEvent,
             isArray = U.isArray,
@@ -55,7 +53,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('funnel', 'pie', 
+        BaseSeries.seriesType('funnel', 'pie', 
         /**
          * Funnel charts are a type of chart often used to visualize stages in a
          * sales project, where the top are the initial stages with the most
@@ -541,7 +539,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('pyramid', 'funnel', 
+        BaseSeries.seriesType('pyramid', 'funnel', 
         /**
          * A pyramid series is a special type of funnel, without neck and reversed
          * by default.

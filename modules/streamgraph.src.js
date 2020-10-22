@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Streamgraph module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/StreamgraphSeries.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/StreamgraphSeries.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
         /* *
          *
          *  Streamgraph module
@@ -40,7 +40,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
         /**
          * @private
          * @class
@@ -48,7 +47,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('streamgraph', 'areaspline'
+        BaseSeries.seriesType('streamgraph', 'areaspline'
         /**
          * A streamgraph is a type of stacked area graph which is displaced around a
          * central axis, resulting in a flowing, organic shape.
@@ -63,6 +62,24 @@
          * @optionparent plotOptions.streamgraph
          */
         , {
+            /**
+             * @see [fillColor](#plotOptions.streamgraph.fillColor)
+             * @see [fillOpacity](#plotOptions.streamgraph.fillOpacity)
+             *
+             * @apioption plotOptions.streamgraph.color
+             */
+            /**
+             * @see [color](#plotOptions.streamgraph.color)
+             * @see [fillOpacity](#plotOptions.streamgraph.fillOpacity)
+             *
+             * @apioption plotOptions.streamgraph.fillColor
+             */
+            /**
+             * @see [color](#plotOptions.streamgraph.color)
+             * @see [fillColor](#plotOptions.streamgraph.fillColor)
+             *
+             * @apioption plotOptions.streamgraph.fillOpacity
+             */
             fillOpacity: 1,
             lineWidth: 0,
             marker: {
@@ -92,6 +109,12 @@
          * @product   highcharts highstock
          * @requires  modules/streamgraph
          * @apioption series.streamgraph
+         */
+        /**
+         * @see [fillColor](#series.streamgraph.fillColor)
+         * @see [fillOpacity](#series.streamgraph.fillOpacity)
+         *
+         * @apioption series.streamgraph.color
          */
         /**
          * An array of data points for the series. For the `streamgraph` series type,
@@ -151,6 +174,20 @@
          * @extends   series.line.data
          * @product   highcharts highstock
          * @apioption series.streamgraph.data
+         */
+        /**
+         * @see [color](#series.streamgraph.color)
+         * @see [fillOpacity](#series.streamgraph.fillOpacity)
+         *
+         * @apioption series.streamgraph.fillColor
+         */
+        /**
+         * @see [color](#series.streamgraph.color)
+         * @see [fillColor](#series.streamgraph.fillColor)
+         *
+         * @type      {number}
+         * @default   1
+         * @apioption series.streamgraph.fillOpacity
          */
         ''; // adds doclets above to transpiled file
 

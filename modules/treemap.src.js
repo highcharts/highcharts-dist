@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2014-2019 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -27,7 +27,177 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Mixins/ColorMapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+        /* *
+         *
+         *  (c) 2010-2020 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var defined = U.defined;
+        var noop = H.noop,
+            seriesTypes = H.seriesTypes;
+        /**
+         * Mixin for maps and heatmaps
+         *
+         * @private
+         * @mixin Highcharts.colorMapPointMixin
+         */
+        var colorMapPointMixin = {
+                dataLabelOnNull: true,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Color points have a value option that determines whether or not it is
+                 * a null point
+                 * @private
+                 * @function Highcharts.colorMapPointMixin.isValid
+                 * @return {boolean}
+                 */
+                isValid: function () {
+                    // undefined is allowed
+                    return (this.value !== null &&
+                        this.value !== Infinity &&
+                        this.value !== -Infinity);
+            },
+            /**
+             * @private
+             * @function Highcharts.colorMapPointMixin.setState
+             * @param {string} state
+             * @return {void}
+             */
+            setState: function (state) {
+                Point.prototype.setState.call(this, state);
+                if (this.graphic) {
+                    this.graphic.attr({
+                        zIndex: state === 'hover' ? 1 : 0
+                    });
+                }
+            }
+            /* eslint-enable valid-jsdoc */
+        };
+        /**
+         * @private
+         * @mixin Highcharts.colorMapSeriesMixin
+         */
+        var colorMapSeriesMixin = {
+                pointArrayMap: ['value'],
+                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
+                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+                getSymbol: noop,
+                parallelArrays: ['x', 'y', 'value'],
+                colorKey: 'value',
+                pointAttribs: seriesTypes.column.prototype.pointAttribs,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Get the color attibutes to apply on the graphic
+                 * @private
+                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
+                 * @param {Highcharts.Point} point
+                 * @return {Highcharts.SVGAttributes}
+                 */
+                colorAttribs: function (point) {
+                    var ret = {};
+                if (defined(point.color)) {
+                    ret[this.colorProp || 'fill'] = point.color;
+                }
+                return ret;
+            }
+        };
+        var exports = {
+                colorMapPointMixin: colorMapPointMixin,
+                colorMapSeriesMixin: colorMapSeriesMixin
+            };
+
+        return exports;
+    });
+    _registerModule(_modules, 'Mixins/DrawPoint.js', [], function () {
+        /* *
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var isFn = function (x) {
+                return typeof x === 'function';
+        };
+        /* eslint-disable no-invalid-this, valid-jsdoc */
+        /**
+         * Handles the drawing of a component.
+         * Can be used for any type of component that reserves the graphic property, and
+         * provides a shouldDraw on its context.
+         *
+         * @private
+         * @function draw
+         * @param {DrawPointParams} params
+         *        Parameters.
+         *
+         * @todo add type checking.
+         * @todo export this function to enable usage
+         */
+        var draw = function draw(params) {
+                var _a;
+            var component = this,
+                graphic = component.graphic,
+                animatableAttribs = params.animatableAttribs,
+                onComplete = params.onComplete,
+                css = params.css,
+                renderer = params.renderer,
+                animation = (_a = component.series) === null || _a === void 0 ? void 0 : _a.options.animation;
+            if (component.shouldDraw()) {
+                if (!graphic) {
+                    component.graphic = graphic =
+                        renderer[params.shapeType](params.shapeArgs)
+                            .add(params.group);
+                }
+                graphic
+                    .css(css)
+                    .attr(params.attribs)
+                    .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
+            }
+            else if (graphic) {
+                var destroy = function () {
+                        component.graphic = graphic = graphic.destroy();
+                    if (isFn(onComplete)) {
+                        onComplete();
+                    }
+                };
+                // animate only runs complete callback if something was animated.
+                if (Object.keys(animatableAttribs).length) {
+                    graphic.animate(animatableAttribs, void 0, function () {
+                        destroy();
+                    });
+                }
+                else {
+                    destroy();
+                }
+            }
+        };
+        /**
+         * An extended version of draw customized for points.
+         * It calls additional methods that is expected when rendering a point.
+         * @private
+         * @param {Highcharts.Dictionary<any>} params Parameters
+         */
+        var drawPoint = function drawPoint(params) {
+                var point = this,
+            attribs = params.attribs = params.attribs || {};
+            // Assigning class in dot notation does go well in IE8
+            // eslint-disable-next-line dot-notation
+            attribs['class'] = point.getClassName();
+            // Call draw to render component
+            draw.call(point, params);
+        };
+        var drawPointModule = {
+                draw: draw,
+                drawPoint: drawPoint,
+                isFn: isFn
+            };
+
+        return drawPointModule;
+    });
+    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -255,91 +425,7 @@
 
         return result;
     });
-    _registerModule(_modules, 'Mixins/DrawPoint.js', [], function () {
-        /* *
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var isFn = function (x) {
-                return typeof x === 'function';
-        };
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * Handles the drawing of a component.
-         * Can be used for any type of component that reserves the graphic property, and
-         * provides a shouldDraw on its context.
-         *
-         * @private
-         * @function draw
-         * @param {DrawPointParams} params
-         *        Parameters.
-         *
-         * @todo add type checking.
-         * @todo export this function to enable usage
-         */
-        var draw = function draw(params) {
-                var _a;
-            var component = this,
-                graphic = component.graphic,
-                animatableAttribs = params.animatableAttribs,
-                onComplete = params.onComplete,
-                css = params.css,
-                renderer = params.renderer,
-                animation = (_a = component.series) === null || _a === void 0 ? void 0 : _a.options.animation;
-            if (component.shouldDraw()) {
-                if (!graphic) {
-                    component.graphic = graphic =
-                        renderer[params.shapeType](params.shapeArgs)
-                            .add(params.group);
-                }
-                graphic
-                    .css(css)
-                    .attr(params.attribs)
-                    .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
-            }
-            else if (graphic) {
-                var destroy = function () {
-                        component.graphic = graphic = graphic.destroy();
-                    if (isFn(onComplete)) {
-                        onComplete();
-                    }
-                };
-                // animate only runs complete callback if something was animated.
-                if (Object.keys(animatableAttribs).length) {
-                    graphic.animate(animatableAttribs, void 0, function () {
-                        destroy();
-                    });
-                }
-                else {
-                    destroy();
-                }
-            }
-        };
-        /**
-         * An extended version of draw customized for points.
-         * It calls additional methods that is expected when rendering a point.
-         * @private
-         * @param {Highcharts.Dictionary<any>} params Parameters
-         */
-        var drawPoint = function drawPoint(params) {
-                var point = this,
-            attribs = params.attribs = params.attribs || {};
-            // Assigning class in dot notation does go well in IE8
-            // eslint-disable-next-line dot-notation
-            attribs['class'] = point.getClassName();
-            // Call draw to render component
-            draw.call(point, params);
-        };
-        var drawPointModule = {
-                draw: draw,
-                drawPoint: drawPoint,
-                isFn: isFn
-            };
-
-        return drawPointModule;
-    });
-    _registerModule(_modules, 'Series/TreemapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/TreeSeries.js'], _modules['Mixins/DrawPoint.js'], _modules['Core/Color.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, mixinTreeSeries, drawPointModule, Color, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'Series/TreemapSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Color/Color.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Mixins/DrawPoint.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (BaseSeries, Color, ColorMapMixin, DrawPointMixin, H, LegendSymbolMixin, Point, TreeSeriesMixin, U) {
         /* *
          *
          *  (c) 2014-2020 Highsoft AS
@@ -351,11 +437,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getColor = mixinTreeSeries.getColor,
-            getLevelOptions = mixinTreeSeries.getLevelOptions,
-            updateRootId = mixinTreeSeries.updateRootId;
-        var drawPoint = drawPointModule.drawPoint;
+        var seriesTypes = BaseSeries.seriesTypes;
         var color = Color.parse;
+        var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
+        var drawPoint = DrawPointMixin.drawPoint;
+        var noop = H.noop;
+        var getColor = TreeSeriesMixin.getColor,
+            getLevelOptions = TreeSeriesMixin.getLevelOptions,
+            updateRootId = TreeSeriesMixin.updateRootId;
         var addEvent = U.addEvent,
             correctFloat = U.correctFloat,
             defined = U.defined,
@@ -369,14 +458,11 @@
             merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
-            seriesType = U.seriesType,
             stableSort = U.stableSort;
         /* eslint-disable no-invalid-this */
         var AXIS_MAX = 100;
-        var seriesTypes = H.seriesTypes,
-            noop = H.noop, 
-            // @todo Similar to eachObject, this function is likely redundant
-            isBoolean = function (x) {
+        // @todo Similar to eachObject, this function is likely redundant
+        var isBoolean = function (x) {
                 return typeof x === 'boolean';
         }, Series = H.Series, 
         // @todo Similar to recursive, this function is likely redundant
@@ -404,7 +490,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('treemap', 'scatter'
+        BaseSeries.seriesType('treemap', 'scatter'
         /**
          * A treemap displays hierarchical data using nested rectangles. The data
          * can be laid out in varying ways depending on options.
@@ -521,7 +607,7 @@
             /**
              * @ignore-option
              */
-            marker: false,
+            marker: void 0,
             /**
              * When using automatic point colors pulled from the `options.colors`
              * collection, this option determines whether the chart should receive
@@ -926,8 +1012,8 @@
                     allIds = this.data.map(function (d) {
                         return d.id;
                 }), parentList = series.getListOfParents(this.data, allIds);
-                series.nodeMap = [];
-                return series.buildNode('', -1, 0, parentList, null);
+                series.nodeMap = {};
+                return series.buildNode('', -1, 0, parentList);
             },
             // Define hasData function for non-cartesian series.
             // Returns true if the series has points at all.
@@ -936,7 +1022,6 @@
             },
             init: function (chart, options) {
                 var series = this,
-                    colorMapSeriesMixin = H.colorMapSeriesMixin,
                     setOptionsEvent;
                 // If color series logic is loaded, add some properties
                 if (colorMapSeriesMixin) {
@@ -1015,7 +1100,7 @@
                 });
                 // Sort the children
                 stableSort(children, function (a, b) {
-                    return a.sortIndex - b.sortIndex;
+                    return (a.sortIndex || 0) - (b.sortIndex || 0);
                 });
                 // Set the values
                 val = pick(point && point.options.value, childrenTotal);
@@ -1594,27 +1679,27 @@
                     allowTraversingTree = options.allowTraversingTree;
                 points.forEach(function (point) {
                     var levelDynamic = point.node.levelDynamic,
-                        animate = {},
-                        attr = {},
+                        animatableAttribs = {},
+                        attribs = {},
                         css = {},
-                        groupKey = 'level-group-' + levelDynamic,
+                        groupKey = 'level-group-' + point.node.level,
                         hasGraphic = !!point.graphic,
                         shouldAnimate = withinAnimationLimit && hasGraphic,
                         shapeArgs = point.shapeArgs;
                     // Don't bother with calculate styling if the point is not drawn
                     if (point.shouldDraw()) {
                         if (borderRadius) {
-                            attr.r = borderRadius;
+                            attribs.r = borderRadius;
                         }
                         merge(true, // Extend object
                         // Which object to extend
-                        shouldAnimate ? animate : attr, 
+                        shouldAnimate ? animatableAttribs : attribs, 
                         // Add shapeArgs to animate/attr if graphic exists
                         hasGraphic ? shapeArgs : {}, 
                         // Add style attribs if !styleMode
                         styledMode ?
                             {} :
-                            series.pointAttribs(point, (point.selected && 'select')));
+                            series.pointAttribs(point, point.selected ? 'select' : void 0));
                         // In styled mode apply point.color. Use CSS, otherwise the
                         // fill used in the style sheet will take precedence over
                         // the fill attribute.
@@ -1627,7 +1712,7 @@
                                 .attr({
                                 // @todo Set the zIndex based upon the number of
                                 // levels, instead of using 1000
-                                zIndex: 1000 - levelDynamic
+                                zIndex: 1000 - (levelDynamic || 0)
                             })
                                 .add(series.group);
                             series[groupKey].survive = true;
@@ -1635,8 +1720,8 @@
                     }
                     // Draw the point
                     point.draw({
-                        animatableAttribs: animate,
-                        attribs: attr,
+                        animatableAttribs: animatableAttribs,
+                        attribs: attribs,
                         css: css,
                         group: series[groupKey],
                         renderer: renderer,
@@ -1659,8 +1744,7 @@
                     point = event.point,
                     drillId = point && point.drillId;
                 // If a drill id is returned, add click event and cursor.
-                if (isString(drillId) &&
-                    (series.isDrillAllowed ? series.isDrillAllowed(drillId) : true)) {
+                if (isString(drillId)) {
                     point.setState(''); // Remove hover
                     series.setRootNode(drillId, true, { trigger: 'click' });
                 }
@@ -1791,21 +1875,6 @@
                 // Fire setRootNode event.
                 fireEvent(series, 'setRootNode', eventArgs, defaultFn);
             },
-            /**
-             * Check if the drill up/down is allowed.
-             *
-             * @private
-             */
-            isDrillAllowed: function (targetNode) {
-                var tree = this.tree,
-                    firstChild = tree.children[0];
-                // The sunburst series looks exactly the same on the level ''
-                // and level 1 if there’s only one element on level 1. Disable
-                // drilling up/down when it doesn't perform any visual
-                // difference (#13388).
-                return !(tree.children.length === 1 && ((this.rootNode === '' && targetNode === firstChild.id) ||
-                    (this.rootNode === firstChild.id && targetNode === '')));
-            },
             renderTraverseUpButton: function (rootId) {
                 var series = this,
                     nodeMap = series.nodeMap,
@@ -1813,22 +1882,21 @@
                     name = node.name,
                     buttonOptions = series.options.traverseUpButton,
                     backText = pick(buttonOptions.text,
-                    name, '< Back'),
+                    name, '◁ Back'),
                     attr,
                     states;
-                if (rootId === '' ||
-                    (series.isDrillAllowed ?
-                        !(isString(node.parent) && series.isDrillAllowed(node.parent)) : false)) {
+                if (rootId === '' || (series.is('sunburst') &&
+                    series.tree.children.length === 1 &&
+                    rootId === series.tree.children[0].id)) {
                     if (series.drillUpButton) {
-                        series.drillUpButton =
-                            series.drillUpButton.destroy();
+                        series.drillUpButton = series.drillUpButton.destroy();
                     }
                 }
                 else if (!this.drillUpButton) {
                     attr = buttonOptions.theme;
                     states = attr && attr.states;
                     this.drillUpButton = this.chart.renderer
-                        .button(backText, null, null, function () {
+                        .button(backText, 0, 0, function () {
                         series.drillUp();
                     }, attr, states && states.hover, states && states.select)
                         .addClass('highcharts-drillup-button')
@@ -1907,7 +1975,7 @@
              * @function Highcharts.Point#isValid
              */
             isValid: function () {
-                return this.id || isNumber(this.value);
+                return Boolean(this.id || isNumber(this.value));
             },
             setState: function (state) {
                 Point.prototype.setState.call(this, state);
@@ -1919,8 +1987,7 @@
                 }
             },
             shouldDraw: function () {
-                var point = this;
-                return isNumber(point.plotY) && point.y !== null;
+                return isNumber(this.plotY) && this.y !== null;
             }
         });
         addEvent(H.Series, 'afterBindAxes', function () {

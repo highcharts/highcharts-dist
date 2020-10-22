@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/NATRIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/NATRIndicator.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,8 +36,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
-        var ATR = H.seriesTypes.atr;
+        // im port './ATRIndicator.js';
+        var ATR = BaseSeries.seriesTypes.atr;
         /**
          * The NATR series type.
          *
@@ -47,7 +47,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('natr', 'sma', 
+        BaseSeries.seriesType('natr', 'sma', 
         /**
          * Normalized average true range indicator (NATR). This series requires
          * `linkedTo` option to be set and should be loaded after the

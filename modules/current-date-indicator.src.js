@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
+ * @license Highcharts Gantt JS v8.2.2 (2020-10-22)
  *
  * CurrentDateIndicator
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (H, O, U, PlotLineOrBand) {
+    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (Axis, U, PlotLineOrBand) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -40,11 +40,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var dateFormat = O.dateFormat;
         var addEvent = U.addEvent,
             merge = U.merge,
             wrap = U.wrap;
-        var Axis = H.Axis;
         var defaultConfig = {
                 /**
                  * Show an indicator on the axis for the current date and time. Can be a
@@ -76,13 +74,13 @@
                      * [dateFormat](/class-reference/Highcharts#dateFormat) function.
                      *
                      * @type      {string}
-                     * @default   '%a, %b %d %Y, %H:%M'
+                     * @default   %a, %b %d %Y, %H:%M
                      * @product   gantt
                      * @apioption xAxis.currentDateIndicator.label.format
                      */
                     format: '%a, %b %d %Y, %H:%M',
                     formatter: function (value, format) {
-                        return dateFormat(format, value);
+                        return this.axis.chart.time.dateFormat(format, value);
                 },
                 rotation: 0,
                 /**

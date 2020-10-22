@@ -10,6 +10,7 @@
  *
  * */
 'use strict';
+import Chart from '../../Core/Chart/Chart.js';
 import H from '../../Core/Globals.js';
 import O from '../../Core/Options.js';
 var defaultOptions = O.defaultOptions;
@@ -17,14 +18,14 @@ import Point from '../../Core/Series/Point.js';
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, extend = U.extend, merge = U.merge;
 import Instrument from './Instrument.js';
-import instruments from './instrumentDefinitions.js';
+import instruments from './InstrumentDefinitions.js';
 import Earcon from './Earcon.js';
-import pointSonifyFunctions from './pointSonify.js';
-import chartSonifyFunctions from './chartSonify.js';
-import utilities from './utilities.js';
+import pointSonifyFunctions from './PointSonify.js';
+import chartSonifyFunctions from './ChartSonify.js';
+import utilities from './Utilities.js';
 import TimelineClasses from './Timeline.js';
-import sonificationOptions from './options.js';
-import '../../Core/Series/Series.js';
+import sonificationOptions from './Options.js';
+import '../../Series/LineSeries.js';
 // Expose on the Highcharts object
 /**
  * Global classes and objects related to sonification.
@@ -97,7 +98,7 @@ merge(true, defaultOptions, sonificationOptions);
 Point.prototype.sonify = pointSonifyFunctions.pointSonify;
 Point.prototype.cancelSonify = pointSonifyFunctions.pointCancelSonify;
 H.Series.prototype.sonify = chartSonifyFunctions.seriesSonify;
-extend(H.Chart.prototype, {
+extend(Chart.prototype, {
     sonify: chartSonifyFunctions.chartSonify,
     pauseSonify: chartSonifyFunctions.pause,
     resumeSonify: chartSonifyFunctions.resume,
@@ -110,11 +111,11 @@ extend(H.Chart.prototype, {
 });
 /* eslint-disable no-invalid-this */
 // Prepare charts for sonification on init
-addEvent(H.Chart, 'init', function () {
+addEvent(Chart, 'init', function () {
     this.sonification = {};
 });
 // Update with chart/series/point updates
-addEvent(H.Chart, 'update', function (e) {
+addEvent(Chart, 'update', function (e) {
     var newOptions = e.options.sonification;
     if (newOptions) {
         merge(true, this.options.sonification, newOptions);

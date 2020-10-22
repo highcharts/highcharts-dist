@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.2.0 (2020-08-20)
+ * @license Highmaps JS v8.2.2 (2020-10-22)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/ColorSeries.js', [_modules['Core/Globals.js']], function (H) {
+    _registerModule(_modules, 'Mixins/ColorSeries.js', [], function () {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -42,18 +42,18 @@
          * @private
          * @mixin Highcharts.colorPointMixin
          */
-        H.colorPointMixin = {
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Set the visibility of a single point
-             * @private
-             * @function Highcharts.colorPointMixin.setVisible
-             * @param {boolean} visible
-             * @return {void}
-             */
-            setVisible: function (vis) {
-                var point = this,
-                    method = vis ? 'show' : 'hide';
+        var colorPointMixin = {
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Set the visibility of a single point
+                 * @private
+                 * @function Highcharts.colorPointMixin.setVisible
+                 * @param {boolean} visible
+                 * @return {void}
+                 */
+                setVisible: function (vis) {
+                    var point = this,
+            method = vis ? 'show' : 'hide';
                 point.visible = point.options.visible = Boolean(vis);
                 // Show and hide associated elements
                 ['graphic', 'dataLabel'].forEach(function (key) {
@@ -69,23 +69,25 @@
          * @private
          * @mixin Highcharts.colorSeriesMixin
          */
-        H.colorSeriesMixin = {
-            optionalAxis: 'colorAxis',
-            colorAxis: 0,
-            /* eslint-disable valid-jsdoc */
-            /**
-             * In choropleth maps, the color is a result of the value, so this needs
-             * translation too
-             * @private
-             * @function Highcharts.colorSeriesMixin.translateColors
-             * @return {void}
-             */
-            translateColors: function () {
-                var series = this,
-                    points = this.data.length ? this.data : this.points,
-                    nullColor = this.options.nullColor,
-                    colorAxis = this.colorAxis,
-                    colorKey = this.colorKey;
+        var colorSeriesMixin = {
+                optionalAxis: 'colorAxis',
+                colorAxis: 0,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * In choropleth maps,
+            the color is a result of the value,
+            so this needs
+                 * translation too
+                 * @private
+                 * @function Highcharts.colorSeriesMixin.translateColors
+                 * @return {void}
+                 */
+                translateColors: function () {
+                    var series = this,
+            points = this.data.length ? this.data : this.points,
+            nullColor = this.options.nullColor,
+            colorAxis = this.colorAxis,
+            colorKey = this.colorKey;
                 points.forEach(function (point) {
                     var value = point.getNestedProperty(colorKey),
                         color;
@@ -105,9 +107,14 @@
             }
             /* eslint-enable valid-jsdoc */
         };
+        var exports = {
+                colorPointMixin: colorPointMixin,
+                colorSeriesMixin: colorSeriesMixin
+            };
 
+        return exports;
     });
-    _registerModule(_modules, 'Core/Axis/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'Core/Axis/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Mixins/ColorSeries.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Mixins/LegendSymbol.js'], _modules['Series/LineSeries.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, ColorSeriesModule, Fx, H, Legend, LegendSymbolMixin, LineSeries, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -134,11 +141,12 @@
             };
         })();
         var color = Color.parse;
+        var colorPointMixin = ColorSeriesModule.colorPointMixin,
+            colorSeriesMixin = ColorSeriesModule.colorSeriesMixin;
         var noop = H.noop;
         var addEvent = U.addEvent,
             erase = U.erase,
             extend = U.extend,
-            Fx = U.Fx,
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
@@ -149,10 +157,7 @@
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
         ''; // detach doclet above
-        var Series = H.Series,
-            colorPointMixin = H.colorPointMixin,
-            colorSeriesMixin = H.colorSeriesMixin;
-        extend(Series.prototype, colorSeriesMixin);
+        extend(LineSeries.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         Chart.prototype.collectionsWithUpdate.push('colorAxis');
         Chart.prototype.collectionsWithInit.colorAxis = [Chart.prototype.addColorAxis];
@@ -561,7 +566,7 @@
                         cSeries.maxColorValue = cSeries[colorKey + 'Max'];
                     }
                     else {
-                        var cExtremes = Series.prototype.getExtremes.call(cSeries,
+                        var cExtremes = LineSeries.prototype.getExtremes.call(cSeries,
                             colorValArray);
                         cSeries.minColorValue = cExtremes.dataMin;
                         cSeries.maxColorValue = cExtremes.dataMax;
@@ -573,7 +578,7 @@
                             Math.max(this.dataMax, cSeries.maxColorValue);
                     }
                     if (!calculatedExtremes) {
-                        Series.prototype.applyExtremes.call(cSeries);
+                        LineSeries.prototype.applyExtremes.call(cSeries);
                     }
                 }
             };
@@ -1246,7 +1251,7 @@
             }
         });
         // Add colorAxis to series axisTypes
-        addEvent(Series, 'bindAxes', function () {
+        addEvent(LineSeries, 'bindAxes', function () {
             var axisTypes = this.axisTypes;
             if (!axisTypes) {
                 this.axisTypes = ['colorAxis'];
@@ -1312,7 +1317,7 @@
             }
         });
         // Calculate and set colors for points
-        addEvent(Series, 'afterTranslate', function () {
+        addEvent(LineSeries, 'afterTranslate', function () {
             if (this.chart.colorAxis &&
                 this.chart.colorAxis.length ||
                 this.colorAttribs) {
@@ -1341,21 +1346,21 @@
          * @private
          * @mixin Highcharts.colorMapPointMixin
          */
-        H.colorMapPointMixin = {
-            dataLabelOnNull: true,
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Color points have a value option that determines whether or not it is
-             * a null point
-             * @private
-             * @function Highcharts.colorMapPointMixin.isValid
-             * @return {boolean}
-             */
-            isValid: function () {
-                // undefined is allowed
-                return (this.value !== null &&
-                    this.value !== Infinity &&
-                    this.value !== -Infinity);
+        var colorMapPointMixin = {
+                dataLabelOnNull: true,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Color points have a value option that determines whether or not it is
+                 * a null point
+                 * @private
+                 * @function Highcharts.colorMapPointMixin.isValid
+                 * @return {boolean}
+                 */
+                isValid: function () {
+                    // undefined is allowed
+                    return (this.value !== null &&
+                        this.value !== Infinity &&
+                        this.value !== -Infinity);
             },
             /**
              * @private
@@ -1377,33 +1382,38 @@
          * @private
          * @mixin Highcharts.colorMapSeriesMixin
          */
-        H.colorMapSeriesMixin = {
-            pointArrayMap: ['value'],
-            axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
-            trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-            getSymbol: noop,
-            parallelArrays: ['x', 'y', 'value'],
-            colorKey: 'value',
-            pointAttribs: seriesTypes.column.prototype.pointAttribs,
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Get the color attibutes to apply on the graphic
-             * @private
-             * @function Highcharts.colorMapSeriesMixin.colorAttribs
-             * @param {Highcharts.Point} point
-             * @return {Highcharts.SVGAttributes}
-             */
-            colorAttribs: function (point) {
-                var ret = {};
+        var colorMapSeriesMixin = {
+                pointArrayMap: ['value'],
+                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
+                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+                getSymbol: noop,
+                parallelArrays: ['x', 'y', 'value'],
+                colorKey: 'value',
+                pointAttribs: seriesTypes.column.prototype.pointAttribs,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Get the color attibutes to apply on the graphic
+                 * @private
+                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
+                 * @param {Highcharts.Point} point
+                 * @return {Highcharts.SVGAttributes}
+                 */
+                colorAttribs: function (point) {
+                    var ret = {};
                 if (defined(point.color)) {
                     ret[this.colorProp || 'fill'] = point.color;
                 }
                 return ret;
             }
         };
+        var exports = {
+                colorMapPointMixin: colorMapPointMixin,
+                colorMapSeriesMixin: colorMapSeriesMixin
+            };
 
+        return exports;
     });
-    _registerModule(_modules, 'Series/HeatmapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/HeatmapSeries.js', [_modules['Core/Series/Series.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (BaseSeries, ColorMapMixin, H, LegendSymbolMixin, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1413,13 +1423,18 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var colorMapPointMixin = ColorMapMixin.colorMapPointMixin,
+            colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
+        var noop = H.noop;
         var clamp = U.clamp,
             extend = U.extend,
             fireEvent = U.fireEvent,
             isNumber = U.isNumber,
             merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes,
+            symbols = SVGRenderer.prototype.symbols;
         /* *
          * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
@@ -1433,12 +1448,6 @@
         * @type {number|null|undefined}
         */
         ''; // detach doclets above
-        var colorMapPointMixin = H.colorMapPointMixin,
-            colorMapSeriesMixin = H.colorMapSeriesMixin,
-            noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            symbols = SVGRenderer.prototype.symbols;
         /**
          * @private
          * @class
@@ -1446,7 +1455,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('heatmap', 'scatter', 
+        BaseSeries.seriesType('heatmap', 'scatter', 
         /**
          * A heatmap is a graphical representation of data where the individual
          * values contained in a matrix are represented as colors.

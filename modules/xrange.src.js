@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * X-range series
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/XRangeSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, H, Color, Point, U) {
+    _registerModule(_modules, 'Series/XRangeSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Color/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, BaseSeries, H, Color, Point, U) {
         /* *
          *
          *  X-range series module
@@ -49,8 +49,7 @@
             isNumber = U.isNumber,
             isObject = U.isObject,
             merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
         /* *
          * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
@@ -59,9 +58,9 @@
         * @type {number|undefined}
         * @requires modules/xrange
         */
-        var columnType = H.seriesTypes.column,
-            seriesTypes = H.seriesTypes,
-            Series = H.Series;
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes,
+            columnType = seriesTypes.column;
         /**
          * Return color of a point based on its category.
          *
@@ -96,7 +95,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('xrange', 'column'
+        BaseSeries.seriesType('xrange', 'column'
         /**
          * The X-range series displays ranges on the X axis, typically time
          * intervals with a start and end date.
@@ -495,7 +494,7 @@
                                 pfOptions = {};
                             }
                             if (isObject(seriesOpts.partialFill)) {
-                                pfOptions = merge(pfOptions, seriesOpts.partialFill);
+                                pfOptions = merge(seriesOpts.partialFill, pfOptions);
                             }
                             fill = (pfOptions.fill ||
                                 color(pointAttr.fill).brighten(-0.3).get() ||

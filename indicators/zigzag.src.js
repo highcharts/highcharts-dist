@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/ZigzagIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/ZigzagIndicator.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
         /* *
          *
          *  (c) 2010-2020 Kacper Madej
@@ -38,8 +38,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
-        var UNDEFINED;
+        // im port './SMAIndicator.js';
         /**
          * The Zig Zag series type.
          *
@@ -49,7 +48,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('zigzag', 'sma', 
+        BaseSeries.seriesType('zigzag', 'sma', 
         /**
          * Zig Zag indicator.
          *
@@ -128,8 +127,8 @@
                 // Exit if not enught points or no low or high values
                 if (!xVal || xVal.length <= 1 ||
                     (yValLen &&
-                        (yVal[0][lowIndex] === UNDEFINED ||
-                            yVal[0][highIndex] === UNDEFINED))) {
+                        (typeof yVal[0][lowIndex] === 'undefined' ||
+                            typeof yVal[0][highIndex] === 'undefined'))) {
                     return;
                 }
                 // Set first zigzag point candidate

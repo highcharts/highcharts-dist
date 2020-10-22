@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/Funnel3DSeries.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Color.js'], _modules['Core/Utilities.js']], function (H, Math3D, Color, U) {
+    _registerModule(_modules, 'Series/Funnel3DSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, Series, U) {
         /* *
          *
          *  Highcharts funnel3d series module
@@ -42,20 +42,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var perspective = Math3D.perspective;
         var color = Color.parse;
+        var charts = H.charts,
+            RendererProto = H.Renderer.prototype;
+        var perspective = Math3D.perspective;
+        var seriesTypes = Series.seriesTypes;
         var error = U.error,
             extend = U.extend,
             merge = U.merge,
             pick = U.pick,
-            relativeLength = U.relativeLength,
-            seriesType = U.seriesType;
-        var charts = H.charts,
-            seriesTypes = H.seriesTypes, 
-            // Use H.Renderer instead of SVGRenderer for VML support.
-            RendererProto = H.Renderer.prototype, 
-            //
-            cuboidPath = RendererProto.cuboidPath,
+            relativeLength = U.relativeLength;
+        var cuboidPath = RendererProto.cuboidPath,
             funnel3dMethods;
         /**
          * The funnel3d series type.
@@ -66,7 +63,7 @@
          * @requires modules/cylinder
          * @requires modules/funnel3d
          */
-        seriesType('funnel3d', 'column', 
+        Series.seriesType('funnel3d', 'column', 
         /**
          * A funnel3d is a 3d version of funnel series type. Funnel charts are
          * a type of chart often used to visualize stages in a sales project,

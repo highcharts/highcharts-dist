@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/CMFIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/CMFIndicator.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -41,7 +41,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
+        // im port './SMAIndicator.js';
         /**
          * The CMF series type.
          *
@@ -51,7 +51,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('cmf', 'sma', 
+        BaseSeries.seriesType('cmf', 'sma', 
         /**
          * Chaikin Money Flow indicator (cmf).
          *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
+ * @license Highcharts Gantt JS v8.2.2 (2020-10-22)
  *
  * Pathfinder
  *
@@ -2314,6 +2314,12 @@
                 chart.series.forEach(function (series) {
                     if (series.visible && !series.options.isInternal) {
                         series.points.forEach(function (point) {
+                            var ganttPointOptions = point.options;
+                            // For Gantt series the connect could be
+                            // defined as a dependency
+                            if (ganttPointOptions && ganttPointOptions.dependency) {
+                                ganttPointOptions.connect = ganttPointOptions.dependency;
+                            }
                             var to,
                                 connects = (point.options &&
                                     point.options.connect &&

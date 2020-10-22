@@ -1,5 +1,5 @@
 /*
- Highstock JS v8.2.0 (2020-08-20)
+ Highstock JS v8.2.2 (2020-10-22)
 
  Indicator series type for Highstock
 
@@ -7,7 +7,7 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/accumulation-distribution",["highcharts","highcharts/modules/stock"],function(c){a(c);a.Highcharts=c;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function c(a,c,k,f){a.hasOwnProperty(c)||(a[c]=f.apply(null,k))}a=a?a._modules:{};c(a,"Stock/Indicators/ADIndicator.js",[a["Core/Utilities.js"]],function(a){var c=a.error;
-a=a.seriesType;a("ad","sma",{params:{volumeSeriesID:"volume"}},{nameComponents:!1,nameBase:"Accumulation/Distribution",getValues:function(a,f){var d=f.period,m=a.xData,g=a.yData,b=f.volumeSeriesID,e=a.chart.get(b);f=e&&e.yData;var n=g?g.length:0,h=[],p=[],q=[];if(!(m.length<=d&&n&&4!==g[0].length)){if(e){for(;d<n;d++){a=h.length;b=g[d][1];e=g[d][2];var l=g[d][3],k=f[d];b=[m[d],l===b&&l===e||b===e?0:(2*l-e-b)/(b-e)*k];0<a&&(b[1]+=h[a-1][1]);h.push(b);p.push(b[0]);q.push(b[1])}return{values:h,xData:p,
-yData:q}}c("Series "+b+" not found! Check `volumeSeriesID`.",!0,a.chart)}}});""});c(a,"masters/indicators/accumulation-distribution.src.js",[],function(){})});
+(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/accumulation-distribution",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,b,h,k){a.hasOwnProperty(b)||(a[b]=k.apply(null,h))}a=a?a._modules:{};b(a,"Stock/Indicators/ADIndicator.js",[a["Core/Series/Series.js"],a["Core/Utilities.js"]],
+function(a,b){var h=b.error;a.seriesType("ad","sma",{params:{volumeSeriesID:"volume"}},{nameComponents:!1,nameBase:"Accumulation/Distribution",getValues:function(a,b){var d=b.period,m=a.xData,f=a.yData,c=b.volumeSeriesID,e=a.chart.get(c);b=e&&e.yData;var n=f?f.length:0,g=[],p=[],q=[];if(!(m.length<=d&&n&&4!==f[0].length)){if(e){for(;d<n;d++){a=g.length;c=f[d][1];e=f[d][2];var l=f[d][3],k=b[d];c=[m[d],l===c&&l===e||c===e?0:(2*l-e-c)/(c-e)*k];0<a&&(c[1]+=g[a-1][1]);g.push(c);p.push(c[0]);q.push(c[1])}return{values:g,
+xData:p,yData:q}}h("Series "+c+" not found! Check `volumeSeriesID`.",!0,a.chart)}}});""});b(a,"masters/indicators/accumulation-distribution.src.js",[],function(){})});
 //# sourceMappingURL=accumulation-distribution.js.map

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Slow Stochastic series type for Highstock
  *
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/SlowStochasticIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
+    _registerModule(_modules, 'Stock/Indicators/SlowStochasticIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/IndicatorRequired.js']], function (BaseSeries, RequiredIndicatorMixin) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,8 +98,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
-        var seriesTypes = H.seriesTypes;
+        var seriesTypes = BaseSeries.seriesTypes;
+        // im port './StochasticIndicator.js';
         /**
          * The Slow Stochastic series type.
          *
@@ -109,7 +109,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('slowstochastic', 'stochastic', 
+        BaseSeries.seriesType('slowstochastic', 'stochastic', 
         /**
          * Slow Stochastic oscillator. This series requires the `linkedTo` option
          * to be set and should be loaded after `stock/indicators/indicators.js`
@@ -145,7 +145,7 @@
             init: function () {
                 var args = arguments,
                     ctx = this;
-                requiredIndicator.isParentLoaded(H.seriesTypes.stochastic, 'stochastic', ctx.type, function (indicator) {
+                RequiredIndicatorMixin.isParentLoaded(seriesTypes.stochastic, 'stochastic', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
                 });

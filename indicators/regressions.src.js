@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/RegressionIndicators.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/RegressionIndicators.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /**
          *
          *  (c) 2010-2020 Kamil Kulig
@@ -38,8 +38,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
+        var isArray = U.isArray;
+        // im port './SMAIndicator.js';
         /**
          * Linear regression series type.
          *
@@ -49,7 +49,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('linearRegression', 'sma', 
+        BaseSeries.seriesType('linearRegression', 'sma', 
         /**
          * Linear regression indicator. This series requires `linkedTo` option to be
          * set.
@@ -269,7 +269,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('linearRegressionSlope', 'linearRegression', 
+        BaseSeries.seriesType('linearRegressionSlope', 'linearRegression', 
         /**
          * Linear regression slope indicator. This series requires `linkedTo`
          * option to be set.
@@ -317,7 +317,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('linearRegressionIntercept', 'linearRegression', 
+        BaseSeries.seriesType('linearRegressionIntercept', 'linearRegression', 
         /**
          * Linear regression intercept indicator. This series requires `linkedTo`
          * option to be set.
@@ -365,7 +365,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('linearRegressionAngle', 'linearRegression', 
+        BaseSeries.seriesType('linearRegressionAngle', 'linearRegression', 
         /**
          * Linear regression angle indicator. This series requires `linkedTo`
          * option to be set.

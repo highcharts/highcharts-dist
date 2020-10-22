@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/PivotPointsIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/PivotPointsIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -37,9 +37,9 @@
          *
          * */
         var defined = U.defined,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
-        var SMA = H.seriesTypes.sma;
+            isArray = U.isArray;
+        // im port './SMAIndicator.js';
+        var SMA = BaseSeries.seriesTypes.sma;
         /* eslint-disable valid-jsdoc */
         /**
          * @private
@@ -68,7 +68,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('pivotpoints', 'sma', 
+        BaseSeries.seriesType('pivotpoints', 'sma', 
         /**
          * Pivot points indicator. This series requires the `linkedTo` option to be
          * set and should be loaded after `stock/indicators/indicators.js` file.

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -86,7 +86,7 @@
 
         return reduceArrayMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/WilliamsRIndicator.js', [_modules['Core/Utilities.js'], _modules['Mixins/ReduceArray.js']], function (U, reduceArrayMixin) {
+    _registerModule(_modules, 'Stock/Indicators/WilliamsRIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/ReduceArray.js'], _modules['Core/Utilities.js']], function (BaseSeries, ReduceArrayMixin, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -94,9 +94,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
-            seriesType = U.seriesType;
-        var getArrayExtremes = reduceArrayMixin.getArrayExtremes;
+        var getArrayExtremes = ReduceArrayMixin.getArrayExtremes;
+        var isArray = U.isArray;
+        // im port './SMAIndicator.js';
         /**
          * The Williams %R series type.
          *
@@ -106,7 +106,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('williamsr', 'sma', 
+        BaseSeries.seriesType('williamsr', 'sma', 
         /**
          * Williams %R. This series requires the `linkedTo` option to be
          * set and should be loaded after the `stock/indicators/indicators.js`.

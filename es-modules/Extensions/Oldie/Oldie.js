@@ -10,17 +10,18 @@
  *
  * */
 'use strict';
-import Chart from '../Core/Chart/Chart.js';
-import Color from '../Core/Color.js';
+import Chart from '../../Core/Chart/Chart.js';
+import Color from '../../Core/Color/Color.js';
 var color = Color.parse;
-import H from '../Core/Globals.js';
+import H from '../../Core/Globals.js';
 var deg2rad = H.deg2rad, doc = H.doc, noop = H.noop, svg = H.svg, win = H.win;
-import Pointer from '../Core/Pointer.js';
-import SVGElement from '../Core/Renderer/SVG/SVGElement.js';
-import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
-import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, createElement = U.createElement, css = U.css, defined = U.defined, discardElement = U.discardElement, erase = U.erase, extend = U.extend, extendClass = U.extendClass, getOptions = U.getOptions, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, offset = U.offset, pick = U.pick, pInt = U.pInt, uniqueKey = U.uniqueKey;
-var VMLRenderer, VMLRendererExtension, VMLElement;
+import Pointer from '../../Core/Pointer.js';
+import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
+import SVGRenderer from '../../Core/Renderer/SVG/SVGRenderer3D.js';
+import U from '../../Core/Utilities.js';
+var addEvent = U.addEvent, createElement = U.createElement, css = U.css, defined = U.defined, discardElement = U.discardElement, erase = U.erase, extend = U.extend, extendClass = U.extendClass, getOptions = U.getOptions, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, offset = U.offset, pick = U.pick, pInt = U.pInt, setOptions = U.setOptions, uniqueKey = U.uniqueKey;
+import VMLRenderer3D from './VMLRenderer3D.js';
+var VMLRenderer, VMLElement;
 /**
  * Path to the pattern image required by VML browsers in order to
  * draw radial gradients.
@@ -32,7 +33,7 @@ var VMLRenderer, VMLRendererExtension, VMLElement;
  * @apioption global.VMLRadialGradientURL
  */
 getOptions().global.VMLRadialGradientURL =
-    'http://code.highcharts.com/8.2.0/gfx/vml-radial-gradient.png';
+    'http://code.highcharts.com/8.2.2/gfx/vml-radial-gradient.png';
 // Utilites
 if (doc && !doc.defaultView) {
     H.getStyle = U.getStyle = function (el, prop) {
@@ -704,7 +705,7 @@ if (!svg) {
      *
      * @augments Highcharts.SVGRenderer
      */
-    VMLRendererExtension = {
+    var VMLRendererExtension = {
         Element: VMLElement,
         isIE8: win.navigator.userAgent.indexOf('MSIE 8.0') > -1,
         /**
@@ -1215,9 +1216,11 @@ if (!svg) {
     H.VMLRenderer = VMLRenderer = function () {
         this.init.apply(this, arguments);
     };
-    VMLRenderer.prototype = merge(SVGRenderer.prototype, VMLRendererExtension);
+    VMLRenderer.prototype = merge(VMLRenderer.prototype, SVGRenderer.prototype, VMLRendererExtension);
     // general renderer
     H.Renderer = VMLRenderer;
+    // 3D additions
+    VMLRenderer3D.compose(VMLRenderer, SVGRenderer);
 }
 SVGRenderer.prototype.getSpanWidth = function (wrapper, tspan) {
     var renderer = this, bBox = wrapper.getBBox(true), actualWidth = bBox.width;

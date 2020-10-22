@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Wind barb series module
  *
@@ -186,7 +186,7 @@
 
         return onSeriesMixin;
     });
-    _registerModule(_modules, 'Series/WindbarbSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/OnSeries.js']], function (H, U, onSeriesMixin) {
+    _registerModule(_modules, 'Series/WindbarbSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Mixins/OnSeries.js'], _modules['Core/Utilities.js']], function (A, BaseSeries, H, OnSeriesMixin, U) {
         /* *
          *
          *  Wind barb series module
@@ -198,11 +198,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var animObject = U.animObject,
-            isNumber = U.isNumber,
-            pick = U.pick,
-            seriesType = U.seriesType;
+        var animObject = A.animObject;
         var noop = H.noop;
+        var isNumber = U.isNumber,
+            pick = U.pick;
         // eslint-disable-next-line valid-jsdoc
         /**
          * Once off, register the windbarb approximation for data grouping. This can be
@@ -241,7 +240,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('windbarb', 'column'
+        BaseSeries.seriesType('windbarb', 'column'
         /**
          * Wind barbs are a convenient way to represent wind speed and direction in
          * one graphical form. Wind direction is given by the stem direction, and
@@ -380,7 +379,7 @@
             markerAttribs: function () {
                 return;
             },
-            getPlotBox: onSeriesMixin.getPlotBox,
+            getPlotBox: OnSeriesMixin.getPlotBox,
             // Create a single wind arrow. It is later rotated around the zero
             // centerpoint.
             windArrow: function (point) {
@@ -438,7 +437,7 @@
             translate: function () {
                 var beaufortFloor = this.beaufortFloor,
                     beaufortName = this.beaufortName;
-                onSeriesMixin.translate.call(this);
+                OnSeriesMixin.translate.call(this);
                 this.points.forEach(function (point) {
                     var level = 0;
                     // Find the beaufort level (zero based)

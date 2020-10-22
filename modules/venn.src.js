@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2017-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -681,7 +681,7 @@
 
         return nelderMeadMixin;
     });
-    _registerModule(_modules, 'Series/VennSeries.js', [_modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/DrawPoint.js'], _modules['Mixins/Geometry.js'], _modules['Mixins/GeometryCircles.js'], _modules['Mixins/NelderMead.js']], function (Color, H, U, drawPointModule, geometry, geometryCirclesModule, nelderMeadMixin) {
+    _registerModule(_modules, 'Series/VennSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Series/Series.js'], _modules['Core/Color/Color.js'], _modules['Mixins/DrawPoint.js'], _modules['Mixins/Geometry.js'], _modules['Mixins/GeometryCircles.js'], _modules['Mixins/NelderMead.js'], _modules['Core/Utilities.js']], function (A, BaseSeries, Color, DrawPointMixin, GeometryMixin, GeometryCirclesModule, NelderMeadMixin, U) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a Venn
@@ -698,30 +698,29 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var animObject = A.animObject;
+        var seriesTypes = BaseSeries.seriesTypes;
         var color = Color.parse;
+        var draw = DrawPointMixin.draw;
+        var getCenterOfPoints = GeometryMixin.getCenterOfPoints,
+            getDistanceBetweenPoints = GeometryMixin.getDistanceBetweenPoints;
+        var getAreaOfCircle = GeometryCirclesModule.getAreaOfCircle,
+            getAreaOfIntersectionBetweenCircles = GeometryCirclesModule.getAreaOfIntersectionBetweenCircles,
+            getCircleCircleIntersection = GeometryCirclesModule.getCircleCircleIntersection,
+            getCirclesIntersectionPolygon = GeometryCirclesModule.getCirclesIntersectionPolygon,
+            getOverlapBetweenCirclesByDistance = GeometryCirclesModule.getOverlapBetweenCircles,
+            isCircle1CompletelyOverlappingCircle2 = GeometryCirclesModule.isCircle1CompletelyOverlappingCircle2,
+            isPointInsideAllCircles = GeometryCirclesModule.isPointInsideAllCircles,
+            isPointInsideCircle = GeometryCirclesModule.isPointInsideCircle,
+            isPointOutsideAllCircles = GeometryCirclesModule.isPointOutsideAllCircles;
+        var nelderMead = NelderMeadMixin.nelderMead;
         var addEvent = U.addEvent,
-            animObject = U.animObject,
             extend = U.extend,
             isArray = U.isArray,
             isNumber = U.isNumber,
             isObject = U.isObject,
             isString = U.isString,
-            merge = U.merge,
-            seriesType = U.seriesType;
-        var draw = drawPointModule.draw;
-        var getAreaOfCircle = geometryCirclesModule.getAreaOfCircle,
-            getAreaOfIntersectionBetweenCircles = geometryCirclesModule.getAreaOfIntersectionBetweenCircles,
-            getCircleCircleIntersection = geometryCirclesModule.getCircleCircleIntersection,
-            getCirclesIntersectionPolygon = geometryCirclesModule.getCirclesIntersectionPolygon,
-            getOverlapBetweenCirclesByDistance = geometryCirclesModule.getOverlapBetweenCircles,
-            isCircle1CompletelyOverlappingCircle2 = geometryCirclesModule.isCircle1CompletelyOverlappingCircle2,
-            isPointInsideAllCircles = geometryCirclesModule.isPointInsideAllCircles,
-            isPointInsideCircle = geometryCirclesModule.isPointInsideCircle,
-            isPointOutsideAllCircles = geometryCirclesModule.isPointOutsideAllCircles;
-        var nelderMead = nelderMeadMixin.nelderMead;
-        var getCenterOfPoints = geometry.getCenterOfPoints,
-            getDistanceBetweenPoints = geometry.getDistanceBetweenPoints,
-            seriesTypes = H.seriesTypes;
+            merge = U.merge;
         var objectValues = function objectValues(obj) {
                 return Object.keys(obj).map(function (x) {
                     return obj[x];
@@ -1699,14 +1698,14 @@
             },
             utils: {
                 addOverlapToSets: addOverlapToSets,
-                geometry: geometry,
-                geometryCircles: geometryCirclesModule,
+                geometry: GeometryMixin,
+                geometryCircles: GeometryCirclesModule,
                 getLabelWidth: getLabelWidth,
                 getMarginFromCircles: getMarginFromCircles,
                 getDistanceBetweenCirclesByOverlap: getDistanceBetweenCirclesByOverlap,
                 layoutGreedyVenn: layoutGreedyVenn,
                 loss: loss,
-                nelderMead: nelderMeadMixin,
+                nelderMead: NelderMeadMixin,
                 processVennData: processVennData,
                 sortByTotalOverlap: sortByTotalOverlap
             }
@@ -1796,6 +1795,7 @@
          * @excluding halo
          * @apioption series.venn.states.select
          */
+        ''; // detach doclets above
         /**
          * @private
          * @class
@@ -1803,7 +1803,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('venn', 'scatter', vennOptions, vennSeries, vennPoint);
+        BaseSeries.seriesType('venn', 'scatter', vennOptions, vennSeries, vennPoint);
         /* eslint-disable no-invalid-this */
         // Modify final series options.
         addEvent(seriesTypes.venn, 'afterSetOptions', function (e) {

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -217,7 +217,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/KeltnerChannelsIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/MultipleLines.js']], function (H, U, multipleLinesMixin) {
+    _registerModule(_modules, 'Stock/Indicators/KeltnerChannelsIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/MultipleLines.js'], _modules['Core/Utilities.js']], function (BaseSeries, MultipleLinesMixin, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -225,12 +225,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = BaseSeries.seriesTypes;
         var correctFloat = U.correctFloat,
-            merge = U.merge,
-            seriesType = U.seriesType;
-        var SMA = H.seriesTypes.sma,
-            EMA = H.seriesTypes.ema,
-            ATR = H.seriesTypes.atr;
+            merge = U.merge;
+        // im port './ATRIndicator.js';
+        // im port './EMAIndicator.js';
+        // im port './SMAIndicator.js';
+        var SMA = seriesTypes.sma,
+            EMA = seriesTypes.ema,
+            ATR = seriesTypes.atr;
         /**
          * The Keltner Channels series type.
          *
@@ -240,7 +243,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('keltnerchannels', 'sma', 
+        BaseSeries.seriesType('keltnerchannels', 'sma', 
         /**
          * Keltner Channels. This series requires the `linkedTo` option to be set
          * and should be loaded after the `stock/indicators/indicators.js`,
@@ -318,7 +321,7 @@
         /**
          * @lends Highcharts.Series#
          */
-        merge(multipleLinesMixin, {
+        merge(MultipleLinesMixin, {
             pointArrayMap: ['top', 'middle', 'bottom'],
             pointValKey: 'middle',
             nameBase: 'Keltner Channels',

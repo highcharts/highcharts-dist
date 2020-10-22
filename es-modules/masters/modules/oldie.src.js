@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  * @module highcharts/modules/oldie
  * @requires highcharts
  *
@@ -11,4 +11,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/Oldie.js';
+import '../../Extensions/Oldie/Oldie.js';

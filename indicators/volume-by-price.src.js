@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/VBPIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Stock/Indicators/VBPIndicator.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (A, BaseSeries, H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Paweł Dalek
@@ -40,15 +40,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var animObject = A.animObject;
+        var noop = H.noop;
         var addEvent = U.addEvent,
-            animObject = U.animObject,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             correctFloat = U.correctFloat,
             error = U.error,
             extend = U.extend,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
+            isArray = U.isArray;
         /* eslint-disable require-jsdoc */
         // Utils
         function arrayExtremesOHLC(data) {
@@ -73,8 +73,7 @@
         }
         /* eslint-enable require-jsdoc */
         var abs = Math.abs,
-            noop = H.noop,
-            columnPrototype = H.seriesTypes.column.prototype;
+            columnPrototype = BaseSeries.seriesTypes.column.prototype;
         /**
          * The Volume By Price (VBP) series type.
          *
@@ -84,7 +83,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('vbp', 'sma', 
+        BaseSeries.seriesType('vbp', 'sma', 
         /**
          * Volume By Price indicator.
          *

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/APOIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/IndicatorRequired.js']], function (H, U, requiredIndicator) {
+    _registerModule(_modules, 'Stock/Indicators/APOIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (BaseSeries, RequiredIndicatorMixin, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,9 +98,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = U.error,
-            seriesType = U.seriesType;
-        var EMA = H.seriesTypes.ema;
+        var error = U.error;
+        // im port './EMAIndicator.js';
+        var EMA = BaseSeries.seriesTypes.ema;
         /**
          * The APO series type.
          *
@@ -110,7 +110,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('apo', 'ema', 
+        BaseSeries.seriesType('apo', 'ema', 
         /**
          * Absolute Price Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`
@@ -157,7 +157,7 @@
             init: function () {
                 var args = arguments,
                     ctx = this;
-                requiredIndicator.isParentLoaded(EMA, 'ema', ctx.type, function (indicator) {
+                RequiredIndicatorMixin.isParentLoaded(EMA, 'ema', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
                 });

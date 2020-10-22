@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Vector plot series module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/VectorSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/VectorSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (A, BaseSeries, H, U) {
         /* *
          *
          *  Vector plot series module
@@ -40,10 +40,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var animObject = U.animObject,
-            arrayMax = U.arrayMax,
-            pick = U.pick,
-            seriesType = U.seriesType;
+        var animObject = A.animObject;
+        var arrayMax = U.arrayMax,
+            pick = U.pick;
         /**
          * The vector series class.
          *
@@ -53,7 +52,7 @@
          *
          * @augments Highcharts.seriesTypes.scatter
          */
-        seriesType('vector', 'scatter'
+        BaseSeries.seriesType('vector', 'scatter'
         /**
          * A vector plot is a type of cartesian chart where each point has an X and
          * Y position, a length and a direction. Vectors are drawn as arrows.

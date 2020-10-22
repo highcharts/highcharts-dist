@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/DPOIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/DPOIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -37,8 +37,8 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
+        // im port './SMAIndicator.js';
         /* eslint-disable valid-jsdoc */
         // Utils
         /**
@@ -62,7 +62,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('dpo', 'sma', 
+        BaseSeries.seriesType('dpo', 'sma', 
         /**
          * Detrended Price Oscillator. This series requires the `linkedTo` option to
          * be set and should be loaded after the `stock/indicators/indicators.js`.

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/PriceEnvelopesIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/PriceEnvelopesIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -37,9 +37,9 @@
          *
          * */
         var isArray = U.isArray,
-            merge = U.merge,
-            seriesType = U.seriesType;
-        var SMA = H.seriesTypes.sma;
+            merge = U.merge;
+        // im port './SMAIndicator.js';
+        var SMA = BaseSeries.seriesTypes.sma;
         /**
          * The Price Envelopes series type.
          *
@@ -49,7 +49,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('priceenvelopes', 'sma', 
+        BaseSeries.seriesType('priceenvelopes', 'sma', 
         /**
          * Price envelopes indicator based on [SMA](#plotOptions.sma) calculations.
          * This series requires the `linkedTo` option to be set and should be loaded

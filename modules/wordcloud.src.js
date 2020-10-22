@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2016-2019 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -433,7 +433,7 @@
 
         return collision;
     });
-    _registerModule(_modules, 'Series/WordcloudSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Mixins/DrawPoint.js'], _modules['Mixins/Polygon.js']], function (H, U, drawPointModule, polygonMixin) {
+    _registerModule(_modules, 'Series/WordcloudSeries.js', [_modules['Core/Series/Series.js'], _modules['Mixins/DrawPoint.js'], _modules['Core/Globals.js'], _modules['Mixins/Polygon.js'], _modules['Core/Utilities.js']], function (BaseSeries, DrawPointMixin, H, PolygonMixin, U) {
         /* *
          *
          *  Experimental Highcharts module which enables visualization of a word cloud.
@@ -445,22 +445,21 @@
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
+        var drawPoint = DrawPointMixin.drawPoint;
+        var noop = H.noop;
+        var getBoundingBoxFromPolygon = PolygonMixin.getBoundingBoxFromPolygon,
+            getPolygon = PolygonMixin.getPolygon,
+            isPolygonsColliding = PolygonMixin.isPolygonsColliding,
+            movePolygon = PolygonMixin.movePolygon,
+            rotate2DToOrigin = PolygonMixin.rotate2DToOrigin,
+            rotate2DToPoint = PolygonMixin.rotate2DToPoint;
         var extend = U.extend,
             find = U.find,
             isArray = U.isArray,
             isNumber = U.isNumber,
             isObject = U.isObject,
-            merge = U.merge,
-            seriesType = U.seriesType;
-        var drawPoint = drawPointModule.drawPoint;
-        var getBoundingBoxFromPolygon = polygonMixin.getBoundingBoxFromPolygon,
-            getPolygon = polygonMixin.getPolygon,
-            isPolygonsColliding = polygonMixin.isPolygonsColliding,
-            movePolygon = polygonMixin.movePolygon,
-            rotate2DToOrigin = polygonMixin.rotate2DToOrigin,
-            rotate2DToPoint = polygonMixin.rotate2DToPoint;
-        var noop = H.noop,
-            Series = H.Series;
+            merge = U.merge;
+        var Series = H.Series;
         /**
          * Detects if there is a collision between two rectangles.
          *
@@ -1448,6 +1447,7 @@
          * @product   highcharts
          * @apioption series.sunburst.data.weight
          */
+        ''; // detach doclets above
         /**
          * @private
          * @class
@@ -1455,7 +1455,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('wordcloud', 'column', wordCloudOptions, wordCloudSeries, wordCloudPoint);
+        BaseSeries.seriesType('wordcloud', 'column', wordCloudOptions, wordCloudSeries, wordCloudPoint);
 
     });
     _registerModule(_modules, 'masters/modules/wordcloud.src.js', [], function () {

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Advanced Highstock tools
  *
@@ -421,7 +421,7 @@
 
         return ControlPoint;
     });
-    _registerModule(_modules, 'Extensions/Annotations/MockPoint.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/Annotations/MockPoint.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/Axis.js']], function (H, U, Axis) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -687,7 +687,7 @@
                     axisOptions = options[axisName],
                     chart = this.series.chart;
                 this.series[axisName] =
-                    axisOptions instanceof H.Axis ?
+                    axisOptions instanceof Axis ?
                         axisOptions :
                         defined(axisOptions) ?
                             (chart[axisName][axisOptions] ||
@@ -993,6 +993,7 @@
              */
             anchor: function (point) {
                 var plotBox = point.series.getPlotBox(),
+                    chart = point.series.chart,
                     box = point.mock ?
                         point.toAnchor() :
                         Tooltip.prototype.getAnchor.call({
@@ -1008,8 +1009,8 @@
                 return {
                     relativePosition: anchor,
                     absolutePosition: merge(anchor, {
-                        x: anchor.x + plotBox.translateX,
-                        y: anchor.y + plotBox.translateY
+                        x: anchor.x + (point.mock ? plotBox.translateX : chart.plotLeft),
+                        y: anchor.y + (point.mock ? plotBox.translateY : chart.plotTop)
                     })
                 };
             },
@@ -2387,7 +2388,7 @@
 
         return ControllableImage;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Annotations.js', [_modules['Core/Chart/Chart.js'], _modules['Extensions/Annotations/Mixins/ControllableMixin.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Mixins/EventEmitterMixin.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (Chart, ControllableMixin, ControllableRect, ControllableCircle, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, EventEmitterMixin, H, MockPoint, Pointer, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Annotations.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Extensions/Annotations/Mixins/ControllableMixin.js'], _modules['Extensions/Annotations/Controllables/ControllableRect.js'], _modules['Extensions/Annotations/Controllables/ControllableCircle.js'], _modules['Extensions/Annotations/Controllables/ControllablePath.js'], _modules['Extensions/Annotations/Controllables/ControllableImage.js'], _modules['Extensions/Annotations/Controllables/ControllableLabel.js'], _modules['Extensions/Annotations/ControlPoint.js'], _modules['Extensions/Annotations/Mixins/EventEmitterMixin.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/MockPoint.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (A, Chart, ControllableMixin, ControllableRect, ControllableCircle, ControllablePath, ControllableImage, ControllableLabel, ControlPoint, EventEmitterMixin, H, MockPoint, Pointer, U) {
         /* *
          *
          *  (c) 2009-2017 Highsoft, Black Label
@@ -2397,6 +2398,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var getDeferredAnimation = A.getDeferredAnimation;
         var chartProto = Chart.prototype;
         var addEvent = U.addEvent,
             defined = U.defined,
@@ -2405,7 +2407,6 @@
             extend = U.extend,
             find = U.find,
             fireEvent = U.fireEvent,
-            getDeferredAnimation = U.getDeferredAnimation,
             merge = U.merge,
             pick = U.pick,
             splat = U.splat,
@@ -3405,7 +3406,7 @@
                      *         Basic shape annotation
                      *
                      * @type      {string}
-                     * @default   'rect'
+                     * @default   rect
                      * @apioption annotations.shapeOptions.type
                      */
                     /**
@@ -3805,7 +3806,7 @@
 
         return chartNavigation;
     });
-    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Mixins/Navigation.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Annotation, chartNavigationMixin, H, U) {
+    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, chartNavigationMixin, H, U) {
         /* *
          *
          *  (c) 2009-2017 Highsoft, Black Label
@@ -4489,7 +4490,7 @@
          * @type {bindingsUtils}
          */
         NavigationBindings.prototype.utils = bindingsUtils;
-        H.Chart.prototype.initNavigationBindings = function () {
+        Chart.prototype.initNavigationBindings = function () {
             var chart = this,
                 options = chart.options;
             if (options && options.navigation && options.navigation.bindings) {
@@ -4498,10 +4499,10 @@
                 chart.navigationBindings.initUpdate();
             }
         };
-        addEvent(H.Chart, 'load', function () {
+        addEvent(Chart, 'load', function () {
             this.initNavigationBindings();
         });
-        addEvent(H.Chart, 'destroy', function () {
+        addEvent(Chart, 'destroy', function () {
             if (this.navigationBindings) {
                 this.navigationBindings.destroy();
             }
@@ -4838,7 +4839,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/8.2.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/8.2.2/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -4922,6 +4923,7 @@
             defined = U.defined,
             extend = U.extend,
             fireEvent = U.fireEvent,
+            getOptions = U.getOptions,
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
@@ -5018,6 +5020,7 @@
             };
         };
         bindingsUtils.manageIndicators = function (data) {
+            var _a;
             var navigation = this,
                 chart = navigation.chart,
                 seriesConfig = {
@@ -5057,6 +5060,8 @@
                     'linearRegressionAngle'
                 ],
                 yAxis,
+                parentSeries,
+                defaultOptions,
                 series;
             if (data.actionType === 'edit') {
                 navigation.fieldsToOptions(data.fields, seriesConfig);
@@ -5084,6 +5089,19 @@
             else {
                 seriesConfig.id = uniqueKey();
                 navigation.fieldsToOptions(data.fields, seriesConfig);
+                parentSeries = chart.get(seriesConfig.linkedTo);
+                defaultOptions = getOptions().plotOptions;
+                // Make sure that indicator uses the SUM approx if SUM approx is used
+                // by parent series (#13950).
+                if (typeof parentSeries !== 'undefined' &&
+                    parentSeries instanceof Highcharts.Series &&
+                    parentSeries.getDGApproximation() === 'sum' &&
+                    // If indicator has defined approx type, use it (e.g. "ranges")
+                    !defined(defaultOptions && defaultOptions[seriesConfig.type] && ((_a = defaultOptions.dataGrouping) === null || _a === void 0 ? void 0 : _a.approximation))) {
+                    seriesConfig.dataGrouping = {
+                        approximation: 'sum'
+                    };
+                }
                 if (indicatorsWithAxes.indexOf(data.type) >= 0) {
                     yAxis = chart.addAxis({
                         id: uniqueKey(),
@@ -6934,9 +6952,10 @@
                     toolbarClassName: 'stocktools-toolbar',
                     /**
                      * A collection of strings pointing to config options for the
-                     * toolbar items. Each name refers to unique key from definitions
-                     * object.
+                     * toolbar items. Each name refers to a unique key from the
+                     * definitions object.
                      *
+                     * @type    {Array<string>}
                      * @default [
                      *   'indicators',
                      *   'separator',
@@ -7491,10 +7510,10 @@
         });
         /* eslint-disable no-invalid-this, valid-jsdoc */
         // Run HTML generator
-        addEvent(H.Chart, 'afterGetContainer', function () {
+        addEvent(Chart, 'afterGetContainer', function () {
             this.setStockTools();
         });
-        addEvent(H.Chart, 'getMargins', function () {
+        addEvent(Chart, 'getMargins', function () {
             var listWrapper = this.stockTools && this.stockTools.listWrapper,
                 offsetWidth = listWrapper && ((listWrapper.startWidth +
                     getStyle(listWrapper, 'padding-left') +
@@ -7503,12 +7522,12 @@
                 this.plotLeft += offsetWidth;
             }
         });
-        addEvent(H.Chart, 'destroy', function () {
+        addEvent(Chart, 'destroy', function () {
             if (this.stockTools) {
                 this.stockTools.destroy();
             }
         });
-        addEvent(H.Chart, 'redraw', function () {
+        addEvent(Chart, 'redraw', function () {
             if (this.stockTools && this.stockTools.guiEnabled) {
                 this.stockTools.redraw();
             }
@@ -7999,7 +8018,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/8.2.0/gfx/stock-icons/';
+                    'https://code.highcharts.com/8.2.2/gfx/stock-icons/';
             };
             return Toolbar;
         }());
@@ -8061,7 +8080,7 @@
                     guiOptions = merge(chartOptions.stockTools && chartOptions.stockTools.gui,
                     options && options.gui),
                     langOptions = lang.stockTools && lang.stockTools.gui;
-                this.stockTools = new H.Toolbar(guiOptions, langOptions, this);
+                this.stockTools = new Toolbar(guiOptions, langOptions, this);
                 if (this.stockTools.guiEnabled) {
                     this.isDirtyBox = true;
                 }

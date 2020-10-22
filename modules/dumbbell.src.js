@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2009-2019 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/AreaRangeSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/AreaRangeSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -36,17 +36,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var noop = H.noop;
         var defined = U.defined,
             extend = U.extend,
             isArray = U.isArray,
             isNumber = U.isNumber,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            seriesProto = Series.prototype,
-            pointProto = Point.prototype;
+            pick = U.pick;
+        var Series = H.Series,
+            areaProto = BaseSeries.seriesTypes.area.prototype,
+            columnProto = BaseSeries.seriesTypes.column.prototype,
+            pointProto = Point.prototype,
+            seriesProto = Series.prototype;
         /**
          * The area range series is a carteseian series with higher and lower values for
          * each point along an X axis, where the area between the values is shaded.
@@ -62,7 +62,31 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.arearange
          */
-        seriesType('arearange', 'area', {
+        BaseSeries.seriesType('arearange', 'area', {
+            /**
+             * @see [fillColor](#plotOptions.arearange.fillColor)
+             * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
+             *
+             * @apioption plotOptions.arearange.color
+             */
+            /**
+             * @default   low
+             * @apioption plotOptions.arearange.colorKey
+             */
+            /**
+             * @see [color](#plotOptions.arearange.color)
+             * @see [fillOpacity](#plotOptions.arearange.fillOpacity)
+             *
+             * @apioption plotOptions.arearange.fillColor
+             */
+            /**
+             * @see [color](#plotOptions.arearange.color)
+             * @see [fillColor](#plotOptions.arearange.fillColor)
+             *
+             * @default   {highcharts} 0.75
+             * @default   {highstock} 0.75
+             * @apioption plotOptions.arearange.fillOpacity
+             */
             /**
              * Whether to apply a drop shadow to the graph line. Since 2.3 the shadow
              * can be an object configuration containing `color`, `offsetX`, `offsetY`,
@@ -71,10 +95,6 @@
              * @type      {boolean|Highcharts.ShadowOptionsObject}
              * @product   highcharts
              * @apioption plotOptions.arearange.shadow
-             */
-            /**
-             * @default   low
-             * @apioption plotOptions.arearange.colorKey
              */
             /**
              * Pixel width of the arearange graph line.
@@ -181,7 +201,7 @@
                 var series = this,
                     yAxis = series.yAxis,
                     hasModifyValue = !!series.modifyValue;
-                seriesTypes.area.prototype.translate.apply(series);
+                areaProto.translate.apply(series);
                 // Set plotLow and plotHigh
                 series.points.forEach(function (point) {
                     var high = point.high,
@@ -219,7 +239,7 @@
                 var highPoints = [],
                     highAreaPoints = [],
                     i,
-                    getGraphPath = seriesTypes.area.prototype.getGraphPath,
+                    getGraphPath = areaProto.getGraphPath,
                     point,
                     pointShim,
                     linePath,
@@ -330,14 +350,8 @@
                 // since we now have to loop over all the points multiple times to work
                 // around the data label logic.
                 if (isArray(dataLabelOptions)) {
-                    if (dataLabelOptions.length > 1) {
-                        upperDataLabelOptions = dataLabelOptions[0];
-                        lowerDataLabelOptions = dataLabelOptions[1];
-                    }
-                    else {
-                        upperDataLabelOptions = dataLabelOptions[0];
-                        lowerDataLabelOptions = { enabled: false };
-                    }
+                    upperDataLabelOptions = dataLabelOptions[0] || { enabled: false };
+                    lowerDataLabelOptions = dataLabelOptions[1] || { enabled: false };
                 }
                 else {
                     // Make copies
@@ -451,8 +465,7 @@
                 this.options.dataLabels = dataLabelOptions;
             },
             alignDataLabel: function () {
-                seriesTypes.column.prototype.alignDataLabel
-                    .apply(this, arguments);
+                columnProto.alignDataLabel.apply(this, arguments);
             },
             drawPoints: function () {
                 var series = this,
@@ -614,6 +627,12 @@
          * @apioption series.arearange
          */
         /**
+         * @see [fillColor](#series.arearange.fillColor)
+         * @see [fillOpacity](#series.arearange.fillOpacity)
+         *
+         * @apioption series.arearange.color
+         */
+        /**
          * An array of data points for the series. For the `arearange` series type,
          * points can be given in the following ways:
          *
@@ -674,6 +693,20 @@
          * @apioption series.arearange.data.dataLabels
          */
         /**
+         * @see [color](#series.arearange.color)
+         * @see [fillOpacity](#series.arearange.fillOpacity)
+         *
+         * @apioption series.arearange.fillColor
+         */
+        /**
+         * @see [color](#series.arearange.color)
+         * @see [fillColor](#series.arearange.fillColor)
+         *
+         * @default   {highcharts} 0.75
+         * @default   {highstock} 0.75
+         * @apioption series.arearange.fillOpacity
+         */
+        /**
          * The high or maximum value for each data point.
          *
          * @type      {number}
@@ -690,7 +723,264 @@
         ''; // adds doclets above to tranpiled file
 
     });
-    _registerModule(_modules, 'Series/DumbbellSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/ColumnRangeSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, O, U) {
+        /* *
+         *
+         *  (c) 2010-2020 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var noop = H.noop;
+        var defaultOptions = O.defaultOptions;
+        var clamp = U.clamp,
+            merge = U.merge,
+            pick = U.pick;
+        var columnProto = BaseSeries.seriesTypes.column.prototype;
+        /**
+         * The column range is a cartesian series type with higher and lower
+         * Y values along an X axis. To display horizontal bars, set
+         * [chart.inverted](#chart.inverted) to `true`.
+         *
+         * @sample {highcharts|highstock} highcharts/demo/columnrange/
+         *         Inverted column range
+         *
+         * @extends      plotOptions.column
+         * @since        2.3.0
+         * @excluding    negativeColor, stacking, softThreshold, threshold
+         * @product      highcharts highstock
+         * @requires     highcharts-more
+         * @optionparent plotOptions.columnrange
+         */
+        var columnRangeOptions = {
+                /**
+                 * Extended data labels for range series types. Range series data labels
+                 * have no `x` and `y` options. Instead,
+            they have `xLow`,
+            `xHigh`,
+                 * `yLow` and `yHigh` options to allow the higher and lower data label
+                 * sets individually.
+                 *
+                 * @declare   Highcharts.SeriesAreaRangeDataLabelsOptionsObject
+                 * @extends   plotOptions.arearange.dataLabels
+                 * @since     2.3.0
+                 * @product   highcharts highstock
+                 * @apioption plotOptions.columnrange.dataLabels
+                 */
+                pointRange: null,
+                /** @ignore-option */
+                marker: null,
+                states: {
+                    hover: {
+                        /** @ignore-option */
+                        halo: false
+                    }
+                }
+            };
+        /**
+         * The ColumnRangeSeries class
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.columnrange
+         *
+         * @augments Highcharts.Series
+         */
+        BaseSeries.seriesType('columnrange', 'arearange', merge(defaultOptions.plotOptions.column, defaultOptions.plotOptions.arearange, columnRangeOptions), {
+            // eslint-disable-next-line valid-jsdoc
+            /**
+             * Translate data points from raw values x and y to plotX and plotY
+             * @private
+             */
+            translate: function () {
+                var series = this,
+                    yAxis = series.yAxis,
+                    xAxis = series.xAxis,
+                    startAngleRad = xAxis.startAngleRad,
+                    start,
+                    chart = series.chart,
+                    isRadial = series.xAxis.isRadial,
+                    safeDistance = Math.max(chart.chartWidth,
+                    chart.chartHeight) + 999,
+                    plotHigh;
+                // eslint-disable-next-line valid-jsdoc
+                /**
+                 * Don't draw too far outside plot area (#6835)
+                 * @private
+                 */
+                function safeBounds(pixelPos) {
+                    return clamp(pixelPos, -safeDistance, safeDistance);
+                }
+                columnProto.translate.apply(series);
+                // Set plotLow and plotHigh
+                series.points.forEach(function (point) {
+                    var shapeArgs = point.shapeArgs,
+                        minPointLength = series.options.minPointLength,
+                        heightDifference,
+                        height,
+                        y;
+                    point.plotHigh = plotHigh = safeBounds(yAxis.translate(point.high, 0, 1, 0, 1));
+                    point.plotLow = safeBounds(point.plotY);
+                    // adjust shape
+                    y = plotHigh;
+                    height = pick(point.rectPlotY, point.plotY) - plotHigh;
+                    // Adjust for minPointLength
+                    if (Math.abs(height) < minPointLength) {
+                        heightDifference = (minPointLength - height);
+                        height += heightDifference;
+                        y -= heightDifference / 2;
+                        // Adjust for negative ranges or reversed Y axis (#1457)
+                    }
+                    else if (height < 0) {
+                        height *= -1;
+                        y -= height;
+                    }
+                    if (isRadial) {
+                        start = point.barX + startAngleRad;
+                        point.shapeType = 'arc';
+                        point.shapeArgs = series.polarArc(y + height, y, start, start + point.pointWidth);
+                    }
+                    else {
+                        shapeArgs.height = height;
+                        shapeArgs.y = y;
+                        point.tooltipPos = chart.inverted ?
+                            [
+                                yAxis.len + yAxis.pos - chart.plotLeft - y -
+                                    height / 2,
+                                xAxis.len + xAxis.pos - chart.plotTop -
+                                    shapeArgs.x - shapeArgs.width / 2,
+                                height
+                            ] : [
+                            xAxis.left - chart.plotLeft + shapeArgs.x +
+                                shapeArgs.width / 2,
+                            yAxis.pos - chart.plotTop + y + height / 2,
+                            height
+                        ]; // don't inherit from column tooltip position - #3372
+                    }
+                });
+            },
+            directTouch: true,
+            trackerGroups: ['group', 'dataLabelsGroup'],
+            drawGraph: noop,
+            getSymbol: noop,
+            // Overrides from modules that may be loaded after this module
+            crispCol: function () {
+                return columnProto.crispCol.apply(this, arguments);
+            },
+            drawPoints: function () {
+                return columnProto.drawPoints.apply(this, arguments);
+            },
+            drawTracker: function () {
+                return columnProto.drawTracker.apply(this, arguments);
+            },
+            getColumnMetrics: function () {
+                return columnProto.getColumnMetrics.apply(this, arguments);
+            },
+            pointAttribs: function () {
+                return columnProto.pointAttribs.apply(this, arguments);
+            },
+            animate: function () {
+                return columnProto.animate.apply(this, arguments);
+            },
+            polarArc: function () {
+                return columnProto.polarArc.apply(this, arguments);
+            },
+            translate3dPoints: function () {
+                return columnProto.translate3dPoints.apply(this, arguments);
+            },
+            translate3dShapes: function () {
+                return columnProto.translate3dShapes.apply(this, arguments);
+            }
+        }, {
+            setState: columnProto.pointClass.prototype.setState
+        });
+        /**
+         * A `columnrange` series. If the [type](#series.columnrange.type)
+         * option is not specified, it is inherited from
+         * [chart.type](#chart.type).
+         *
+         * @extends   series,plotOptions.columnrange
+         * @excluding dataParser, dataURL, stack, stacking
+         * @product   highcharts highstock
+         * @requires  highcharts-more
+         * @apioption series.columnrange
+         */
+        /**
+         * An array of data points for the series. For the `columnrange` series
+         * type, points can be given in the following ways:
+         *
+         * 1. An array of arrays with 3 or 2 values. In this case, the values correspond
+         *    to `x,low,high`. If the first value is a string, it is applied as the name
+         *    of the point, and the `x` value is inferred. The `x` value can also be
+         *    omitted, in which case the inner arrays should be of length 2\. Then the
+         *    `x` value is automatically calculated, either starting at 0 and
+         *    incremented by 1, or from `pointStart` and `pointInterval` given in the
+         *    series options.
+         *    ```js
+         *    data: [
+         *        [0, 4, 2],
+         *        [1, 2, 1],
+         *        [2, 9, 10]
+         *    ]
+         *    ```
+         *
+         * 2. An array of objects with named values. The following snippet shows only a
+         *    few settings, see the complete options set below. If the total number of
+         *    data points exceeds the series'
+         *    [turboThreshold](#series.columnrange.turboThreshold), this option is not
+         *    available.
+         *    ```js
+         *    data: [{
+         *        x: 1,
+         *        low: 0,
+         *        high: 4,
+         *        name: "Point2",
+         *        color: "#00FF00"
+         *    }, {
+         *        x: 1,
+         *        low: 5,
+         *        high: 3,
+         *        name: "Point1",
+         *        color: "#FF00FF"
+         *    }]
+         *    ```
+         *
+         * @sample {highcharts} highcharts/series/data-array-of-arrays/
+         *         Arrays of numeric x and y
+         * @sample {highcharts} highcharts/series/data-array-of-arrays-datetime/
+         *         Arrays of datetime x and y
+         * @sample {highcharts} highcharts/series/data-array-of-name-value/
+         *         Arrays of point.name and y
+         * @sample {highcharts} highcharts/series/data-array-of-objects/
+         *         Config objects
+         *
+         * @type      {Array<Array<(number|string),number>|Array<(number|string),number,number>|*>}
+         * @extends   series.arearange.data
+         * @excluding marker
+         * @product   highcharts highstock
+         * @apioption series.columnrange.data
+         */
+        /**
+         * @extends   series.columnrange.dataLabels
+         * @product   highcharts highstock
+         * @apioption series.columnrange.data.dataLabels
+         */
+        /**
+         * @excluding halo, lineWidth, lineWidthPlus, marker
+         * @product   highcharts highstock
+         * @apioption series.columnrange.states.hover
+         */
+        /**
+         * @excluding halo, lineWidth, lineWidthPlus, marker
+         * @product   highcharts highstock
+         * @apioption series.columnrange.states.select
+         */
+        ''; // adds doclets above into transpiled
+
+    });
+    _registerModule(_modules, 'Series/DumbbellSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BaseSeries, SVGRenderer, H, U) {
         /* *
          *
          *  (c) 2010-2020 Sebastian Bochan, Rafal Sebestjanski
@@ -700,129 +990,99 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var SVGRenderer = H.SVGRenderer;
+        var noop = H.noop;
         var extend = U.extend,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var seriesTypes = H.seriesTypes,
-            seriesProto = H.Series.prototype,
-            areaRangeProto = seriesTypes.arearange.prototype,
-            columnRangeProto = seriesTypes.columnrange.prototype,
-            colProto = seriesTypes.column.prototype,
-            areaRangePointProto = areaRangeProto.pointClass.prototype;
-        /**
-         * The dumbbell series is a cartesian series with higher and lower values for
-         * each point along an X axis, connected with a line between the values.
-         * Requires `highcharts-more.js` and `modules/dumbbell.js`.
-         *
-         * @sample {highcharts} highcharts/demo/dumbbell/
-         *         Dumbbell chart
-         * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
-         *         Styled mode
-         *
-         * @extends      plotOptions.arearange
-         * @product      highcharts highstock
-         * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
-         *               stickyTracking, trackByArea, boostThreshold, boostBlending
-         * @since 8.0.0
-         * @optionparent plotOptions.dumbbell
-         */
-        seriesType('dumbbell', 'arearange', {
-            /** @ignore-option */
-            trackByArea: false,
-            /** @ignore-option */
-            fillColor: 'none',
-            /** @ignore-option */
-            lineWidth: 0,
-            pointRange: 1,
+            pick = U.pick;
+        var seriesProto = H.Series.prototype, seriesTypes = BaseSeries.seriesTypes, areaRangeProto = seriesTypes.arearange.prototype, columnRangeProto = seriesTypes.columnrange.prototype, colProto = seriesTypes.column.prototype, areaRangePointProto = areaRangeProto.pointClass.prototype, TrackerMixin = H.TrackerMixin; // Interaction
             /**
-             * Pixel width of the line that connects the dumbbell point's values.
+             * The dumbbell series is a cartesian series with higher and lower values for
+             * each point along an X axis, connected with a line between the values.
+             * Requires `highcharts-more.js` and `modules/dumbbell.js`.
              *
-             * @since 8.0.0
-             * @product   highcharts highstock
-             */
-            connectorWidth: 1,
-            /** @ignore-option */
-            stickyTracking: false,
-            groupPadding: 0.2,
-            crisp: false,
-            pointPadding: 0.1,
-            /**
-             * Color of the start markers in a dumbbell graph.
+             * @sample {highcharts} highcharts/demo/dumbbell/
+             *         Dumbbell chart
+             * @sample {highcharts} highcharts/series-dumbbell/styled-mode-dumbbell/
+             *         Styled mode
              *
-             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+             * @extends      plotOptions.arearange
+             * @product      highcharts highstock
+             * @excluding    fillColor, fillOpacity, lineWidth, stack, stacking,
+             *               stickyTracking, trackByArea, boostThreshold, boostBlending
              * @since 8.0.0
-             * @product   highcharts highstock
+             * @optionparent plotOptions.dumbbell
              */
-            lowColor: '#333333',
-            /**
-             * Color of the line that connects the dumbbell point's values.
-             * By default it is the series' color.
-             *
-             * @type      {string}
-             * @product   highcharts highstock
-             * @since 8.0.0
-             * @apioption plotOptions.dumbbell.connectorColor
-             */
-            states: {
-                hover: {
-                    /** @ignore-option */
-                    lineWidthPlus: 0,
-                    /**
-                     * The additional connector line width for a hovered point.
-                     *
-                     * @since 8.0.0
-                     * @product   highcharts highstock
-                     */
-                    connectorWidthPlus: 1,
-                    /** @ignore-option */
-                    halo: false
+            BaseSeries.seriesType('dumbbell', 'arearange', {
+                /** @ignore-option */
+                trackByArea: false,
+                /** @ignore-option */
+                fillColor: 'none',
+                /** @ignore-option */
+                lineWidth: 0,
+                pointRange: 1,
+                /**
+                 * Pixel width of the line that connects the dumbbell point's values.
+                 *
+                 * @since 8.0.0
+                 * @product   highcharts highstock
+                 */
+                connectorWidth: 1,
+                /** @ignore-option */
+                stickyTracking: false,
+                groupPadding: 0.2,
+                crisp: false,
+                pointPadding: 0.1,
+                /**
+                 * Color of the start markers in a dumbbell graph.
+                 *
+                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @since 8.0.0
+                 * @product   highcharts highstock
+                 */
+                lowColor: '#333333',
+                /**
+                 * Color of the line that connects the dumbbell point's values.
+                 * By default it is the series' color.
+                 *
+                 * @type      {string}
+                 * @product   highcharts highstock
+                 * @since 8.0.0
+                 * @apioption plotOptions.dumbbell.connectorColor
+                 */
+                states: {
+                    hover: {
+                        /** @ignore-option */
+                        lineWidthPlus: 0,
+                        /**
+                         * The additional connector line width for a hovered point.
+                         *
+                         * @since 8.0.0
+                         * @product   highcharts highstock
+                         */
+                        connectorWidthPlus: 1,
+                        /** @ignore-option */
+                        halo: false
+                    }
                 }
-            }
-        }, {
-            trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-            drawTracker: H.TrackerMixin.drawTrackerPoint,
-            drawGraph: H.noop,
-            crispCol: colProto.crispCol,
-            /**
-             * Get connector line path and styles that connects dumbbell point's low and
-             * high values.
-             * @private
-             *
-             * @param {Highcharts.Series} this The series of points.
-             * @param {Highcharts.Point} point The point to inspect.
-             *
-             * @return {Highcharts.SVGAttributes} attribs The path and styles.
-             */
-            getConnectorAttribs: function (point) {
-                var series = this,
-                    chart = series.chart,
-                    pointOptions = point.options,
-                    seriesOptions = series.options,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    connectorWidth = pick(pointOptions.connectorWidth,
-                    seriesOptions.connectorWidth),
-                    connectorColor = pick(pointOptions.connectorColor,
-                    seriesOptions.connectorColor,
-                    pointOptions.color,
-                    point.zone ? point.zone.color : void 0,
-                    point.color),
-                    connectorWidthPlus = pick(seriesOptions.states &&
+            }, {
+                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+                drawTracker: TrackerMixin.drawTrackerPoint,
+                drawGraph: noop,
+                crispCol: colProto.crispCol,
+                /**
+                 * Get connector line path and styles that connects dumbbell point's low and
+                 * high values.
+                 * @private
+                 *
+                 * @param {Highcharts.Series} this The series of points.
+                 * @param {Highcharts.Point} point The point to inspect.
+                 *
+                 * @return {Highcharts.SVGAttributes} attribs The path and styles.
+                 */
+                getConnectorAttribs: function (point) {
+                    var series = this, chart = series.chart, pointOptions = point.options, seriesOptions = series.options, xAxis = series.xAxis, yAxis = series.yAxis, connectorWidth = pick(pointOptions.connectorWidth, seriesOptions.connectorWidth), connectorColor = pick(pointOptions.connectorColor, seriesOptions.connectorColor, pointOptions.color, point.zone ? point.zone.color : void 0, point.color), connectorWidthPlus = pick(seriesOptions.states &&
                         seriesOptions.states.hover &&
-                        seriesOptions.states.hover.connectorWidthPlus, 1),
-                    dashStyle = pick(pointOptions.dashStyle,
-                    seriesOptions.dashStyle),
-                    pointTop = pick(point.plotLow,
-                    point.plotY),
-                    pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0,
-                    true),
-                    pointHeight = chart.inverted ?
-                        yAxis.len - pxThreshold : pxThreshold,
-                    pointBottom = pick(point.plotHigh,
-                    pointHeight),
-                    attribs,
-                    origProps;
+                        seriesOptions.states.hover.connectorWidthPlus, 1), dashStyle = pick(pointOptions.dashStyle, seriesOptions.dashStyle), pointTop = pick(point.plotLow, point.plotY), pxThreshold = yAxis.toPixels(seriesOptions.threshold || 0, true), pointHeight = chart.inverted ?
+                        yAxis.len - pxThreshold : pxThreshold, pointBottom = pick(point.plotHigh, pointHeight), attribs, origProps;
                 if (point.state) {
                     connectorWidth = connectorWidth + connectorWidthPlus;
                 }

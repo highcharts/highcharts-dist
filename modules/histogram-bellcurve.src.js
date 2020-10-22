@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * (c) 2010-2019 Highsoft AS
  * Author: Sebastian Domas
@@ -152,7 +152,7 @@
 
         return derivedSeriesMixin;
     });
-    _registerModule(_modules, 'Series/HistogramSeries.js', [_modules['Core/Utilities.js'], _modules['Mixins/DerivedSeries.js']], function (U, derivedSeriesMixin) {
+    _registerModule(_modules, 'Series/HistogramSeries.js', [_modules['Core/Series/Series.js'], _modules['Mixins/DerivedSeries.js'], _modules['Core/Utilities.js']], function (BaseSeries, DerivedSeriesMixin, U) {
         /* *
          *
          *  Copyright (c) 2010-2017 Highsoft AS
@@ -168,8 +168,7 @@
             correctFloat = U.correctFloat,
             isNumber = U.isNumber,
             merge = U.merge,
-            objectEach = U.objectEach,
-            seriesType = U.seriesType;
+            objectEach = U.objectEach;
         /* ************************************************************************** *
          *  HISTOGRAM
          * ************************************************************************** */
@@ -210,7 +209,7 @@
          * @name Highcharts.seriesTypes.histogram
          * @augments Highcharts.Series
          */
-        seriesType('histogram', 'column', 
+        BaseSeries.seriesType('histogram', 'column', 
         /**
          * A histogram is a column series which represents the distribution of the
          * data set in the base series. Histogram splits data into bins and shows
@@ -258,7 +257,7 @@
                     '<span style="color:{point.color}">\u25CF</span>' +
                     ' {series.name} <b>{point.y}</b><br/>')
             }
-        }, merge(derivedSeriesMixin, {
+        }, merge(DerivedSeriesMixin, {
             setDerivedData: function () {
                 var yData = this.baseSeries.yData;
                 if (!yData.length) {
@@ -359,7 +358,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/BellcurveSeries.js', [_modules['Core/Utilities.js'], _modules['Mixins/DerivedSeries.js']], function (U, derivedSeriesMixin) {
+    _registerModule(_modules, 'Series/BellcurveSeries.js', [_modules['Core/Series/Series.js'], _modules['Mixins/DerivedSeries.js'], _modules['Core/Utilities.js']], function (BaseSeries, DerivedSeriesMixin, U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -373,8 +372,7 @@
          * */
         var correctFloat = U.correctFloat,
             isNumber = U.isNumber,
-            merge = U.merge,
-            seriesType = U.seriesType;
+            merge = U.merge;
         /* ************************************************************************** *
          *  BELL CURVE                                                                *
          * ************************************************************************** */
@@ -421,7 +419,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('bellcurve', 'areaspline'
+        BaseSeries.seriesType('bellcurve', 'areaspline'
         /**
          * A bell curve is an areaspline series which represents the probability
          * density function of the normal distribution. It calculates mean and
@@ -441,6 +439,26 @@
          */
         , {
             /**
+             * @see [fillColor](#plotOptions.bellcurve.fillColor)
+             * @see [fillOpacity](#plotOptions.bellcurve.fillOpacity)
+             *
+             * @apioption plotOptions.bellcurve.color
+             */
+            /**
+             * @see [color](#plotOptions.bellcurve.color)
+             * @see [fillOpacity](#plotOptions.bellcurve.fillOpacity)
+             *
+             * @apioption plotOptions.bellcurve.fillColor
+             */
+            /**
+             * @see [color](#plotOptions.bellcurve.color)
+             * @see [fillColor](#plotOptions.bellcurve.fillColor)
+             *
+             * @default   {highcharts} 0.75
+             * @default   {highstock} 0.75
+             * @apioption plotOptions.bellcurve.fillOpacity
+             */
+            /**
              * This option allows to define the length of the bell curve. A unit of
              * the length of the bell curve is standard deviation.
              *
@@ -459,7 +477,7 @@
             marker: {
                 enabled: false
             }
-        }, merge(derivedSeriesMixin, {
+        }, merge(DerivedSeriesMixin, {
             setMean: function () {
                 this.mean = correctFloat(mean(this.baseSeries.yData));
             },
@@ -511,6 +529,26 @@
          *
          * @type      {number|string}
          * @apioption series.bellcurve.baseSeries
+         */
+        /**
+         * @see [fillColor](#series.bellcurve.fillColor)
+         * @see [fillOpacity](#series.bellcurve.fillOpacity)
+         *
+         * @apioption series.bellcurve.color
+         */
+        /**
+         * @see [color](#series.bellcurve.color)
+         * @see [fillOpacity](#series.bellcurve.fillOpacity)
+         *
+         * @apioption series.bellcurve.fillColor
+         */
+        /**
+         * @see [color](#series.bellcurve.color)
+         * @see [fillColor](#series.bellcurve.fillColor)
+         *
+         * @default   {highcharts} 0.75
+         * @default   {highstock} 0.75
+         * @apioption series.bellcurve.fillOpacity
          */
         ''; // adds doclets above to transpiled file
 

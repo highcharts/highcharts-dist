@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Drag-panes module
  *
@@ -544,7 +544,7 @@
                     // Resizer not present and enabled
                     if (enabled) {
                         // Add new resizer
-                        axis.resizer = new H.AxisResizer(axis);
+                        axis.resizer = new AxisResizer(axis);
                     }
                     // Resizer not present and disabled, so do nothing
                 }

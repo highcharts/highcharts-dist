@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Timeline series
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/TimelineSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, Point, SVGElement, U) {
+    _registerModule(_modules, 'Series/TimelineSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, LegendSymbolMixin, Point, SVGElement, U) {
         /* *
          *
          *  Timeline Series.
@@ -43,6 +43,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = BaseSeries.seriesTypes;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
@@ -50,8 +51,9 @@
             isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
+        var TrackerMixin = H.TrackerMixin,
+            Series = H.Series;
         /**
          * Callback JavaScript function to format the data label as a string. Note that
          * if a `format` is defined, the format takes precedence and the formatter is
@@ -79,9 +81,6 @@
         * @type {Highcharts.Series}
         */
         ''; // dettach doclets above
-        var TrackerMixin = H.TrackerMixin,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes;
         /**
          * The timeline series type.
          *
@@ -91,7 +90,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('timeline', 'line', 
+        BaseSeries.seriesType('timeline', 'line', 
         /**
          * The timeline series presents given events along a drawn line.
          *

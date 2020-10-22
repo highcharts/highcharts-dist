@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Highcharts Drilldown module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Drilldown.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, O, Point, SVGRenderer, Tick, U) {
+    _registerModule(_modules, 'Extensions/Drilldown.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, Color, H, O, Point, SVGRenderer, Tick, U) {
         /* *
          *
          *  Highcharts Drilldown module
@@ -40,10 +40,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var animObject = A.animObject;
+        var noop = H.noop;
         var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             removeEvent = U.removeEvent,
-            animObject = U.animObject,
             extend = U.extend,
             fireEvent = U.fireEvent,
             format = U.format,
@@ -164,8 +165,7 @@
         * @name Highcharts.DrillupEventObject#type
         * @type {"drillup"}
         */
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes,
+        var seriesTypes = H.seriesTypes,
             PieSeries = seriesTypes.pie,
             ColumnSeries = seriesTypes.column,
             ddSeriesId = 1;
@@ -200,6 +200,8 @@
          * @product      highcharts highmaps
          * @requires     modules/drilldown
          * @optionparent drilldown
+         * @sample {highcharts} highcharts/series-organization/drilldown
+         *         Organization chart drilldown
          */
         defaultOptions.drilldown = {
             /**
@@ -833,7 +835,15 @@
                 // Do dummy animation on first point to get to complete
                 syncTimeout(function () {
                     if (newSeries.points) { // May be destroyed in the meantime, #3389
-                        newSeries.points.forEach(function (point, i) {
+                        // Unable to drillup with nodes, #13711
+                        var pointsWithNodes = [];
+                        newSeries.data.forEach(function (el) {
+                            pointsWithNodes.push(el);
+                        });
+                        if (newSeries.nodes) {
+                            pointsWithNodes = pointsWithNodes.concat(newSeries.nodes);
+                        }
+                        pointsWithNodes.forEach(function (point, i) {
                             // Fade in other points
                             var verb = i === (level && level.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
                             if (point.graphic) { // #3407
@@ -1029,8 +1039,8 @@
          * @param {global.MouseEvent} e
          *        Click event
          */
-        H.Axis.prototype.drilldownCategory = function (x, e) {
-            objectEach(this.getDDPoints(x), function (point) {
+        Axis.prototype.drilldownCategory = function (x, e) {
+            this.getDDPoints(x).forEach(function (point) {
                 if (point &&
                     point.series &&
                     point.series.visible &&
@@ -1047,11 +1057,11 @@
          * @function Highcharts.Axis#getDDPoints
          * @param {number} x
          *        Tick position
-         * @return {Array<(boolean|Highcharts.Point)>|undefined}
+         * @return {Array<(false|Highcharts.Point)>}
          *         Drillable points
          */
-        H.Axis.prototype.getDDPoints = function (x) {
-            return this.ddPoints && this.ddPoints[x];
+        Axis.prototype.getDDPoints = function (x) {
+            return (this.ddPoints && this.ddPoints[x] || []);
         };
         /**
          * Make a tick label drillable, or remove drilling on update.

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Money Flow Index indicator for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/MFIIndicator.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Stock/Indicators/MFIIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
         /* *
          *
          *  Money Flow Index indicator for Highstock
@@ -41,8 +41,8 @@
          *
          * */
         var error = U.error,
-            isArray = U.isArray,
-            seriesType = U.seriesType;
+            isArray = U.isArray;
+        // im port './SMAIndicator.js';
         /* eslint-disable require-jsdoc */
         // Utils:
         function sumArray(array) {
@@ -69,7 +69,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('mfi', 'sma', 
+        BaseSeries.seriesType('mfi', 'sma', 
         /**
          * Money Flow Index. This series requires `linkedTo` option to be set and
          * should be loaded after the `stock/indicators/indicators.js` file.

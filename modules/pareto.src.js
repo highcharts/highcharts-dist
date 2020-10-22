@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Pareto series type for Highcharts
  *
@@ -153,7 +153,7 @@
 
         return derivedSeriesMixin;
     });
-    _registerModule(_modules, 'Series/ParetoSeries.js', [_modules['Core/Utilities.js'], _modules['Mixins/DerivedSeries.js']], function (U, derivedSeriesMixin) {
+    _registerModule(_modules, 'Series/ParetoSeries.js', [_modules['Core/Series/Series.js'], _modules['Mixins/DerivedSeries.js'], _modules['Core/Utilities.js']], function (BaseSeries, DerivedSeriesMixin, U) {
         /* *
          *
          *  (c) 2010-2017 Sebastian Bochan
@@ -164,8 +164,7 @@
          *
          * */
         var correctFloat = U.correctFloat,
-            merge = U.merge,
-            seriesType = U.seriesType;
+            merge = U.merge;
         /**
          * The pareto series type.
          *
@@ -175,7 +174,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('pareto', 'line'
+        BaseSeries.seriesType('pareto', 'line'
         /**
          * A pareto diagram is a type of chart that contains both bars and a line
          * graph, where individual values are represented in descending order by
@@ -205,7 +204,7 @@
             zIndex: 3
         }, 
         /* eslint-disable no-invalid-this, valid-jsdoc */
-        merge(derivedSeriesMixin, {
+        merge(DerivedSeriesMixin, {
             /**
              * Calculate sum and return percent points.
              *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Marker clusters module for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/MarkerClusters.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, O, Point, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/MarkerClusters.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Series/Series.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/Axis.js']], function (A, BaseSeries, Chart, H, O, Point, SVGRenderer, U, Axis) {
         /* *
          *
          *  Marker clusters module.
@@ -42,9 +42,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var animObject = A.animObject;
         var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
-            animObject = U.animObject,
             defined = U.defined,
             error = U.error,
             isArray = U.isArray,
@@ -69,7 +69,7 @@
         ''; // detach doclets from following code
         /* eslint-disable no-invalid-this */
         var Series = H.Series,
-            Scatter = H.seriesTypes.scatter,
+            Scatter = BaseSeries.seriesTypes.scatter,
             baseGeneratePoints = Series.prototype.generatePoints,
             stateIdCounter = 0, 
             // Points that ids are included in the oldPointsStateId array
@@ -1743,7 +1743,7 @@
             }
         });
         // Destroy the old tooltip after zoom.
-        addEvent(H.Axis, 'setExtremes', function () {
+        addEvent(Axis, 'setExtremes', function () {
             var chart = this.chart,
                 animationDuration = 0,
                 animation;

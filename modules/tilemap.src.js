@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.2.0 (2020-08-20)
+ * @license Highmaps JS v8.2.2 (2020-10-22)
  *
  * Tilemap module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/TilemapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/TilemapSeries.js', [_modules['Core/Series/Series.js'], _modules['Mixins/ColorSeries.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BaseSeries, ColorSeriesModule, H, U) {
         /* *
          *
          *  Tilemaps module
@@ -41,15 +41,15 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var colorPointMixin = ColorSeriesModule.colorPointMixin;
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
+            extend = U.extend,
+            pick = U.pick;
         /**
          * @typedef {"circle"|"diamond"|"hexagon"|"square"} Highcharts.TilemapShapeValue
          */
         ''; // detach doclets above
-        var addEvent = U.addEvent,
-            clamp = U.clamp,
-            extend = U.extend,
-            pick = U.pick,
-            seriesType = U.seriesType;
         /**
          * Utility func to get padding definition from tile size division
          * @private
@@ -390,7 +390,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('tilemap', 'heatmap'
+        BaseSeries.seriesType('tilemap', 'heatmap'
         /**
          * A tilemap series is a type of heatmap where the tile shapes are
          * configurable.
@@ -555,7 +555,7 @@
             haloPath: function () {
                 return this.series.tileShape.haloPath.apply(this, Array.prototype.slice.call(arguments));
             }
-        }, H.colorPointMixin));
+        }, colorPointMixin));
         /**
          * A `tilemap` series. If the [type](#series.tilemap.type) option is
          * not specified, it is inherited from [chart.type](#chart.type).

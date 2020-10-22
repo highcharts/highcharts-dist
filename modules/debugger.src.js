@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Debugger module
  *
@@ -167,7 +167,7 @@
         };
 
     });
-    _registerModule(_modules, 'Extensions/Debugger.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/Debugger.js', [_modules['Core/Globals.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (H, Chart, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -199,7 +199,7 @@
             }
         });
         /* eslint-disable no-invalid-this */
-        addEvent(H.Chart, 'displayError', function (e) {
+        addEvent(Chart, 'displayError', function (e) {
             var chart = this,
                 code = e.code,
                 msg,
@@ -248,7 +248,7 @@
                 });
             }
         });
-        addEvent(H.Chart, 'beforeRedraw', function () {
+        addEvent(Chart, 'beforeRedraw', function () {
             var errorElements = this.errorElements;
             if (errorElements && errorElements.length) {
                 errorElements.forEach(function (el) {

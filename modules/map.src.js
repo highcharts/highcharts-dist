@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.2.0 (2020-08-20)
+ * @license Highmaps JS v8.2.2 (2020-10-22)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *
@@ -193,7 +193,7 @@
 
         return MapAxis;
     });
-    _registerModule(_modules, 'Mixins/ColorSeries.js', [_modules['Core/Globals.js']], function (H) {
+    _registerModule(_modules, 'Mixins/ColorSeries.js', [], function () {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -209,18 +209,18 @@
          * @private
          * @mixin Highcharts.colorPointMixin
          */
-        H.colorPointMixin = {
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Set the visibility of a single point
-             * @private
-             * @function Highcharts.colorPointMixin.setVisible
-             * @param {boolean} visible
-             * @return {void}
-             */
-            setVisible: function (vis) {
-                var point = this,
-                    method = vis ? 'show' : 'hide';
+        var colorPointMixin = {
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Set the visibility of a single point
+                 * @private
+                 * @function Highcharts.colorPointMixin.setVisible
+                 * @param {boolean} visible
+                 * @return {void}
+                 */
+                setVisible: function (vis) {
+                    var point = this,
+            method = vis ? 'show' : 'hide';
                 point.visible = point.options.visible = Boolean(vis);
                 // Show and hide associated elements
                 ['graphic', 'dataLabel'].forEach(function (key) {
@@ -236,23 +236,25 @@
          * @private
          * @mixin Highcharts.colorSeriesMixin
          */
-        H.colorSeriesMixin = {
-            optionalAxis: 'colorAxis',
-            colorAxis: 0,
-            /* eslint-disable valid-jsdoc */
-            /**
-             * In choropleth maps, the color is a result of the value, so this needs
-             * translation too
-             * @private
-             * @function Highcharts.colorSeriesMixin.translateColors
-             * @return {void}
-             */
-            translateColors: function () {
-                var series = this,
-                    points = this.data.length ? this.data : this.points,
-                    nullColor = this.options.nullColor,
-                    colorAxis = this.colorAxis,
-                    colorKey = this.colorKey;
+        var colorSeriesMixin = {
+                optionalAxis: 'colorAxis',
+                colorAxis: 0,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * In choropleth maps,
+            the color is a result of the value,
+            so this needs
+                 * translation too
+                 * @private
+                 * @function Highcharts.colorSeriesMixin.translateColors
+                 * @return {void}
+                 */
+                translateColors: function () {
+                    var series = this,
+            points = this.data.length ? this.data : this.points,
+            nullColor = this.options.nullColor,
+            colorAxis = this.colorAxis,
+            colorKey = this.colorKey;
                 points.forEach(function (point) {
                     var value = point.getNestedProperty(colorKey),
                         color;
@@ -272,9 +274,14 @@
             }
             /* eslint-enable valid-jsdoc */
         };
+        var exports = {
+                colorPointMixin: colorPointMixin,
+                colorSeriesMixin: colorSeriesMixin
+            };
 
+        return exports;
     });
-    _registerModule(_modules, 'Core/Axis/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, Legend, LegendSymbolMixin, Point, U) {
+    _registerModule(_modules, 'Core/Axis/ColorAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Mixins/ColorSeries.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Mixins/LegendSymbol.js'], _modules['Series/LineSeries.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, ColorSeriesModule, Fx, H, Legend, LegendSymbolMixin, LineSeries, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -301,11 +308,12 @@
             };
         })();
         var color = Color.parse;
+        var colorPointMixin = ColorSeriesModule.colorPointMixin,
+            colorSeriesMixin = ColorSeriesModule.colorSeriesMixin;
         var noop = H.noop;
         var addEvent = U.addEvent,
             erase = U.erase,
             extend = U.extend,
-            Fx = U.Fx,
             isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
@@ -316,10 +324,7 @@
          * @typedef {"linear"|"logarithmic"} Highcharts.ColorAxisTypeValue
          */
         ''; // detach doclet above
-        var Series = H.Series,
-            colorPointMixin = H.colorPointMixin,
-            colorSeriesMixin = H.colorSeriesMixin;
-        extend(Series.prototype, colorSeriesMixin);
+        extend(LineSeries.prototype, colorSeriesMixin);
         extend(Point.prototype, colorPointMixin);
         Chart.prototype.collectionsWithUpdate.push('colorAxis');
         Chart.prototype.collectionsWithInit.colorAxis = [Chart.prototype.addColorAxis];
@@ -728,7 +733,7 @@
                         cSeries.maxColorValue = cSeries[colorKey + 'Max'];
                     }
                     else {
-                        var cExtremes = Series.prototype.getExtremes.call(cSeries,
+                        var cExtremes = LineSeries.prototype.getExtremes.call(cSeries,
                             colorValArray);
                         cSeries.minColorValue = cExtremes.dataMin;
                         cSeries.maxColorValue = cExtremes.dataMax;
@@ -740,7 +745,7 @@
                             Math.max(this.dataMax, cSeries.maxColorValue);
                     }
                     if (!calculatedExtremes) {
-                        Series.prototype.applyExtremes.call(cSeries);
+                        LineSeries.prototype.applyExtremes.call(cSeries);
                     }
                 }
             };
@@ -1413,7 +1418,7 @@
             }
         });
         // Add colorAxis to series axisTypes
-        addEvent(Series, 'bindAxes', function () {
+        addEvent(LineSeries, 'bindAxes', function () {
             var axisTypes = this.axisTypes;
             if (!axisTypes) {
                 this.axisTypes = ['colorAxis'];
@@ -1479,7 +1484,7 @@
             }
         });
         // Calculate and set colors for points
-        addEvent(Series, 'afterTranslate', function () {
+        addEvent(LineSeries, 'afterTranslate', function () {
             if (this.chart.colorAxis &&
                 this.chart.colorAxis.length ||
                 this.colorAttribs) {
@@ -1508,21 +1513,21 @@
          * @private
          * @mixin Highcharts.colorMapPointMixin
          */
-        H.colorMapPointMixin = {
-            dataLabelOnNull: true,
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Color points have a value option that determines whether or not it is
-             * a null point
-             * @private
-             * @function Highcharts.colorMapPointMixin.isValid
-             * @return {boolean}
-             */
-            isValid: function () {
-                // undefined is allowed
-                return (this.value !== null &&
-                    this.value !== Infinity &&
-                    this.value !== -Infinity);
+        var colorMapPointMixin = {
+                dataLabelOnNull: true,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Color points have a value option that determines whether or not it is
+                 * a null point
+                 * @private
+                 * @function Highcharts.colorMapPointMixin.isValid
+                 * @return {boolean}
+                 */
+                isValid: function () {
+                    // undefined is allowed
+                    return (this.value !== null &&
+                        this.value !== Infinity &&
+                        this.value !== -Infinity);
             },
             /**
              * @private
@@ -1544,31 +1549,36 @@
          * @private
          * @mixin Highcharts.colorMapSeriesMixin
          */
-        H.colorMapSeriesMixin = {
-            pointArrayMap: ['value'],
-            axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
-            trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-            getSymbol: noop,
-            parallelArrays: ['x', 'y', 'value'],
-            colorKey: 'value',
-            pointAttribs: seriesTypes.column.prototype.pointAttribs,
-            /* eslint-disable valid-jsdoc */
-            /**
-             * Get the color attibutes to apply on the graphic
-             * @private
-             * @function Highcharts.colorMapSeriesMixin.colorAttribs
-             * @param {Highcharts.Point} point
-             * @return {Highcharts.SVGAttributes}
-             */
-            colorAttribs: function (point) {
-                var ret = {};
+        var colorMapSeriesMixin = {
+                pointArrayMap: ['value'],
+                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
+                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+                getSymbol: noop,
+                parallelArrays: ['x', 'y', 'value'],
+                colorKey: 'value',
+                pointAttribs: seriesTypes.column.prototype.pointAttribs,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Get the color attibutes to apply on the graphic
+                 * @private
+                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
+                 * @param {Highcharts.Point} point
+                 * @return {Highcharts.SVGAttributes}
+                 */
+                colorAttribs: function (point) {
+                    var ret = {};
                 if (defined(point.color)) {
                     ret[this.colorProp || 'fill'] = point.color;
                 }
                 return ret;
             }
         };
+        var exports = {
+                colorMapPointMixin: colorMapPointMixin,
+                colorMapSeriesMixin: colorMapSeriesMixin
+            };
 
+        return exports;
     });
     _registerModule(_modules, 'Maps/MapNavigation.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
         /* *
@@ -1965,7 +1975,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/MapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, Point, SVGRenderer, U) {
+    _registerModule(_modules, 'Maps/Map.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, O, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -1975,6 +1985,438 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var defaultOptions = O.defaultOptions;
+        var extend = U.extend,
+            getOptions = U.getOptions,
+            merge = U.merge,
+            pick = U.pick;
+        var Renderer = H.Renderer,
+            VMLRenderer = H.VMLRenderer;
+        // Add language
+        extend(defaultOptions.lang, {
+            zoomIn: 'Zoom in',
+            zoomOut: 'Zoom out'
+        });
+        // Set the default map navigation options
+        /**
+         * @product      highmaps
+         * @optionparent mapNavigation
+         */
+        defaultOptions.mapNavigation = {
+            /**
+             * General options for the map navigation buttons. Individual options
+             * can be given from the [mapNavigation.buttons](#mapNavigation.buttons)
+             * option set.
+             *
+             * @sample {highmaps} maps/mapnavigation/button-theme/
+             *         Theming the navigation buttons
+             */
+            buttonOptions: {
+                /**
+                 * What box to align the buttons to. Possible values are `plotBox`
+                 * and `spacingBox`.
+                 *
+                 * @type {Highcharts.ButtonRelativeToValue}
+                 */
+                alignTo: 'plotBox',
+                /**
+                 * The alignment of the navigation buttons.
+                 *
+                 * @type {Highcharts.AlignValue}
+                 */
+                align: 'left',
+                /**
+                 * The vertical alignment of the buttons. Individual alignment can
+                 * be adjusted by each button's `y` offset.
+                 *
+                 * @type {Highcharts.VerticalAlignValue}
+                 */
+                verticalAlign: 'top',
+                /**
+                 * The X offset of the buttons relative to its `align` setting.
+                 */
+                x: 0,
+                /**
+                 * The width of the map navigation buttons.
+                 */
+                width: 18,
+                /**
+                 * The pixel height of the map navigation buttons.
+                 */
+                height: 18,
+                /**
+                 * Padding for the navigation buttons.
+                 *
+                 * @since 5.0.0
+                 */
+                padding: 5,
+                /**
+                 * Text styles for the map navigation buttons.
+                 *
+                 * @type    {Highcharts.CSSObject}
+                 * @default {"fontSize": "15px", "fontWeight": "bold"}
+                 */
+                style: {
+                    /** @ignore */
+                    fontSize: '15px',
+                    /** @ignore */
+                    fontWeight: 'bold'
+                },
+                /**
+                 * A configuration object for the button theme. The object accepts
+                 * SVG properties like `stroke-width`, `stroke` and `fill`. Tri-state
+                 * button styles are supported by the `states.hover` and `states.select`
+                 * objects.
+                 *
+                 * @sample {highmaps} maps/mapnavigation/button-theme/
+                 *         Themed navigation buttons
+                 *
+                 * @type    {Highcharts.SVGAttributes}
+                 * @default {"stroke-width": 1, "text-align": "center"}
+                 */
+                theme: {
+                    /** @ignore */
+                    'stroke-width': 1,
+                    /** @ignore */
+                    'text-align': 'center'
+                }
+            },
+            /**
+             * The individual buttons for the map navigation. This usually includes
+             * the zoom in and zoom out buttons. Properties for each button is
+             * inherited from
+             * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
+             * individual options can be overridden. But default, the `onclick`, `text`
+             * and `y` options are individual.
+             */
+            buttons: {
+                /**
+                 * Options for the zoom in button. Properties for the zoom in and zoom
+                 * out buttons are inherited from
+                 * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
+                 * individual options can be overridden. By default, the `onclick`,
+                 * `text` and `y` options are individual.
+                 *
+                 * @extends mapNavigation.buttonOptions
+                 */
+                zoomIn: {
+                    // eslint-disable-next-line valid-jsdoc
+                    /**
+                     * Click handler for the button.
+                     *
+                     * @type    {Function}
+                     * @default function () { this.mapZoom(0.5); }
+                     */
+                    onclick: function () {
+                        this.mapZoom(0.5);
+                    },
+                    /**
+                     * The text for the button. The tooltip (title) is a language option
+                     * given by [lang.zoomIn](#lang.zoomIn).
+                     */
+                    text: '+',
+                    /**
+                     * The position of the zoomIn button relative to the vertical
+                     * alignment.
+                     */
+                    y: 0
+                },
+                /**
+                 * Options for the zoom out button. Properties for the zoom in and
+                 * zoom out buttons are inherited from
+                 * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
+                 * individual options can be overridden. By default, the `onclick`,
+                 * `text` and `y` options are individual.
+                 *
+                 * @extends mapNavigation.buttonOptions
+                 */
+                zoomOut: {
+                    // eslint-disable-next-line valid-jsdoc
+                    /**
+                     * Click handler for the button.
+                     *
+                     * @type    {Function}
+                     * @default function () { this.mapZoom(2); }
+                     */
+                    onclick: function () {
+                        this.mapZoom(2);
+                    },
+                    /**
+                     * The text for the button. The tooltip (title) is a language option
+                     * given by [lang.zoomOut](#lang.zoomIn).
+                     */
+                    text: '-',
+                    /**
+                     * The position of the zoomOut button relative to the vertical
+                     * alignment.
+                     */
+                    y: 28
+                }
+            },
+            /**
+             * Whether to enable navigation buttons. By default it inherits the
+             * [enabled](#mapNavigation.enabled) setting.
+             *
+             * @type      {boolean}
+             * @apioption mapNavigation.enableButtons
+             */
+            /**
+             * Whether to enable map navigation. The default is not to enable
+             * navigation, as many choropleth maps are simple and don't need it.
+             * Additionally, when touch zoom and mousewheel zoom is enabled, it breaks
+             * the default behaviour of these interactions in the website, and the
+             * implementer should be aware of this.
+             *
+             * Individual interactions can be enabled separately, namely buttons,
+             * multitouch zoom, double click zoom, double click zoom to element and
+             * mousewheel zoom.
+             *
+             * @type      {boolean}
+             * @default   false
+             * @apioption mapNavigation.enabled
+             */
+            /**
+             * Enables zooming in on an area on double clicking in the map. By default
+             * it inherits the [enabled](#mapNavigation.enabled) setting.
+             *
+             * @type      {boolean}
+             * @apioption mapNavigation.enableDoubleClickZoom
+             */
+            /**
+             * Whether to zoom in on an area when that area is double clicked.
+             *
+             * @sample {highmaps} maps/mapnavigation/doubleclickzoomto/
+             *         Enable double click zoom to
+             *
+             * @type      {boolean}
+             * @default   false
+             * @apioption mapNavigation.enableDoubleClickZoomTo
+             */
+            /**
+             * Enables zooming by mouse wheel. By default it inherits the [enabled](
+             * #mapNavigation.enabled) setting.
+             *
+             * @type      {boolean}
+             * @apioption mapNavigation.enableMouseWheelZoom
+             */
+            /**
+             * Whether to enable multitouch zooming. Note that if the chart covers the
+             * viewport, this prevents the user from using multitouch and touchdrag on
+             * the web page, so you should make sure the user is not trapped inside the
+             * chart. By default it inherits the [enabled](#mapNavigation.enabled)
+             * setting.
+             *
+             * @type      {boolean}
+             * @apioption mapNavigation.enableTouchZoom
+             */
+            /**
+             * Sensitivity of mouse wheel or trackpad scrolling. 1 is no sensitivity,
+             * while with 2, one mousewheel delta will zoom in 50%.
+             *
+             * @since 4.2.4
+             */
+            mouseWheelSensitivity: 1.1
+            // enabled: false,
+            // enableButtons: null, // inherit from enabled
+            // enableTouchZoom: null, // inherit from enabled
+            // enableDoubleClickZoom: null, // inherit from enabled
+            // enableDoubleClickZoomTo: false
+            // enableMouseWheelZoom: null, // inherit from enabled
+        };
+        /* eslint-disable valid-jsdoc */
+        /**
+         * Utility for reading SVG paths directly.
+         *
+         * @requires modules/map
+         *
+         * @function Highcharts.splitPath
+         *
+         * @param {string|Array<string|number>} path
+         *
+         * @return {Highcharts.SVGPathArray}
+         */
+        var splitPath = H.splitPath = function (path) {
+                var arr;
+            if (typeof path === 'string') {
+                path = path
+                    // Move letters apart
+                    .replace(/([A-Za-z])/g, ' $1 ')
+                    // Trim
+                    .replace(/^\s*/, '').replace(/\s*$/, '');
+                // Split on spaces and commas. The semicolon is bogus, designed to
+                // circumvent string replacement in the pre-v7 assembler that built
+                // specific styled mode files.
+                var split = path.split(/[ ,;]+/);
+                arr = split.map(function (item) {
+                    if (!/[A-za-z]/.test(item)) {
+                        return parseFloat(item);
+                    }
+                    return item;
+                });
+            }
+            else {
+                arr = path;
+            }
+            return SVGRenderer.prototype.pathToSegments(arr);
+        };
+        /**
+         * Contains all loaded map data for Highmaps.
+         *
+         * @requires modules/map
+         *
+         * @name Highcharts.maps
+         * @type {Record<string,*>}
+         */
+        H.maps = {};
+        /**
+         * Create symbols for the zoom buttons
+         * @private
+         */
+        function selectiveRoundedRect(x, y, w, h, rTopLeft, rTopRight, rBottomRight, rBottomLeft) {
+            return [
+                ['M', x + rTopLeft, y],
+                // top side
+                ['L', x + w - rTopRight, y],
+                // top right corner
+                ['C', x + w - rTopRight / 2, y, x + w, y + rTopRight / 2, x + w, y + rTopRight],
+                // right side
+                ['L', x + w, y + h - rBottomRight],
+                // bottom right corner
+                ['C', x + w, y + h - rBottomRight / 2, x + w - rBottomRight / 2, y + h, x + w - rBottomRight, y + h],
+                // bottom side
+                ['L', x + rBottomLeft, y + h],
+                // bottom left corner
+                ['C', x + rBottomLeft / 2, y + h, x, y + h - rBottomLeft / 2, x, y + h - rBottomLeft],
+                // left side
+                ['L', x, y + rTopLeft],
+                // top left corner
+                ['C', x, y + rTopLeft / 2, x + rTopLeft / 2, y, x + rTopLeft, y],
+                ['Z']
+            ];
+        }
+        SVGRenderer.prototype.symbols.topbutton = function (x, y, w, h, options) {
+            var r = (options && options.r) || 0;
+            return selectiveRoundedRect(x - 1, y - 1, w, h, r, r, 0, 0);
+        };
+        SVGRenderer.prototype.symbols.bottombutton = function (x, y, w, h, options) {
+            var r = (options && options.r) || 0;
+            return selectiveRoundedRect(x - 1, y - 1, w, h, 0, 0, r, r);
+        };
+        // The symbol callbacks are generated on the SVGRenderer object in all browsers.
+        // Even VML browsers need this in order to generate shapes in export. Now share
+        // them with the VMLRenderer.
+        if (Renderer === VMLRenderer) {
+            ['topbutton', 'bottombutton'].forEach(function (shape) {
+                VMLRenderer.prototype.symbols[shape] =
+                    SVGRenderer.prototype.symbols[shape];
+            });
+        }
+        /**
+         * The factory function for creating new map charts. Creates a new {@link
+         * Highcharts.Chart|Chart} object with different default options than the basic
+         * Chart.
+         *
+         * @requires modules/map
+         *
+         * @function Highcharts.mapChart
+         *
+         * @param {string|Highcharts.HTMLDOMElement} [renderTo]
+         *        The DOM element to render to, or its id.
+         *
+         * @param {Highcharts.Options} options
+         *        The chart options structure as described in the
+         *        [options reference](https://api.highcharts.com/highstock).
+         *
+         * @param {Highcharts.ChartCallbackFunction} [callback]
+         *        A function to execute when the chart object is finished loading and
+         *        rendering. In most cases the chart is built in one thread, but in
+         *        Internet Explorer version 8 or less the chart is sometimes
+         *        initialized before the document is ready, and in these cases the
+         *        chart object will not be finished synchronously. As a consequence,
+         *        code that relies on the newly built Chart object should always run in
+         *        the callback. Defining a
+         *        [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
+         *        handler is equivalent.
+         *
+         * @return {Highcharts.Chart}
+         *         The chart object.
+         */
+        var mapChart = H.Map /* fake class for jQuery */ = H.mapChart = function (a,
+            b,
+            c) {
+                var hasRenderToArg = typeof a === 'string' || a.nodeName,
+            options = arguments[hasRenderToArg ? 1 : 0],
+            userOptions = options,
+            hiddenAxis = {
+                    endOnTick: false,
+                    visible: false,
+                    minPadding: 0,
+                    maxPadding: 0,
+                    startOnTick: false
+                },
+            seriesOptions,
+            defaultCreditsOptions = getOptions().credits;
+            /* For visual testing
+            hiddenAxis.gridLineWidth = 1;
+            hiddenAxis.gridZIndex = 10;
+            hiddenAxis.tickPositions = undefined;
+            // */
+            // Don't merge the data
+            seriesOptions = options.series;
+            options.series = null;
+            options = merge({
+                chart: {
+                    panning: {
+                        enabled: true,
+                        type: 'xy'
+                    },
+                    type: 'map'
+                },
+                credits: {
+                    mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
+                        '{geojson.copyrightShort}</a>'),
+                    mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                },
+                tooltip: {
+                    followTouchMove: false
+                },
+                xAxis: hiddenAxis,
+                yAxis: merge(hiddenAxis, { reversed: true })
+            }, options, // user's options
+            {
+                chart: {
+                    inverted: false,
+                    alignTicks: false
+                }
+            });
+            options.series = userOptions.series = seriesOptions;
+            return hasRenderToArg ?
+                new Chart(a, options, c) :
+                new Chart(options, b);
+        };
+        var mapModule = {
+                mapChart: mapChart,
+                maps: H.maps,
+                splitPath: splitPath
+            };
+
+        return mapModule;
+    });
+    _registerModule(_modules, 'Series/MapSeries.js', [_modules['Core/Series/Series.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Maps/Map.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (BaseSeries, ColorMapMixin, H, LegendSymbolMixin, mapModule, Point, SVGRenderer, U) {
+        /* *
+         *
+         *  (c) 2010-2020 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var colorMapPointMixin = ColorMapMixin.colorMapPointMixin,
+            colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
+        var noop = H.noop;
+        var maps = mapModule.maps,
+            splitPath = mapModule.splitPath;
         var extend = U.extend,
             fireEvent = U.fireEvent,
             getNestedProperty = U.getNestedProperty,
@@ -1983,13 +2425,9 @@
             merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
-            seriesType = U.seriesType,
             splat = U.splat;
-        var colorMapPointMixin = H.colorMapPointMixin,
-            colorMapSeriesMixin = H.colorMapSeriesMixin,
-            noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes;
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes;
         /**
          * @private
          * @class
@@ -1997,7 +2435,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('map', 'scatter', 
+        BaseSeries.seriesType('map', 'scatter', 
         /**
          * The map series is used for basic choropleth maps, where each map area has
          * a color based on its value.
@@ -2089,7 +2527,7 @@
              *         Borders demo
              *
              * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @default   '#cccccc'
+             * @default   #cccccc
              * @product   highmaps
              * @apioption plotOptions.series.borderColor
              *
@@ -2114,6 +2552,7 @@
              */
             borderWidth: 1,
             /**
+             * @type      {string}
              * @default   value
              * @apioption plotOptions.map.colorKey
              */
@@ -2144,8 +2583,6 @@
              * @default   hc-key
              * @product   highmaps
              * @apioption plotOptions.series.joinBy
-             *
-             * @private
              */
             joinBy: 'hc-key',
             /**
@@ -2279,7 +2716,7 @@
                 (paths || []).forEach(function (point) {
                     if (point.path) {
                         if (typeof point.path === 'string') {
-                            point.path = H.splitPath(point.path);
+                            point.path = splitPath(point.path);
                             // Legacy one-dimensional array
                         }
                         else if (point.path[0] === 'M') {
@@ -2440,7 +2877,7 @@
                 // Collect mapData from chart options if not defined on series
                 if (!mapData && globalMapData) {
                     mapData = typeof globalMapData === 'string' ?
-                        H.maps[globalMapData] :
+                        maps[globalMapData] :
                         globalMapData;
                 }
                 // Pick up numeric values, add index
@@ -3120,7 +3557,7 @@
         ''; // adds doclets above to the transpiled file
 
     });
-    _registerModule(_modules, 'Series/MapLineSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/MapLineSeries.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3130,8 +3567,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesType = U.seriesType;
-        var seriesTypes = H.seriesTypes;
+        var seriesTypes = BaseSeries.seriesTypes;
         /**
          * @private
          * @class
@@ -3139,7 +3575,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('mapline', 'map', 
+        BaseSeries.seriesType('mapline', 'map', 
         /**
          * A mapline series is a special case of the map series where the value
          * colors are applied to the strokes rather than the fills. It can also be
@@ -3248,7 +3684,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/MapPointSeries.js', [_modules['Core/Globals.js']], function (H) {
+    _registerModule(_modules, 'Series/MapPointSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -3258,10 +3694,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var merge = H.merge,
-            Point = H.Point,
-            Series = H.Series,
-            seriesType = H.seriesType;
+        var merge = U.merge;
+        var Series = H.Series;
         /**
          * @private
          * @class
@@ -3269,7 +3703,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('mappoint', 'scatter', 
+        BaseSeries.seriesType('mappoint', 'scatter', 
         /**
          * A mappoint series is a special form of scatter series where the points
          * can be laid out in map coordinates on top of a map.
@@ -3423,7 +3857,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Legend, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Legend, U) {
         /* *
          *
          *  (c) 2010-2020 Highsoft AS
@@ -3484,7 +3918,7 @@
                      * individual range.
                      *
                      * @sample highcharts/bubble-legend/similartoseries/
-                     *         Similat look to the bubble series
+                     *         Similar look to the bubble series
                      * @sample highcharts/bubble-legend/bordercolor/
                      *         Individual bubble border color
                      *
@@ -3512,7 +3946,7 @@
                      * individual color is not defined.
                      *
                      * @sample highcharts/bubble-legend/similartoseries/
-                     *         Similat look to the bubble series
+                     *         Similar look to the bubble series
                      * @sample highcharts/bubble-legend/color/
                      *         Individual bubble color
                      *
@@ -4439,7 +4873,7 @@
 
         return H.BubbleLegend;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Color, Point, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, BaseSeries, Color, H, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -4449,22 +4883,21 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /**
-         * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
-         */
         var color = Color.parse;
+        var noop = H.noop;
         var arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             clamp = U.clamp,
             extend = U.extend,
             isNumber = U.isNumber,
             pick = U.pick,
-            pInt = U.pInt,
-            seriesType = U.seriesType;
-        var Axis = H.Axis,
-            noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes;
+            pInt = U.pInt;
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes;
+        /**
+         * @typedef {"area"|"width"} Highcharts.BubbleSizeByValue
+         */
+        ''; // detach doclets above
         /**
          * A bubble series is a three dimensional series type where each point renders
          * an X, Y and Z value. Each points is drawn as a bubble where the position
@@ -4480,7 +4913,7 @@
          * @requires     highcharts-more
          * @optionparent plotOptions.bubble
          */
-        seriesType('bubble', 'scatter', {
+        BaseSeries.seriesType('bubble', 'scatter', {
             dataLabels: {
                 formatter: function () {
                     return this.point.z;
@@ -5044,7 +5477,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/MapBubbleSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/MapBubbleSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (BaseSeries, Point, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -5054,9 +5487,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var merge = U.merge,
-            seriesType = U.seriesType;
-        var seriesTypes = H.seriesTypes;
+        var merge = U.merge;
+        var seriesTypes = BaseSeries.seriesTypes;
         // The mapbubble series type
         if (seriesTypes.bubble) {
             /**
@@ -5066,7 +5498,7 @@
              *
              * @augments Highcharts.Series
              */
-            seriesType('mapbubble', 'bubble'
+            BaseSeries.seriesType('mapbubble', 'bubble'
             /**
              * A map bubble series is a bubble series laid out on top of a map
              * series, where each bubble is tied to a specific map area.
@@ -5286,7 +5718,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/HeatmapSeries.js', [_modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (H, LegendSymbolMixin, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/HeatmapSeries.js', [_modules['Core/Series/Series.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (BaseSeries, ColorMapMixin, H, LegendSymbolMixin, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -5296,13 +5728,18 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var colorMapPointMixin = ColorMapMixin.colorMapPointMixin,
+            colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
+        var noop = H.noop;
         var clamp = U.clamp,
             extend = U.extend,
             fireEvent = U.fireEvent,
             isNumber = U.isNumber,
             merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes,
+            symbols = SVGRenderer.prototype.symbols;
         /* *
          * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
@@ -5316,12 +5753,6 @@
         * @type {number|null|undefined}
         */
         ''; // detach doclets above
-        var colorMapPointMixin = H.colorMapPointMixin,
-            colorMapSeriesMixin = H.colorMapSeriesMixin,
-            noop = H.noop,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            symbols = SVGRenderer.prototype.symbols;
         /**
          * @private
          * @class
@@ -5329,7 +5760,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('heatmap', 'scatter', 
+        BaseSeries.seriesType('heatmap', 'scatter', 
         /**
          * A heatmap is a graphical representation of data where the individual
          * values contained in a matrix are represented as colors.
@@ -6790,425 +7221,6 @@
                 });
             }
         });
-
-    });
-    _registerModule(_modules, 'Maps/Map.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, O, SVGRenderer, U) {
-        /* *
-         *
-         *  (c) 2010-2020 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var defaultOptions = O.defaultOptions;
-        var extend = U.extend,
-            getOptions = U.getOptions,
-            merge = U.merge,
-            pick = U.pick;
-        var Renderer = H.Renderer,
-            VMLRenderer = H.VMLRenderer;
-        // Add language
-        extend(defaultOptions.lang, {
-            zoomIn: 'Zoom in',
-            zoomOut: 'Zoom out'
-        });
-        // Set the default map navigation options
-        /**
-         * @product      highmaps
-         * @optionparent mapNavigation
-         */
-        defaultOptions.mapNavigation = {
-            /**
-             * General options for the map navigation buttons. Individual options
-             * can be given from the [mapNavigation.buttons](#mapNavigation.buttons)
-             * option set.
-             *
-             * @sample {highmaps} maps/mapnavigation/button-theme/
-             *         Theming the navigation buttons
-             */
-            buttonOptions: {
-                /**
-                 * What box to align the buttons to. Possible values are `plotBox`
-                 * and `spacingBox`.
-                 *
-                 * @type {Highcharts.ButtonRelativeToValue}
-                 */
-                alignTo: 'plotBox',
-                /**
-                 * The alignment of the navigation buttons.
-                 *
-                 * @type {Highcharts.AlignValue}
-                 */
-                align: 'left',
-                /**
-                 * The vertical alignment of the buttons. Individual alignment can
-                 * be adjusted by each button's `y` offset.
-                 *
-                 * @type {Highcharts.VerticalAlignValue}
-                 */
-                verticalAlign: 'top',
-                /**
-                 * The X offset of the buttons relative to its `align` setting.
-                 */
-                x: 0,
-                /**
-                 * The width of the map navigation buttons.
-                 */
-                width: 18,
-                /**
-                 * The pixel height of the map navigation buttons.
-                 */
-                height: 18,
-                /**
-                 * Padding for the navigation buttons.
-                 *
-                 * @since 5.0.0
-                 */
-                padding: 5,
-                /**
-                 * Text styles for the map navigation buttons.
-                 *
-                 * @type    {Highcharts.CSSObject}
-                 * @default {"fontSize": "15px", "fontWeight": "bold"}
-                 */
-                style: {
-                    /** @ignore */
-                    fontSize: '15px',
-                    /** @ignore */
-                    fontWeight: 'bold'
-                },
-                /**
-                 * A configuration object for the button theme. The object accepts
-                 * SVG properties like `stroke-width`, `stroke` and `fill`. Tri-state
-                 * button styles are supported by the `states.hover` and `states.select`
-                 * objects.
-                 *
-                 * @sample {highmaps} maps/mapnavigation/button-theme/
-                 *         Themed navigation buttons
-                 *
-                 * @type    {Highcharts.SVGAttributes}
-                 * @default {"stroke-width": 1, "text-align": "center"}
-                 */
-                theme: {
-                    /** @ignore */
-                    'stroke-width': 1,
-                    /** @ignore */
-                    'text-align': 'center'
-                }
-            },
-            /**
-             * The individual buttons for the map navigation. This usually includes
-             * the zoom in and zoom out buttons. Properties for each button is
-             * inherited from
-             * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
-             * individual options can be overridden. But default, the `onclick`, `text`
-             * and `y` options are individual.
-             */
-            buttons: {
-                /**
-                 * Options for the zoom in button. Properties for the zoom in and zoom
-                 * out buttons are inherited from
-                 * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
-                 * individual options can be overridden. By default, the `onclick`,
-                 * `text` and `y` options are individual.
-                 *
-                 * @extends mapNavigation.buttonOptions
-                 */
-                zoomIn: {
-                    // eslint-disable-next-line valid-jsdoc
-                    /**
-                     * Click handler for the button.
-                     *
-                     * @type    {Function}
-                     * @default function () { this.mapZoom(0.5); }
-                     */
-                    onclick: function () {
-                        this.mapZoom(0.5);
-                    },
-                    /**
-                     * The text for the button. The tooltip (title) is a language option
-                     * given by [lang.zoomIn](#lang.zoomIn).
-                     */
-                    text: '+',
-                    /**
-                     * The position of the zoomIn button relative to the vertical
-                     * alignment.
-                     */
-                    y: 0
-                },
-                /**
-                 * Options for the zoom out button. Properties for the zoom in and
-                 * zoom out buttons are inherited from
-                 * [mapNavigation.buttonOptions](#mapNavigation.buttonOptions), while
-                 * individual options can be overridden. By default, the `onclick`,
-                 * `text` and `y` options are individual.
-                 *
-                 * @extends mapNavigation.buttonOptions
-                 */
-                zoomOut: {
-                    // eslint-disable-next-line valid-jsdoc
-                    /**
-                     * Click handler for the button.
-                     *
-                     * @type    {Function}
-                     * @default function () { this.mapZoom(2); }
-                     */
-                    onclick: function () {
-                        this.mapZoom(2);
-                    },
-                    /**
-                     * The text for the button. The tooltip (title) is a language option
-                     * given by [lang.zoomOut](#lang.zoomIn).
-                     */
-                    text: '-',
-                    /**
-                     * The position of the zoomOut button relative to the vertical
-                     * alignment.
-                     */
-                    y: 28
-                }
-            },
-            /**
-             * Whether to enable navigation buttons. By default it inherits the
-             * [enabled](#mapNavigation.enabled) setting.
-             *
-             * @type      {boolean}
-             * @apioption mapNavigation.enableButtons
-             */
-            /**
-             * Whether to enable map navigation. The default is not to enable
-             * navigation, as many choropleth maps are simple and don't need it.
-             * Additionally, when touch zoom and mousewheel zoom is enabled, it breaks
-             * the default behaviour of these interactions in the website, and the
-             * implementer should be aware of this.
-             *
-             * Individual interactions can be enabled separately, namely buttons,
-             * multitouch zoom, double click zoom, double click zoom to element and
-             * mousewheel zoom.
-             *
-             * @type      {boolean}
-             * @default   false
-             * @apioption mapNavigation.enabled
-             */
-            /**
-             * Enables zooming in on an area on double clicking in the map. By default
-             * it inherits the [enabled](#mapNavigation.enabled) setting.
-             *
-             * @type      {boolean}
-             * @apioption mapNavigation.enableDoubleClickZoom
-             */
-            /**
-             * Whether to zoom in on an area when that area is double clicked.
-             *
-             * @sample {highmaps} maps/mapnavigation/doubleclickzoomto/
-             *         Enable double click zoom to
-             *
-             * @type      {boolean}
-             * @default   false
-             * @apioption mapNavigation.enableDoubleClickZoomTo
-             */
-            /**
-             * Enables zooming by mouse wheel. By default it inherits the [enabled](
-             * #mapNavigation.enabled) setting.
-             *
-             * @type      {boolean}
-             * @apioption mapNavigation.enableMouseWheelZoom
-             */
-            /**
-             * Whether to enable multitouch zooming. Note that if the chart covers the
-             * viewport, this prevents the user from using multitouch and touchdrag on
-             * the web page, so you should make sure the user is not trapped inside the
-             * chart. By default it inherits the [enabled](#mapNavigation.enabled)
-             * setting.
-             *
-             * @type      {boolean}
-             * @apioption mapNavigation.enableTouchZoom
-             */
-            /**
-             * Sensitivity of mouse wheel or trackpad scrolling. 1 is no sensitivity,
-             * while with 2, one mousewheel delta will zoom in 50%.
-             *
-             * @since 4.2.4
-             */
-            mouseWheelSensitivity: 1.1
-            // enabled: false,
-            // enableButtons: null, // inherit from enabled
-            // enableTouchZoom: null, // inherit from enabled
-            // enableDoubleClickZoom: null, // inherit from enabled
-            // enableDoubleClickZoomTo: false
-            // enableMouseWheelZoom: null, // inherit from enabled
-        };
-        /* eslint-disable valid-jsdoc */
-        /**
-         * Utility for reading SVG paths directly.
-         *
-         * @requires modules/map
-         *
-         * @function Highcharts.splitPath
-         *
-         * @param {string|Array<string|number>} path
-         *
-         * @return {Highcharts.SVGPathArray}
-         */
-        H.splitPath = function (path) {
-            var arr;
-            if (typeof path === 'string') {
-                path = path
-                    // Move letters apart
-                    .replace(/([A-Za-z])/g, ' $1 ')
-                    // Trim
-                    .replace(/^\s*/, '').replace(/\s*$/, '');
-                // Split on spaces and commas. The semicolon is bogus, designed to
-                // circumvent string replacement in the pre-v7 assembler that built
-                // specific styled mode files.
-                var split = path.split(/[ ,;]+/);
-                arr = split.map(function (item) {
-                    if (!/[A-za-z]/.test(item)) {
-                        return parseFloat(item);
-                    }
-                    return item;
-                });
-            }
-            else {
-                arr = path;
-            }
-            return SVGRenderer.prototype.pathToSegments(arr);
-        };
-        /**
-         * Contains all loaded map data for Highmaps.
-         *
-         * @requires modules/map
-         *
-         * @name Highcharts.maps
-         * @type {Highcharts.Dictionary<*>}
-         */
-        H.maps = {};
-        /**
-         * Create symbols for the zoom buttons
-         * @private
-         */
-        function selectiveRoundedRect(x, y, w, h, rTopLeft, rTopRight, rBottomRight, rBottomLeft) {
-            return [
-                ['M', x + rTopLeft, y],
-                // top side
-                ['L', x + w - rTopRight, y],
-                // top right corner
-                ['C', x + w - rTopRight / 2, y, x + w, y + rTopRight / 2, x + w, y + rTopRight],
-                // right side
-                ['L', x + w, y + h - rBottomRight],
-                // bottom right corner
-                ['C', x + w, y + h - rBottomRight / 2, x + w - rBottomRight / 2, y + h, x + w - rBottomRight, y + h],
-                // bottom side
-                ['L', x + rBottomLeft, y + h],
-                // bottom left corner
-                ['C', x + rBottomLeft / 2, y + h, x, y + h - rBottomLeft / 2, x, y + h - rBottomLeft],
-                // left side
-                ['L', x, y + rTopLeft],
-                // top left corner
-                ['C', x, y + rTopLeft / 2, x + rTopLeft / 2, y, x + rTopLeft, y],
-                ['Z']
-            ];
-        }
-        SVGRenderer.prototype.symbols.topbutton = function (x, y, w, h, options) {
-            var r = (options && options.r) || 0;
-            return selectiveRoundedRect(x - 1, y - 1, w, h, r, r, 0, 0);
-        };
-        SVGRenderer.prototype.symbols.bottombutton = function (x, y, w, h, options) {
-            var r = (options && options.r) || 0;
-            return selectiveRoundedRect(x - 1, y - 1, w, h, 0, 0, r, r);
-        };
-        // The symbol callbacks are generated on the SVGRenderer object in all browsers.
-        // Even VML browsers need this in order to generate shapes in export. Now share
-        // them with the VMLRenderer.
-        if (Renderer === VMLRenderer) {
-            ['topbutton', 'bottombutton'].forEach(function (shape) {
-                VMLRenderer.prototype.symbols[shape] =
-                    SVGRenderer.prototype.symbols[shape];
-            });
-        }
-        /**
-         * The factory function for creating new map charts. Creates a new {@link
-         * Highcharts.Chart|Chart} object with different default options than the basic
-         * Chart.
-         *
-         * @requires modules/map
-         *
-         * @function Highcharts.mapChart
-         *
-         * @param {string|Highcharts.HTMLDOMElement} [renderTo]
-         *        The DOM element to render to, or its id.
-         *
-         * @param {Highcharts.Options} options
-         *        The chart options structure as described in the
-         *        [options reference](https://api.highcharts.com/highstock).
-         *
-         * @param {Highcharts.ChartCallbackFunction} [callback]
-         *        A function to execute when the chart object is finished loading and
-         *        rendering. In most cases the chart is built in one thread, but in
-         *        Internet Explorer version 8 or less the chart is sometimes
-         *        initialized before the document is ready, and in these cases the
-         *        chart object will not be finished synchronously. As a consequence,
-         *        code that relies on the newly built Chart object should always run in
-         *        the callback. Defining a
-         *        [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
-         *        handler is equivalent.
-         *
-         * @return {Highcharts.Chart}
-         *         The chart object.
-         */
-        H.Map = H.mapChart = function (a, b, c) {
-            var hasRenderToArg = typeof a === 'string' || a.nodeName,
-                options = arguments[hasRenderToArg ? 1 : 0],
-                userOptions = options,
-                hiddenAxis = {
-                    endOnTick: false,
-                    visible: false,
-                    minPadding: 0,
-                    maxPadding: 0,
-                    startOnTick: false
-                },
-                seriesOptions,
-                defaultCreditsOptions = getOptions().credits;
-            /* For visual testing
-            hiddenAxis.gridLineWidth = 1;
-            hiddenAxis.gridZIndex = 10;
-            hiddenAxis.tickPositions = undefined;
-            // */
-            // Don't merge the data
-            seriesOptions = options.series;
-            options.series = null;
-            options = merge({
-                chart: {
-                    panning: {
-                        enabled: true,
-                        type: 'xy'
-                    },
-                    type: 'map'
-                },
-                credits: {
-                    mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
-                        '{geojson.copyrightShort}</a>'),
-                    mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
-                },
-                tooltip: {
-                    followTouchMove: false
-                },
-                xAxis: hiddenAxis,
-                yAxis: merge(hiddenAxis, { reversed: true })
-            }, options, // user's options
-            {
-                chart: {
-                    inverted: false,
-                    alignTicks: false
-                }
-            });
-            options.series = userOptions.series = seriesOptions;
-            return hasRenderToArg ?
-                new Chart(a, options, c) :
-                new Chart(options, b);
-        };
 
     });
     _registerModule(_modules, 'masters/modules/map.src.js', [], function () {

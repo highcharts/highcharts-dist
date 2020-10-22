@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  * Organization chart series type
  *
  * (c) 2019-2019 Torstein Honsi
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/OrganizationSeries.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/OrganizationSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, U) {
         /* *
          *
          *  Organization chart module
@@ -41,8 +41,8 @@
          * */
         var css = U.css,
             pick = U.pick,
-            seriesType = U.seriesType,
             wrap = U.wrap;
+        var base = BaseSeries.seriesTypes.sankey.prototype;
         /**
          * Layout value for the child nodes in an organization chart. If `hanging`, this
          * node's children will hang below their parent, allowing a tighter packing of
@@ -50,7 +50,7 @@
          *
          * @typedef {"normal"|"hanging"} Highcharts.SeriesOrganizationNodesLayoutValue
          */
-        var base = H.seriesTypes.sankey.prototype;
+        ''; // detach doclets above
         /**
          * @private
          * @class
@@ -58,7 +58,7 @@
          *
          * @augments Highcharts.seriesTypes.sankey
          */
-        seriesType('organization', 'sankey', 
+        BaseSeries.seriesType('organization', 'sankey', 
         /**
          * An organization chart is a diagram that shows the structure of an
          * organization and the relationships and relative ranks of its parts and
@@ -471,6 +471,7 @@
          * @extends   series,plotOptions.organization
          * @exclude   dataSorting, boostThreshold, boostBlending
          * @product   highcharts
+         * @requires  modules/sankey
          * @requires  modules/organization
          * @apioption series.organization
          */

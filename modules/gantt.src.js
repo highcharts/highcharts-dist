@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.2.0 (2020-08-20)
+ * @license Highcharts Gantt JS v8.2.2 (2020-10-22)
  *
  * Gantt series
  *
@@ -515,7 +515,7 @@
 
         return TreeGridTick;
     });
-    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -793,40 +793,24 @@
             options.labels.rotation = 0;
         };
         /**
-         * For a datetime axis, the scale will automatically adjust to the
-         * appropriate unit. This member gives the default string
-         * representations used for each unit. For intermediate values,
-         * different units may be used, for example the `day` unit can be used
-         * on midnight and `hour` unit be used for intermediate values on the
-         * same axis.
+         * @productdesc {gantt}
          * For grid axes (like in Gantt charts),
          * it is possible to declare as a list to provide different
          * formats depending on available space.
-         * For an overview of the replacement codes, see
-         * [dateFormat](/class-reference/Highcharts#dateFormat).
          *
          * Defaults to:
          * ```js
          * {
-                hour: {
-                    list: ['%H:%M', '%H']
-                },
-                day: {
-                    list: ['%A, %e. %B', '%a, %e. %b', '%E']
-                },
-                week: {
-                    list: ['Week %W', 'W%W']
-                },
-                month: {
-                    list: ['%B', '%b', '%o']
-                }
-            },
+         *     hour: { list: ['%H:%M', '%H'] },
+         *     day: { list: ['%A, %e. %B', '%a, %e. %b', '%E'] },
+         *     week: { list: ['Week %W', 'W%W'] },
+         *     month: { list: ['%B', '%b', '%o'] }
+         * }
          * ```
          *
-         * @sample {gantt} gantt/demo/left-axis-table
-         *         Gantt Chart with custom axis date format.
+         * @sample {gantt} gantt/grid-axis/date-time-label-formats
+         *         Gantt chart with custom axis date format.
          *
-         * @product gantt
          * @apioption xAxis.dateTimeLabelFormats
          */
         /**
@@ -903,21 +887,28 @@
                 };
             tickPositions.forEach(function (pos) {
                 var tick = ticks[pos],
-                    tickHeight = 0,
-                    tickWidth = 0,
+                    labelHeight = 0,
+                    labelWidth = 0,
                     label;
                 if (isObject(tick)) {
                     label = isObject(tick.label) ? tick.label : {};
-                    // Find width and height of tick
-                    tickHeight = label.getBBox ? label.getBBox().height : 0;
+                    // Find width and height of label
+                    labelHeight = label.getBBox ? label.getBBox().height : 0;
+                    if (label.textStr && !isNumber(label.textPxLength)) {
+                        label.textPxLength = label.getBBox().width;
+                    }
+                    labelWidth = isNumber(label.textPxLength) ?
+                        // Math.round ensures crisp lines
+                        Math.round(label.textPxLength) :
+                        0;
                     if (label.textStr) {
                         // Set the tickWidth same as the label width after ellipsis
                         // applied #10281
-                        tickWidth = Math.round(label.getBBox().width);
+                        labelWidth = Math.round(label.getBBox().width);
                     }
                     // Update the result if width and/or height are larger
-                    dimensions.height = Math.max(tickHeight, dimensions.height);
-                    dimensions.width = Math.max(tickWidth, dimensions.width);
+                    dimensions.height = Math.max(labelHeight, dimensions.height);
+                    dimensions.width = Math.max(labelWidth, dimensions.width);
                 }
             });
             return dimensions;
@@ -940,7 +931,7 @@
         };
         // First letter of the day of the week, e.g. 'M' for 'Monday'.
         H.dateFormats.E = function (timestamp) {
-            return dateFormat('%a', timestamp, true).charAt(0);
+            return this.dateFormat('%a', timestamp, true).charAt(0);
         };
         /* eslint-disable no-invalid-this */
         addEvent(Chart, 'afterSetChartSize', function () {
@@ -1103,6 +1094,32 @@
                 return (lastIndex === thisIndex &&
                     (isNumber(columnIndex) ? columns.length === columnIndex : true));
             };
+            /**
+             * Add extra border based on the provided path.
+             *  *
+             * @private
+             *
+             * @param {SVGPath} path
+             * The path of the border.
+             *
+             * @return {Highcharts.SVGElement}
+             */
+            GridAxisAdditions.prototype.renderBorder = function (path) {
+                var axis = this.axis,
+                    renderer = axis.chart.renderer,
+                    options = axis.options,
+                    extraBorderLine = renderer.path(path)
+                        .addClass('highcharts-axis-line')
+                        .add(axis.axisBorder);
+                if (!renderer.styledMode) {
+                    extraBorderLine.attr({
+                        stroke: options.lineColor,
+                        'stroke-width': options.lineWidth,
+                        zIndex: 7
+                    });
+                }
+                return extraBorderLine;
+            };
             return GridAxisAdditions;
         }());
         /**
@@ -1225,11 +1242,18 @@
                             function (p) {
                                 return p[axis.isXAxis ? 'x' : 'y'] === value;
                         });
+                        var pointCopy;
+                        if (point && series.is('gantt')) {
+                            // For the Gantt set point aliases to the pointCopy
+                            // to do not change the original point
+                            pointCopy = merge(point);
+                            H.seriesTypes.gantt.prototype.setGanttPointAliases(pointCopy);
+                        }
                         // Make additional properties available for the
                         // formatter
                         this.isFirst = isFirst;
                         this.isLast = isLast;
-                        this.point = point;
+                        this.point = pointCopy;
                         // Call original labelFormatter
                         return proceed.call(this);
                     });
@@ -1277,15 +1301,11 @@
              * @private
              */
             GridAxis.onAfterRender = function () {
-                var axis = this;
-                var grid = axis.grid;
-                var options = axis.options;
-                var renderer = axis.chart.renderer;
-                var gridOptions = options.grid || {};
-                var yStartIndex,
-                    yEndIndex,
-                    xStartIndex,
-                    xEndIndex;
+                var _a;
+                var axis = this,
+                    grid = axis.grid,
+                    options = axis.options,
+                    gridOptions = options.grid || {};
                 if (gridOptions.enabled === true) {
                     // @todo acutual label padding (top, bottom, left, right)
                     axis.maxLabelDimensions = axis.getMaxLabelDimensions(axis.ticks, axis.tickPositions);
@@ -1304,13 +1324,13 @@
                     if (axis.grid && axis.grid.isOuterAxis() && axis.axisLine) {
                         var lineWidth = options.lineWidth;
                         if (lineWidth) {
-                            var linePath = axis.getLinePath(lineWidth);
-                            var startPoint = linePath[0];
-                            var endPoint = linePath[1];
-                            // Negate distance if top or left axis
-                            // Subtract 1px to draw the line at the end of the tick
-                            var tickLength = (axis.tickSize('tick') || [1])[0];
-                            var distance = (tickLength - 1) * ((axis.side === GridAxis.Side.top ||
+                            var linePath = axis.getLinePath(lineWidth),
+                                startPoint = linePath[0],
+                                endPoint = linePath[1], 
+                                // Negate distance if top or left axis
+                                // Subtract 1px to draw the line at the end of the tick
+                                tickLength = (axis.tickSize('tick') || [1])[0],
+                                distance = (tickLength - 1) * ((axis.side === GridAxis.Side.top ||
                                     axis.side === GridAxis.Side.left) ? -1 : 1);
                             // If axis is horizontal, reposition line path vertically
                             if (startPoint[0] === 'M' && endPoint[0] === 'L') {
@@ -1319,26 +1339,35 @@
                                     endPoint[2] += distance;
                                 }
                                 else {
-                                    // If axis is vertical, reposition line path
-                                    // horizontally
                                     startPoint[1] += distance;
                                     endPoint[1] += distance;
                                 }
                             }
-                            if (!axis.grid.axisLineExtra) {
-                                axis.grid.axisLineExtra = renderer
-                                    .path(linePath)
-                                    .attr({
-                                    zIndex: 7
-                                })
-                                    .addClass('highcharts-axis-line')
-                                    .add(axis.axisGroup);
-                                if (!renderer.styledMode) {
-                                    axis.grid.axisLineExtra.attr({
-                                        stroke: options.lineColor,
-                                        'stroke-width': lineWidth
+                            // If it doesn't exist, add an upper and lower border
+                            // for the vertical grid axis.
+                            if (!axis.horiz && axis.chart.marginRight) {
+                                var upperBorderStartPoint = startPoint, upperBorderEndPoint = ['L', axis.left, startPoint[2]], upperBorderPath = [upperBorderStartPoint, upperBorderEndPoint], lowerBorderEndPoint = ['L', axis.chart.chartWidth - axis.chart.marginRight, axis.toPixels(axis.max + axis.tickmarkOffset)], lowerBorderStartPoint = ['M', endPoint[1], axis.toPixels(axis.max + axis.tickmarkOffset)], lowerBorderPath = [lowerBorderStartPoint, lowerBorderEndPoint];
+                                if (!axis.grid.upperBorder && axis.min % 1 !== 0) {
+                                    axis.grid.upperBorder = axis.grid.renderBorder(upperBorderPath);
+                                }
+                                if (axis.grid.upperBorder) {
+                                    axis.grid.upperBorder.animate({
+                                        d: upperBorderPath
                                     });
                                 }
+                                if (!axis.grid.lowerBorder && axis.max % 1 !== 0) {
+                                    axis.grid.lowerBorder = axis.grid.renderBorder(lowerBorderPath);
+                                }
+                                if (axis.grid.lowerBorder) {
+                                    axis.grid.lowerBorder.animate({
+                                        d: lowerBorderPath
+                                    });
+                                }
+                            }
+                            // Render an extra line parallel to the existing axes,
+                            // to close the grid.
+                            if (!axis.grid.axisLineExtra) {
+                                axis.grid.axisLineExtra = axis.grid.renderBorder(linePath);
                             }
                             else {
                                 axis.grid.axisLineExtra.animate({
@@ -1353,12 +1382,42 @@
                     (grid && grid.columns || []).forEach(function (column) {
                         column.render();
                     });
+                    // Manipulate the tick mark visibility
+                    // based on the axis.max- allows smooth scrolling.
+                    if (!axis.horiz && axis.chart.hasRendered && (axis.scrollbar || ((_a = axis.linkedParent) === null || _a === void 0 ? void 0 : _a.scrollbar))) {
+                        var max = axis.max,
+                            min = axis.min,
+                            tickmarkOffset = axis.tickmarkOffset,
+                            lastTick = axis.tickPositions[axis.tickPositions.length - 1],
+                            firstTick = axis.tickPositions[0];
+                        // Hide/show firts tick label.
+                        if (min - firstTick > tickmarkOffset) {
+                            axis.ticks[firstTick].label.hide();
+                        }
+                        else {
+                            axis.ticks[firstTick].label.show();
+                        }
+                        // Hide/show last tick mark/label.
+                        if (lastTick - max > tickmarkOffset) {
+                            axis.ticks[lastTick].label.hide();
+                        }
+                        else {
+                            axis.ticks[lastTick].label.show();
+                        }
+                        if (lastTick - max < tickmarkOffset && lastTick - max > 0 && axis.ticks[lastTick].isLast) {
+                            axis.ticks[lastTick].mark.hide();
+                        }
+                        else {
+                            axis.ticks[lastTick - 1].mark.show();
+                        }
+                    }
                 }
             };
             /**
              * @private
              */
             GridAxis.onAfterSetAxisTranslation = function () {
+                var _a;
                 var axis = this;
                 var tickInfo = axis.tickPositions && axis.tickPositions.info;
                 var options = axis.options;
@@ -1385,6 +1444,13 @@
                         if (!defined(userLabels.x)) {
                             options.labels.x = 3;
                         }
+                    }
+                }
+                else {
+                    // Don't trim ticks which not in min/max range but
+                    // they are still in the min/max plus tickInterval.
+                    if (this.options.type !== 'treegrid' && ((_a = axis.grid) === null || _a === void 0 ? void 0 : _a.columns)) {
+                        this.minPointOffset = this.tickInterval;
                     }
                 }
             };
@@ -1697,7 +1763,7 @@
 
         return GridAxis;
     });
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Extensions/Stacking.js']], function (Axis, H, U, StackItem) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Series/LineSeries.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, LineSeries, StackItem, U) {
         /* *
          *
          *  (c) 2009-2020 Torstein Honsi
@@ -1713,7 +1779,6 @@
             isArray = U.isArray,
             isNumber = U.isNumber,
             pick = U.pick;
-        var Series = H.Series;
         /* eslint-disable valid-jsdoc */
         /**
          * Provides support for broken axes.
@@ -2040,7 +2105,7 @@
                  */
                 BrokenAxis.compose = function (AxisClass, SeriesClass) {
                     AxisClass.keepProps.push('brokenAxis');
-                var seriesProto = Series.prototype;
+                var seriesProto = LineSeries.prototype;
                 /**
                  * @private
                  */
@@ -2273,11 +2338,11 @@
             };
             return BrokenAxis;
         }());
-        BrokenAxis.compose(Axis, Series); // @todo remove automatism
+        BrokenAxis.compose(Axis, LineSeries); // @todo remove automatism
 
         return BrokenAxis;
     });
-    _registerModule(_modules, 'Core/Axis/TreeGridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Tick.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGridTick.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Axis, Tick, Tree, TreeGridTick, mixinTreeSeries, U) {
+    _registerModule(_modules, 'Core/Axis/TreeGridAxis.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/Tick.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGridTick.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (H, Axis, Tick, Tree, TreeGridTick, mixinTreeSeries, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -2292,6 +2357,7 @@
         var addEvent = U.addEvent,
             find = U.find,
             fireEvent = U.fireEvent,
+            isArray = U.isArray,
             isNumber = U.isNumber,
             isObject = U.isObject,
             isString = U.isString,
@@ -2434,6 +2500,7 @@
                             mapOfPosToGridNode[pos] = gridNode = {
                                 depth: parentGridNode ? parentGridNode.depth + 1 : 0,
                                 name: name,
+                                id: data.id,
                                 nodes: [node],
                                 children: [],
                                 pos: pos
@@ -2545,6 +2612,11 @@
                             if (s.visible) {
                                 // Push all data to array
                                 (s.options.data || []).forEach(function (data) {
+                                    // For using keys - rebuild the data structure
+                                    if (s.options.keys && s.options.keys.length) {
+                                        data = s.pointClass.prototype.optionsToObject.call({ series: s }, data);
+                                        H.seriesTypes.gantt.prototype.setGanttPointAliases(data);
+                                    }
                                     if (isObject(data, true)) {
                                         // Set series index on data. Removed again
                                         // after use.
@@ -2580,13 +2652,21 @@
                         axis.treeGrid.tree = treeGrid.tree;
                         // Update yData now that we have calculated the y values
                         axis.series.forEach(function (series) {
-                            var data = (series.options.data || []).map(function (d) {
-                                    return isObject(d,
-                                true) ? merge(d) : d;
+                            var axisData = (series.options.data || []).map(function (d) {
+                                    if (isArray(d) && series.options.keys && series.options.keys.length) {
+                                        // Get the axisData from the data array used to
+                                        // build the treeGrid where has been modified
+                                        data.forEach(function (point) {
+                                            if (d.indexOf(point.x) >= 0 && d.indexOf(point.x2) >= 0) {
+                                                d = point;
+                                        }
+                                    });
+                                }
+                                return isObject(d, true) ? merge(d) : d;
                             });
                             // Avoid destroying points when series is not visible
                             if (series.visible) {
-                                series.setData(data, false);
+                                series.setData(axisData, false);
                             }
                         });
                         // Calculate the label options for each level in the tree.
@@ -2878,6 +2958,32 @@
                  *
                  * */
                 /**
+                 * Set the collapse status.
+                 *
+                 * @private
+                 *
+                 * @param {Highcharts.Axis} axis
+                 * The axis to check against.
+                 *
+                 * @param {Highcharts.GridNode} node
+                 * The node to collapse.
+                 */
+                Additions.prototype.setCollapsedStatus = function (node) {
+                    var axis = this.axis,
+                        chart = axis.chart;
+                    axis.series.forEach(function (series) {
+                        var data = series.options.data;
+                        if (node.id && data) {
+                            var point = chart.get(node.id),
+                                dataPoint = data[series.data.indexOf(point)];
+                            if (point && dataPoint) {
+                                point.collapsed = node.collapsed;
+                                dataPoint.collapsed = node.collapsed;
+                            }
+                        }
+                    });
+                };
+                /**
                  * Calculates the new axis breaks to collapse a node.
                  *
                  * @private
@@ -2900,6 +3006,9 @@
                         obj = getBreakFromNode(node,
                         axis.max);
                     breaks.push(obj);
+                    // Change the collapsed flag #13838
+                    node.collapsed = true;
+                    axis.treeGrid.setCollapsedStatus(node);
                     return breaks;
                 };
                 /**
@@ -2924,6 +3033,9 @@
                         breaks = (axis.options.breaks || []),
                         obj = getBreakFromNode(node,
                         axis.max);
+                    // Change the collapsed flag #13838
+                    node.collapsed = false;
+                    axis.treeGrid.setCollapsedStatus(node);
                     // Remove the break from the axis breaks array.
                     return breaks.reduce(function (arr, b) {
                         if (b.to !== obj.to || b.from !== obj.from) {
@@ -2942,11 +3054,13 @@
                  * List of positions.
                  */
                 Additions.prototype.getTickPositions = function () {
-                    var axis = this.axis;
+                    var axis = this.axis,
+                        roundedMin = Math.floor(axis.min / axis.tickInterval) * axis.tickInterval,
+                        roundedMax = Math.ceil(axis.max / axis.tickInterval) * axis.tickInterval;
                     return Object.keys(axis.treeGrid.mapOfPosToGridNode || {}).reduce(function (arr, key) {
                         var pos = +key;
-                        if (axis.min <= pos &&
-                            axis.max >= pos &&
+                        if (pos >= roundedMin &&
+                            pos <= roundedMax &&
                             !(axis.brokenAxis && axis.brokenAxis.isInAnyBreak(pos))) {
                             arr.push(pos);
                         }
@@ -3012,7 +3126,7 @@
 
         return TreeGridAxis;
     });
-    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (H, O, U, PlotLineOrBand) {
+    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (Axis, U, PlotLineOrBand) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -3024,11 +3138,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var dateFormat = O.dateFormat;
         var addEvent = U.addEvent,
             merge = U.merge,
             wrap = U.wrap;
-        var Axis = H.Axis;
         var defaultConfig = {
                 /**
                  * Show an indicator on the axis for the current date and time. Can be a
@@ -3060,13 +3172,13 @@
                      * [dateFormat](/class-reference/Highcharts#dateFormat) function.
                      *
                      * @type      {string}
-                     * @default   '%a, %b %d %Y, %H:%M'
+                     * @default   %a, %b %d %Y, %H:%M
                      * @product   gantt
                      * @apioption xAxis.currentDateIndicator.label.format
                      */
                     format: '%a, %b %d %Y, %H:%M',
                     formatter: function (value, format) {
-                        return dateFormat(format, value);
+                        return this.axis.chart.time.dateFormat(format, value);
                 },
                 rotation: 0,
                 /**
@@ -3112,7 +3224,7 @@
         });
 
     });
-    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/StaticScale.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Axis, Chart, U) {
         /* *
          *
          *  (c) 2016-2020 Torstein Honsi, Lars Cabrera
@@ -3126,7 +3238,6 @@
             defined = U.defined,
             isNumber = U.isNumber,
             pick = U.pick;
-        var Chart = H.Chart;
         /* eslint-disable no-invalid-this */
         /**
          * For vertical axes only. Setting the static scale ensures that each tick unit
@@ -3144,7 +3255,7 @@
          * @product   gantt
          * @apioption yAxis.staticScale
          */
-        addEvent(H.Axis, 'afterSetOptions', function () {
+        addEvent(Axis, 'afterSetOptions', function () {
             var chartOptions = this.chart.options && this.chart.options.chart;
             if (!this.horiz &&
                 isNumber(this.options.staticScale) &&
@@ -5479,6 +5590,12 @@
                 chart.series.forEach(function (series) {
                     if (series.visible && !series.options.isInternal) {
                         series.points.forEach(function (point) {
+                            var ganttPointOptions = point.options;
+                            // For Gantt series the connect could be
+                            // defined as a dependency
+                            if (ganttPointOptions && ganttPointOptions.dependency) {
+                                ganttPointOptions.connect = ganttPointOptions.dependency;
+                            }
                             var to,
                                 connects = (point.options &&
                                     point.options.connect &&
@@ -5872,7 +5989,7 @@
 
         return Pathfinder;
     });
-    _registerModule(_modules, 'Series/XRangeSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, H, Color, Point, U) {
+    _registerModule(_modules, 'Series/XRangeSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Color/Color.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (Axis, BaseSeries, H, Color, Point, U) {
         /* *
          *
          *  X-range series module
@@ -5893,8 +6010,7 @@
             isNumber = U.isNumber,
             isObject = U.isObject,
             merge = U.merge,
-            pick = U.pick,
-            seriesType = U.seriesType;
+            pick = U.pick;
         /* *
          * @interface Highcharts.PointOptionsObject in parts/Point.ts
          */ /**
@@ -5903,9 +6019,9 @@
         * @type {number|undefined}
         * @requires modules/xrange
         */
-        var columnType = H.seriesTypes.column,
-            seriesTypes = H.seriesTypes,
-            Series = H.Series;
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes,
+            columnType = seriesTypes.column;
         /**
          * Return color of a point based on its category.
          *
@@ -5940,7 +6056,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('xrange', 'column'
+        BaseSeries.seriesType('xrange', 'column'
         /**
          * The X-range series displays ranges on the X axis, typically time
          * intervals with a start and end date.
@@ -6339,7 +6455,7 @@
                                 pfOptions = {};
                             }
                             if (isObject(seriesOpts.partialFill)) {
-                                pfOptions = merge(pfOptions, seriesOpts.partialFill);
+                                pfOptions = merge(seriesOpts.partialFill, pfOptions);
                             }
                             fill = (pfOptions.fill ||
                                 color(pointAttr.fill).brighten(-0.3).get() ||
@@ -6614,7 +6730,7 @@
         ''; // adds doclets above to transpiled file
 
     });
-    _registerModule(_modules, 'Series/GanttSeries.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, O, U) {
+    _registerModule(_modules, 'Series/GanttSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, O, U) {
         /* *
          *
          *  (c) 2016-2020 Highsoft AS
@@ -6630,10 +6746,9 @@
         var isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
-            seriesType = U.seriesType,
             splat = U.splat;
-        var seriesTypes = H.seriesTypes,
-            Series = H.Series,
+        var Series = H.Series,
+            seriesTypes = BaseSeries.seriesTypes,
             parent = seriesTypes.xrange;
         /**
          * @private
@@ -6642,7 +6757,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('gantt', 'xrange'
+        BaseSeries.seriesType('gantt', 'xrange'
         /**
          * A `gantt` series. If the [type](#series.gantt.type) option is not specified,
          * it is inherited from [chart.type](#chart.type).
@@ -6680,8 +6795,8 @@
                     if (!format) {
                         format = splat(tooltip.getDateFormat(xAxis.closestPointRange, point.start, startOfWeek, formats))[0];
                     }
-                    start = dateFormat(format, point.start);
-                    end = dateFormat(format, point.end);
+                    start = series.chart.time.dateFormat(format, point.start);
+                    end = series.chart.time.dateFormat(format, point.end);
                     retVal += '<br/>';
                     if (!milestone) {
                         retVal += 'Start: ' + start + '<br/>';
@@ -6812,7 +6927,6 @@
                 addIfExists('x', pick(options.start, options.x));
                 addIfExists('x2', pick(options.end, options.x2));
                 addIfExists('partialFill', pick(options.completed, options.partialFill));
-                addIfExists('connect', pick(options.dependency, options.connect));
             }
             /* eslint-enable valid-jsdoc */
         }, merge(parent.prototype.pointClass.prototype, {
@@ -6836,11 +6950,11 @@
              */
             applyOptions: function (options, x) {
                 var point = this,
-                    retVal = merge(options);
-                H.seriesTypes.gantt.prototype.setGanttPointAliases(retVal);
-                retVal = parent.prototype.pointClass.prototype.applyOptions
-                    .call(point, retVal, x);
-                return retVal;
+                    ganttPoint;
+                ganttPoint = parent.prototype.pointClass.prototype.applyOptions
+                    .call(point, options, x);
+                H.seriesTypes.gantt.prototype.setGanttPointAliases(ganttPoint);
+                return ganttPoint;
             },
             isValid: function () {
                 return ((typeof this.start === 'number' ||
@@ -7090,7 +7204,11 @@
                     enabled: false
                 },
                 navigator: {
-                    series: { type: 'gantt' }
+                    series: { type: 'gantt' },
+                    // Bars were clipped, #14060.
+                    yAxis: {
+                        type: 'category'
+                    }
                 }
             }, options, // user's options
             // forced options
@@ -7098,13 +7216,6 @@
                 isGantt: true
             });
             options.series = userOptions.series = seriesOptions;
-            (options.series || []).forEach(function (series) {
-                if (series.data) {
-                    series.data.forEach(function (point) {
-                        H.seriesTypes.gantt.prototype.setGanttPointAliases(point);
-                    });
-                }
-            });
             return hasRenderToArg ?
                 new Chart(renderTo, options, callback) :
                 new Chart(options, options); // @todo does not look correct
@@ -10127,7 +10238,7 @@
 
         return NavigatorAxis;
     });
-    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/Options.js'], _modules['Core/Scrollbar.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, O, Scrollbar, U) {
+    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Series/LineSeries.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/Options.js'], _modules['Core/Scrollbar.js'], _modules['Core/Utilities.js']], function (Axis, BaseSeries, Chart, Color, H, LineSeries, NavigatorAxis, O, Scrollbar, U) {
         /* *
          *
          *  (c) 2010-2020 Torstein Honsi
@@ -10137,7 +10248,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var seriesTypes = BaseSeries.seriesTypes;
         var color = Color.parse;
+        var hasTouch = H.hasTouch,
+            isTouchDevice = H.isTouchDevice;
         var defaultOptions = O.defaultOptions;
         var addEvent = U.addEvent,
             clamp = U.clamp,
@@ -10153,11 +10267,7 @@
             pick = U.pick,
             removeEvent = U.removeEvent,
             splat = U.splat;
-        var hasTouch = H.hasTouch,
-            isTouchDevice = H.isTouchDevice,
-            Series = H.Series,
-            seriesTypes = H.seriesTypes,
-            defaultSeriesType, 
+        var defaultSeriesType, 
             // Finding the min or max of a set of variables where we don't know if they
             // are defined, is a pattern that is repeated several places in Highcharts.
             // Consider making this a global utility method.
@@ -11527,6 +11637,7 @@
                         offset: 0,
                         index: yAxisIndex,
                         isInternal: true,
+                        reversed: pick((navigatorOptions.yAxis && navigatorOptions.yAxis.reversed), (chart.yAxis[0] && chart.yAxis[0].reversed), false),
                         zoomEnabled: false
                     }, chart.inverted ? {
                         width: height
@@ -12177,7 +12288,7 @@
                 }
             });
             // Handle updating series
-            addEvent(Series, 'afterUpdate', function () {
+            addEvent(LineSeries, 'afterUpdate', function () {
                 if (this.chart.navigator && !this.options.isInternal) {
                     this.chart.navigator.setBaseSeries(null, false);
                 }

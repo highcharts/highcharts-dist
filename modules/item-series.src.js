@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Item series type for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/ItemSeries.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, O, U) {
+    _registerModule(_modules, 'Series/ItemSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (BaseSeries, H, O, U) {
         /* *
          *
          *  (c) 2020 Torstein Honsi
@@ -47,9 +47,8 @@
             isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach,
-            pick = U.pick,
-            seriesType = U.seriesType;
-        var piePoint = H.seriesTypes.pie.prototype.pointClass.prototype;
+            pick = U.pick;
+        var piePoint = BaseSeries.seriesTypes.pie.prototype.pointClass.prototype;
         /**
          * The item series type.
          *
@@ -61,7 +60,7 @@
          *
          * @augments Highcharts.seriesTypes.pie
          */
-        seriesType('item', 
+        BaseSeries.seriesType('item', 
         // Inherits pie as the most tested non-cartesian series with individual
         // point legend, tooltips etc. Only downside is we need to re-enable
         // marker options.

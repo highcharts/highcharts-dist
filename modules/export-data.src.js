@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.0 (2020-08-20)
+ * @license Highcharts JS v8.2.2 (2020-10-22)
  *
  * Exporting module
  *
@@ -55,7 +55,9 @@
          *         Blob
          */
         var dataURLtoBlob = Highcharts.dataURLtoBlob = function (dataURL) {
-                var parts = dataURL.match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
+                var parts = dataURL
+                    .replace(/filename=.*;/, '')
+                    .match(/data:([^;]*)(;base64)?,([0-9A-Za-z+/]+)/);
             if (parts &&
                 parts.length > 3 &&
                 win.atob &&
@@ -66,12 +68,11 @@
                 // Try to convert data URL to Blob
                 var binStr = win.atob(parts[3]),
                     buf = new win.ArrayBuffer(binStr.length),
-                    binary = new win.Uint8Array(buf),
-                    blob;
+                    binary = new win.Uint8Array(buf);
                 for (var i = 0; i < binary.length; ++i) {
                     binary[i] = binStr.charCodeAt(i);
                 }
-                blob = new win.Blob([binary], { 'type': parts[1] });
+                var blob = new win.Blob([binary], { 'type': parts[1] });
                 return domurl.createObjectURL(blob);
             }
         };
@@ -1058,9 +1059,9 @@
             this.isDataTableVisible = false;
         };
         Chart.prototype.toggleDataTable = function () {
-            var _a;
             var exportDivElements = this.exportDivElements,
-                menuItems = (_a = exportingOptions === null || exportingOptions === void 0 ? void 0 : exportingOptions.buttons) === null || _a === void 0 ? void 0 : _a.contextButton.menuItems,
+                options = this.options.exporting,
+                menuItems = options && options.buttons && options.buttons.contextButton.menuItems,
                 lang = this.options.lang;
             if (this.isDataTableVisible) {
                 this.hideData();

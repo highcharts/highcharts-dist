@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.0 (2020-08-20)
+ * @license Highstock JS v8.2.2 (2020-10-22)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/IKHIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Color.js'], _modules['Core/Utilities.js']], function (H, Color, U) {
+    _registerModule(_modules, 'Stock/Indicators/IKHIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BaseSeries, Color, H, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,15 +36,14 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        /* eslint-enable @typescript-eslint/interface-name-prefix */
         var color = Color.parse;
         var defined = U.defined,
             isArray = U.isArray,
             merge = U.merge,
-            objectEach = U.objectEach,
-            seriesType = U.seriesType;
-        var UNDEFINED,
-            SMA = H.seriesTypes.sma;
+            objectEach = U.objectEach;
+        /* eslint-enable @typescript-eslint/interface-name-prefix */
+        // im port './SMAIndicator.js';
+        var SMA = BaseSeries.seriesTypes.sma;
         /* eslint-disable require-jsdoc */
         // Utils:
         function maxHigh(arr) {
@@ -75,7 +74,7 @@
                     loopLength = series.xIncrement ? 1 : xData.length - 1;
                     for (i = loopLength; i > 0; i--) {
                         distance = xData[i] - xData[i - 1];
-                        if (closestDataRange === UNDEFINED ||
+                        if (typeof closestDataRange === 'undefined' ||
                             distance < closestDataRange) {
                             closestDataRange = distance;
                         }
@@ -144,7 +143,7 @@
          *
          * @augments Highcharts.Series
          */
-        seriesType('ikh', 'sma', 
+        BaseSeries.seriesType('ikh', 'sma', 
         /**
          * Ichimoku Kinko Hyo (IKH). This series requires `linkedTo` option to be
          * set.
@@ -626,11 +625,13 @@
                     spanA = SMA.prototype.getGraphPath.call(indicator, 
                     // Reverse points, so Senkou Span A will start from the end:
                     indicator.nextPoints);
-                    spanA[0][0] = 'L';
-                    path = SMA.prototype.getGraphPath.call(indicator, points);
-                    spanAarr = spanA.slice(0, path.length);
-                    for (var i = spanAarr.length - 1; i >= 0; i--) {
-                        path.push(spanAarr[i]);
+                    if (spanA && spanA.length) {
+                        spanA[0][0] = 'L';
+                        path = SMA.prototype.getGraphPath.call(indicator, points);
+                        spanAarr = spanA.slice(0, path.length);
+                        for (var i = spanAarr.length - 1; i >= 0; i--) {
+                            path.push(spanAarr[i]);
+                        }
                     }
                 }
                 else {
@@ -694,21 +695,21 @@
                     }
                     CS = yVal[i][3];
                     date = xVal[i];
-                    if (IKH[i] === UNDEFINED) {
+                    if (typeof IKH[i] === 'undefined') {
                         IKH[i] = [];
                     }
-                    if (IKH[i + period] === UNDEFINED) {
+                    if (typeof IKH[i + period] === 'undefined') {
                         IKH[i + period] = [];
                     }
                     IKH[i + period][0] = TS;
                     IKH[i + period][1] = KS;
-                    IKH[i + period][2] = UNDEFINED;
+                    IKH[i + period][2] = void 0;
                     IKH[i][2] = CS;
                     if (i <= period) {
-                        IKH[i + period][3] = UNDEFINED;
-                        IKH[i + period][4] = UNDEFINED;
+                        IKH[i + period][3] = void 0;
+                        IKH[i + period][4] = void 0;
                     }
-                    if (IKH[i + 2 * period] === UNDEFINED) {
+                    if (typeof IKH[i + 2 * period] === 'undefined') {
                         IKH[i + 2 * period] = [];
                     }
                     IKH[i + 2 * period][3] = SSA;
