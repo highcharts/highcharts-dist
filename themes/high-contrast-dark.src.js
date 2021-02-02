@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * (c) 2009-2019 Highsoft AS
  *
@@ -29,7 +29,7 @@
     _registerModule(_modules, 'Extensions/Themes/HighContrastDark.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2020 Highsoft AS
+         *  (c) 2010-2021 Highsoft AS
          *
          *  Author: Øystein Moseng
          *

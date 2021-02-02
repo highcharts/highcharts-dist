@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
         /**
          *
-         *  (c) 2010-2020 Daniel Studencki
+         *  (c) 2010-2021 Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/APOIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (BaseSeries, RequiredIndicatorMixin, U) {
+    _registerModule(_modules, 'Stock/Indicators/APO/APOIndicator.js', [_modules['Mixins/IndicatorRequired.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (RequiredIndicatorMixin, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,9 +98,31 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var error = U.error;
-        // im port './EMAIndicator.js';
-        var EMA = BaseSeries.seriesTypes.ema;
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var EMAIndicator = SeriesRegistry.seriesTypes.ema;
+        var extend = U.extend,
+            merge = U.merge,
+            error = U.error;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The APO series type.
          *
@@ -110,59 +132,27 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('apo', 'ema', 
-        /**
-         * Absolute Price Oscillator. This series requires the `linkedTo` option to
-         * be set and should be loaded after the `stock/indicators/indicators.js`
-         * and `stock/indicators/ema.js`.
-         *
-         * @sample {highstock} stock/indicators/apo
-         *         Absolute Price Oscillator
-         *
-         * @extends      plotOptions.ema
-         * @since        7.0.0
-         * @product      highstock
-         * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
-         *               pointInterval, pointIntervalUnit, pointPlacement,
-         *               pointRange, pointStart, showInNavigator, stacking
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/ema
-         * @requires     stock/indicators/apo
-         * @optionparent plotOptions.apo
-         */
-        {
-            /**
-             * Paramters used in calculation of Absolute Price Oscillator
-             * series points.
-             *
-             * @excluding period
-             */
-            params: {
-                /**
-                 * Periods for Absolute Price Oscillator calculations.
-                 *
-                 * @type    {Array<number>}
-                 * @default [10, 20]
-                 * @since   7.0.0
-                 */
-                periods: [10, 20]
+        var APOIndicator = /** @class */ (function (_super) {
+                __extends(APOIndicator, _super);
+            function APOIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                *
+                *  Properties
+                *
+                * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series.prototype
-         */
-        {
-            nameBase: 'APO',
-            nameComponents: ['periods'],
-            init: function () {
-                var args = arguments,
-                    ctx = this;
-                RequiredIndicatorMixin.isParentLoaded(EMA, 'ema', ctx.type, function (indicator) {
-                    indicator.prototype.init.apply(ctx, args);
-                    return;
-                });
-            },
-            getValues: function (series, params) {
+            /* *
+            *
+            *  Functions
+            *
+            * */
+            APOIndicator.prototype.getValues = function (series, params) {
                 var periods = params.periods,
                     index = params.index, 
                     // 0- date, 1- Absolute price oscillator
@@ -182,11 +172,11 @@
                         'should be lower than the second one."');
                     return;
                 }
-                SPE = EMA.prototype.getValues.call(this, series, {
+                SPE = EMAIndicator.prototype.getValues.call(this, series, {
                     index: index,
                     period: periods[0]
                 });
-                LPE = EMA.prototype.getValues.call(this, series, {
+                LPE = EMAIndicator.prototype.getValues.call(this, series, {
                     index: index,
                     period: periods[1]
                 });
@@ -207,8 +197,64 @@
                     xData: xData,
                     yData: yData
                 };
-            }
+            };
+            APOIndicator.prototype.init = function () {
+                var args = arguments,
+                    ctx = this;
+                RequiredIndicatorMixin.isParentLoaded(EMAIndicator, 'ema', ctx.type, function (indicator) {
+                    indicator.prototype.init.apply(ctx, args);
+                    return;
+                });
+            };
+            /**
+             * Absolute Price Oscillator. This series requires the `linkedTo` option to
+             * be set and should be loaded after the `stock/indicators/indicators.js`
+             * and `stock/indicators/ema.js`.
+             *
+             * @sample {highstock} stock/indicators/apo
+             *         Absolute Price Oscillator
+             *
+             * @extends      plotOptions.ema
+             * @since        7.0.0
+             * @product      highstock
+             * @excluding    allAreas, colorAxis, joinBy, keys, navigatorOptions,
+             *               pointInterval, pointIntervalUnit, pointPlacement,
+             *               pointRange, pointStart, showInNavigator, stacking
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/ema
+             * @requires     stock/indicators/apo
+             * @optionparent plotOptions.apo
+             */
+            APOIndicator.defaultOptions = merge(EMAIndicator.defaultOptions, {
+                /**
+                 * Paramters used in calculation of Absolute Price Oscillator
+                 * series points.
+                 *
+                 * @excluding period
+                 */
+                params: {
+                    /**
+                     * Periods for Absolute Price Oscillator calculations.
+                     *
+                     * @type    {Array<number>}
+                     * @default [10, 20]
+                     * @since   7.0.0
+                     */
+                    periods: [10, 20]
+                }
+            });
+            return APOIndicator;
+        }(EMAIndicator));
+        extend(APOIndicator.prototype, {
+            nameBase: 'APO',
+            nameComponents: ['periods']
         });
+        SeriesRegistry.registerSeriesType('apo', APOIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * An `Absolute Price Oscillator` series. If the [type](#series.apo.type) option
          * is not specified, it is inherited from [chart.type](#chart.type).
@@ -226,6 +272,7 @@
          */
         ''; // to include the above in the js output
 
+        return APOIndicator;
     });
     _registerModule(_modules, 'masters/indicators/apo.src.js', [], function () {
 

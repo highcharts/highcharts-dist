@@ -13,10 +13,6 @@ import * as _Highcharts from "../highcharts.src";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
-    interface Point {
-        high?: number;
-        low?: number;
-    }
     interface Series {
         /**
          * Get non-presentational attributes for a point. Used internally for

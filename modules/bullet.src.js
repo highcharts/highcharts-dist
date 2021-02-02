@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Bullet graph series type for Highcharts
  *
@@ -28,21 +28,111 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/BulletSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
+    _registerModule(_modules, 'Series/Bullet/BulletPoint.js', [_modules['Series/Column/ColumnSeries.js']], function (ColumnSeries) {
         /* *
          *
-         *  (c) 2010-2020 Kacper Madej
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isNumber = U.isNumber,
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        /* *
+         *
+         *  Class
+         *
+         * */
+        var BulletPoint = /** @class */ (function (_super) {
+                __extends(BulletPoint, _super);
+            function BulletPoint() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.options = void 0;
+                _this.series = void 0;
+                return _this;
+                /* eslint-enable valid-jsdoc */
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Destroys target graphic.
+             * @private
+             */
+            BulletPoint.prototype.destroy = function () {
+                if (this.targetGraphic) {
+                    this.targetGraphic = this.targetGraphic.destroy();
+                }
+                _super.prototype.destroy.apply(this, arguments);
+                return;
+            };
+            return BulletPoint;
+        }(ColumnSeries.prototype.pointClass));
+        /* *
+         *
+         *  Export Default
+         *
+         * */
+
+        return BulletPoint;
+    });
+    _registerModule(_modules, 'Series/Bullet/BulletSeries.js', [_modules['Series/Bullet/BulletPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BulletPoint, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Kacper Madej
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var extend = U.extend,
+            isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
             relativeLength = U.relativeLength;
-        var columnProto = BaseSeries.seriesTypes.column.prototype;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The bullet series type.
          *
@@ -52,88 +142,33 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('bullet', 'column'
-        /**
-         * A bullet graph is a variation of a bar graph. The bullet graph features
-         * a single measure, compares it to a target, and displays it in the context
-         * of qualitative ranges of performance that could be set using
-         * [plotBands](#yAxis.plotBands) on [yAxis](#yAxis).
-         *
-         * @sample {highcharts} highcharts/demo/bullet-graph/
-         *         Bullet graph
-         *
-         * @extends      plotOptions.column
-         * @since        6.0.0
-         * @product      highcharts
-         * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
-         *               dataSorting, boostBlending
-         * @requires     modules/bullet
-         * @optionparent plotOptions.bullet
-         */
-        , {
-            /**
-             * All options related with look and positiong of targets.
-             *
-             * @since 6.0.0
-             */
-            targetOptions: {
-                /**
-                 * The width of the rectangle representing the target. Could be set
-                 * as a pixel value or as a percentage of a column width.
+        var BulletSeries = /** @class */ (function (_super) {
+                __extends(BulletSeries, _super);
+            function BulletSeries() {
+                /* *
                  *
-                 * @type  {number|string}
-                 * @since 6.0.0
-                 */
-                width: '140%',
-                /**
-                 * The height of the rectangle representing the target.
+                 *  Static Properties
                  *
-                 * @since 6.0.0
-                 */
-                height: 3,
-                /**
-                 * The border color of the rectangle representing the target. When
-                 * not set, the  point's border color is used.
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
                  *
-                 * In styled mode, use class `highcharts-bullet-target` instead.
+                 * Properties
                  *
-                 * @type      {Highcharts.ColorString}
-                 * @since     6.0.0
-                 * @product   highcharts
-                 * @apioption plotOptions.bullet.targetOptions.borderColor
-                 */
-                /**
-                 * The color of the rectangle representing the target. When not set,
-                 * point's color (if set in point's options -
-                 * [`color`](#series.bullet.data.color)) or zone of the target value
-                 * (if [`zones`](#plotOptions.bullet.zones) or
-                 * [`negativeColor`](#plotOptions.bullet.negativeColor) are set)
-                 * or the same color as the point has is used.
-                 *
-                 * In styled mode, use class `highcharts-bullet-target` instead.
-                 *
-                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 * @since     6.0.0
-                 * @product   highcharts
-                 * @apioption plotOptions.bullet.targetOptions.color
-                 */
-                /**
-                 * The border width of the rectangle representing the target.
-                 *
-                 * In styled mode, use class `highcharts-bullet-target` instead.
-                 *
-                 * @since   6.0.0
-                 */
-                borderWidth: 0
-            },
-            tooltip: {
-                pointFormat: '<span style="color:{series.color}">\u25CF</span>' +
-                    ' {series.name}: <b>{point.y}</b>. Target: <b>{point.target}' +
-                    '</b><br/>'
+                 * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                _this.targetData = void 0;
+                return _this;
+                /* eslint-enable valid-jsdoc */
             }
-        }, {
-            pointArrayMap: ['y', 'target'],
-            parallelArrays: ['x', 'y', 'target'],
+            /* *
+             *
+             * Functions
+             *
+             * */
             /* eslint-disable valid-jsdoc */
             /**
              * Draws the targets. For inverted chart, the `series.group` is rotated,
@@ -143,12 +178,12 @@
              * @ignore
              * @function Highcharts.Series#drawPoints
              */
-            drawPoints: function () {
+            BulletSeries.prototype.drawPoints = function () {
                 var series = this,
                     chart = series.chart,
                     options = series.options,
                     animationLimit = options.animationLimit || 250;
-                columnProto.drawPoints.apply(this);
+                _super.prototype.drawPoints.apply(this, arguments);
                 series.points.forEach(function (point) {
                     var pointOptions = point.options,
                         shapeArgs,
@@ -224,22 +259,22 @@
                         point.targetGraphic = targetGraphic.destroy();
                     }
                 });
-            },
+            };
             /**
              * Includes target values to extend extremes from y values.
              *
              * @ignore
              * @function Highcharts.Series#getExtremes
              */
-            getExtremes: function (yData) {
+            BulletSeries.prototype.getExtremes = function (yData) {
                 var series = this,
                     targetData = series.targetData,
                     yMax,
                     yMin;
-                var dataExtremes = columnProto.getExtremes.call(this,
+                var dataExtremes = _super.prototype.getExtremes.call(this,
                     yData);
                 if (targetData && targetData.length) {
-                    var targetExtremes = columnProto.getExtremes.call(this,
+                    var targetExtremes = _super.prototype.getExtremes.call(this,
                         targetData);
                     if (isNumber(targetExtremes.dataMin)) {
                         dataExtremes.dataMin = Math.min(pick(dataExtremes.dataMin, Infinity), targetExtremes.dataMin);
@@ -249,27 +284,104 @@
                     }
                 }
                 return dataExtremes;
-            }
-            /* eslint-enable valid-jsdoc */
-        }, 
-        /** @lends Highcharts.seriesTypes.ohlc.prototype.pointClass.prototype */
-        {
-            // eslint-disable-next-line valid-jsdoc
+            };
             /**
-             * Destroys target graphic.
+             * A bullet graph is a variation of a bar graph. The bullet graph features
+             * a single measure, compares it to a target, and displays it in the context
+             * of qualitative ranges of performance that could be set using
+             * [plotBands](#yAxis.plotBands) on [yAxis](#yAxis).
              *
-             * @private
-             * @function
+             * @sample {highcharts} highcharts/demo/bullet-graph/
+             *         Bullet graph
+             *
+             * @extends      plotOptions.column
+             * @since        6.0.0
+             * @product      highcharts
+             * @excluding    allAreas, boostThreshold, colorAxis, compare, compareBase,
+             *               dataSorting, boostBlending
+             * @requires     modules/bullet
+             * @optionparent plotOptions.bullet
              */
-            destroy: function () {
-                if (this.targetGraphic) {
-                    this.targetGraphic = this.targetGraphic.destroy();
+            BulletSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+                /**
+                 * All options related with look and positiong of targets.
+                 *
+                 * @since 6.0.0
+                 */
+                targetOptions: {
+                    /**
+                     * The width of the rectangle representing the target. Could be set
+                     * as a pixel value or as a percentage of a column width.
+                     *
+                     * @type  {number|string}
+                     * @since 6.0.0
+                     */
+                    width: '140%',
+                    /**
+                     * The height of the rectangle representing the target.
+                     *
+                     * @since 6.0.0
+                     */
+                    height: 3,
+                    /**
+                     * The border color of the rectangle representing the target. When
+                     * not set, the  point's border color is used.
+                     *
+                     * In styled mode, use class `highcharts-bullet-target` instead.
+                     *
+                     * @type      {Highcharts.ColorString}
+                     * @since     6.0.0
+                     * @product   highcharts
+                     * @apioption plotOptions.bullet.targetOptions.borderColor
+                     */
+                    /**
+                     * The color of the rectangle representing the target. When not set,
+                     * point's color (if set in point's options -
+                     * [`color`](#series.bullet.data.color)) or zone of the target value
+                     * (if [`zones`](#plotOptions.bullet.zones) or
+                     * [`negativeColor`](#plotOptions.bullet.negativeColor) are set)
+                     * or the same color as the point has is used.
+                     *
+                     * In styled mode, use class `highcharts-bullet-target` instead.
+                     *
+                     * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                     * @since     6.0.0
+                     * @product   highcharts
+                     * @apioption plotOptions.bullet.targetOptions.color
+                     */
+                    /**
+                     * The border width of the rectangle representing the target.
+                     *
+                     * In styled mode, use class `highcharts-bullet-target` instead.
+                     *
+                     * @since   6.0.0
+                     */
+                    borderWidth: 0
+                },
+                tooltip: {
+                    pointFormat: '<span style="color:{series.color}">\u25CF</span>' +
+                        ' {series.name}: <b>{point.y}</b>. Target: <b>{point.target}' +
+                        '</b><br/>'
                 }
-                columnProto.pointClass.prototype.destroy
-                    .apply(this, arguments);
-                return;
-            }
+            });
+            return BulletSeries;
+        }(ColumnSeries));
+        extend(BulletSeries.prototype, {
+            parallelArrays: ['x', 'y', 'target'],
+            pointArrayMap: ['y', 'target']
         });
+        BulletSeries.prototype.pointClass = BulletPoint;
+        SeriesRegistry.registerSeriesType('bullet', BulletSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         * API Options
+         *
+         * */
         /**
          * A `bullet` series. If the [type](#series.bullet.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -355,6 +467,7 @@
          */
         ''; // adds doclets above to transpiled file
 
+        return BulletSeries;
     });
     _registerModule(_modules, 'masters/modules/bullet.src.js', [], function () {
 

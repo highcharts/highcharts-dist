@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  * @module highcharts/modules/lollipop
  * @requires highcharts
  *
@@ -8,4 +8,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/LollipopSeries.js';
+import '../../Series/Lollipop/LollipopSeries.js';

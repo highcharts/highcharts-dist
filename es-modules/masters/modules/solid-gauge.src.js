@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more
@@ -11,4 +11,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Series/SolidGaugeSeries.js';
+import '../../Series/SolidGauge/SolidGaugeSeries.js';

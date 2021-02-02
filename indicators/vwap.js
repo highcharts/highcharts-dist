@@ -1,5 +1,5 @@
 /*
- Highstock JS v8.2.2 (2020-10-22)
+ Highstock JS v9.0.0 (2021-02-02)
 
  Indicator series type for Highstock
 
@@ -7,7 +7,8 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/vwap",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,b,m,g){a.hasOwnProperty(b)||(a[b]=g.apply(null,m))}a=a?a._modules:{};b(a,"Stock/Indicators/VWAPIndicator.js",[a["Core/Series/Series.js"],a["Core/Utilities.js"]],function(a,b){var m=
-b.error,g=b.isArray;a.seriesType("vwap","sma",{params:{period:30,volumeSeriesID:"volume"}},{getValues:function(a,b){var d=a.chart,e=a.xData;a=a.yData;var t=b.period,h=!0,f;if(f=d.get(b.volumeSeriesID))return g(a[0])||(h=!1),this.calculateVWAPValues(h,e,a,f,t);m("Series "+b.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,d)},calculateVWAPValues:function(a,b,d,e,m){var h=e.yData,f=e.xData.length,c=b.length;e=[];var g=[],p=[],q=[],n=[],k;f=c<=f?c:f;for(k=c=0;c<f;c++){var l=a?(d[c][1]+d[c][2]+
-d[c][3])/3:d[c];l*=h[c];l=k?e[c-1]+l:l;var r=k?g[c-1]+h[c]:h[c];e.push(l);g.push(r);n.push([b[c],l/r]);p.push(n[c][0]);q.push(n[c][1]);k++;k===m&&(k=0)}return{values:n,xData:p,yData:q}}});""});b(a,"masters/indicators/vwap.src.js",[],function(){})});
+(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/vwap",["highcharts","highcharts/modules/stock"],function(d){a(d);a.Highcharts=d;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function d(a,e,d,h){a.hasOwnProperty(e)||(a[e]=h.apply(null,d))}a=a?a._modules:{};d(a,"Stock/Indicators/VWAP/VWAPIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],
+function(a,e){var d=this&&this.__extends||function(){var a=function(c,b){a=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(a,b){a.__proto__=b}||function(a,b){for(var c in b)b.hasOwnProperty(c)&&(a[c]=b[c])};return a(c,b)};return function(c,b){function d(){this.constructor=c}a(c,b);c.prototype=null===b?Object.create(b):(d.prototype=b.prototype,new d)}}(),h=a.seriesTypes.sma,u=e.error,v=e.isArray,w=e.merge;e=function(a){function c(){var b=null!==a&&a.apply(this,arguments)||this;b.data=
+void 0;b.points=void 0;b.options=void 0;return b}d(c,a);c.prototype.getValues=function(a,c){var b=a.chart,d=a.xData;a=a.yData;var e=c.period,n=!0,g;if(g=b.get(c.volumeSeriesID))return v(a[0])||(n=!1),this.calculateVWAPValues(n,d,a,g,e);u("Series "+c.volumeSeriesID+" not found! Check `volumeSeriesID`.",!0,b)};c.prototype.calculateVWAPValues=function(a,c,d,e,h){var b=e.yData,g=e.xData.length,f=c.length;e=[];var p=[],q=[],r=[],m=[],k;g=f<=g?f:g;for(k=f=0;f<g;f++){var l=a?(d[f][1]+d[f][2]+d[f][3])/3:
+d[f];l*=b[f];l=k?e[f-1]+l:l;var t=k?p[f-1]+b[f]:b[f];e.push(l);p.push(t);m.push([c[f],l/t]);q.push(m[f][0]);r.push(m[f][1]);k++;k===h&&(k=0)}return{values:m,xData:q,yData:r}};c.defaultOptions=w(h.defaultOptions,{params:{period:30,volumeSeriesID:"volume"}});return c}(h);a.registerSeriesType("vwap",e);"";return e});d(a,"masters/indicators/vwap.src.js",[],function(){})});
 //# sourceMappingURL=vwap.js.map

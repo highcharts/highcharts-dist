@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Mixins/IndicatorRequired.js', [_modules['Core/Utilities.js']], function (U) {
         /**
          *
-         *  (c) 2010-2020 Daniel Studencki
+         *  (c) 2010-2021 Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
@@ -90,7 +90,7 @@
 
         return requiredIndicatorMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/TEMAIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/IndicatorRequired.js'], _modules['Core/Utilities.js']], function (BaseSeries, RequiredIndicatorMixin, U) {
+    _registerModule(_modules, 'Stock/Indicators/TEMA/TEMAIndicator.js', [_modules['Mixins/IndicatorRequired.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (RequiredIndicatorMixin, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -98,10 +98,26 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var EMAIndicator = SeriesRegistry.seriesTypes.ema;
         var correctFloat = U.correctFloat,
-            isArray = U.isArray;
-        // im port './EMAIndicator.js';
-        var EMAindicator = BaseSeries.seriesTypes.ema;
+            isArray = U.isArray,
+            merge = U.merge;
         /**
          * The TEMA series type.
          *
@@ -111,52 +127,37 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('tema', 'ema', 
-        /**
-         * Triple exponential moving average (TEMA) indicator. This series requires
-         * `linkedTo` option to be set and should be loaded after the
-         * `stock/indicators/indicators.js` and `stock/indicators/ema.js`.
-         *
-         * @sample {highstock} stock/indicators/tema
-         *         TEMA indicator
-         *
-         * @extends      plotOptions.ema
-         * @since        7.0.0
-         * @product      highstock
-         * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
-         *               navigatorOptions, pointInterval, pointIntervalUnit,
-         *               pointPlacement, pointRange, pointStart, showInNavigator,
-         *               stacking
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/ema
-         * @requires     stock/indicators/tema
-         * @optionparent plotOptions.tema
-         */
-        {}, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        {
-            init: function () {
+        var TEMAIndicator = /** @class */ (function (_super) {
+                __extends(TEMAIndicator, _super);
+            function TEMAIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.EMApercent = void 0;
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
+            }
+            TEMAIndicator.prototype.init = function () {
                 var args = arguments,
                     ctx = this;
-                RequiredIndicatorMixin.isParentLoaded(EMAindicator, 'ema', ctx.type, function (indicator) {
+                RequiredIndicatorMixin.isParentLoaded(EMAIndicator, 'ema', ctx.type, function (indicator) {
                     indicator.prototype.init.apply(ctx, args);
                     return;
                 });
-            },
-            getEMA: function (yVal, prevEMA, SMA, index, i, xVal) {
-                return EMAindicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.chart.series[0].EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
-            },
-            getTemaPoint: function (xVal, tripledPeriod, EMAlevels, i) {
+            };
+            TEMAIndicator.prototype.getEMA = function (yVal, prevEMA, SMA, index, i, xVal) {
+                return EMAIndicator.prototype.calculateEma(xVal || [], yVal, typeof i === 'undefined' ? 1 : i, this.EMApercent, prevEMA, typeof index === 'undefined' ? -1 : index, SMA);
+            };
+            TEMAIndicator.prototype.getTemaPoint = function (xVal, tripledPeriod, EMAlevels, i) {
                 var TEMAPoint = [
                         xVal[i - 3],
                         correctFloat(3 * EMAlevels.level1 -
                             3 * EMAlevels.level2 + EMAlevels.level3)
                     ];
                 return TEMAPoint;
-            },
-            getValues: function (series, params) {
+            };
+            TEMAIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     doubledPeriod = 2 * period,
                     tripledPeriod = 3 * period,
@@ -182,7 +183,7 @@
                     // EMA(EMA) = level2,
                     // EMA(EMA(EMA)) = level3,
                     EMAlevels = {};
-                series.EMApercent = (2 / (period + 1));
+                this.EMApercent = (2 / (period + 1));
                 // Check period, if bigger than EMA points length, skip
                 if (yValLen < 3 * period - 2) {
                     return;
@@ -193,7 +194,7 @@
                 }
                 // Accumulate first N-points
                 accumulatePeriodPoints =
-                    EMAindicator.prototype.accumulatePeriodPoints(period, index, yVal);
+                    EMAIndicator.prototype.accumulatePeriodPoints(period, index, yVal);
                 // first point
                 SMA = accumulatePeriodPoints / period;
                 accumulatePeriodPoints = 0;
@@ -254,8 +255,36 @@
                     xData: xDataTema,
                     yData: yDataTema
                 };
-            }
-        });
+            };
+            /**
+             * Triple exponential moving average (TEMA) indicator. This series requires
+             * `linkedTo` option to be set and should be loaded after the
+             * `stock/indicators/indicators.js` and `stock/indicators/ema.js`.
+             *
+             * @sample {highstock} stock/indicators/tema
+             *         TEMA indicator
+             *
+             * @extends      plotOptions.ema
+             * @since        7.0.0
+             * @product      highstock
+             * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
+             *               navigatorOptions, pointInterval, pointIntervalUnit,
+             *               pointPlacement, pointRange, pointStart, showInNavigator,
+             *               stacking
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/ema
+             * @requires     stock/indicators/tema
+             * @optionparent plotOptions.tema
+             */
+            TEMAIndicator.defaultOptions = merge(EMAIndicator.defaultOptions);
+            return TEMAIndicator;
+        }(EMAIndicator));
+        SeriesRegistry.registerSeriesType('tema', TEMAIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A `TEMA` series. If the [type](#series.ema.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -273,6 +302,7 @@
          */
         ''; // to include the above in the js output
 
+        return TEMAIndicator;
     });
     _registerModule(_modules, 'masters/indicators/tema.src.js', [], function () {
 

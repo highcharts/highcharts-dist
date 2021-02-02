@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Client side exporting module
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (Highcharts) {
         /* *
          *
-         *  (c) 2015-2020 Oystein Moseng
+         *  (c) 2015-2021 Oystein Moseng
          *
          *  License: www.highcharts.com/license
          *
@@ -41,10 +41,8 @@
          *
          * */
         var win = Highcharts.win,
-            nav = win.navigator,
             doc = win.document,
-            domurl = win.URL || win.webkitURL || win,
-            isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
+            domurl = win.URL || win.webkitURL || win;
         /**
          * Convert base64 dataURL to Blob if supported, otherwise returns undefined.
          * @private
@@ -89,8 +87,9 @@
          */
         var downloadURL = Highcharts.downloadURL = function (dataURL,
             filename) {
-                var a = doc.createElement('a'),
-            windowRef;
+                var nav = win.navigator;
+            var a = doc.createElement('a'),
+                windowRef;
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -102,6 +101,7 @@
             dataURL = "" + dataURL;
             // Some browsers have limitations for data URL lengths. Try to convert to
             // Blob or fall back. Edge always needs that blob.
+            var isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
             if (isEdgeBrowser || dataURL.length > 2000000) {
                 dataURL = dataURLtoBlob(dataURL) || '';
                 if (!dataURL) {
@@ -157,11 +157,9 @@
             getOptions = U.getOptions,
             merge = U.merge;
         var downloadURL = DownloadURL.downloadURL;
-        var domurl = win.URL || win.webkitURL || win,
-            nav = win.navigator,
-            isMSBrowser = /Edge\/|Trident\/|MSIE /.test(nav.userAgent), 
+        var domurl = win.URL || win.webkitURL || win, 
             // Milliseconds to defer image load event handlers to offset IE bug
-            loadEventDeferDelay = isMSBrowser ? 150 : 0;
+            loadEventDeferDelay = H.isMS ? 150 : 0;
         // Dummy object so we can reuse our canvas-tools.js without errors
         H.CanVGRenderer = {};
         /* eslint-disable valid-jsdoc */
@@ -194,13 +192,14 @@
          */
         function svgToDataUrl(svg) {
             // Webkit and not chrome
-            var webKit = (nav.userAgent.indexOf('WebKit') > -1 &&
-                    nav.userAgent.indexOf('Chrome') < 0);
+            var userAgent = win.navigator.userAgent;
+            var webKit = (userAgent.indexOf('WebKit') > -1 &&
+                    userAgent.indexOf('Chrome') < 0);
             try {
                 // Safari requires data URI since it doesn't allow navigation to blob
                 // URLs. Firefox has an issue with Blobs and internal references,
                 // leading to gradients not working using Blobs (#4550)
-                if (!webKit && nav.userAgent.toLowerCase().indexOf('firefox') < 0) {
+                if (!webKit && !H.isFirefox) {
                     return domurl.createObjectURL(new win.Blob([svg], {
                         type: 'image/svg+xml;charset-utf-16'
                     }));
@@ -354,6 +353,20 @@
                 [].forEach.call(svgElement.querySelectorAll('*[visibility="hidden"]'), function (node) {
                     node.parentNode.removeChild(node);
                 });
+                // Workaround for #13948, multiple stops in linear gradient set to 0
+                // causing error in Acrobat
+                var gradients = svgElement.querySelectorAll('linearGradient');
+                for (var index = 0; index < gradients.length; index++) {
+                    var gradient = gradients[index];
+                    var stops = gradient.querySelectorAll('stop');
+                    var i = 0;
+                    while (i < stops.length &&
+                        stops[i].getAttribute('offset') === '0' &&
+                        stops[i + 1].getAttribute('offset') === '0') {
+                        stops[i].remove();
+                        i++;
+                    }
+                }
                 win.svg2pdf(svgElement, pdf, { removeInvalid: true });
                 return pdf.output('datauristring');
             }
@@ -415,7 +428,7 @@
                 // SVG download. In this case, we want to use Microsoft specific Blob if
                 // available
                 try {
-                    if (typeof nav.msSaveOrOpenBlob !== 'undefined') {
+                    if (typeof win.navigator.msSaveOrOpenBlob !== 'undefined') {
                         blob = new MSBlobBuilder();
                         blob.append(svg);
                         svgurl = blob.getBlob('image/svg+xml');
@@ -477,7 +490,7 @@
                     var canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), imageWidth = svg.match(/^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, imageHeight = svg.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, downloadWithCanVG = function () {
                             ctx.drawSvg(svg, 0, 0, imageWidth, imageHeight);
                         try {
-                            downloadURL(nav.msSaveOrOpenBlob ?
+                            downloadURL(win.navigator.msSaveOrOpenBlob ?
                                 canvas.msToBlob() :
                                 canvas.toDataURL(imageType), filename);
                             if (successCallback) {
@@ -669,7 +682,7 @@
             // If we are on IE and in styled mode, add a whitelist to the renderer for
             // inline styles that we want to pass through. There are so many styles by
             // default in IE that we don't want to blacklist them all.
-            if (isMSBrowser && chart.styledMode) {
+            if (H.isMS && chart.styledMode) {
                 SVGRenderer.prototype.inlineWhitelist = [
                     /^blockSize/,
                     /^border/,
@@ -704,7 +717,7 @@
             // Always fall back on:
             // - MS browsers: Embedded images JPEG/PNG, or any PDF
             // - Embedded images and PDF
-            if ((isMSBrowser &&
+            if ((H.isMS &&
                 (options.type === 'application/pdf' ||
                     chart.container.getElementsByTagName('image').length &&
                         options.type !== 'image/svg+xml')) || (options.type === 'application/pdf' &&
@@ -716,7 +729,7 @@
         };
         // Extend the default options to use the local exporter logic
         merge(true, getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/8.2.2/lib/',
+            libURL: 'https://code.highcharts.com/9.0.0/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {

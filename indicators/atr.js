@@ -1,5 +1,5 @@
 /*
- Highstock JS v8.2.2 (2020-10-22)
+ Highstock JS v9.0.0 (2021-02-02)
 
  Indicator series type for Highstock
 
@@ -7,7 +7,8 @@
 
  License: www.highcharts.com/license
 */
-(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/atr",["highcharts","highcharts/modules/stock"],function(b){a(b);a.Highcharts=b;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function b(a,b,g,h){a.hasOwnProperty(b)||(a[b]=h.apply(null,g))}a=a?a._modules:{};b(a,"Stock/Indicators/ATRIndicator.js",[a["Core/Series/Series.js"],a["Core/Utilities.js"]],function(a,b){function g(a,
-d){return Math.max(a[1]-a[2],"undefined"===typeof d?0:Math.abs(a[1]-d[3]),"undefined"===typeof d?0:Math.abs(a[2]-d[3]))}var h=b.isArray;a.seriesType("atr","sma",{params:{period:14}},{getValues:function(a,d){d=d.period;var b=a.xData,q=(a=a.yData)?a.length:0,k=1,f=0,p=0,l=[],m=[],n=[],c;var r=[[b[0],a[0]]];if(!(b.length<=d)&&h(a[0])&&4===a[0].length){for(c=1;c<=q;c++)if(r.push([b[c],a[c]]),d<k){var e=d;var t=b[c-1],u=g(a[c-1],a[c-2]);e=[t,(f*(e-1)+u)/e];f=e[1];l.push(e);m.push(e[0]);n.push(e[1])}else d===
-k?(f=p/(c-1),l.push([b[c-1],f]),m.push(b[c-1]),n.push(f)):p+=g(a[c-1],a[c-2]),k++;return{values:l,xData:m,yData:n}}}});""});b(a,"masters/indicators/atr.src.js",[],function(){})});
+(function(a){"object"===typeof module&&module.exports?(a["default"]=a,module.exports=a):"function"===typeof define&&define.amd?define("highcharts/indicators/atr",["highcharts","highcharts/modules/stock"],function(d){a(d);a.Highcharts=d;return a}):a("undefined"!==typeof Highcharts?Highcharts:void 0)})(function(a){function d(a,f,d,g){a.hasOwnProperty(f)||(a[f]=g.apply(null,d))}a=a?a._modules:{};d(a,"Stock/Indicators/ATR/ATRIndicator.js",[a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,
+f){function d(a,b){return Math.max(a[1]-a[2],"undefined"===typeof b?0:Math.abs(a[1]-b[3]),"undefined"===typeof b?0:Math.abs(a[2]-b[3]))}var g=this&&this.__extends||function(){var a=function(b,c){a=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(a,c){a.__proto__=c}||function(a,c){for(var b in c)c.hasOwnProperty(b)&&(a[b]=c[b])};return a(b,c)};return function(b,c){function d(){this.constructor=b}a(b,c);b.prototype=null===c?Object.create(c):(d.prototype=c.prototype,new d)}}(),k=a.seriesTypes.sma,
+r=f.isArray,m=f.merge;f=function(a){function b(){var c=null!==a&&a.apply(this,arguments)||this;c.data=void 0;c.points=void 0;c.options=void 0;return c}g(b,a);b.prototype.getValues=function(a,b){b=b.period;var c=a.xData,f=(a=a.yData)?a.length:0,g=1,l=0,k=0,n=[],p=[],q=[],e;var m=[[c[0],a[0]]];if(!(c.length<=b)&&r(a[0])&&4===a[0].length){for(e=1;e<=f;e++)if(m.push([c[e],a[e]]),b<g){var h=b;var t=c[e-1],u=d(a[e-1],a[e-2]);h=[t,(l*(h-1)+u)/h];l=h[1];n.push(h);p.push(h[0]);q.push(h[1])}else b===g?(l=k/
+(e-1),n.push([c[e-1],l]),p.push(c[e-1]),q.push(l)):k+=d(a[e-1],a[e-2]),g++;return{values:n,xData:p,yData:q}}};b.defaultOptions=m(k.defaultOptions,{params:{period:14}});return b}(k);a.registerSeriesType("atr",f);"";return f});d(a,"masters/indicators/atr.src.js",[],function(){})});
 //# sourceMappingURL=atr.js.map

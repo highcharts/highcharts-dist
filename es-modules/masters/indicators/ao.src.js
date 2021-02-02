@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  * @module highcharts/indicators/ao
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -11,4 +11,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Stock/Indicators/AOIndicator.js';
+import '../../Stock/Indicators/AO/AOIndicator.js';

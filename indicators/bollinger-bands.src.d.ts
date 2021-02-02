@@ -12,16 +12,6 @@ import * as _Highcharts from "../highcharts.src";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts.src" {
-    /**
-     * Utility function to check if an item is an array.
-     *
-     * @param obj
-     *        The item to check.
-     *
-     * @return True if the argument is an array.
-     */
-    function isArray(obj: any): boolean;
-}
+declare module "../highcharts.src" {}
 export default factory;
 export let Highcharts: typeof _Highcharts;

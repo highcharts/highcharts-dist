@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Vector plot series module
  *
@@ -28,21 +28,46 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/VectorSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Series/Series.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (A, BaseSeries, H, U) {
+    _registerModule(_modules, 'Series/Vector/VectorSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, H, SeriesRegistry, U) {
         /* *
          *
          *  Vector plot series module
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var animObject = A.animObject;
+        var Series = SeriesRegistry.series,
+            ScatterSeries = SeriesRegistry.seriesTypes.scatter;
         var arrayMax = U.arrayMax,
+            extend = U.extend,
+            merge = U.merge,
             pick = U.pick;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The vector series class.
          *
@@ -52,120 +77,56 @@
          *
          * @augments Highcharts.seriesTypes.scatter
          */
-        BaseSeries.seriesType('vector', 'scatter'
-        /**
-         * A vector plot is a type of cartesian chart where each point has an X and
-         * Y position, a length and a direction. Vectors are drawn as arrows.
-         *
-         * @sample {highcharts|highstock} highcharts/demo/vector-plot/
-         *         Vector pot
-         *
-         * @since        6.0.0
-         * @extends      plotOptions.scatter
-         * @excluding    boostThreshold, marker, connectEnds, connectNulls,
-         *               cropThreshold, dashStyle, dragDrop, gapSize, gapUnit,
-         *               dataGrouping, linecap, shadow, stacking, step, jitter,
-         *               boostBlending
-         * @product      highcharts highstock
-         * @requires     modules/vector
-         * @optionparent plotOptions.vector
-         */
-        , {
-            /**
-             * The line width for each vector arrow.
-             */
-            lineWidth: 2,
-            /**
-             * @ignore
-             */
-            marker: null,
-            /**
-             * What part of the vector it should be rotated around. Can be one of
-             * `start`, `center` and `end`. When `start`, the vectors will start
-             * from the given [x, y] position, and when `end` the vectors will end
-             * in the [x, y] position.
+        var VectorSeries = /** @class */ (function (_super) {
+                __extends(VectorSeries, _super);
+            function VectorSeries() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.lengthMax = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
+                /* eslint-enable valid-jsdoc */
+            }
+            /* *
              *
-             * @sample highcharts/plotoptions/vector-rotationorigin-start/
-             *         Rotate from start
+             *  Functions
              *
-             * @validvalue ["start", "center", "end"]
-             */
-            rotationOrigin: 'center',
-            states: {
-                hover: {
-                    /**
-                     * Additonal line width for the vector errors when they are
-                     * hovered.
-                     */
-                    lineWidthPlus: 1
-                }
-            },
-            tooltip: {
-                /**
-                 * @default [{point.x}, {point.y}] Length: {point.length} Direction: {point.direction}°
-                 */
-                pointFormat: '<b>[{point.x}, {point.y}]</b><br/>Length: <b>{point.length}</b><br/>Direction: <b>{point.direction}\u00B0</b><br/>'
-            },
-            /**
-             * Maximum length of the arrows in the vector plot. The individual arrow
-             * length is computed between 0 and this value.
-             */
-            vectorLength: 20
-        }, {
-            pointArrayMap: ['y', 'length', 'direction'],
-            parallelArrays: ['x', 'y', 'length', 'direction'],
+             * */
             /* eslint-disable valid-jsdoc */
             /**
-             * Get presentational attributes.
-             *
+             * Fade in the arrows on initializing series.
              * @private
-             * @function Highcharts.seriesTypes.vector#pointAttribs
-             *
-             * @param {Highcharts.Point} point
-             *
-             * @param {string} [state]
-             *
-             * @return {Highcharts.SVGAttributes}
              */
-            pointAttribs: function (point, state) {
-                var options = this.options,
-                    stroke = point.color || this.color,
-                    strokeWidth = this.options.lineWidth;
-                if (state) {
-                    stroke = options.states[state].color || stroke;
-                    strokeWidth =
-                        (options.states[state].lineWidth || strokeWidth) +
-                            (options.states[state].lineWidthPlus || 0);
+            VectorSeries.prototype.animate = function (init) {
+                if (init) {
+                    this.markerGroup.attr({
+                        opacity: 0.01
+                    });
                 }
-                return {
-                    'stroke': stroke,
-                    'stroke-width': strokeWidth
-                };
-            },
-            /**
-             * @ignore
-             * @deprecated
-             * @function Highcharts.seriesTypes.vector#markerAttribs
-             */
-            markerAttribs: H.noop,
-            /**
-             * @ignore
-             * @deprecated
-             * @function Highcharts.seriesTypes.vector#getSymbol
-             */
-            getSymbol: H.noop,
+                else {
+                    this.markerGroup.animate({
+                        opacity: 1
+                    }, animObject(this.options.animation));
+                }
+            };
             /**
              * Create a single arrow. It is later rotated around the zero
              * centerpoint.
-             *
              * @private
-             * @function Highcharts.seriesTypes.vector#arrow
-             *
-             * @param {Highcharts.Point} point
-             *
-             * @return {Highcharts.SVGPathArray}
              */
-            arrow: function (point) {
+            VectorSeries.prototype.arrow = function (point) {
                 var path,
                     fraction = point.length / this.lengthMax,
                     u = fraction * this.options.vectorLength / 20,
@@ -185,20 +146,36 @@
                     ['L', 0, -10 * u + o] // top
                 ];
                 return path;
+            };
+            /*
+            drawLegendSymbol: function (legend, item) {
+                var options = legend.options,
+                        symbolHeight = legend.symbolHeight,
+                        square = options.squareSymbol,
+                        symbolWidth = square ? symbolHeight : legend.symbolWidth,
+                        path = this.arrow.call({
+                            lengthMax: 1,
+                            options: {
+                                vectorLength: symbolWidth
+                            }
+                        }, {
+                            length: 1
+                        });
+                item.legendLine = this.chart.renderer.path(path)
+                .addClass('highcharts-point')
+                .attr({
+                    zIndex: 3,
+                    translateY: symbolWidth / 2,
+                    rotation: 270,
+                    'stroke-width': 1,
+                    'stroke': 'black'
+                }).add(item.legendGroup);
             },
+            */
             /**
              * @private
-             * @function Highcharts.seriesTypes.vector#translate
              */
-            translate: function () {
-                H.Series.prototype.translate.call(this);
-                this.lengthMax = arrayMax(this.lengthData);
-            },
-            /**
-             * @private
-             * @function Highcharts.seriesTypes.vector#drawPoints
-             */
-            drawPoints: function () {
+            VectorSeries.prototype.drawPoints = function () {
                 var chart = this.chart;
                 this.points.forEach(function (point) {
                     var plotX = point.plotX,
@@ -229,62 +206,124 @@
                         point.graphic = point.graphic.destroy();
                     }
                 }, this);
-            },
+            };
+            /**
+             * Get presentational attributes.
+             * @private
+             */
+            VectorSeries.prototype.pointAttribs = function (point, state) {
+                var options = this.options,
+                    stroke = point.color || this.color,
+                    strokeWidth = this.options.lineWidth;
+                if (state) {
+                    stroke = options.states[state].color || stroke;
+                    strokeWidth =
+                        (options.states[state].lineWidth || strokeWidth) +
+                            (options.states[state].lineWidthPlus || 0);
+                }
+                return {
+                    'stroke': stroke,
+                    'stroke-width': strokeWidth
+                };
+            };
+            /**
+             * @private
+             */
+            VectorSeries.prototype.translate = function () {
+                Series.prototype.translate.call(this);
+                this.lengthMax = arrayMax(this.lengthData);
+            };
+            /**
+             * A vector plot is a type of cartesian chart where each point has an X and
+             * Y position, a length and a direction. Vectors are drawn as arrows.
+             *
+             * @sample {highcharts|highstock} highcharts/demo/vector-plot/
+             *         Vector pot
+             *
+             * @since        6.0.0
+             * @extends      plotOptions.scatter
+             * @excluding    boostThreshold, marker, connectEnds, connectNulls,
+             *               cropThreshold, dashStyle, dragDrop, gapSize, gapUnit,
+             *               dataGrouping, linecap, shadow, stacking, step, jitter,
+             *               boostBlending
+             * @product      highcharts highstock
+             * @requires     modules/vector
+             * @optionparent plotOptions.vector
+             */
+            VectorSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
+                /**
+                 * The line width for each vector arrow.
+                 */
+                lineWidth: 2,
+                /**
+                 * @ignore
+                 */
+                marker: null,
+                /**
+                 * What part of the vector it should be rotated around. Can be one of
+                 * `start`, `center` and `end`. When `start`, the vectors will start
+                 * from the given [x, y] position, and when `end` the vectors will end
+                 * in the [x, y] position.
+                 *
+                 * @sample highcharts/plotoptions/vector-rotationorigin-start/
+                 *         Rotate from start
+                 *
+                 * @validvalue ["start", "center", "end"]
+                 */
+                rotationOrigin: 'center',
+                states: {
+                    hover: {
+                        /**
+                         * Additonal line width for the vector errors when they are
+                         * hovered.
+                         */
+                        lineWidthPlus: 1
+                    }
+                },
+                tooltip: {
+                    /**
+                     * @default [{point.x}, {point.y}] Length: {point.length} Direction: {point.direction}°
+                     */
+                    pointFormat: '<b>[{point.x}, {point.y}]</b><br/>Length: <b>{point.length}</b><br/>Direction: <b>{point.direction}\u00B0</b><br/>'
+                },
+                /**
+                 * Maximum length of the arrows in the vector plot. The individual arrow
+                 * length is computed between 0 and this value.
+                 */
+                vectorLength: 20
+            });
+            return VectorSeries;
+        }(ScatterSeries));
+        extend(VectorSeries.prototype, {
             /**
              * @ignore
              * @deprecated
-             * @function Highcharts.seriesTypes.vector#drawGraph
              */
             drawGraph: H.noop,
-            /*
-            drawLegendSymbol: function (legend, item) {
-                var options = legend.options,
-                        symbolHeight = legend.symbolHeight,
-                        square = options.squareSymbol,
-                        symbolWidth = square ? symbolHeight : legend.symbolWidth,
-                        path = this.arrow.call({
-                            lengthMax: 1,
-                            options: {
-                                vectorLength: symbolWidth
-                            }
-                        }, {
-                            length: 1
-                        });
-
-                item.legendLine = this.chart.renderer.path(path)
-                .addClass('highcharts-point')
-                .attr({
-                    zIndex: 3,
-                    translateY: symbolWidth / 2,
-                    rotation: 270,
-                    'stroke-width': 1,
-                    'stroke': 'black'
-                }).add(item.legendGroup);
-
-            },
-            */
             /**
-             * Fade in the arrows on initializing series.
-             *
-             * @private
-             * @function Highcharts.seriesTypes.vector#animate
-             *
-             * @param {boolean} [init]
+             * @ignore
+             * @deprecated
              */
-            animate: function (init) {
-                if (init) {
-                    this.markerGroup.attr({
-                        opacity: 0.01
-                    });
-                }
-                else {
-                    this.markerGroup.animate({
-                        opacity: 1
-                    }, animObject(this.options.animation));
-                }
-            }
-            /* eslint-enable valid-jsdoc */
+            getSymbol: H.noop,
+            /**
+             * @ignore
+             * @deprecated
+             */
+            markerAttribs: H.noop,
+            parallelArrays: ['x', 'y', 'length', 'direction'],
+            pointArrayMap: ['y', 'length', 'direction']
         });
+        SeriesRegistry.registerSeriesType('vector', VectorSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * A `vector` series. If the [type](#series.vector.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -361,6 +400,7 @@
          */
         ''; // adds doclets above to the transpiled file
 
+        return VectorSeries;
     });
     _registerModule(_modules, 'masters/modules/vector.src.js', [], function () {
 

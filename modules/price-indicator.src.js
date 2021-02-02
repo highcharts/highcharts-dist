@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Advanced Highstock tools
  *
@@ -29,9 +29,9 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/PriceIndication.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/PriceIndication.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Series, U) {
         /**
-         * (c) 2009-2020 Sebastian Bochann
+         * (c) 2009-2021 Sebastian Bochann
          *
          * Price indicator for Highcharts
          *
@@ -103,7 +103,7 @@
          *
          */
         /* eslint-disable no-invalid-this */
-        addEvent(H.Series, 'afterRender', function () {
+        addEvent(Series, 'afterRender', function () {
             var serie = this,
                 seriesOptions = serie.options,
                 pointRange = seriesOptions.pointRange,
@@ -166,7 +166,7 @@
                     serie.crossLabel = yAxis.crossLabel;
                 }
                 // Restore crosshair:
-                yAxis.crosshair = origOptions;
+                yAxis.crosshair = yAxis.options.crosshair = origOptions;
                 yAxis.cross = origGraphic;
                 yAxis.crossLabel = origLabel;
             }

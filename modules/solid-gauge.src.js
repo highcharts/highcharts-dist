@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Solid angular gauge module
  *
@@ -28,12 +28,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/SolidGaugeSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Utilities.js']], function (BaseSeries, Color, H, LegendSymbolMixin, U) {
+    _registerModule(_modules, 'Core/Axis/SolidGaugeAxis.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
-         *  Solid angular gauge module
-         *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -41,68 +39,8 @@
          *
          * */
         var color = Color.parse;
-        var Renderer = H.Renderer;
-        var clamp = U.clamp,
-            extend = U.extend,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            pInt = U.pInt,
-            wrap = U.wrap;
-        /**
-         * Additional options, depending on the actual symbol drawn.
-         *
-         * @interface Highcharts.SymbolOptionsObject
-         */ /**
-        * Whether to draw rounded edges.
-        * @name Highcharts.SymbolOptionsObject#rounded
-        * @type {boolean|undefined}
-        */
-        /**
-         * Symbol definition of an arc with round edges.
-         *
-         * @private
-         * @function Highcharts.Renderer#symbols.arc
-         *
-         * @param {number} x
-         *        The X coordinate for the top left position.
-         *
-         * @param {number} y
-         *        The Y coordinate for the top left position.
-         *
-         * @param {number} w
-         *        The pixel width.
-         *
-         * @param {number} h
-         *        The pixel height.
-         *
-         * @param {Highcharts.SymbolOptionsObject} [options]
-         *        Additional options, depending on the actual symbol drawn.
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path of the created arc.
-         */
-        wrap(Renderer.prototype.symbols, 'arc', function (proceed, x, y, w, h, options) {
-            var arc = proceed,
-                path = arc(x,
-                y,
-                w,
-                h,
-                options);
-            if (options.rounded) {
-                var r = options.r || w,
-                    smallR = (r - (options.innerR || 0)) / 2,
-                    outerArcStart = path[0],
-                    innerArcStart = path[2];
-                if (outerArcStart[0] === 'M' && innerArcStart[0] === 'L') {
-                    var x1 = outerArcStart[1], y1 = outerArcStart[2], x2 = innerArcStart[1], y2 = innerArcStart[2], roundStart = ['A', smallR, smallR, 0, 1, 1, x1, y1], roundEnd = ['A', smallR, smallR, 0, 1, 1, x2, y2];
-                    // Replace the line segment and the last close segment
-                    path[2] = roundEnd;
-                    path[4] = roundStart;
-                }
-            }
-            return path;
-        });
+        var extend = U.extend,
+            merge = U.merge;
         /**
          * @private
          */
@@ -220,6 +158,121 @@
             }
             SolidGaugeAxis.init = init;
         })(SolidGaugeAxis || (SolidGaugeAxis = {}));
+        /* *
+         *
+         *  Default export
+         *
+         * */
+
+        return SolidGaugeAxis;
+    });
+    _registerModule(_modules, 'Series/SolidGauge/SolidGaugeComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+        /* *
+         *
+         *  Solid angular gauge module
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var Renderer = H.Renderer;
+        var wrap = U.wrap;
+        /**
+         * Additional options, depending on the actual symbol drawn.
+         *
+         * @interface Highcharts.SymbolOptionsObject
+         */ /**
+        * Whether to draw rounded edges.
+        * @name Highcharts.SymbolOptionsObject#rounded
+        * @type {boolean|undefined}
+        */
+        /**
+         * Symbol definition of an arc with round edges.
+         *
+         * @private
+         * @function Highcharts.Renderer#symbols.arc
+         *
+         * @param {number} x
+         *        The X coordinate for the top left position.
+         *
+         * @param {number} y
+         *        The Y coordinate for the top left position.
+         *
+         * @param {number} w
+         *        The pixel width.
+         *
+         * @param {number} h
+         *        The pixel height.
+         *
+         * @param {Highcharts.SymbolOptionsObject} [options]
+         *        Additional options, depending on the actual symbol drawn.
+         *
+         * @return {Highcharts.SVGPathArray}
+         *         Path of the created arc.
+         */
+        wrap(Renderer.prototype.symbols, 'arc', function (proceed, x, y, w, h, options) {
+            var arc = proceed,
+                path = arc(x,
+                y,
+                w,
+                h,
+                options);
+            if (options.rounded) {
+                var r = options.r || w,
+                    smallR = (r - (options.innerR || 0)) / 2,
+                    outerArcStart = path[0],
+                    innerArcStart = path[2];
+                if (outerArcStart[0] === 'M' && innerArcStart[0] === 'L') {
+                    var x1 = outerArcStart[1], y1 = outerArcStart[2], x2 = innerArcStart[1], y2 = innerArcStart[2], roundStart = ['A', smallR, smallR, 0, 1, 1, x1, y1], roundEnd = ['A', smallR, smallR, 0, 1, 1, x2, y2];
+                    // Replace the line segment and the last close segment
+                    path[2] = roundEnd;
+                    path[4] = roundStart;
+                }
+            }
+            return path;
+        });
+
+    });
+    _registerModule(_modules, 'Series/SolidGauge/SolidGaugeSeries.js', [_modules['Mixins/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/SolidGaugeAxis.js'], _modules['Core/Utilities.js']], function (LegendSymbolMixin, SeriesRegistry, SolidGaugeAxis, U) {
+        /* *
+         *
+         *  Solid angular gauge module
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var _a = SeriesRegistry.seriesTypes,
+            GaugeSeries = _a.gauge,
+            pieProto = _a.pie.prototype;
+        var clamp = U.clamp,
+            extend = U.extend,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
+            pInt = U.pInt;
         /**
          * A solid gauge is a circular gauge where the value is indicated by a filled
          * arc, and the color of the arc may variate with the value.
@@ -303,7 +356,7 @@
                  * @sample {highcharts} highcharts/plotoptions/solidgauge-threshold/
                  *         Zero threshold with negative and positive values
                  *
-                 * @type      {number}
+                 * @type      {number|null}
                  * @since     5.0.3
                  * @product   highcharts
                  * @apioption plotOptions.solidgauge.threshold
@@ -316,12 +369,52 @@
                     y: 0
                 }
             };
-        // The solidgauge series type
-        BaseSeries.seriesType('solidgauge', 'gauge', solidGaugeOptions, {
-            drawLegendSymbol: LegendSymbolMixin.drawRectangle,
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * SolidGauge series type.
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.solidgauge
+         *
+         * @augments Highcarts.Series
+         */
+        var SolidGaugeSeries = /** @class */ (function (_super) {
+                __extends(SolidGaugeSeries, _super);
+            function SolidGaugeSeries() {
+                /* *
+                 *
+                 *  Static properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.points = void 0;
+                _this.options = void 0;
+                _this.axis = void 0;
+                _this.yAxis = void 0;
+                _this.startAngleRad = void 0;
+                _this.thresholdAngleRad = void 0;
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             // Extend the translate function to extend the Y axis with the necessary
             // decoration (#5895).
-            translate: function () {
+            SolidGaugeSeries.prototype.translate = function () {
                 var axis = this.yAxis;
                 SolidGaugeAxis.init(axis);
                 // Prepare data classes
@@ -330,10 +423,10 @@
                 }
                 axis.initStops(axis.options);
                 // Generate points and inherit data label position
-                H.seriesTypes.gauge.prototype.translate.call(this);
-            },
+                GaugeSeries.prototype.translate.call(this);
+            };
             // Draw the points where each point is one needle.
-            drawPoints: function () {
+            SolidGaugeSeries.prototype.drawPoints = function () {
                 var series = this,
                     yAxis = series.yAxis,
                     center = yAxis.center,
@@ -432,15 +525,26 @@
                         }
                     }
                 });
-            },
+            };
             // Extend the pie slice animation by animating from start angle and up.
-            animate: function (init) {
+            SolidGaugeSeries.prototype.animate = function (init) {
                 if (!init) {
                     this.startAngleRad = this.thresholdAngleRad;
-                    H.seriesTypes.pie.prototype.animate.call(this, init);
+                    pieProto.animate.call(this, init);
                 }
-            }
+            };
+            SolidGaugeSeries.defaultOptions = merge(GaugeSeries.defaultOptions, solidGaugeOptions);
+            return SolidGaugeSeries;
+        }(GaugeSeries));
+        extend(SolidGaugeSeries.prototype, {
+            drawLegendSymbol: LegendSymbolMixin.drawRectangle
         });
+        SeriesRegistry.registerSeriesType('solidgauge', SolidGaugeSeries);
+        /* *
+         *
+         *  Default export
+         *
+         * */
         /**
          * A `solidgauge` series. If the [type](#series.solidgauge.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -522,7 +626,7 @@
          */
         ''; // adds doclets above to transpiled file
 
-        return SolidGaugeAxis;
+        return SolidGaugeSeries;
     });
     _registerModule(_modules, 'masters/modules/solid-gauge.src.js', [], function () {
 

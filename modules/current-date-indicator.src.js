@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.2.2 (2020-10-22)
+ * @license Highcharts Gantt JS v9.0.0 (2021-02-02)
  *
  * CurrentDateIndicator
  *
@@ -28,10 +28,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (Axis, U, PlotLineOrBand) {
+    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Color/Palette.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (Axis, palette, U, PlotLineOrBand) {
         /* *
          *
-         *  (c) 2016-2020 Highsoft AS
+         *  (c) 2016-2021 Highsoft AS
          *
          *  Author: Lars A. V. Cabrera
          *
@@ -63,7 +63,7 @@
                  * @apioption xAxis.currentDateIndicator
                  */
                 currentDateIndicator: true,
-                color: '#ccd6eb',
+                color: palette.highlightColor20,
                 width: 2,
                 /**
                  * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions

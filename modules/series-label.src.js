@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * (c) 2009-2019 Torstein Honsi
  *
@@ -26,10 +26,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, H, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, Series, SVGRenderer, U) {
         /* *
          *
-         *  (c) 2009-2020 Torstein Honsi
+         *  (c) 2009-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -76,8 +76,7 @@
          * https://jsfiddle.net/highcharts/y5A37/
          */
         ''; // detach doclets above
-        var labelDistance = 3,
-            Series = H.Series;
+        var labelDistance = 3;
         setOptions({
             /**
              * @optionparent plotOptions

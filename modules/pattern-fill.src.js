@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -29,12 +29,12 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/PatternFill.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, H, Point, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/PatternFill.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, H, Point, Series, SVGRenderer, U) {
         /* *
          *
          *  Module for using patterns or images as point fills.
          *
-         *  (c) 2010-2020 Highsoft AS
+         *  (c) 2010-2021 Highsoft AS
          *  Author: Torstein Hønsi, Øystein Moseng
          *
          *  License: www.highcharts.com/license
@@ -159,7 +159,7 @@
         */
         ''; // detach doclets above
         // Add the predefined patterns
-        var patterns = (function () {
+        var patterns = H.patterns = (function () {
                 var patterns = [],
             colors = getOptions().colors;
             [
@@ -416,7 +416,7 @@
             return pattern;
         };
         // Make sure we have a series color
-        wrap(H.Series.prototype, 'getColor', function (proceed) {
+        wrap(Series.prototype, 'getColor', function (proceed) {
             var oldColor = this.options.color;
             // Temporarely remove color options to get defaults
             if (oldColor &&
@@ -436,7 +436,7 @@
             }
         });
         // Calculate pattern dimensions on points that have their own pattern.
-        addEvent(H.Series, 'render', function () {
+        addEvent(Series, 'render', function () {
             var isResizing = this.chart.isResizing;
             if (this.isDirtyData || isResizing || !this.chart.hasRendered) {
                 (this.points || []).forEach(function (point) {

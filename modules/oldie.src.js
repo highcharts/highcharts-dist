@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
@@ -32,7 +32,7 @@
     _registerModule(_modules, 'Extensions/Math3D.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -99,10 +99,10 @@
          * @private
          * @function Highcharts.perspective3D
          *
-         * @param {Highcharts.Position3dObject} coordinate
+         * @param {Highcharts.Position3DObject} coordinate
          * 3D position
          *
-         * @param {Highcharts.Position3dObject} origin
+         * @param {Highcharts.Position3DObject} origin
          * 3D root position
          *
          * @param {number} distance
@@ -113,61 +113,57 @@
          *
          * @requires highcharts-3d
          */
-        var perspective3D = H.perspective3D = function (coordinate,
-            origin,
-            distance) {
-                var projection = ((distance > 0) && (distance < Number.POSITIVE_INFINITY)) ?
+        function perspective3D(coordinate, origin, distance) {
+            var projection = ((distance > 0) && (distance < Number.POSITIVE_INFINITY)) ?
                     distance / (coordinate.z + origin.z + distance) :
                     1;
             return {
                 x: coordinate.x * projection,
                 y: coordinate.y * projection
             };
-        };
+        }
+        H.perspective3D = perspective3D;
         /**
          * Transforms a given array of points according to the angles in chart.options.
          *
          * @private
          * @function Highcharts.perspective
          *
-         * @param {Array<Highcharts.Position3dObject>} points
+         * @param {Array<Highcharts.Position3DObject>} points
          * The array of points
          *
          * @param {Highcharts.Chart} chart
          * The chart
          *
          * @param {boolean} [insidePlotArea]
-         * Whether to verifiy that the points are inside the plotArea
+         * Whether to verify that the points are inside the plotArea
          *
          * @param {boolean} [useInvertedPersp]
          * Whether to use inverted perspective in calculations
          *
-         * @return {Array<Highcharts.Position3dObject>}
+         * @return {Array<Highcharts.Position3DObject>}
          * An array of transformed points
          *
          * @requires highcharts-3d
          */
-        var perspective = H.perspective = function (points,
-            chart,
-            insidePlotArea,
-            useInvertedPersp) {
-                var options3d = chart.options.chart.options3d, 
+        function perspective(points, chart, insidePlotArea, useInvertedPersp) {
+            var options3d = chart.options.chart.options3d, 
                 /* The useInvertedPersp argument is used for
                  * inverted charts with already inverted elements,
                  * such as dataLabels or tooltip positions.
                  */
                 inverted = pick(useInvertedPersp,
-            insidePlotArea ? chart.inverted : false),
-            origin = {
+                insidePlotArea ? chart.inverted : false),
+                origin = {
                     x: chart.plotWidth / 2,
                     y: chart.plotHeight / 2,
                     z: options3d.depth / 2,
                     vd: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0)
                 },
-            scale = chart.scale3d || 1,
-            beta = deg2rad * options3d.beta * (inverted ? -1 : 1),
-            alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1),
-            angles = {
+                scale = chart.scale3d || 1,
+                beta = deg2rad * options3d.beta * (inverted ? -1 : 1),
+                alpha = deg2rad * options3d.alpha * (inverted ? -1 : 1),
+                angles = {
                     cosA: Math.cos(alpha),
                     cosB: Math.cos(-beta),
                     sinA: Math.sin(alpha),
@@ -195,7 +191,8 @@
                     z: coordinate.z
                 };
             });
-        };
+        }
+        H.perspective = perspective;
         /**
          * Calculate a distance from camera to points - made for calculating zIndex of
          * scatter points.
@@ -214,10 +211,9 @@
          *
          * @requires highcharts-3d
          */
-        var pointCameraDistance = H.pointCameraDistance = function (coordinates,
-            chart) {
-                var options3d = chart.options.chart.options3d,
-            cameraPosition = {
+        function pointCameraDistance(coordinates, chart) {
+            var options3d = chart.options.chart.options3d,
+                cameraPosition = {
                     x: chart.plotWidth / 2,
                     y: chart.plotHeight / 2,
                     z: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0) +
@@ -225,13 +221,14 @@
                 }, 
                 // Added support for objects with plotX or x coordinates.
                 distance = Math.sqrt(Math.pow(cameraPosition.x - pick(coordinates.plotX,
-            coordinates.x), 2) +
+                coordinates.x), 2) +
                     Math.pow(cameraPosition.y - pick(coordinates.plotY,
-            coordinates.y), 2) +
+                coordinates.y), 2) +
                     Math.pow(cameraPosition.z - pick(coordinates.plotZ,
-            coordinates.z), 2));
+                coordinates.z), 2));
             return distance;
-        };
+        }
+        H.pointCameraDistance = pointCameraDistance;
         /**
          * Calculate area of a 2D polygon using Shoelace algorithm
          * https://en.wikipedia.org/wiki/Shoelace_formula
@@ -247,43 +244,41 @@
          *
          * @requires highcharts-3d
          */
-        var shapeArea = H.shapeArea = function (vertexes) {
-                var area = 0,
-            i,
-            j;
+        function shapeArea(vertexes) {
+            var area = 0,
+                i,
+                j;
             for (i = 0; i < vertexes.length; i++) {
                 j = (i + 1) % vertexes.length;
                 area += vertexes[i].x * vertexes[j].y - vertexes[j].x * vertexes[i].y;
             }
             return area / 2;
-        };
+        }
+        H.shapeArea = shapeArea;
         /**
          * Calculate area of a 3D polygon after perspective projection
          *
          * @private
          * @function Highcharts.shapeArea3d
          *
-         * @param {Array<Highcharts.Position3dObject>} vertexes
+         * @param {Array<Highcharts.Position3DObject>} vertexes
          * 3D Polygon
          *
          * @param {Highcharts.Chart} chart
          * Related chart
          *
          * @param {boolean} [insidePlotArea]
-         * Whether to verifiy that the points are inside the plotArea
+         * Whether to verify that the points are inside the plotArea
          *
          * @return {number}
          * Calculated area
          *
          * @requires highcharts-3d
          */
-        var shapeArea3D = H.shapeArea3d = function (vertexes,
-            chart,
-            insidePlotArea) {
-                return shapeArea(perspective(vertexes,
-            chart,
-            insidePlotArea));
-        };
+        function shapeArea3D(vertexes, chart, insidePlotArea) {
+            return shapeArea(perspective(vertexes, chart, insidePlotArea));
+        }
+        H.shapeArea3d = shapeArea3D;
         var mathModule = {
                 perspective: perspective,
                 perspective3D: perspective3D,
@@ -294,10 +289,184 @@
 
         return mathModule;
     });
-    _registerModule(_modules, 'Core/Renderer/SVG/SVGRenderer3D.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Color, H, Math3D, SVGElement, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Renderer/SVG/SVGElement3D.js', [_modules['Core/Color/Color.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Color, SVGElement, U) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  Extensions to the SVGRenderer class to enable 3D shapes
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var color = Color.parse;
+        var defined = U.defined,
+            merge = U.merge,
+            objectEach = U.objectEach,
+            pick = U.pick;
+        /* *
+         *
+         *  Namespace
+         *
+         * */
+        var SVGElement3D;
+        (function (SVGElement3D) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            SVGElement3D.base = {
+                /**
+                 * The init is used by base - renderer.Element
+                 * @private
+                 */
+                initArgs: function (args) {
+                    var elem3d = this,
+                        renderer = elem3d.renderer,
+                        paths = renderer[elem3d.pathType + 'Path'](args),
+                        zIndexes = paths.zIndexes;
+                    // build parts
+                    elem3d.parts.forEach(function (part) {
+                        elem3d[part] = renderer.path(paths[part]).attr({
+                            'class': 'highcharts-3d-' + part,
+                            zIndex: zIndexes[part] || 0
+                        }).add(elem3d);
+                    });
+                    elem3d.attr({
+                        'stroke-linejoin': 'round',
+                        zIndex: zIndexes.group
+                    });
+                    // store original destroy
+                    elem3d.originalDestroy = elem3d.destroy;
+                    elem3d.destroy = elem3d.destroyParts;
+                    // Store information if any side of element was rendered by force.
+                    elem3d.forcedSides = paths.forcedSides;
+                },
+                /**
+                 * Single property setter that applies options to each part
+                 * @private
+                 */
+                singleSetterForParts: function (prop, val, values, verb, duration, complete) {
+                    var elem3d = this,
+                        newAttr = {},
+                        optionsToApply = [null,
+                        null, (verb || 'attr'),
+                        duration,
+                        complete],
+                        hasZIndexes = values && values.zIndexes;
+                    if (!values) {
+                        newAttr[prop] = val;
+                        optionsToApply[0] = newAttr;
+                    }
+                    else {
+                        // It is needed to deal with the whole group zIndexing
+                        // in case of graph rotation
+                        if (hasZIndexes && hasZIndexes.group) {
+                            this.attr({
+                                zIndex: hasZIndexes.group
+                            });
+                        }
+                        objectEach(values, function (partVal, part) {
+                            newAttr[part] = {};
+                            newAttr[part][prop] = partVal;
+                            // include zIndexes if provided
+                            if (hasZIndexes) {
+                                newAttr[part].zIndex = values.zIndexes[part] || 0;
+                            }
+                        });
+                        optionsToApply[1] = newAttr;
+                    }
+                    return elem3d.processParts.apply(elem3d, optionsToApply);
+                },
+                /**
+                 * Calls function for each part. Used for attr, animate and destroy.
+                 * @private
+                 */
+                processParts: function (props, partsProps, verb, duration, complete) {
+                    var elem3d = this;
+                    elem3d.parts.forEach(function (part) {
+                        // if different props for different parts
+                        if (partsProps) {
+                            props = pick(partsProps[part], false);
+                        }
+                        // only if something to set, but allow undefined
+                        if (props !== false) {
+                            elem3d[part][verb](props, duration, complete);
+                        }
+                    });
+                    return elem3d;
+                },
+                /**
+                 * Destroy all parts
+                 * @private
+                 */
+                destroyParts: function () {
+                    this.processParts(null, null, 'destroy');
+                    return this.originalDestroy();
+                }
+            };
+            SVGElement3D.cuboid = merge(SVGElement3D.base, {
+                parts: ['front', 'top', 'side'],
+                pathType: 'cuboid',
+                attr: function (args, val, complete, continueAnimation) {
+                    // Resolve setting attributes by string name
+                    if (typeof args === 'string' && typeof val !== 'undefined') {
+                        var key = args;
+                        args = {};
+                        args[key] = val;
+                    }
+                    if (args.shapeArgs || defined(args.x)) {
+                        return this.singleSetterForParts('d', null, this.renderer[this.pathType + 'Path'](args.shapeArgs || args));
+                    }
+                    return SVGElement.prototype.attr.call(this, args, void 0, complete, continueAnimation);
+                },
+                animate: function (args, duration, complete) {
+                    if (defined(args.x) && defined(args.y)) {
+                        var paths = this.renderer[this.pathType + 'Path'](args),
+                            forcedSides = paths.forcedSides;
+                        this.singleSetterForParts('d', null, paths, 'animate', duration, complete);
+                        this.attr({
+                            zIndex: paths.zIndexes.group
+                        });
+                        // If sides that are forced to render changed, recalculate
+                        // colors.
+                        if (forcedSides !== this.forcedSides) {
+                            this.forcedSides = forcedSides;
+                            SVGElement3D.cuboid.fillSetter.call(this, this.fill);
+                        }
+                    }
+                    else {
+                        SVGElement.prototype.animate.call(this, args, duration, complete);
+                    }
+                    return this;
+                },
+                fillSetter: function (fill) {
+                    var elem3d = this;
+                    elem3d.forcedSides = elem3d.forcedSides || [];
+                    elem3d.singleSetterForParts('fill', null, {
+                        front: fill,
+                        // Do not change color if side was forced to render.
+                        top: color(fill).brighten(elem3d.forcedSides.indexOf('top') >= 0 ? 0 : 0.1).get(),
+                        side: color(fill).brighten(elem3d.forcedSides.indexOf('side') >= 0 ? 0 : -0.1).get()
+                    });
+                    // fill for animation getter (#6776)
+                    elem3d.color = elem3d.fill = fill;
+                    return elem3d;
+                }
+            });
+            /* eslint-enable valid-jsdoc */
+        })(SVGElement3D || (SVGElement3D = {}));
+
+        return SVGElement3D;
+    });
+    _registerModule(_modules, 'Core/Renderer/SVG/SVGRenderer3D.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGElement3D.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Color, H, Math3D, SVGElement, SVGElement3D, SVGRenderer, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  Extensions to the SVGRenderer class to enable 3D shapes
          *
@@ -308,28 +477,29 @@
          * */
         var animObject = A.animObject;
         var color = Color.parse;
+        var charts = H.charts,
+            deg2rad = H.deg2rad;
         var perspective = Math3D.perspective,
             shapeArea = Math3D.shapeArea;
         var defined = U.defined,
             extend = U.extend,
             merge = U.merge,
-            objectEach = U.objectEach,
             pick = U.pick;
+        /* *
+         *
+         *  Constants
+         *
+         * */
         var cos = Math.cos,
+            sin = Math.sin,
             PI = Math.PI,
-            sin = Math.sin;
-        var charts = H.charts,
-            deg2rad = H.deg2rad, 
-            // internal:
-            dFactor,
-            element3dMethods,
-            cuboidMethods;
-        /*
-            EXTENSION TO THE SVG-RENDERER TO ENABLE 3D SHAPES
-        */
-        // HELPER METHODS
-        dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+            dFactor = (4 * (Math.sqrt(2) - 1) / 3) / (PI / 2);
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
         /**
          * Method to construct a curved path. Can 'wrap' around more then 180 degrees.
          * @private
@@ -361,6 +531,12 @@
                     cy + (ry * Math.sin(end)) + dy
                 ]];
         }
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        SVGRenderer.prototype.elements3d = SVGElement3D;
         SVGRenderer.prototype.toLinePath = function (points, closed) {
             var result = [];
             // Put "L x y" for each point
@@ -395,6 +571,7 @@
             ret.vertexes = [];
             ret.insidePlotArea = false;
             ret.enabled = true;
+            /* eslint-disable no-invalid-this */
             ret.attr = function (hash) {
                 if (typeof hash === 'object' &&
                     (defined(hash.enabled) ||
@@ -443,6 +620,7 @@
                 }
                 return SVGElement.prototype.animate.apply(this, arguments);
             };
+            /* eslint-enable no-invalid-this */
             return ret.attr(args);
         };
         // A Polyhedron is a handy way of defining a group of 3-D faces. It's only
@@ -458,6 +636,7 @@
                 });
             }
             result.faces = [];
+            /* eslint-disable no-invalid-this */
             // destroy all children
             result.destroy = function () {
                 for (var i = 0; i < result.faces.length; i++) {
@@ -498,152 +677,8 @@
                 }
                 return SVGElement.prototype.animate.apply(this, arguments);
             };
+            /* eslint-enable no-invalid-this */
             return result.attr(args);
-        };
-        // Base, abstract prototype member for 3D elements
-        element3dMethods = {
-            /**
-             * The init is used by base - renderer.Element
-             * @private
-             */
-            initArgs: function (args) {
-                var elem3d = this,
-                    renderer = elem3d.renderer,
-                    paths = renderer[elem3d.pathType + 'Path'](args),
-                    zIndexes = paths.zIndexes;
-                // build parts
-                elem3d.parts.forEach(function (part) {
-                    elem3d[part] = renderer.path(paths[part]).attr({
-                        'class': 'highcharts-3d-' + part,
-                        zIndex: zIndexes[part] || 0
-                    }).add(elem3d);
-                });
-                elem3d.attr({
-                    'stroke-linejoin': 'round',
-                    zIndex: zIndexes.group
-                });
-                // store original destroy
-                elem3d.originalDestroy = elem3d.destroy;
-                elem3d.destroy = elem3d.destroyParts;
-                // Store information if any side of element was rendered by force.
-                elem3d.forcedSides = paths.forcedSides;
-            },
-            /**
-             * Single property setter that applies options to each part
-             * @private
-             */
-            singleSetterForParts: function (prop, val, values, verb, duration, complete) {
-                var elem3d = this,
-                    newAttr = {},
-                    optionsToApply = [null,
-                    null, (verb || 'attr'),
-                    duration,
-                    complete],
-                    hasZIndexes = values && values.zIndexes;
-                if (!values) {
-                    newAttr[prop] = val;
-                    optionsToApply[0] = newAttr;
-                }
-                else {
-                    // It is needed to deal with the whole group zIndexing
-                    // in case of graph rotation
-                    if (hasZIndexes && hasZIndexes.group) {
-                        this.attr({
-                            zIndex: hasZIndexes.group
-                        });
-                    }
-                    objectEach(values, function (partVal, part) {
-                        newAttr[part] = {};
-                        newAttr[part][prop] = partVal;
-                        // include zIndexes if provided
-                        if (hasZIndexes) {
-                            newAttr[part].zIndex = values.zIndexes[part] || 0;
-                        }
-                    });
-                    optionsToApply[1] = newAttr;
-                }
-                return elem3d.processParts.apply(elem3d, optionsToApply);
-            },
-            /**
-             * Calls function for each part. Used for attr, animate and destroy.
-             * @private
-             */
-            processParts: function (props, partsProps, verb, duration, complete) {
-                var elem3d = this;
-                elem3d.parts.forEach(function (part) {
-                    // if different props for different parts
-                    if (partsProps) {
-                        props = pick(partsProps[part], false);
-                    }
-                    // only if something to set, but allow undefined
-                    if (props !== false) {
-                        elem3d[part][verb](props, duration, complete);
-                    }
-                });
-                return elem3d;
-            },
-            /**
-             * Destroy all parts
-             * @private
-             */
-            destroyParts: function () {
-                this.processParts(null, null, 'destroy');
-                return this.originalDestroy();
-            }
-        };
-        // CUBOID
-        cuboidMethods = merge(element3dMethods, {
-            parts: ['front', 'top', 'side'],
-            pathType: 'cuboid',
-            attr: function (args, val, complete, continueAnimation) {
-                // Resolve setting attributes by string name
-                if (typeof args === 'string' && typeof val !== 'undefined') {
-                    var key = args;
-                    args = {};
-                    args[key] = val;
-                }
-                if (args.shapeArgs || defined(args.x)) {
-                    return this.singleSetterForParts('d', null, this.renderer[this.pathType + 'Path'](args.shapeArgs || args));
-                }
-                return SVGElement.prototype.attr.call(this, args, void 0, complete, continueAnimation);
-            },
-            animate: function (args, duration, complete) {
-                if (defined(args.x) && defined(args.y)) {
-                    var paths = this.renderer[this.pathType + 'Path'](args),
-                        forcedSides = paths.forcedSides;
-                    this.singleSetterForParts('d', null, paths, 'animate', duration, complete);
-                    this.attr({
-                        zIndex: paths.zIndexes.group
-                    });
-                    // If sides that are forced to render changed, recalculate colors.
-                    if (forcedSides !== this.forcedSides) {
-                        this.forcedSides = forcedSides;
-                        cuboidMethods.fillSetter.call(this, this.fill);
-                    }
-                }
-                else {
-                    SVGElement.prototype.animate.call(this, args, duration, complete);
-                }
-                return this;
-            },
-            fillSetter: function (fill) {
-                var elem3d = this;
-                elem3d.forcedSides = elem3d.forcedSides || [];
-                elem3d.singleSetterForParts('fill', null, {
-                    front: fill,
-                    // Do not change color if side was forced to render.
-                    top: color(fill).brighten(elem3d.forcedSides.indexOf('top') >= 0 ? 0 : 0.1).get(),
-                    side: color(fill).brighten(elem3d.forcedSides.indexOf('side') >= 0 ? 0 : -0.1).get()
-                });
-                // fill for animation getter (#6776)
-                elem3d.color = elem3d.fill = fill;
-                return elem3d;
-            }
-        });
-        // set them up
-        SVGRenderer.prototype.elements3d = {
-            base: element3dMethods,
-            cuboid: cuboidMethods
         };
         /**
          * return result, generalization
@@ -915,6 +950,7 @@
             wrapper.side2 = renderer.path();
             wrapper.inn = renderer.path();
             wrapper.out = renderer.path();
+            /* eslint-disable no-invalid-this */
             // Add all faces
             wrapper.onAdd = function () {
                 var parent = wrapper.parentGroup,
@@ -1074,6 +1110,7 @@
                 this.side1.show(inherit);
                 this.side2.show(inherit);
             };
+            /* eslint-enable no-invalid-this */
             return wrapper;
         };
         // Generate the paths required to draw a 3D arc
@@ -1276,13 +1313,18 @@
                 zSide2: a2 * 0.99
             };
         };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return SVGRenderer;
     });
     _registerModule(_modules, 'Extensions/Oldie/VMLAxis3D.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  Extension to the VML Renderer
          *
@@ -1360,7 +1402,7 @@
     _registerModule(_modules, 'Extensions/Oldie/VMLRenderer3D.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js'], _modules['Extensions/Oldie/VMLAxis3D.js']], function (Axis, U, VMLAxis3D) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  Extension to the VML Renderer
          *
@@ -1404,10 +1446,10 @@
 
         return VMLRenderer3D;
     });
-    _registerModule(_modules, 'Extensions/Oldie/Oldie.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Pointer.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer3D.js'], _modules['Core/Utilities.js'], _modules['Extensions/Oldie/VMLRenderer3D.js']], function (Chart, Color, H, Pointer, SVGElement, SVGRenderer, U, VMLRenderer3D) {
+    _registerModule(_modules, 'Extensions/Oldie/Oldie.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Pointer.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer3D.js'], _modules['Core/Utilities.js'], _modules['Extensions/Oldie/VMLRenderer3D.js']], function (Chart, Color, H, palette, Pointer, SVGElement, SVGRenderer, U, VMLRenderer3D) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -1453,7 +1495,7 @@
          * @apioption global.VMLRadialGradientURL
          */
         getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/8.2.2/gfx/vml-radial-gradient.png';
+            'http://code.highcharts.com/9.0.0/gfx/vml-radial-gradient.png';
         // Utilites
         if (doc && !doc.defaultView) {
             H.getStyle = U.getStyle = function (el, prop) {
@@ -1514,7 +1556,7 @@
                 }
                 // Get mouse position
                 if (!chartPosition) {
-                    this.chartPosition = chartPosition = offset(this.chart.container);
+                    this.chartPosition = chartPosition = this.getChartPosition();
                 }
                 return extend(e, {
                     // #2005, #2129: the second case is for IE10 quirks mode within
@@ -1970,7 +2012,7 @@
                             // apply the opacity
                             markup = [
                                 '<stroke color="',
-                                shadowOptions.color || '#000000',
+                                shadowOptions.color || palette.neutralColor100,
                                 '" opacity="', shadowElementOpacity * i, '"/>'
                             ];
                             createElement(renderer.prepVML(markup), null, null, shadow);
@@ -2696,7 +2738,8 @@
             H.VMLRenderer = VMLRenderer = function () {
                 this.init.apply(this, arguments);
             };
-            VMLRenderer.prototype = merge(VMLRenderer.prototype, SVGRenderer.prototype, VMLRendererExtension);
+            extend(VMLRenderer.prototype, SVGRenderer.prototype);
+            extend(VMLRenderer.prototype, VMLRendererExtension);
             // general renderer
             H.Renderer = VMLRenderer;
             // 3D additions

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  * @module highcharts/highcharts-3d
  * @requires highcharts
  *
@@ -15,6 +15,7 @@ import '../Core/Axis/ZAxis.js';
 import '../Core/Axis/Axis3D.js';
 import '../Core/Axis/Tick3D.js';
 import '../Core/Series/Series3D.js';
-import '../Series/Column3DSeries.js';
-import '../Series/Pie3DSeries.js';
-import '../Series/Scatter3DSeries.js';
+import '../Series/Column3D/Column3DComposition.js';
+import '../Series/Pie3D/Pie3DComposition.js';
+import '../Series/Scatter3D/Scatter3DSeries.js';
+import '../Series/Area3DSeries.js';

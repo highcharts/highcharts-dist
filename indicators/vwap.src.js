@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,10 +28,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/VWAPIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
+    _registerModule(_modules, 'Stock/Indicators/VWAP/VWAPIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2020 Paweł Dalek
+         *  (c) 2010-2021 Paweł Dalek
          *
          *  Volume Weighted Average Price (VWAP) indicator for Highstock
          *
@@ -40,9 +40,31 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var error = U.error,
-            isArray = U.isArray;
-        // im port './SMAIndicator.js';
+            isArray = U.isArray,
+            merge = U.merge;
+        /* *
+         *
+         * Class
+         *
+         * */
         /**
          * The Volume Weighted Average Price (VWAP) series type.
          *
@@ -52,50 +74,27 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('vwap', 'sma', 
-        /**
-         * Volume Weighted Average Price indicator.
-         *
-         * This series requires `linkedTo` option to be set.
-         *
-         * @sample stock/indicators/vwap
-         *         Volume Weighted Average Price indicator
-         *
-         * @extends      plotOptions.sma
-         * @since        6.0.0
-         * @product      highstock
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/vwap
-         * @optionparent plotOptions.vwap
-         */
-        {
-            /**
-             * @excluding index
-             */
-            params: {
-                period: 30,
-                /**
-                 * The id of volume series which is mandatory. For example using
-                 * OHLC data, volumeSeriesID='volume' means the indicator will be
-                 * calculated using OHLC and volume values.
-                 */
-                volumeSeriesID: 'volume'
+        var VWAPIndicator = /** @class */ (function (_super) {
+                __extends(VWAPIndicator, _super);
+            function VWAPIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.points = void 0;
+                _this.options = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        {
-            /**
-             * Returns the final values of the indicator ready to be presented on a
-             * chart
-             * @private
-             * @param {Highcharts.VWAPIndicator} this indicator
-             * @param {Highcharts.Series} series - series for indicator
-             * @param {object} params - params
-             * @return {object} - computed VWAP
-             **/
-            getValues: function (series, params) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            VWAPIndicator.prototype.getValues = function (series, params) {
                 var indicator = this,
                     chart = series.chart,
                     xValues = series.xData,
@@ -115,7 +114,7 @@
                     isOHLC = false;
                 }
                 return indicator.calculateVWAPValues(isOHLC, xValues, yValues, volumeSeries, period);
-            },
+            };
             /**
              * Main algorithm used to calculate Volume Weighted Average Price (VWAP)
              * values
@@ -129,7 +128,7 @@
              * @param {number} period - number of points to be calculated
              * @return {object} - Object contains computed VWAP
              **/
-            calculateVWAPValues: function (isOHLC, xValues, yValues, volumeSeries, period) {
+            VWAPIndicator.prototype.calculateVWAPValues = function (isOHLC, xValues, yValues, volumeSeries, period) {
                 var volumeValues = volumeSeries.yData,
                     volumeLength = volumeSeries.xData.length,
                     pointsLength = xValues.length,
@@ -179,8 +178,44 @@
                     xData: xData,
                     yData: yData
                 };
-            }
-        });
+            };
+            /**
+             * Volume Weighted Average Price indicator.
+             *
+             * This series requires `linkedTo` option to be set.
+             *
+             * @sample stock/indicators/vwap
+             *         Volume Weighted Average Price indicator
+             *
+             * @extends      plotOptions.sma
+             * @since        6.0.0
+             * @product      highstock
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/vwap
+             * @optionparent plotOptions.vwap
+             */
+            VWAPIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * @excluding index
+                 */
+                params: {
+                    period: 30,
+                    /**
+                     * The id of volume series which is mandatory. For example using
+                     * OHLC data, volumeSeriesID='volume' means the indicator will be
+                     * calculated using OHLC and volume values.
+                     */
+                    volumeSeriesID: 'volume'
+                }
+            });
+            return VWAPIndicator;
+        }(SMAIndicator));
+        SeriesRegistry.registerSeriesType('vwap', VWAPIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A `Volume Weighted Average Price (VWAP)` series. If the
          * [type](#series.vwap.type) option is not specified, it is inherited from
@@ -196,6 +231,7 @@
          */
         ''; // to include the above in the js output
 
+        return VWAPIndicator;
     });
     _registerModule(_modules, 'masters/indicators/vwap.src.js', [], function () {
 

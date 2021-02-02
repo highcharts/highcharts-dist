@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,32 +28,33 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/ADIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
+    _registerModule(_modules, 'Stock/Indicators/AD/ADIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          * */
-        var error = U.error;
-        // im port './SMAIndicator.js';
-        /* eslint-disable valid-jsdoc */
-        // Utils:
-        /**
-         * @private
-         */
-        function populateAverage(xVal, yVal, yValVolume, i) {
-            var high = yVal[i][1],
-                low = yVal[i][2],
-                close = yVal[i][3],
-                volume = yValVolume[i],
-                adY = close === high && close === low || high === low ?
-                    0 :
-                    ((2 * close - low - high) / (high - low)) * volume,
-                adX = xVal[i];
-            return [adX, adY];
-        }
-        /* eslint-enable valid-jsdoc */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var error = U.error,
+            extend = U.extend,
+            merge = U.merge;
         /**
          * The AD series type.
          *
@@ -63,40 +64,48 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('ad', 'sma', 
-        /**
-         * Accumulation Distribution (AD). This series requires `linkedTo` option to
-         * be set.
-         *
-         * @sample stock/indicators/accumulation-distribution
-         *         Accumulation/Distribution indicator
-         *
-         * @extends      plotOptions.sma
-         * @since        6.0.0
-         * @product      highstock
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/accumulation-distribution
-         * @optionparent plotOptions.ad
-         */
-        {
-            params: {
-                /**
-                 * The id of volume series which is mandatory.
-                 * For example using OHLC data, volumeSeriesID='volume' means
-                 * the indicator will be calculated using OHLC and volume values.
+        var ADIndicator = /** @class */ (function (_super) {
+                __extends(ADIndicator, _super);
+            function ADIndicator() {
+                /* *
                  *
-                 * @since 6.0.0
-                 */
-                volumeSeriesID: 'volume'
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        {
-            nameComponents: false,
-            nameBase: 'Accumulation/Distribution',
-            getValues: function (series, params) {
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            ADIndicator.populateAverage = function (xVal, yVal, yValVolume, i, _period) {
+                var high = yVal[i][1],
+                    low = yVal[i][2],
+                    close = yVal[i][3],
+                    volume = yValVolume[i],
+                    adY = close === high && close === low || high === low ?
+                        0 :
+                        ((2 * close - low - high) / (high - low)) * volume,
+                    adX = xVal[i];
+                return [adX, adY];
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            ADIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     xVal = series.xData,
                     yVal = series.yData,
@@ -125,7 +134,7 @@
                 // Calculate value one-by-one for each period in visible data
                 for (i = period; i < yValLen; i++) {
                     len = AD.length;
-                    ADPoint = populateAverage(xVal, yVal, yValVolume, i, period);
+                    ADPoint = ADIndicator.populateAverage(xVal, yVal, yValVolume, i, period);
                     if (len > 0) {
                         ADPoint[1] += AD[len - 1][1];
                     }
@@ -138,8 +147,50 @@
                     xData: xData,
                     yData: yData
                 };
-            }
+            };
+            /**
+             * Accumulation Distribution (AD). This series requires `linkedTo` option to
+             * be set.
+             *
+             * @sample stock/indicators/accumulation-distribution
+             *         Accumulation/Distribution indicator
+             *
+             * @extends      plotOptions.sma
+             * @since        6.0.0
+             * @product      highstock
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/accumulation-distribution
+             * @optionparent plotOptions.ad
+             */
+            ADIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                params: {
+                    /**
+                     * The id of volume series which is mandatory.
+                     * For example using OHLC data, volumeSeriesID='volume' means
+                     * the indicator will be calculated using OHLC and volume values.
+                     *
+                     * @since 6.0.0
+                     */
+                    volumeSeriesID: 'volume'
+                }
+            });
+            return ADIndicator;
+        }(SMAIndicator));
+        extend(ADIndicator.prototype, {
+            nameComponents: false,
+            nameBase: 'Accumulation/Distribution'
         });
+        SeriesRegistry.registerSeriesType('ad', ADIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * A `AD` series. If the [type](#series.ad.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -154,6 +205,7 @@
          */
         ''; // add doclet above to transpiled file
 
+        return ADIndicator;
     });
     _registerModule(_modules, 'masters/indicators/accumulation-distribution.src.js', [], function () {
 

@@ -12,17 +12,6 @@ import * as _Highcharts from "./highcharts";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "./highcharts" {
-    interface Point {
-        /**
-         * Range series only. The high or maximum value for each data point.
-         */
-        high?: number;
-        /**
-         * Range series only. The low or minimum value for each data point.
-         */
-        low?: number;
-    }
-}
+declare module "./highcharts" {}
 export default factory;
 export let Highcharts: typeof _Highcharts;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Old IE (v6, v7, v8) array polyfills for Highcharts v7+.
  *
@@ -32,7 +32,7 @@
     _registerModule(_modules, 'Extensions/OldiePolyfills.js', [], function () {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -146,6 +146,24 @@
                     return thatFunc.apply(thatArg, funcArgs);
                 };
             };
+        }
+        // Adapted from https://johnresig.com/blog/objectgetprototypeof/
+        if (!Object.getPrototypeOf) {
+            if (typeof 'test'.__proto__ === 'object') { // eslint-disable-line no-proto
+                Object.getPrototypeOf = function (object) {
+                    return object.__proto__; // eslint-disable-line no-proto
+                };
+            }
+            else {
+                Object.getPrototypeOf = function (object) {
+                    var proto = object.constructor.prototype;
+                    if (proto === object) {
+                        return {}.constructor.prototype;
+                    }
+                    // May break if the constructor has been tampered with
+                    return proto;
+                };
+            }
         }
         if (!Object.keys) {
             Object.keys = function (obj) {

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,17 +28,40 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/ZigzagIndicator.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
+    _registerModule(_modules, 'Stock/Indicators/Zigzag/ZigzagIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  (c) 2010-2020 Kacper Madej
+         *  (c) 2010-2021 Kacper Madej
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        // im port './SMAIndicator.js';
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var merge = U.merge,
+            extend = U.extend;
+        /* *
+         *
+         * Class
+         *
+         * */
         /**
          * The Zig Zag series type.
          *
@@ -48,60 +71,27 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('zigzag', 'sma', 
-        /**
-         * Zig Zag indicator.
-         *
-         * This series requires `linkedTo` option to be set.
-         *
-         * @sample stock/indicators/zigzag
-         *         Zig Zag indicator
-         *
-         * @extends      plotOptions.sma
-         * @since        6.0.0
-         * @product      highstock
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/zigzag
-         * @optionparent plotOptions.zigzag
-         */
-        {
-            /**
-             * @excluding index, period
-             */
-            params: {
-                /**
-                 * The point index which indicator calculations will base - low
-                 * value.
+        var ZigzagIndicator = /** @class */ (function (_super) {
+                __extends(ZigzagIndicator, _super);
+            function ZigzagIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
                  *
-                 * For example using OHLC data, index=2 means the indicator will be
-                 * calculated using Low values.
-                 */
-                lowIndex: 2,
-                /**
-                 * The point index which indicator calculations will base - high
-                 * value.
+                 *  Properties
                  *
-                 * For example using OHLC data, index=1 means the indicator will be
-                 * calculated using High values.
-                 */
-                highIndex: 1,
-                /**
-                 * The threshold for the value change.
-                 *
-                 * For example deviation=1 means the indicator will ignore all price
-                 * movements less than 1%.
-                 */
-                deviation: 1
+                 * */
+                _this.data = void 0;
+                _this.points = void 0;
+                _this.options = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        {
-            nameComponents: ['deviation'],
-            nameSuffixes: ['%'],
-            nameBase: 'Zig Zag',
-            getValues: function (series, params) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            ZigzagIndicator.prototype.getValues = function (series, params) {
                 var lowIndex = params.lowIndex,
                     highIndex = params.highIndex,
                     deviation = params.deviation / 100,
@@ -211,8 +201,65 @@
                     xData: xData,
                     yData: yData
                 };
-            }
+            };
+            /**
+             * Zig Zag indicator.
+             *
+             * This series requires `linkedTo` option to be set.
+             *
+             * @sample stock/indicators/zigzag
+             *         Zig Zag indicator
+             *
+             * @extends      plotOptions.sma
+             * @since        6.0.0
+             * @product      highstock
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/zigzag
+             * @optionparent plotOptions.zigzag
+             */
+            ZigzagIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * @excluding index, period
+                 */
+                params: {
+                    /**
+                     * The point index which indicator calculations will base - low
+                     * value.
+                     *
+                     * For example using OHLC data, index=2 means the indicator will be
+                     * calculated using Low values.
+                     */
+                    lowIndex: 2,
+                    /**
+                     * The point index which indicator calculations will base - high
+                     * value.
+                     *
+                     * For example using OHLC data, index=1 means the indicator will be
+                     * calculated using High values.
+                     */
+                    highIndex: 1,
+                    /**
+                     * The threshold for the value change.
+                     *
+                     * For example deviation=1 means the indicator will ignore all price
+                     * movements less than 1%.
+                     */
+                    deviation: 1
+                }
+            });
+            return ZigzagIndicator;
+        }(SMAIndicator));
+        extend(ZigzagIndicator.prototype, {
+            nameComponents: ['deviation'],
+            nameSuffixes: ['%'],
+            nameBase: 'Zig Zag'
         });
+        SeriesRegistry.registerSeriesType('zigzag', ZigzagIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A `Zig Zag` series. If the [type](#series.zigzag.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -227,6 +274,7 @@
          */
         ''; // adds doclets above to transpiled file
 
+        return ZigzagIndicator;
     });
     _registerModule(_modules, 'masters/indicators/zigzag.src.js', [], function () {
 

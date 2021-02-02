@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Exporting module
  *
@@ -28,14 +28,15 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/FullScreen.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Extensions/FullScreen.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (Chart, H, AST, U) {
         /* *
-         * (c) 2009-2020 Rafal Sebestjanski
+         * (c) 2009-2021 Rafal Sebestjanski
          *
          * Full screen for Highcharts
          *
          * License: www.highcharts.com/license
          */
+        var doc = H.doc;
         var addEvent = U.addEvent;
         /**
          * The module allows user to enable display chart in full screen mode.
@@ -203,10 +204,9 @@
                     menuItems &&
                     exportDivElements &&
                     exportDivElements.length) {
-                    exportDivElements[menuItems.indexOf('viewFullscreen')]
-                        .innerHTML = !this.isOpen ?
+                    AST.setElementHTML(exportDivElements[menuItems.indexOf('viewFullscreen')], !this.isOpen ?
                         (exportingOptions.menuItemDefinitions.viewFullscreen.text ||
-                            lang.viewFullscreen) : lang.exitFullscreen;
+                            lang.viewFullscreen) : lang.exitFullscreen);
                 }
             };
             /**
@@ -250,7 +250,7 @@
     _registerModule(_modules, 'Mixins/Navigation.js', [], function () {
         /**
          *
-         *  (c) 2010-2018 Paweł Fus
+         *  (c) 2010-2021 Paweł Fus
          *
          *  License: www.highcharts.com/license
          *
@@ -306,12 +306,12 @@
 
         return chartNavigation;
     });
-    _registerModule(_modules, 'Extensions/Exporting.js', [_modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, chartNavigationMixin, H, O, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/Exporting.js', [_modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, chartNavigationMixin, H, O, palette, SVGRenderer, U) {
         /* *
          *
          *  Exporting module
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -401,11 +401,6 @@
          *
          * @typedef {"image/png"|"image/jpeg"|"application/pdf"|"image/svg+xml"} Highcharts.ExportingMimeTypeValue
          */
-        // create shortcuts
-        var userAgent = win.navigator.userAgent,
-            symbols = H.Renderer.prototype.symbols,
-            isMSBrowser = /Edge\/|Trident\/|MSIE /.test(userAgent),
-            isFirefoxBrowser = /firefox/i.test(userAgent);
         // Add language
         extend(defaultOptions.lang
         /**
@@ -644,9 +639,9 @@
              */
             menuStyle: {
                 /** @ignore-option */
-                border: '1px solid #999999',
+                border: "1px solid " + palette.neutralColor40,
                 /** @ignore-option */
-                background: '#ffffff',
+                background: palette.backgroundColor,
                 /** @ignore-option */
                 padding: '5px 0'
             },
@@ -672,7 +667,7 @@
                 /** @ignore-option */
                 padding: '0.5em 1em',
                 /** @ignore-option */
-                color: '#333333',
+                color: palette.neutralColor80,
                 /** @ignore-option */
                 background: 'none',
                 /** @ignore-option */
@@ -699,9 +694,9 @@
              */
             menuItemHoverStyle: {
                 /** @ignore-option */
-                background: '#335cad',
+                background: palette.highlightColor80,
                 /** @ignore-option */
-                color: '#ffffff'
+                color: palette.backgroundColor
             },
             /**
              * A collection of options for buttons appearing in the exporting
@@ -724,7 +719,7 @@
                  * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @since 2.0
                  */
-                symbolFill: '#666666',
+                symbolFill: palette.neutralColor60,
                 /**
                  * The color of the symbol's stroke or line.
                  *
@@ -734,7 +729,7 @@
                  * @type  {Highcharts.ColorString}
                  * @since 2.0
                  */
-                symbolStroke: '#666666',
+                symbolStroke: palette.neutralColor60,
                 /**
                  * The pixel stroke width of the symbol on the button.
                  *
@@ -762,7 +757,7 @@
                      * The default fill exists only to capture hover events.
                      *
                      * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                     * @default   #ffffff
+                     * @default   ${palette.backgroundColor}
                      * @apioption navigation.buttonOptions.theme.fill
                      */
                     /**
@@ -1833,10 +1828,10 @@
                                             item.onclick
                                                 .apply(chart, arguments);
                                         }
-                                    },
-                                    innerHTML: (item.text ||
-                                        chart.options.lang[item.textKey])
+                                    }
                                 }, null, innerMenu);
+                                element.appendChild(doc.createTextNode(item.text ||
+                                    chart.options.lang[item.textKey]));
                                 if (!chart.styledMode) {
                                     element.onmouseover = function () {
                                         css(this, navOptions.menuItemHoverStyle);
@@ -1916,7 +1911,7 @@
                     select = states && states.select,
                     callback;
                 if (!chart.styledMode) {
-                    attr.fill = pick(attr.fill, '#ffffff');
+                    attr.fill = pick(attr.fill, palette.backgroundColor);
                     attr.stroke = pick(attr.stroke, 'none');
                 }
                 delete attr.states;
@@ -1939,7 +1934,7 @@
                     };
                 }
                 if (btnOptions.text && btnOptions.symbol) {
-                    attr.paddingLeft = pick(attr.paddingLeft, 25);
+                    attr.paddingLeft = pick(attr.paddingLeft, 30);
                 }
                 else if (!btnOptions.text) {
                     extend(attr, {
@@ -1950,7 +1945,7 @@
                 }
                 if (!chart.styledMode) {
                     attr['stroke-linecap'] = 'round';
-                    attr.fill = pick(attr.fill, '#ffffff');
+                    attr.fill = pick(attr.fill, palette.backgroundColor);
                     attr.stroke = pick(attr.stroke, 'none');
                 }
                 button = renderer
@@ -2224,7 +2219,7 @@
                         dummySVG.removeChild(dummy);
                     }
                     // Loop through all styles and add them inline if they are ok
-                    if (isFirefoxBrowser || isMSBrowser) {
+                    if (H.isFirefox || H.isMS) {
                         // Some browsers put lots of styles on the prototype
                         for (var p in styles) { // eslint-disable-line guard-for-in
                             filterStyles(styles[p], p);
@@ -2262,7 +2257,7 @@
             recurse(this.container.querySelector('svg'));
             tearDown();
         };
-        symbols.menu = function (x, y, width, height) {
+        H.Renderer.prototype.symbols.menu = function (x, y, width, height) {
             var arr = [
                     ['M',
                 x,
@@ -2285,7 +2280,7 @@
                 ];
             return arr;
         };
-        symbols.menuball = function (x, y, width, height) {
+        H.Renderer.prototype.symbols.menuball = function (x, y, width, height) {
             var path = [],
                 h = (height / 3) - 2;
             path = path.concat(this.circle(width - h, y, h, h), this.circle(width - h, y + h + 4, h, h), this.circle(width - h, y + 2 * (h + 4), h, h));
@@ -2318,8 +2313,6 @@
                 });
                 chart.isDirtyExporting = false;
             }
-            // Destroy the export elements at chart destroy
-            addEvent(chart, 'destroy', chart.destroyExport);
         };
         /* eslint-disable no-invalid-this */
         // Add update methods to handle chart.update and chart.exporting.update and
@@ -2361,6 +2354,8 @@
         Chart.prototype.callbacks.push(function (chart) {
             chart.renderExporting();
             addEvent(chart, 'redraw', chart.renderExporting);
+            // Destroy the export elements at chart destroy
+            addEvent(chart, 'destroy', chart.destroyExport);
             // Uncomment this to see a button directly below the chart, for quick
             // testing of export
             /*

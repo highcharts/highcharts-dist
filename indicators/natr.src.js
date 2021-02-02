@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/NATRIndicator.js', [_modules['Core/Series/Series.js']], function (BaseSeries) {
+    _registerModule(_modules, 'Stock/Indicators/NATR/NATRIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,8 +36,25 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        // im port './ATRIndicator.js';
-        var ATR = BaseSeries.seriesTypes.atr;
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var ATRIndicator = SeriesRegistry.seriesTypes.atr;
+        var merge = U.merge,
+            extend = U.extend;
         /**
          * The NATR series type.
          *
@@ -47,34 +64,31 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('natr', 'sma', 
-        /**
-         * Normalized average true range indicator (NATR). This series requires
-         * `linkedTo` option to be set and should be loaded after the
-         * `stock/indicators/indicators.js` and `stock/indicators/atr.js`.
-         *
-         * @sample {highstock} stock/indicators/natr
-         *         NATR indicator
-         *
-         * @extends      plotOptions.atr
-         * @since        7.0.0
-         * @product      highstock
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/natr
-         * @optionparent plotOptions.natr
-         */
-        {
-            tooltip: {
-                valueSuffix: '%'
+        var NATRIndicator = /** @class */ (function (_super) {
+                __extends(NATRIndicator, _super);
+            function NATRIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /**
+                 * @lends Highcharts.Series#
+                 */
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.points = void 0;
+                _this.options = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        {
-            requiredIndicators: ['atr'],
-            getValues: function (series, params) {
-                var atrData = (ATR.prototype.getValues.apply(this,
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            NATRIndicator.prototype.getValues = function (series, params) {
+                var atrData = (ATRIndicator.prototype.getValues.apply(this,
                     arguments)),
                     atrLength = atrData.values.length,
                     period = params.period - 1,
@@ -89,8 +103,38 @@
                     period++;
                 }
                 return atrData;
-            }
+            };
+            /**
+             * Normalized average true range indicator (NATR). This series requires
+             * `linkedTo` option to be set and should be loaded after the
+             * `stock/indicators/indicators.js` and `stock/indicators/atr.js`.
+             *
+             * @sample {highstock} stock/indicators/natr
+             *         NATR indicator
+             *
+             * @extends      plotOptions.atr
+             * @since        7.0.0
+             * @product      highstock
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/natr
+             * @optionparent plotOptions.natr
+             */
+            NATRIndicator.defaultOptions = merge(ATRIndicator.defaultOptions, {
+                tooltip: {
+                    valueSuffix: '%'
+                }
+            });
+            return NATRIndicator;
+        }(ATRIndicator));
+        extend(NATRIndicator.prototype, {
+            requiredIndicators: ['atr']
         });
+        SeriesRegistry.registerSeriesType('natr', NATRIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A `NATR` series. If the [type](#series.natr.type) option is not specified, it
          * is inherited from [chart.type](#chart.type).
@@ -105,6 +149,7 @@
          */
         ''; // to include the above in the js output'
 
+        return NATRIndicator;
     });
     _registerModule(_modules, 'masters/indicators/natr.src.js', [], function () {
 

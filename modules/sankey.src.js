@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Sankey diagram module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/Nodes.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Mixins/Nodes.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (H, Point, Series, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -131,7 +131,7 @@
             generatePoints: function () {
                 var chart = this.chart,
                     nodeLookup = {};
-                H.Series.prototype.generatePoints.call(this);
+                Series.prototype.generatePoints.call(this);
                 if (!this.nodes) {
                     this.nodes = []; // List of Point-like node items
                 }
@@ -179,14 +179,14 @@
                     });
                     this.nodes.length = 0;
                 }
-                H.Series.prototype.setData.apply(this, arguments);
+                Series.prototype.setData.apply(this, arguments);
             },
             // Destroy alll nodes and links
             destroy: function () {
                 // Nodes must also be destroyed (#8682, #9300)
                 this.data = []
                     .concat(this.points || [], this.nodes);
-                return H.Series.prototype.destroy.apply(this, arguments);
+                return Series.prototype.destroy.apply(this, arguments);
             },
             /**
              * When hovering node, highlight all connected links. When hovering a link,
@@ -218,6 +218,110 @@
         };
 
         return NodesMixin;
+    });
+    _registerModule(_modules, 'Series/Sankey/SankeyPoint.js', [_modules['Mixins/Nodes.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (NodesMixin, Point, SeriesRegistry, U) {
+        /* *
+         *
+         *  Sankey diagram module
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var defined = U.defined,
+            extend = U.extend;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        var SankeyPoint = /** @class */ (function (_super) {
+                __extends(SankeyPoint, _super);
+            function SankeyPoint() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.className = void 0;
+                _this.fromNode = void 0;
+                _this.level = void 0;
+                _this.linkBase = void 0;
+                _this.linksFrom = void 0;
+                _this.linksTo = void 0;
+                _this.mass = void 0;
+                _this.nodeX = void 0;
+                _this.nodeY = void 0;
+                _this.options = void 0;
+                _this.series = void 0;
+                _this.toNode = void 0;
+                return _this;
+                /* eslint-enable valid-jsdoc */
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            SankeyPoint.prototype.applyOptions = function (options, x) {
+                Point.prototype.applyOptions.call(this, options, x);
+                // Treat point.level as a synonym of point.column
+                if (defined(this.options.level)) {
+                    this.options.column = this.column = this.options.level;
+                }
+                return this;
+            };
+            /**
+             * @private
+             */
+            SankeyPoint.prototype.getClassName = function () {
+                return (this.isNode ? 'highcharts-node ' : 'highcharts-link ') +
+                    Point.prototype.getClassName.call(this);
+            };
+            /**
+             * @private
+             */
+            SankeyPoint.prototype.isValid = function () {
+                return this.isNode || typeof this.weight === 'number';
+            };
+            return SankeyPoint;
+        }(ColumnSeries.prototype.pointClass));
+        extend(SankeyPoint.prototype, {
+            setState: NodesMixin.setNodeState
+        });
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return SankeyPoint;
     });
     _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
@@ -447,123 +551,50 @@
 
         return result;
     });
-    _registerModule(_modules, 'Series/SankeySeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Series/CartesianSeries.js'], _modules['Core/Color/Color.js'], _modules['Series/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Series/Point.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Series, CartesianSeries, Color, ColumnSeries, H, NodesMixin, Point, TreeSeriesMixin, U) {
+    _registerModule(_modules, 'Series/Sankey/SankeySeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Series/Sankey/SankeyPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Color, H, NodesMixin, SankeyPoint, SeriesRegistry, TreeSeriesMixin, U) {
         /* *
          *
          *  Sankey diagram module
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var Series = SeriesRegistry.series,
+            ColumnSeries = SeriesRegistry.seriesTypes.column;
         var getLevelOptions = TreeSeriesMixin.getLevelOptions;
         var defined = U.defined,
+            extend = U.extend,
             find = U.find,
             isObject = U.isObject,
             merge = U.merge,
             pick = U.pick,
             relativeLength = U.relativeLength,
             stableSort = U.stableSort;
-        /**
-         * A node in a sankey diagram.
+        /* *
          *
-         * @interface Highcharts.SankeyNodeObject
-         * @extends Highcharts.Point
-         * @product highcharts
-         */ /**
-        * The color of the auto generated node.
-        *
-        * @name Highcharts.SankeyNodeObject#color
-        * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-        */ /**
-        * The color index of the auto generated node, especially for use in styled
-        * mode.
-        *
-        * @name Highcharts.SankeyNodeObject#colorIndex
-        * @type {number}
-        */ /**
-        * An optional column index of where to place the node. The default behaviour is
-        * to place it next to the preceding node.
-        *
-        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
-        *      Specified node column
-        *
-        * @name Highcharts.SankeyNodeObject#column
-        * @type {number}
-        * @since 6.0.5
-        */ /**
-        * The id of the auto-generated node, refering to the `from` or `to` setting of
-        * the link.
-        *
-        * @name Highcharts.SankeyNodeObject#id
-        * @type {string}
-        */ /**
-        * The name to display for the node in data labels and tooltips. Use this when
-        * the name is different from the `id`. Where the id must be unique for each
-        * node, this is not necessary for the name.
-        *
-        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/sankey/|Highcharts-Demo:}
-        *         Sankey diagram with node options
-        *
-        * @name Highcharts.SankeyNodeObject#name
-        * @type {string}
-        * @product highcharts
-        */ /**
-        * The vertical offset of a node in terms of weight. Positive values shift the
-        * node downwards, negative shift it upwards.
-        *
-        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
-        *         Specified node offset
-        *
-        * @name Highcharts.SankeyNodeObject#offset
-        * @type {number}
-        * @default 0
-        * @since 6.0.5
-        */
-        /**
-         * Formatter callback function.
+         *  Class
          *
-         * @callback Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction
-         *
-         * @param {Highcharts.SeriesSankeyDataLabelsFormatterContextObject|Highcharts.PointLabelObject} this
-         *        Data label context to format
-         *
-         * @return {string|undefined}
-         *         Formatted data label text
-         */
-        /**
-         * Context for the node formatter function.
-         *
-         * @interface Highcharts.SeriesSankeyDataLabelsFormatterContextObject
-         * @extends Highcharts.PointLabelObject
-         */ /**
-        * The node object. The node name, if defined, is available through
-        * `this.point.name`.
-        * @name Highcharts.SeriesSankeyDataLabelsFormatterContextObject#point
-        * @type {Highcharts.SankeyNodeObject}
-        */
-        ''; // detach doclets above
-        // eslint-disable-next-line valid-jsdoc
-        /**
-         * @private
-         */
-        var getDLOptions = function getDLOptions(params) {
-                var optionsPoint = (isObject(params.optionsPoint) ?
-                    params.optionsPoint.dataLabels :
-                    {}),
-            optionsLevel = (isObject(params.level) ?
-                    params.level.dataLabels :
-                    {}),
-            options = merge({
-                    style: {}
-                },
-            optionsLevel,
-            optionsPoint);
-            return options;
-        };
+         * */
         /**
          * @private
          * @class
@@ -571,300 +602,68 @@
          *
          * @augments Highcharts.Series
          */
-        Series.seriesType('sankey', 'column', 
-        /**
-         * A sankey diagram is a type of flow diagram, in which the width of the
-         * link between two nodes is shown proportionally to the flow quantity.
-         *
-         * @sample highcharts/demo/sankey-diagram/
-         *         Sankey diagram
-         * @sample highcharts/plotoptions/sankey-inverted/
-         *         Inverted sankey diagram
-         * @sample highcharts/plotoptions/sankey-outgoing
-         *         Sankey diagram with outgoing links
-         *
-         * @extends      plotOptions.column
-         * @since        6.0.0
-         * @product      highcharts
-         * @excluding    animationLimit, boostThreshold, borderRadius,
-         *               crisp, cropThreshold, colorAxis, colorKey, depth, dragDrop,
-         *               edgeColor, edgeWidth, findNearestPointBy, grouping,
-         *               groupPadding, groupZPadding, maxPointWidth, negativeColor,
-         *               pointInterval, pointIntervalUnit, pointPadding,
-         *               pointPlacement, pointRange, pointStart, pointWidth,
-         *               shadow, softThreshold, stacking, threshold, zoneAxis,
-         *               zones, minPointLength, dataSorting, boostBlending
-         * @requires     modules/sankey
-         * @optionparent plotOptions.sankey
-         */
-        {
-            borderWidth: 0,
-            colorByPoint: true,
-            /**
-             * Higher numbers makes the links in a sankey diagram or dependency
-             * wheelrender more curved. A `curveFactor` of 0 makes the lines
-             * straight.
-             *
-             * @private
-             */
-            curveFactor: 0.33,
-            /**
-             * Options for the data labels appearing on top of the nodes and links.
-             * For sankey charts, data labels are visible for the nodes by default,
-             * but hidden for links. This is controlled by modifying the
-             * `nodeFormat`, and the `format` that applies to links and is an empty
-             * string by default.
-             *
-             * @declare Highcharts.SeriesSankeyDataLabelsOptionsObject
-             *
-             * @private
-             */
-            dataLabels: {
-                enabled: true,
-                backgroundColor: 'none',
-                crop: false,
-                /**
-                 * The
-                 * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
-                 * specifying what to show for _nodes_ in the sankey diagram. By
-                 * default the `nodeFormatter` returns `{point.name}`.
+        var SankeySeries = /** @class */ (function (_super) {
+                __extends(SankeySeries, _super);
+            function SankeySeries() {
+                /* *
                  *
-                 * @sample highcharts/plotoptions/sankey-link-datalabels/
-                 *         Node and link data labels
+                 *  Static Properties
                  *
-                 * @type {string}
-                 */
-                nodeFormat: void 0,
-                // eslint-disable-next-line valid-jsdoc
-                /**
-                 * Callback to format data labels for _nodes_ in the sankey diagram.
-                 * The `nodeFormat` option takes precedence over the
-                 * `nodeFormatter`.
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
                  *
-                 * @type  {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
-                 * @since 6.0.2
-                 */
-                nodeFormatter: function () {
-                    return this.point.name;
-                },
-                format: void 0,
-                // eslint-disable-next-line valid-jsdoc
-                /**
-                 * @type {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
-                 */
-                formatter: function () {
-                    return;
-                },
-                inside: true
-            },
-            /**
-             * @ignore-option
-             *
-             * @private
-             */
-            inactiveOtherPoints: true,
-            /**
-             * Set options on specific levels. Takes precedence over series options,
-             * but not node and link options.
-             *
-             * @sample highcharts/demo/sunburst
-             *         Sunburst chart
-             *
-             * @type      {Array<*>}
-             * @since     7.1.0
-             * @apioption plotOptions.sankey.levels
-             */
-            /**
-             * Can set `borderColor` on all nodes which lay on the same level.
-             *
-             * @type      {Highcharts.ColorString}
-             * @apioption plotOptions.sankey.levels.borderColor
-             */
-            /**
-             * Can set `borderWidth` on all nodes which lay on the same level.
-             *
-             * @type      {number}
-             * @apioption plotOptions.sankey.levels.borderWidth
-             */
-            /**
-             * Can set `color` on all nodes which lay on the same level.
-             *
-             * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @apioption plotOptions.sankey.levels.color
-             */
-            /**
-             * Can set `colorByPoint` on all nodes which lay on the same level.
-             *
-             * @type      {boolean}
-             * @default   true
-             * @apioption plotOptions.sankey.levels.colorByPoint
-             */
-            /**
-             * Can set `dataLabels` on all points which lay on the same level.
-             *
-             * @extends   plotOptions.sankey.dataLabels
-             * @apioption plotOptions.sankey.levels.dataLabels
-             */
-            /**
-             * Decides which level takes effect from the options set in the levels
-             * object.
-             *
-             * @type      {number}
-             * @apioption plotOptions.sankey.levels.level
-             */
-            /**
-             * Can set `linkOpacity` on all points which lay on the same level.
-             *
-             * @type      {number}
-             * @default   0.5
-             * @apioption plotOptions.sankey.levels.linkOpacity
-             */
-            /**
-             * Can set `states` on all nodes and points which lay on the same level.
-             *
-             * @extends   plotOptions.sankey.states
-             * @apioption plotOptions.sankey.levels.states
-             */
-            /**
-             * Opacity for the links between nodes in the sankey diagram.
-             *
-             * @private
-             */
-            linkOpacity: 0.5,
-            /**
-             * The minimal width for a line of a sankey. By default,
-             * 0 values are not shown.
-             *
-             * @sample highcharts/plotoptions/sankey-minlinkwidth
-             *         Sankey diagram with minimal link height
-             *
-             * @type      {number}
-             * @since     7.1.3
-             * @default   0
-             * @apioption plotOptions.sankey.minLinkWidth
-             *
-             * @private
-             */
-            minLinkWidth: 0,
-            /**
-             * The pixel width of each node in a sankey diagram or dependency wheel,
-             * or the height in case the chart is inverted.
-             *
-             * @private
-             */
-            nodeWidth: 20,
-            /**
-             * The padding between nodes in a sankey diagram or dependency wheel, in
-             * pixels.
-             *
-             * If the number of nodes is so great that it is possible to lay them
-             * out within the plot area with the given `nodePadding`, they will be
-             * rendered with a smaller padding as a strategy to avoid overflow.
-             *
-             * @private
-             */
-            nodePadding: 10,
-            showInLegend: false,
-            states: {
-                hover: {
-                    /**
-                     * Opacity for the links between nodes in the sankey diagram in
-                     * hover mode.
-                     */
-                    linkOpacity: 1
-                },
-                /**
-                 * The opposite state of a hover for a single point node/link.
+                 *  Properties
                  *
-                 * @declare Highcharts.SeriesStatesInactiveOptionsObject
-                 */
-                inactive: {
-                    /**
-                     * Opacity for the links between nodes in the sankey diagram in
-                     * inactive mode.
-                     */
-                    linkOpacity: 0.1,
-                    /**
-                     * Opacity of inactive markers.
-                     *
-                     * @type      {number}
-                     * @apioption plotOptions.series.states.inactive.opacity
-                     */
-                    opacity: 0.1,
-                    /**
-                     * Animation when not hovering over the marker.
-                     *
-                     * @type      {boolean|Partial<Highcharts.AnimationOptionsObject>}
-                     * @apioption plotOptions.series.states.inactive.animation
-                     */
-                    animation: {
-                        /** @internal */
-                        duration: 50
-                    }
-                }
-            },
-            tooltip: {
-                /**
-                 * A callback for defining the format for _nodes_ in the chart's
-                 * tooltip, as opposed to links.
-                 *
-                 * @type      {Highcharts.FormatterCallbackFunction<Highcharts.SankeyNodeObject>}
-                 * @since     6.0.2
-                 * @apioption plotOptions.sankey.tooltip.nodeFormatter
-                 */
-                /**
-                 * Whether the tooltip should follow the pointer or stay fixed on
-                 * the item.
-                 */
-                followPointer: true,
-                headerFormat: '<span style="font-size: 10px">{series.name}</span><br/>',
-                pointFormat: '{point.fromNode.name} \u2192 {point.toNode.name}: <b>{point.weight}</b><br/>',
-                /**
-                 * The
-                 * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
-                 * specifying what to show for _nodes_ in tooltip of a diagram
-                 * series, as opposed to links.
-                 */
-                nodeFormat: '{point.name}: <b>{point.sum}</b><br/>'
+                 * */
+                _this.colDistance = void 0;
+                _this.data = void 0;
+                _this.group = void 0;
+                _this.nodeLookup = void 0;
+                _this.nodePadding = void 0;
+                _this.nodes = void 0;
+                _this.nodeWidth = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                _this.translationFactor = void 0;
+                return _this;
+                /* eslint-enable valid-jsdoc */
             }
-        }, {
-            isCartesian: false,
-            invertable: true,
-            forceDL: true,
-            orderNodes: true,
-            pointArrayMap: ['from', 'to'],
-            // Create a single node that holds information on incoming and outgoing
-            // links.
-            createNode: NodesMixin.createNode,
-            searchPoint: H.noop,
-            setData: NodesMixin.setData,
-            destroy: NodesMixin.destroy,
-            /* eslint-disable valid-jsdoc */
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            // eslint-disable-next-line valid-jsdoc
             /**
-             * Overridable function to get node padding, overridden in dependency
-             * wheel series type.
              * @private
              */
-            getNodePadding: function () {
-                var nodePadding = this.options.nodePadding || 0;
-                // If the number of columns is so great that they will overflow with
-                // the given nodePadding, we sacrifice the padding in order to
-                // render all nodes within the plot area (#11917).
-                if (this.nodeColumns) {
-                    var maxLength = this.nodeColumns.reduce(function (acc,
-                        col) { return Math.max(acc,
-                        col.length); }, 0);
-                    if (maxLength * nodePadding > this.chart.plotSizeY) {
-                        nodePadding = this.chart.plotSizeY / maxLength;
-                    }
-                }
-                return nodePadding;
-            },
+            SankeySeries.getDLOptions = function (params) {
+                var optionsPoint = (isObject(params.optionsPoint) ?
+                        params.optionsPoint.dataLabels :
+                        {}),
+                    optionsLevel = (isObject(params.level) ?
+                        params.level.dataLabels :
+                        {}),
+                    options = merge({
+                        style: {}
+                    },
+                    optionsLevel,
+                    optionsPoint);
+                return options;
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
             /**
              * Create a node column.
              * @private
              */
-            createNodeColumn: function () {
+            SankeySeries.prototype.createNodeColumn = function () {
                 var series = this,
                     chart = this.chart,
                     column = [];
@@ -913,13 +712,13 @@
                     return (chart.plotSizeY - height) / 2;
                 };
                 return column;
-            },
+            };
             /**
              * Create node columns by analyzing the nodes and the relations between
              * incoming and outgoing links.
              * @private
              */
-            createNodeColumns: function () {
+            SankeySeries.prototype.createNodeColumns = function () {
                 var columns = [];
                 this.nodes.forEach(function (node) {
                     var fromColumn = -1,
@@ -970,46 +769,13 @@
                     }
                 }
                 return columns;
-            },
-            /**
-             * Define hasData function for non-cartesian series.
-             * @private
-             * @return {boolean}
-             *         Returns true if the series has points at all.
-             */
-            hasData: function () {
-                return !!this.processedXData.length; // != 0
-            },
-            /**
-             * Return the presentational attributes.
-             * @private
-             */
-            pointAttribs: function (point, state) {
-                var series = this, level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states && levelOptions.states[state]) || {}, values = [
-                        'colorByPoint', 'borderColor', 'borderWidth', 'linkOpacity'
-                    ].reduce(function (obj, key) {
-                        obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
-                    return obj;
-                }, {}), color = pick(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
-                // Node attributes
-                if (point.isNode) {
-                    return {
-                        fill: color,
-                        stroke: values.borderColor,
-                        'stroke-width': values.borderWidth
-                    };
-                }
-                // Link attributes
-                return {
-                    fill: Color.parse(color).setOpacity(values.linkOpacity).get()
-                };
-            },
+            };
             /**
              * Extend generatePoints by adding the nodes, which are Point objects
              * but pushed to the this.nodes array.
              * @private
              */
-            generatePoints: function () {
+            SankeySeries.prototype.generatePoints = function () {
                 NodesMixin.generatePoints.apply(this, arguments);
                 /**
                  * Order the nodes, starting with the root node(s). (#9818)
@@ -1041,80 +807,178 @@
                         return a.level - b.level;
                     });
                 }
-            },
+            };
             /**
-             * Run translation operations for one node.
+             * Overridable function to get node padding, overridden in dependency
+             * wheel series type.
              * @private
              */
-            translateNode: function (node, column) {
-                var translationFactor = this.translationFactor,
-                    chart = this.chart,
-                    options = this.options,
-                    sum = node.getSum(),
-                    height = Math.max(Math.round(sum * translationFactor),
-                    this.options.minLinkWidth),
-                    crisp = Math.round(options.borderWidth) % 2 / 2,
-                    nodeOffset = column.offset(node,
-                    translationFactor),
-                    fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.top(translationFactor) +
-                        nodeOffset.relativeTop))) + crisp,
-                    left = Math.floor(this.colDistance * node.column +
-                        options.borderWidth / 2) + crisp,
-                    nodeLeft = chart.inverted ?
-                        chart.plotSizeX - left :
-                        left,
-                    nodeWidth = Math.round(this.nodeWidth);
-                node.sum = sum;
-                // If node sum is 0, don't render the rect #12453
-                if (sum) {
-                    // Draw the node
-                    node.shapeType = 'rect';
-                    node.nodeX = nodeLeft;
-                    node.nodeY = fromNodeTop;
-                    if (!chart.inverted) {
-                        node.shapeArgs = {
-                            x: nodeLeft,
-                            y: fromNodeTop,
-                            width: node.options.width || options.width || nodeWidth,
-                            height: node.options.height || options.height || height
-                        };
+            SankeySeries.prototype.getNodePadding = function () {
+                var nodePadding = this.options.nodePadding || 0;
+                // If the number of columns is so great that they will overflow with
+                // the given nodePadding, we sacrifice the padding in order to
+                // render all nodes within the plot area (#11917).
+                if (this.nodeColumns) {
+                    var maxLength = this.nodeColumns.reduce(function (acc,
+                        col) { return Math.max(acc,
+                        col.length); }, 0);
+                    if (maxLength * nodePadding > this.chart.plotSizeY) {
+                        nodePadding = this.chart.plotSizeY / maxLength;
                     }
-                    else {
-                        node.shapeArgs = {
-                            x: nodeLeft - nodeWidth,
-                            y: chart.plotSizeY - fromNodeTop - height,
-                            width: node.options.height || options.height || nodeWidth,
-                            height: node.options.width || options.width || height
-                        };
-                    }
-                    node.shapeArgs.display = node.hasShape() ? '' : 'none';
-                    // Calculate data label options for the point
-                    node.dlOptions = getDLOptions({
-                        level: this.mapOptionsToLevel[node.level],
-                        optionsPoint: node.options
-                    });
-                    // Pass test in drawPoints
-                    node.plotY = 1;
-                    // Set the anchor position for tooltips
-                    node.tooltipPos = chart.inverted ? [
-                        chart.plotSizeY - node.shapeArgs.y - node.shapeArgs.height / 2,
-                        chart.plotSizeX - node.shapeArgs.x - node.shapeArgs.width / 2
-                    ] : [
-                        node.shapeArgs.x + node.shapeArgs.width / 2,
-                        node.shapeArgs.y + node.shapeArgs.height / 2
-                    ];
                 }
-                else {
-                    node.dlOptions = {
-                        enabled: false
+                return nodePadding;
+            };
+            /**
+             * Define hasData function for non-cartesian series.
+             * @private
+             * @return {boolean}
+             *         Returns true if the series has points at all.
+             */
+            SankeySeries.prototype.hasData = function () {
+                return !!this.processedXData.length; // != 0
+            };
+            /**
+             * Return the presentational attributes.
+             * @private
+             */
+            SankeySeries.prototype.pointAttribs = function (point, state) {
+                if (!point) {
+                    return {};
+                }
+                var series = this, level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states && levelOptions.states[state || '']) || {}, values = [
+                        'colorByPoint', 'borderColor', 'borderWidth', 'linkOpacity'
+                    ].reduce(function (obj, key) {
+                        obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
+                    return obj;
+                }, {}), color = pick(stateOptions.color, options.color, values.colorByPoint ? point.color : levelOptions.color);
+                // Node attributes
+                if (point.isNode) {
+                    return {
+                        fill: color,
+                        stroke: values.borderColor,
+                        'stroke-width': values.borderWidth
                     };
                 }
-            },
+                // Link attributes
+                return {
+                    fill: Color.parse(color).setOpacity(values.linkOpacity).get()
+                };
+            };
+            /**
+             * Extend the render function to also render this.nodes together with
+             * the points.
+             * @private
+             */
+            SankeySeries.prototype.render = function () {
+                var points = this.points;
+                this.points = this.points.concat(this.nodes || []);
+                ColumnSeries.prototype.render.call(this);
+                this.points = points;
+            };
+            /**
+             * Run pre-translation by generating the nodeColumns.
+             * @private
+             */
+            SankeySeries.prototype.translate = function () {
+                var _this = this;
+                // Get the translation factor needed for each column to fill up the
+                // plot height
+                var getColumnTranslationFactor = function (column) {
+                        var nodes = column.slice();
+                    var minLinkWidth = _this.options.minLinkWidth || 0;
+                    var exceedsMinLinkWidth;
+                    var factor = 0;
+                    var i;
+                    var remainingHeight = chart.plotSizeY -
+                            options.borderWidth - (column.length - 1) * series.nodePadding;
+                    // Because the minLinkWidth option doesn't obey the direct
+                    // translation, we need to run translation iteratively, check
+                    // node heights, remove those nodes affected by minLinkWidth,
+                    // check again, etc.
+                    while (column.length) {
+                        factor = remainingHeight / column.sum();
+                        exceedsMinLinkWidth = false;
+                        i = column.length;
+                        while (i--) {
+                            if (column[i].getSum() * factor < minLinkWidth) {
+                                column.splice(i, 1);
+                                remainingHeight -= minLinkWidth;
+                                exceedsMinLinkWidth = true;
+                            }
+                        }
+                        if (!exceedsMinLinkWidth) {
+                            break;
+                        }
+                    }
+                    // Re-insert original nodes
+                    column.length = 0;
+                    nodes.forEach(function (node) { return column.push(node); });
+                    return factor;
+                };
+                if (!this.processedXData) {
+                    this.processData();
+                }
+                this.generatePoints();
+                this.nodeColumns = this.createNodeColumns();
+                this.nodeWidth = relativeLength(this.options.nodeWidth, this.chart.plotSizeX);
+                var series = this,
+                    chart = this.chart,
+                    options = this.options,
+                    nodeWidth = this.nodeWidth,
+                    nodeColumns = this.nodeColumns;
+                this.nodePadding = this.getNodePadding();
+                // Find out how much space is needed. Base it on the translation
+                // factor of the most spaceous column.
+                this.translationFactor = nodeColumns.reduce(function (translationFactor, column) { return Math.min(translationFactor, getColumnTranslationFactor(column)); }, Infinity);
+                this.colDistance =
+                    (chart.plotSizeX - nodeWidth -
+                        options.borderWidth) / Math.max(1, nodeColumns.length - 1);
+                // Calculate level options used in sankey and organization
+                series.mapOptionsToLevel = getLevelOptions({
+                    // NOTE: if support for allowTraversingTree is added, then from
+                    // should be the level of the root node.
+                    from: 1,
+                    levels: options.levels,
+                    to: nodeColumns.length - 1,
+                    defaults: {
+                        borderColor: options.borderColor,
+                        borderRadius: options.borderRadius,
+                        borderWidth: options.borderWidth,
+                        color: series.color,
+                        colorByPoint: options.colorByPoint,
+                        // NOTE: if support for allowTraversingTree is added, then
+                        // levelIsConstant should be optional.
+                        levelIsConstant: true,
+                        linkColor: options.linkColor,
+                        linkLineWidth: options.linkLineWidth,
+                        linkOpacity: options.linkOpacity,
+                        states: options.states
+                    }
+                });
+                // First translate all nodes so we can use them when drawing links
+                nodeColumns.forEach(function (column) {
+                    column.forEach(function (node) {
+                        series.translateNode(node, column);
+                    });
+                }, this);
+                // Then translate links
+                this.nodes.forEach(function (node) {
+                    // Translate the links from this node
+                    node.linksFrom.forEach(function (linkPoint) {
+                        // If weight is 0 - don't render the link path #12453,
+                        // render null points (for organization chart)
+                        if ((linkPoint.weight || linkPoint.isNull) && linkPoint.to) {
+                            series.translateLink(linkPoint);
+                            linkPoint.allowShadow = false;
+                        }
+                    });
+                });
+            };
             /**
              * Run translation operations for one link.
              * @private
              */
-            translateLink: function (point) {
+            SankeySeries.prototype.translateLink = function (point) {
                 var getY = function (node,
                     fromOrTo) {
                         var _a;
@@ -1243,137 +1107,443 @@
                 if (!point.color) {
                     point.color = fromNode.color;
                 }
-            },
+            };
             /**
-             * Run pre-translation by generating the nodeColumns.
+             * Run translation operations for one node.
              * @private
              */
-            translate: function () {
-                var _this = this;
-                // Get the translation factor needed for each column to fill up the
-                // plot height
-                var getColumnTranslationFactor = function (column) {
-                        var nodes = column.slice();
-                    var minLinkWidth = _this.options.minLinkWidth || 0;
-                    var exceedsMinLinkWidth;
-                    var factor = 0;
-                    var i;
-                    var remainingHeight = chart.plotSizeY -
-                            options.borderWidth - (column.length - 1) * series.nodePadding;
-                    // Because the minLinkWidth option doesn't obey the direct
-                    // translation, we need to run translation iteratively, check
-                    // node heights, remove those nodes affected by minLinkWidth,
-                    // check again, etc.
-                    while (column.length) {
-                        factor = remainingHeight / column.sum();
-                        exceedsMinLinkWidth = false;
-                        i = column.length;
-                        while (i--) {
-                            if (column[i].getSum() * factor < minLinkWidth) {
-                                column.splice(i, 1);
-                                remainingHeight -= minLinkWidth;
-                                exceedsMinLinkWidth = true;
-                            }
-                        }
-                        if (!exceedsMinLinkWidth) {
-                            break;
-                        }
-                    }
-                    // Re-insert original nodes
-                    column.length = 0;
-                    nodes.forEach(function (node) { return column.push(node); });
-                    return factor;
-                };
-                if (!this.processedXData) {
-                    this.processData();
-                }
-                this.generatePoints();
-                this.nodeColumns = this.createNodeColumns();
-                this.nodeWidth = relativeLength(this.options.nodeWidth, this.chart.plotSizeX);
-                var series = this,
+            SankeySeries.prototype.translateNode = function (node, column) {
+                var translationFactor = this.translationFactor,
                     chart = this.chart,
                     options = this.options,
-                    nodeWidth = this.nodeWidth,
-                    nodeColumns = this.nodeColumns;
-                this.nodePadding = this.getNodePadding();
-                // Find out how much space is needed. Base it on the translation
-                // factor of the most spaceous column.
-                this.translationFactor = nodeColumns.reduce(function (translationFactor, column) { return Math.min(translationFactor, getColumnTranslationFactor(column)); }, Infinity);
-                this.colDistance =
-                    (chart.plotSizeX - nodeWidth -
-                        options.borderWidth) / Math.max(1, nodeColumns.length - 1);
-                // Calculate level options used in sankey and organization
-                series.mapOptionsToLevel = getLevelOptions({
-                    // NOTE: if support for allowTraversingTree is added, then from
-                    // should be the level of the root node.
-                    from: 1,
-                    levels: options.levels,
-                    to: nodeColumns.length - 1,
-                    defaults: {
-                        borderColor: options.borderColor,
-                        borderRadius: options.borderRadius,
-                        borderWidth: options.borderWidth,
-                        color: series.color,
-                        colorByPoint: options.colorByPoint,
-                        // NOTE: if support for allowTraversingTree is added, then
-                        // levelIsConstant should be optional.
-                        levelIsConstant: true,
-                        linkColor: options.linkColor,
-                        linkLineWidth: options.linkLineWidth,
-                        linkOpacity: options.linkOpacity,
-                        states: options.states
+                    sum = node.getSum(),
+                    height = Math.max(Math.round(sum * translationFactor),
+                    this.options.minLinkWidth),
+                    crisp = Math.round(options.borderWidth) % 2 / 2,
+                    nodeOffset = column.offset(node,
+                    translationFactor),
+                    fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.top(translationFactor) +
+                        nodeOffset.relativeTop))) + crisp,
+                    left = Math.floor(this.colDistance * node.column +
+                        options.borderWidth / 2) + crisp,
+                    nodeLeft = chart.inverted ?
+                        chart.plotSizeX - left :
+                        left,
+                    nodeWidth = Math.round(this.nodeWidth);
+                node.sum = sum;
+                // If node sum is 0, don't render the rect #12453
+                if (sum) {
+                    // Draw the node
+                    node.shapeType = 'rect';
+                    node.nodeX = nodeLeft;
+                    node.nodeY = fromNodeTop;
+                    if (!chart.inverted) {
+                        node.shapeArgs = {
+                            x: nodeLeft,
+                            y: fromNodeTop,
+                            width: node.options.width || options.width || nodeWidth,
+                            height: node.options.height || options.height || height
+                        };
                     }
-                });
-                // First translate all nodes so we can use them when drawing links
-                nodeColumns.forEach(function (column) {
-                    column.forEach(function (node) {
-                        series.translateNode(node, column);
+                    else {
+                        node.shapeArgs = {
+                            x: nodeLeft - nodeWidth,
+                            y: chart.plotSizeY - fromNodeTop - height,
+                            width: node.options.height || options.height || nodeWidth,
+                            height: node.options.width || options.width || height
+                        };
+                    }
+                    node.shapeArgs.display = node.hasShape() ? '' : 'none';
+                    // Calculate data label options for the point
+                    node.dlOptions = SankeySeries.getDLOptions({
+                        level: this.mapOptionsToLevel[node.level],
+                        optionsPoint: node.options
                     });
-                }, this);
-                // Then translate links
-                this.nodes.forEach(function (node) {
-                    // Translate the links from this node
-                    node.linksFrom.forEach(function (linkPoint) {
-                        // If weight is 0 - don't render the link path #12453,
-                        // render null points (for organization chart)
-                        if ((linkPoint.weight || linkPoint.isNull) && linkPoint.to) {
-                            series.translateLink(linkPoint);
-                            linkPoint.allowShadow = false;
-                        }
-                    });
-                });
-            },
-            /**
-             * Extend the render function to also render this.nodes together with
-             * the points.
-             * @private
-             */
-            render: function () {
-                var points = this.points;
-                this.points = this.points.concat(this.nodes || []);
-                ColumnSeries.prototype.render.call(this);
-                this.points = points;
-            },
-            /* eslint-enable valid-jsdoc */
-            animate: CartesianSeries.prototype.animate
-        }, {
-            applyOptions: function (options, x) {
-                Point.prototype.applyOptions.call(this, options, x);
-                // Treat point.level as a synonym of point.column
-                if (defined(this.options.level)) {
-                    this.options.column = this.column = this.options.level;
+                    // Pass test in drawPoints
+                    node.plotY = 1;
+                    // Set the anchor position for tooltips
+                    node.tooltipPos = chart.inverted ? [
+                        chart.plotSizeY - node.shapeArgs.y - node.shapeArgs.height / 2,
+                        chart.plotSizeX - node.shapeArgs.x - node.shapeArgs.width / 2
+                    ] : [
+                        node.shapeArgs.x + node.shapeArgs.width / 2,
+                        node.shapeArgs.y + node.shapeArgs.height / 2
+                    ];
                 }
-                return this;
-            },
-            setState: NodesMixin.setNodeState,
-            getClassName: function () {
-                return (this.isNode ? 'highcharts-node ' : 'highcharts-link ') +
-                    Point.prototype.getClassName.call(this);
-            },
-            isValid: function () {
-                return this.isNode || typeof this.weight === 'number';
-            }
+                else {
+                    node.dlOptions = {
+                        enabled: false
+                    };
+                }
+            };
+            /**
+             * A sankey diagram is a type of flow diagram, in which the width of the
+             * link between two nodes is shown proportionally to the flow quantity.
+             *
+             * @sample highcharts/demo/sankey-diagram/
+             *         Sankey diagram
+             * @sample highcharts/plotoptions/sankey-inverted/
+             *         Inverted sankey diagram
+             * @sample highcharts/plotoptions/sankey-outgoing
+             *         Sankey diagram with outgoing links
+             *
+             * @extends      plotOptions.column
+             * @since        6.0.0
+             * @product      highcharts
+             * @excluding    animationLimit, boostThreshold, borderRadius,
+             *               crisp, cropThreshold, colorAxis, colorKey, depth, dragDrop,
+             *               edgeColor, edgeWidth, findNearestPointBy, grouping,
+             *               groupPadding, groupZPadding, maxPointWidth, negativeColor,
+             *               pointInterval, pointIntervalUnit, pointPadding,
+             *               pointPlacement, pointRange, pointStart, pointWidth,
+             *               shadow, softThreshold, stacking, threshold, zoneAxis,
+             *               zones, minPointLength, dataSorting, boostBlending
+             * @requires     modules/sankey
+             * @optionparent plotOptions.sankey
+             */
+            SankeySeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+                borderWidth: 0,
+                colorByPoint: true,
+                /**
+                 * Higher numbers makes the links in a sankey diagram or dependency
+                 * wheelrender more curved. A `curveFactor` of 0 makes the lines
+                 * straight.
+                 *
+                 * @private
+                 */
+                curveFactor: 0.33,
+                /**
+                 * Options for the data labels appearing on top of the nodes and links.
+                 * For sankey charts, data labels are visible for the nodes by default,
+                 * but hidden for links. This is controlled by modifying the
+                 * `nodeFormat`, and the `format` that applies to links and is an empty
+                 * string by default.
+                 *
+                 * @declare Highcharts.SeriesSankeyDataLabelsOptionsObject
+                 *
+                 * @private
+                 */
+                dataLabels: {
+                    enabled: true,
+                    backgroundColor: 'none',
+                    crop: false,
+                    /**
+                     * The
+                     * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+                     * specifying what to show for _nodes_ in the sankey diagram. By
+                     * default the `nodeFormatter` returns `{point.name}`.
+                     *
+                     * @sample highcharts/plotoptions/sankey-link-datalabels/
+                     *         Node and link data labels
+                     *
+                     * @type {string}
+                     */
+                    nodeFormat: void 0,
+                    // eslint-disable-next-line valid-jsdoc
+                    /**
+                     * Callback to format data labels for _nodes_ in the sankey diagram.
+                     * The `nodeFormat` option takes precedence over the
+                     * `nodeFormatter`.
+                     *
+                     * @type  {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
+                     * @since 6.0.2
+                     */
+                    nodeFormatter: function () {
+                        return this.point.name;
+                    },
+                    format: void 0,
+                    // eslint-disable-next-line valid-jsdoc
+                    /**
+                     * @type {Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction}
+                     */
+                    formatter: function () {
+                        return;
+                    },
+                    inside: true
+                },
+                /**
+                 * @ignore-option
+                 *
+                 * @private
+                 */
+                inactiveOtherPoints: true,
+                /**
+                 * Set options on specific levels. Takes precedence over series options,
+                 * but not node and link options.
+                 *
+                 * @sample highcharts/demo/sunburst
+                 *         Sunburst chart
+                 *
+                 * @type      {Array<*>}
+                 * @since     7.1.0
+                 * @apioption plotOptions.sankey.levels
+                 */
+                /**
+                 * Can set `borderColor` on all nodes which lay on the same level.
+                 *
+                 * @type      {Highcharts.ColorString}
+                 * @apioption plotOptions.sankey.levels.borderColor
+                 */
+                /**
+                 * Can set `borderWidth` on all nodes which lay on the same level.
+                 *
+                 * @type      {number}
+                 * @apioption plotOptions.sankey.levels.borderWidth
+                 */
+                /**
+                 * Can set `color` on all nodes which lay on the same level.
+                 *
+                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @apioption plotOptions.sankey.levels.color
+                 */
+                /**
+                 * Can set `colorByPoint` on all nodes which lay on the same level.
+                 *
+                 * @type      {boolean}
+                 * @default   true
+                 * @apioption plotOptions.sankey.levels.colorByPoint
+                 */
+                /**
+                 * Can set `dataLabels` on all points which lay on the same level.
+                 *
+                 * @extends   plotOptions.sankey.dataLabels
+                 * @apioption plotOptions.sankey.levels.dataLabels
+                 */
+                /**
+                 * Decides which level takes effect from the options set in the levels
+                 * object.
+                 *
+                 * @type      {number}
+                 * @apioption plotOptions.sankey.levels.level
+                 */
+                /**
+                 * Can set `linkOpacity` on all points which lay on the same level.
+                 *
+                 * @type      {number}
+                 * @default   0.5
+                 * @apioption plotOptions.sankey.levels.linkOpacity
+                 */
+                /**
+                 * Can set `states` on all nodes and points which lay on the same level.
+                 *
+                 * @extends   plotOptions.sankey.states
+                 * @apioption plotOptions.sankey.levels.states
+                 */
+                /**
+                 * Opacity for the links between nodes in the sankey diagram.
+                 *
+                 * @private
+                 */
+                linkOpacity: 0.5,
+                /**
+                 * The minimal width for a line of a sankey. By default,
+                 * 0 values are not shown.
+                 *
+                 * @sample highcharts/plotoptions/sankey-minlinkwidth
+                 *         Sankey diagram with minimal link height
+                 *
+                 * @type      {number}
+                 * @since     7.1.3
+                 * @default   0
+                 * @apioption plotOptions.sankey.minLinkWidth
+                 *
+                 * @private
+                 */
+                minLinkWidth: 0,
+                /**
+                 * The pixel width of each node in a sankey diagram or dependency wheel,
+                 * or the height in case the chart is inverted.
+                 *
+                 * @private
+                 */
+                nodeWidth: 20,
+                /**
+                 * The padding between nodes in a sankey diagram or dependency wheel, in
+                 * pixels.
+                 *
+                 * If the number of nodes is so great that it is possible to lay them
+                 * out within the plot area with the given `nodePadding`, they will be
+                 * rendered with a smaller padding as a strategy to avoid overflow.
+                 *
+                 * @private
+                 */
+                nodePadding: 10,
+                showInLegend: false,
+                states: {
+                    hover: {
+                        /**
+                         * Opacity for the links between nodes in the sankey diagram in
+                         * hover mode.
+                         */
+                        linkOpacity: 1
+                    },
+                    /**
+                     * The opposite state of a hover for a single point node/link.
+                     *
+                     * @declare Highcharts.SeriesStatesInactiveOptionsObject
+                     */
+                    inactive: {
+                        /**
+                         * Opacity for the links between nodes in the sankey diagram in
+                         * inactive mode.
+                         */
+                        linkOpacity: 0.1,
+                        /**
+                         * Opacity of inactive markers.
+                         *
+                         * @type      {number}
+                         * @apioption plotOptions.series.states.inactive.opacity
+                         */
+                        opacity: 0.1,
+                        /**
+                         * Animation when not hovering over the marker.
+                         *
+                         * @type      {boolean|Partial<Highcharts.AnimationOptionsObject>}
+                         * @apioption plotOptions.series.states.inactive.animation
+                         */
+                        animation: {
+                            /** @internal */
+                            duration: 50
+                        }
+                    }
+                },
+                tooltip: {
+                    /**
+                     * A callback for defining the format for _nodes_ in the chart's
+                     * tooltip, as opposed to links.
+                     *
+                     * @type      {Highcharts.FormatterCallbackFunction<Highcharts.SankeyNodeObject>}
+                     * @since     6.0.2
+                     * @apioption plotOptions.sankey.tooltip.nodeFormatter
+                     */
+                    /**
+                     * Whether the tooltip should follow the pointer or stay fixed on
+                     * the item.
+                     */
+                    followPointer: true,
+                    headerFormat: '<span style="font-size: 10px">{series.name}</span><br/>',
+                    pointFormat: '{point.fromNode.name} \u2192 {point.toNode.name}: <b>{point.weight}</b><br/>',
+                    /**
+                     * The
+                     * [format string](https://www.highcharts.com/docs/chart-concepts/labels-and-string-formatting)
+                     * specifying what to show for _nodes_ in tooltip of a diagram
+                     * series, as opposed to links.
+                     */
+                    nodeFormat: '{point.name}: <b>{point.sum}</b><br/>'
+                }
+            });
+            return SankeySeries;
+        }(ColumnSeries));
+        extend(SankeySeries.prototype, {
+            animate: Series.prototype.animate,
+            // Create a single node that holds information on incoming and outgoing
+            // links.
+            createNode: NodesMixin.createNode,
+            destroy: NodesMixin.destroy,
+            forceDL: true,
+            invertable: true,
+            isCartesian: false,
+            orderNodes: true,
+            pointArrayMap: ['from', 'to'],
+            pointClass: SankeyPoint,
+            searchPoint: H.noop,
+            setData: NodesMixin.setData
         });
+        SeriesRegistry.registerSeriesType('sankey', SankeySeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * A node in a sankey diagram.
+         *
+         * @interface Highcharts.SankeyNodeObject
+         * @extends Highcharts.Point
+         * @product highcharts
+         */ /**
+        * The color of the auto generated node.
+        *
+        * @name Highcharts.SankeyNodeObject#color
+        * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+        */ /**
+        * The color index of the auto generated node, especially for use in styled
+        * mode.
+        *
+        * @name Highcharts.SankeyNodeObject#colorIndex
+        * @type {number}
+        */ /**
+        * An optional column index of where to place the node. The default behaviour is
+        * to place it next to the preceding node.
+        *
+        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
+        *      Specified node column
+        *
+        * @name Highcharts.SankeyNodeObject#column
+        * @type {number}
+        * @since 6.0.5
+        */ /**
+        * The id of the auto-generated node, refering to the `from` or `to` setting of
+        * the link.
+        *
+        * @name Highcharts.SankeyNodeObject#id
+        * @type {string}
+        */ /**
+        * The name to display for the node in data labels and tooltips. Use this when
+        * the name is different from the `id`. Where the id must be unique for each
+        * node, this is not necessary for the name.
+        *
+        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/css/sankey/|Highcharts-Demo:}
+        *         Sankey diagram with node options
+        *
+        * @name Highcharts.SankeyNodeObject#name
+        * @type {string}
+        * @product highcharts
+        */ /**
+        * The vertical offset of a node in terms of weight. Positive values shift the
+        * node downwards, negative shift it upwards.
+        *
+        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
+        *         Specified node offset
+        *
+        * @name Highcharts.SankeyNodeObject#offset
+        * @type {number}
+        * @default 0
+        * @since 6.0.5
+        */
+        /**
+         * Formatter callback function.
+         *
+         * @callback Highcharts.SeriesSankeyDataLabelsFormatterCallbackFunction
+         *
+         * @param {Highcharts.SeriesSankeyDataLabelsFormatterContextObject|Highcharts.PointLabelObject} this
+         *        Data label context to format
+         *
+         * @return {string|undefined}
+         *         Formatted data label text
+         */
+        /**
+         * Context for the node formatter function.
+         *
+         * @interface Highcharts.SeriesSankeyDataLabelsFormatterContextObject
+         * @extends Highcharts.PointLabelObject
+         */ /**
+        * The node object. The node name, if defined, is available through
+        * `this.point.name`.
+        * @name Highcharts.SeriesSankeyDataLabelsFormatterContextObject#point
+        * @type {Highcharts.SankeyNodeObject}
+        */
+        ''; // detach doclets above
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * A `sankey` series. If the [type](#series.sankey.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -1567,6 +1737,7 @@
          */
         ''; // adds doclets above to transpiled file
 
+        return SankeySeries;
     });
     _registerModule(_modules, 'masters/modules/sankey.src.js', [], function () {
 

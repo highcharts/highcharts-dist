@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/ATRIndicator.js', [_modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (BaseSeries, U) {
+    _registerModule(_modules, 'Stock/Indicators/ATR/ATRIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -36,8 +36,25 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray;
-        // im port './SMAIndicator.js';
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var isArray = U.isArray,
+            merge = U.merge;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -67,6 +84,11 @@
             return [x, y];
         }
         /* eslint-enable valid-jsdoc */
+        /* *
+         *
+         * Class
+         *
+         * */
         /**
          * The ATR series type.
          *
@@ -76,31 +98,27 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('atr', 'sma', 
-        /**
-         * Average true range indicator (ATR). This series requires `linkedTo`
-         * option to be set.
-         *
-         * @sample stock/indicators/atr
-         *         ATR indicator
-         *
-         * @extends      plotOptions.sma
-         * @since        6.0.0
-         * @product      highstock
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/atr
-         * @optionparent plotOptions.atr
-         */
-        {
-            params: {
-                period: 14
+        var ATRIndicator = /** @class */ (function (_super) {
+                __extends(ATRIndicator, _super);
+            function ATRIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.points = void 0;
+                _this.options = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        {
-            getValues: function (series, params) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            ATRIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     xVal = series.xData,
                     yVal = series.yData,
@@ -148,8 +166,34 @@
                     xData: xData,
                     yData: yData
                 };
-            }
-        });
+            };
+            /**
+             * Average true range indicator (ATR). This series requires `linkedTo`
+             * option to be set.
+             *
+             * @sample stock/indicators/atr
+             *         ATR indicator
+             *
+             * @extends      plotOptions.sma
+             * @since        6.0.0
+             * @product      highstock
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/atr
+             * @optionparent plotOptions.atr
+             */
+            ATRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                params: {
+                    period: 14
+                }
+            });
+            return ATRIndicator;
+        }(SMAIndicator));
+        SeriesRegistry.registerSeriesType('atr', ATRIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A `ATR` series. If the [type](#series.atr.type) option is not specified, it
          * is inherited from [chart.type](#chart.type).
@@ -164,6 +208,7 @@
          */
         ''; // to include the above in the js output
 
+        return ATRIndicator;
     });
     _registerModule(_modules, 'masters/indicators/atr.src.js', [], function () {
 

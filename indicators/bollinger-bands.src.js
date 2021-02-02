@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Mixins/MultipleLines.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
          *
-         *  (c) 2010-2020 Wojciech Chmiel
+         *  (c) 2010-2021 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
@@ -217,7 +217,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/BBIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/MultipleLines.js'], _modules['Core/Utilities.js']], function (BaseSeries, MultipleLinesMixin, U) {
+    _registerModule(_modules, 'Stock/Indicators/BB/BBIndicator.js', [_modules['Mixins/MultipleLines.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (MultipleLinesMixin, SeriesRegistry, U) {
         /**
          *
          *  License: www.highcharts.com/license
@@ -225,10 +225,26 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isArray = U.isArray,
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var extend = U.extend,
+            isArray = U.isArray,
             merge = U.merge;
-        // im port './SMAIndicator.js';
-        var SMA = BaseSeries.seriesTypes.sma;
         /* eslint-disable valid-jsdoc */
         // Utils:
         /**
@@ -258,85 +274,23 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('bb', 'sma', 
-        /**
-         * Bollinger bands (BB). This series requires the `linkedTo` option to be
-         * set and should be loaded after the `stock/indicators/indicators.js` file.
-         *
-         * @sample stock/indicators/bollinger-bands
-         *         Bollinger bands
-         *
-         * @extends      plotOptions.sma
-         * @since        6.0.0
-         * @product      highstock
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/bollinger-bands
-         * @optionparent plotOptions.bb
-         */
-        {
-            params: {
-                period: 20,
-                /**
-                 * Standard deviation for top and bottom bands.
-                 */
-                standardDeviation: 2,
-                index: 3
-            },
-            /**
-             * Bottom line options.
-             */
-            bottomLine: {
-                /**
-                 * Styles for a bottom line.
-                 */
-                styles: {
-                    /**
-                     * Pixel width of the line.
-                     */
-                    lineWidth: 1,
-                    /**
-                     * Color of the line. If not set, it's inherited from
-                     * [plotOptions.bb.color](#plotOptions.bb.color).
-                     *
-                     * @type  {Highcharts.ColorString}
-                     */
-                    lineColor: void 0
-                }
-            },
-            /**
-             * Top line options.
-             *
-             * @extends plotOptions.bb.bottomLine
-             */
-            topLine: {
-                styles: {
-                    lineWidth: 1,
-                    /**
-                     * @type {Highcharts.ColorString}
-                     */
-                    lineColor: void 0
-                }
-            },
-            tooltip: {
-                pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Top: {point.top}<br/>Middle: {point.middle}<br/>Bottom: {point.bottom}<br/>'
-            },
-            marker: {
-                enabled: false
-            },
-            dataGrouping: {
-                approximation: 'averages'
+        var BBIndicator = /** @class */ (function (_super) {
+                __extends(BBIndicator, _super);
+            function BBIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                *
+                *  Prototype Properties
+                *
+                * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        merge(MultipleLinesMixin, {
-            pointArrayMap: ['top', 'middle', 'bottom'],
-            pointValKey: 'middle',
-            nameComponents: ['period', 'standardDeviation'],
-            linesApiNames: ['topLine', 'bottomLine'],
-            init: function () {
-                SMA.prototype.init.apply(this, arguments);
+            BBIndicator.prototype.init = function () {
+                SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
                 // Set default color for lines:
                 this.options = merge({
                     topLine: {
@@ -350,8 +304,8 @@
                         }
                     }
                 }, this.options);
-            },
-            getValues: function (series, params) {
+            };
+            BBIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     standardDeviation = params.standardDeviation,
                     xVal = series.xData,
@@ -379,7 +333,7 @@
                 for (i = period; i <= yValLen; i++) {
                     slicedX = xVal.slice(i - period, i);
                     slicedY = yVal.slice(i - period, i);
-                    point = SMA.prototype.getValues.call(this, {
+                    point = SeriesRegistry.seriesTypes.sma.prototype.getValues.call(this, {
                         xData: slicedX,
                         yData: slicedY
                     }, params);
@@ -397,8 +351,93 @@
                     xData: xData,
                     yData: yData
                 };
-            }
-        }));
+            };
+            /**
+             * Bollinger bands (BB). This series requires the `linkedTo` option to be
+             * set and should be loaded after the `stock/indicators/indicators.js` file.
+             *
+             * @sample stock/indicators/bollinger-bands
+             *         Bollinger bands
+             *
+             * @extends      plotOptions.sma
+             * @since        6.0.0
+             * @product      highstock
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/bollinger-bands
+             * @optionparent plotOptions.bb
+             */
+            BBIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                params: {
+                    period: 20,
+                    /**
+                     * Standard deviation for top and bottom bands.
+                     */
+                    standardDeviation: 2,
+                    index: 3
+                },
+                /**
+                 * Bottom line options.
+                 */
+                bottomLine: {
+                    /**
+                     * Styles for a bottom line.
+                     */
+                    styles: {
+                        /**
+                         * Pixel width of the line.
+                         */
+                        lineWidth: 1,
+                        /**
+                         * Color of the line. If not set, it's inherited from
+                         * [plotOptions.bb.color](#plotOptions.bb.color).
+                         *
+                         * @type  {Highcharts.ColorString}
+                         */
+                        lineColor: void 0
+                    }
+                },
+                /**
+                 * Top line options.
+                 *
+                 * @extends plotOptions.bb.bottomLine
+                 */
+                topLine: {
+                    styles: {
+                        lineWidth: 1,
+                        /**
+                         * @type {Highcharts.ColorString}
+                         */
+                        lineColor: void 0
+                    }
+                },
+                tooltip: {
+                    pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Top: {point.top}<br/>Middle: {point.middle}<br/>Bottom: {point.bottom}<br/>'
+                },
+                marker: {
+                    enabled: false
+                },
+                dataGrouping: {
+                    approximation: 'averages'
+                }
+            });
+            return BBIndicator;
+        }(SMAIndicator));
+        extend(BBIndicator.prototype, {
+            pointArrayMap: ['top', 'middle', 'bottom'],
+            pointValKey: 'middle',
+            nameComponents: ['period', 'standardDeviation'],
+            linesApiNames: ['topLine', 'bottomLine'],
+            drawGraph: MultipleLinesMixin.drawGraph,
+            getTranslatedLinesNames: MultipleLinesMixin.getTranslatedLinesNames,
+            translate: MultipleLinesMixin.translate,
+            toYData: MultipleLinesMixin.toYData
+        });
+        SeriesRegistry.registerSeriesType('bb', BBIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A bollinger bands indicator. If the [type](#series.bb.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -413,6 +452,7 @@
          */
         ''; // to include the above in the js output
 
+        return BBIndicator;
     });
     _registerModule(_modules, 'masters/indicators/bollinger-bands.src.js', [], function () {
 

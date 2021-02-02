@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Sonification module
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Instrument.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  Instrument class for sonification module.
          *
@@ -586,7 +586,7 @@
     _registerModule(_modules, 'Extensions/Sonification/MusicalFrequencies.js', [], function () {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  List of musical frequencies from C0 to C8.
          *
@@ -700,7 +700,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Utilities.js', [_modules['Extensions/Sonification/MusicalFrequencies.js'], _modules['Core/Utilities.js']], function (musicalFrequencies, U) {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  Utility functions for sonification.
          *
@@ -873,7 +873,7 @@
     _registerModule(_modules, 'Extensions/Sonification/InstrumentDefinitions.js', [_modules['Extensions/Sonification/Instrument.js'], _modules['Extensions/Sonification/Utilities.js']], function (Instrument, utilities) {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  Instrument definitions for sonification module.
          *
@@ -905,7 +905,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Earcon.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  Earcons for the sonification module in Highcharts.
          *
@@ -1081,7 +1081,7 @@
     _registerModule(_modules, 'Extensions/Sonification/PointSonify.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Extensions/Sonification/Utilities.js']], function (H, U, utilities) {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  Code for sonifying single points.
          *
@@ -1433,7 +1433,7 @@
     _registerModule(_modules, 'Extensions/Sonification/ChartSonify.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Extensions/Sonification/Utilities.js']], function (H, Point, U, utilities) {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  Sonification functions for chart/series.
          *
@@ -2574,7 +2574,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Timeline.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Extensions/Sonification/Utilities.js']], function (H, U, utilities) {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  TimelineEvent class definition.
          *
@@ -3214,7 +3214,7 @@
     _registerModule(_modules, 'Extensions/Sonification/Options.js', [], function () {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  Default options for sonification.
          *
@@ -3247,10 +3247,10 @@
 
         return options;
     });
-    _registerModule(_modules, 'Extensions/Sonification/Sonification.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Extensions/Sonification/Instrument.js'], _modules['Extensions/Sonification/InstrumentDefinitions.js'], _modules['Extensions/Sonification/Earcon.js'], _modules['Extensions/Sonification/PointSonify.js'], _modules['Extensions/Sonification/ChartSonify.js'], _modules['Extensions/Sonification/Utilities.js'], _modules['Extensions/Sonification/Timeline.js'], _modules['Extensions/Sonification/Options.js']], function (Chart, H, O, Point, U, Instrument, instruments, Earcon, pointSonifyFunctions, chartSonifyFunctions, utilities, TimelineClasses, sonificationOptions) {
+    _registerModule(_modules, 'Extensions/Sonification/Sonification.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Extensions/Sonification/Instrument.js'], _modules['Extensions/Sonification/InstrumentDefinitions.js'], _modules['Extensions/Sonification/Earcon.js'], _modules['Extensions/Sonification/PointSonify.js'], _modules['Extensions/Sonification/ChartSonify.js'], _modules['Extensions/Sonification/Utilities.js'], _modules['Extensions/Sonification/Timeline.js'], _modules['Extensions/Sonification/Options.js']], function (Chart, H, O, Point, Series, U, Instrument, instruments, Earcon, pointSonifyFunctions, chartSonifyFunctions, utilities, TimelineClasses, sonificationOptions) {
         /* *
          *
-         *  (c) 2009-2020 Øystein Moseng
+         *  (c) 2009-2021 Øystein Moseng
          *
          *  Sonification module for Highcharts
          *
@@ -3334,7 +3334,7 @@
         // Chart specific
         Point.prototype.sonify = pointSonifyFunctions.pointSonify;
         Point.prototype.cancelSonify = pointSonifyFunctions.pointCancelSonify;
-        H.Series.prototype.sonify = chartSonifyFunctions.seriesSonify;
+        Series.prototype.sonify = chartSonifyFunctions.seriesSonify;
         extend(Chart.prototype, {
             sonify: chartSonifyFunctions.chartSonify,
             pauseSonify: chartSonifyFunctions.pause,

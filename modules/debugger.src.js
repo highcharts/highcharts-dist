@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Debugger module
  *
@@ -170,7 +170,7 @@
     _registerModule(_modules, 'Extensions/Debugger.js', [_modules['Core/Globals.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (H, Chart, U) {
         /* *
          *
-         *  (c) 2010-2020 Torstein Honsi
+         *  (c) 2010-2021 Torstein Honsi
          *
          *  License: www.highcharts.com/license
          *
@@ -225,7 +225,8 @@
                 // Format msg so SVGRenderer can handle it
                 msg = msg
                     .replace(/<h1>(.*)<\/h1>/g, '<br><span style="font-size: 24px">$1</span><br>')
-                    .replace(/<\/p>/g, '</p><br>');
+                    .replace(/<p>/g, '')
+                    .replace(/<\/p>/g, '<br>');
                 // Render red chart frame.
                 chart.errorElements[0] = renderer.rect(2, 2, chartWidth - 4, chartHeight - 4).attr({
                     'stroke-width': 4,

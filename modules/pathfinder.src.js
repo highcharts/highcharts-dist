@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.2.2 (2020-10-22)
+ * @license Highcharts Gantt JS v9.0.0 (2021-02-02)
  *
  * Pathfinder
  *
@@ -1056,7 +1056,6 @@
                         x: rectHorizontalCenter,
                         y: rectVerticalCenter
                     },
-                    markerPoint = {},
                     xFactor = 1,
                     yFactor = 1;
                 while (theta < -Math.PI) {
@@ -1099,9 +1098,10 @@
                 if (anchor.y !== rectVerticalCenter) {
                     edgePoint.y = anchor.y;
                 }
-                markerPoint.x = edgePoint.x + (markerRadius * Math.cos(theta));
-                markerPoint.y = edgePoint.y - (markerRadius * Math.sin(theta));
-                return markerPoint;
+                return {
+                    x: edgePoint.x + (markerRadius * Math.cos(theta)),
+                    y: edgePoint.y - (markerRadius * Math.sin(theta))
+                };
             }
         });
         /**
@@ -2634,7 +2634,6 @@
                         x: rectHorizontalCenter,
                         y: rectVerticalCenter
                     },
-                    markerPoint = {},
                     xFactor = 1,
                     yFactor = 1;
                 while (theta < -Math.PI) {
@@ -2677,9 +2676,10 @@
                 if (anchor.y !== rectVerticalCenter) {
                     edgePoint.y = anchor.y;
                 }
-                markerPoint.x = edgePoint.x + (markerRadius * Math.cos(theta));
-                markerPoint.y = edgePoint.y - (markerRadius * Math.sin(theta));
-                return markerPoint;
+                return {
+                    x: edgePoint.x + (markerRadius * Math.cos(theta)),
+                    y: edgePoint.y - (markerRadius * Math.sin(theta))
+                };
             }
         });
         /**

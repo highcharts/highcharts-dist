@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v8.2.2 (2020-10-22)
+ * @license Highmaps JS v9.0.0 (2021-02-02)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -15,10 +15,10 @@ import '../../Core/Axis/ColorAxis.js';
 import '../../Mixins/ColorMapSeries.js';
 import '../../Maps/MapNavigation.js';
 import '../../Maps/MapPointer.js';
-import '../../Series/MapSeries.js';
-import '../../Series/MapLineSeries.js';
-import '../../Series/MapPointSeries.js';
-import '../../Series/MapBubbleSeries.js';
-import '../../Series/HeatmapSeries.js';
+import '../../Series/Map/MapSeries.js';
+import '../../Series/MapLine/MapLineSeries.js';
+import '../../Series/MapPoint/MapPointSeries.js';
+import '../../Series/MapBubble/MapBubbleSeries.js';
+import '../../Series/Heatmap/HeatmapSeries.js';
 import '../../Extensions/GeoJSON.js';
 import '../../Maps/Map.js';

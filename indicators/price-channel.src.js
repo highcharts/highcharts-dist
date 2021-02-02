@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Mixins/MultipleLines.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
          *
-         *  (c) 2010-2020 Wojciech Chmiel
+         *  (c) 2010-2021 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
@@ -220,7 +220,7 @@
     _registerModule(_modules, 'Mixins/ReduceArray.js', [], function () {
         /**
          *
-         *  (c) 2010-2020 Pawel Fus & Daniel Studencki
+         *  (c) 2010-2021 Pawel Fus & Daniel Studencki
          *
          *  License: www.highcharts.com/license
          *
@@ -275,7 +275,7 @@
 
         return reduceArrayMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/PCIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/MultipleLines.js'], _modules['Mixins/ReduceArray.js'], _modules['Core/Utilities.js']], function (BaseSeries, MultipleLinesMixin, ReduceArrayMixin, U) {
+    _registerModule(_modules, 'Stock/Indicators/PC/PCIndicator.js', [_modules['Core/Color/Palette.js'], _modules['Mixins/MultipleLines.js'], _modules['Mixins/ReduceArray.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (palette, MultipleLinesMixin, ReduceArrayMixin, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -283,9 +283,31 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var merge = U.merge;
-        // im port './SMAIndicator.js';
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var merge = U.merge,
+            extend = U.extend;
         var getArrayExtremes = ReduceArrayMixin.getArrayExtremes;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Price Channel series type.
          *
@@ -295,77 +317,27 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('pc', 'sma', 
-        /**
-         * Price channel (PC). This series requires the `linkedTo` option to be
-         * set and should be loaded after the `stock/indicators/indicators.js`.
-         *
-         * @sample {highstock} stock/indicators/price-channel
-         *         Price Channel
-         *
-         * @extends      plotOptions.sma
-         * @since        7.0.0
-         * @product      highstock
-         * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
-         *               navigatorOptions, pointInterval, pointIntervalUnit,
-         *               pointPlacement, pointRange, pointStart, showInNavigator,
-         *               stacking
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/price-channel
-         * @optionparent plotOptions.pc
-         */
-        {
-            /**
-             * @excluding index
-             */
-            params: {
-                period: 20
-            },
-            lineWidth: 1,
-            topLine: {
-                styles: {
-                    /**
-                     * Color of the top line. If not set, it's inherited from
-                     * [plotOptions.pc.color](#plotOptions.pc.color).
-                     *
-                     * @type {Highcharts.ColorString}
-                     */
-                    lineColor: '#7cb5ec #434348 #90ed7d #f7a35c #8085e9 #f15c80 #e4d354 #2b908f #f45b5b #91e8e1'.split(' ')[2],
-                    /**
-                     * Pixel width of the line.
-                     */
-                    lineWidth: 1
-                }
-            },
-            bottomLine: {
-                styles: {
-                    /**
-                     * Color of the bottom line. If not set, it's inherited from
-                     * [plotOptions.pc.color](#plotOptions.pc.color).
-                     *
-                     * @type {Highcharts.ColorString}
-                     */
-                    lineColor: '#7cb5ec #434348 #90ed7d #f7a35c #8085e9 #f15c80 #e4d354 #2b908f #f45b5b #91e8e1'.split(' ')[8],
-                    /**
-                     * Pixel width of the line.
-                     */
-                    lineWidth: 1
-                }
-            },
-            dataGrouping: {
-                approximation: 'averages'
+        var PCIndicator = /** @class */ (function (_super) {
+                __extends(PCIndicator, _super);
+            function PCIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                *
+                *  Properties
+                *
+                * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        merge(MultipleLinesMixin, {
-            pointArrayMap: ['top', 'middle', 'bottom'],
-            pointValKey: 'middle',
-            nameBase: 'Price Channel',
-            nameComponents: ['period'],
-            linesApiNames: ['topLine', 'bottomLine'],
-            getValues: function (series, params) {
+            /* *
+            *
+            *  Functions
+            *
+            * */
+            PCIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     xVal = series.xData,
                     yVal = series.yData,
@@ -403,8 +375,86 @@
                     xData: xData,
                     yData: yData
                 };
-            }
-        }));
+            };
+            /**
+             * Price channel (PC). This series requires the `linkedTo` option to be
+             * set and should be loaded after the `stock/indicators/indicators.js`.
+             *
+             * @sample {highstock} stock/indicators/price-channel
+             *         Price Channel
+             *
+             * @extends      plotOptions.sma
+             * @since        7.0.0
+             * @product      highstock
+             * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
+             *               navigatorOptions, pointInterval, pointIntervalUnit,
+             *               pointPlacement, pointRange, pointStart, showInNavigator,
+             *               stacking
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/price-channel
+             * @optionparent plotOptions.pc
+             */
+            PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * @excluding index
+                 */
+                params: {
+                    period: 20
+                },
+                lineWidth: 1,
+                topLine: {
+                    styles: {
+                        /**
+                         * Color of the top line. If not set, it's inherited from
+                         * [plotOptions.pc.color](#plotOptions.pc.color).
+                         *
+                         * @type {Highcharts.ColorString}
+                         */
+                        lineColor: palette.colors[2],
+                        /**
+                         * Pixel width of the line.
+                         */
+                        lineWidth: 1
+                    }
+                },
+                bottomLine: {
+                    styles: {
+                        /**
+                         * Color of the bottom line. If not set, it's inherited from
+                         * [plotOptions.pc.color](#plotOptions.pc.color).
+                         *
+                         * @type {Highcharts.ColorString}
+                         */
+                        lineColor: palette.colors[8],
+                        /**
+                         * Pixel width of the line.
+                         */
+                        lineWidth: 1
+                    }
+                },
+                dataGrouping: {
+                    approximation: 'averages'
+                }
+            });
+            return PCIndicator;
+        }(SMAIndicator));
+        extend(PCIndicator.prototype, {
+            getTranslatedLinesNames: MultipleLinesMixin.getTranslatedLinesNames,
+            drawGraph: MultipleLinesMixin.drawGraph,
+            toYData: MultipleLinesMixin.toYData,
+            pointArrayMap: ['top', 'middle', 'bottom'],
+            pointValKey: 'middle',
+            nameBase: 'Price Channel',
+            nameComponents: ['period'],
+            linesApiNames: ['topLine', 'bottomLine'],
+            translate: MultipleLinesMixin.translate
+        });
+        SeriesRegistry.registerSeriesType('pc', PCIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A Price channel indicator. If the [type](#series.pc.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -422,6 +472,7 @@
          */
         ''; // to include the above in the js output
 
+        return PCIndicator;
     });
     _registerModule(_modules, 'masters/indicators/price-channel.src.js', [], function () {
 

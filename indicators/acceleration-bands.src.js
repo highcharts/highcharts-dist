@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Mixins/MultipleLines.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
          *
-         *  (c) 2010-2020 Wojciech Chmiel
+         *  (c) 2010-2021 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
@@ -217,7 +217,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/ABIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/MultipleLines.js'], _modules['Core/Utilities.js']], function (BaseSeries, MultipleLinesMixin, U) {
+    _registerModule(_modules, 'Stock/Indicators/ABands/ABandsIndicator.js', [_modules['Mixins/MultipleLines.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (MultipleLinesMixin, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -225,10 +225,26 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var correctFloat = U.correctFloat,
+            extend = U.extend,
             merge = U.merge;
-        // im port './SMAIndicator.js';
-        var SMA = BaseSeries.seriesTypes.sma;
         /* eslint-disable valid-jsdoc */
         /**
          * @private
@@ -259,69 +275,32 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('abands', 'sma', 
-        /**
-         * Acceleration bands (ABANDS). This series requires the `linkedTo` option
-         * to be set and should be loaded after the
-         * `stock/indicators/indicators.js`.
-         *
-         * @sample {highstock} stock/indicators/acceleration-bands
-         *         Acceleration Bands
-         *
-         * @extends      plotOptions.sma
-         * @mixes        Highcharts.MultipleLinesMixin
-         * @since        7.0.0
-         * @product      highstock
-         * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
-         *               navigatorOptions, pointInterval, pointIntervalUnit,
-         *               pointPlacement, pointRange, pointStart, showInNavigator,
-         *               stacking,
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/acceleration-bands
-         * @optionparent plotOptions.abands
-         */
-        {
-            params: {
-                period: 20,
-                /**
-                 * The algorithms factor value used to calculate bands.
+        var ABandsIndicator = /** @class */ (function (_super) {
+                __extends(ABandsIndicator, _super);
+            function ABandsIndicator() {
+                /* *
                  *
-                 * @product highstock
-                 */
-                factor: 0.001,
-                index: 3
-            },
-            lineWidth: 1,
-            topLine: {
-                styles: {
-                    /**
-                     * Pixel width of the line.
-                     */
-                    lineWidth: 1
-                }
-            },
-            bottomLine: {
-                styles: {
-                    /**
-                     * Pixel width of the line.
-                     */
-                    lineWidth: 1
-                }
-            },
-            dataGrouping: {
-                approximation: 'averages'
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
             }
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        merge(MultipleLinesMixin, {
-            pointArrayMap: ['top', 'middle', 'bottom'],
-            pointValKey: 'middle',
-            nameBase: 'Acceleration Bands',
-            nameComponents: ['period', 'factor'],
-            linesApiNames: ['topLine', 'bottomLine'],
-            getValues: function (series, params) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            ABandsIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     factor = params.factor,
                     index = params.index,
@@ -367,19 +346,19 @@
                     if (i >= period) {
                         slicedX = xVal.slice(i - period, i);
                         slicedY = yVal.slice(i - period, i);
-                        ubSMA = SMA.prototype.getValues.call(this, {
+                        ubSMA = _super.prototype.getValues.call(this, {
                             xData: slicedX,
                             yData: UB.slice(i - period, i)
                         }, {
                             period: period
                         });
-                        lbSMA = SMA.prototype.getValues.call(this, {
+                        lbSMA = _super.prototype.getValues.call(this, {
                             xData: slicedX,
                             yData: LB.slice(i - period, i)
                         }, {
                             period: period
                         });
-                        pointSMA = SMA.prototype.getValues.call(this, {
+                        pointSMA = _super.prototype.getValues.call(this, {
                             xData: slicedX,
                             yData: slicedY
                         }, {
@@ -400,8 +379,83 @@
                     xData: xData,
                     yData: yData
                 };
-            }
-        }));
+            };
+            /**
+             * Acceleration bands (ABANDS). This series requires the `linkedTo` option
+             * to be set and should be loaded after the
+             * `stock/indicators/indicators.js`.
+             *
+             * @sample {highstock} stock/indicators/acceleration-bands
+             *         Acceleration Bands
+             *
+             * @extends      plotOptions.sma
+             * @mixes        Highcharts.MultipleLinesMixin
+             * @since        7.0.0
+             * @product      highstock
+             * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
+             *               navigatorOptions, pointInterval, pointIntervalUnit,
+             *               pointPlacement, pointRange, pointStart, showInNavigator,
+             *               stacking,
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/acceleration-bands
+             * @optionparent plotOptions.abands
+             */
+            ABandsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                params: {
+                    period: 20,
+                    /**
+                     * The algorithms factor value used to calculate bands.
+                     *
+                     * @product highstock
+                     */
+                    factor: 0.001,
+                    index: 3
+                },
+                lineWidth: 1,
+                topLine: {
+                    styles: {
+                        /**
+                         * Pixel width of the line.
+                         */
+                        lineWidth: 1
+                    }
+                },
+                bottomLine: {
+                    styles: {
+                        /**
+                         * Pixel width of the line.
+                         */
+                        lineWidth: 1
+                    }
+                },
+                dataGrouping: {
+                    approximation: 'averages'
+                }
+            });
+            return ABandsIndicator;
+        }(SMAIndicator));
+        extend(ABandsIndicator.prototype, {
+            drawGraph: MultipleLinesMixin.drawGraph,
+            getTranslatedLinesNames: MultipleLinesMixin.getTranslatedLinesNames,
+            linesApiNames: ['topLine', 'bottomLine'],
+            nameBase: 'Acceleration Bands',
+            nameComponents: ['period', 'factor'],
+            pointArrayMap: ['top', 'middle', 'bottom'],
+            pointValKey: 'middle',
+            toYData: MultipleLinesMixin.toYData,
+            translate: MultipleLinesMixin.translate
+        });
+        SeriesRegistry.registerSeriesType('abands', ABandsIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
         /**
          * An Acceleration bands indicator. If the [type](#series.abands.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
@@ -419,6 +473,7 @@
          */
         ''; // to include the above in jsdoc
 
+        return ABandsIndicator;
     });
     _registerModule(_modules, 'masters/indicators/acceleration-bands.src.js', [], function () {
 

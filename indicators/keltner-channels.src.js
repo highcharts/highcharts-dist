@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  *
  * Indicator series type for Highstock
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Mixins/MultipleLines.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /**
          *
-         *  (c) 2010-2020 Wojciech Chmiel
+         *  (c) 2010-2021 Wojciech Chmiel
          *
          *  License: www.highcharts.com/license
          *
@@ -217,7 +217,7 @@
 
         return multipleLinesMixin;
     });
-    _registerModule(_modules, 'Stock/Indicators/KeltnerChannelsIndicator.js', [_modules['Core/Series/Series.js'], _modules['Mixins/MultipleLines.js'], _modules['Core/Utilities.js']], function (BaseSeries, MultipleLinesMixin, U) {
+    _registerModule(_modules, 'Stock/Indicators/KeltnerChannels/KeltnerChannelsIndicator.js', [_modules['Mixins/MultipleLines.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (MultipleLinesMixin, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -225,15 +225,29 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var seriesTypes = BaseSeries.seriesTypes;
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var _a = SeriesRegistry.seriesTypes,
+            SMAIndicator = _a.sma,
+            EMAIndicator = _a.ema,
+            ATRIndicator = _a.atr;
         var correctFloat = U.correctFloat,
+            extend = U.extend,
             merge = U.merge;
-        // im port './ATRIndicator.js';
-        // im port './EMAIndicator.js';
-        // im port './SMAIndicator.js';
-        var SMA = seriesTypes.sma,
-            EMA = seriesTypes.ema,
-            ATR = seriesTypes.atr;
         /**
          * The Keltner Channels series type.
          *
@@ -243,93 +257,18 @@
          *
          * @augments Highcharts.Series
          */
-        BaseSeries.seriesType('keltnerchannels', 'sma', 
-        /**
-         * Keltner Channels. This series requires the `linkedTo` option to be set
-         * and should be loaded after the `stock/indicators/indicators.js`,
-         * `stock/indicators/atr.js`, and `stock/ema/.js`.
-         *
-         * @sample {highstock} stock/indicators/keltner-channels
-         *         Keltner Channels
-         *
-         * @extends      plotOptions.sma
-         * @since        7.0.0
-         * @product      highstock
-         * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
-         *               navigatorOptions, pointInterval, pointIntervalUnit,
-         *               pointPlacement, pointRange, pointStart,showInNavigator,
-         *               stacking
-         * @requires     stock/indicators/indicators
-         * @requires     stock/indicators/keltner-channels
-         * @optionparent plotOptions.keltnerchannels
-         */
-        {
-            params: {
-                period: 20,
-                /**
-                 * The ATR period.
-                 */
-                periodATR: 10,
-                /**
-                 * The ATR multiplier.
-                 */
-                multiplierATR: 2
-            },
-            /**
-             * Bottom line options.
-             *
-             */
-            bottomLine: {
-                /**
-                 * Styles for a bottom line.
-                 *
-                 */
-                styles: {
-                    /**
-                     * Pixel width of the line.
-                     */
-                    lineWidth: 1,
-                    /**
-                     * Color of the line. If not set, it's inherited from
-                     * `plotOptions.keltnerchannels.color`
-                     */
-                    lineColor: void 0
-                }
-            },
-            /**
-             * Top line options.
-             *
-             * @extends plotOptions.keltnerchannels.bottomLine
-             */
-            topLine: {
-                styles: {
-                    lineWidth: 1,
-                    lineColor: void 0
-                }
-            },
-            tooltip: {
-                pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Upper Channel: {point.top}<br/>EMA({series.options.params.period}): {point.middle}<br/>Lower Channel: {point.bottom}<br/>'
-            },
-            marker: {
-                enabled: false
-            },
-            dataGrouping: {
-                approximation: 'averages'
-            },
-            lineWidth: 1
-        }, 
-        /**
-         * @lends Highcharts.Series#
-         */
-        merge(MultipleLinesMixin, {
-            pointArrayMap: ['top', 'middle', 'bottom'],
-            pointValKey: 'middle',
-            nameBase: 'Keltner Channels',
-            nameComponents: ['period', 'periodATR', 'multiplierATR'],
-            linesApiNames: ['topLine', 'bottomLine'],
-            requiredIndicators: ['ema', 'atr'],
-            init: function () {
-                SMA.prototype.init.apply(this, arguments);
+        var KeltnerChannelsIndicator = /** @class */ (function (_super) {
+                __extends(KeltnerChannelsIndicator, _super);
+            function KeltnerChannelsIndicator() {
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
+            }
+            KeltnerChannelsIndicator.prototype.init = function () {
+                SeriesRegistry.seriesTypes.sma.prototype.init.apply(this, arguments);
                 // Set default color for lines:
                 this.options = merge({
                     topLine: {
@@ -343,8 +282,8 @@
                         }
                     }
                 }, this.options);
-            },
-            getValues: function (series, params) {
+            };
+            KeltnerChannelsIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
                     periodATR = params.periodATR,
                     multiplierATR = params.multiplierATR,
@@ -359,11 +298,11 @@
                     TL,
                     BL,
                     date,
-                    seriesEMA = EMA.prototype.getValues(series, {
+                    seriesEMA = SeriesRegistry.seriesTypes.ema.prototype.getValues(series, {
                         period: period,
                         index: index
                     }),
-                    seriesATR = ATR.prototype.getValues(series, {
+                    seriesATR = SeriesRegistry.seriesTypes.atr.prototype.getValues(series, {
                         period: periodATR
                     }),
                     pointEMA,
@@ -390,13 +329,106 @@
                     xData: xData,
                     yData: yData
                 };
-            }
-        }));
+            };
+            /**
+             * Keltner Channels. This series requires the `linkedTo` option to be set
+             * and should be loaded after the `stock/indicators/indicators.js`,
+             * `stock/indicators/atr.js`, and `stock/ema/.js`.
+             *
+             * @sample {highstock} stock/indicators/keltner-channels
+             *         Keltner Channels
+             *
+             * @extends      plotOptions.sma
+             * @since        7.0.0
+             * @product      highstock
+             * @excluding    allAreas, colorAxis, compare, compareBase, joinBy, keys,
+             *               navigatorOptions, pointInterval, pointIntervalUnit,
+             *               pointPlacement, pointRange, pointStart,showInNavigator,
+             *               stacking
+             * @requires     stock/indicators/indicators
+             * @requires     stock/indicators/keltner-channels
+             * @optionparent plotOptions.keltnerchannels
+             */
+            KeltnerChannelsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                params: {
+                    period: 20,
+                    /**
+                     * The ATR period.
+                     */
+                    periodATR: 10,
+                    /**
+                     * The ATR multiplier.
+                     */
+                    multiplierATR: 2
+                },
+                /**
+                 * Bottom line options.
+                 *
+                 */
+                bottomLine: {
+                    /**
+                     * Styles for a bottom line.
+                     *
+                     */
+                    styles: {
+                        /**
+                         * Pixel width of the line.
+                         */
+                        lineWidth: 1,
+                        /**
+                         * Color of the line. If not set, it's inherited from
+                         * `plotOptions.keltnerchannels.color`
+                         */
+                        lineColor: void 0
+                    }
+                },
+                /**
+                 * Top line options.
+                 *
+                 * @extends plotOptions.keltnerchannels.bottomLine
+                 */
+                topLine: {
+                    styles: {
+                        lineWidth: 1,
+                        lineColor: void 0
+                    }
+                },
+                tooltip: {
+                    pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b><br/>Upper Channel: {point.top}<br/>EMA({series.options.params.period}): {point.middle}<br/>Lower Channel: {point.bottom}<br/>'
+                },
+                marker: {
+                    enabled: false
+                },
+                dataGrouping: {
+                    approximation: 'averages'
+                },
+                lineWidth: 1
+            });
+            return KeltnerChannelsIndicator;
+        }(SMAIndicator));
+        extend(KeltnerChannelsIndicator.prototype, {
+            pointArrayMap: ['top', 'middle', 'bottom'],
+            pointValKey: 'middle',
+            nameBase: 'Keltner Channels',
+            nameComponents: ['period', 'periodATR', 'multiplierATR'],
+            linesApiNames: ['topLine', 'bottomLine'],
+            requiredIndicators: ['ema', 'atr'],
+            drawGraph: MultipleLinesMixin.drawGraph,
+            getTranslatedLinesNames: MultipleLinesMixin.getTranslatedLinesNames,
+            translate: MultipleLinesMixin.translate,
+            toYData: MultipleLinesMixin.toYData
+        });
+        SeriesRegistry.registerSeriesType('keltnerchannels', KeltnerChannelsIndicator);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         /**
          * A Keltner Channels indicator. If the [type](#series.keltnerchannels.type)
          * option is not specified, it is inherited from[chart.type](#chart.type).
          *
-         * @extends      series,plotOptions.keltnerchannels
+         * @extends      series,plotOptions.sma
          * @since        7.0.0
          * @product      highstock
          * @excluding    allAreas, colorAxis, compare, compareBase, dataParser, dataURL,
@@ -409,6 +441,7 @@
          */
         ''; // to include the above in the js output
 
+        return KeltnerChannelsIndicator;
     });
     _registerModule(_modules, 'masters/indicators/keltner-channels.src.js', [], function () {
 

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v8.2.2 (2020-10-22)
+ * @license Highstock JS v9.0.0 (2021-02-02)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -13,9 +13,9 @@
 import '../../Core/Axis/OrdinalAxis.js';
 import './broken-axis.src.js';
 import '../../Extensions/DataGrouping.js';
-import '../../Series/OHLCSeries.js';
-import '../../Series/CandlestickSeries.js';
-import '../../Series/FlagsSeries.js';
+import '../../Series/OHLC/OHLCSeries.js';
+import '../../Series/Candlestick/CandlestickSeries.js';
+import '../../Series/Flags/FlagsSeries.js';
 import '../../Core/Scrollbar.js';
 import '../../Core/Navigator.js';
 import '../../Extensions/RangeSelector.js';

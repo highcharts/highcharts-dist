@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v8.2.2 (2020-10-22)
+ * @license Highcharts Gantt JS v9.0.0 (2021-02-02)
  *
  * GridAxis
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Core/Axis/GridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (Axis, H, O, Tick, U) {
+    _registerModule(_modules, 'Core/Axis/GridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (Axis, H, Tick, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -39,7 +39,6 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var dateFormat = O.dateFormat;
         var addEvent = U.addEvent,
             defined = U.defined,
             erase = U.erase,
@@ -532,7 +531,7 @@
                             // For the Gantt set point aliases to the pointCopy
                             // to do not change the original point
                             pointCopy = merge(point);
-                            H.seriesTypes.gantt.prototype.setGanttPointAliases(pointCopy);
+                            H.seriesTypes.gantt.prototype.pointClass.setGanttPointAliases(pointCopy);
                         }
                         // Make additional properties available for the
                         // formatter
@@ -692,7 +691,7 @@
                         if (lastTick - max < tickmarkOffset && lastTick - max > 0 && axis.ticks[lastTick].isLast) {
                             axis.ticks[lastTick].mark.hide();
                         }
-                        else {
+                        else if (axis.ticks[lastTick - 1]) {
                             axis.ticks[lastTick - 1].mark.show();
                         }
                     }
@@ -708,34 +707,35 @@
                 var options = axis.options;
                 var gridOptions = options.grid || {};
                 var userLabels = axis.userOptions.labels || {};
-                if (axis.horiz) {
-                    if (gridOptions.enabled === true) {
+                // Fire this only for the Gantt type chart, #14868.
+                if (gridOptions.enabled) {
+                    if (axis.horiz) {
                         axis.series.forEach(function (series) {
                             series.options.pointRange = 0;
                         });
-                    }
-                    // Lower level time ticks, like hours or minutes, represent
-                    // points in time and not ranges. These should be aligned
-                    // left in the grid cell by default. The same applies to
-                    // years of higher order.
-                    if (tickInfo &&
-                        options.dateTimeLabelFormats &&
-                        options.labels &&
-                        !defined(userLabels.align) &&
-                        (options.dateTimeLabelFormats[tickInfo.unitName].range === false ||
-                            tickInfo.count > 1 // years
-                        )) {
-                        options.labels.align = 'left';
-                        if (!defined(userLabels.x)) {
-                            options.labels.x = 3;
+                        // Lower level time ticks, like hours or minutes, represent
+                        // points in time and not ranges. These should be aligned
+                        // left in the grid cell by default. The same applies to
+                        // years of higher order.
+                        if (tickInfo &&
+                            options.dateTimeLabelFormats &&
+                            options.labels &&
+                            !defined(userLabels.align) &&
+                            (options.dateTimeLabelFormats[tickInfo.unitName].range === false ||
+                                tickInfo.count > 1 // years
+                            )) {
+                            options.labels.align = 'left';
+                            if (!defined(userLabels.x)) {
+                                options.labels.x = 3;
+                            }
                         }
                     }
-                }
-                else {
-                    // Don't trim ticks which not in min/max range but
-                    // they are still in the min/max plus tickInterval.
-                    if (this.options.type !== 'treegrid' && ((_a = axis.grid) === null || _a === void 0 ? void 0 : _a.columns)) {
-                        this.minPointOffset = this.tickInterval;
+                    else {
+                        // Don't trim ticks which not in min/max range but
+                        // they are still in the min/max plus tickInterval.
+                        if (this.options.type !== 'treegrid' && ((_a = axis.grid) === null || _a === void 0 ? void 0 : _a.columns)) {
+                            this.minPointOffset = this.tickInterval;
+                        }
                     }
                 }
             };

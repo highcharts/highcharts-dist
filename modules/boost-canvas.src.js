@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Boost module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Series/LineSeries.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, LineSeries, Series, U) {
+    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, palette, Series, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -47,6 +47,7 @@
         var color = Color.parse;
         var doc = H.doc,
             noop = H.noop;
+        var seriesTypes = SeriesRegistry.seriesTypes;
         var addEvent = U.addEvent,
             extend = U.extend,
             fireEvent = U.fireEvent,
@@ -54,8 +55,7 @@
             merge = U.merge,
             pick = U.pick,
             wrap = U.wrap;
-        var seriesTypes = Series.seriesTypes,
-            CHUNK_SIZE = 50000,
+        var CHUNK_SIZE = 50000,
             destroyLoadingDiv;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
@@ -109,7 +109,7 @@
                     }
                 });
             }
-            extend(LineSeries.prototype, {
+            extend(Series.prototype, {
                 /**
                  * Create a hidden canvas to draw the graph on. The contents is later
                  * copied over to an SVG image element.
@@ -351,7 +351,7 @@
                     if (rawData.length > 99999) {
                         chart.options.loading = merge(loadingOptions, {
                             labelStyle: {
-                                backgroundColor: color('#ffffff').setOpacity(0.75).get(),
+                                backgroundColor: color(palette.backgroundColor).setOpacity(0.75).get(),
                                 padding: '1em',
                                 borderRadius: '0.5em'
                             },

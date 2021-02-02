@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v8.2.2 (2020-10-22)
+ * @license Highcharts JS v9.0.0 (2021-02-02)
  *
  * Dot plot series type for Highcharts
  *
@@ -28,10 +28,10 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/DotplotSeries.js', [_modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Series, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/DotPlot/DotPlotSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
         /* *
          *
-         *  (c) 2009-2020 Torstein Honsi
+         *  (c) 2009-2021 Torstein Honsi
          *
          *  Dot plot series type for Highcharts
          *
@@ -40,9 +40,55 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        SVGRenderer.prototype.symbols.rect = function (x, y, w, h, options) {
+            return SVGRenderer.prototype.symbols.callout(x, y, w, h, options);
+        };
+
+    });
+    _registerModule(_modules, 'Series/DotPlot/DotPlotSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2009-2021 Torstein Honsi
+         *
+         *  Dot plot series type for Highcharts
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /**
+         * @private
+         * @todo
+         * - Check update, remove etc.
+         * - Custom icons like persons, carts etc. Either as images, font icons or
+         *   Highcharts symbols.
+         */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var extend = U.extend,
+            merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * @private
          * @class
@@ -50,18 +96,32 @@
          *
          * @augments Highcharts.Series
          */
-        Series.seriesType('dotplot', 'column', {
-            itemPadding: 0.2,
-            marker: {
-                symbol: 'circle',
-                states: {
-                    hover: {},
-                    select: {}
-                }
+        var DotPlotSeries = /** @class */ (function (_super) {
+                __extends(DotPlotSeries, _super);
+            function DotPlotSeries() {
+                /* *
+                 *
+                 * Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 * Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                return _this;
             }
-        }, {
-            markerAttribs: void 0,
-            drawPoints: function () {
+            /* *
+             *
+             * Functions
+             *
+             * */
+            DotPlotSeries.prototype.drawPoints = function () {
                 var series = this,
                     renderer = series.chart.renderer,
                     seriesMarkerOptions = this.options.marker,
@@ -141,12 +201,30 @@
                         }
                     });
                 });
-            }
+            };
+            DotPlotSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+                itemPadding: 0.2,
+                marker: {
+                    symbol: 'circle',
+                    states: {
+                        hover: {},
+                        select: {}
+                    }
+                }
+            });
+            return DotPlotSeries;
+        }(ColumnSeries));
+        extend(DotPlotSeries.prototype, {
+            markerAttribs: void 0
         });
-        SVGRenderer.prototype.symbols.rect = function (x, y, w, h, options) {
-            return SVGRenderer.prototype.symbols.callout(x, y, w, h, options);
-        };
+        SeriesRegistry.registerSeriesType('dotplot', DotPlotSeries);
+        /* *
+         *
+         * Default Export
+         *
+         * */
 
+        return DotPlotSeries;
     });
     _registerModule(_modules, 'masters/modules/dotplot.src.js', [], function () {
 
