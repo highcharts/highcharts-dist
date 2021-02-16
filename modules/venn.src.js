@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
- * (c) 2017-2019 Highsoft AS
+ * (c) 2017-2021 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license
@@ -743,7 +743,7 @@
             return VennPoint;
         }(ScatterSeries.prototype.pointClass));
         extend(VennPoint.prototype, {
-            draw: DrawPointMixin.draw
+            draw: DrawPointMixin.drawPoint
         });
         /* *
          *

@@ -1,9 +1,9 @@
 /*
- Highcharts Gantt JS v9.0.0 (2021-02-02)
+ Highcharts Gantt JS v9.0.1 (2021-02-15)
 
  GridAxis
 
- (c) 2016-2019 Lars A. V. Cabrera
+ (c) 2016-2021 Lars A. V. Cabrera
 
  License: www.highcharts.com/license
 */

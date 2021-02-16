@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
  * Accessibility module
  *
- * (c) 2010-2019 Highsoft AS
+ * (c) 2010-2021 Highsoft AS
  * Author: Oystein Moseng
  *
  * License: www.highcharts.com/license
@@ -115,6 +115,57 @@
             return { type: type };
         }
         /**
+         * Get an appropriate heading level for an element. Corresponds to the
+         * heading level below the previous heading in the DOM.
+         *
+         * Note: Only detects previous headings in the DOM that are siblings,
+         * ancestors, or previous siblings of ancestors. Headings that are nested below
+         * siblings of ancestors (cousins et.al) are not picked up. This is because it
+         * is ambiguous whether or not the nesting is for layout purposes or indicates a
+         * separate section.
+         *
+         * @private
+         * @param {Highcharts.HTMLDOMElement} [element]
+         * @return {string} The heading tag name (h1, h2 etc).
+         * If no nearest heading is found, "p" is returned.
+         */
+        function getHeadingTagNameForElement(element) {
+            var getIncreasedHeadingLevel = function (tagName) {
+                    var headingLevel = parseInt(tagName.slice(1), 10);
+                var newLevel = Math.min(6,
+                    headingLevel + 1);
+                return 'h' + newLevel;
+            };
+            var isHeading = function (tagName) { return /H[1-6]/.test(tagName); };
+            var getPreviousSiblingsHeading = function (el) {
+                    var sibling = el;
+                while (sibling = sibling.previousSibling) { // eslint-disable-line
+                    var tagName = sibling.tagName || '';
+                    if (isHeading(tagName)) {
+                        return tagName;
+                    }
+                }
+                return '';
+            };
+            var getHeadingRecursive = function (el) {
+                    var prevSiblingsHeading = getPreviousSiblingsHeading(el);
+                if (prevSiblingsHeading) {
+                    return getIncreasedHeadingLevel(prevSiblingsHeading);
+                }
+                // No previous siblings are headings, try parent node
+                var parent = el.parentElement;
+                if (!parent) {
+                    return 'p';
+                }
+                var parentTagName = parent.tagName;
+                if (isHeading(parentTagName)) {
+                    return getIncreasedHeadingLevel(parentTagName);
+                }
+                return getHeadingRecursive(parent);
+            };
+            return getHeadingRecursive(element);
+        }
+        /**
          * Remove an element from the DOM.
          * @private
          * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} [element]
@@ -193,6 +244,7 @@
                 escapeStringForHTML: escapeStringForHTML,
                 getElement: getElement,
                 getFakeMouseEvent: getFakeMouseEvent,
+                getHeadingTagNameForElement: getHeadingTagNameForElement,
                 removeElement: removeElement,
                 reverseChildNodes: reverseChildNodes,
                 setElAttrs: setElAttrs,
@@ -2266,11 +2318,14 @@
          * @return {boolean|number|undefined}
          */
         function isSkipPoint(point) {
+            var _a;
             var a11yOptions = point.series.chart.options.accessibility;
+            var pointA11yDisabled = ((_a = point.options.accessibility) === null || _a === void 0 ? void 0 : _a.enabled) === false;
             return point.isNull &&
                 a11yOptions.keyboardNavigation.seriesNavigation.skipNullPoints ||
                 point.visible === false ||
                 point.isInside === false ||
+                pointA11yDisabled ||
                 isSkipSeries(point.series);
         }
         /**
@@ -2875,6 +2930,7 @@
             var langFormatStr = 'accessibility.screenReaderSection.annotations.description' + pointsSelector;
             var context = {
                     annotationText: labelText,
+                    annotation: label,
                     numPoints: numPoints,
                     annotationPoint: pointValueDescriptions[0],
                     additionalAnnotationPoints: pointValueDescriptions.slice(1)
@@ -2908,7 +2964,7 @@
                 return '';
             }
             var annotationItems = getAnnotationListItems(chart);
-            return "<ul>" + annotationItems.join(' ') + "</ul>";
+            return "<ul style=\"list-style-type: none\">" + annotationItems.join(' ') + "</ul>";
         }
         /**
          * Return the texts for the annotation(s) connected to a point, or empty array
@@ -3289,15 +3345,18 @@
                 setKeyboardProps = shouldSetKeyboardNavPropsOnPoints(series);
             if (setScreenReaderProps || setKeyboardProps) {
                 series.points.forEach(function (point) {
+                    var _a,
+                        _b;
                     var pointEl = point.graphic && point.graphic.element ||
                             shouldAddDummyPoint(point) && addDummyPointElement(point);
+                    var pointA11yDisabled = ((_b = (_a = point.options) === null || _a === void 0 ? void 0 : _a.accessibility) === null || _b === void 0 ? void 0 : _b.enabled) === false;
                     if (pointEl) {
                         // We always set tabindex, as long as we are setting props.
                         // When setting tabindex, also remove default outline to
                         // avoid ugly border on click.
                         pointEl.setAttribute('tabindex', '-1');
                         pointEl.style.outline = '0';
-                        if (setScreenReaderProps) {
+                        if (setScreenReaderProps && !pointA11yDisabled) {
                             setPointScreenReaderAttribs(point, pointEl);
                         }
                         else {
@@ -4551,6 +4610,7 @@
                  * @sample {highstock} stock/rangeselector/enabled/
                  *         Disable the range selector
                  *
+                 * @type {boolean|undefined}
                  * @default {highstock} true
                  */
                 enabled: void 0,
@@ -5652,7 +5712,9 @@
                         height: 0,
                         zIndex: inputsZIndex
                     });
-                    this.renderButtons();
+                    if (this.buttonOptions.length) {
+                        this.renderButtons();
+                    }
                     // First create a wrapper outside the container in order to make
                     // the inputs work and make export correct
                     if (container.parentNode) {
@@ -6159,7 +6221,7 @@
                         hasActiveButton = true;
                     }
                 });
-                if (!hasActiveButton && buttons.length > 0) {
+                if (!hasActiveButton) {
                     if (dropdown) {
                         dropdown.selectedIndex = 0;
                     }
@@ -7117,10 +7179,11 @@
             getChartTitle = ChartUtilities.getChartTitle,
             unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
         var addClass = HTMLUtilities.addClass,
-            setElAttrs = HTMLUtilities.setElAttrs,
             escapeStringForHTML = HTMLUtilities.escapeStringForHTML,
-            stripHTMLTagsFromString = HTMLUtilities.stripHTMLTagsFromString,
             getElement = HTMLUtilities.getElement,
+            getHeadingTagNameForElement = HTMLUtilities.getHeadingTagNameForElement,
+            setElAttrs = HTMLUtilities.setElAttrs,
+            stripHTMLTagsFromString = HTMLUtilities.stripHTMLTagsFromString,
             visuallyHideElement = HTMLUtilities.visuallyHideElement;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
@@ -7357,6 +7420,7 @@
                     annotationsList = getAnnotationsInfoHTML(chart),
                     annotationsTitleStr = chart.langFormat('accessibility.screenReaderSection.annotations.heading', { chart: chart }),
                     context = {
+                        headingTagName: getHeadingTagNameForElement(chart.renderTo),
                         chartTitle: getChartTitle(chart),
                         typeDescription: this.getTypeDescriptionText(),
                         chartSubtitle: this.getSubtitleText(),
@@ -8058,6 +8122,12 @@
         * @type {string|undefined}
         * @requires modules/accessibility
         * @since 7.1.0
+        */ /**
+        * Enable or disable exposing the point to assistive technology
+        * @name Highcharts.PointAccessibilityOptionsObject#enabled
+        * @type {boolean|undefined}
+        * @requires modules/accessibility
+        * @since 9.0.1
         */
         /* *
          * @interface Highcharts.PointOptionsObject in parts/Point.ts
@@ -8147,16 +8217,20 @@
                          */
                         /**
                          * Format for the screen reader information region before the chart.
-                         * Supported HTML tags are `<h1-7>`, `<p>`, `<div>`, `<a>`, `<ul>`,
+                         * Supported HTML tags are `<h1-6>`, `<p>`, `<div>`, `<a>`, `<ul>`,
                          * `<ol>`, `<li>`, and `<button>`. Attributes are not supported,
                          * except for id on `<div>`, `<a>`, and `<button>`. Id is required
                          * on `<a>` and `<button>` in the format `<tag id="abcd">`. Numbers,
                          * lower- and uppercase letters, "-" and "#" are valid characters in
                          * IDs.
                          *
+                         * The headingTagName is an auto-detected heading (h1-h6) that
+                         * corresponds to the heading level below the previous heading in
+                         * the DOM.
+                         *
                          * @since 8.0.0
                          */
-                        beforeChartFormat: '<h5>{chartTitle}</h5>' +
+                        beforeChartFormat: '<{headingTagName}>{chartTitle}</{headingTagName}>' +
                             '<div>{typeDescription}</div>' +
                             '<div>{chartSubtitle}</div>' +
                             '<div>{chartLongdesc}</div>' +
@@ -8645,6 +8719,15 @@
                  * @type      {string}
                  * @since     7.1.0
                  * @apioption series.line.data.accessibility.description
+                 */
+                /**
+                 * Set to false to disable accessibility functionality for a specific point.
+                 * The point will not be included in keyboard navigation, and will not be
+                 * exposed to assistive technology.
+                 *
+                 * @type      {boolean}
+                 * @since 9.0.1
+                 * @apioption series.line.data.accessibility.enabled
                  */
                 /**
                  * Accessibility options for a series.
@@ -9921,7 +10004,7 @@
         };
 
     });
-    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/Options.js'], _modules['Accessibility/Options/LangOptions.js'], _modules['Accessibility/Options/DeprecatedOptions.js']], function (ChartUtilities, H, KeyboardNavigationHandler, O, Point, Series, U, AccessibilityComponent, KeyboardNavigation, LegendComponent, MenuComponent, SeriesComponent, ZoomComponent, RangeSelectorComponent, InfoRegionsComponent, ContainerComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions) {
+    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/Options.js'], _modules['Accessibility/Options/LangOptions.js'], _modules['Accessibility/Options/DeprecatedOptions.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (ChartUtilities, H, KeyboardNavigationHandler, O, Point, Series, U, AccessibilityComponent, KeyboardNavigation, LegendComponent, MenuComponent, SeriesComponent, ZoomComponent, RangeSelectorComponent, InfoRegionsComponent, ContainerComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions, HTMLUtilities) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -9948,6 +10031,7 @@
         });
         // Expose functionality on Highcharts namespace
         H.A11yChartUtilities = ChartUtilities;
+        H.A11yHTMLUtilities = HTMLUtilities;
         H.KeyboardNavigationHandler = KeyboardNavigationHandler;
         H.AccessibilityComponent = AccessibilityComponent;
         /* eslint-disable no-invalid-this, valid-jsdoc */

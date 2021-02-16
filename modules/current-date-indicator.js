@@ -1,9 +1,9 @@
 /*
- Highcharts Gantt JS v9.0.0 (2021-02-02)
+ Highcharts Gantt JS v9.0.1 (2021-02-15)
 
  CurrentDateIndicator
 
- (c) 2010-2019 Lars A. V. Cabrera
+ (c) 2010-2021 Lars A. V. Cabrera
 
  License: www.highcharts.com/license
 */

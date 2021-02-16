@@ -1,9 +1,9 @@
 /*
- Highstock JS v9.0.0 (2021-02-02)
+ Highstock JS v9.0.1 (2021-02-15)
 
  Parabolic SAR Indicator for Highstock
 
- (c) 2010-2019 Grzegorz Blachliski
+ (c) 2010-2021 Grzegorz Blachliski
 
  License: www.highcharts.com/license
 */

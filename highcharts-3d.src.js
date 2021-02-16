@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
  * 3D features for Highcharts JS
  *
@@ -4977,7 +4977,7 @@
         SeriesRegistry.seriesTypes.pie = Pie3DSeries;
 
     });
-    _registerModule(_modules, 'Series/Scatter3D/Scatter3DPoint.js', [_modules['Series/Scatter/ScatterSeries.js']], function (ScatterSeries) {
+    _registerModule(_modules, 'Series/Scatter3D/Scatter3DPoint.js', [_modules['Series/Scatter/ScatterSeries.js'], _modules['Core/Utilities.js']], function (ScatterSeries, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -5005,6 +5005,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
+        var defined = U.defined;
         /* *
          *
          *  Class
@@ -5031,7 +5032,7 @@
              * */
             Scatter3DPoint.prototype.applyOptions = function () {
                 _super.prototype.applyOptions.apply(this, arguments);
-                if (typeof this.z === 'undefined') {
+                if (!defined(this.z)) {
                     this.z = 0;
                 }
                 return this;

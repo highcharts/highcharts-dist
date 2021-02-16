@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
  * Sankey diagram module
  *
- * (c) 2010-2019 Torstein Honsi
+ * (c) 2010-2021 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -1441,7 +1441,7 @@
             createNode: NodesMixin.createNode,
             destroy: NodesMixin.destroy,
             forceDL: true,
-            invertable: true,
+            invertible: true,
             isCartesian: false,
             orderNodes: true,
             pointArrayMap: ['from', 'to'],

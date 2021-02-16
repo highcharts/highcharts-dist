@@ -1,9 +1,9 @@
 /*
- Highcharts Gantt JS v9.0.0 (2021-02-02)
+ Highcharts Gantt JS v9.0.1 (2021-02-15)
 
  Tree Grid
 
- (c) 2016-2019 Jon Arild Nygard
+ (c) 2016-2021 Jon Arild Nygard
 
  License: www.highcharts.com/license
 */

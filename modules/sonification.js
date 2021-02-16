@@ -1,9 +1,9 @@
 /*
- Highcharts JS v9.0.0 (2021-02-02)
+ Highcharts JS v9.0.1 (2021-02-15)
 
  Sonification module
 
- (c) 2012-2019 ystein Moseng
+ (c) 2012-2021 ystein Moseng
 
  License: www.highcharts.com/license
 */

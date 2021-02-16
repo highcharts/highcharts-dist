@@ -1,9 +1,9 @@
 /**
- * @license Highcharts Gantt JS v9.0.0 (2021-02-02)
+ * @license Highcharts Gantt JS v9.0.1 (2021-02-16)
  *
  * Gantt series
  *
- * (c) 2016-2019 Lars A. V. Cabrera
+ * (c) 2016-2021 Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -721,6 +721,25 @@
                 return (this.chart.pointCount < (this.options.animationLimit || 250) ?
                     'animate' :
                     'attr');
+            };
+            /**
+             * @private
+             * @function Highcharts.XRangeSeries#isPointInside
+             */
+            XRangeSeries.prototype.isPointInside = function (point) {
+                var shapeArgs = point.shapeArgs,
+                    plotX = point.plotX,
+                    plotY = point.plotY;
+                if (!shapeArgs) {
+                    return _super.prototype.isPointInside.apply(this, arguments);
+                }
+                var isInside = typeof plotX !== 'undefined' &&
+                        typeof plotY !== 'undefined' &&
+                        plotY >= 0 &&
+                        plotY <= this.yAxis.len &&
+                        shapeArgs.x + shapeArgs.width >= 0 &&
+                        plotX <= this.xAxis.len;
+                return isInside;
             };
             /* *
              *
@@ -7537,9 +7556,22 @@
                  * Scrollbar class to use.
                  */
                 ScrollbarAxis.compose = function (AxisClass, ScrollbarClass) {
-                    // Wrap axis initialization and create scrollbar if enabled:
-                    addEvent(AxisClass, 'afterInit', function () {
-                        var axis = this;
+                    var getExtremes = function (axis) {
+                        var axisMin = pick(axis.options && axis.options.min, axis.min);
+                    var axisMax = pick(axis.options && axis.options.max,
+                        axis.max);
+                    return {
+                        axisMin: axisMin,
+                        axisMax: axisMax,
+                        scrollMin: defined(axis.dataMin) ?
+                            Math.min(axisMin, axis.min, axis.dataMin, pick(axis.threshold, Infinity)) : axisMin,
+                        scrollMax: defined(axis.dataMax) ?
+                            Math.max(axisMax, axis.max, axis.dataMax, pick(axis.threshold, -Infinity)) : axisMax
+                    };
+                };
+                // Wrap axis initialization and create scrollbar if enabled:
+                addEvent(AxisClass, 'afterInit', function () {
+                    var axis = this;
                     if (axis.options &&
                         axis.options.scrollbar &&
                         axis.options.scrollbar.enabled) {
@@ -7548,18 +7580,11 @@
                         axis.options.startOnTick = axis.options.endOnTick = false;
                         axis.scrollbar = new ScrollbarClass(axis.chart.renderer, axis.options.scrollbar, axis.chart);
                         addEvent(axis.scrollbar, 'changed', function (e) {
-                            var axisMin = pick(axis.options && axis.options.min,
-                                axis.min),
-                                axisMax = pick(axis.options && axis.options.max,
-                                axis.max),
-                                unitedMin = defined(axis.dataMin) ?
-                                    Math.min(axisMin,
-                                axis.min,
-                                axis.dataMin) : axisMin,
-                                unitedMax = defined(axis.dataMax) ?
-                                    Math.max(axisMax,
-                                axis.max,
-                                axis.dataMax) : axisMax,
+                            var _a = getExtremes(axis),
+                                axisMin = _a.axisMin,
+                                axisMax = _a.axisMax,
+                                unitedMin = _a.scrollMin,
+                                unitedMax = _a.scrollMax,
                                 range = unitedMax - unitedMin,
                                 to,
                                 from;
@@ -7597,18 +7622,9 @@
                 // Wrap rendering axis, and update scrollbar if one is created:
                 addEvent(AxisClass, 'afterRender', function () {
                     var axis = this,
-                        scrollMin = Math.min(pick(axis.options.min,
-                        axis.min),
-                        axis.min,
-                        pick(axis.dataMin,
-                        axis.min) // #6930
-                        ),
-                        scrollMax = Math.max(pick(axis.options.max,
-                        axis.max),
-                        axis.max,
-                        pick(axis.dataMax,
-                        axis.max) // #6930
-                        ),
+                        _a = getExtremes(axis),
+                        scrollMin = _a.scrollMin,
+                        scrollMax = _a.scrollMax,
                         scrollbar = axis.scrollbar,
                         offset = axis.axisTitleMargin + (axis.titleOffset || 0),
                         scrollbarsOffsets = axis.chart.scrollbarsOffsets,
@@ -8799,6 +8815,7 @@
                  * @sample {highstock} stock/rangeselector/enabled/
                  *         Disable the range selector
                  *
+                 * @type {boolean|undefined}
                  * @default {highstock} true
                  */
                 enabled: void 0,
@@ -9900,7 +9917,9 @@
                         height: 0,
                         zIndex: inputsZIndex
                     });
-                    this.renderButtons();
+                    if (this.buttonOptions.length) {
+                        this.renderButtons();
+                    }
                     // First create a wrapper outside the container in order to make
                     // the inputs work and make export correct
                     if (container.parentNode) {
@@ -10407,7 +10426,7 @@
                         hasActiveButton = true;
                     }
                 });
-                if (!hasActiveButton && buttons.length > 0) {
+                if (!hasActiveButton) {
                     if (dropdown) {
                         dropdown.selectedIndex = 0;
                     }

@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
  * Client side exporting module
  *
- * (c) 2015-2019 Torstein Honsi / Oystein Moseng
+ * (c) 2015-2021 Torstein Honsi / Oystein Moseng
  *
  * License: www.highcharts.com/license
  */
@@ -154,6 +154,7 @@
         var addEvent = U.addEvent,
             error = U.error,
             extend = U.extend,
+            fireEvent = U.fireEvent,
             getOptions = U.getOptions,
             merge = U.merge;
         var downloadURL = DownloadURL.downloadURL;
@@ -367,6 +368,15 @@
                         i++;
                     }
                 }
+                // Workaround for #15135, zero width spaces, which Highcharts uses to
+                // break lines, are not correctly rendered in PDF. Replace it with a
+                // regular space and offset by some pixels to compensate.
+                [].forEach.call(svgElement.querySelectorAll('tspan'), function (tspan) {
+                    if (tspan.textContent === '\u200B') {
+                        tspan.textContent = ' ';
+                        tspan.setAttribute('dx', -5);
+                    }
+                });
                 win.svg2pdf(svgElement, pdf, { removeInvalid: true });
                 return pdf.output('datauristring');
             }
@@ -667,7 +677,7 @@
                         'for charts with embedded HTML');
                 }
                 else {
-                    downloadSVGLocal(svg, extend({ filename: chart.getFilename() }, options), fallbackToExportServer);
+                    downloadSVGLocal(svg, extend({ filename: chart.getFilename() }, options), fallbackToExportServer, function () { return fireEvent(chart, 'exportChartLocalSuccess'); });
                 }
             }, 
             // Return true if the SVG contains images with external data. With the
@@ -729,7 +739,7 @@
         };
         // Extend the default options to use the local exporter logic
         merge(true, getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/9.0.0/lib/',
+            libURL: 'https://code.highcharts.com/9.0.1/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {

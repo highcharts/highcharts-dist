@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
  * Timeline series
  *
- * (c) 2010-2019 Highsoft AS
+ * (c) 2010-2021 Highsoft AS
  * Author: Daniel Studencki
  *
  * License: www.highcharts.com/license
@@ -558,6 +558,10 @@
                 colorByPoint: true,
                 stickyTracking: false,
                 ignoreHiddenPoint: true,
+                /**
+                 * @ignore
+                 * @private
+                 */
                 legendType: 'point',
                 lineWidth: 4,
                 tooltip: {

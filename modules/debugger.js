@@ -1,9 +1,9 @@
 /*
- Highcharts JS v9.0.0 (2021-02-02)
+ Highcharts JS v9.0.1 (2021-02-15)
 
  Debugger module
 
- (c) 2012-2019 Torstein Honsi
+ (c) 2012-2021 Torstein Honsi
 
  License: www.highcharts.com/license
 */

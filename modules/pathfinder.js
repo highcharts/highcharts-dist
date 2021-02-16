@@ -1,9 +1,9 @@
 /*
- Highcharts Gantt JS v9.0.0 (2021-02-02)
+ Highcharts Gantt JS v9.0.1 (2021-02-15)
 
  Pathfinder
 
- (c) 2016-2019 ystein Moseng
+ (c) 2016-2021 ystein Moseng
 
  License: www.highcharts.com/license
 */

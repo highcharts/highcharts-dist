@@ -1,7 +1,7 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
- * (c) 2009-2018 Torstein Honsi
+ * (c) 2009-2021 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -2446,7 +2446,8 @@
         var _a = SeriesRegistry.seriesTypes,
             ColumnPoint = _a.column.prototype.pointClass,
             AreaRangePoint = _a.arearange.prototype.pointClass;
-        var extend = U.extend;
+        var extend = U.extend,
+            isNumber = U.isNumber;
         /* *
          *
          *  Class
@@ -2465,6 +2466,9 @@
                 _this.shapeType = void 0;
                 return _this;
             }
+            ColumnRangePoint.prototype.isValid = function () {
+                return isNumber(this.low);
+            };
             return ColumnRangePoint;
         }(AreaRangePoint));
         /* *

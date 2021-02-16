@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
  * Annotations module
  *
- * (c) 2009-2019 Torstein Honsi
+ * (c) 2009-2021 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -4122,7 +4122,6 @@
                     // TO DO: Polyfill for IE11?
                     !closestPolyfill(clickEvent.target, '.' + PREFIX + 'popup')) {
                     fireEvent(navigation, 'closePopup');
-                    navigation.deselectAnnotation();
                 }
                 if (!selectedButton || !selectedButton.start) {
                     return;
@@ -4593,7 +4592,6 @@
                 }
                 else {
                     // Deselect current:
-                    navigation.deselectAnnotation();
                     fireEvent(navigation, 'closePopup');
                 }
                 // Let bubble event to chart.click:
@@ -4865,7 +4863,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.0.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.0.1/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -4930,6 +4928,9 @@
                 }
             }
         });
+        addEvent(NavigationBindings, 'closePopup', function () {
+            this.deselectAnnotation();
+        });
 
         return NavigationBindings;
     });
@@ -4949,6 +4950,7 @@
         var addEvent = U.addEvent,
             createElement = U.createElement,
             defined = U.defined,
+            fireEvent = U.fireEvent,
             getOptions = U.getOptions,
             isArray = U.isArray,
             isObject = U.isObject,
@@ -4969,8 +4971,8 @@
                 proceed.apply(this, Array.prototype.slice.call(arguments, 1));
             }
         });
-        H.Popup = function (parentDiv, iconsURL) {
-            this.init(parentDiv, iconsURL);
+        H.Popup = function (parentDiv, iconsURL, chart) {
+            this.init(parentDiv, iconsURL, chart);
         };
         H.Popup.prototype = {
             /**
@@ -4981,7 +4983,8 @@
              * @param {string} iconsURL
              * Icon URL
              */
-            init: function (parentDiv, iconsURL) {
+            init: function (parentDiv, iconsURL, chart) {
+                this.chart = chart;
                 // create popup div
                 this.container = createElement(DIV, {
                     className: PREFIX + 'popup'
@@ -5006,7 +5009,7 @@
                     this.iconsURL + 'close.svg)';
                 ['click', 'touchstart'].forEach(function (eventName) {
                     addEvent(closeBtn, eventName, function () {
-                        _self.closePopup();
+                        fireEvent(_self.chart.navigationBindings, 'closePopup');
                     });
                 });
             },
@@ -5713,7 +5716,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/9.0.0/gfx/stock-icons/'));
+                    'https://code.highcharts.com/9.0.1/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

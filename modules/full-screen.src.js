@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v9.0.0 (2021-02-02)
+ * @license Highstock JS v9.0.1 (2021-02-16)
  *
  * Advanced Highstock tools
  *
- * (c) 2010-2019 Highsoft AS
+ * (c) 2010-2021 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -128,7 +128,8 @@
              */
             Fullscreen.prototype.close = function () {
                 var fullscreen = this,
-                    chart = fullscreen.chart;
+                    chart = fullscreen.chart,
+                    optionsChart = chart.options.chart;
                 // Don't fire exitFullscreen() when user exited using 'Escape' button.
                 if (fullscreen.isOpen &&
                     fullscreen.browserProps &&
@@ -139,6 +140,15 @@
                 if (fullscreen.unbindFullscreenEvent) {
                     fullscreen.unbindFullscreenEvent();
                 }
+                chart.setSize(fullscreen.origWidth, fullscreen.origHeight, false);
+                fullscreen.origWidth = void 0;
+                fullscreen.origHeight = void 0;
+                if (optionsChart) {
+                    optionsChart.width = fullscreen.origWidthOption;
+                    optionsChart.height = fullscreen.origHeightOption;
+                }
+                fullscreen.origWidthOption = void 0;
+                fullscreen.origHeightOption = void 0;
                 fullscreen.isOpen = false;
                 fullscreen.setButtonText();
             };
@@ -156,7 +166,14 @@
              */
             Fullscreen.prototype.open = function () {
                 var fullscreen = this,
-                    chart = fullscreen.chart;
+                    chart = fullscreen.chart,
+                    optionsChart = chart.options.chart;
+                if (optionsChart) {
+                    fullscreen.origWidthOption = optionsChart.width;
+                    fullscreen.origHeightOption = optionsChart.height;
+                }
+                fullscreen.origWidth = chart.chartWidth;
+                fullscreen.origHeight = chart.chartHeight;
                 // Handle exitFullscreen() method when user clicks 'Escape' button.
                 if (fullscreen.browserProps) {
                     fullscreen.unbindFullscreenEvent = addEvent(chart.container.ownerDocument, // chart's document
@@ -167,6 +184,7 @@
                             fullscreen.close();
                         }
                         else {
+                            chart.setSize(null, null, false);
                             fullscreen.isOpen = true;
                             fullscreen.setButtonText();
                         }

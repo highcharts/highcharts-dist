@@ -49,7 +49,7 @@ checkPassiveEvents = function () {
 };
 var H = {
     product: 'Highcharts',
-    version: '9.0.0',
+    version: '9.0.1',
     deg2rad: Math.PI * 2 / 360,
     doc: doc,
     hasBidiBug: hasBidiBug,

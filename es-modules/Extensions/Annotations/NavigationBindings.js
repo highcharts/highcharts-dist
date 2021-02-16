@@ -263,7 +263,6 @@ var NavigationBindings = /** @class */ (function () {
             // TO DO: Polyfill for IE11?
             !closestPolyfill(clickEvent.target, '.' + PREFIX + 'popup')) {
             fireEvent(navigation, 'closePopup');
-            navigation.deselectAnnotation();
         }
         if (!selectedButton || !selectedButton.start) {
             return;
@@ -714,7 +713,6 @@ function selectableAnnotation(annotationType) {
         }
         else {
             // Deselect current:
-            navigation.deselectAnnotation();
             fireEvent(navigation, 'closePopup');
         }
         // Let bubble event to chart.click:
@@ -974,7 +972,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/9.0.0/gfx/stock-icons/
+         * @default   https://code.highcharts.com/9.0.1/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */
@@ -1038,5 +1036,8 @@ setOptions({
             }
         }
     }
+});
+addEvent(NavigationBindings, 'closePopup', function () {
+    this.deselectAnnotation();
 });
 export default NavigationBindings;

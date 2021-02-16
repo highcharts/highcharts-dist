@@ -1,9 +1,9 @@
 /**
- * @license Highcharts JS v9.0.0 (2021-02-02)
+ * @license Highcharts JS v9.0.1 (2021-02-16)
  *
  * X-range series
  *
- * (c) 2010-2019 Torstein Honsi, Lars A. V. Cabrera
+ * (c) 2010-2021 Torstein Honsi, Lars A. V. Cabrera
  *
  * License: www.highcharts.com/license
  */
@@ -721,6 +721,25 @@
                 return (this.chart.pointCount < (this.options.animationLimit || 250) ?
                     'animate' :
                     'attr');
+            };
+            /**
+             * @private
+             * @function Highcharts.XRangeSeries#isPointInside
+             */
+            XRangeSeries.prototype.isPointInside = function (point) {
+                var shapeArgs = point.shapeArgs,
+                    plotX = point.plotX,
+                    plotY = point.plotY;
+                if (!shapeArgs) {
+                    return _super.prototype.isPointInside.apply(this, arguments);
+                }
+                var isInside = typeof plotX !== 'undefined' &&
+                        typeof plotY !== 'undefined' &&
+                        plotY >= 0 &&
+                        plotY <= this.yAxis.len &&
+                        shapeArgs.x + shapeArgs.width >= 0 &&
+                        plotX <= this.xAxis.len;
+                return isInside;
             };
             /* *
              *

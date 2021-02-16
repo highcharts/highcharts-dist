@@ -1,9 +1,9 @@
 /*
- Highcharts JS v9.0.0 (2021-02-02)
+ Highcharts JS v9.0.1 (2021-02-15)
 
  Arrow Symbols
 
- (c) 2017-2019 Lars A. V. Cabrera
+ (c) 2017-2021 Lars A. V. Cabrera
 
  License: www.highcharts.com/license
 */

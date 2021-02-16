@@ -1,9 +1,9 @@
 /*
- Highcharts JS v9.0.0 (2021-02-02)
+ Highcharts JS v9.0.1 (2021-02-15)
 
  Sankey diagram module
 
- (c) 2010-2019 Torstein Honsi
+ (c) 2010-2021 Torstein Honsi
 
  License: www.highcharts.com/license
 */
@@ -34,5 +34,5 @@ h-g),x=D+20,F=x+g,H=b,E=H+g,z=E+20,A=x+.7*g,B=p-.7*g,I=r+.7*g;a.shapeArgs={d:[["
 c.color)};f.prototype.translateNode=function(a,b){var c=this.translationFactor,d=this.chart,e=this.options,g=a.getSum(),k=Math.max(Math.round(g*c),this.options.minLinkWidth),h=Math.round(e.borderWidth)%2/2,l=b.offset(a,c);b=Math.floor(q(l.absoluteTop,b.top(c)+l.relativeTop))+h;h=Math.floor(this.colDistance*a.column+e.borderWidth/2)+h;h=d.inverted?d.plotSizeX-h:h;c=Math.round(this.nodeWidth);(a.sum=g)?(a.shapeType="rect",a.nodeX=h,a.nodeY=b,a.shapeArgs=d.inverted?{x:h-c,y:d.plotSizeY-b-k,width:a.options.height||
 e.height||c,height:a.options.width||e.width||k}:{x:h,y:b,width:a.options.width||e.width||c,height:a.options.height||e.height||k},a.shapeArgs.display=a.hasShape()?"":"none",a.dlOptions=f.getDLOptions({level:this.mapOptionsToLevel[a.level],optionsPoint:a.options}),a.plotY=1,a.tooltipPos=d.inverted?[d.plotSizeY-a.shapeArgs.y-a.shapeArgs.height/2,d.plotSizeX-a.shapeArgs.x-a.shapeArgs.width/2]:[a.shapeArgs.x+a.shapeArgs.width/2,a.shapeArgs.y+a.shapeArgs.height/2]):a.dlOptions={enabled:!1}};f.defaultOptions=
 A(b.defaultOptions,{borderWidth:0,colorByPoint:!0,curveFactor:.33,dataLabels:{enabled:!0,backgroundColor:"none",crop:!1,nodeFormat:void 0,nodeFormatter:function(){return this.point.name},format:void 0,formatter:function(){},inside:!0},inactiveOtherPoints:!0,linkOpacity:.5,minLinkWidth:0,nodeWidth:20,nodePadding:10,showInLegend:!1,states:{hover:{linkOpacity:1},inactive:{linkOpacity:.1,opacity:.1,animation:{duration:50}}},tooltip:{followPointer:!0,headerFormat:'<span style="font-size: 10px">{series.name}</span><br/>',
-pointFormat:"{point.fromNode.name} \u2192 {point.toNode.name}: <b>{point.weight}</b><br/>",nodeFormat:"{point.name}: <b>{point.sum}</b><br/>"}});return f}(b);h(f.prototype,{animate:c.prototype.animate,createNode:k.createNode,destroy:k.destroy,forceDL:!0,invertable:!0,isCartesian:!1,orderNodes:!0,pointArrayMap:["from","to"],pointClass:l,searchPoint:g.noop,setData:k.setData});p.registerSeriesType("sankey",f);"";"";return f});r(d,"masters/modules/sankey.src.js",[],function(){})});
+pointFormat:"{point.fromNode.name} \u2192 {point.toNode.name}: <b>{point.weight}</b><br/>",nodeFormat:"{point.name}: <b>{point.sum}</b><br/>"}});return f}(b);h(f.prototype,{animate:c.prototype.animate,createNode:k.createNode,destroy:k.destroy,forceDL:!0,invertible:!0,isCartesian:!1,orderNodes:!0,pointArrayMap:["from","to"],pointClass:l,searchPoint:g.noop,setData:k.setData});p.registerSeriesType("sankey",f);"";"";return f});r(d,"masters/modules/sankey.src.js",[],function(){})});
 //# sourceMappingURL=sankey.js.map

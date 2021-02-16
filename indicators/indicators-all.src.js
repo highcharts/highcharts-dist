@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v9.0.0 (2021-02-02)
+ * @license Highstock JS v9.0.1 (2021-02-16)
  *
  * All technical indicators for Highstock
  *
- * (c) 2010-2019 Pawel Fus
+ * (c) 2010-2021 Pawel Fus
  *
  * License: www.highcharts.com/license
  */
@@ -4047,6 +4047,7 @@
                 indicator.points = mainLinePoints;
                 indicator.options = mainLineOptions;
                 indicator.graph = mainLinePath;
+                indicator.color = mainColor;
             };
             IKHIndicator.prototype.getGraphPath = function (points) {
                 var indicator = this,
@@ -4807,10 +4808,12 @@
                 }
                 // Calculating the short and long EMA used when calculating the MACD
                 shortEMA = SeriesRegistry.seriesTypes.ema.prototype.getValues(series, {
-                    period: params.shortPeriod
+                    period: params.shortPeriod,
+                    index: params.index
                 });
                 longEMA = SeriesRegistry.seriesTypes.ema.prototype.getValues(series, {
-                    period: params.longPeriod
+                    period: params.longPeriod,
+                    index: params.index
                 });
                 shortEMA = shortEMA.values;
                 longEMA = longEMA.values;

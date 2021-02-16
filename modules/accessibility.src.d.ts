@@ -61,6 +61,10 @@ declare module "../highcharts.src" {
          * Provide a description of the data point, announced to screen readers.
          */
         description?: string;
+        /**
+         * Enable or disable exposing the point to assistive technology
+         */
+        enabled?: boolean;
     }
     interface PointOptionsObject {
         accessibility?: PointAccessibilityOptionsObject;

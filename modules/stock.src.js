@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v9.0.0 (2021-02-02)
+ * @license Highstock JS v9.0.1 (2021-02-16)
  *
  * Highstock as a plugin for Highcharts
  *
- * (c) 2010-2019 Torstein Honsi
+ * (c) 2010-2021 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
@@ -238,9 +238,22 @@
                  * Scrollbar class to use.
                  */
                 ScrollbarAxis.compose = function (AxisClass, ScrollbarClass) {
-                    // Wrap axis initialization and create scrollbar if enabled:
-                    addEvent(AxisClass, 'afterInit', function () {
-                        var axis = this;
+                    var getExtremes = function (axis) {
+                        var axisMin = pick(axis.options && axis.options.min, axis.min);
+                    var axisMax = pick(axis.options && axis.options.max,
+                        axis.max);
+                    return {
+                        axisMin: axisMin,
+                        axisMax: axisMax,
+                        scrollMin: defined(axis.dataMin) ?
+                            Math.min(axisMin, axis.min, axis.dataMin, pick(axis.threshold, Infinity)) : axisMin,
+                        scrollMax: defined(axis.dataMax) ?
+                            Math.max(axisMax, axis.max, axis.dataMax, pick(axis.threshold, -Infinity)) : axisMax
+                    };
+                };
+                // Wrap axis initialization and create scrollbar if enabled:
+                addEvent(AxisClass, 'afterInit', function () {
+                    var axis = this;
                     if (axis.options &&
                         axis.options.scrollbar &&
                         axis.options.scrollbar.enabled) {
@@ -249,18 +262,11 @@
                         axis.options.startOnTick = axis.options.endOnTick = false;
                         axis.scrollbar = new ScrollbarClass(axis.chart.renderer, axis.options.scrollbar, axis.chart);
                         addEvent(axis.scrollbar, 'changed', function (e) {
-                            var axisMin = pick(axis.options && axis.options.min,
-                                axis.min),
-                                axisMax = pick(axis.options && axis.options.max,
-                                axis.max),
-                                unitedMin = defined(axis.dataMin) ?
-                                    Math.min(axisMin,
-                                axis.min,
-                                axis.dataMin) : axisMin,
-                                unitedMax = defined(axis.dataMax) ?
-                                    Math.max(axisMax,
-                                axis.max,
-                                axis.dataMax) : axisMax,
+                            var _a = getExtremes(axis),
+                                axisMin = _a.axisMin,
+                                axisMax = _a.axisMax,
+                                unitedMin = _a.scrollMin,
+                                unitedMax = _a.scrollMax,
                                 range = unitedMax - unitedMin,
                                 to,
                                 from;
@@ -298,18 +304,9 @@
                 // Wrap rendering axis, and update scrollbar if one is created:
                 addEvent(AxisClass, 'afterRender', function () {
                     var axis = this,
-                        scrollMin = Math.min(pick(axis.options.min,
-                        axis.min),
-                        axis.min,
-                        pick(axis.dataMin,
-                        axis.min) // #6930
-                        ),
-                        scrollMax = Math.max(pick(axis.options.max,
-                        axis.max),
-                        axis.max,
-                        pick(axis.dataMax,
-                        axis.max) // #6930
-                        ),
+                        _a = getExtremes(axis),
+                        scrollMin = _a.scrollMin,
+                        scrollMax = _a.scrollMax,
                         scrollbar = axis.scrollbar,
                         offset = axis.axisTitleMargin + (axis.titleOffset || 0),
                         scrollbarsOffsets = axis.chart.scrollbarsOffsets,
@@ -7519,6 +7516,8 @@
              * @function Highcharts.seriesTypes.flags#invertGroups
              */
             invertGroups: noop,
+            // Flags series group should not be invertible (#14063).
+            invertible: false,
             noSharedTooltip: true,
             pointClass: FlagsPoint,
             sorted: false,
@@ -7858,6 +7857,7 @@
                  * @sample {highstock} stock/rangeselector/enabled/
                  *         Disable the range selector
                  *
+                 * @type {boolean|undefined}
                  * @default {highstock} true
                  */
                 enabled: void 0,
@@ -8959,7 +8959,9 @@
                         height: 0,
                         zIndex: inputsZIndex
                     });
-                    this.renderButtons();
+                    if (this.buttonOptions.length) {
+                        this.renderButtons();
+                    }
                     // First create a wrapper outside the container in order to make
                     // the inputs work and make export correct
                     if (container.parentNode) {
@@ -9466,7 +9468,7 @@
                         hasActiveButton = true;
                     }
                 });
-                if (!hasActiveButton && buttons.length > 0) {
+                if (!hasActiveButton) {
                     if (dropdown) {
                         dropdown.selectedIndex = 0;
                     }
@@ -10530,7 +10532,7 @@
             // Call base method
             seriesInit.apply(this, arguments);
             // Set comparison mode
-            this.setCompare(this.options.compare);
+            this.initCompare(this.options.compare);
         };
         /**
          * Highstock only. Set the
@@ -10544,6 +10546,18 @@
          *        Can be one of `null` (default), `"percent"` or `"value"`.
          */
         Series.prototype.setCompare = function (compare) {
+            this.initCompare(compare);
+            // Survive to export, #5485
+            this.userOptions.compare = compare;
+        };
+        /**
+         * @ignore
+         * @function Highcharts.Series#initCompare
+         *
+         * @param {string} [compare]
+         *        Can be one of `null` (default), `"percent"` or `"value"`.
+         */
+        Series.prototype.initCompare = function (compare) {
             // Set or unset the modifyValue method
             this.modifyValue = (compare === 'value' || compare === 'percent') ?
                 function (value, point) {
@@ -10568,8 +10582,6 @@
                     return 0;
                 } :
                 null;
-            // Survive to export, #5485
-            this.userOptions.compare = compare;
             // Mark dirty
             if (this.chart.hasRendered) {
                 this.isDirty = true;

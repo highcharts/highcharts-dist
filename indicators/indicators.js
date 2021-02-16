@@ -1,9 +1,9 @@
 /*
- Highstock JS v9.0.0 (2021-02-02)
+ Highstock JS v9.0.1 (2021-02-15)
 
  Indicator series type for Highstock
 
- (c) 2010-2019 Pawel Fus, Sebastian Bochan
+ (c) 2010-2021 Pawel Fus, Sebastian Bochan
 
  License: www.highcharts.com/license
 */

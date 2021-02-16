@@ -1,9 +1,9 @@
 /**
- * @license Highstock JS v9.0.0 (2021-02-02)
+ * @license Highstock JS v9.0.1 (2021-02-16)
  *
  * Advanced Highstock tools
  *
- * (c) 2010-2019 Highsoft AS
+ * (c) 2010-2021 Highsoft AS
  * Author: Torstein Honsi
  *
  * License: www.highcharts.com/license
@@ -4123,7 +4123,6 @@
                     // TO DO: Polyfill for IE11?
                     !closestPolyfill(clickEvent.target, '.' + PREFIX + 'popup')) {
                     fireEvent(navigation, 'closePopup');
-                    navigation.deselectAnnotation();
                 }
                 if (!selectedButton || !selectedButton.start) {
                     return;
@@ -4594,7 +4593,6 @@
                 }
                 else {
                     // Deselect current:
-                    navigation.deselectAnnotation();
                     fireEvent(navigation, 'closePopup');
                 }
                 // Let bubble event to chart.click:
@@ -4866,7 +4864,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.0.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.0.1/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -4930,6 +4928,9 @@
                     }
                 }
             }
+        });
+        addEvent(NavigationBindings, 'closePopup', function () {
+            this.deselectAnnotation();
         });
 
         return NavigationBindings;
@@ -8070,7 +8071,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/9.0.0/gfx/stock-icons/';
+                    'https://code.highcharts.com/9.0.1/gfx/stock-icons/';
             };
             return Toolbar;
         }());
