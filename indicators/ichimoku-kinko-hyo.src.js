@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  *
  * Indicator series type for Highstock
  *
@@ -57,6 +57,7 @@
         var defined = U.defined,
             extend = U.extend,
             isArray = U.isArray,
+            isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach;
         /* eslint-disable require-jsdoc */
@@ -238,15 +239,16 @@
                 var indicator = this;
                 SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
                 indicator.points.forEach(function (point) {
-                    indicator.pointArrayMap.forEach(function (value) {
-                        if (defined(point[value])) {
-                            point['plot' + value] = indicator.yAxis.toPixels(point[value], true);
+                    indicator.pointArrayMap.forEach(function (key) {
+                        var pointValue = point[key];
+                        if (isNumber(pointValue)) {
+                            point['plot' + key] = indicator.yAxis.toPixels(pointValue, true);
                             // Add extra parameters for support tooltip in moved
                             // lines
-                            point.plotY = point['plot' + value];
+                            point.plotY = point['plot' + key];
                             point.tooltipPos = [
                                 point.plotX,
-                                point['plot' + value]
+                                point['plot' + key]
                             ];
                             point.isNull = false;
                         }

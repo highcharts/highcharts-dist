@@ -994,7 +994,7 @@ var Chart = /** @class */ (function () {
                 zIndex: 0,
                 '-webkit-tap-highlight-color': 'rgba(0,0,0,0)',
                 userSelect: 'none' // #13503
-            }, optionsChart.style);
+            }, optionsChart.style || {});
         }
         /**
          * The containing HTML element of the chart. The container is
@@ -1328,6 +1328,7 @@ var Chart = /** @class */ (function () {
                 axis.setAxisSize();
                 axis.setAxisTranslation();
             });
+            renderer.alignElements();
         }
         fireEvent(chart, 'afterSetChartSize', { skipAxes: skipAxes });
     };
@@ -2010,9 +2011,6 @@ var Chart = /** @class */ (function () {
         else {
             axis = new Axis(this, userOptions);
         }
-        // Push the new axis options to the chart options
-        chartOptions[type] = splat(chartOptions[type] || {});
-        chartOptions[type].push(userOptions);
         if (isColorAxis) {
             this.isDirtyLegend = true;
             // Clear before 'bindAxes' (#11924)
@@ -2281,7 +2279,7 @@ var Chart = /** @class */ (function () {
                 // Else, just merge the options. For nodes like loading, noData,
                 // plotOptions
             }
-            else if (key !== 'color' &&
+            else if (key !== 'colors' &&
                 chart.collectionsWithUpdate.indexOf(key) === -1) {
                 merge(true, chart.options[key], options[key]);
             }
@@ -2301,15 +2299,13 @@ var Chart = /** @class */ (function () {
             if (options[coll]) {
                 // In stock charts, the navigator series are also part of the
                 // chart.series array, but those series should not be handled
-                // here (#8196).
-                if (coll === 'series') {
-                    indexMap = [];
-                    chart[coll].forEach(function (s, i) {
-                        if (!s.options.isInternal) {
-                            indexMap.push(pick(s.options.index, i));
-                        }
-                    });
-                }
+                // here (#8196) and neither should the navigator axis (#9671).
+                indexMap = [];
+                chart[coll].forEach(function (s, i) {
+                    if (!s.options.isInternal) {
+                        indexMap.push(pick(s.options.index, i));
+                    }
+                });
                 splat(options[coll]).forEach(function (newOptions, i) {
                     var hasId = defined(newOptions.id);
                     var item;
@@ -2442,9 +2438,9 @@ var Chart = /** @class */ (function () {
      */
     Chart.prototype.showResetZoom = function () {
         var chart = this, lang = defaultOptions.lang, btnOptions = chart.options.chart.resetZoomButton, theme = btnOptions.theme, states = theme.states, alignTo = (btnOptions.relativeTo === 'chart' ||
-            btnOptions.relativeTo === 'spaceBox' ?
+            btnOptions.relativeTo === 'spacingBox' ?
             null :
-            this.scrollablePlotBox || 'plotBox');
+            'scrollablePlotBox');
         /**
          * @private
          */

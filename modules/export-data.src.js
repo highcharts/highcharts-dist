@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Exporting module
  *
@@ -818,7 +818,8 @@
                 var html = "<" + node.tagName;
                 if (attributes) {
                     Object.keys(attributes).forEach(function (key) {
-                        html += " " + key + "=\"" + attributes[key] + "\"";
+                        var value = attributes[key];
+                        html += " " + key + "=\"" + value + "\"";
                     });
                 }
                 html += '>';

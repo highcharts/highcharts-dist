@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.0.1 (2021-02-16)
+ * @license Highmaps JS v9.0.1 (2021-03-13)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -235,9 +235,6 @@
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
-                // Keep the options structure updated for export. Unlike xAxis and
-                // yAxis, the colorAxis is not an array. (#3207)
-                chart.options[axis.coll] = options;
                 _super.prototype.init.call(this, chart, options);
                 // Base init() pushes it to the xAxis array, now pop it again
                 // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
@@ -1756,8 +1753,10 @@
                             shapeArgs[dimension[0]]) + (pointStateOptions[dimension[0] + 'Plus'] ||
                             seriesStateOptions[dimension[0] + 'Plus'] || 0);
                         // Align marker by a new size.
-                        attribs[dimension[1]] = shapeArgs[dimension[1]] +
-                            (shapeArgs[dimension[0]] - attribs[dimension[0]]) / 2;
+                        attribs[dimension[1]] =
+                            shapeArgs[dimension[1]] +
+                                (shapeArgs[dimension[0]] -
+                                    attribs[dimension[0]]) / 2;
                     });
                 }
                 return state ? attribs : shapeArgs;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Accessibility module
  *
@@ -1738,7 +1738,8 @@
                 }
                 var itemLabel = this.chart.langFormat('accessibility.legend.legendItem', {
                         chart: this.chart,
-                        itemName: stripHTMLTags(item.name)
+                        itemName: stripHTMLTags(item.name),
+                        item: item
                     }),
                     attribs = {
                         tabindex: -1,
@@ -2069,7 +2070,7 @@
                     var button = getExportMenuButtonElement(this.chart);
                     this.exportButtonProxy = this.createProxyButton(button, this.exportProxyGroup, {
                         'aria-label': chart.langFormat('accessibility.exporting.menuButtonLabel', { chart: chart }),
-                        'aria-expanded': 'false'
+                        'aria-expanded': false
                     });
                 }
             },
@@ -5384,12 +5385,13 @@
                     var _a = this.inputGroup,
                         translateX = _a.translateX,
                         translateY = _a.translateY;
+                    var inputBoxWidth = this.options.inputBoxWidth;
                     css(input, {
-                        width: isTextInput ? ((dateBox.width - 2) + 'px') : 'auto',
+                        width: isTextInput ? ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') : 'auto',
                         height: isTextInput ? ((dateBox.height - 2) + 'px') : 'auto',
                         border: '2px solid silver'
                     });
-                    if (isTextInput) {
+                    if (isTextInput && inputBoxWidth) {
                         css(input, {
                             left: (translateX + dateBox.x) + 'px',
                             top: translateY + 'px'
@@ -5402,7 +5404,7 @@
                             left: Math.min(Math.round(dateBox.x +
                                 translateX -
                                 (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                            top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                            top: (translateY - 1 - (input.offsetHeight - dateBox.height) / 2) + 'px'
                         });
                     }
                 }
@@ -5453,7 +5455,7 @@
                     var parts = inputDate.split('-');
                     date = Date.UTC(pInt(parts[0]), pInt(parts[1]) - 1, pInt(parts[2]));
                 }
-                if (time && useUTC) {
+                if (time && useUTC && isNumber(date)) {
                     date += time.getTimezoneOffset(date);
                 }
                 return date;
@@ -5601,9 +5603,9 @@
                 var keyDown = false;
                 // handle changes in the input boxes
                 input.onchange = function () {
-                    updateExtremes();
-                    // Blur input when clicking date input calendar
+                    // Update extremes and blur input when clicking date input calendar
                     if (!keyDown) {
+                        updateExtremes();
                         rangeSelector.hideInput(name);
                         input.blur();
                     }
@@ -5614,8 +5616,12 @@
                         updateExtremes();
                     }
                 };
-                input.onkeydown = function () {
+                input.onkeydown = function (event) {
                     keyDown = true;
+                    // Arrow keys
+                    if (event.keyCode === 38 || event.keyCode === 40) {
+                        updateExtremes();
+                    }
                 };
                 input.onkeyup = function () {
                     keyDown = false;
@@ -5752,9 +5758,12 @@
                             this.maxLabel,
                             this.maxDateBox
                         ].forEach(function (label) {
-                            if (label && label.width) {
-                                label.attr({ x: x_1 });
-                                x_1 += label.width + options.inputSpacing;
+                            if (label) {
+                                var width = label.getBBox().width;
+                                if (width) {
+                                    label.attr({ x: x_1 });
+                                    x_1 += width + options.inputSpacing;
+                                }
                             }
                         });
                     }
@@ -7583,7 +7592,7 @@
                 };
                 if (el && chart) {
                     setElAttrs(el, {
-                        tabindex: '-1'
+                        tabindex: -1
                     });
                     el.onclick = function (e) {
                         var _a;
@@ -7601,7 +7610,7 @@
                 var el = this.viewDataTableButton = getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
                 if (el) {
                     setElAttrs(el, {
-                        tabindex: '-1',
+                        tabindex: -1,
                         'aria-expanded': !!getElement(tableId)
                     });
                     el.onclick = chart.options.accessibility
@@ -9845,9 +9854,9 @@
              *
              * @param {number} margin
              *
-             * @param {Highcharts.CSSObject} style
+             * @param {SVGAttributes} attribs
              */
-            addFocusBorder: function (margin, style) {
+            addFocusBorder: function (margin, attribs) {
                 // Allow updating by just adding new border
                 if (this.focusBorder) {
                     this.removeFocusBorder();
@@ -9916,7 +9925,7 @@
                         }
                     }
                 }
-                this.focusBorder = this.renderer.rect(borderPosX, borderPosY, borderWidth, borderHeight, parseInt((style && style.borderRadius || 0).toString(), 10))
+                this.focusBorder = this.renderer.rect(borderPosX, borderPosY, borderWidth, borderHeight, parseInt((attribs && attribs.r || 0).toString(), 10))
                     .addClass('highcharts-focus-border')
                     .attr({
                     zIndex: 99
@@ -9924,11 +9933,11 @@
                     .add(this.parentGroup);
                 if (!this.renderer.styledMode) {
                     this.focusBorder.attr({
-                        stroke: style && style.stroke,
-                        'stroke-width': style && style.strokeWidth
+                        stroke: attribs && attribs.stroke,
+                        'stroke-width': attribs && attribs.strokeWidth
                     });
                 }
-                addUpdateFocusBorderHooks(this, margin, style);
+                addUpdateFocusBorderHooks(this, margin, attribs);
                 addDestroyFocusBorderHook(this);
             },
             /**
@@ -9958,8 +9967,8 @@
                 if (focusBorderOptions.enabled) {
                     focusElement.addFocusBorder(focusBorderOptions.margin, {
                         stroke: focusBorderOptions.style.color,
-                        strokeWidth: focusBorderOptions.style.lineWidth,
-                        borderRadius: focusBorderOptions.style.borderRadius
+                        'stroke-width': focusBorderOptions.style.lineWidth,
+                        r: focusBorderOptions.style.borderRadius
                     });
                 }
             }
@@ -10275,7 +10284,6 @@
 
     });
     _registerModule(_modules, 'masters/modules/accessibility.src.js', [], function () {
-
 
 
     });

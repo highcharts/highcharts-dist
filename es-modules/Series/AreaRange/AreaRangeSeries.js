@@ -66,7 +66,6 @@ var AreaRangeSeries = /** @class */ (function (_super) {
         _this.points = void 0;
         _this.lowerStateMarkerGraphic = void 0;
         _this.xAxis = void 0;
-        _this.setStackedPoints = noop;
         return _this;
         /* eslint-enable valid-jsdoc */
     }
@@ -517,7 +516,8 @@ extend(AreaRangeSeries.prototype, {
     pointArrayMap: ['low', 'high'],
     pointValKey: 'low',
     deferTranslatePolar: true,
-    pointClass: AreaRangePoint
+    pointClass: AreaRangePoint,
+    setStackedPoints: noop
 });
 SeriesRegistry.registerSeriesType('arearange', AreaRangeSeries);
 /* *

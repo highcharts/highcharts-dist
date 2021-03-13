@@ -974,7 +974,7 @@ var Tooltip = /** @class */ (function () {
      */
     Tooltip.prototype.renderSplit = function (labels, points) {
         var tooltip = this;
-        var chart = tooltip.chart, _a = tooltip.chart, chartWidth = _a.chartWidth, chartHeight = _a.chartHeight, plotHeight = _a.plotHeight, plotLeft = _a.plotLeft, plotTop = _a.plotTop, pointer = _a.pointer, ren = _a.renderer, _b = _a.scrollablePixelsY, scrollablePixelsY = _b === void 0 ? 0 : _b, _c = _a.scrollingContainer, _d = _c === void 0 ? { scrollLeft: 0, scrollTop: 0 } : _c, scrollLeft = _d.scrollLeft, scrollTop = _d.scrollTop, styledMode = _a.styledMode, distance = tooltip.distance, options = tooltip.options, positioner = tooltip.options.positioner;
+        var chart = tooltip.chart, _a = tooltip.chart, chartWidth = _a.chartWidth, chartHeight = _a.chartHeight, plotHeight = _a.plotHeight, plotLeft = _a.plotLeft, plotTop = _a.plotTop, pointer = _a.pointer, _b = _a.scrollablePixelsY, scrollablePixelsY = _b === void 0 ? 0 : _b, _c = _a.scrollingContainer, _d = _c === void 0 ? { scrollLeft: 0, scrollTop: 0 } : _c, scrollLeft = _d.scrollLeft, scrollTop = _d.scrollTop, styledMode = _a.styledMode, distance = tooltip.distance, options = tooltip.options, positioner = tooltip.options.positioner;
         // The area which the tooltip should be limited to. Limit to scrollable
         // plot area if enabled, otherwise limit to the chart container.
         var bounds = {
@@ -984,6 +984,7 @@ var Tooltip = /** @class */ (function () {
             bottom: scrollTop + chartHeight
         };
         var tooltipLabel = tooltip.getLabel();
+        var ren = this.renderer || chart.renderer;
         var headerTop = Boolean(chart.xAxis[0] && chart.xAxis[0].opposite);
         var distributionBoxTop = plotTop + scrollTop;
         var headerHeight = 0;
@@ -1117,7 +1118,7 @@ var Tooltip = /** @class */ (function () {
                 var isHeader = point.isHeader;
                 // Store the tooltip label referance on the series
                 var owner = isHeader ? tooltip : point.series;
-                var tt = owner.tt = updatePartialTooltip(owner.tt, point, str);
+                var tt = owner.tt = updatePartialTooltip(owner.tt, point, str.toString());
                 // Get X position now, so we can move all to the other side in
                 // case of overflow
                 var bBox = tt.getBBox();

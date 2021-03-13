@@ -147,11 +147,6 @@ H.theme = {
             lineColor: 'white'
         }
     },
-    toolbar: {
-        itemStyle: {
-            color: '#CCC'
-        }
-    },
     navigation: {
         buttonOptions: {
             symbolStroke: '#DDDDDD',

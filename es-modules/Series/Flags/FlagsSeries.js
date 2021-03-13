@@ -226,7 +226,10 @@ var FlagsSeries = /** @class */ (function (_super) {
         points.forEach(function (point) {
             var graphic = point.graphic;
             if (graphic) {
-                addEvent(graphic.element, 'mouseover', function () {
+                if (point.unbindMouseOver) {
+                    point.unbindMouseOver();
+                }
+                point.unbindMouseOver = addEvent(graphic.element, 'mouseover', function () {
                     // Raise this point
                     if (point.stackIndex > 0 &&
                         !point.raised) {
@@ -373,7 +376,7 @@ var FlagsSeries = /** @class */ (function (_super) {
          * @product   highstock
          */
         tooltip: {
-            pointFormat: '{point.text}<br/>'
+            pointFormat: '{point.text}'
         },
         threshold: null,
         /**

@@ -53,7 +53,27 @@ declare module "../highcharts.src" {
         setCompare(compare?: string): void;
     }
     /**
-     * Factory function for creating new stock charts. Creates a new Chart
+     * Stock-optimized chart. Use Chart for common charts.
+     */
+    class StockChart {
+        /**
+         * Initializes the chart. The constructor's arguments are passed on
+         * directly.
+         *
+         * @param userOptions
+         *        Custom options.
+         *
+         * @param callback
+         *        Function to run when the chart has loaded and and all external
+         *        images are loaded.
+         *
+         * @fires Highcharts.StockChart#init
+         * @fires Highcharts.StockChart#afterInit
+         */
+        init(userOptions: Options, callback?: Function): void;
+    }
+    /**
+     * Factory function for creating new stock charts. Creates a new StockChart
      * object with different default options than the basic Chart.
      *
      * @param options
@@ -71,9 +91,9 @@ declare module "../highcharts.src" {
      *
      * @return The chart object.
      */
-    function stockChart(options: Options, callback?: ChartCallbackFunction): Chart;
+    function stockChart(options: Options, callback?: ChartCallbackFunction): StockChart;
     /**
-     * Factory function for creating new stock charts. Creates a new Chart
+     * Factory function for creating new stock charts. Creates a new StockChart
      * object with different default options than the basic Chart.
      *
      * @param renderTo
@@ -94,7 +114,7 @@ declare module "../highcharts.src" {
      *
      * @return The chart object.
      */
-    function stockChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): Chart;
+    function stockChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): StockChart;
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
      * rotated. The same method is used in Navigator's handles, to rotate them.

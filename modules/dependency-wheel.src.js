@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Dependency wheel module
  *
@@ -99,8 +99,8 @@
                 var renderer = this.series.chart.renderer,
                     shapeArgs = this.shapeArgs,
                     upperHalf = this.angle < 0 || this.angle > Math.PI,
-                    start = shapeArgs.start,
-                    end = shapeArgs.end;
+                    start = shapeArgs.start || 0,
+                    end = shapeArgs.end || 0;
                 if (!this.dataLabelPath) {
                     this.dataLabelPath = renderer
                         .arc({
@@ -335,9 +335,9 @@
                             centerY = center[1],
                             r = center[2] / 2,
                             innerR = r - options.nodeWidth,
-                            start = startAngle + factor * shapeArgs.y,
+                            start = startAngle + factor * (shapeArgs.y || 0),
                             end = startAngle +
-                                factor * (shapeArgs.y + shapeArgs.height);
+                                factor * ((shapeArgs.y || 0) + (shapeArgs.height || 0));
                         // Middle angle
                         node.angle = start + (end - start) / 2;
                         node.shapeType = 'arc';

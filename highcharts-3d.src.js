@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * 3D features for Highcharts JS
  *
@@ -586,10 +586,9 @@
                         this.insidePlotArea),
                         path = renderer.toLinePath(vertexes2d,
                         true),
-                        area = shapeArea(vertexes2d),
-                        visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
+                        area = shapeArea(vertexes2d);
                     hash.d = path;
-                    hash.visibility = visibility;
+                    hash.visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
                 }
                 return SVGElement.prototype.attr.apply(this, arguments);
             };
@@ -698,15 +697,15 @@
         };
         // Generates a cuboid path and zIndexes
         SVGRenderer.prototype.cuboidPath = function (shapeArgs) {
-            var x = shapeArgs.x,
-                y = shapeArgs.y,
+            var x = shapeArgs.x || 0,
+                y = shapeArgs.y || 0,
                 z = shapeArgs.z || 0, 
                 // For side calculation (right/left)
                 // there is a need for height (and other shapeArgs arguments)
                 // to be at least 1px
-                h = shapeArgs.height,
-                w = shapeArgs.width,
-                d = shapeArgs.depth,
+                h = shapeArgs.height || 0,
+                w = shapeArgs.width || 0,
+                d = shapeArgs.depth || 0,
                 chart = charts[this.chartIndex],
                 front,
                 back,
@@ -1112,15 +1111,15 @@
         };
         // Generate the paths required to draw a 3D arc
         SVGRenderer.prototype.arc3dPath = function (shapeArgs) {
-            var cx = shapeArgs.x, // x coordinate of the center
-                cy = shapeArgs.y, // y coordinate of the center
-                start = shapeArgs.start, // start angle
-                end = shapeArgs.end - 0.00001, // end angle
-                r = shapeArgs.r, // radius
+            var cx = shapeArgs.x || 0, // x coordinate of the center
+                cy = shapeArgs.y || 0, // y coordinate of the center
+                start = shapeArgs.start || 0, // start angle
+                end = (shapeArgs.end || 0) - 0.00001, // end angle
+                r = shapeArgs.r || 0, // radius
                 ir = shapeArgs.innerR || 0, // inner radius
                 d = shapeArgs.depth || 0, // depth
-                alpha = shapeArgs.alpha, // alpha rotation of the chart
-                beta = shapeArgs.beta; // beta rotation of the chart
+                alpha = shapeArgs.alpha || 0, // alpha rotation of the chart
+                beta = shapeArgs.beta || 0; // beta rotation of the chart
                 // Derived Variables
                 var cs = Math.cos(start), // cosinus of the start angle
                 ss = Math.sin(start), // sinus of the start angle
@@ -4356,19 +4355,17 @@
         // When series is not added to group it is needed to change setVisible method to
         // allow correct Legend funcionality. This wrap is basing on pie chart series.
         wrap(columnProto, 'setVisible', function (proceed, vis) {
-            var series = this,
-                pointVis;
+            var series = this;
             if (series.chart.is3d()) {
                 series.data.forEach(function (point) {
                     point.visible = point.options.visible = vis =
                         typeof vis === 'undefined' ?
                             !pick(series.visible, point.visible) : vis;
-                    pointVis = vis ? 'visible' : 'hidden';
                     series.options.data[series.data.indexOf(point)] =
                         point.options;
                     if (point.graphic) {
                         point.graphic.attr({
-                            visibility: pointVis
+                            visibility: vis ? 'visible' : 'hidden'
                         });
                     }
                 });

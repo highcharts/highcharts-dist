@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.0.1 (2021-02-16)
+ * @license Highcharts Gantt JS v9.0.1 (2021-03-13)
  *
  * Gantt series
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/XRange/XRangePoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js']], function (Point, SeriesRegistry) {
+    _registerModule(_modules, 'Series/XRange/XRangePoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Point, SeriesRegistry, U) {
         /* *
          *
          *  X-range series module
@@ -57,9 +57,10 @@
             };
         })();
         var ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var extend = U.extend;
         /* *
          *
-         *  Declarations
+         *  Class
          *
          * */
         var XRangePoint = /** @class */ (function (_super) {
@@ -74,7 +75,6 @@
                  * */
                 _this.options = void 0;
                 _this.series = void 0;
-                _this.tooltipDateKeys = ['x', 'x2'];
                 return _this;
                 /* eslint-enable valid-jsdoc */
             }
@@ -200,6 +200,9 @@
             };
             return XRangePoint;
         }(ColumnSeries.prototype.pointClass));
+        extend(XRangePoint.prototype, {
+            tooltipDateKeys: ['x', 'x2']
+        });
         /* *
          *
          *  Default Export
@@ -466,15 +469,14 @@
              * @param {Highcharts.Point} point
              */
             XRangeSeries.prototype.translatePoint = function (point) {
-                var _a,
-                    _b;
+                var _a;
                 var series = this,
                     xAxis = series.xAxis,
                     yAxis = series.yAxis,
                     metrics = series.columnMetrics,
                     options = series.options,
                     minPointLength = options.minPointLength || 0,
-                    oldColWidth = ((_a = point.shapeArgs) === null || _a === void 0 ? void 0 : _a.width) / 2,
+                    oldColWidth = (((_a = point.shapeArgs) === null || _a === void 0 ? void 0 : _a.width) || 0) / 2,
                     seriesXOffset = series.pointXOffset = metrics.offset,
                     plotX = point.plotX,
                     posX = pick(point.x2,
@@ -482,7 +484,6 @@
                     plotX2 = xAxis.translate(posX, 0, 0, 0, 1),
                     length = Math.abs(plotX2 - plotX),
                     widthDifference,
-                    shapeArgs,
                     partialFill,
                     inverted = this.chart.inverted,
                     borderWidth = pick(options.borderWidth, 1),
@@ -515,31 +516,33 @@
                     yAxis.categories) {
                     point.plotY = yAxis.translate(point.y, 0, 1, 0, 1, options.pointPlacement);
                 }
-                point.shapeArgs = {
-                    x: Math.floor(Math.min(plotX, plotX2)) + crisper,
-                    y: Math.floor(point.plotY + yOffset) + crisper,
-                    width: Math.round(Math.abs(plotX2 - plotX)),
-                    height: pointHeight,
-                    r: series.options.borderRadius
-                };
+                var shapeArgs = {
+                        x: Math.floor(Math.min(plotX,
+                    plotX2)) + crisper,
+                        y: Math.floor(point.plotY + yOffset) + crisper,
+                        width: Math.round(Math.abs(plotX2 - plotX)),
+                        height: pointHeight,
+                        r: series.options.borderRadius
+                    };
+                point.shapeArgs = shapeArgs;
                 // Move tooltip to default position
                 if (!inverted) {
                     point.tooltipPos[0] -= oldColWidth +
                         seriesXOffset -
-                        ((_b = point.shapeArgs) === null || _b === void 0 ? void 0 : _b.width) / 2;
+                        shapeArgs.width / 2;
                 }
                 else {
                     point.tooltipPos[1] += seriesXOffset +
                         oldColWidth;
                 }
                 // Align data labels inside the shape and inside the plot area
-                dlLeft = point.shapeArgs.x;
-                dlRight = dlLeft + point.shapeArgs.width;
+                dlLeft = shapeArgs.x;
+                dlRight = dlLeft + shapeArgs.width;
                 if (dlLeft < 0 || dlRight > xAxis.len) {
                     dlLeft = clamp(dlLeft, 0, xAxis.len);
                     dlRight = clamp(dlRight, 0, xAxis.len);
                     dlWidth = dlRight - dlLeft;
-                    point.dlBox = merge(point.shapeArgs, {
+                    point.dlBox = merge(shapeArgs, {
                         x: dlLeft,
                         width: dlRight - dlLeft,
                         centerX: dlWidth ? dlWidth / 2 : null
@@ -556,10 +559,10 @@
                     series.columnMetrics.offset : -metrics.width / 2;
                 // Centering tooltip position (#14147)
                 if (!inverted) {
-                    tooltipPos[xIndex] += (xAxis.reversed ? -1 : 0) * point.shapeArgs.width;
+                    tooltipPos[xIndex] += (xAxis.reversed ? -1 : 0) * shapeArgs.width;
                 }
                 else {
-                    tooltipPos[xIndex] += point.shapeArgs.width / 2;
+                    tooltipPos[xIndex] += shapeArgs.width / 2;
                 }
                 tooltipPos[yIndex] = clamp(tooltipPos[yIndex] + ((inverted ? -1 : 1) * tooltipYOffset), 0, yAxis.len - 1);
                 // Add a partShapeArgs to the point, based on the shapeArgs property
@@ -573,14 +576,9 @@
                     if (!isNumber(partialFill)) {
                         partialFill = 0;
                     }
-                    shapeArgs = point.shapeArgs;
-                    point.partShapeArgs = {
-                        x: shapeArgs.x,
-                        y: shapeArgs.y,
-                        width: shapeArgs.width,
-                        height: shapeArgs.height,
+                    point.partShapeArgs = merge(shapeArgs, {
                         r: series.options.borderRadius
-                    };
+                    });
                     clipRectWidth = Math.max(Math.round(length * partialFill + point.plotX -
                         plotX), 0);
                     point.clipRectArgs = {
@@ -737,7 +735,7 @@
                         typeof plotY !== 'undefined' &&
                         plotY >= 0 &&
                         plotY <= this.yAxis.len &&
-                        shapeArgs.x + shapeArgs.width >= 0 &&
+                        (shapeArgs.x || 0) + (shapeArgs.width || 0) >= 0 &&
                         plotX <= this.xAxis.len;
                 return isInside;
             };
@@ -1302,10 +1300,10 @@
                     renderer = params.renderer,
                     labelBox = params.xy,
                     options = params.options,
-                    width = options.width,
-                    height = options.height,
+                    width = options.width || 0,
+                    height = options.height || 0,
                     iconCenter = {
-                        x: labelBox.x - (width / 2) - options.padding,
+                        x: labelBox.x - (width / 2) - (options.padding || 0),
                         y: labelBox.y - (height / 2)
                     },
                     rotation = params.collapsed ? 90 : 180,
@@ -1313,25 +1311,21 @@
                 var icon = treeGrid.labelIcon;
                 if (!icon) {
                     treeGrid.labelIcon = icon = renderer
-                        .path(renderer.symbols[options.type](options.x, options.y, width, height))
+                        .path(renderer.symbols[options.type](options.x || 0, options.y || 0, width, height))
                         .addClass('highcharts-label-icon')
                         .add(params.group);
                 }
                 // Set the new position, and show or hide
-                if (!shouldRender) {
-                    icon.attr({ y: -9999 }); // #1338
-                }
+                icon.attr({ y: shouldRender ? 0 : -9999 }); // #14904, #1338
                 // Presentational attributes
                 if (!renderer.styledMode) {
                     icon
                         .attr({
-                        'stroke-width': 1,
-                        'fill': pick(params.color, palette.neutralColor60)
-                    })
-                        .css({
                         cursor: 'pointer',
+                        'fill': pick(params.color, palette.neutralColor60),
+                        'stroke-width': 1,
                         stroke: options.lineColor,
-                        strokeWidth: options.lineWidth
+                        strokeWidth: options.lineWidth || 0
                     });
                 }
                 // Update the icon positions
@@ -1378,7 +1372,8 @@
                     level = (node && node.depth) || 1;
                     result.x += (
                     // Add space for symbols
-                    ((symbolOptions.width) + (symbolOptions.padding * 2)) +
+                    ((symbolOptions.width || 0) +
+                        ((symbolOptions.padding || 0) * 2)) +
                         // Apply indentation
                         ((level - 1) * indentation));
                 }
@@ -4182,26 +4177,25 @@
         var addEvent = U.addEvent,
             merge = U.merge,
             wrap = U.wrap;
-        var defaultConfig = {
-                /**
-                 * Show an indicator on the axis for the current date and time. Can be a
-                 * boolean or a configuration object similar to
-                 * [xAxis.plotLines](#xAxis.plotLines).
-                 *
-                 * @sample gantt/current-date-indicator/demo
-                 *         Current date indicator enabled
-                 * @sample gantt/current-date-indicator/object-config
-                 *         Current date indicator with custom options
-                 *
-                 * @declare   Highcharts.AxisCurrentDateIndicatorOptions
-                 * @type      {boolean|*}
-                 * @default   true
-                 * @extends   xAxis.plotLines
-                 * @excluding value
-                 * @product   gantt
-                 * @apioption xAxis.currentDateIndicator
-                 */
-                currentDateIndicator: true,
+        /**
+         * Show an indicator on the axis for the current date and time. Can be a
+         * boolean or a configuration object similar to
+         * [xAxis.plotLines](#xAxis.plotLines).
+         *
+         * @sample gantt/current-date-indicator/demo
+         *         Current date indicator enabled
+         * @sample gantt/current-date-indicator/object-config
+         *         Current date indicator with custom options
+         *
+         * @declare   Highcharts.CurrentDateIndicatorOptions
+         * @type      {boolean|CurrentDateIndicatorOptions}
+         * @default   true
+         * @extends   xAxis.plotLines
+         * @excluding value
+         * @product   gantt
+         * @apioption xAxis.currentDateIndicator
+         */
+        var defaultOptions = {
                 color: palette.highlightColor20,
                 width: 2,
                 /**
@@ -4219,7 +4213,7 @@
                      */
                     format: '%a, %b %d %Y, %H:%M',
                     formatter: function (value, format) {
-                        return this.axis.chart.time.dateFormat(format, value);
+                        return this.axis.chart.time.dateFormat(format || '', value);
                 },
                 rotation: 0,
                 /**
@@ -4236,13 +4230,16 @@
             var options = this.options,
                 cdiOptions = options.currentDateIndicator;
             if (cdiOptions) {
-                cdiOptions = typeof cdiOptions === 'object' ?
-                    merge(defaultConfig, cdiOptions) : merge(defaultConfig);
-                cdiOptions.value = new Date();
+                var plotLineOptions = typeof cdiOptions === 'object' ?
+                        merge(defaultOptions,
+                    cdiOptions) :
+                        merge(defaultOptions);
+                plotLineOptions.value = Date.now();
+                plotLineOptions.className = 'highcharts-current-date-indicator';
                 if (!options.plotLines) {
                     options.plotLines = [];
                 }
-                options.plotLines.push(cdiOptions);
+                options.plotLines.push(plotLineOptions);
             }
         });
         addEvent(PlotLineOrBand, 'render', function () {
@@ -4255,9 +4252,12 @@
         });
         wrap(PlotLineOrBand.prototype, 'getLabelText', function (defaultMethod, defaultLabelOptions) {
             var options = this.options;
-            if (options.currentDateIndicator && options.label &&
+            if (options &&
+                options.className &&
+                options.className.indexOf('highcharts-current-date-indicator') !== -1 &&
+                options.label &&
                 typeof options.label.formatter === 'function') {
-                options.value = new Date();
+                options.value = Date.now();
                 return options.label.formatter
                     .call(this, options.value, options.label.format);
             }
@@ -4320,7 +4320,7 @@
                         // Minimum height is 1 x staticScale.
                         height = Math.max(height, staticScale);
                         diff = height - chart.plotHeight;
-                        if (Math.abs(diff) >= 1) {
+                        if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
                             chart.plotHeight = height;
                             chart.redrawTrigger = 'adjustHeight';
                             chart.setSize(void 0, chart.chartHeight + diff, animate);
@@ -4331,7 +4331,9 @@
                             var clipRect = series.sharedClipKey &&
                                     chart[series.sharedClipKey];
                             if (clipRect) {
-                                clipRect.attr({
+                                clipRect.attr(chart.inverted ? {
+                                    width: chart.plotHeight
+                                } : {
                                     height: chart.plotHeight
                                 });
                             }
@@ -4854,10 +4856,10 @@
             // Prefer using shapeArgs (columns)
             if (shapeArgs) {
                 return {
-                    xMin: shapeArgs.x,
-                    xMax: shapeArgs.x + shapeArgs.width,
-                    yMin: shapeArgs.y,
-                    yMax: shapeArgs.y + shapeArgs.height
+                    xMin: shapeArgs.x || 0,
+                    xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
+                    yMin: shapeArgs.y || 0,
+                    yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
                 };
             }
             // Otherwise use plotX/plotY and bb
@@ -6487,10 +6489,10 @@
             // Prefer using shapeArgs (columns)
             if (shapeArgs) {
                 return {
-                    xMin: shapeArgs.x,
-                    xMax: shapeArgs.x + shapeArgs.width,
-                    yMin: shapeArgs.y,
-                    yMax: shapeArgs.y + shapeArgs.height
+                    xMin: shapeArgs.x || 0,
+                    xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
+                    yMin: shapeArgs.y || 0,
+                    yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
                 };
             }
             // Otherwise use plotX/plotY and bb
@@ -7127,7 +7129,7 @@
                     diamondShape;
                 if (point.options.milestone) {
                     if (isNumber(plotY) && point.y !== null && point.visible !== false) {
-                        diamondShape = renderer.symbols.diamond(shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height);
+                        diamondShape = renderer.symbols.diamond(shapeArgs.x || 0, shapeArgs.y || 0, shapeArgs.width || 0, shapeArgs.height || 0);
                         if (graphic) {
                             graphic[verb]({
                                 d: diamondShape
@@ -7164,9 +7166,9 @@
                 XRangeSeries.prototype.translatePoint.call(series, point);
                 if (point.options.milestone) {
                     shapeArgs = point.shapeArgs;
-                    size = shapeArgs.height;
+                    size = shapeArgs.height || 0;
                     point.shapeArgs = {
-                        x: shapeArgs.x - (size / 2),
+                        x: (shapeArgs.x || 0) - (size / 2),
                         y: shapeArgs.y,
                         width: size,
                         height: size
@@ -7402,7 +7404,7 @@
 
         return GanttSeries;
     });
-    _registerModule(_modules, 'Core/Chart/GanttChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Core/Chart/GanttChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js']], function (Chart, U) {
         /* *
          *
          *  (c) 2016-2021 Highsoft AS
@@ -7414,115 +7416,170 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var getOptions = U.getOptions,
             isArray = U.isArray,
             merge = U.merge,
             splat = U.splat;
         /**
-         * Factory function for Gantt charts.
+         * Gantt-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
          *
-         * @example
-         * // Render a chart in to div#container
-         * var chart = Highcharts.ganttChart('container', {
-         *     title: {
-         *         text: 'My chart'
-         *     },
-         *     series: [{
-         *         data: ...
-         *     }]
-         * });
+         * @requires modules/gantt
          *
-         * @function Highcharts.ganttChart
-         *
-         * @param {string|Highcharts.HTMLDOMElement} renderTo
-         *        The DOM element to render to, or its id.
-         *
-         * @param {Highcharts.Options} options
-         *        The chart options structure.
-         *
-         * @param {Highcharts.ChartCallbackFunction} [callback]
-         *        Function to run when the chart has loaded and and all external images
-         *        are loaded. Defining a
-         *        [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
-         *        handler is equivalent.
-         *
-         * @return {Highcharts.Chart}
-         *         Returns the Chart object.
+         * @class
+         * @name Highcharts.GanttChart
+         * @extends Highcharts.Chart
          */
-        H.ganttChart = function (renderTo, options, callback) {
-            var hasRenderToArg = typeof renderTo === 'string' || renderTo.nodeName,
-                seriesOptions = options.series,
-                defaultOptions = getOptions(),
-                defaultLinkedTo,
-                userOptions = options;
-            options = arguments[hasRenderToArg ? 1 : 0];
-            // If user hasn't defined axes as array, make it into an array and add a
-            // second axis by default.
-            if (!isArray(options.xAxis)) {
-                options.xAxis = [options.xAxis || {}, {}];
+        var GanttChart = /** @class */ (function (_super) {
+                __extends(GanttChart, _super);
+            function GanttChart() {
+                return _super !== null && _super.apply(this, arguments) || this;
             }
-            // apply X axis options to both single and multi x axes
-            options.xAxis = options.xAxis.map(function (xAxisOptions, i) {
-                if (i === 1) { // Second xAxis
-                    defaultLinkedTo = 0;
+            /**
+             * Initializes the chart. The constructor's arguments are passed on
+             * directly.
+             *
+             * @function Highcharts.GanttChart#init
+             *
+             * @param {Highcharts.Options} userOptions
+             *        Custom options.
+             *
+             * @param {Function} [callback]
+             *        Function to run when the chart has loaded and and all external
+             *        images are loaded.
+             *
+             * @return {void}
+             *
+             * @fires Highcharts.GanttChart#event:init
+             * @fires Highcharts.GanttChart#event:afterInit
+             */
+            GanttChart.prototype.init = function (userOptions, callback) {
+                var seriesOptions = userOptions.series,
+                    defaultOptions = getOptions(),
+                    defaultLinkedTo;
+                // If user hasn't defined axes as array, make it into an array and add a
+                // second axis by default.
+                if (!isArray(userOptions.xAxis)) {
+                    userOptions.xAxis = [userOptions.xAxis || {}, {}];
                 }
-                return merge(defaultOptions.xAxis, {
-                    grid: {
-                        enabled: true
-                    },
-                    opposite: true,
-                    linkedTo: defaultLinkedTo
-                }, xAxisOptions, // user options
-                {
-                    type: 'datetime'
-                });
-            });
-            // apply Y axis options to both single and multi y axes
-            options.yAxis = (splat(options.yAxis || {})).map(function (yAxisOptions) {
-                return merge(defaultOptions.yAxis, // #3802
-                {
-                    grid: {
-                        enabled: true
-                    },
-                    staticScale: 50,
-                    reversed: true,
-                    // Set default type treegrid, but only if 'categories' is
-                    // undefined
-                    type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
-                }, yAxisOptions // user options
-                );
-            });
-            options.series = null;
-            options = merge(true, {
-                chart: {
-                    type: 'gantt'
-                },
-                title: {
-                    text: null
-                },
-                legend: {
-                    enabled: false
-                },
-                navigator: {
-                    series: { type: 'gantt' },
-                    // Bars were clipped, #14060.
-                    yAxis: {
-                        type: 'category'
+                // apply X axis options to both single and multi x axes
+                userOptions.xAxis = userOptions.xAxis.map(function (xAxisOptions, i) {
+                    if (i === 1) { // Second xAxis
+                        defaultLinkedTo = 0;
                     }
-                }
-            }, options, // user's options
-            // forced options
-            {
-                isGantt: true
-            });
-            options.series = userOptions.series = seriesOptions;
-            return hasRenderToArg ?
-                new Chart(renderTo, options, callback) :
-                new Chart(options, options); // @todo does not look correct
-        };
+                    return merge(defaultOptions.xAxis, {
+                        grid: {
+                            enabled: true
+                        },
+                        opposite: true,
+                        linkedTo: defaultLinkedTo
+                    }, xAxisOptions, // user options
+                    {
+                        type: 'datetime'
+                    });
+                });
+                // apply Y axis options to both single and multi y axes
+                userOptions.yAxis = (splat(userOptions.yAxis || {})).map(function (yAxisOptions) {
+                    return merge(defaultOptions.yAxis, // #3802
+                    {
+                        grid: {
+                            enabled: true
+                        },
+                        staticScale: 50,
+                        reversed: true,
+                        // Set default type treegrid, but only if 'categories' is
+                        // undefined
+                        type: yAxisOptions.categories ? yAxisOptions.type : 'treegrid'
+                    }, yAxisOptions // user options
+                    );
+                });
+                delete userOptions.series;
+                userOptions = merge(true, {
+                    chart: {
+                        type: 'gantt'
+                    },
+                    title: {
+                        text: null
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    navigator: {
+                        series: { type: 'gantt' },
+                        // Bars were clipped, #14060.
+                        yAxis: {
+                            type: 'category'
+                        }
+                    }
+                }, userOptions, // user's options
+                // forced options
+                {
+                    isGantt: true
+                });
+                userOptions.series = seriesOptions;
+                _super.prototype.init.call(this, userOptions, callback);
+            };
+            return GanttChart;
+        }(Chart));
+        /* eslint-disable valid-jsdoc */
+        (function (GanttChart) {
+            /**
+             * The factory function for creating new gantt charts. Creates a new {@link
+             * Highcharts.GanttChart|GanttChart} object with different default options
+             * than the basic Chart.
+             *
+             * @example
+             * // Render a chart in to div#container
+             * var chart = Highcharts.ganttChart('container', {
+             *     title: {
+             *         text: 'My chart'
+             *     },
+             *     series: [{
+             *         data: ...
+             *     }]
+             * });
+             *
+             * @function Highcharts.ganttChart
+             *
+             * @param {string|Highcharts.HTMLDOMElement} renderTo
+             *        The DOM element to render to, or its id.
+             *
+             * @param {Highcharts.Options} options
+             *        The chart options structure.
+             *
+             * @param {Highcharts.ChartCallbackFunction} [callback]
+             *        Function to run when the chart has loaded and and all external
+             *        images are loaded. Defining a
+             *        [chart.events.load](https://api.highcharts.com/highcharts/chart.events.load)
+             *        handler is equivalent.
+             *
+             * @return {Highcharts.GanttChart}
+             *         Returns the Chart object.
+             */
+            function ganttChart(a, b, c) {
+                return new GanttChart(a, b, c);
+            }
+            GanttChart.ganttChart = ganttChart;
+        })(GanttChart || (GanttChart = {}));
 
+        return GanttChart;
     });
-    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -7603,12 +7660,7 @@
                                 to = unitedMin + range * (1 - this.from);
                                 from = unitedMin + range * (1 - this.to);
                             }
-                            if (pick(this.options.liveRedraw, H.svg && !H.isTouchDevice && !this.chart.isBoosting) ||
-                                // Mouseup always should change extremes
-                                e.DOMType === 'mouseup' ||
-                                e.DOMType === 'touchend' ||
-                                // Internal events
-                                !defined(e.DOMType)) {
+                            if (this.shouldUpdateExtremes(e.DOMType)) {
                                 axis.setExtremes(from, to, true, e.DOMType !== 'mousemove' && e.DOMType !== 'touchmove', e);
                             }
                             else {
@@ -8304,6 +8356,23 @@
                     }
                 }
                 scroller.rendered = true;
+            };
+            /**
+             * Checks if the extremes should be updated in response to a scrollbar
+             * change event.
+             *
+             * @private
+             * @function Highcharts.Scrollbar#shouldUpdateExtremes
+             * @param  {string} eventType
+             * @return {boolean}
+             */
+            Scrollbar.prototype.shouldUpdateExtremes = function (eventType) {
+                return (pick(this.options.liveRedraw, H.svg && !H.isTouchDevice && !this.chart.isBoosting) ||
+                    // Mouseup always should change extremes
+                    eventType === 'mouseup' ||
+                    eventType === 'touchend' ||
+                    // Internal events
+                    !defined(eventType));
             };
             Scrollbar.prototype.trackClick = function (e) {
                 var scroller = this;
@@ -9589,12 +9658,13 @@
                     var _a = this.inputGroup,
                         translateX = _a.translateX,
                         translateY = _a.translateY;
+                    var inputBoxWidth = this.options.inputBoxWidth;
                     css(input, {
-                        width: isTextInput ? ((dateBox.width - 2) + 'px') : 'auto',
+                        width: isTextInput ? ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') : 'auto',
                         height: isTextInput ? ((dateBox.height - 2) + 'px') : 'auto',
                         border: '2px solid silver'
                     });
-                    if (isTextInput) {
+                    if (isTextInput && inputBoxWidth) {
                         css(input, {
                             left: (translateX + dateBox.x) + 'px',
                             top: translateY + 'px'
@@ -9607,7 +9677,7 @@
                             left: Math.min(Math.round(dateBox.x +
                                 translateX -
                                 (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                            top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                            top: (translateY - 1 - (input.offsetHeight - dateBox.height) / 2) + 'px'
                         });
                     }
                 }
@@ -9658,7 +9728,7 @@
                     var parts = inputDate.split('-');
                     date = Date.UTC(pInt(parts[0]), pInt(parts[1]) - 1, pInt(parts[2]));
                 }
-                if (time && useUTC) {
+                if (time && useUTC && isNumber(date)) {
                     date += time.getTimezoneOffset(date);
                 }
                 return date;
@@ -9806,9 +9876,9 @@
                 var keyDown = false;
                 // handle changes in the input boxes
                 input.onchange = function () {
-                    updateExtremes();
-                    // Blur input when clicking date input calendar
+                    // Update extremes and blur input when clicking date input calendar
                     if (!keyDown) {
+                        updateExtremes();
                         rangeSelector.hideInput(name);
                         input.blur();
                     }
@@ -9819,8 +9889,12 @@
                         updateExtremes();
                     }
                 };
-                input.onkeydown = function () {
+                input.onkeydown = function (event) {
                     keyDown = true;
+                    // Arrow keys
+                    if (event.keyCode === 38 || event.keyCode === 40) {
+                        updateExtremes();
+                    }
                 };
                 input.onkeyup = function () {
                     keyDown = false;
@@ -9957,9 +10031,12 @@
                             this.maxLabel,
                             this.maxDateBox
                         ].forEach(function (label) {
-                            if (label && label.width) {
-                                label.attr({ x: x_1 });
-                                x_1 += label.width + options.inputSpacing;
+                            if (label) {
+                                var width = label.getBBox().width;
+                                if (width) {
+                                    label.attr({ x: x_1 });
+                                    x_1 += width + options.inputSpacing;
+                                }
                             }
                         });
                     }
@@ -12574,9 +12651,7 @@
                             from = range * this.from;
                         navigator.hasDragged = navigator.scrollbar.hasDragged;
                         navigator.render(0, 0, from, to);
-                        if (chart.options.scrollbar.liveRedraw ||
-                            (e.DOMType !== 'mousemove' &&
-                                e.DOMType !== 'touchmove')) {
+                        if (this.shouldUpdateExtremes(e.DOMType)) {
                             setTimeout(function () {
                                 navigator.onMouseUp(e);
                             });
@@ -12811,29 +12886,29 @@
                 // Adding this multiple times to the same axis is no problem, as
                 // duplicates should be discarded by the browser.
                 if (baseSeries[0] && baseSeries[0].xAxis) {
-                    addEvent(baseSeries[0].xAxis, 'foundExtremes', this.modifyBaseAxisExtremes);
+                    baseSeries[0].eventsToUnbind.push(addEvent(baseSeries[0].xAxis, 'foundExtremes', this.modifyBaseAxisExtremes));
                 }
                 baseSeries.forEach(function (base) {
                     // Link base series show/hide to navigator series visibility
-                    addEvent(base, 'show', function () {
+                    base.eventsToUnbind.push(addEvent(base, 'show', function () {
                         if (this.navigatorSeries) {
                             this.navigatorSeries.setVisible(true, false);
                         }
-                    });
-                    addEvent(base, 'hide', function () {
+                    }));
+                    base.eventsToUnbind.push(addEvent(base, 'hide', function () {
                         if (this.navigatorSeries) {
                             this.navigatorSeries.setVisible(false, false);
                         }
-                    });
+                    }));
                     // Respond to updated data in the base series, unless explicitily
                     // not adapting to data changes.
                     if (this.navigatorOptions.adaptToUpdatedData !== false) {
                         if (base.xAxis) {
-                            addEvent(base, 'updatedData', this.updatedDataHandler);
+                            base.eventsToUnbind.push(addEvent(base, 'updatedData', this.updatedDataHandler));
                         }
                     }
                     // Handle series removal
-                    addEvent(base, 'remove', function () {
+                    base.eventsToUnbind.push(addEvent(base, 'remove', function () {
                         if (this.navigatorSeries) {
                             erase(navigator.series, this.navigatorSeries);
                             if (defined(this.navigatorSeries.options)) {
@@ -12841,7 +12916,7 @@
                             }
                             delete this.navigatorSeries;
                         }
-                    });
+                    }));
                 }, this);
             };
             /**
@@ -13180,8 +13255,10 @@
 
         return H.Navigator;
     });
-    _registerModule(_modules, 'masters/modules/gantt.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/gantt.src.js', [_modules['Core/Globals.js'], _modules['Core/Chart/GanttChart.js']], function (Highcharts, GanttChart) {
 
+        Highcharts.GanttChart = GanttChart;
+        Highcharts.ganttChart = GanttChart.ganttChart;
 
     });
 }));

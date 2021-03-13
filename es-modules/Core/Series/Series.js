@@ -296,14 +296,15 @@ var Series = /** @class */ (function () {
         fireEvent(this, 'bindAxes', null, function () {
             // repeat for xAxis and yAxis
             (series.axisTypes || []).forEach(function (AXIS) {
+                var index = 0;
                 // loop through the chart's axis objects
                 chart[AXIS].forEach(function (axis) {
                     axisOptions = axis.options;
                     // apply if the series xAxis or yAxis option mathches
                     // the number of the axis, or if undefined, use the
                     // first axis
-                    if (seriesOptions[AXIS] ===
-                        axisOptions.index ||
+                    if ((seriesOptions[AXIS] === index &&
+                        !axisOptions.isInternal) ||
                         (typeof seriesOptions[AXIS] !==
                             'undefined' &&
                             seriesOptions[AXIS] === axisOptions.id) ||
@@ -330,6 +331,9 @@ var Series = /** @class */ (function () {
                         series[AXIS] = axis;
                         // mark dirty for redraw
                         axis.isDirty = true;
+                    }
+                    if (!axisOptions.isInternal) {
+                        index++;
                     }
                 });
                 // The series needs an X and an Y axis
@@ -580,9 +584,7 @@ var Series = /** @class */ (function () {
             this.getCyclic('color');
         }
         else if (this.options.colorByPoint) {
-            // #4359, selected slice got series.color even when colorByPoint
-            // was set.
-            this.options.color = null;
+            this.color = palette.neutralColor20;
         }
         else {
             this.getCyclic('color', this.options.color ||
@@ -1747,7 +1749,7 @@ var Series = /** @class */ (function () {
                     // Set starting position for point sliding animation.
                     if (series.enabledDataSorting) {
                         point.startXPos = xAxis.reversed ?
-                            -markerAttribs.width :
+                            -(markerAttribs.width || 0) :
                             xAxis.width;
                     }
                     var isInside = point.isInside !== false;
@@ -1758,7 +1760,7 @@ var Series = /** @class */ (function () {
                             .animate(markerAttribs);
                     }
                     else if (isInside &&
-                        (markerAttribs.width > 0 || point.hasImage)) {
+                        ((markerAttribs.width || 0) > 0 || point.hasImage)) {
                         /**
                          * The graphic representation of the point.
                          * Typically this is a simple shape, like a `rect`
@@ -1842,7 +1844,7 @@ var Series = /** @class */ (function () {
         attribs = {
             // Math.floor for #1843:
             x: seriesOptions.crisp ?
-                Math.floor(point.plotX) - radius :
+                Math.floor(point.plotX - radius) :
                 point.plotX - radius,
             y: point.plotY - radius
         };
@@ -2223,7 +2225,8 @@ var Series = /** @class */ (function () {
         // hidden, and looks bad in other oldIE
         animDuration = (!series.finishedAnimating &&
             chart.renderer.isSVG &&
-            animOptions.duration), visibility = series.visible ? 'inherit' : 'hidden', // #2597
+            animOptions.duration), visibility = series.visible ?
+            'inherit' : 'hidden', // #2597
         zIndex = options.zIndex, hasRendered = series.hasRendered, chartSeriesGroup = chart.seriesGroup, inverted = chart.inverted;
         fireEvent(this, 'render');
         // the group
@@ -2879,6 +2882,8 @@ var Series = /** @class */ (function () {
             series.remove(false, false, false, true);
             if (casting) {
                 // Modern browsers including IE11
+                // @todo slow, consider alternatives mentioned:
+                // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
                 if (Object.setPrototypeOf) {
                     Object.setPrototypeOf(series, seriesTypes[newType || initialType].prototype);
                     // Legacy (IE < 11)

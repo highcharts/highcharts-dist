@@ -186,7 +186,7 @@ var charts = H.charts, doc = H.doc, win = H.win;
  */
 /**
  * Generic dictionary in TypeScript notation.
- * Use the native `Record<string, any>` instead.
+ * Use the native `AnyRecord` instead.
  *
  * @deprecated
  * @interface Highcharts.Dictionary<T>
@@ -1893,12 +1893,12 @@ function fireEvent(el, type, eventArguments, defaultFunction) {
         (el.dispatchEvent || el.fireEvent)) {
         e = doc.createEvent('Events');
         e.initEvent(type, true, true);
-        extend(e, eventArguments);
+        eventArguments = extend(e, eventArguments);
         if (el.dispatchEvent) {
-            el.dispatchEvent(e);
+            el.dispatchEvent(eventArguments);
         }
         else {
-            el.fireEvent(type, e);
+            el.fireEvent(type, eventArguments);
         }
     }
     else if (el.hcEvents) {

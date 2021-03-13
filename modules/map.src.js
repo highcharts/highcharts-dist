@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.0.1 (2021-02-16)
+ * @license Highmaps JS v9.0.1 (2021-03-13)
  *
  * Highmaps as a plugin for Highcharts or Highstock.
  *
@@ -402,9 +402,6 @@
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
-                // Keep the options structure updated for export. Unlike xAxis and
-                // yAxis, the colorAxis is not an array. (#3207)
-                chart.options[axis.coll] = options;
                 _super.prototype.init.call(this, chart, options);
                 // Base init() pushes it to the xAxis array, now pop it again
                 // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
@@ -1921,7 +1918,7 @@
                 objectEach(o.buttons, function (button, n) {
                     buttonOptions = merge(o.buttonOptions, button);
                     // Presentational
-                    if (!chart.styledMode) {
+                    if (!chart.styledMode && buttonOptions.theme) {
                         attr = buttonOptions.theme;
                         attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                         );
@@ -1930,7 +1927,7 @@
                         selectStates = states && states.select;
                     }
                     button = chart.renderer
-                        .button(buttonOptions.text, 0, 0, outerHandler, attr, hoverStates, selectStates, 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
+                        .button(buttonOptions.text || '', 0, 0, outerHandler, attr, hoverStates, selectStates, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
                         .addClass('highcharts-map-navigation highcharts-' + {
                         zoomIn: 'zoom-in',
                         zoomOut: 'zoom-out'
@@ -1991,10 +1988,14 @@
             if (pick(options.enableMouseWheelZoom, options.enabled)) {
                 this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, typeof doc.onmousewheel === 'undefined' ?
                     'DOMMouseScroll' : 'mousewheel', function (e) {
-                    chart.pointer.onContainerMouseWheel(e);
-                    // Issue #5011, returning false from non-jQuery event does
-                    // not prevent default
-                    stopEvent(e);
+                    // Prevent scrolling when the pointer is over the element
+                    // with that class, for example anotation popup #12100.
+                    if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
+                        chart.pointer.onContainerMouseWheel(e);
+                        // Issue #5011, returning false from non-jQuery event does
+                        // not prevent default
+                        stopEvent(e);
+                    }
                     return false;
                 });
             }
@@ -2282,7 +2283,7 @@
 
         return SVGRenderer.prototype.symbols;
     });
-    _registerModule(_modules, 'Maps/Map.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Chart/MapChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2292,17 +2293,106 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var getOptions = U.getOptions,
             merge = U.merge,
             pick = U.pick;
+        /**
+         * Map-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
+         *
+         * @requires modules/map
+         *
+         * @class
+         * @name Highcharts.MapChart
+         * @extends Highcharts.Chart
+         */
+        var MapChart = /** @class */ (function (_super) {
+                __extends(MapChart, _super);
+            function MapChart() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            /**
+             * Initializes the chart. The constructor's arguments are passed on
+             * directly.
+             *
+             * @function Highcharts.MapChart#init
+             *
+             * @param {Highcharts.Options} userOptions
+             *        Custom options.
+             *
+             * @param {Function} [callback]
+             *        Function to run when the chart has loaded and and all external
+             *        images are loaded.
+             *
+             * @return {void}
+             *
+             * @fires Highcharts.MapChart#event:init
+             * @fires Highcharts.MapChart#event:afterInit
+             */
+            MapChart.prototype.init = function (userOptions, callback) {
+                var hiddenAxis = {
+                        endOnTick: false,
+                        visible: false,
+                        minPadding: 0,
+                        maxPadding: 0,
+                        startOnTick: false
+                    },
+                    seriesOptions = userOptions.series,
+                    defaultCreditsOptions = getOptions().credits;
+                /* For visual testing
+                hiddenAxis.gridLineWidth = 1;
+                hiddenAxis.gridZIndex = 10;
+                hiddenAxis.tickPositions = undefined;
+                // */
+                // Don't merge the data
+                userOptions.series = void 0;
+                userOptions = merge({
+                    chart: {
+                        panning: {
+                            enabled: true,
+                            type: 'xy'
+                        },
+                        type: 'map'
+                    },
+                    credits: {
+                        mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
+                            '{geojson.copyrightShort}</a>'),
+                        mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                    },
+                    tooltip: {
+                        followTouchMove: false
+                    },
+                    xAxis: hiddenAxis,
+                    yAxis: merge(hiddenAxis, { reversed: true })
+                }, userOptions, // user's options
+                {
+                    chart: {
+                        inverted: false,
+                        alignTicks: false
+                    }
+                });
+                userOptions.series = seriesOptions;
+                _super.prototype.init.call(this, userOptions, callback);
+            };
+            return MapChart;
+        }(Chart));
         /* eslint-disable valid-jsdoc */
-        var Map;
-        (function (Map) {
-            /* *
-             *
-             *  Constants
-             *
-             * */
+        (function (MapChart) {
             /**
              * Contains all loaded map data for Highmaps.
              *
@@ -2311,16 +2401,11 @@
              * @name Highcharts.maps
              * @type {Record<string,*>}
              */
-            Map.maps = {};
-            /* *
-             *
-             *  Functions
-             *
-             * */
+            MapChart.maps = {};
             /**
              * The factory function for creating new map charts. Creates a new {@link
-             * Highcharts.Chart|Chart} object with different default options than the
-             * basic Chart.
+             * Highcharts.MapChart|MapChart} object with different default options than
+             * the basic Chart.
              *
              * @requires modules/map
              *
@@ -2343,61 +2428,13 @@
              * [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
              * handler is equivalent.
              *
-             * @return {Highcharts.Chart}
+             * @return {Highcharts.MapChart}
              * The chart object.
              */
             function mapChart(a, b, c) {
-                var hasRenderToArg = typeof a === 'string' || a.nodeName,
-                    options = arguments[hasRenderToArg ? 1 : 0],
-                    userOptions = options,
-                    hiddenAxis = {
-                        endOnTick: false,
-                        visible: false,
-                        minPadding: 0,
-                        maxPadding: 0,
-                        startOnTick: false
-                    },
-                    seriesOptions,
-                    defaultCreditsOptions = getOptions().credits;
-                /* For visual testing
-                hiddenAxis.gridLineWidth = 1;
-                hiddenAxis.gridZIndex = 10;
-                hiddenAxis.tickPositions = undefined;
-                // */
-                // Don't merge the data
-                seriesOptions = options.series;
-                options.series = null;
-                options = merge({
-                    chart: {
-                        panning: {
-                            enabled: true,
-                            type: 'xy'
-                        },
-                        type: 'map'
-                    },
-                    credits: {
-                        mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
-                            '{geojson.copyrightShort}</a>'),
-                        mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
-                    },
-                    tooltip: {
-                        followTouchMove: false
-                    },
-                    xAxis: hiddenAxis,
-                    yAxis: merge(hiddenAxis, { reversed: true })
-                }, options, // user's options
-                {
-                    chart: {
-                        inverted: false,
-                        alignTicks: false
-                    }
-                });
-                options.series = userOptions.series = seriesOptions;
-                return hasRenderToArg ?
-                    new Chart(a, options, c) :
-                    new Chart(options, b);
+                return new MapChart(a, b, c);
             }
-            Map.mapChart = mapChart;
+            MapChart.mapChart = mapChart;
             /**
              * Utility for reading SVG paths directly.
              *
@@ -2433,23 +2470,15 @@
                 }
                 return SVGRenderer.prototype.pathToSegments(arr);
             }
-            Map.splitPath = splitPath;
-        })(Map || (Map = {}));
-        /* *
-         *
-         *  Compatibility
-         *
-         * */
-        H.Map = Map.mapChart; // @todo remove fake class for jQuery
-        H.mapChart = Map.mapChart;
-        H.maps = Map.maps;
+            MapChart.splitPath = splitPath;
+        })(MapChart || (MapChart = {}));
         /* *
          *
          *  Default Export
          *
          * */
 
-        return Map;
+        return MapChart;
     });
     _registerModule(_modules, 'Series/Map/MapPoint.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, SeriesRegistry, U) {
         /* *
@@ -2584,7 +2613,7 @@
 
         return MapPoint;
     });
-    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Maps/Map.js'], _modules['Series/Map/MapPoint.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, H, LegendSymbolMixin, mapModule, MapPoint, palette, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, H, LegendSymbolMixin, MapChart, MapPoint, palette, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2612,8 +2641,8 @@
         })();
         var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
         var noop = H.noop;
-        var maps = mapModule.maps,
-            splitPath = mapModule.splitPath;
+        var maps = MapChart.maps,
+            splitPath = MapChart.splitPath;
         var 
             // indirect dependency to keep product size low
             _a = SeriesRegistry.seriesTypes,
@@ -4936,7 +4965,10 @@
                 // Render bubble symbol
                 symbols.bubbleItems.push(renderer
                     .circle(posX, elementCenter + crispMovement, absoluteRadius)
-                    .attr(styledMode ? {} : range.bubbleStyle)
+                    .attr(
+                // @todo: Resolve bad typing of bubbleStyle. CSSObject can't
+                // be passed to .attr.
+                (styledMode ? {} : range.bubbleStyle))
                     .addClass((styledMode ?
                     'highcharts-color-' +
                         this.options.seriesIndex + ' ' :
@@ -4949,7 +4981,10 @@
                     ['M', posX, posY],
                     ['L', posX + connectorLength, posY]
                 ], options.connectorWidth))
-                    .attr(styledMode ? {} : range.connectorStyle)
+                    .attr(
+                // @todo: Resolve bad typing of connectorStyle. CSSObject
+                // can't be passed to .attr.
+                (styledMode ? {} : range.connectorStyle))
                     .addClass((styledMode ?
                     'highcharts-color-' +
                         this.options.seriesIndex + ' ' : '') +
@@ -4958,7 +4993,10 @@
                 // Render label
                 label = renderer
                     .text(this.formatLabel(range), labelX, labelY + labelMovement)
-                    .attr(styledMode ? {} : range.labelStyle)
+                    .attr(
+                // @todo: Resolve bad typing of labelStyle. CSSObject can't
+                // be passed to .attr.
+                (styledMode ? {} : range.labelStyle))
                     .addClass('highcharts-bubble-legend-labels ' +
                     (options.labels.className || '')).add(this.legendSymbol);
                 labels.push(label);
@@ -6764,8 +6802,10 @@
                             shapeArgs[dimension[0]]) + (pointStateOptions[dimension[0] + 'Plus'] ||
                             seriesStateOptions[dimension[0] + 'Plus'] || 0);
                         // Align marker by a new size.
-                        attribs[dimension[1]] = shapeArgs[dimension[1]] +
-                            (shapeArgs[dimension[0]] - attribs[dimension[0]]) / 2;
+                        attribs[dimension[1]] =
+                            shapeArgs[dimension[1]] +
+                                (shapeArgs[dimension[0]] -
+                                    attribs[dimension[0]]) / 2;
                     });
                 }
                 return state ? attribs : shapeArgs;
@@ -8027,8 +8067,11 @@
         });
 
     });
-    _registerModule(_modules, 'masters/modules/map.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/map.src.js', [_modules['Core/Globals.js'], _modules['Core/Chart/MapChart.js']], function (Highcharts, MapChart) {
 
+        Highcharts.MapChart = MapChart;
+        Highcharts.mapChart = Highcharts.Map = MapChart.mapChart;
+        Highcharts.maps = MapChart.maps;
 
     });
 }));

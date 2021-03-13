@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Annotations module
  *
@@ -1356,12 +1356,13 @@
                 }
             };
         SVGRenderer.prototype.addMarker = function (id, markerOptions) {
+            var _a;
             var options = { attributes: { id: id } };
             var attrs = {
                     stroke: markerOptions.color || 'none',
                     fill: markerOptions.color || 'rgba(0, 0, 0, 0.75)'
                 };
-            options.children = markerOptions.children.map(function (child) {
+            options.children = (_a = markerOptions.children) === null || _a === void 0 ? void 0 : _a.map(function (child) {
                 return merge(attrs, child);
             });
             var ast = merge(true, {
@@ -1445,6 +1446,7 @@
                 var attributes = def.attributes;
                 if (def.tagName === 'marker' &&
                     attributes &&
+                    attributes.id &&
                     attributes.display !== 'none') {
                     this.renderer.addMarker(attributes.id, def);
                 }
@@ -2004,8 +2006,8 @@
                         height: label.height
                     }, 
                     //
-                    x = alignAttr.x - chart.plotLeft,
-                    y = alignAttr.y - chart.plotTop;
+                    x = (alignAttr.x || 0) - chart.plotLeft,
+                    y = (alignAttr.y || 0) - chart.plotTop;
                 // Off left
                 off = x + padding;
                 if (off < 0) {
@@ -3844,7 +3846,6 @@
          * */
         var addEvent = U.addEvent,
             attr = U.attr,
-            extend = U.extend,
             format = U.format,
             fireEvent = U.fireEvent,
             isArray = U.isArray,
@@ -3914,26 +3915,47 @@
          */
         var bindingsUtils = {
                 /**
-                 * Update size of background (rect) in some annotations: Measure,
-            Simple
-                 * Rect.
+                 * Get field type according to value
                  *
                  * @private
-                 * @function Highcharts.NavigationBindingsUtilsObject.updateRectSize
+                 * @function Highcharts.NavigationBindingsUtilsObject.getFieldType
                  *
-                 * @param {Highcharts.PointerEventObject} event
-                 * Normalized browser event
+                 * @param {'boolean'|'number'|'string'} value
+                 * Atomic type (one of: string,
+            number,
+            boolean)
                  *
-                 * @param {Highcharts.Annotation} annotation
-                 * Annotation to be updated
+                 * @return {'checkbox'|'number'|'text'}
+                 * Field type (one of: text,
+            number,
+            checkbox)
                  */
-                updateRectSize: function (event,
-            annotation) {
-                    var chart = annotation.chart,
-            options = annotation.options.typeOptions,
-            coords = chart.pointer.getCoordinates(event),
-            width = coords.xAxis[0].value - options.point.x,
-            height = options.point.y - coords.yAxis[0].value;
+                getFieldType: function (value) {
+                    return {
+                        'string': 'text',
+                        'number': 'number',
+                        'boolean': 'checkbox'
+                    }[typeof value];
+            },
+            /**
+             * Update size of background (rect) in some annotations: Measure, Simple
+             * Rect.
+             *
+             * @private
+             * @function Highcharts.NavigationBindingsUtilsObject.updateRectSize
+             *
+             * @param {Highcharts.PointerEventObject} event
+             * Normalized browser event
+             *
+             * @param {Highcharts.Annotation} annotation
+             * Annotation to be updated
+             */
+            updateRectSize: function (event, annotation) {
+                var chart = annotation.chart,
+                    options = annotation.options.typeOptions,
+                    coords = chart.pointer.getCoordinates(event),
+                    width = coords.xAxis[0].value - options.point.x,
+                    height = options.point.y - coords.yAxis[0].value;
                 annotation.update({
                     typeOptions: {
                         background: {
@@ -3942,25 +3964,6 @@
                         }
                     }
                 });
-            },
-            /**
-             * Get field type according to value
-             *
-             * @private
-             * @function Highcharts.NavigationBindingsUtilsObject.getFieldType
-             *
-             * @param {'boolean'|'number'|'string'} value
-             * Atomic type (one of: string, number, boolean)
-             *
-             * @return {'checkbox'|'number'|'text'}
-             * Field type (one of: text, number, checkbox)
-             */
-            getFieldType: function (value) {
-                return {
-                    'string': 'text',
-                    'number': 'number',
-                    'boolean': 'checkbox'
-                }[typeof value];
             }
         };
         /**
@@ -4946,7 +4949,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isFirefox = H.isFirefox;
+        var doc = H.doc,
+            isFirefox = H.isFirefox;
         var addEvent = U.addEvent,
             createElement = U.createElement,
             defined = U.defined,
@@ -5059,9 +5063,8 @@
                 if (!inputName.match(indexFilter)) {
                     // add label
                     createElement(LABEL, {
-                        innerHTML: lang[optionName] || optionName,
                         htmlFor: inputName
-                    }, null, parentDiv);
+                    }, void 0, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
                 }
                 // add input
                 createElement(INPUT, {
@@ -5069,7 +5072,7 @@
                     value: value[0],
                     type: value[1],
                     className: PREFIX + 'popup-field'
-                }, null, parentDiv).setAttribute(PREFIX + 'data-name', option);
+                }, void 0, parentDiv).setAttribute(PREFIX + 'data-name', option);
             },
             /**
              * Create button.
@@ -5092,9 +5095,8 @@
                     closePopup = this.closePopup,
                     getFields = this.getFields,
                     button;
-                button = createElement(BUTTON, {
-                    innerHTML: label
-                }, null, parentDiv);
+                button = createElement(BUTTON, void 0, void 0, parentDiv);
+                button.appendChild(doc.createTextNode(label));
                 ['click', 'touchstart'].forEach(function (eventName) {
                     addEvent(button, eventName, function () {
                         closePopup.call(_self);
@@ -5225,13 +5227,11 @@
                     // set position
                     popupDiv.style.top = chart.plotTop + 10 + 'px';
                     // create label
-                    createElement(SPAN, {
-                        innerHTML: pick(
-                        // Advanced annotations:
-                        lang[options.langKey] || options.langKey, 
-                        // Basic shapes:
-                        options.shapes && options.shapes[0].type)
-                    }, null, popupDiv);
+                    createElement(SPAN, void 0, void 0, popupDiv).appendChild(doc.createTextNode(pick(
+                    // Advanced annotations:
+                    lang[options.langKey] || options.langKey, 
+                    // Basic shapes:
+                    options.shapes && options.shapes[0].type)));
                     // add buttons
                     button = this.addButton(popupDiv, lang.removeButton || 'remove', 'remove', callback, popupDiv);
                     button.className += ' ' + PREFIX + 'annotation-remove-button';
@@ -5264,9 +5264,9 @@
                         lhsCol;
                     // create title of annotations
                     lhsCol = createElement('h2', {
-                        innerHTML: lang[options.langKey] || options.langKey,
                         className: PREFIX + 'popup-main-title'
-                    }, null, popupDiv);
+                    }, void 0, popupDiv);
+                    lhsCol.appendChild(doc.createTextNode(lang[options.langKey] || options.langKey || ''));
                     // left column
                     lhsCol = createElement(DIV, {
                         className: PREFIX + 'popup-lhs-col ' + PREFIX + 'popup-lhs-full'
@@ -5343,9 +5343,8 @@
                         storage.forEach(function (genInput) {
                             if (genInput[0] === true) {
                                 createElement(SPAN, {
-                                    className: PREFIX + 'annotation-title',
-                                    innerHTML: genInput[1]
-                                }, null, genInput[2]);
+                                    className: PREFIX + 'annotation-title'
+                                }, void 0, genInput[2]).appendChild(doc.createTextNode(genInput[1]));
                             }
                             else {
                                 addInput.apply(genInput[0], genInput.splice(1));
@@ -5408,9 +5407,9 @@
                                 value),
                                 indicatorType = indicatorNameType.type;
                             item = createElement(LI, {
-                                className: PREFIX + 'indicator-list',
-                                innerHTML: indicatorNameType.name
-                            }, null, indicatorList);
+                                className: PREFIX + 'indicator-list'
+                            }, void 0, indicatorList);
+                            item.appendChild(doc.createTextNode(indicatorNameType.name));
                             ['click', 'touchstart'].forEach(function (eventName) {
                                 addEvent(item, eventName, function () {
                                     addFormFields.call(_self, chart, isEdit ? serie : series[indicatorType], indicatorNameType.type, rhsColWrapper);
@@ -5479,9 +5478,8 @@
                         selectBox,
                         seriesOptions;
                     createElement(LABEL, {
-                        innerHTML: lang[optionName] || optionName,
                         htmlFor: selectName
-                    }, null, parentDiv);
+                    }, null, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
                     // select type
                     selectBox = createElement(SELECT, {
                         name: selectName,
@@ -5495,9 +5493,8 @@
                             seriesOptions.id &&
                             seriesOptions.id !== PREFIX + 'navigator-series') {
                             createElement(OPTION, {
-                                innerHTML: seriesOptions.name || seriesOptions.id,
                                 value: seriesOptions.id
-                            }, null, selectBox);
+                            }, null, selectBox).appendChild(doc.createTextNode(seriesOptions.name || seriesOptions.id));
                         }
                     });
                     if (defined(selectedOption)) {
@@ -5527,9 +5524,8 @@
                     rhsColWrapper.innerHTML = '';
                     // create title (indicator name in the right column)
                     createElement(H3, {
-                        className: PREFIX + 'indicator-title',
-                        innerHTML: getNameType(series, seriesType).name
-                    }, null, rhsColWrapper);
+                        className: PREFIX + 'indicator-title'
+                    }, void 0, rhsColWrapper).appendChild(doc.createTextNode(getNameType(series, seriesType).name));
                     // input type
                     createElement(INPUT, {
                         type: 'hidden',
@@ -5638,9 +5634,9 @@
                     }
                     // tab 1
                     menuItem = createElement(SPAN, {
-                        innerHTML: lang[tabName + 'Button'] || tabName,
                         className: className
-                    }, null, popupDiv);
+                    }, void 0, popupDiv);
+                    menuItem.appendChild(doc.createTextNode(lang[tabName + 'Button'] || tabName));
                     menuItem.setAttribute(PREFIX + 'data-tab-type', tabName);
                     return menuItem;
                 },
@@ -5652,7 +5648,7 @@
                 addContentItem: function () {
                     var popupDiv = this.popup.container;
                     return createElement(DIV, {
-                        className: PREFIX + 'tab-item-content'
+                        className: PREFIX + 'tab-item-content ' + PREFIX + 'no-mousewheel' // #12100
                     }, null, popupDiv);
                 },
                 /**

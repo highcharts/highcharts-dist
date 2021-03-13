@@ -13,7 +13,7 @@ import Chart from '../../Core/Chart/Chart.js';
 import chartNavigationMixin from '../../Mixins/Navigation.js';
 import H from '../../Core/Globals.js';
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, attr = U.attr, extend = U.extend, format = U.format, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, setOptions = U.setOptions;
+var addEvent = U.addEvent, attr = U.attr, format = U.format, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, setOptions = U.setOptions;
 /**
  * A config object for navigation bindings in annotations.
  *
@@ -69,6 +69,25 @@ function closestPolyfill(el, s) {
  */
 var bindingsUtils = {
     /**
+     * Get field type according to value
+     *
+     * @private
+     * @function Highcharts.NavigationBindingsUtilsObject.getFieldType
+     *
+     * @param {'boolean'|'number'|'string'} value
+     * Atomic type (one of: string, number, boolean)
+     *
+     * @return {'checkbox'|'number'|'text'}
+     * Field type (one of: text, number, checkbox)
+     */
+    getFieldType: function (value) {
+        return {
+            'string': 'text',
+            'number': 'number',
+            'boolean': 'checkbox'
+        }[typeof value];
+    },
+    /**
      * Update size of background (rect) in some annotations: Measure, Simple
      * Rect.
      *
@@ -91,25 +110,6 @@ var bindingsUtils = {
                 }
             }
         });
-    },
-    /**
-     * Get field type according to value
-     *
-     * @private
-     * @function Highcharts.NavigationBindingsUtilsObject.getFieldType
-     *
-     * @param {'boolean'|'number'|'string'} value
-     * Atomic type (one of: string, number, boolean)
-     *
-     * @return {'checkbox'|'number'|'text'}
-     * Field type (one of: text, number, checkbox)
-     */
-    getFieldType: function (value) {
-        return {
-            'string': 'text',
-            'number': 'number',
-            'boolean': 'checkbox'
-        }[typeof value];
     }
 };
 /**

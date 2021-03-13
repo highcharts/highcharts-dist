@@ -547,7 +547,7 @@ Chart.prototype.addSingleSeriesAsDrilldown = function (point, ddOptions) {
     }
     // Run fancy cross-animation on supported and equal types
     if (oldSeries.type === newSeries.type) {
-        newSeries.animate = newSeries.animateDrilldown || noop;
+        newSeries.animate = (newSeries.animateDrilldown || noop);
         newSeries.options.animation = true;
     }
 };
@@ -588,11 +588,15 @@ Chart.prototype.getDrilldownBackText = function () {
     }
 };
 Chart.prototype.showDrillUpButton = function () {
-    var chart = this, backText = this.getDrilldownBackText(), buttonOptions = chart.options.drilldown.drillUpButton, attr, states;
+    var chart = this, backText = this.getDrilldownBackText(), buttonOptions = chart.options.drilldown.drillUpButton, attr, states, alignTo = (buttonOptions.relativeTo === 'chart' ||
+        buttonOptions.relativeTo === 'spacingBox' ?
+        null :
+        'scrollablePlotBox');
     if (!this.drillUpButton) {
         attr = buttonOptions.theme;
         states = attr && attr.states;
-        this.drillUpButton = this.renderer.button(backText, null, null, function () {
+        this.drillUpButton = this.renderer
+            .button(backText, null, null, function () {
             chart.drillUp();
         }, attr, states && states.hover, states && states.select)
             .addClass('highcharts-drillup-button')
@@ -601,7 +605,7 @@ Chart.prototype.showDrillUpButton = function () {
             zIndex: 7
         })
             .add()
-            .align(buttonOptions.position, false, buttonOptions.relativeTo || 'plotBox');
+            .align(buttonOptions.position, false, alignTo);
     }
     else {
         this.drillUpButton.attr({

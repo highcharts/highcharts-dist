@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Highcharts Drilldown module
  *
@@ -581,7 +581,7 @@
             }
             // Run fancy cross-animation on supported and equal types
             if (oldSeries.type === newSeries.type) {
-                newSeries.animate = newSeries.animateDrilldown || noop;
+                newSeries.animate = (newSeries.animateDrilldown || noop);
                 newSeries.options.animation = true;
             }
         };
@@ -628,11 +628,16 @@
                 backText = this.getDrilldownBackText(),
                 buttonOptions = chart.options.drilldown.drillUpButton,
                 attr,
-                states;
+                states,
+                alignTo = (buttonOptions.relativeTo === 'chart' ||
+                    buttonOptions.relativeTo === 'spacingBox' ?
+                    null :
+                    'scrollablePlotBox');
             if (!this.drillUpButton) {
                 attr = buttonOptions.theme;
                 states = attr && attr.states;
-                this.drillUpButton = this.renderer.button(backText, null, null, function () {
+                this.drillUpButton = this.renderer
+                    .button(backText, null, null, function () {
                     chart.drillUp();
                 }, attr, states && states.hover, states && states.select)
                     .addClass('highcharts-drillup-button')
@@ -641,7 +646,7 @@
                     zIndex: 7
                 })
                     .add()
-                    .align(buttonOptions.position, false, buttonOptions.relativeTo || 'plotBox');
+                    .align(buttonOptions.position, false, alignTo);
             }
             else {
                 this.drillUpButton.attr({

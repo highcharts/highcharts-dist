@@ -1109,10 +1109,20 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
                 options.series.push(seriesOptions);
             }
         });
-        // Assign an internal key to ensure a one-to-one mapping (#5924)
+        var colls = {};
         chart.axes.forEach(function (axis) {
+            // Assign an internal key to ensure a one-to-one mapping (#5924)
             if (!axis.userOptions.internalKey) { // #6444
                 axis.userOptions.internalKey = uniqueKey();
+            }
+            if (!axis.options.isInternal) {
+                if (!colls[axis.coll]) {
+                    colls[axis.coll] = true;
+                    options[axis.coll] = [];
+                }
+                options[axis.coll].push(merge(axis.userOptions, {
+                    visible: axis.visible
+                }));
             }
         });
         // generate the chart copy
@@ -1435,7 +1445,9 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
                     button.setState(0);
                 }
                 chart.openMenu = false;
-                css(chart.renderTo, { overflow: 'hidden' }); // #10361
+                // #10361, #9998
+                css(chart.renderTo, { overflow: 'hidden' });
+                css(chart.container, { overflow: 'hidden' });
                 U.clearTimeout(menu.hideTimer);
                 fireEvent(chart, 'exportMenuHidden');
             };
@@ -1527,7 +1539,9 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
             menuStyle.top = (y + height - menuPadding) + 'px';
         }
         css(menu, menuStyle);
-        css(chart.renderTo, { overflow: '' }); // #10361
+        // #10361, #9998
+        css(chart.renderTo, { overflow: '' });
+        css(chart.container, { overflow: '' });
         chart.openMenu = true;
         fireEvent(chart, 'exportMenuShown');
     },
@@ -1550,7 +1564,7 @@ extend(Chart.prototype, /** @lends Highcharts.Chart.prototype */ {
             chart.exportDivElements = [];
             chart.exportSVGElements = [];
         }
-        if (btnOptions.enabled === false) {
+        if (btnOptions.enabled === false || !btnOptions.theme) {
             return;
         }
         var attr = btnOptions.theme, states = attr.states, hover = states && states.hover, select = states && states.select, callback;
@@ -1801,7 +1815,8 @@ Chart.prototype.inlineStyles = function () {
                 // If parent node has the same style, it gets inherited, no need
                 // to inline it. Top-level props should be diffed against parent
                 // (#7687).
-                if ((parentStyles[prop] !== val || node.nodeName === 'svg') &&
+                if ((parentStyles[prop] !== val ||
+                    node.nodeName === 'svg') &&
                     defaultStyles[node.nodeName][prop] !== val) {
                     // Attributes
                     if (!inlineToAttributes ||

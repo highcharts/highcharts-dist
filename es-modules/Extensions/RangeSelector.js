@@ -957,12 +957,13 @@ var RangeSelector = /** @class */ (function () {
         if (input && dateBox && this.inputGroup) {
             var isTextInput = input.type === 'text';
             var _a = this.inputGroup, translateX = _a.translateX, translateY = _a.translateY;
+            var inputBoxWidth = this.options.inputBoxWidth;
             css(input, {
-                width: isTextInput ? ((dateBox.width - 2) + 'px') : 'auto',
+                width: isTextInput ? ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') : 'auto',
                 height: isTextInput ? ((dateBox.height - 2) + 'px') : 'auto',
                 border: '2px solid silver'
             });
-            if (isTextInput) {
+            if (isTextInput && inputBoxWidth) {
                 css(input, {
                     left: (translateX + dateBox.x) + 'px',
                     top: translateY + 'px'
@@ -975,7 +976,7 @@ var RangeSelector = /** @class */ (function () {
                     left: Math.min(Math.round(dateBox.x +
                         translateX -
                         (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                    top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                    top: (translateY - 1 - (input.offsetHeight - dateBox.height) / 2) + 'px'
                 });
             }
         }
@@ -1026,7 +1027,7 @@ var RangeSelector = /** @class */ (function () {
             var parts = inputDate.split('-');
             date = Date.UTC(pInt(parts[0]), pInt(parts[1]) - 1, pInt(parts[2]));
         }
-        if (time && useUTC) {
+        if (time && useUTC && isNumber(date)) {
             date += time.getTimezoneOffset(date);
         }
         return date;
@@ -1158,9 +1159,9 @@ var RangeSelector = /** @class */ (function () {
         var keyDown = false;
         // handle changes in the input boxes
         input.onchange = function () {
-            updateExtremes();
-            // Blur input when clicking date input calendar
+            // Update extremes and blur input when clicking date input calendar
             if (!keyDown) {
+                updateExtremes();
                 rangeSelector.hideInput(name);
                 input.blur();
             }
@@ -1171,8 +1172,12 @@ var RangeSelector = /** @class */ (function () {
                 updateExtremes();
             }
         };
-        input.onkeydown = function () {
+        input.onkeydown = function (event) {
             keyDown = true;
+            // Arrow keys
+            if (event.keyCode === 38 || event.keyCode === 40) {
+                updateExtremes();
+            }
         };
         input.onkeyup = function () {
             keyDown = false;
@@ -1296,9 +1301,12 @@ var RangeSelector = /** @class */ (function () {
                     this.maxLabel,
                     this.maxDateBox
                 ].forEach(function (label) {
-                    if (label && label.width) {
-                        label.attr({ x: x_1 });
-                        x_1 += label.width + options.inputSpacing;
+                    if (label) {
+                        var width = label.getBBox().width;
+                        if (width) {
+                            label.attr({ x: x_1 });
+                            x_1 += width + options.inputSpacing;
+                        }
                     }
                 });
             }

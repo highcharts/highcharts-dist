@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -11,7 +11,6 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-
 import '../../Stock/Indicators/SMA/SMAIndicator.js';
 import '../../Stock/Indicators/AD/ADIndicator.js';
 import '../../Stock/Indicators/AO/AOIndicator.js';

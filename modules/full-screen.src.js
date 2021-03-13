@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  *
  * Advanced Highstock tools
  *
@@ -138,7 +138,7 @@
                 }
                 // Unbind event as it's necessary only before exiting from fullscreen.
                 if (fullscreen.unbindFullscreenEvent) {
-                    fullscreen.unbindFullscreenEvent();
+                    fullscreen.unbindFullscreenEvent = fullscreen.unbindFullscreenEvent();
                 }
                 chart.setSize(fullscreen.origWidth, fullscreen.origHeight, false);
                 fullscreen.origWidth = void 0;
@@ -176,11 +176,12 @@
                 fullscreen.origHeight = chart.chartHeight;
                 // Handle exitFullscreen() method when user clicks 'Escape' button.
                 if (fullscreen.browserProps) {
-                    fullscreen.unbindFullscreenEvent = addEvent(chart.container.ownerDocument, // chart's document
-                    fullscreen.browserProps.fullscreenChange, function () {
-                        // Handle lack of async of browser's fullScreenChange event.
-                        if (fullscreen.isOpen) {
-                            fullscreen.isOpen = false;
+                    var unbindChange_1 = addEvent(chart.container.ownerDocument, // chart's document
+                        fullscreen.browserProps.fullscreenChange,
+                        function () {
+                            // Handle lack of async of browser's fullScreenChange event.
+                            if (fullscreen.isOpen) {
+                                fullscreen.isOpen = false;
                             fullscreen.close();
                         }
                         else {
@@ -189,6 +190,12 @@
                             fullscreen.setButtonText();
                         }
                     });
+                    var unbindDestroy_1 = addEvent(chart, 'destroy',
+                        unbindChange_1);
+                    fullscreen.unbindFullscreenEvent = function () {
+                        unbindChange_1();
+                        unbindDestroy_1();
+                    };
                     var promise = chart.renderTo[fullscreen.browserProps.requestFullscreen]();
                     if (promise) {
                         // No dot notation because of IE8 compatibility
@@ -197,7 +204,6 @@
                             'Full screen is not supported inside a frame.');
                         });
                     }
-                    addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
                 }
             };
             /**

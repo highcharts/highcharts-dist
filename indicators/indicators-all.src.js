@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  *
  * All technical indicators for Highstock
  *
@@ -3643,6 +3643,7 @@
         var defined = U.defined,
             extend = U.extend,
             isArray = U.isArray,
+            isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach;
         /* eslint-disable require-jsdoc */
@@ -3824,15 +3825,16 @@
                 var indicator = this;
                 SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
                 indicator.points.forEach(function (point) {
-                    indicator.pointArrayMap.forEach(function (value) {
-                        if (defined(point[value])) {
-                            point['plot' + value] = indicator.yAxis.toPixels(point[value], true);
+                    indicator.pointArrayMap.forEach(function (key) {
+                        var pointValue = point[key];
+                        if (isNumber(pointValue)) {
+                            point['plot' + key] = indicator.yAxis.toPixels(pointValue, true);
                             // Add extra parameters for support tooltip in moved
                             // lines
-                            point.plotY = point['plot' + value];
+                            point.plotY = point['plot' + key];
                             point.tooltipPos = [
                                 point.plotX,
-                                point['plot' + value]
+                                point['plot' + key]
                             ];
                             point.isNull = false;
                         }
@@ -4794,7 +4796,8 @@
                 this.zones = histogramZones;
             };
             MACDIndicator.prototype.getValues = function (series, params) {
-                var j = 0,
+                var indexToShift = params.longPeriod - params.shortPeriod, // #14197
+                    j = 0,
                     MACD = [],
                     xMACD = [],
                     yMACD = [],
@@ -4819,17 +4822,17 @@
                 longEMA = longEMA.values;
                 // Subtract each Y value from the EMA's and create the new dataset
                 // (MACD)
-                for (i = 1; i <= shortEMA.length; i++) {
-                    if (defined(longEMA[i - 1]) &&
-                        defined(longEMA[i - 1][1]) &&
-                        defined(shortEMA[i + params.shortPeriod + 1]) &&
-                        defined(shortEMA[i + params.shortPeriod + 1][0])) {
+                for (i = 0; i <= shortEMA.length; i++) {
+                    if (defined(longEMA[i]) &&
+                        defined(longEMA[i][1]) &&
+                        defined(shortEMA[i + indexToShift]) &&
+                        defined(shortEMA[i + indexToShift][0])) {
                         MACD.push([
-                            shortEMA[i + params.shortPeriod + 1][0],
+                            shortEMA[i + indexToShift][0],
                             0,
                             null,
-                            shortEMA[i + params.shortPeriod + 1][1] -
-                                longEMA[i - 1][1]
+                            shortEMA[i + indexToShift][1] -
+                                longEMA[i][1]
                         ]);
                     }
                 }
@@ -7183,7 +7186,7 @@
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray,
+        var isNumber = U.isNumber,
             merge = U.merge;
         /* eslint-disable require-jsdoc */
         // Utils:
@@ -7232,22 +7235,31 @@
                     RSI = [],
                     xData = [],
                     yData = [],
-                    index = 3,
+                    index = params.index,
                     gain = 0,
                     loss = 0,
                     RSIPoint,
                     change,
                     avgGain,
                     avgLoss,
-                    i;
-                // RSI requires close value
-                if ((xVal.length < period) || !isArray(yVal[0]) ||
-                    yVal[0].length !== 4) {
+                    i,
+                    values;
+                if ((xVal.length < period)) {
                     return;
+                }
+                if (isNumber(yVal[0])) {
+                    values = yVal;
+                }
+                else {
+                    // in case of the situation, where the series type has data length
+                    // longer then 4 (HLC, range), this ensures that we are not trying
+                    // to reach the index out of bounds
+                    index = Math.min(index, yVal[0].length - 1);
+                    values = yVal.map(function (value) { return value[index]; });
                 }
                 // Calculate changes for first N points
                 while (range < period) {
-                    change = toFixed(yVal[range][index] - yVal[range - 1][index], decimals);
+                    change = toFixed(values[range] - values[range - 1], decimals);
                     if (change > 0) {
                         gain += change;
                     }
@@ -7260,7 +7272,7 @@
                 avgGain = toFixed(gain / (period - 1), decimals);
                 avgLoss = toFixed(loss / (period - 1), decimals);
                 for (i = range; i < yValLen; i++) {
-                    change = toFixed(yVal[i][index] - yVal[i - 1][index], decimals);
+                    change = toFixed(values[i] - values[i - 1], decimals);
                     if (change > 0) {
                         gain = change;
                         loss = 0;
@@ -7313,7 +7325,8 @@
             RSIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
                 params: {
                     period: 14,
-                    decimals: 4
+                    decimals: 4,
+                    index: 3
                 }
             });
             return RSIIndicator;
@@ -8334,8 +8347,7 @@
                     indicator.setData([]);
                     indicator.zoneStarts = [];
                     if (indicator.zoneLinesSVG) {
-                        indicator.zoneLinesSVG.destroy();
-                        delete indicator.zoneLinesSVG;
+                        indicator.zoneLinesSVG = indicator.zoneLinesSVG.destroy();
                     }
                 }
                 /* eslint-enable require-jsdoc */
@@ -8359,13 +8371,17 @@
                     inverted = series.chart.inverted,
                     group = series.group,
                     attr = {},
-                    translate,
                     position;
                 if (!init && group) {
-                    translate = inverted ? 'translateY' : 'translateX';
                     position = inverted ? series.yAxis.top : series.xAxis.left;
-                    group['forceAnimate:' + translate] = true;
-                    attr[translate] = position;
+                    if (inverted) {
+                        group['forceAnimate:translateY'] = true;
+                        attr.translateY = position;
+                    }
+                    else {
+                        group['forceAnimate:translateX'] = true;
+                        attr.translateX = position;
+                    }
                     group.animate(attr, extend(animObject(series.options.animation), {
                         step: function (val, fx) {
                             series.group.attr({
@@ -8555,7 +8571,9 @@
                     if (this.points.length) {
                         this.setData([]);
                         this.zoneStarts = [];
-                        this.zoneLinesSVG.destroy();
+                        if (this.zoneLinesSVG) {
+                            this.zoneLinesSVG = this.zoneLinesSVG.destroy();
+                        }
                     }
                     return [];
                 }
@@ -10657,7 +10675,6 @@
         return TrendLineIndicator;
     });
     _registerModule(_modules, 'masters/indicators/indicators-all.src.js', [], function () {
-
 
         // eslint-disable-next-line max-len
         // eslint-disable-next-line max-len

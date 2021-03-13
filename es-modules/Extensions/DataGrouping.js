@@ -136,10 +136,11 @@ var approximations = H.approximations = {
     }
 };
 var groupData = function (xData, yData, groupPositions, approximation) {
+    var _a;
     var series = this, data = series.data, dataOptions = series.options && series.options.data, groupedXData = [], groupedYData = [], groupMap = [], dataLength = xData.length, pointX, pointY, groupedY, 
     // when grouping the fake extended axis for panning,
     // we don't need to consider y
-    handleYData = !!yData, values = [], approximationFn, pointArrayMap = series.pointArrayMap, pointArrayMapLength = pointArrayMap && pointArrayMap.length, extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']), pos = 0, start = 0, valuesLen, i, j;
+    handleYData = !!yData, values = [], approximationFn, pointArrayMap = series.pointArrayMap, pointArrayMapLength = pointArrayMap && pointArrayMap.length, extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']), groupAll = this.options.dataGrouping && this.options.dataGrouping.groupAll, pos = 0, start = 0, valuesLen, i, j;
     /**
      * @private
      */
@@ -179,7 +180,7 @@ var groupData = function (xData, yData, groupPositions, approximation) {
             // get group x and y
             pointX = groupPositions[pos];
             series.dataGroupInfo = {
-                start: series.cropStart + start,
+                start: groupAll ? start : (series.cropStart + start),
                 length: values[0].length
             };
             groupedY = approximationFn.apply(series, values);
@@ -224,7 +225,7 @@ var groupData = function (xData, yData, groupPositions, approximation) {
         // for each raw data point, push it to an array that contains all values
         // for this specific group
         if (pointArrayMap) {
-            var index = series.cropStart + i, point = (data && data[index]) ||
+            var index = ((_a = series.options.dataGrouping) === null || _a === void 0 ? void 0 : _a.groupAll) ? i : series.cropStart + i, point = (data && data[index]) ||
                 series.pointClass.prototype.applyOptions.apply({
                     series: series
                 }, [dataOptions[index]]), val;
@@ -423,7 +424,9 @@ seriesProto.processData = function () {
             xAxis.getGroupPixelWidth && xAxis.getGroupPixelWidth();
         // Execute grouping if the amount of points is greater than the limit
         // defined in groupPixelWidth
-        if (groupPixelWidth) {
+        if (groupPixelWidth &&
+            processedXData &&
+            processedXData.length) {
             hasGroupedData = true;
             // Force recreation of point instances in series.translate, #5699
             series.isDirty = true;
@@ -745,6 +748,8 @@ export default dataGrouping;
  *
  * @sample {highstock} stock/plotoptions/series-datagrouping-approximation
  *         Approximation callback with custom data
+ * @sample {highstock} stock/plotoptions/series-datagrouping-simple-approximation
+ *         Simple approximation demo
  *
  * @type       {Highcharts.DataGroupingApproximationValue|Function}
  * @apioption  plotOptions.series.dataGrouping.approximation

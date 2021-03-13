@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Sonification module
  *
@@ -3361,8 +3361,6 @@
 
     });
     _registerModule(_modules, 'masters/modules/sonification.src.js', [], function () {
-
-
 
 
     });

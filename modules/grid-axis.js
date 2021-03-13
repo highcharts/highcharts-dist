@@ -1,5 +1,5 @@
 /*
- Highcharts Gantt JS v9.0.1 (2021-02-15)
+ Highcharts Gantt JS v9.0.1 (2021-03-13)
 
  GridAxis
 

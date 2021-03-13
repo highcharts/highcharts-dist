@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -171,11 +171,6 @@
                 },
                 candlestick: {
                     lineColor: 'white'
-                }
-            },
-            toolbar: {
-                itemStyle: {
-                    color: '#CCC'
                 }
             },
             navigation: {

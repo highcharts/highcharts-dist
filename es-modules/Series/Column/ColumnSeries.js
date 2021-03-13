@@ -98,7 +98,7 @@ var ColumnSeries = /** @class */ (function (_super) {
             series.group.attr(attr);
         }
         else { // run the animation
-            translateStart = series.group.attr(translateProp);
+            translateStart = Number(series.group.attr(translateProp));
             series.group.animate({ scaleY: 1 }, extend(animObject(series.options.animation), {
                 // Do the scale synchronously to ensure smooth
                 // updating (#5030, #7228)
@@ -378,7 +378,7 @@ var ColumnSeries = /** @class */ (function (_super) {
             point.tooltipPos = chart.inverted ?
                 [
                     clamp(yAxis.len + yAxis.pos - chart.plotLeft - plotY, yAxis.pos - chart.plotLeft, yAxis.len + yAxis.pos - chart.plotLeft),
-                    xAxis.len + xAxis.pos - chart.plotTop - (plotX || 0) - seriesXOffset - barW / 2,
+                    xAxis.len + xAxis.pos - chart.plotTop - barX - barW / 2,
                     barH
                 ] :
                 [
@@ -418,7 +418,6 @@ var ColumnSeries = /** @class */ (function (_super) {
         // set to fill when borderColor null:
         stroke = ((point && point[strokeOption]) ||
             options[strokeOption] ||
-            this.color ||
             fill), strokeWidth = (point && point[strokeWidthOption]) ||
             options[strokeWidthOption] ||
             this[strokeWidthOption] || 0, dashstyle = (point && point.options.dashStyle) || options.dashStyle, opacity = pick(point && point.opacity, options.opacity, 1), zone, brightness;
@@ -490,7 +489,7 @@ var ColumnSeries = /** @class */ (function (_super) {
                 // Set starting position for point sliding animation.
                 if (series.enabledDataSorting) {
                     point.startXPos = series.xAxis.reversed ?
-                        -(shapeArgs ? shapeArgs.width : 0) :
+                        -(shapeArgs ? (shapeArgs.width || 0) : 0) :
                         series.xAxis.width;
                 }
                 if (!graphic) {

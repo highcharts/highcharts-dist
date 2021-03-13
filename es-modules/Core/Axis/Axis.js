@@ -2148,7 +2148,7 @@ var Axis = /** @class */ (function () {
             newTickInterval = getStep(labelMetrics.h);
         }
         this.autoRotation = autoRotation;
-        this.labelRotation = pick(rotation, rotationOption);
+        this.labelRotation = pick(rotation, isNumber(rotationOption) ? rotationOption : 0);
         return newTickInterval;
     };
     /**
@@ -2184,9 +2184,9 @@ var Axis = /** @class */ (function () {
         }
         if (!horiz) {
             // #7028
-            var cssWidth = (_a = labelOptions === null || labelOptions === void 0 ? void 0 : labelOptions.style) === null || _a === void 0 ? void 0 : _a.width;
+            var cssWidth = (_a = labelOptions.style) === null || _a === void 0 ? void 0 : _a.width;
             if (cssWidth !== void 0) {
-                return parseInt(cssWidth, 10);
+                return parseInt(String(cssWidth), 10);
             }
             if (marginLeft) {
                 return marginLeft - chart.spacing[3];
@@ -2211,8 +2211,8 @@ var Axis = /** @class */ (function () {
             attr.rotation = labelOptions.rotation || 0;
         }
         // Get the longest label length
-        tickPositions.forEach(function (tick) {
-            tick = ticks[tick];
+        tickPositions.forEach(function (tickPosition) {
+            var tick = ticks[tickPosition];
             // Replace label - sorting animation
             if (tick.movedLabel) {
                 tick.replaceMovedLabel();
@@ -2429,7 +2429,7 @@ var Axis = /** @class */ (function () {
         hasData = axis.hasData();
         axis.showAxis = showAxis = hasData || pick(options.showEmpty, true);
         // Set/reset staggerLines
-        axis.staggerLines = axis.horiz && labelOptions.staggerLines;
+        axis.staggerLines = (axis.horiz && labelOptions.staggerLines) || void 0;
         // Create the axisGroup and gridGroup elements on first iteration
         if (!axis.axisGroup) {
             var createGroup = function (name, suffix, zIndex) { return renderer.g(name)
@@ -2504,7 +2504,7 @@ var Axis = /** @class */ (function () {
             labelOffsetPadded -= lineHeightCorrection;
             labelOffsetPadded += directionFactor * (horiz ?
                 pick(labelOptions.y, axis.tickRotCorr.y + directionFactor * 8) :
-                labelOptions.x);
+                (labelOptions.x || 0));
         }
         axis.axisTitleMargin = pick(titleOffsetOption, labelOffsetPadded);
         if (axis.getMaxLabelDimensions) {
@@ -2513,7 +2513,7 @@ var Axis = /** @class */ (function () {
         // Due to GridAxis.tickSize, tickSize should be calculated after ticks
         // has rendered.
         var tickSize = this.tickSize('tick');
-        axisOffset[side] = Math.max(axisOffset[side], axis.axisTitleMargin + titleOffset +
+        axisOffset[side] = Math.max(axisOffset[side], (axis.axisTitleMargin || 0) + titleOffset +
             directionFactor * axis.offset, labelOffsetPadded, // #3027
         tickPositions && tickPositions.length && tickSize ?
             tickSize[0] + directionFactor * axis.offset :
@@ -3095,13 +3095,6 @@ var Axis = /** @class */ (function () {
     Axis.prototype.update = function (options, redraw) {
         var chart = this.chart, newEvents = ((options && options.events) || {});
         options = merge(this.userOptions, options);
-        // Color Axis is not an array,
-        // This change is applied in the ColorAxis wrapper
-        if (chart.options[this.coll].indexOf) {
-            // Don't use this.options.index,
-            // StockChart has Axes in navigator too
-            chart.options[this.coll][chart.options[this.coll].indexOf(this.userOptions)] = options;
-        }
         // Remove old events, if no new exist (#8161)
         objectEach(chart.options[this.coll].events, function (fn, ev) {
             if (typeof newEvents[ev] === 'undefined') {
@@ -3138,12 +3131,6 @@ var Axis = /** @class */ (function () {
         // Remove the axis
         erase(chart.axes, this);
         erase(chart[key], this);
-        if (isArray(chart.options[key])) {
-            chart.options[key].splice(this.options.index, 1);
-        }
-        else { // color axis, #6488
-            delete chart.options[key];
-        }
         chart[key].forEach(function (axis, i) {
             // Re-index, #1706, #8075
             axis.options.index = axis.userOptions.index = i;
@@ -3870,6 +3857,18 @@ var Axis = /** @class */ (function () {
              *
              * @type       {Highcharts.AlignValue}
              * @apioption  xAxis.labels.align
+             */
+            /**
+             * Whether to allow the axis labels to overlap.
+             * When false, overlapping labels are hidden.
+             *
+             * @sample {highcharts} highcharts/xaxis/labels-allowoverlap-true/
+             *         X axis labels overlap enabled
+             *
+             * @type {boolean}
+             * @default false
+             * @apioption xAxis.labels.allowOverlap
+             *
              */
             /**
              * For horizontal axes, the allowed degrees of label rotation
@@ -5055,13 +5054,13 @@ var Axis = /** @class */ (function () {
          *     [1, 2, 3, 4, 6, 8, 12]
          * ], [
          *     'day',
-         *     [1]
+         *     [1, 2]
          * ], [
          *     'week',
-         *     [1]
+         *     [1, 2]
          * ], [
          *     'month',
-         *     [1, 3, 6]
+         *     [1, 2, 3, 4, 6]
          * ], [
          *     'year',
          *     null

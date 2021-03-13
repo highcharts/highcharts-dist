@@ -17,6 +17,15 @@ import palette from '../../Color/Palette.js';
 import U from '../../Utilities.js';
 var attr = U.attr, createElement = U.createElement, css = U.css, defined = U.defined, erase = U.erase, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, syncTimeout = U.syncTimeout, uniqueKey = U.uniqueKey;
 /**
+ * Reference to the global SVGElement class as a workaround for a name conflict
+ * in the Highcharts namespace.
+ *
+ * @global
+ * @typedef {global.SVGElement} GlobalSVGElement
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/SVGElement
+ */
+/**
  * The horizontal alignment of an element.
  *
  * @typedef {"center"|"left"|"right"} Highcharts.AlignValue
@@ -398,7 +407,7 @@ var SVGElement = /** @class */ (function () {
             alignByTranslate = this.alignByTranslate;
             alignTo = this.alignTo;
         }
-        box = pick(box, renderer[alignTo], renderer);
+        box = pick(box, renderer[alignTo], alignTo === 'scrollablePlotBox' ? renderer.plotBox : void 0, renderer);
         // Assign variables
         align = alignOptions.align;
         vAlign = alignOptions.verticalAlign;
@@ -569,14 +578,17 @@ var SVGElement = /** @class */ (function () {
             });
             // Insert an absolutely positioned break before the original text
             // to keep it in place
-            var br = doc.createElementNS(SVG_NS, 'tspan');
-            br.textContent = '\u200B';
-            attr(br, {
-                x: elem.getAttribute('x'),
-                y: elem.getAttribute('y')
+            var br_1 = doc.createElementNS(SVG_NS, 'tspan');
+            br_1.textContent = '\u200B';
+            // Copy x and y if not null
+            ['x', 'y'].forEach(function (key) {
+                var value = elem.getAttribute(key);
+                if (value) {
+                    br_1.setAttribute(key, value);
+                }
             });
             // Insert the outline
-            outline_1.appendChild(br);
+            outline_1.appendChild(br_1);
             elem.insertBefore(outline_1, elem.firstChild);
         }
     };
@@ -794,9 +806,9 @@ var SVGElement = /** @class */ (function () {
                 }
                 // Build the unique key to detect whether we need to create a
                 // new element (#1282)
-                objectEach(gradAttr, function (val, n) {
+                objectEach(gradAttr, function (value, n) {
                     if (n !== 'id') {
-                        key.push(n, val);
+                        key.push(n, value);
                     }
                 });
                 objectEach(stops, function (val) {

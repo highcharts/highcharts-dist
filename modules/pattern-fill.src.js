@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -369,14 +369,16 @@
             pattern.id = id;
             // Use an SVG path for the pattern
             if (options.path) {
-                path = options.path;
+                path = U.isObject(options.path) ?
+                    options.path :
+                    { d: options.path };
                 // The background
                 if (options.backgroundColor) {
                     rect(options.backgroundColor);
                 }
                 // The pattern
                 attribs = {
-                    'd': path.d || path
+                    'd': path.d
                 };
                 if (!this.styledMode) {
                     attribs.stroke = path.stroke || color;

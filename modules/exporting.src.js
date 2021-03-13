@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Exporting module
  *
@@ -137,7 +137,7 @@
                 }
                 // Unbind event as it's necessary only before exiting from fullscreen.
                 if (fullscreen.unbindFullscreenEvent) {
-                    fullscreen.unbindFullscreenEvent();
+                    fullscreen.unbindFullscreenEvent = fullscreen.unbindFullscreenEvent();
                 }
                 chart.setSize(fullscreen.origWidth, fullscreen.origHeight, false);
                 fullscreen.origWidth = void 0;
@@ -175,11 +175,12 @@
                 fullscreen.origHeight = chart.chartHeight;
                 // Handle exitFullscreen() method when user clicks 'Escape' button.
                 if (fullscreen.browserProps) {
-                    fullscreen.unbindFullscreenEvent = addEvent(chart.container.ownerDocument, // chart's document
-                    fullscreen.browserProps.fullscreenChange, function () {
-                        // Handle lack of async of browser's fullScreenChange event.
-                        if (fullscreen.isOpen) {
-                            fullscreen.isOpen = false;
+                    var unbindChange_1 = addEvent(chart.container.ownerDocument, // chart's document
+                        fullscreen.browserProps.fullscreenChange,
+                        function () {
+                            // Handle lack of async of browser's fullScreenChange event.
+                            if (fullscreen.isOpen) {
+                                fullscreen.isOpen = false;
                             fullscreen.close();
                         }
                         else {
@@ -188,6 +189,12 @@
                             fullscreen.setButtonText();
                         }
                     });
+                    var unbindDestroy_1 = addEvent(chart, 'destroy',
+                        unbindChange_1);
+                    fullscreen.unbindFullscreenEvent = function () {
+                        unbindChange_1();
+                        unbindDestroy_1();
+                    };
                     var promise = chart.renderTo[fullscreen.browserProps.requestFullscreen]();
                     if (promise) {
                         // No dot notation because of IE8 compatibility
@@ -196,7 +203,6 @@
                             'Full screen is not supported inside a frame.');
                         });
                     }
-                    addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
                 }
             };
             /**
@@ -1455,10 +1461,20 @@
                         options.series.push(seriesOptions);
                     }
                 });
-                // Assign an internal key to ensure a one-to-one mapping (#5924)
+                var colls = {};
                 chart.axes.forEach(function (axis) {
+                    // Assign an internal key to ensure a one-to-one mapping (#5924)
                     if (!axis.userOptions.internalKey) { // #6444
                         axis.userOptions.internalKey = uniqueKey();
+                    }
+                    if (!axis.options.isInternal) {
+                        if (!colls[axis.coll]) {
+                            colls[axis.coll] = true;
+                            options[axis.coll] = [];
+                        }
+                        options[axis.coll].push(merge(axis.userOptions, {
+                            visible: axis.visible
+                        }));
                     }
                 });
                 // generate the chart copy
@@ -1797,7 +1813,9 @@
                             button.setState(0);
                         }
                         chart.openMenu = false;
-                        css(chart.renderTo, { overflow: 'hidden' }); // #10361
+                        // #10361, #9998
+                        css(chart.renderTo, { overflow: 'hidden' });
+                        css(chart.container, { overflow: 'hidden' });
                         U.clearTimeout(menu.hideTimer);
                         fireEvent(chart, 'exportMenuHidden');
                     };
@@ -1889,7 +1907,9 @@
                     menuStyle.top = (y + height - menuPadding) + 'px';
                 }
                 css(menu, menuStyle);
-                css(chart.renderTo, { overflow: '' }); // #10361
+                // #10361, #9998
+                css(chart.renderTo, { overflow: '' });
+                css(chart.container, { overflow: '' });
                 chart.openMenu = true;
                 fireEvent(chart, 'exportMenuShown');
             },
@@ -1920,7 +1940,7 @@
                     chart.exportDivElements = [];
                     chart.exportSVGElements = [];
                 }
-                if (btnOptions.enabled === false) {
+                if (btnOptions.enabled === false || !btnOptions.theme) {
                     return;
                 }
                 var attr = btnOptions.theme,
@@ -2193,7 +2213,8 @@
                         // If parent node has the same style, it gets inherited, no need
                         // to inline it. Top-level props should be diffed against parent
                         // (#7687).
-                        if ((parentStyles[prop] !== val || node.nodeName === 'svg') &&
+                        if ((parentStyles[prop] !== val ||
+                            node.nodeName === 'svg') &&
                             defaultStyles[node.nodeName][prop] !== val) {
                             // Attributes
                             if (!inlineToAttributes ||

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  *
  * Highstock as a plugin for Highcharts
  *
@@ -204,7 +204,7 @@
 
         return NavigatorAxis;
     });
-    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/Axis/ScrollbarAxis.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -285,12 +285,7 @@
                                 to = unitedMin + range * (1 - this.from);
                                 from = unitedMin + range * (1 - this.to);
                             }
-                            if (pick(this.options.liveRedraw, H.svg && !H.isTouchDevice && !this.chart.isBoosting) ||
-                                // Mouseup always should change extremes
-                                e.DOMType === 'mouseup' ||
-                                e.DOMType === 'touchend' ||
-                                // Internal events
-                                !defined(e.DOMType)) {
+                            if (this.shouldUpdateExtremes(e.DOMType)) {
                                 axis.setExtremes(from, to, true, e.DOMType !== 'mousemove' && e.DOMType !== 'touchmove', e);
                             }
                             else {
@@ -986,6 +981,23 @@
                     }
                 }
                 scroller.rendered = true;
+            };
+            /**
+             * Checks if the extremes should be updated in response to a scrollbar
+             * change event.
+             *
+             * @private
+             * @function Highcharts.Scrollbar#shouldUpdateExtremes
+             * @param  {string} eventType
+             * @return {boolean}
+             */
+            Scrollbar.prototype.shouldUpdateExtremes = function (eventType) {
+                return (pick(this.options.liveRedraw, H.svg && !H.isTouchDevice && !this.chart.isBoosting) ||
+                    // Mouseup always should change extremes
+                    eventType === 'mouseup' ||
+                    eventType === 'touchend' ||
+                    // Internal events
+                    !defined(eventType));
             };
             Scrollbar.prototype.trackClick = function (e) {
                 var scroller = this;
@@ -2713,9 +2725,7 @@
                             from = range * this.from;
                         navigator.hasDragged = navigator.scrollbar.hasDragged;
                         navigator.render(0, 0, from, to);
-                        if (chart.options.scrollbar.liveRedraw ||
-                            (e.DOMType !== 'mousemove' &&
-                                e.DOMType !== 'touchmove')) {
+                        if (this.shouldUpdateExtremes(e.DOMType)) {
                             setTimeout(function () {
                                 navigator.onMouseUp(e);
                             });
@@ -2950,29 +2960,29 @@
                 // Adding this multiple times to the same axis is no problem, as
                 // duplicates should be discarded by the browser.
                 if (baseSeries[0] && baseSeries[0].xAxis) {
-                    addEvent(baseSeries[0].xAxis, 'foundExtremes', this.modifyBaseAxisExtremes);
+                    baseSeries[0].eventsToUnbind.push(addEvent(baseSeries[0].xAxis, 'foundExtremes', this.modifyBaseAxisExtremes));
                 }
                 baseSeries.forEach(function (base) {
                     // Link base series show/hide to navigator series visibility
-                    addEvent(base, 'show', function () {
+                    base.eventsToUnbind.push(addEvent(base, 'show', function () {
                         if (this.navigatorSeries) {
                             this.navigatorSeries.setVisible(true, false);
                         }
-                    });
-                    addEvent(base, 'hide', function () {
+                    }));
+                    base.eventsToUnbind.push(addEvent(base, 'hide', function () {
                         if (this.navigatorSeries) {
                             this.navigatorSeries.setVisible(false, false);
                         }
-                    });
+                    }));
                     // Respond to updated data in the base series, unless explicitily
                     // not adapting to data changes.
                     if (this.navigatorOptions.adaptToUpdatedData !== false) {
                         if (base.xAxis) {
-                            addEvent(base, 'updatedData', this.updatedDataHandler);
+                            base.eventsToUnbind.push(addEvent(base, 'updatedData', this.updatedDataHandler));
                         }
                     }
                     // Handle series removal
-                    addEvent(base, 'remove', function () {
+                    base.eventsToUnbind.push(addEvent(base, 'remove', function () {
                         if (this.navigatorSeries) {
                             erase(navigator.series, this.navigatorSeries);
                             if (defined(this.navigatorSeries.options)) {
@@ -2980,7 +2990,7 @@
                             }
                             delete this.navigatorSeries;
                         }
-                    });
+                    }));
                 }, this);
             };
             /**
@@ -4922,29 +4932,31 @@
             yData,
             groupPositions,
             approximation) {
-                var series = this,
-            data = series.data,
-            dataOptions = series.options && series.options.data,
-            groupedXData = [],
-            groupedYData = [],
-            groupMap = [],
-            dataLength = xData.length,
-            pointX,
-            pointY,
-            groupedY, 
+                var _a;
+            var series = this,
+                data = series.data,
+                dataOptions = series.options && series.options.data,
+                groupedXData = [],
+                groupedYData = [],
+                groupMap = [],
+                dataLength = xData.length,
+                pointX,
+                pointY,
+                groupedY, 
                 // when grouping the fake extended axis for panning,
                 // we don't need to consider y
                 handleYData = !!yData,
-            values = [],
-            approximationFn,
-            pointArrayMap = series.pointArrayMap,
-            pointArrayMapLength = pointArrayMap && pointArrayMap.length,
-            extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']),
-            pos = 0,
-            start = 0,
-            valuesLen,
-            i,
-            j;
+                values = [],
+                approximationFn,
+                pointArrayMap = series.pointArrayMap,
+                pointArrayMapLength = pointArrayMap && pointArrayMap.length,
+                extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']),
+                groupAll = this.options.dataGrouping && this.options.dataGrouping.groupAll,
+                pos = 0,
+                start = 0,
+                valuesLen,
+                i,
+                j;
             /**
              * @private
              */
@@ -4984,7 +4996,7 @@
                     // get group x and y
                     pointX = groupPositions[pos];
                     series.dataGroupInfo = {
-                        start: series.cropStart + start,
+                        start: groupAll ? start : (series.cropStart + start),
                         length: values[0].length
                     };
                     groupedY = approximationFn.apply(series, values);
@@ -5029,7 +5041,7 @@
                 // for each raw data point, push it to an array that contains all values
                 // for this specific group
                 if (pointArrayMap) {
-                    var index = series.cropStart + i,
+                    var index = ((_a = series.options.dataGrouping) === null || _a === void 0 ? void 0 : _a.groupAll) ? i : series.cropStart + i,
                         point = (data && data[index]) ||
                             series.pointClass.prototype.applyOptions.apply({
                                 series: series
@@ -5249,7 +5261,9 @@
                         xAxis.getGroupPixelWidth && xAxis.getGroupPixelWidth();
                 // Execute grouping if the amount of points is greater than the limit
                 // defined in groupPixelWidth
-                if (groupPixelWidth) {
+                if (groupPixelWidth &&
+                    processedXData &&
+                    processedXData.length) {
                     hasGroupedData = true;
                     // Force recreation of point instances in series.translate, #5699
                     series.isDirty = true;
@@ -5613,6 +5627,8 @@
          *
          * @sample {highstock} stock/plotoptions/series-datagrouping-approximation
          *         Approximation callback with custom data
+         * @sample {highstock} stock/plotoptions/series-datagrouping-simple-approximation
+         *         Simple approximation demo
          *
          * @type       {Highcharts.DataGroupingApproximationValue|Function}
          * @apioption  plotOptions.series.dataGrouping.approximation
@@ -7226,7 +7242,10 @@
                 points.forEach(function (point) {
                     var graphic = point.graphic;
                     if (graphic) {
-                        addEvent(graphic.element, 'mouseover', function () {
+                        if (point.unbindMouseOver) {
+                            point.unbindMouseOver();
+                        }
+                        point.unbindMouseOver = addEvent(graphic.element, 'mouseover', function () {
                             // Raise this point
                             if (point.stackIndex > 0 &&
                                 !point.raised) {
@@ -7377,7 +7396,7 @@
                  * @product   highstock
                  */
                 tooltip: {
-                    pointFormat: '{point.text}<br/>'
+                    pointFormat: '{point.text}'
                 },
                 threshold: null,
                 /**
@@ -8631,12 +8650,13 @@
                     var _a = this.inputGroup,
                         translateX = _a.translateX,
                         translateY = _a.translateY;
+                    var inputBoxWidth = this.options.inputBoxWidth;
                     css(input, {
-                        width: isTextInput ? ((dateBox.width - 2) + 'px') : 'auto',
+                        width: isTextInput ? ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') : 'auto',
                         height: isTextInput ? ((dateBox.height - 2) + 'px') : 'auto',
                         border: '2px solid silver'
                     });
-                    if (isTextInput) {
+                    if (isTextInput && inputBoxWidth) {
                         css(input, {
                             left: (translateX + dateBox.x) + 'px',
                             top: translateY + 'px'
@@ -8649,7 +8669,7 @@
                             left: Math.min(Math.round(dateBox.x +
                                 translateX -
                                 (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                            top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                            top: (translateY - 1 - (input.offsetHeight - dateBox.height) / 2) + 'px'
                         });
                     }
                 }
@@ -8700,7 +8720,7 @@
                     var parts = inputDate.split('-');
                     date = Date.UTC(pInt(parts[0]), pInt(parts[1]) - 1, pInt(parts[2]));
                 }
-                if (time && useUTC) {
+                if (time && useUTC && isNumber(date)) {
                     date += time.getTimezoneOffset(date);
                 }
                 return date;
@@ -8848,9 +8868,9 @@
                 var keyDown = false;
                 // handle changes in the input boxes
                 input.onchange = function () {
-                    updateExtremes();
-                    // Blur input when clicking date input calendar
+                    // Update extremes and blur input when clicking date input calendar
                     if (!keyDown) {
+                        updateExtremes();
                         rangeSelector.hideInput(name);
                         input.blur();
                     }
@@ -8861,8 +8881,12 @@
                         updateExtremes();
                     }
                 };
-                input.onkeydown = function () {
+                input.onkeydown = function (event) {
                     keyDown = true;
+                    // Arrow keys
+                    if (event.keyCode === 38 || event.keyCode === 40) {
+                        updateExtremes();
+                    }
                 };
                 input.onkeyup = function () {
                     keyDown = false;
@@ -8999,9 +9023,12 @@
                             this.maxLabel,
                             this.maxDateBox
                         ].forEach(function (label) {
-                            if (label && label.width) {
-                                label.attr({ x: x_1 });
-                                x_1 += label.width + options.inputSpacing;
+                            if (label) {
+                                var width = label.getBBox().width;
+                                if (width) {
+                                    label.attr({ x: x_1 });
+                                    x_1 += width + options.inputSpacing;
+                                }
                             }
                         });
                     }
@@ -9977,7 +10004,7 @@
 
         return H.RangeSelector;
     });
-    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, palette, Point, Series, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Axis, Chart, palette, Point, Series, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -9987,6 +10014,22 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var pointTooltipFormatter = Point.prototype.tooltipFormatter;
         var _a = Series.prototype,
             seriesInit = _a.init,
@@ -10011,64 +10054,174 @@
         // defaultOptions.scrollbar
         // Has a dependency on RangeSelector due to the use of
         // defaultOptions.rangeSelector
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /* *
-         *
-         *  Factory
-         *
-         * */
         /**
-         * Factory function for creating new stock charts. Creates a new
-         * {@link Highcharts.Chart|Chart} object with different default options than the
-         * basic Chart.
+         * Stock-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
          *
-         * @example
-         * var chart = Highcharts.stockChart('container', {
-         *     series: [{
-         *         data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-         *         pointInterval: 24 * 60 * 60 * 1000
-         *     }]
-         * });
+         * @requires modules/stock
          *
-         * @function Highcharts.stockChart
-         *
-         * @param {string|Highcharts.HTMLDOMElement} [renderTo]
-         *        The DOM element to render to, or its id.
-         *
-         * @param {Highcharts.Options} options
-         *        The chart options structure as described in the
-         *        [options reference](https://api.highcharts.com/highstock).
-         *
-         * @param {Highcharts.ChartCallbackFunction} [callback]
-         *        A function to execute when the chart object is finished loading and
-         *        rendering. In most cases the chart is built in one thread, but in
-         *        Internet Explorer version 8 or less the chart is sometimes
-         *        initialized before the document is ready, and in these cases the
-         *        chart object will not be finished synchronously. As a consequence,
-         *        code that relies on the newly built Chart object should always run in
-         *        the callback. Defining a
-         *        [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
-         *        handler is equivalent.
-         *
-         * @return {Highcharts.Chart}
-         *         The chart object.
+         * @class
+         * @name Highcharts.StockChart
+         * @extends Highcharts.Chart
          */
-        function stockChart(a, b, c) {
-            var hasRenderToArg = isString(a) || a.nodeName,
-                options = arguments[hasRenderToArg ? 1 : 0],
-                userOptions = options, 
+        var StockChart = /** @class */ (function (_super) {
+                __extends(StockChart, _super);
+            function StockChart() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            /**
+             * Initializes the chart. The constructor's arguments are passed on
+             * directly.
+             *
+             * @function Highcharts.StockChart#init
+             *
+             * @param {Highcharts.Options} userOptions
+             *        Custom options.
+             *
+             * @param {Function} [callback]
+             *        Function to run when the chart has loaded and and all external
+             *        images are loaded.
+             *
+             * @return {void}
+             *
+             * @fires Highcharts.StockChart#event:init
+             * @fires Highcharts.StockChart#event:afterInit
+             */
+            StockChart.prototype.init = function (userOptions, callback) {
                 // to increase performance, don't merge the data
-                seriesOptions = options.series,
-                defaultOptions = getOptions(),
-                opposite, 
-                // Always disable startOnTick:true on the main axis when the navigator
-                // is enabled (#1090)
-                navigatorEnabled = pick(options.navigator && options.navigator.enabled,
-                defaultOptions.navigator.enabled,
-                true);
-            // apply X axis options to both single and multi y axes
-            options.xAxis = splat(options.xAxis || {}).map(function (xAxisOptions, i) {
-                return merge({
+                var seriesOptions = userOptions.series,
+                    defaultOptions = getOptions(), 
+                    // Always disable startOnTick:true on the main axis when the
+                    // navigator is enabled (#1090)
+                    navigatorEnabled = pick(userOptions.navigator && userOptions.navigator.enabled,
+                    defaultOptions.navigator.enabled,
+                    true);
+                // apply X axis options to both single and multi y axes
+                userOptions.xAxis = splat(userOptions.xAxis || {}).map(function (xAxisOptions, i) {
+                    return merge(getDefaultAxisOptions('xAxis', xAxisOptions), defaultOptions.xAxis, // #3802
+                    defaultOptions.xAxis && defaultOptions.xAxis[i], // #7690
+                    xAxisOptions, // user options
+                    getForcedAxisOptions('xAxis', userOptions));
+                });
+                // apply Y axis options to both single and multi y axes
+                userOptions.yAxis = splat(userOptions.yAxis || {}).map(function (yAxisOptions, i) {
+                    return merge(getDefaultAxisOptions('yAxis', yAxisOptions), defaultOptions.yAxis, // #3802
+                    defaultOptions.yAxis && defaultOptions.yAxis[i], // #7690
+                    yAxisOptions // user options
+                    );
+                });
+                userOptions.series = void 0;
+                userOptions = merge({
+                    chart: {
+                        panning: {
+                            enabled: true,
+                            type: 'x'
+                        },
+                        pinchType: 'x'
+                    },
+                    navigator: {
+                        enabled: navigatorEnabled
+                    },
+                    scrollbar: {
+                        // #4988 - check if setOptions was called
+                        enabled: pick(defaultOptions.scrollbar.enabled, true)
+                    },
+                    rangeSelector: {
+                        // #4988 - check if setOptions was called
+                        enabled: pick(defaultOptions.rangeSelector.enabled, true)
+                    },
+                    title: {
+                        text: null
+                    },
+                    tooltip: {
+                        split: pick(defaultOptions.tooltip.split, true),
+                        crosshairs: true
+                    },
+                    legend: {
+                        enabled: false
+                    }
+                }, userOptions, // user's options
+                {
+                    isStock: true // internal flag
+                });
+                userOptions.series = seriesOptions;
+                _super.prototype.init.call(this, userOptions, callback);
+            };
+            /**
+             * Factory for creating different axis types.
+             * Extended to add stock defaults.
+             *
+             * @private
+             * @function Highcharts.StockChart#createAxis
+             *
+             * @param {string} type
+             *        An axis type.
+             *
+             * @param {Chart.CreateAxisOptionsObject} options
+             *        The axis creation options.
+             *
+             * @return {Highcharts.Axis | Highcharts.ColorAxis}
+             */
+            StockChart.prototype.createAxis = function (type, options) {
+                options.axis = merge(getDefaultAxisOptions(type, options.axis), options.axis, getForcedAxisOptions(type, this.userOptions));
+                return _super.prototype.createAxis.call(this, type, options);
+            };
+            return StockChart;
+        }(Chart));
+        /* eslint-disable no-invalid-this, valid-jsdoc */
+        (function (StockChart) {
+            /**
+             * Factory function for creating new stock charts. Creates a new
+             * {@link Highcharts.StockChart|StockChart} object with different default
+             * options than the basic Chart.
+             *
+             * @example
+             * var chart = Highcharts.stockChart('container', {
+             *     series: [{
+             *         data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+             *         pointInterval: 24 * 60 * 60 * 1000
+             *     }]
+             * });
+             *
+             * @function Highcharts.stockChart
+             *
+             * @param {string|Highcharts.HTMLDOMElement} [renderTo]
+             *        The DOM element to render to, or its id.
+             *
+             * @param {Highcharts.Options} options
+             *        The chart options structure as described in the
+             *        [options reference](https://api.highcharts.com/highstock).
+             *
+             * @param {Highcharts.ChartCallbackFunction} [callback]
+             *        A function to execute when the chart object is finished loading
+             *        and rendering. In most cases the chart is built in one thread,
+             *        but in Internet Explorer version 8 or less the chart is sometimes
+             *        initialized before the document is ready, and in these cases the
+             *        chart object will not be finished synchronously. As a
+             *        consequence, code that relies on the newly built Chart object
+             *        should always run in the callback. Defining a
+             *        [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
+             *        handler is equivalent.
+             *
+             * @return {Highcharts.StockChart}
+             *         The chart object.
+             */
+            function stockChart(a, b, c) {
+                return new StockChart(a, b, c);
+            }
+            StockChart.stockChart = stockChart;
+        })(StockChart || (StockChart = {}));
+        /**
+         * Get stock-specific default axis options.
+         *
+         * @private
+         * @function getDefaultAxisOptions
+         * @param {string} type
+         * @param {Highcharts.AxisOptions} options
+         * @return {Highcharts.AxisOptions}
+         */
+        function getDefaultAxisOptions(type, options) {
+            if (type === 'xAxis') {
+                return {
                     minPadding: 0,
                     maxPadding: 0,
                     overscroll: 0,
@@ -10080,25 +10233,14 @@
                         overflow: 'justify'
                     },
                     showLastLabel: true
-                }, defaultOptions.xAxis, // #3802
-                defaultOptions.xAxis && defaultOptions.xAxis[i], // #7690
-                xAxisOptions, // user options
-                {
-                    type: 'datetime',
-                    categories: null
-                }, (navigatorEnabled ? {
-                    startOnTick: false,
-                    endOnTick: false
-                } : null));
-            });
-            // apply Y axis options to both single and multi y axes
-            options.yAxis = splat(options.yAxis || {}).map(function (yAxisOptions, i) {
-                opposite = pick(yAxisOptions.opposite, true);
-                return merge({
+                };
+            }
+            if (type === 'yAxis') {
+                return {
                     labels: {
                         y: -2
                     },
-                    opposite: opposite,
+                    opposite: pick(options.opposite, true),
                     /**
                      * @default {highcharts} true
                      * @default {highstock} false
@@ -10108,54 +10250,40 @@
                      */
                     showLastLabel: !!(
                     // #6104, show last label by default for category axes
-                    yAxisOptions.categories ||
-                        yAxisOptions.type === 'category'),
+                    options.categories ||
+                        options.type === 'category'),
                     title: {
                         text: null
                     }
-                }, defaultOptions.yAxis, // #3802
-                defaultOptions.yAxis && defaultOptions.yAxis[i], // #7690
-                yAxisOptions // user options
-                );
-            });
-            options.series = null;
-            options = merge({
-                chart: {
-                    panning: {
-                        enabled: true,
-                        type: 'x'
-                    },
-                    pinchType: 'x'
-                },
-                navigator: {
-                    enabled: navigatorEnabled
-                },
-                scrollbar: {
-                    // #4988 - check if setOptions was called
-                    enabled: pick(defaultOptions.scrollbar.enabled, true)
-                },
-                rangeSelector: {
-                    // #4988 - check if setOptions was called
-                    enabled: pick(defaultOptions.rangeSelector.enabled, true)
-                },
-                title: {
-                    text: null
-                },
-                tooltip: {
-                    split: pick(defaultOptions.tooltip.split, true),
-                    crosshairs: true
-                },
-                legend: {
-                    enabled: false
-                }
-            }, options, // user's options
-            {
-                isStock: true // internal flag
-            });
-            options.series = userOptions.series = seriesOptions;
-            return hasRenderToArg ?
-                new Chart(a, options, c) :
-                new Chart(options, b);
+                };
+            }
+            return {};
+        }
+        /**
+         * Get stock-specific forced axis options.
+         *
+         * @private
+         * @function getForcedAxisOptions
+         * @param {string} type
+         * @param {Highcharts.Options} chartOptions
+         * @return {Highcharts.AxisOptions}
+         */
+        function getForcedAxisOptions(type, chartOptions) {
+            if (type === 'xAxis') {
+                var defaultOptions = getOptions(), 
+                    // Always disable startOnTick:true on the main axis when the
+                    // navigator is enabled (#1090)
+                    navigatorEnabled = pick(chartOptions.navigator && chartOptions.navigator.enabled,
+                    defaultOptions.navigator.enabled,
+                    true);
+                return {
+                    type: 'datetime',
+                    categories: void 0,
+                    startOnTick: navigatorEnabled ? false : void 0,
+                    endOnTick: navigatorEnabled ? false : void 0
+                };
+            }
+            return {};
         }
         /* *
          *
@@ -10388,7 +10516,9 @@
             // Check if the label has to be drawn
             if (!defined(this.crosshair.label) ||
                 !this.crosshair.label.enabled ||
-                !this.cross) {
+                !this.cross ||
+                !isNumber(this.min) ||
+                !isNumber(this.max)) {
                 return;
             }
             var chart = this.chart, log = this.logarithmic, options = this.options.crosshair.label, // the label's options
@@ -10397,7 +10527,7 @@
                 left = this.left, // left position
                 top = this.top, // top position
                 crossLabel = this.crossLabel, // the svgElement
-                posx, posy, crossBox, formatOption = options.format, formatFormat = '', limit, align, tickInside = this.options.tickPosition === 'inside', snap = this.crosshair.snap !== false, value, offset = 0, 
+                posx, posy, crossBox, formatOption = options.format, formatFormat = '', limit, align, tickInside = this.options.tickPosition === 'inside', snap = this.crosshair.snap !== false, offset = 0, 
                 // Use last available event (#5287)
                 e = event.e || (this.cross && this.cross.e), point = event.point, min = this.min, max = this.max;
             if (log) {
@@ -10410,7 +10540,7 @@
             // If the label does not exist yet, create it.
             if (!crossLabel) {
                 crossLabel = this.crossLabel = chart.renderer
-                    .label(null, null, null, options.shape || 'callout')
+                    .label('', 0, void 0, options.shape || 'callout')
                     .addClass('highcharts-crosshair-label' + (this.series[0] &&
                     ' highcharts-color-' + this.series[0].colorIndex))
                     .attr({
@@ -10425,7 +10555,7 @@
                     crossLabel
                         .attr({
                         fill: options.backgroundColor ||
-                            (this.series[0] && this.series[0].color) ||
+                            point && point.series && point.series.color || // #14888
                             palette.neutralColor60,
                         stroke: options.borderColor || '',
                         'stroke-width': options.borderWidth || 0
@@ -10439,12 +10569,12 @@
                 }
             }
             if (horiz) {
-                posx = snap ? point.plotX + left : e.chartX;
+                posx = snap ? (point.plotX || 0) + left : e.chartX;
                 posy = top + (opposite ? 0 : this.height);
             }
             else {
                 posx = opposite ? this.width + left : 0;
-                posy = snap ? point.plotY + top : e.chartY;
+                posy = snap ? (point.plotY || 0) + top : e.chartY;
             }
             if (!formatOption && !options.formatter) {
                 if (this.dateTime) {
@@ -10454,19 +10584,21 @@
                     '{value' + (formatFormat ? ':' + formatFormat : '') + '}';
             }
             // Show the label
-            value = snap ?
-                point[this.isXAxis ? 'x' : 'y'] :
-                this.toValue(horiz ? e.chartX : e.chartY);
+            var value = snap ?
+                    (this.isXAxis ? point.x : point.y) :
+                    this.toValue(horiz ? e.chartX : e.chartY);
+            // Crosshair should be rendered within Axis range (#7219). Also, the point
+            // of currentPriceIndicator should be inside the plot area, #14879.
+            var isInside = point ?
+                    point.series.isPointInside(point) :
+                    (isNumber(value) && value > min && value < max);
             crossLabel.attr({
                 text: formatOption ?
                     format(formatOption, { value: value }, chart) :
                     options.formatter.call(this, value),
                 x: posx,
                 y: posy,
-                // Crosshair should be rendered within Axis range (#7219)
-                visibility: value < min || value > max ?
-                    'hidden' :
-                    'visible'
+                visibility: isInside ? 'visible' : 'hidden'
             });
             crossBox = crossLabel.getBBox();
             // now it is placed we can correct its position
@@ -10701,7 +10833,8 @@
             if (!(chart.is3d && chart.is3d()) &&
                 !chart.polar &&
                 this.xAxis &&
-                !this.xAxis.isRadial // Gauge, #6192
+                !this.xAxis.isRadial && // Gauge, #6192
+                this.options.clip !== false // #15128
             ) {
                 clipHeight = this.yAxis.len;
                 // Include xAxis line width (#8031) but only if the Y axis ends on the
@@ -10714,9 +10847,11 @@
                         clipHeight -= Math.max(lineHeightCorrection - dist, 0);
                     }
                 }
-                // First render, initial clip box
-                if (!this.clipBox && this.isDirty && !this.isDirtyData) {
-                    this.clipBox = merge(chart.clipBox);
+                // First render, initial clip box. clipBox also needs to be updated if
+                // the series is rendered again before starting animating, in
+                // compliance with a responsive rule (#13858).
+                if (!chart.hasLoaded || (!this.clipBox && this.isDirty && !this.isDirtyData)) {
+                    this.clipBox = this.clipBox || merge(chart.clipBox);
                     this.clipBox.width = this.xAxis.len;
                     this.clipBox.height = clipHeight;
                     // On redrawing, resizing etc, update the clip rectangle
@@ -10748,12 +10883,6 @@
                 delete options.scrollbar;
             }
         });
-        /* *
-         *
-         *  Compatibility
-         *
-         * */
-        H.StockChart = H.stockChart = stockChart;
         /* *
          *
          *  Default Export
@@ -10818,10 +10947,11 @@
          */
         ''; // keeps doclets above in transpiled file
 
-        return stockChart;
+        return StockChart;
     });
-    _registerModule(_modules, 'masters/modules/stock.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/stock.src.js', [_modules['Core/Globals.js'], _modules['Core/Chart/StockChart.js']], function (Highcharts, StockChart) {
 
+        Highcharts.StockChart = Highcharts.stockChart = StockChart.stockChart;
 
     });
 }));

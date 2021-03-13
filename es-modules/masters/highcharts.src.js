@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  * @module highcharts/highcharts
  *
  * (c) 2009-2021 Torstein Honsi
@@ -36,7 +36,6 @@ import '../Series/Pie/PieSeries.js';
 import '../Core/Series/DataLabels.js';
 import '../Extensions/OverlappingDataLabels.js';
 import '../Core/Responsive.js';
-
 // Utilities
 Highcharts.addEvent = Utilities.addEvent;
 Highcharts.arrayMax = Utilities.arrayMax;
@@ -84,9 +83,7 @@ Highcharts.timeUnits = Utilities.timeUnits;
 Highcharts.uniqueKey = Utilities.uniqueKey;
 Highcharts.useSerialIds = Utilities.useSerialIds;
 Highcharts.wrap = Utilities.wrap;
-
 // Classes
 Highcharts.AST = AST;
 Highcharts.Series = Series;
-
 export default Highcharts;

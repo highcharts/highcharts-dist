@@ -136,6 +136,26 @@ declare module "../highcharts" {
         value?: (number|null);
     }
     /**
+     * Map-optimized chart. Use Chart for common charts.
+     */
+    class MapChart {
+        /**
+         * Initializes the chart. The constructor's arguments are passed on
+         * directly.
+         *
+         * @param userOptions
+         *        Custom options.
+         *
+         * @param callback
+         *        Function to run when the chart has loaded and and all external
+         *        images are loaded.
+         *
+         * @fires Highcharts.MapChart#init
+         * @fires Highcharts.MapChart#afterInit
+         */
+        init(userOptions: Options, callback?: Function): void;
+    }
+    /**
      * Contains all loaded map data for Highmaps.
      */
     let maps: Record<string, any>;
@@ -160,7 +180,7 @@ declare module "../highcharts" {
      */
     function geojson(geojson: GeoJSON, hType?: string): Array<any>;
     /**
-     * The factory function for creating new map charts. Creates a new Chart
+     * The factory function for creating new map charts. Creates a new MapChart
      * object with different default options than the basic Chart.
      *
      * @param options
@@ -178,9 +198,9 @@ declare module "../highcharts" {
      *
      * @return The chart object.
      */
-    function mapChart(options: Options, callback?: ChartCallbackFunction): Chart;
+    function mapChart(options: Options, callback?: ChartCallbackFunction): MapChart;
     /**
-     * The factory function for creating new map charts. Creates a new Chart
+     * The factory function for creating new map charts. Creates a new MapChart
      * object with different default options than the basic Chart.
      *
      * @param renderTo
@@ -201,7 +221,7 @@ declare module "../highcharts" {
      *
      * @return The chart object.
      */
-    function mapChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): Chart;
+    function mapChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): MapChart;
     /**
      * Utility for reading SVG paths directly.
      */

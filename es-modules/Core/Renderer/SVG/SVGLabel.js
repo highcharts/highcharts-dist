@@ -92,11 +92,11 @@ var SVGLabel = /** @class */ (function (_super) {
      *
      * */
     SVGLabel.prototype.alignSetter = function (value) {
-        var alignFactor = {
+        var alignFactor = ({
             left: 0,
             center: 0.5,
             right: 1
-        }[value];
+        })[value];
         if (alignFactor !== this.alignFactor) {
             this.alignFactor = alignFactor;
             // Bounding box exists, means we're dynamically changing
@@ -183,14 +183,19 @@ var SVGLabel = /** @class */ (function (_super) {
      * Return the bounding box of the box, not the group.
      */
     SVGLabel.prototype.getBBox = function () {
-        var bBox = this.bBox;
+        // If we have a text string and the DOM bBox was 0, it typically means
+        // that the label was first rendered hidden, so we need to update the
+        // bBox (#15246)
+        if (this.textStr && this.bBox.width === 0 && this.bBox.height === 0) {
+            this.updateBoxSize();
+        }
         var padding = this.padding;
         var paddingLeft = pick(this.paddingLeft, padding);
         return {
             width: this.width,
             height: this.height,
-            x: bBox.x - paddingLeft,
-            y: bBox.y - padding
+            x: this.bBox.x - paddingLeft,
+            y: this.bBox.y - padding
         };
     };
     SVGLabel.prototype.getCrispAdjust = function () {

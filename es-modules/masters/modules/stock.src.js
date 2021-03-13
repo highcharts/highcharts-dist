@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -10,6 +10,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
+import Highcharts from '../../Core/Globals.js';
 import '../../Core/Axis/OrdinalAxis.js';
 import './broken-axis.src.js';
 import '../../Extensions/DataGrouping.js';
@@ -19,4 +20,5 @@ import '../../Series/Flags/FlagsSeries.js';
 import '../../Core/Scrollbar.js';
 import '../../Core/Navigator.js';
 import '../../Extensions/RangeSelector.js';
-import '../../Core/Chart/StockChart.js';
+import StockChart from '../../Core/Chart/StockChart.js';
+Highcharts.StockChart = Highcharts.stockChart = StockChart.stockChart;

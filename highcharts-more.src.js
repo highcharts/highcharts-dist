@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -1615,7 +1615,6 @@
                 _this.points = void 0;
                 _this.lowerStateMarkerGraphic = void 0;
                 _this.xAxis = void 0;
-                _this.setStackedPoints = noop;
                 return _this;
                 /* eslint-enable valid-jsdoc */
             }
@@ -2097,7 +2096,8 @@
             pointArrayMap: ['low', 'high'],
             pointValKey: 'low',
             deferTranslatePolar: true,
-            pointClass: AreaRangePoint
+            pointClass: AreaRangePoint,
+            setStackedPoints: noop
         });
         SeriesRegistry.registerSeriesType('arearange', AreaRangeSeries);
         /* *
@@ -2462,7 +2462,6 @@
                 _this.options = void 0;
                 _this.barX = void 0;
                 _this.pointWidth = void 0;
-                _this.shapeArgs = void 0;
                 _this.shapeType = void 0;
                 return _this;
             }
@@ -2633,7 +2632,7 @@
                 columnProto.translate.apply(series);
                 // Set plotLow and plotHigh
                 series.points.forEach(function (point) {
-                    var shapeArgs = point.shapeArgs,
+                    var shapeArgs = point.shapeArgs || {},
                         minPointLength = series.options.minPointLength,
                         heightDifference,
                         height,
@@ -2662,16 +2661,20 @@
                     else {
                         shapeArgs.height = height;
                         shapeArgs.y = y;
+                        var _a = shapeArgs.x,
+                            x = _a === void 0 ? 0 : _a,
+                            _b = shapeArgs.width,
+                            width = _b === void 0 ? 0 : _b;
                         point.tooltipPos = chart.inverted ?
                             [
                                 yAxis.len + yAxis.pos - chart.plotLeft - y -
                                     height / 2,
                                 xAxis.len + xAxis.pos - chart.plotTop -
-                                    shapeArgs.x - shapeArgs.width / 2,
+                                    x - width / 2,
                                 height
                             ] : [
-                            xAxis.left - chart.plotLeft + shapeArgs.x +
-                                shapeArgs.width / 2,
+                            xAxis.left - chart.plotLeft + x +
+                                width / 2,
                             yAxis.pos - chart.plotTop + y + height / 2,
                             height
                         ]; // don't inherit from column tooltip position - #3372
@@ -5442,8 +5445,14 @@
                         path.length &&
                         ((!stacking && prevPoint.y < 0 && !reversedYAxis) ||
                             (prevPoint.y > 0 && reversedYAxis))) {
-                        path[path.length - 2][2] += prevArgs.height;
-                        path[path.length - 1][2] += prevArgs.height;
+                        var nextLast = path[path.length - 2];
+                        if (nextLast && typeof nextLast[2] === 'number') {
+                            nextLast[2] += prevArgs.height || 0;
+                        }
+                        var last = path[path.length - 1];
+                        if (last && typeof last[2] === 'number') {
+                            last[2] += prevArgs.height || 0;
+                        }
                     }
                 }
                 return path;
@@ -6681,7 +6690,10 @@
                 // Render bubble symbol
                 symbols.bubbleItems.push(renderer
                     .circle(posX, elementCenter + crispMovement, absoluteRadius)
-                    .attr(styledMode ? {} : range.bubbleStyle)
+                    .attr(
+                // @todo: Resolve bad typing of bubbleStyle. CSSObject can't
+                // be passed to .attr.
+                (styledMode ? {} : range.bubbleStyle))
                     .addClass((styledMode ?
                     'highcharts-color-' +
                         this.options.seriesIndex + ' ' :
@@ -6694,7 +6706,10 @@
                     ['M', posX, posY],
                     ['L', posX + connectorLength, posY]
                 ], options.connectorWidth))
-                    .attr(styledMode ? {} : range.connectorStyle)
+                    .attr(
+                // @todo: Resolve bad typing of connectorStyle. CSSObject
+                // can't be passed to .attr.
+                (styledMode ? {} : range.connectorStyle))
                     .addClass((styledMode ?
                     'highcharts-color-' +
                         this.options.seriesIndex + ' ' : '') +
@@ -6703,7 +6718,10 @@
                 // Render label
                 label = renderer
                     .text(this.formatLabel(range), labelX, labelY + labelMovement)
-                    .attr(styledMode ? {} : range.labelStyle)
+                    .attr(
+                // @todo: Resolve bad typing of labelStyle. CSSObject can't
+                // be passed to .attr.
+                (styledMode ? {} : range.labelStyle))
                     .addClass('highcharts-bubble-legend-labels ' +
                     (options.labels.className || '')).add(this.legendSymbol);
                 labels.push(label);
@@ -9456,6 +9474,15 @@
                     });
                 }
             },
+            isStable: function () {
+                var tempDiff = Math.abs(this.prevSystemTemperature -
+                        this.systemTemperature);
+                var upScaledTemperature = 10 * this.systemTemperature /
+                        Math.sqrt(this.nodes.length);
+                return Math.abs(upScaledTemperature) < 1 &&
+                    tempDiff < 0.00001 ||
+                    this.temperature <= 0;
+            },
             setCircularPositions: function () {
                 var layout = this,
                     box = layout.box,
@@ -9915,11 +9942,10 @@
                         opacity: nodeMarker.fillOpacity,
                         stroke: nodeMarker.lineColor || series.color,
                         'stroke-width': nodeMarker.lineWidth
-                    },
-                    visibility = series.visible ? 'inherit' : 'hidden';
+                    };
                 // create the group for parent Nodes if doesn't exist
                 if (!this.parentNodesGroup) {
-                    series.parentNodesGroup = series.plotGroup('parentNodesGroup', 'parentNode', visibility, 0.1, chart.seriesGroup);
+                    series.parentNodesGroup = series.plotGroup('parentNodesGroup', 'parentNode', series.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
                     series.group.attr({
                         zIndex: 2
                     });
@@ -11603,7 +11629,7 @@
                             labelPos =
                                 this.yAxis.postTranslate(
                                 // angle
-                                (shapeArgs.start + shapeArgs.end) / 2 -
+                                ((shapeArgs.start || 0) + (shapeArgs.end || 0)) / 2 -
                                     this
                                         .xAxis.startAngleRad, 
                                 // radius

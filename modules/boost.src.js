@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * Boost module
  *
@@ -1053,13 +1053,21 @@
                     }
                     points.forEach(function (point) {
                         var plotY = point.plotY,
-                            shapeArgs,
                             swidth,
                             pointAttr;
                         if (typeof plotY !== 'undefined' &&
                             !isNaN(plotY) &&
-                            point.y !== null) {
-                            shapeArgs = point.shapeArgs;
+                            point.y !== null &&
+                            point.shapeArgs) {
+                            var _a = point.shapeArgs,
+                                _b = _a.x,
+                                x_1 = _b === void 0 ? 0 : _b,
+                                _c = _a.y,
+                                y_1 = _c === void 0 ? 0 : _c,
+                                _d = _a.width,
+                                width_1 = _d === void 0 ? 0 : _d,
+                                _e = _a.height,
+                                height_1 = _e === void 0 ? 0 : _e;
                             pointAttr = chart.styledMode ?
                                 point.series
                                     .colorAttribs(point) :
@@ -1083,7 +1091,7 @@
                                 scolor[0] /= 255.0;
                                 scolor[1] /= 255.0;
                                 scolor[2] /= 255.0;
-                                pushRect(shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height, scolor);
+                                pushRect(x_1, y_1, width_1, height_1, scolor);
                                 swidth /= 2;
                             }
                             // } else {
@@ -1095,12 +1103,12 @@
                             // bottom-right. This causes a vertical and horizontal flip
                             // in the resulting image, making it rotated 180 degrees.
                             if (series.type === 'heatmap' && chart.inverted) {
-                                shapeArgs.x = xAxis.len - shapeArgs.x;
-                                shapeArgs.y = yAxis.len - shapeArgs.y;
-                                shapeArgs.width = -shapeArgs.width;
-                                shapeArgs.height = -shapeArgs.height;
+                                x_1 = xAxis.len - x_1;
+                                y_1 = yAxis.len - y_1;
+                                width_1 = -width_1;
+                                height_1 = -height_1;
                             }
-                            pushRect(shapeArgs.x + swidth, shapeArgs.y + swidth, shapeArgs.width - (swidth * 2), shapeArgs.height - (swidth * 2), pcolor);
+                            pushRect(x_1 + swidth, y_1 + swidth, width_1 - (swidth * 2), height_1 - (swidth * 2), pcolor);
                         }
                     });
                     closeSegment();
@@ -1399,37 +1407,43 @@
                 if (settings.debug.timeSeriesProcessing) {
                     console.time('building ' + s.type + ' series'); // eslint-disable-line no-console
                 }
-                series.push({
-                    segments: [],
-                    // from: data.length,
-                    markerFrom: markerData.length,
-                    // Push RGBA values to this array to use per. point coloring.
-                    // It should be 0-padded, so each component should be pushed in
-                    // succession.
-                    colorData: [],
-                    series: s,
-                    zMin: Number.MAX_VALUE,
-                    zMax: -Number.MAX_VALUE,
-                    hasMarkers: s.options.marker ?
-                        s.options.marker.enabled !== false :
-                        false,
-                    showMarkers: true,
-                    drawMode: {
-                        'area': 'lines',
-                        'arearange': 'lines',
-                        'areaspline': 'line_strip',
-                        'column': 'lines',
-                        'columnrange': 'lines',
-                        'bar': 'lines',
-                        'line': 'line_strip',
-                        'scatter': 'points',
-                        'heatmap': 'triangles',
-                        'treemap': 'triangles',
-                        'bubble': 'points'
-                    }[s.type] || 'line_strip'
-                });
+                var obj = {
+                        segments: [],
+                        // from: data.length,
+                        markerFrom: markerData.length,
+                        // Push RGBA values to this array to use per. point coloring.
+                        // It should be 0-padded, so each component should be pushed in
+                        // succession.
+                        colorData: [],
+                        series: s,
+                        zMin: Number.MAX_VALUE,
+                        zMax: -Number.MAX_VALUE,
+                        hasMarkers: s.options.marker ?
+                            s.options.marker.enabled !== false :
+                            false,
+                        showMarkers: true,
+                        drawMode: {
+                            'area': 'lines',
+                            'arearange': 'lines',
+                            'areaspline': 'line_strip',
+                            'column': 'lines',
+                            'columnrange': 'lines',
+                            'bar': 'lines',
+                            'line': 'line_strip',
+                            'scatter': 'points',
+                            'heatmap': 'triangles',
+                            'treemap': 'triangles',
+                            'bubble': 'points'
+                        }[s.type] || 'line_strip'
+                    };
+                if (s.index >= series.length) {
+                    series.push(obj);
+                }
+                else {
+                    series[s.index] = obj;
+                }
                 // Add the series data to our buffer(s)
-                pushSeriesData(s, series[series.length - 1]);
+                pushSeriesData(s, obj);
                 if (settings.debug.timeSeriesProcessing) {
                     console.timeEnd('building ' + s.type + ' series'); // eslint-disable-line no-console
                 }
@@ -2658,12 +2672,20 @@
                         // draw the columns
                         this.points.forEach(function (point) {
                             var plotY = point.plotY,
-                                shapeArgs,
                                 pointAttr;
                             if (typeof plotY !== 'undefined' &&
                                 !isNaN(plotY) &&
-                                point.y !== null) {
-                                shapeArgs = point.shapeArgs;
+                                point.y !== null &&
+                                ctx) {
+                                var _a = point.shapeArgs || {},
+                                    _b = _a.x,
+                                    x = _b === void 0 ? 0 : _b,
+                                    _c = _a.y,
+                                    y = _c === void 0 ? 0 : _c,
+                                    _d = _a.width,
+                                    width = _d === void 0 ? 0 : _d,
+                                    _e = _a.height,
+                                    height = _e === void 0 ? 0 : _e;
                                 if (!chart.styledMode) {
                                     pointAttr = point.series.pointAttribs(point);
                                 }
@@ -2672,10 +2694,10 @@
                                 }
                                 ctx.fillStyle = pointAttr.fill;
                                 if (inverted) {
-                                    ctx.fillRect(yAxis.len - shapeArgs.y + xAxis.left, xAxis.len - shapeArgs.x + yAxis.top, -shapeArgs.height, -shapeArgs.width);
+                                    ctx.fillRect(yAxis.len - y + xAxis.left, xAxis.len - x + yAxis.top, -height, -width);
                                 }
                                 else {
-                                    ctx.fillRect(shapeArgs.x + xAxis.left, shapeArgs.y + yAxis.top, shapeArgs.width, shapeArgs.height);
+                                    ctx.fillRect(x + xAxis.left, y + yAxis.top, width, height);
                                 }
                             }
                         });
@@ -3761,7 +3783,6 @@
 
     });
     _registerModule(_modules, 'masters/modules/boost.src.js', [], function () {
-
 
 
     });

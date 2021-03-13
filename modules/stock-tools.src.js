@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  *
  * Advanced Highstock tools
  *
@@ -1357,12 +1357,13 @@
                 }
             };
         SVGRenderer.prototype.addMarker = function (id, markerOptions) {
+            var _a;
             var options = { attributes: { id: id } };
             var attrs = {
                     stroke: markerOptions.color || 'none',
                     fill: markerOptions.color || 'rgba(0, 0, 0, 0.75)'
                 };
-            options.children = markerOptions.children.map(function (child) {
+            options.children = (_a = markerOptions.children) === null || _a === void 0 ? void 0 : _a.map(function (child) {
                 return merge(attrs, child);
             });
             var ast = merge(true, {
@@ -1446,6 +1447,7 @@
                 var attributes = def.attributes;
                 if (def.tagName === 'marker' &&
                     attributes &&
+                    attributes.id &&
                     attributes.display !== 'none') {
                     this.renderer.addMarker(attributes.id, def);
                 }
@@ -2005,8 +2007,8 @@
                         height: label.height
                     }, 
                     //
-                    x = alignAttr.x - chart.plotLeft,
-                    y = alignAttr.y - chart.plotTop;
+                    x = (alignAttr.x || 0) - chart.plotLeft,
+                    y = (alignAttr.y || 0) - chart.plotTop;
                 // Off left
                 off = x + padding;
                 if (off < 0) {
@@ -3845,7 +3847,6 @@
          * */
         var addEvent = U.addEvent,
             attr = U.attr,
-            extend = U.extend,
             format = U.format,
             fireEvent = U.fireEvent,
             isArray = U.isArray,
@@ -3915,26 +3916,47 @@
          */
         var bindingsUtils = {
                 /**
-                 * Update size of background (rect) in some annotations: Measure,
-            Simple
-                 * Rect.
+                 * Get field type according to value
                  *
                  * @private
-                 * @function Highcharts.NavigationBindingsUtilsObject.updateRectSize
+                 * @function Highcharts.NavigationBindingsUtilsObject.getFieldType
                  *
-                 * @param {Highcharts.PointerEventObject} event
-                 * Normalized browser event
+                 * @param {'boolean'|'number'|'string'} value
+                 * Atomic type (one of: string,
+            number,
+            boolean)
                  *
-                 * @param {Highcharts.Annotation} annotation
-                 * Annotation to be updated
+                 * @return {'checkbox'|'number'|'text'}
+                 * Field type (one of: text,
+            number,
+            checkbox)
                  */
-                updateRectSize: function (event,
-            annotation) {
-                    var chart = annotation.chart,
-            options = annotation.options.typeOptions,
-            coords = chart.pointer.getCoordinates(event),
-            width = coords.xAxis[0].value - options.point.x,
-            height = options.point.y - coords.yAxis[0].value;
+                getFieldType: function (value) {
+                    return {
+                        'string': 'text',
+                        'number': 'number',
+                        'boolean': 'checkbox'
+                    }[typeof value];
+            },
+            /**
+             * Update size of background (rect) in some annotations: Measure, Simple
+             * Rect.
+             *
+             * @private
+             * @function Highcharts.NavigationBindingsUtilsObject.updateRectSize
+             *
+             * @param {Highcharts.PointerEventObject} event
+             * Normalized browser event
+             *
+             * @param {Highcharts.Annotation} annotation
+             * Annotation to be updated
+             */
+            updateRectSize: function (event, annotation) {
+                var chart = annotation.chart,
+                    options = annotation.options.typeOptions,
+                    coords = chart.pointer.getCoordinates(event),
+                    width = coords.xAxis[0].value - options.point.x,
+                    height = options.point.y - coords.yAxis[0].value;
                 annotation.update({
                     typeOptions: {
                         background: {
@@ -3943,25 +3965,6 @@
                         }
                     }
                 });
-            },
-            /**
-             * Get field type according to value
-             *
-             * @private
-             * @function Highcharts.NavigationBindingsUtilsObject.getFieldType
-             *
-             * @param {'boolean'|'number'|'string'} value
-             * Atomic type (one of: string, number, boolean)
-             *
-             * @return {'checkbox'|'number'|'text'}
-             * Field type (one of: text, number, checkbox)
-             */
-            getFieldType: function (value) {
-                return {
-                    'string': 'text',
-                    'number': 'number',
-                    'boolean': 'checkbox'
-                }[typeof value];
             }
         };
         /**
@@ -5109,8 +5112,9 @@
                     }
                     series.remove(false);
                     if (indicatorsWithAxes.indexOf(series.type) >= 0) {
+                        var removedYAxisHeight = yAxis.options.height;
                         yAxis.remove(false);
-                        navigation.resizeYAxes();
+                        navigation.resizeYAxes(removedYAxisHeight);
                     }
                 }
             }
@@ -5228,6 +5232,20 @@
             return axis.userOptions.className !== PREFIX + 'navigator-yaxis';
         };
         /**
+         * Check if any of the price indicators are enabled.
+         * @private
+         * @function bindingsUtils.isLastPriceEnabled
+         *
+         * @param {array} series
+         *        Array of series.
+         *
+         * @return {boolean}
+         *         Tells which indicator is enabled.
+         */
+        bindingsUtils.isPriceIndicatorEnabled = function (series) {
+            return series.some(function (s) { return s.lastVisiblePrice || s.lastPrice; });
+        };
+        /**
          * Update each point after specified index, most of the annotations use
          * this. For example crooked line: logic behind updating each point is the
          * same, only index changes when adding an annotation.
@@ -5282,36 +5300,63 @@
              * @param {number} defaultHeight
              *        Default height in percents.
              *
-             * @return {Array}
-             *         An array of calculated positions in percentages.
-             *         Format: `{top: Number, height: Number}`
+             * @param {string} removedYAxisHeight
+             *        Height of the removed yAxis in percents.
+             *
+             * @return {Highcharts.YAxisPositions}
+             *         An object containing an array of calculated positions
+             *         in percentages. Format: `{top: Number, height: Number}`
+             *         and maximum value of top + height of axes.
              */
-            getYAxisPositions: function (yAxes, plotHeight, defaultHeight) {
+            getYAxisPositions: function (yAxes, plotHeight, defaultHeight, removedYAxisHeight) {
                 var positions,
-                    allAxesHeight = 0;
+                    allAxesHeight = 0,
+                    previousAxisHeight,
+                    removedHeight;
                 /** @private */
                 function isPercentage(prop) {
                     return defined(prop) && !isNumber(prop) && prop.match('%');
                 }
-                positions = yAxes.map(function (yAxis) {
-                    var height = isPercentage(yAxis.options.height) ?
+                if (removedYAxisHeight) {
+                    removedHeight = correctFloat((parseFloat(removedYAxisHeight) / 100));
+                }
+                positions = yAxes.map(function (yAxis, index) {
+                    var height = correctFloat(isPercentage(yAxis.options.height) ?
                             parseFloat(yAxis.options.height) / 100 :
-                            yAxis.height / plotHeight,
-                        top = isPercentage(yAxis.options.top) ?
+                            yAxis.height / plotHeight),
+                        top = correctFloat(isPercentage(yAxis.options.top) ?
                             parseFloat(yAxis.options.top) / 100 :
-                            correctFloat(yAxis.top - yAxis.chart.plotTop) / plotHeight;
-                    // New yAxis does not contain "height" info yet
-                    if (!isNumber(height)) {
-                        height = defaultHeight / 100;
+                            (yAxis.top - yAxis.chart.plotTop) / plotHeight);
+                    // New axis' height is NaN so we can check if
+                    // the axis is newly created this way
+                    if (!removedHeight) {
+                        if (!isNumber(height)) {
+                            // Check if the previous axis is the
+                            // indicator axis (every indicator inherits from sma)
+                            height = yAxes[index - 1].series.every(function (s) { return s.is('sma'); }) ?
+                                previousAxisHeight : defaultHeight / 100;
+                        }
+                        if (!isNumber(top)) {
+                            top = allAxesHeight;
+                        }
+                        previousAxisHeight = height;
+                        allAxesHeight = correctFloat(Math.max(allAxesHeight, (top || 0) + (height || 0)));
                     }
-                    allAxesHeight = correctFloat(allAxesHeight + height);
+                    else {
+                        if (top <= allAxesHeight) {
+                            allAxesHeight = correctFloat(Math.max(allAxesHeight, (top || 0) + (height || 0)));
+                        }
+                        else {
+                            top = correctFloat(top - removedHeight);
+                            allAxesHeight = correctFloat(allAxesHeight + height);
+                        }
+                    }
                     return {
                         height: height * 100,
                         top: top * 100
                     };
                 });
-                positions.allAxesHeight = allAxesHeight;
-                return positions;
+                return { positions: positions, allAxesHeight: allAxesHeight };
             },
             /**
              * Get current resize options for each yAxis. Note that each resize is
@@ -5355,79 +5400,56 @@
             },
             /**
              * Resize all yAxes (except navigator) to fit the plotting height. Method
-             * checks if new axis is added, then shrinks other main axis up to 5 panes.
-             * If added is more thatn 5 panes, it rescales all other axes to fit new
-             * yAxis.
+             * checks if new axis is added, if the new axis will fit under previous
+             * axes it is placed there. If not, current plot area is scaled
+             * to make room for new axis.
              *
-             * If axis is removed, and we have more than 5 panes, rescales all other
-             * axes. If chart has less than 5 panes, first pane receives all extra
-             * space.
+             * If axis is removed, the current plot area streaches to fit into 100%
+             * of the plot area.
              *
              * @private
              * @function Highcharts.NavigationBindings#resizeYAxes
-             * @param {number} [defaultHeight]
-             * Default height for yAxis
+             * @param {string} [removedYAxisHeight]
+             *
+             *
              */
-            resizeYAxes: function (defaultHeight) {
-                defaultHeight = defaultHeight || 20; // in %, but as a number
+            resizeYAxes: function (removedYAxisHeight) {
+                // The height of the new axis before rescalling. In %, but as a number.
+                var defaultHeight = 20;
                 var chart = this.chart, 
                     // Only non-navigator axes
                     yAxes = chart.yAxis.filter(bindingsUtils.isNotNavigatorYAxis),
-                    plotHeight = chart.plotHeight,
-                    allAxesLength = yAxes.length, 
+                    plotHeight = chart.plotHeight, 
                     // Gather current heights (in %)
-                    positions = this.getYAxisPositions(yAxes,
+                    _a = this.getYAxisPositions(yAxes,
                     plotHeight,
-                    defaultHeight),
-                    resizers = this.getYAxisResizers(yAxes),
-                    allAxesHeight = positions.allAxesHeight,
-                    changedSpace = defaultHeight;
-                // More than 100%
-                if (allAxesHeight > 1) {
-                    // Simple case, add new panes up to 5
-                    if (allAxesLength < 6) {
-                        // Added axis, decrease first pane's height:
-                        positions[0].height = correctFloat(positions[0].height - changedSpace);
-                        // And update all other "top" positions:
-                        positions = this.recalculateYAxisPositions(positions, changedSpace);
-                    }
-                    else {
-                        // We have more panes, rescale all others to gain some space,
-                        // This is new height for upcoming yAxis:
-                        defaultHeight = 100 / allAxesLength;
-                        // This is how much we need to take from each other yAxis:
-                        changedSpace = defaultHeight / (allAxesLength - 1);
-                        // Now update all positions:
-                        positions = this.recalculateYAxisPositions(positions, changedSpace, true, -1);
-                    }
-                    // Set last position manually:
-                    positions[allAxesLength - 1] = {
-                        top: correctFloat(100 - defaultHeight),
-                        height: defaultHeight
+                    defaultHeight,
+                    removedYAxisHeight),
+                    positions = _a.positions,
+                    allAxesHeight = _a.allAxesHeight,
+                    resizers = this.getYAxisResizers(yAxes);
+                // check if the axis is being either added or removed and
+                // if the new indicator axis will fit under existing axes.
+                // if so, there is no need to scale them.
+                if (!removedYAxisHeight &&
+                    allAxesHeight <= correctFloat(0.8 + defaultHeight / 100)) {
+                    positions[positions.length - 1] = {
+                        height: defaultHeight,
+                        top: correctFloat(allAxesHeight * 100 - defaultHeight)
                     };
                 }
                 else {
-                    // Less than 100%
-                    changedSpace = correctFloat(1 - allAxesHeight) * 100;
-                    // Simple case, return first pane it's space:
-                    if (allAxesLength < 5) {
-                        positions[0].height = correctFloat(positions[0].height + changedSpace);
-                        positions = this.recalculateYAxisPositions(positions, changedSpace);
-                    }
-                    else {
-                        // There were more panes, return to each pane a bit of space:
-                        changedSpace /= allAxesLength;
-                        // Removed axis, add extra space to the first pane:
-                        // And update all other positions:
-                        positions = this.recalculateYAxisPositions(positions, changedSpace, true, 1);
-                    }
+                    positions.forEach(function (position) {
+                        position.height = (position.height / (allAxesHeight * 100)) * 100;
+                        position.top = (position.top / (allAxesHeight * 100)) * 100;
+                    });
                 }
                 positions.forEach(function (position, index) {
-                    // if (index === 0) debugger;
                     yAxes[index].update({
                         height: position.height + '%',
                         top: position.top + '%',
-                        resize: resizers[index]
+                        resize: resizers[index],
+                        offset: 0
                     }, false);
                 });
             },
@@ -5562,7 +5584,7 @@
                         navigation = this.chart.options.navigation,
                         options = merge({
                             langKey: 'ray',
-                            type: 'crookedLine',
+                            type: 'infinityLine',
                             typeOptions: {
                                 type: 'ray',
                                 points: [{
@@ -6631,39 +6653,18 @@
                 /** @ignore-option */
                 init: function (button) {
                     var chart = this.chart,
-                        series = chart.series[0],
-                        options = series.options,
-                        lastVisiblePrice = (options.lastVisiblePrice &&
-                            options.lastVisiblePrice.enabled),
-                        lastPrice = options.lastPrice && options.lastPrice.enabled,
+                        series = chart.series,
                         gui = chart.stockTools,
-                        iconsURL = gui.getIconsURL();
+                        priceIndicatorEnabled = bindingsUtils.isPriceIndicatorEnabled(chart.series);
                     if (gui && gui.guiEnabled) {
-                        if (lastPrice) {
-                            button.firstChild.style['background-image'] =
-                                'url("' + iconsURL +
-                                    'current-price-show.svg")';
-                        }
-                        else {
-                            button.firstChild.style['background-image'] =
-                                'url("' + iconsURL +
-                                    'current-price-hide.svg")';
-                        }
+                        series.forEach(function (series) {
+                            series.update({
+                                lastPrice: { enabled: !priceIndicatorEnabled },
+                                lastVisiblePrice: { enabled: !priceIndicatorEnabled, label: { enabled: true } }
+                            }, false);
+                        });
+                        chart.redraw();
                     }
-                    series.update({
-                        // line
-                        lastPrice: {
-                            enabled: !lastPrice,
-                            color: 'red'
-                        },
-                        // label
-                        lastVisiblePrice: {
-                            enabled: !lastVisiblePrice,
-                            label: {
-                                enabled: true
-                            }
-                        }
-                    });
                     fireEvent(this, 'deselectButton', { button: button });
                 }
             },
@@ -6930,7 +6931,32 @@
                         crosshairX: 'Crosshair X',
                         crosshairY: 'Crosshair Y',
                         tunnel: 'Tunnel',
-                        background: 'Background'
+                        background: 'Background',
+                        // Indicators' params (#15170):
+                        index: 'Index',
+                        period: 'Period',
+                        standardDeviation: 'Standard deviation',
+                        periodTenkan: 'Tenkan period',
+                        periodSenkouSpanB: 'Senkou Span B period',
+                        periodATR: 'ATR period',
+                        multiplierATR: 'ATR multiplier',
+                        shortPeriod: 'Short period',
+                        longPeriod: 'Long period',
+                        signalPeriod: 'Signal period',
+                        decimals: 'Decimals',
+                        algorithm: 'Algorithm',
+                        topBand: 'Top band',
+                        bottomBand: 'Bottom band',
+                        initialAccelerationFactor: 'Initial acceleration factor',
+                        maxAccelerationFactor: 'Max acceleration factor',
+                        increment: 'Increment',
+                        multiplier: 'Multiplier',
+                        ranges: 'Ranges',
+                        highIndex: 'High index',
+                        lowIndex: 'Low index',
+                        deviation: 'Deviation',
+                        xAxisUnit: 'x-axis unit',
+                        factor: 'Factor'
                     }
                 }
             },
@@ -8165,6 +8191,25 @@
                     button = button.parentNode.parentNode;
                 }
                 gui.selectButton(button);
+            }
+        });
+        // Check if the correct price indicator button is displayed, #15029.
+        addEvent(H.Chart, 'render', function () {
+            var chart = this,
+                stockTools = chart.stockTools,
+                button = stockTools &&
+                    stockTools.toolbar &&
+                    stockTools.toolbar.querySelector('.highcharts-current-price-indicator');
+            // Change the initial button background.
+            if (stockTools && chart.navigationBindings && chart.options.series && button) {
+                if (chart.navigationBindings.constructor.prototype.utils.isPriceIndicatorEnabled(chart.series)) {
+                    button.firstChild.style['background-image'] =
+                        'url("' + stockTools.getIconsURL() + 'current-price-hide.svg")';
+                }
+                else {
+                    button.firstChild.style['background-image'] =
+                        'url("' + stockTools.getIconsURL() + 'current-price-show.svg")';
+                }
             }
         });
         H.Toolbar = Toolbar;

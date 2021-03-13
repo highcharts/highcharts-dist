@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  *
  * Indicator series type for Highstock
  *
@@ -662,7 +662,6 @@
         return LinearRegressionAngleIndicator;
     });
     _registerModule(_modules, 'masters/indicators/regressions.src.js', [], function () {
-
 
         // eslint-disable-next-line max-len
         // eslint-disable-next-line max-len

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -569,8 +569,8 @@
             DumbbellSeries.prototype.markerAttribs = function () {
                 var ret = areaRangeProto.markerAttribs.apply(this,
                     arguments);
-                ret.x = Math.floor(ret.x);
-                ret.y = Math.floor(ret.y);
+                ret.x = Math.floor(ret.x || 0);
+                ret.y = Math.floor(ret.y || 0);
                 return ret;
             };
             /**

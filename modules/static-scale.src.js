@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.0.1 (2021-02-16)
+ * @license Highcharts Gantt JS v9.0.1 (2021-03-13)
  *
  * StaticScale
  *
@@ -83,7 +83,7 @@
                         // Minimum height is 1 x staticScale.
                         height = Math.max(height, staticScale);
                         diff = height - chart.plotHeight;
-                        if (Math.abs(diff) >= 1) {
+                        if (!chart.scrollablePixelsY && Math.abs(diff) >= 1) {
                             chart.plotHeight = height;
                             chart.redrawTrigger = 'adjustHeight';
                             chart.setSize(void 0, chart.chartHeight + diff, animate);
@@ -94,7 +94,9 @@
                             var clipRect = series.sharedClipKey &&
                                     chart[series.sharedClipKey];
                             if (clipRect) {
-                                clipRect.attr({
+                                clipRect.attr(chart.inverted ? {
+                                    width: chart.plotHeight
+                                } : {
                                     height: chart.plotHeight
                                 });
                             }

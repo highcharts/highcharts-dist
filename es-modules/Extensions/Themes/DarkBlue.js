@@ -88,11 +88,6 @@ Highcharts.theme = {
             color: '#F0F0F0'
         }
     },
-    toolbar: {
-        itemStyle: {
-            color: 'silver'
-        }
-    },
     plotOptions: {
         line: {
             dataLabels: {

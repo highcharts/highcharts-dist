@@ -26,7 +26,28 @@ declare module "../highcharts" {
         x2?: number;
     }
     /**
-     * Factory function for Gantt charts.
+     * Gantt-optimized chart. Use Chart for common charts.
+     */
+    class GanttChart {
+        /**
+         * Initializes the chart. The constructor's arguments are passed on
+         * directly.
+         *
+         * @param userOptions
+         *        Custom options.
+         *
+         * @param callback
+         *        Function to run when the chart has loaded and and all external
+         *        images are loaded.
+         *
+         * @fires Highcharts.GanttChart#init
+         * @fires Highcharts.GanttChart#afterInit
+         */
+        init(userOptions: Options, callback?: Function): void;
+    }
+    /**
+     * The factory function for creating new gantt charts. Creates a new
+     * GanttChart object with different default options than the basic Chart.
      *
      * @param renderTo
      *        The DOM element to render to, or its id.
@@ -41,7 +62,7 @@ declare module "../highcharts" {
      *
      * @return Returns the Chart object.
      */
-    function ganttChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): Chart;
+    function ganttChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): GanttChart;
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
      * rotated. The same method is used in Navigator's handles, to rotate them.

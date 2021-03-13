@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.0.1 (2021-03-13)
  * @module highcharts/modules/boost
  * @requires highcharts
  *
@@ -11,6 +11,5 @@
  * License: www.highcharts.com/license
  *
  * */
-
 'use strict';
 import '../../Extensions/Boost/Boost.js';

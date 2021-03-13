@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.0.1 (2021-03-13)
  *
  * Data grouping module
  *
@@ -172,29 +172,31 @@
             yData,
             groupPositions,
             approximation) {
-                var series = this,
-            data = series.data,
-            dataOptions = series.options && series.options.data,
-            groupedXData = [],
-            groupedYData = [],
-            groupMap = [],
-            dataLength = xData.length,
-            pointX,
-            pointY,
-            groupedY, 
+                var _a;
+            var series = this,
+                data = series.data,
+                dataOptions = series.options && series.options.data,
+                groupedXData = [],
+                groupedYData = [],
+                groupMap = [],
+                dataLength = xData.length,
+                pointX,
+                pointY,
+                groupedY, 
                 // when grouping the fake extended axis for panning,
                 // we don't need to consider y
                 handleYData = !!yData,
-            values = [],
-            approximationFn,
-            pointArrayMap = series.pointArrayMap,
-            pointArrayMapLength = pointArrayMap && pointArrayMap.length,
-            extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']),
-            pos = 0,
-            start = 0,
-            valuesLen,
-            i,
-            j;
+                values = [],
+                approximationFn,
+                pointArrayMap = series.pointArrayMap,
+                pointArrayMapLength = pointArrayMap && pointArrayMap.length,
+                extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']),
+                groupAll = this.options.dataGrouping && this.options.dataGrouping.groupAll,
+                pos = 0,
+                start = 0,
+                valuesLen,
+                i,
+                j;
             /**
              * @private
              */
@@ -234,7 +236,7 @@
                     // get group x and y
                     pointX = groupPositions[pos];
                     series.dataGroupInfo = {
-                        start: series.cropStart + start,
+                        start: groupAll ? start : (series.cropStart + start),
                         length: values[0].length
                     };
                     groupedY = approximationFn.apply(series, values);
@@ -279,7 +281,7 @@
                 // for each raw data point, push it to an array that contains all values
                 // for this specific group
                 if (pointArrayMap) {
-                    var index = series.cropStart + i,
+                    var index = ((_a = series.options.dataGrouping) === null || _a === void 0 ? void 0 : _a.groupAll) ? i : series.cropStart + i,
                         point = (data && data[index]) ||
                             series.pointClass.prototype.applyOptions.apply({
                                 series: series
@@ -499,7 +501,9 @@
                         xAxis.getGroupPixelWidth && xAxis.getGroupPixelWidth();
                 // Execute grouping if the amount of points is greater than the limit
                 // defined in groupPixelWidth
-                if (groupPixelWidth) {
+                if (groupPixelWidth &&
+                    processedXData &&
+                    processedXData.length) {
                     hasGroupedData = true;
                     // Force recreation of point instances in series.translate, #5699
                     series.isDirty = true;
@@ -863,6 +867,8 @@
          *
          * @sample {highstock} stock/plotoptions/series-datagrouping-approximation
          *         Approximation callback with custom data
+         * @sample {highstock} stock/plotoptions/series-datagrouping-simple-approximation
+         *         Simple approximation demo
          *
          * @type       {Highcharts.DataGroupingApproximationValue|Function}
          * @apioption  plotOptions.series.dataGrouping.approximation

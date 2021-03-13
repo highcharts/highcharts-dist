@@ -87,7 +87,7 @@ MapNavigation.prototype.update = function (options) {
         objectEach(o.buttons, function (button, n) {
             buttonOptions = merge(o.buttonOptions, button);
             // Presentational
-            if (!chart.styledMode) {
+            if (!chart.styledMode && buttonOptions.theme) {
                 attr = buttonOptions.theme;
                 attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                 );
@@ -96,7 +96,7 @@ MapNavigation.prototype.update = function (options) {
                 selectStates = states && states.select;
             }
             button = chart.renderer
-                .button(buttonOptions.text, 0, 0, outerHandler, attr, hoverStates, selectStates, 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
+                .button(buttonOptions.text || '', 0, 0, outerHandler, attr, hoverStates, selectStates, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
                 .addClass('highcharts-map-navigation highcharts-' + {
                 zoomIn: 'zoom-in',
                 zoomOut: 'zoom-out'
@@ -154,10 +154,14 @@ MapNavigation.prototype.updateEvents = function (options) {
     if (pick(options.enableMouseWheelZoom, options.enabled)) {
         this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, typeof doc.onmousewheel === 'undefined' ?
             'DOMMouseScroll' : 'mousewheel', function (e) {
-            chart.pointer.onContainerMouseWheel(e);
-            // Issue #5011, returning false from non-jQuery event does
-            // not prevent default
-            stopEvent(e);
+            // Prevent scrolling when the pointer is over the element
+            // with that class, for example anotation popup #12100.
+            if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
+                chart.pointer.onContainerMouseWheel(e);
+                // Issue #5011, returning false from non-jQuery event does
+                // not prevent default
+                stopEvent(e);
+            }
             return false;
         });
     }

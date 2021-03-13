@@ -621,10 +621,10 @@ var SVGRenderer = /** @class */ (function () {
     SVGRenderer.prototype.getRadialAttr = function (radialReference, gradAttr) {
         return {
             cx: (radialReference[0] - radialReference[2] / 2) +
-                gradAttr.cx * radialReference[2],
+                (gradAttr.cx || 0) * radialReference[2],
             cy: (radialReference[1] - radialReference[2] / 2) +
-                gradAttr.cy * radialReference[2],
-            r: gradAttr.r * radialReference[2]
+                (gradAttr.cy || 0) * radialReference[2],
+            r: (gradAttr.r || 0) * radialReference[2]
         };
     };
     /**
@@ -1045,7 +1045,7 @@ var SVGRenderer = /** @class */ (function () {
                 };
         if (!this.styledMode) {
             if (typeof strokeWidth !== 'undefined') {
-                attribs.strokeWidth = strokeWidth;
+                attribs['stroke-width'] = strokeWidth;
                 attribs = wrapper.crisp(attribs);
             }
             attribs.fill = 'none';
@@ -1061,7 +1061,7 @@ var SVGRenderer = /** @class */ (function () {
             });
         };
         wrapper.rGetter = function () {
-            return wrapper.r;
+            return wrapper.r || 0;
         };
         return wrapper.attr(attribs);
     };
@@ -1084,7 +1084,7 @@ var SVGRenderer = /** @class */ (function () {
      * Whether and how to animate.
      */
     SVGRenderer.prototype.setSize = function (width, height, animate) {
-        var renderer = this, alignedObjects = renderer.alignedObjects, i = alignedObjects.length;
+        var renderer = this;
         renderer.width = width;
         renderer.height = height;
         renderer.boxWrapper.animate({
@@ -1099,9 +1099,7 @@ var SVGRenderer = /** @class */ (function () {
             },
             duration: pick(animate, true) ? void 0 : 0
         });
-        while (i--) {
-            alignedObjects[i].align();
-        }
+        renderer.alignElements();
     };
     /**
      * Create and return an svg group element. Child
@@ -1278,7 +1276,7 @@ var SVGRenderer = /** @class */ (function () {
              */
             ['width', 'height'].forEach(function (key) {
                 obj[key + 'Setter'] = function (value, key) {
-                    var attribs = {}, imgSize = this['img' + key], trans = key === 'width' ? 'translateX' : 'translateY';
+                    var imgSize = this['img' + key];
                     this[key] = value;
                     if (defined(imgSize)) {
                         // Scale and center the image within its container.
@@ -1296,7 +1294,10 @@ var SVGRenderer = /** @class */ (function () {
                             this.element.setAttribute(key, imgSize);
                         }
                         if (!this.alignByTranslate) {
-                            attribs[trans] = ((this[key] || 0) - imgSize) / 2;
+                            var translate = ((this[key] || 0) - imgSize) / 2;
+                            var attribs = key === 'width' ?
+                                { translateX: translate } :
+                                { translateY: translate };
                             this.attr(attribs);
                         }
                     }
@@ -1817,6 +1818,16 @@ var SVGRenderer = /** @class */ (function () {
      */
     SVGRenderer.prototype.label = function (str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
         return new SVGLabel(this, str, x, y, shape, anchorX, anchorY, useHTML, baseline, className);
+    };
+    /**
+     * Re-align all aligned elements.
+     *
+     * @private
+     * @function Highcharts.SVGRenderer#alignElements
+     * @return {void}
+     */
+    SVGRenderer.prototype.alignElements = function () {
+        this.alignedObjects.forEach(function (el) { return el.align(); });
     };
     return SVGRenderer;
 }());
