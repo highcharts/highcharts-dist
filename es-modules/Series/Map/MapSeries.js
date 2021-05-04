@@ -26,8 +26,8 @@ var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
 import H from '../../Core/Globals.js';
 var noop = H.noop;
 import LegendSymbolMixin from '../../Mixins/LegendSymbol.js';
-import mapModule from '../../Maps/Map.js';
-var maps = mapModule.maps, splitPath = mapModule.splitPath;
+import MapChart from '../../Core/Chart/MapChart.js';
+var maps = MapChart.maps, splitPath = MapChart.splitPath;
 import MapPoint from './MapPoint.js';
 import palette from '../../Core/Color/Palette.js';
 import Series from '../../Core/Series/Series.js';
@@ -351,30 +351,30 @@ var MapSeries = /** @class */ (function (_super) {
                 else if (point.path[0] === 'M') {
                     point.path = SVGRenderer.prototype.pathToSegments(point.path);
                 }
-                var path = point.path || [], pointMaxX = -MAX_VALUE, pointMinX = MAX_VALUE, pointMaxY = -MAX_VALUE, pointMinY = MAX_VALUE, properties = point.properties;
+                var path = point.path || [], pointMaxX_1 = -MAX_VALUE, pointMinX_1 = MAX_VALUE, pointMaxY_1 = -MAX_VALUE, pointMinY_1 = MAX_VALUE, properties = point.properties;
                 // The first time a map point is used, analyze its box
                 if (!point._foundBox) {
                     path.forEach(function (seg) {
                         var x = seg[seg.length - 2];
                         var y = seg[seg.length - 1];
                         if (typeof x === 'number' && typeof y === 'number') {
-                            pointMinX = Math.min(pointMinX, x);
-                            pointMaxX = Math.max(pointMaxX, x);
-                            pointMinY = Math.min(pointMinY, y);
-                            pointMaxY = Math.max(pointMaxY, y);
+                            pointMinX_1 = Math.min(pointMinX_1, x);
+                            pointMaxX_1 = Math.max(pointMaxX_1, x);
+                            pointMinY_1 = Math.min(pointMinY_1, y);
+                            pointMaxY_1 = Math.max(pointMaxY_1, y);
                         }
                     });
                     // Cache point bounding box for use to position data
                     // labels, bubbles etc
-                    point._midX = (pointMinX + (pointMaxX - pointMinX) * pick(point.middleX, properties &&
+                    point._midX = (pointMinX_1 + (pointMaxX_1 - pointMinX_1) * pick(point.middleX, properties &&
                         properties['hc-middle-x'], 0.5));
-                    point._midY = (pointMinY + (pointMaxY - pointMinY) * pick(point.middleY, properties &&
+                    point._midY = (pointMinY_1 + (pointMaxY_1 - pointMinY_1) * pick(point.middleY, properties &&
                         properties['hc-middle-y'], 0.5));
-                    point._maxX = pointMaxX;
-                    point._minX = pointMinX;
-                    point._maxY = pointMaxY;
-                    point._minY = pointMinY;
-                    point.labelrank = pick(point.labelrank, (pointMaxX - pointMinX) * (pointMaxY - pointMinY));
+                    point._maxX = pointMaxX_1;
+                    point._minX = pointMinX_1;
+                    point._maxY = pointMaxY_1;
+                    point._minY = pointMinY_1;
+                    point.labelrank = pick(point.labelrank, (pointMaxX_1 - pointMinX_1) * (pointMaxY_1 - pointMinY_1));
                     point._foundBox = true;
                 }
                 maxX = Math.max(maxX, point._maxX);
@@ -517,7 +517,7 @@ var MapSeries = /** @class */ (function (_super) {
         this.getBox(data);
         // Pick up transform definitions for chart
         this.chart.mapTransforms = mapTransforms =
-            chartOptions && chartOptions.mapTransforms ||
+            chartOptions.mapTransforms ||
                 mapData && mapData['hc-transform'] ||
                 mapTransforms;
         // Cache cos/sin of transform rotation angle

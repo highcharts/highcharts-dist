@@ -312,10 +312,10 @@ function getPointBB(point) {
     // Prefer using shapeArgs (columns)
     if (shapeArgs) {
         return {
-            xMin: shapeArgs.x,
-            xMax: shapeArgs.x + shapeArgs.width,
-            yMin: shapeArgs.y,
-            yMax: shapeArgs.y + shapeArgs.height
+            xMin: shapeArgs.x || 0,
+            xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
+            yMin: shapeArgs.y || 0,
+            yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
         };
     }
     // Otherwise use plotX/plotY and bb
@@ -474,7 +474,7 @@ var Pathfinder = /** @class */ (function () {
         });
         // Clear connections that should not be updated, and move old info over
         // to new connections.
-        for (var j = 0, k, found, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
+        for (var j = 0, k = void 0, found = void 0, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
             found = false;
             for (k = 0; k < lenNew; ++k) {
                 if (oldConnections[j].fromPoint ===
@@ -560,7 +560,7 @@ var Pathfinder = /** @class */ (function () {
         var obstacles = [], series = this.chart.series, margin = pick(options.algorithmMargin, 0), calculatedMargin;
         for (var i = 0, sLen = series.length; i < sLen; ++i) {
             if (series[i].visible && !series[i].options.isInternal) {
-                for (var j = 0, pLen = series[i].points.length, bb, point; j < pLen; ++j) {
+                for (var j = 0, pLen = series[i].points.length, bb = void 0, point = void 0; j < pLen; ++j) {
                     point = series[i].points[j];
                     if (point.visible) {
                         bb = getPointBB(point);

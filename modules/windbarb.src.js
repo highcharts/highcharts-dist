@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Wind barb series module
  *
@@ -459,7 +459,7 @@
                     // Check if it's inside the plot area, but only for the X
                     // dimension.
                     if (this.options.clip === false ||
-                        chart.isInsidePlot(plotX, 0, false)) {
+                        chart.isInsidePlot(plotX, 0)) {
                         // Create the graphic the first time
                         if (!point.graphic) {
                             point.graphic = this.chart.renderer
@@ -515,6 +515,12 @@
             WindbarbSeries.prototype.getExtremes = function () {
                 return {};
             };
+            WindbarbSeries.prototype.shouldShowTooltip = function (plotX, plotY, options) {
+                if (options === void 0) { options = {}; }
+                options.ignoreX = this.chart.inverted;
+                options.ignoreY = !options.ignoreX;
+                return _super.prototype.shouldShowTooltip.call(this, plotX, plotY, options);
+            };
             /**
              * Wind barbs are a convenient way to represent wind speed and direction in
              * one graphical form. Wind direction is given by the stem direction, and
@@ -536,7 +542,7 @@
                 /**
                  * Data grouping options for the wind barbs. In Highcharts, this
                  * requires the `modules/datagrouping.js` module to be loaded. In
-                 * Highstock, data grouping is included.
+                 * Highcharts Stock, data grouping is included.
                  *
                  * @sample  highcharts/plotoptions/windbarb-datagrouping
                  *          Wind barb with data grouping

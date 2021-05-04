@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -11,5 +11,4 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-
 import '../../Accessibility/Accessibility.js';

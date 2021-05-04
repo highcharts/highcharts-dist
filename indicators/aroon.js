@@ -1,7 +1,7 @@
 /*
- Highstock JS v9.0.1 (2021-02-15)
+ Highstock JS v9.1.0 (2021-05-03)
 
- Indicator series type for Highstock
+ Indicator series type for Highcharts Stock
 
  (c) 2010-2021 Wojciech Chmiel
 
@@ -13,6 +13,6 @@ arguments);a.points.forEach(function(m){e.forEach(function(b,q){g=m[b];null!==g&
 b+' in DOCS options declared. Check if linesApiNames are consistent with your DOCS line names." at mixin/multiple-line.js:34'),a.graph=a["graph"+b],l.prototype.drawGraph.call(a),a["graph"+b]=a.graph):t('Error: "'+b+" doesn't have equivalent in pointArrayMap. To many elements in linesApiNames relative to pointArrayMap.\"")});a.points=d;a.options=c;a.graph=b;l.prototype.drawGraph.call(a)}}});k(a,"Stock/Indicators/Aroon/AroonIndicator.js",[a["Mixins/MultipleLines.js"],a["Core/Series/SeriesRegistry.js"],
 a["Core/Utilities.js"]],function(a,f,e){function k(a,c){var b=a[0],q=0,h;for(h=1;h<a.length;h++)if("max"===c&&a[h]>=b||"min"===c&&a[h]<=b)b=a[h],q=h;return q}var u=this&&this.__extends||function(){var a=function(c,b){a=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(a,b){a.__proto__=b}||function(a,b){for(var c in b)b.hasOwnProperty(c)&&(a[c]=b[c])};return a(c,b)};return function(c,b){function d(){this.constructor=c}a(c,b);c.prototype=null===b?Object.create(b):(d.prototype=b.prototype,
 new d)}}(),l=f.seriesTypes.sma,m=e.extend,v=e.merge,d=e.pick;e=function(a){function c(){var b=null!==a&&a.apply(this,arguments)||this;b.data=void 0;b.options=void 0;b.points=void 0;return b}u(c,a);c.prototype.getValues=function(a,c){c=c.period;var b=a.xData,e=(a=a.yData)?a.length:0,f=[],g=[],m=[],n;for(n=c-1;n<e;n++){var p=a.slice(n-c+1,n+2);var l=k(p.map(function(a){return d(a[2],a)}),"min");p=k(p.map(function(a){return d(a[1],a)}),"max");p=p/c*100;l=l/c*100;b[n+1]&&(f.push([b[n+1],p,l]),g.push(b[n+
-1]),m.push([p,l]))}return{values:f,xData:g,yData:m}};c.defaultOptions=v(l.defaultOptions,{params:{period:25},marker:{enabled:!1},tooltip:{pointFormat:'<span style="color:{point.color}">\u25cf</span><b> {series.name}</b><br/>Aroon Up: {point.y}<br/>Aroon Down: {point.aroonDown}<br/>'},aroonDown:{styles:{lineWidth:1,lineColor:void 0}},dataGrouping:{approximation:"averages"}});return c}(l);m(e.prototype,{linesApiNames:["aroonDown"],nameBase:"Aroon",pointArrayMap:["y","aroonDown"],pointValKey:"y",drawGraph:a.drawGraph,
-getTranslatedLinesNames:a.getTranslatedLinesNames,toYData:a.toYData,translate:a.translate});f.registerSeriesType("aroon",e);"";return e});k(a,"masters/indicators/aroon.src.js",[],function(){})});
+1]),m.push([p,l]))}return{values:f,xData:g,yData:m}};c.defaultOptions=v(l.defaultOptions,{params:{index:void 0,period:25},marker:{enabled:!1},tooltip:{pointFormat:'<span style="color:{point.color}">\u25cf</span><b> {series.name}</b><br/>Aroon Up: {point.y}<br/>Aroon Down: {point.aroonDown}<br/>'},aroonDown:{styles:{lineWidth:1,lineColor:void 0}},dataGrouping:{approximation:"averages"}});return c}(l);m(e.prototype,{linesApiNames:["aroonDown"],nameBase:"Aroon",pointArrayMap:["y","aroonDown"],pointValKey:"y",
+drawGraph:a.drawGraph,getTranslatedLinesNames:a.getTranslatedLinesNames,toYData:a.toYData,translate:a.translate});f.registerSeriesType("aroon",e);"";return e});k(a,"masters/indicators/aroon.src.js",[],function(){})});
 //# sourceMappingURL=aroon.js.map

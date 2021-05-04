@@ -22,9 +22,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, SMAIndicator = _a.sma, LinearRegressionIndicator = _a.linearRegression;
+var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
 import U from '../../../Core/Utilities.js';
-var isArray = U.isArray, extend = U.extend, merge = U.merge;
+var extend = U.extend, merge = U.merge;
 /* *
  *
  * Class

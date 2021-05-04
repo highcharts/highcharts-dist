@@ -105,20 +105,6 @@ var AroonOscillatorIndicator = /** @class */ (function (_super) {
      * @optionparent plotOptions.aroonoscillator
      */
     AroonOscillatorIndicator.defaultOptions = merge(AroonIndicator.defaultOptions, {
-        /**
-         * Paramters used in calculation of aroon oscillator series points.
-         *
-         * @excluding periods, index
-         */
-        params: {
-            /**
-             * Period for Aroon Oscillator
-             *
-             * @since   7.0.0
-             * @product highstock
-             */
-            period: 25
-        },
         tooltip: {
             pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b>: {point.y}'
         }

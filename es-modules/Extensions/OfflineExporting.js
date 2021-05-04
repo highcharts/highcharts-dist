@@ -12,10 +12,11 @@
 import Chart from '../Core/Chart/Chart.js';
 import H from '../Core/Globals.js';
 var win = H.win, doc = H.doc;
-import '../Core/Options.js';
+import O from '../Core/Options.js';
+var getOptions = O.getOptions;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, error = U.error, extend = U.extend, fireEvent = U.fireEvent, getOptions = U.getOptions, merge = U.merge;
+var addEvent = U.addEvent, error = U.error, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge;
 import DownloadURL from '../Extensions/DownloadURL.js';
 var downloadURL = DownloadURL.downloadURL;
 var domurl = win.URL || win.webkitURL || win, 
@@ -575,11 +576,11 @@ Chart.prototype.exportChartLocal = function (exportingOptions, chartOptions) {
         fallbackToExportServer('Image type not supported for this chart/browser.');
         return;
     }
-    chart.getSVGForLocalExport(options, chartOptions, fallbackToExportServer, svgSuccess);
+    chart.getSVGForLocalExport(options, chartOptions || {}, fallbackToExportServer, svgSuccess);
 };
 // Extend the default options to use the local exporter logic
 merge(true, getOptions().exporting, {
-    libURL: 'https://code.highcharts.com/9.0.1/lib/',
+    libURL: 'https://code.highcharts.com/9.1.0/lib/',
     // When offline-exporting is loaded, redefine the menu item definitions
     // related to download.
     menuItemDefinitions: {

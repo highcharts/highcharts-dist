@@ -446,7 +446,7 @@ H.layouts['reingold-fruchterman'].prototype, {
         */
         // Exponential:
         /*
-        var alpha = 0.1;
+        let alpha = 0.1;
         layout.temperature = Math.sqrt(layout.nodes.length) *
             Math.pow(alpha, layout.diffTemperature);
         */

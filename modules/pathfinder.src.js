@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.0.1 (2021-02-16)
+ * @license Highcharts Gantt JS v9.1.0 (2021-05-04)
  *
  * Pathfinder
  *
@@ -537,10 +537,10 @@
             // Prefer using shapeArgs (columns)
             if (shapeArgs) {
                 return {
-                    xMin: shapeArgs.x,
-                    xMax: shapeArgs.x + shapeArgs.width,
-                    yMin: shapeArgs.y,
-                    yMax: shapeArgs.y + shapeArgs.height
+                    xMin: shapeArgs.x || 0,
+                    xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
+                    yMin: shapeArgs.y || 0,
+                    yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
                 };
             }
             // Otherwise use plotX/plotY and bb
@@ -1325,7 +1325,7 @@
          *         renderer, as well as an array of new obstacles making up this
          *         path.
          */
-        var simpleConnect = extend(function (start,
+        var simpleConnect = function (start,
             end,
             options) {
                 var segments = [],
@@ -1430,9 +1430,8 @@
                 path: pathFromSegments(segments),
                 obstacles: segments
             };
-        }, {
-            requiresObstacles: true
-        });
+        };
+        simpleConnect.requiresObstacles = true;
         /**
          * Find a path from a starting coordinate to an ending coordinate, taking
          * obstacles into consideration. Might not always find the optimal path,
@@ -1463,7 +1462,7 @@
          *         renderer, as well as an array of new obstacles making up this
          *         path.
          */
-        var fastAvoid = extend(function (start,
+        var fastAvoid = function (start,
             end,
             options) {
                 /*
@@ -1840,9 +1839,8 @@
                 path: pathFromSegments(segments),
                 obstacles: segments
             };
-        }, {
-            requiresObstacles: true
-        });
+        };
+        fastAvoid.requiresObstacles = true;
         // Define the available pathfinding algorithms.
         // Algorithms take up to 3 arguments: starting point, ending point, and an
         // options object.
@@ -2170,10 +2168,10 @@
             // Prefer using shapeArgs (columns)
             if (shapeArgs) {
                 return {
-                    xMin: shapeArgs.x,
-                    xMax: shapeArgs.x + shapeArgs.width,
-                    yMin: shapeArgs.y,
-                    yMax: shapeArgs.y + shapeArgs.height
+                    xMin: shapeArgs.x || 0,
+                    xMax: (shapeArgs.x || 0) + (shapeArgs.width || 0),
+                    yMin: shapeArgs.y || 0,
+                    yMax: (shapeArgs.y || 0) + (shapeArgs.height || 0)
                 };
             }
             // Otherwise use plotX/plotY and bb
@@ -2345,7 +2343,7 @@
                 });
                 // Clear connections that should not be updated, and move old info over
                 // to new connections.
-                for (var j = 0, k, found, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
+                for (var j = 0, k = void 0, found = void 0, lenOld = oldConnections.length, lenNew = pathfinder.connections.length; j < lenOld; ++j) {
                     found = false;
                     for (k = 0; k < lenNew; ++k) {
                         if (oldConnections[j].fromPoint ===
@@ -2435,7 +2433,7 @@
                     calculatedMargin;
                 for (var i = 0, sLen = series.length; i < sLen; ++i) {
                     if (series[i].visible && !series[i].options.isInternal) {
-                        for (var j = 0, pLen = series[i].points.length, bb, point; j < pLen; ++j) {
+                        for (var j = 0, pLen = series[i].points.length, bb = void 0, point = void 0; j < pLen; ++j) {
                             point = series[i].points[j];
                             if (point.visible) {
                                 bb = getPointBB(point);

@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Sebastian Bochan
  *
@@ -182,8 +182,11 @@
              * @optionparent plotOptions.atr
              */
             ATRIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * @excluding index
+                 */
                 params: {
-                    period: 14
+                    index: void 0 // unused index, do not inherit (#15362)
                 }
             });
             return ATRIndicator;

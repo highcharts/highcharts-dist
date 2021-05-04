@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/DarkUnica.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/Themes/DarkUnica.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (H, O, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -38,8 +38,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var createElement = U.createElement,
-            setOptions = U.setOptions;
+        var setOptions = O.setOptions;
+        var createElement = U.createElement;
         // Load the fonts
         createElement('link', {
             href: 'https://fonts.googleapis.com/css?family=Unica+One',

@@ -72,7 +72,7 @@ var WordcloudSeries = /** @class */ (function (_super) {
             lineWidth: 0,
             maxPadding: 0,
             startOnTick: false,
-            title: null,
+            title: void 0,
             tickPositions: []
         };
         Series.prototype.bindAxes.call(this);
@@ -163,7 +163,9 @@ var WordcloudSeries = /** @class */ (function (_super) {
                 x: placement.x,
                 y: placement.y,
                 text: point.name,
-                rotation: placement.rotation
+                rotation: isNumber(placement.rotation) ?
+                    placement.rotation :
+                    void 0
             }), polygon = getPolygon(placement.x, placement.y, point.dimensions.width, point.dimensions.height, placement.rotation), rectangle = getBoundingBoxFromPolygon(polygon), delta = WordcloudUtils.intersectionTesting(point, {
                 rectangle: rectangle,
                 polygon: polygon,
@@ -189,8 +191,8 @@ var WordcloudSeries = /** @class */ (function (_super) {
             // Check if point was placed, if so delete it, otherwise place it
             // on the correct positions.
             if (isObject(delta)) {
-                attr.x += delta.x;
-                attr.y += delta.y;
+                attr.x = (attr.x || 0) + delta.x;
+                attr.y = (attr.y || 0) + delta.y;
                 rectangle.left += delta.x;
                 rectangle.right += delta.x;
                 rectangle.top += delta.y;
@@ -198,6 +200,7 @@ var WordcloudSeries = /** @class */ (function (_super) {
                 field = WordcloudUtils.updateFieldBoundaries(field, rectangle);
                 placed.push(point);
                 point.isNull = false;
+                point.isInside = true; // #15447
             }
             else {
                 point.isNull = true;

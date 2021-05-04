@@ -10,11 +10,13 @@
 'use strict';
 import Axis from '../Core/Axis/Axis.js';
 import Chart from '../Core/Chart/Chart.js';
+import F from '../Core/FormatUtilities.js';
+var format = F.format;
 import H from '../Core/Globals.js';
 import Series from '../Core/Series/Series.js';
 import StackingAxis from '../Core/Axis/StackingAxis.js';
 import U from '../Core/Utilities.js';
-var correctFloat = U.correctFloat, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, format = U.format, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick;
+var correctFloat = U.correctFloat, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, isArray = U.isArray, isNumber = U.isNumber, objectEach = U.objectEach, pick = U.pick;
 /**
  * Stack of data points
  *
@@ -178,7 +180,7 @@ var StackItem = /** @class */ (function () {
         x = pick(defaultX, chart.xAxis[0].translate(stackItem.x)) +
             xOffset, stackBox = defined(y) && stackItem.getStackBox(chart, stackItem, x, y, xWidth, h, axis), label = stackItem.label, isNegative = stackItem.isNegative, isJustify = pick(stackItem.options.overflow, 'justify') === 'justify', textAlign = stackItem.textAlign, visible;
         if (label && stackBox) {
-            var bBox = label.getBBox(), padding = label.padding, boxOffsetX, boxOffsetY;
+            var bBox = label.getBBox(), padding = label.padding, boxOffsetX = void 0, boxOffsetY = void 0;
             if (textAlign === 'left') {
                 boxOffsetX = chart.inverted ? -padding : padding;
             }
@@ -312,6 +314,7 @@ StackingAxis.compose(Axis);
  * @return {void}
  */
 Series.prototype.setGroupedPoints = function () {
+    var stacking = this.yAxis.stacking;
     if (this.options.centerInCategory &&
         (this.is('column') || this.is('columnrange')) &&
         // With stacking enabled, we already have stacks that we can compute
@@ -320,6 +323,16 @@ Series.prototype.setGroupedPoints = function () {
         // With only one series, we don't need to consider centerInCategory
         this.chart.series.length > 1) {
         Series.prototype.setStackedPoints.call(this, 'group');
+        // After updating, if we now have proper stacks, we must delete the group
+        // pseudo stacks (#14986)
+    }
+    else if (stacking) {
+        objectEach(stacking.stacks, function (type, key) {
+            if (key.slice(-5) === 'group') {
+                objectEach(type, function (stack) { return stack.destroy(); });
+                delete stacking.stacks[key];
+            }
+        });
     }
 };
 /**
@@ -330,9 +343,8 @@ Series.prototype.setGroupedPoints = function () {
  */
 Series.prototype.setStackedPoints = function (stackingParam) {
     var stacking = stackingParam || this.options.stacking;
-    if (!stacking ||
-        (this.visible !== true &&
-            this.chart.options.chart.ignoreHiddenSeries !== false)) {
+    if (!stacking || (this.visible !== true &&
+        this.chart.options.chart.ignoreHiddenSeries !== false)) {
         return;
     }
     var series = this, xData = series.processedXData, yData = series.processedYData, stackedYData = [], yDataLength = yData.length, seriesOptions = series.options, threshold = seriesOptions.threshold, stackThreshold = pick(seriesOptions.startFromThreshold && threshold, 0), stackOption = seriesOptions.stack, stackKey = stackingParam ? series.type + "," + stacking : series.stackKey, negKey = '-' + stackKey, negStacks = series.negStacks, yAxis = series.yAxis, stacks = yAxis.stacking.stacks, oldStacks = yAxis.stacking.oldStacks, stackIndicator, isNegative, stack, other, key, pointKey, i, x, y;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Client side exporting module
  *
@@ -137,7 +137,7 @@
 
         return exports;
     });
-    _registerModule(_modules, 'Extensions/OfflineExporting.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Extensions/DownloadURL.js']], function (Chart, H, SVGRenderer, U, DownloadURL) {
+    _registerModule(_modules, 'Extensions/OfflineExporting.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Extensions/DownloadURL.js']], function (Chart, H, O, SVGRenderer, U, DownloadURL) {
         /* *
          *
          *  Client side exporting module
@@ -151,11 +151,11 @@
          * */
         var win = H.win,
             doc = H.doc;
+        var getOptions = O.getOptions;
         var addEvent = U.addEvent,
             error = U.error,
             extend = U.extend,
             fireEvent = U.fireEvent,
-            getOptions = U.getOptions,
             merge = U.merge;
         var downloadURL = DownloadURL.downloadURL;
         var domurl = win.URL || win.webkitURL || win, 
@@ -735,11 +735,11 @@
                 fallbackToExportServer('Image type not supported for this chart/browser.');
                 return;
             }
-            chart.getSVGForLocalExport(options, chartOptions, fallbackToExportServer, svgSuccess);
+            chart.getSVGForLocalExport(options, chartOptions || {}, fallbackToExportServer, svgSuccess);
         };
         // Extend the default options to use the local exporter logic
         merge(true, getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/9.0.1/lib/',
+            libURL: 'https://code.highcharts.com/9.1.0/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {

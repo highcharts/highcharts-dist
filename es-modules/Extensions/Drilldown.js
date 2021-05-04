@@ -16,6 +16,8 @@ import Axis from '../Core/Axis/Axis.js';
 import Chart from '../Core/Chart/Chart.js';
 import Color from '../Core/Color/Color.js';
 import ColumnSeries from '../Series/Column/ColumnSeries.js';
+import F from '../Core/FormatUtilities.js';
+var format = F.format;
 import H from '../Core/Globals.js';
 var noop = H.noop;
 import O from '../Core/Options.js';
@@ -28,7 +30,7 @@ var seriesTypes = SeriesRegistry.seriesTypes;
 import SVGRenderer from '../Core/Renderer/SVG/SVGRenderer.js';
 import Tick from '../Core/Axis/Tick.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, removeEvent = U.removeEvent, extend = U.extend, fireEvent = U.fireEvent, format = U.format, merge = U.merge, objectEach = U.objectEach, pick = U.pick, syncTimeout = U.syncTimeout;
+var addEvent = U.addEvent, removeEvent = U.removeEvent, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge, objectEach = U.objectEach, pick = U.pick, syncTimeout = U.syncTimeout;
 /**
  * Gets fired when a drilldown point is clicked, before the new series is added.
  * Note that when clicking a category label to trigger multiple series
@@ -547,7 +549,7 @@ Chart.prototype.addSingleSeriesAsDrilldown = function (point, ddOptions) {
     }
     // Run fancy cross-animation on supported and equal types
     if (oldSeries.type === newSeries.type) {
-        newSeries.animate = newSeries.animateDrilldown || noop;
+        newSeries.animate = (newSeries.animateDrilldown || noop);
         newSeries.options.animation = true;
     }
 };
@@ -588,11 +590,15 @@ Chart.prototype.getDrilldownBackText = function () {
     }
 };
 Chart.prototype.showDrillUpButton = function () {
-    var chart = this, backText = this.getDrilldownBackText(), buttonOptions = chart.options.drilldown.drillUpButton, attr, states;
+    var chart = this, backText = this.getDrilldownBackText(), buttonOptions = chart.options.drilldown.drillUpButton, attr, states, alignTo = (buttonOptions.relativeTo === 'chart' ||
+        buttonOptions.relativeTo === 'spacingBox' ?
+        null :
+        'scrollablePlotBox');
     if (!this.drillUpButton) {
         attr = buttonOptions.theme;
         states = attr && attr.states;
-        this.drillUpButton = this.renderer.button(backText, null, null, function () {
+        this.drillUpButton = this.renderer
+            .button(backText, null, null, function () {
             chart.drillUp();
         }, attr, states && states.hover, states && states.select)
             .addClass('highcharts-drillup-button')
@@ -601,7 +607,7 @@ Chart.prototype.showDrillUpButton = function () {
             zIndex: 7
         })
             .add()
-            .align(buttonOptions.position, false, buttonOptions.relativeTo || 'plotBox');
+            .align(buttonOptions.position, false, alignTo);
     }
     else {
         this.drillUpButton.attr({
@@ -764,7 +770,7 @@ addEvent(Chart, 'render', function () {
  */
 ColumnSeries.prototype.animateDrillupTo = function (init) {
     if (!init) {
-        var newSeries = this, level = newSeries.drilldownLevel;
+        var newSeries_1 = this, level_1 = newSeries_1.drilldownLevel;
         // First hide all items before animating in again
         this.points.forEach(function (point) {
             var dataLabel = point.dataLabel;
@@ -785,18 +791,18 @@ ColumnSeries.prototype.animateDrillupTo = function (init) {
         });
         // Do dummy animation on first point to get to complete
         syncTimeout(function () {
-            if (newSeries.points) { // May be destroyed in the meantime, #3389
+            if (newSeries_1.points) { // May be destroyed in the meantime, #3389
                 // Unable to drillup with nodes, #13711
-                var pointsWithNodes = [];
-                newSeries.data.forEach(function (el) {
-                    pointsWithNodes.push(el);
+                var pointsWithNodes_1 = [];
+                newSeries_1.data.forEach(function (el) {
+                    pointsWithNodes_1.push(el);
                 });
-                if (newSeries.nodes) {
-                    pointsWithNodes = pointsWithNodes.concat(newSeries.nodes);
+                if (newSeries_1.nodes) {
+                    pointsWithNodes_1 = pointsWithNodes_1.concat(newSeries_1.nodes);
                 }
-                pointsWithNodes.forEach(function (point, i) {
+                pointsWithNodes_1.forEach(function (point, i) {
                     // Fade in other points
-                    var verb = i === (level && level.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
+                    var verb = i === (level_1 && level_1.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
                     if (point.graphic) { // #3407
                         point.graphic[verb](inherit);
                     }
@@ -903,19 +909,19 @@ if (PieSeries) {
             }
             // Unable to drill down in the horizontal item series #13372
             if (this.center) {
-                var animateFrom = level.shapeArgs, start = animateFrom.start, angle = animateFrom.end - start, startAngle = angle / this.points.length, styledMode = this.chart.styledMode;
+                var animateFrom_1 = level.shapeArgs, start_1 = animateFrom_1.start, angle = animateFrom_1.end - start_1, startAngle_1 = angle / this.points.length, styledMode_1 = this.chart.styledMode;
                 if (!init) {
                     this.points.forEach(function (point, i) {
                         var animateTo = point.shapeArgs;
-                        if (!styledMode) {
-                            animateFrom.fill = level.color;
+                        if (!styledMode_1) {
+                            animateFrom_1.fill = level.color;
                             animateTo.fill = point.color;
                         }
                         if (point.graphic) {
                             point.graphic
-                                .attr(merge(animateFrom, {
-                                start: start + i * startAngle,
-                                end: start + (i + 1) * startAngle
+                                .attr(merge(animateFrom_1, {
+                                start: start_1 + i * startAngle_1,
+                                end: start_1 + (i + 1) * startAngle_1
                             }))[animationOptions ? 'animate' : 'attr'](animateTo, animationOptions);
                         }
                     });

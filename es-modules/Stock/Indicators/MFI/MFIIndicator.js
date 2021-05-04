@@ -1,6 +1,6 @@
 /* *
  *
- *  Money Flow Index indicator for Highstock
+ *  Money Flow Index indicator for Highcharts Stock
  *
  *  (c) 2010-2021 Grzegorz Blachliński
  *
@@ -158,7 +158,7 @@ var MFIIndicator = /** @class */ (function (_super) {
          * @excluding index
          */
         params: {
-            period: 14,
+            index: void 0,
             /**
              * The id of volume series which is mandatory.
              * For example using OHLC data, volumeSeriesID='volume' means

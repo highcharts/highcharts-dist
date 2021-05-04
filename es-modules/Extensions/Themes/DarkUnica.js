@@ -11,8 +11,10 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
+import O from '../../Core/Options.js';
+var setOptions = O.setOptions;
 import U from '../../Core/Utilities.js';
-var createElement = U.createElement, setOptions = U.setOptions;
+var createElement = U.createElement;
 // Load the fonts
 createElement('link', {
     href: 'https://fonts.googleapis.com/css?family=Unica+One',

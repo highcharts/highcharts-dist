@@ -31,7 +31,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import ColumnSeries from '../Column/ColumnSeries.js';
-import './DotPlotSymbols.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
 var extend = U.extend, merge = U.merge, objectEach = U.objectEach, pick = U.pick;

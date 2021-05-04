@@ -15,8 +15,8 @@ export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
     interface Axis {
         /**
-         * Highstock only. Set the compare mode on all series belonging to an Y
-         * axis after render time.
+         * Highcharts Stock only. Set the compare mode on all series belonging
+         * to an Y axis after render time.
          *
          * @param compare
          *        The compare mode. Can be one of `null` (default), `"value"` or
@@ -28,8 +28,8 @@ declare module "../highcharts.src" {
          */
         setCompare(compare?: string, redraw?: boolean): void;
         /**
-         * (Highstock) Highstock only. Force data grouping on all the axis'
-         * series.
+         * (Highstock) Highcharts Stock only. Force data grouping on all the
+         * axis' series.
          *
          * @param dataGrouping
          *        A `dataGrouping` configuration. Use `false` to disable data
@@ -43,9 +43,9 @@ declare module "../highcharts.src" {
     }
     interface Series {
         /**
-         * Highstock only. Set the compare mode of the series after render time.
-         * In most cases it is more useful running Axis#setCompare on the X axis
-         * to update all its series.
+         * Highcharts Stock only. Set the compare mode of the series after
+         * render time. In most cases it is more useful running Axis#setCompare
+         * on the X axis to update all its series.
          *
          * @param compare
          *        Can be one of `null` (default), `"percent"` or `"value"`.
@@ -53,7 +53,27 @@ declare module "../highcharts.src" {
         setCompare(compare?: string): void;
     }
     /**
-     * Factory function for creating new stock charts. Creates a new Chart
+     * Stock-optimized chart. Use Chart for common charts.
+     */
+    class StockChart {
+        /**
+         * Initializes the chart. The constructor's arguments are passed on
+         * directly.
+         *
+         * @param userOptions
+         *        Custom options.
+         *
+         * @param callback
+         *        Function to run when the chart has loaded and and all external
+         *        images are loaded.
+         *
+         * @fires Highcharts.StockChart#init
+         * @fires Highcharts.StockChart#afterInit
+         */
+        init(userOptions: Options, callback?: Function): void;
+    }
+    /**
+     * Factory function for creating new stock charts. Creates a new StockChart
      * object with different default options than the basic Chart.
      *
      * @param options
@@ -71,9 +91,9 @@ declare module "../highcharts.src" {
      *
      * @return The chart object.
      */
-    function stockChart(options: Options, callback?: ChartCallbackFunction): Chart;
+    function stockChart(options: Options, callback?: ChartCallbackFunction): StockChart;
     /**
-     * Factory function for creating new stock charts. Creates a new Chart
+     * Factory function for creating new stock charts. Creates a new StockChart
      * object with different default options than the basic Chart.
      *
      * @param renderTo
@@ -94,7 +114,7 @@ declare module "../highcharts.src" {
      *
      * @return The chart object.
      */
-    function stockChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): Chart;
+    function stockChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): StockChart;
     /**
      * When we have vertical scrollbar, rifles and arrow in buttons should be
      * rotated. The same method is used in Navigator's handles, to rotate them.

@@ -481,7 +481,7 @@ extend(NetworkgraphSeries.prototype, {
      */
     forces: ['barycenter', 'repulsive', 'attractive'],
     hasDraggableNodes: true,
-    drawGraph: null,
+    drawGraph: void 0,
     isCartesian: false,
     requireSorting: false,
     directTouch: true,
@@ -490,7 +490,7 @@ extend(NetworkgraphSeries.prototype, {
     trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
     drawTracker: seriesTypes.column.prototype.drawTracker,
     // Animation is run in `series.simulation`.
-    animate: null,
+    animate: void 0,
     buildKDTree: H.noop,
     /**
      * Create a single node that holds information on incoming and outgoing
@@ -511,11 +511,19 @@ extend(NetworkgraphSeries.prototype, {
      * @private
      */
     init: function () {
+        var _this = this;
         Series.prototype.init.apply(this, arguments);
         addEvent(this, 'updatedData', function () {
-            if (this.layout) {
-                this.layout.stop();
+            if (_this.layout) {
+                _this.layout.stop();
             }
+        });
+        addEvent(this, 'afterUpdate', function () {
+            _this.nodes.forEach(function (node) {
+                if (node && node.series) {
+                    node.resolveColor();
+                }
+            });
         });
         return this;
     },
@@ -583,7 +591,7 @@ extend(NetworkgraphSeries.prototype, {
         if (!defined(point.plotY)) {
             attribs.y = 0;
         }
-        attribs.x = (point.plotX || 0) - (attribs.width / 2 || 0);
+        attribs.x = (point.plotX || 0) - (attribs.width || 0) / 2;
         return attribs;
     },
     /**
@@ -836,6 +844,7 @@ extend(NetworkgraphPoint.prototype, {
         if (!this.graphic) {
             this.graphic = this.series.chart.renderer
                 .path(this.getLinkPath())
+                .addClass(this.getClassName(), true)
                 .add(this.series.group);
             if (!this.series.chart.styledMode) {
                 attribs = this.series.pointAttribs(this);

@@ -52,8 +52,8 @@ var swapXY = H.swapXY = function (path, vertical) {
 };
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
- * A reusable scrollbar, internally used in Highstock's navigator and optionally
- * on individual axes.
+ * A reusable scrollbar, internally used in Highcharts Stock's
+ * navigator and optionally on individual axes.
  *
  * @private
  * @class
@@ -553,6 +553,23 @@ var Scrollbar = /** @class */ (function () {
             }
         }
         scroller.rendered = true;
+    };
+    /**
+     * Checks if the extremes should be updated in response to a scrollbar
+     * change event.
+     *
+     * @private
+     * @function Highcharts.Scrollbar#shouldUpdateExtremes
+     * @param  {string} eventType
+     * @return {boolean}
+     */
+    Scrollbar.prototype.shouldUpdateExtremes = function (eventType) {
+        return (pick(this.options.liveRedraw, H.svg && !H.isTouchDevice && !this.chart.isBoosting) ||
+            // Mouseup always should change extremes
+            eventType === 'mouseup' ||
+            eventType === 'touchend' ||
+            // Internal events
+            !defined(eventType));
     };
     Scrollbar.prototype.trackClick = function (e) {
         var scroller = this;

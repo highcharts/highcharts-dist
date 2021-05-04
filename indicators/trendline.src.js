@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Sebastian Bochan
  *
@@ -158,6 +158,7 @@
                  * @excluding period
                  */
                 params: {
+                    period: void 0,
                     /**
                      * The point index which indicator calculations will base. For
                      * example using OHLC data, index=2 means the indicator will be

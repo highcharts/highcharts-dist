@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Vector plot series module
  *
@@ -149,18 +149,18 @@
             };
             /*
             drawLegendSymbol: function (legend, item) {
-                var options = legend.options,
-                        symbolHeight = legend.symbolHeight,
-                        square = options.squareSymbol,
-                        symbolWidth = square ? symbolHeight : legend.symbolWidth,
-                        path = this.arrow.call({
-                            lengthMax: 1,
-                            options: {
-                                vectorLength: symbolWidth
-                            }
-                        }, {
-                            length: 1
-                        });
+                let options = legend.options,
+                    symbolHeight = legend.symbolHeight,
+                    square = options.squareSymbol,
+                    symbolWidth = square ? symbolHeight : legend.symbolWidth,
+                    path = this.arrow.call({
+                        lengthMax: 1,
+                        options: {
+                            vectorLength: symbolWidth
+                        }
+                    }, {
+                        length: 1
+                    });
                 item.legendLine = this.chart.renderer.path(path)
                 .addClass('highcharts-point')
                 .attr({
@@ -181,7 +181,7 @@
                     var plotX = point.plotX,
                         plotY = point.plotY;
                     if (this.options.clip === false ||
-                        chart.isInsidePlot(plotX, plotY, chart.inverted)) {
+                        chart.isInsidePlot(plotX, plotY, { inverted: chart.inverted })) {
                         if (!point.graphic) {
                             point.graphic = this.chart.renderer
                                 .path()

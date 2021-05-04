@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/PatternFill.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, H, Point, Series, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/PatternFill.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, H, O, Point, Series, SVGRenderer, U) {
         /* *
          *
          *  Module for using patterns or images as point fills.
@@ -43,9 +43,9 @@
          *
          * */
         var animObject = A.animObject;
+        var getOptions = O.getOptions;
         var addEvent = U.addEvent,
             erase = U.erase,
-            getOptions = U.getOptions,
             merge = U.merge,
             pick = U.pick,
             removeEvent = U.removeEvent,
@@ -369,14 +369,16 @@
             pattern.id = id;
             // Use an SVG path for the pattern
             if (options.path) {
-                path = options.path;
+                path = U.isObject(options.path) ?
+                    options.path :
+                    { d: options.path };
                 // The background
                 if (options.backgroundColor) {
                     rect(options.backgroundColor);
                 }
                 // The pattern
                 attribs = {
-                    'd': path.d || path
+                    'd': path.d
                 };
                 if (!this.styledMode) {
                     attribs.stroke = path.stroke || color;

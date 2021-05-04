@@ -26,7 +26,11 @@ var SeriesRegistry;
      *  Static Properties
      *
      * */
-    SeriesRegistry.seriesTypes = {};
+    /**
+     * @internal
+     * @todo Move `Globals.seriesTypes` code to her.
+     */
+    SeriesRegistry.seriesTypes = H.seriesTypes;
     /* *
      *
      *  Static Functions
@@ -122,7 +126,6 @@ var SeriesRegistry;
  *
  * */
 H.seriesType = SeriesRegistry.seriesType;
-H.seriesTypes = SeriesRegistry.seriesTypes;
 /* *
  *
  *  Export

@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Sebastian Bochan
  *
@@ -55,7 +55,6 @@
         var noop = H.noop;
         var _a = SeriesRegistry.seriesTypes,
             SMAIndicator = _a.sma,
-            EMAIndicator = _a.ema,
             ColumnSeries = _a.column;
         var extend = U.extend,
             correctFloat = U.correctFloat,
@@ -235,7 +234,8 @@
                 this.zones = histogramZones;
             };
             MACDIndicator.prototype.getValues = function (series, params) {
-                var j = 0,
+                var indexToShift = params.longPeriod - params.shortPeriod, // #14197
+                    j = 0,
                     MACD = [],
                     xMACD = [],
                     yMACD = [],
@@ -260,17 +260,17 @@
                 longEMA = longEMA.values;
                 // Subtract each Y value from the EMA's and create the new dataset
                 // (MACD)
-                for (i = 1; i <= shortEMA.length; i++) {
-                    if (defined(longEMA[i - 1]) &&
-                        defined(longEMA[i - 1][1]) &&
-                        defined(shortEMA[i + params.shortPeriod + 1]) &&
-                        defined(shortEMA[i + params.shortPeriod + 1][0])) {
+                for (i = 0; i <= shortEMA.length; i++) {
+                    if (defined(longEMA[i]) &&
+                        defined(longEMA[i][1]) &&
+                        defined(shortEMA[i + indexToShift]) &&
+                        defined(shortEMA[i + indexToShift][0])) {
                         MACD.push([
-                            shortEMA[i + params.shortPeriod + 1][0],
+                            shortEMA[i + indexToShift][0],
                             0,
                             null,
-                            shortEMA[i + params.shortPeriod + 1][1] -
-                                longEMA[i - 1][1]
+                            shortEMA[i + indexToShift][1] -
+                                longEMA[i][1]
                         ]);
                     }
                 }

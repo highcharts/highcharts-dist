@@ -1,7 +1,7 @@
 /**
- * @license Highmaps JS v9.0.1 (2021-02-16)
+ * @license Highmaps JS v9.1.0 (2021-05-04)
  *
- * Highmaps as a plugin for Highcharts or Highstock.
+ * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
  * (c) 2011-2021 Torstein Honsi
  *
@@ -391,7 +391,7 @@
                     horiz = userOptions.layout ?
                         userOptions.layout !== 'vertical' :
                         legend.layout !== 'vertical';
-                var options = merge(ColorAxis.defaultOptions,
+                var options = merge(ColorAxis.defaultColorAxisOptions,
                     userOptions, {
                         showEmpty: false,
                         title: null,
@@ -402,9 +402,6 @@
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
-                // Keep the options structure updated for export. Unlike xAxis and
-                // yAxis, the colorAxis is not an array. (#3207)
-                chart.options[axis.coll] = options;
                 _super.prototype.init.call(this, chart, options);
                 // Base init() pushes it to the xAxis array, now pop it again
                 // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
@@ -780,7 +777,7 @@
                             .add(axis.legendGroup);
                         axis.cross.addedToColorAxis = true;
                         if (!axis.chart.styledMode &&
-                            axis.crosshair) {
+                            typeof axis.crosshair === 'object') {
                             axis.cross.attr({
                                 fill: axis.crosshair.color
                             });
@@ -1002,7 +999,7 @@
              * @optionparent colorAxis
              * @ignore
              */
-            ColorAxis.defaultOptions = {
+            ColorAxis.defaultColorAxisOptions = {
                 /**
                  * Whether to allow decimals on the color axis.
                  * @type      {boolean}
@@ -1418,10 +1415,19 @@
         // Add the color axis. This also removes the axis' own series to prevent
         // them from showing up individually.
         addEvent(Legend, 'afterGetAllItems', function (e) {
+            var _this = this;
             var colorAxisItems = [],
                 colorAxes = this.chart.colorAxis || [],
                 options,
                 i;
+            var destroyItem = function (item) {
+                    var i = e.allItems.indexOf(item);
+                if (i !== -1) {
+                    // #15436
+                    _this.destroyItem(e.allItems[i]);
+                    e.allItems.splice(i, 1);
+                }
+            };
             colorAxes.forEach(function (colorAxis) {
                 options = colorAxis.options;
                 if (options && options.showInLegend) {
@@ -1440,11 +1446,11 @@
                         if (!series.options.showInLegend || options.dataClasses) {
                             if (series.options.legendType === 'point') {
                                 series.points.forEach(function (point) {
-                                    erase(e.allItems, point);
+                                    destroyItem(point);
                                 });
                             }
                             else {
-                                erase(e.allItems, series);
+                                destroyItem(series);
                             }
                         }
                     });
@@ -1492,9 +1498,19 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
+        var defined = U.defined,
+            addEvent = U.addEvent;
         var noop = H.noop,
             seriesTypes = H.seriesTypes;
+        // Move points to the top of the z-index order when hovered
+        addEvent(Point, 'afterSetState', function (e) {
+            var point = this; // eslint-disable-line no-invalid-this
+                if (point.moveToTopOnHover && point.graphic) {
+                    point.graphic.attr({
+                        zIndex: e && e.state === 'hover' ? 1 : 0
+                    });
+            }
+        });
         /**
          * Mixin for maps and heatmaps
          *
@@ -1503,6 +1519,7 @@
          */
         var colorMapPointMixin = {
                 dataLabelOnNull: true,
+                moveToTopOnHover: true,
                 /* eslint-disable valid-jsdoc */
                 /**
                  * Color points have a value option that determines whether or not it is
@@ -1514,17 +1531,6 @@
                     return (this.value !== null &&
                         this.value !== Infinity &&
                         this.value !== -Infinity);
-            },
-            /**
-             * @private
-             */
-            setState: function (state) {
-                Point.prototype.setState.call(this, state);
-                if (this.graphic) {
-                    this.graphic.attr({
-                        zIndex: state === 'hover' ? 1 : 0
-                    });
-                }
             }
             /* eslint-enable valid-jsdoc */
         };
@@ -1897,7 +1903,6 @@
         MapNavigation.prototype.update = function (options) {
             var chart = this.chart,
                 o = chart.options.mapNavigation,
-                buttonOptions,
                 attr,
                 states,
                 hoverStates,
@@ -1918,47 +1923,56 @@
                 mapNavButtons.pop().destroy();
             }
             if (pick(o.enableButtons, o.enabled) && !chart.renderer.forExport) {
-                objectEach(o.buttons, function (button, n) {
-                    buttonOptions = merge(o.buttonOptions, button);
+                objectEach(o.buttons, function (buttonOptions, n) {
+                    buttonOptions = merge(o.buttonOptions, buttonOptions);
                     // Presentational
-                    if (!chart.styledMode) {
+                    if (!chart.styledMode && buttonOptions.theme) {
                         attr = buttonOptions.theme;
                         attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                         );
                         states = attr.states;
                         hoverStates = states && states.hover;
                         selectStates = states && states.select;
+                        delete attr.states;
                     }
-                    button = chart.renderer
-                        .button(buttonOptions.text, 0, 0, outerHandler, attr, hoverStates, selectStates, 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
-                        .addClass('highcharts-map-navigation highcharts-' + {
-                        zoomIn: 'zoom-in',
-                        zoomOut: 'zoom-out'
-                    }[n])
-                        .attr({
-                        width: buttonOptions.width,
-                        height: buttonOptions.height,
-                        title: chart.options.lang[n],
-                        padding: buttonOptions.padding,
-                        zIndex: 5
-                    })
-                        .add();
+                    var button = chart.renderer
+                            .button(buttonOptions.text || '', 0, 0, outerHandler, attr, hoverStates, selectStates, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
+                            .addClass('highcharts-map-navigation highcharts-' + {
+                            zoomIn: 'zoom-in',
+                            zoomOut: 'zoom-out'
+                        }[n])
+                            .attr({
+                            width: buttonOptions.width,
+                            height: buttonOptions.height,
+                            title: chart.options.lang[n],
+                            padding: buttonOptions.padding,
+                            zIndex: 5
+                        })
+                            .add();
                     button.handler = buttonOptions.onclick;
                     // Stop double click event (#4444)
                     addEvent(button.element, 'dblclick', stopEvent);
                     mapNavButtons.push(button);
-                    // Align it after the plotBox is known (#12776)
-                    var bo = buttonOptions;
-                    var un = addEvent(chart, 'load',
-                        function () {
-                            button.align(extend(bo, {
-                                width: button.width,
-                                height: 2 * button.height
-                            }),
-                        null,
-                        bo.alignTo);
-                        un();
+                    extend(buttonOptions, {
+                        width: button.width,
+                        height: 2 * button.height
                     });
+                    if (!chart.hasLoaded) {
+                        // Align it after the plotBox is known (#12776)
+                        var unbind_1 = addEvent(chart, 'load',
+                            function () {
+                                // #15406: Make sure button hasnt been destroyed
+                                if (button.element) {
+                                    button.align(buttonOptions,
+                            false,
+                            buttonOptions.alignTo);
+                            }
+                            unbind_1();
+                        });
+                    }
+                    else {
+                        button.align(buttonOptions, false, buttonOptions.alignTo);
+                    }
                 });
             }
             this.updateEvents(o);
@@ -1989,12 +2003,17 @@
             }
             // Add the mousewheel event
             if (pick(options.enableMouseWheelZoom, options.enabled)) {
-                this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, typeof doc.onmousewheel === 'undefined' ?
-                    'DOMMouseScroll' : 'mousewheel', function (e) {
-                    chart.pointer.onContainerMouseWheel(e);
-                    // Issue #5011, returning false from non-jQuery event does
-                    // not prevent default
-                    stopEvent(e);
+                this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, doc.onwheel !== void 0 ? 'wheel' : // Newer Firefox
+                    doc.onmousewheel !== void 0 ? 'mousewheel' :
+                        'DOMMouseScroll', function (e) {
+                    // Prevent scrolling when the pointer is over the element
+                    // with that class, for example anotation popup #12100.
+                    if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
+                        chart.pointer.onContainerMouseWheel(e);
+                        // Issue #5011, returning false from non-jQuery event does
+                        // not prevent default
+                        stopEvent(e);
+                    }
                     return false;
                 });
             }
@@ -2074,7 +2093,7 @@
              *
              * @return {void}
              */
-            mapZoom: function (howMuch, centerXArg, centerYArg, mouseX, mouseY) {
+            mapZoom: function (howMuch, centerXArg, centerYArg, mouseX, mouseY, animation) {
                 var chart = this,
                     xAxis = chart.xAxis[0],
                     xRange = xAxis.max - xAxis.min,
@@ -2143,7 +2162,7 @@
                     }, delay);
                 }
                 */
-                chart.redraw();
+                chart.redraw(animation);
             }
         });
         // Extend the Chart.render method to add zooming and panning
@@ -2170,6 +2189,8 @@
             pick = U.pick,
             wrap = U.wrap;
         /* eslint-disable no-invalid-this */
+        var totalWheelDelta = 0;
+        var totalWheelDeltaTimer;
         // Extend the Pointer
         extend(Pointer.prototype, {
             // The event handler for the doubleclick event
@@ -2188,13 +2209,30 @@
             },
             // The event handler for the mouse scroll event
             onContainerMouseWheel: function (e) {
-                var chart = this.chart,
-                    delta;
+                var chart = this.chart;
                 e = this.normalize(e);
-                // Firefox uses e.detail, WebKit and IE uses wheelDelta
-                delta = e.detail || -(e.wheelDelta / 120);
-                if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
-                    chart.mapZoom(Math.pow(chart.options.mapNavigation.mouseWheelSensitivity, delta), chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY);
+                // Firefox uses e.deltaY or e.detail, WebKit and IE uses wheelDelta
+                var delta = e.deltaY || e.detail || -(e.wheelDelta / 120);
+                // Wheel zooming on trackpads have different behaviours in Firefox vs
+                // WebKit. In Firefox the delta increments in steps by 1, so it is not
+                // distinguishable from true mouse wheel. Therefore we use this timer
+                // to avoid trackpad zooming going too fast and out of control. In
+                // WebKit however, the delta is < 1, so we simply disable animation in
+                // the `chart.mapZoom` call below.
+                if (Math.abs(delta) >= 1) {
+                    totalWheelDelta += Math.abs(delta);
+                    if (totalWheelDeltaTimer) {
+                        clearTimeout(totalWheelDeltaTimer);
+                    }
+                    totalWheelDeltaTimer = setTimeout(function () {
+                        totalWheelDelta = 0;
+                    }, 50);
+                }
+                if (totalWheelDelta < 10 && chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
+                    chart.mapZoom(Math.pow(chart.options.mapNavigation.mouseWheelSensitivity, delta), chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY, 
+                    // Delta less than 1 indicates stepless/trackpad zooming, avoid
+                    // animation delaying the zoom
+                    Math.abs(delta) < 1 ? false : void 0);
                 }
             }
         });
@@ -2282,7 +2320,7 @@
 
         return SVGRenderer.prototype.symbols;
     });
-    _registerModule(_modules, 'Maps/Map.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, H, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Chart/MapChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, O, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2292,17 +2330,106 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getOptions = U.getOptions,
-            merge = U.merge,
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var getOptions = O.getOptions;
+        var merge = U.merge,
             pick = U.pick;
+        /**
+         * Map-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
+         *
+         * @requires modules/map
+         *
+         * @class
+         * @name Highcharts.MapChart
+         * @extends Highcharts.Chart
+         */
+        var MapChart = /** @class */ (function (_super) {
+                __extends(MapChart, _super);
+            function MapChart() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            /**
+             * Initializes the chart. The constructor's arguments are passed on
+             * directly.
+             *
+             * @function Highcharts.MapChart#init
+             *
+             * @param {Highcharts.Options} userOptions
+             *        Custom options.
+             *
+             * @param {Function} [callback]
+             *        Function to run when the chart has loaded and and all external
+             *        images are loaded.
+             *
+             * @return {void}
+             *
+             * @fires Highcharts.MapChart#event:init
+             * @fires Highcharts.MapChart#event:afterInit
+             */
+            MapChart.prototype.init = function (userOptions, callback) {
+                var hiddenAxis = {
+                        endOnTick: false,
+                        visible: false,
+                        minPadding: 0,
+                        maxPadding: 0,
+                        startOnTick: false
+                    },
+                    seriesOptions = userOptions.series,
+                    defaultCreditsOptions = getOptions().credits;
+                /* For visual testing
+                hiddenAxis.gridLineWidth = 1;
+                hiddenAxis.gridZIndex = 10;
+                hiddenAxis.tickPositions = undefined;
+                // */
+                // Don't merge the data
+                userOptions.series = void 0;
+                userOptions = merge({
+                    chart: {
+                        panning: {
+                            enabled: true,
+                            type: 'xy'
+                        },
+                        type: 'map'
+                    },
+                    credits: {
+                        mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
+                            '{geojson.copyrightShort}</a>'),
+                        mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                    },
+                    tooltip: {
+                        followTouchMove: false
+                    },
+                    xAxis: hiddenAxis,
+                    yAxis: merge(hiddenAxis, { reversed: true })
+                }, userOptions, // user's options
+                {
+                    chart: {
+                        inverted: false,
+                        alignTicks: false
+                    }
+                });
+                userOptions.series = seriesOptions;
+                _super.prototype.init.call(this, userOptions, callback);
+            };
+            return MapChart;
+        }(Chart));
         /* eslint-disable valid-jsdoc */
-        var Map;
-        (function (Map) {
-            /* *
-             *
-             *  Constants
-             *
-             * */
+        (function (MapChart) {
             /**
              * Contains all loaded map data for Highmaps.
              *
@@ -2311,16 +2438,11 @@
              * @name Highcharts.maps
              * @type {Record<string,*>}
              */
-            Map.maps = {};
-            /* *
-             *
-             *  Functions
-             *
-             * */
+            MapChart.maps = {};
             /**
              * The factory function for creating new map charts. Creates a new {@link
-             * Highcharts.Chart|Chart} object with different default options than the
-             * basic Chart.
+             * Highcharts.MapChart|MapChart} object with different default options than
+             * the basic Chart.
              *
              * @requires modules/map
              *
@@ -2343,61 +2465,13 @@
              * [chart.events.load](https://api.highcharts.com/highstock/chart.events.load)
              * handler is equivalent.
              *
-             * @return {Highcharts.Chart}
+             * @return {Highcharts.MapChart}
              * The chart object.
              */
             function mapChart(a, b, c) {
-                var hasRenderToArg = typeof a === 'string' || a.nodeName,
-                    options = arguments[hasRenderToArg ? 1 : 0],
-                    userOptions = options,
-                    hiddenAxis = {
-                        endOnTick: false,
-                        visible: false,
-                        minPadding: 0,
-                        maxPadding: 0,
-                        startOnTick: false
-                    },
-                    seriesOptions,
-                    defaultCreditsOptions = getOptions().credits;
-                /* For visual testing
-                hiddenAxis.gridLineWidth = 1;
-                hiddenAxis.gridZIndex = 10;
-                hiddenAxis.tickPositions = undefined;
-                // */
-                // Don't merge the data
-                seriesOptions = options.series;
-                options.series = null;
-                options = merge({
-                    chart: {
-                        panning: {
-                            enabled: true,
-                            type: 'xy'
-                        },
-                        type: 'map'
-                    },
-                    credits: {
-                        mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
-                            '{geojson.copyrightShort}</a>'),
-                        mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
-                    },
-                    tooltip: {
-                        followTouchMove: false
-                    },
-                    xAxis: hiddenAxis,
-                    yAxis: merge(hiddenAxis, { reversed: true })
-                }, options, // user's options
-                {
-                    chart: {
-                        inverted: false,
-                        alignTicks: false
-                    }
-                });
-                options.series = userOptions.series = seriesOptions;
-                return hasRenderToArg ?
-                    new Chart(a, options, c) :
-                    new Chart(options, b);
+                return new MapChart(a, b, c);
             }
-            Map.mapChart = mapChart;
+            MapChart.mapChart = mapChart;
             /**
              * Utility for reading SVG paths directly.
              *
@@ -2433,23 +2507,15 @@
                 }
                 return SVGRenderer.prototype.pathToSegments(arr);
             }
-            Map.splitPath = splitPath;
-        })(Map || (Map = {}));
-        /* *
-         *
-         *  Compatibility
-         *
-         * */
-        H.Map = Map.mapChart; // @todo remove fake class for jQuery
-        H.mapChart = Map.mapChart;
-        H.maps = Map.maps;
+            MapChart.splitPath = splitPath;
+        })(MapChart || (MapChart = {}));
         /* *
          *
          *  Default Export
          *
          * */
 
-        return Map;
+        return MapChart;
     });
     _registerModule(_modules, 'Series/Map/MapPoint.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, SeriesRegistry, U) {
         /* *
@@ -2574,7 +2640,7 @@
         extend(MapPoint.prototype, {
             dataLabelOnNull: colorMapPointMixin.dataLabelOnNull,
             isValid: colorMapPointMixin.isValid,
-            setState: colorMapPointMixin.setState
+            moveToTopOnHover: colorMapPointMixin.moveToTopOnHover
         });
         /* *
          *
@@ -2584,7 +2650,7 @@
 
         return MapPoint;
     });
-    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Maps/Map.js'], _modules['Series/Map/MapPoint.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, H, LegendSymbolMixin, mapModule, MapPoint, palette, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, H, LegendSymbolMixin, MapChart, MapPoint, palette, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2612,8 +2678,8 @@
         })();
         var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
         var noop = H.noop;
-        var maps = mapModule.maps,
-            splitPath = mapModule.splitPath;
+        var maps = MapChart.maps,
+            splitPath = MapChart.splitPath;
         var 
             // indirect dependency to keep product size low
             _a = SeriesRegistry.seriesTypes,
@@ -2976,10 +3042,10 @@
                             point.path = SVGRenderer.prototype.pathToSegments(point.path);
                         }
                         var path = point.path || [],
-                            pointMaxX = -MAX_VALUE,
-                            pointMinX = MAX_VALUE,
-                            pointMaxY = -MAX_VALUE,
-                            pointMinY = MAX_VALUE,
+                            pointMaxX_1 = -MAX_VALUE,
+                            pointMinX_1 = MAX_VALUE,
+                            pointMaxY_1 = -MAX_VALUE,
+                            pointMinY_1 = MAX_VALUE,
                             properties = point.properties;
                         // The first time a map point is used, analyze its box
                         if (!point._foundBox) {
@@ -2987,23 +3053,23 @@
                                 var x = seg[seg.length - 2];
                                 var y = seg[seg.length - 1];
                                 if (typeof x === 'number' && typeof y === 'number') {
-                                    pointMinX = Math.min(pointMinX, x);
-                                    pointMaxX = Math.max(pointMaxX, x);
-                                    pointMinY = Math.min(pointMinY, y);
-                                    pointMaxY = Math.max(pointMaxY, y);
+                                    pointMinX_1 = Math.min(pointMinX_1, x);
+                                    pointMaxX_1 = Math.max(pointMaxX_1, x);
+                                    pointMinY_1 = Math.min(pointMinY_1, y);
+                                    pointMaxY_1 = Math.max(pointMaxY_1, y);
                                 }
                             });
                             // Cache point bounding box for use to position data
                             // labels, bubbles etc
-                            point._midX = (pointMinX + (pointMaxX - pointMinX) * pick(point.middleX, properties &&
+                            point._midX = (pointMinX_1 + (pointMaxX_1 - pointMinX_1) * pick(point.middleX, properties &&
                                 properties['hc-middle-x'], 0.5));
-                            point._midY = (pointMinY + (pointMaxY - pointMinY) * pick(point.middleY, properties &&
+                            point._midY = (pointMinY_1 + (pointMaxY_1 - pointMinY_1) * pick(point.middleY, properties &&
                                 properties['hc-middle-y'], 0.5));
-                            point._maxX = pointMaxX;
-                            point._minX = pointMinX;
-                            point._maxY = pointMaxY;
-                            point._minY = pointMinY;
-                            point.labelrank = pick(point.labelrank, (pointMaxX - pointMinX) * (pointMaxY - pointMinY));
+                            point._maxX = pointMaxX_1;
+                            point._minX = pointMinX_1;
+                            point._maxY = pointMaxY_1;
+                            point._minY = pointMinY_1;
+                            point.labelrank = pick(point.labelrank, (pointMaxX_1 - pointMinX_1) * (pointMaxY_1 - pointMinY_1));
                             point._foundBox = true;
                         }
                         maxX = Math.max(maxX, point._maxX);
@@ -3163,7 +3229,7 @@
                 this.getBox(data);
                 // Pick up transform definitions for chart
                 this.chart.mapTransforms = mapTransforms =
-                    chartOptions && chartOptions.mapTransforms ||
+                    chartOptions.mapTransforms ||
                         mapData && mapData['hc-transform'] ||
                         mapTransforms;
                 // Cache cos/sin of transform rotation angle
@@ -4360,7 +4426,7 @@
 
         return BubblePoint;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Legend, palette, Series, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Chart, Color, F, H, Legend, O, palette, Series, U) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -4374,6 +4440,7 @@
          * */
         var color = Color.parse;
         var noop = H.noop;
+        var setOptions = O.setOptions;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
@@ -4381,7 +4448,6 @@
             merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
-            setOptions = U.setOptions,
             stableSort = U.stableSort,
             wrap = U.wrap;
         /**
@@ -4550,9 +4616,9 @@
                          */
                         style: {
                             /** @ignore-option */
-                            fontSize: 10,
+                            fontSize: '10px',
                             /** @ignore-option */
-                            color: void 0
+                            color: palette.neutralColor100
                         },
                         /**
                          * The x position offset of the label relative to the
@@ -4729,7 +4795,7 @@
                     maxLabel,
                     connectorDistance = options.connectorDistance;
                 // Predict label dimensions
-                this.fontMetrics = chart.renderer.fontMetrics(options.labels.style.fontSize.toString() + 'px');
+                this.fontMetrics = chart.renderer.fontMetrics(options.labels.style.fontSize);
                 // Do not create bubbleLegend now if ranges or ranges valeus are not
                 // specified or if are empty array.
                 if (!ranges || !ranges.length || !isNumber(ranges[0].value)) {
@@ -4769,26 +4835,30 @@
                     options = this.options,
                     series = this.chart.series[options.seriesIndex],
                     baseline = this.legend.baseline,
-                    bubbleStyle = {
-                        'z-index': options.zIndex,
+                    bubbleAttribs = {
+                        zIndex: options.zIndex,
                         'stroke-width': options.borderWidth
                     },
-                    connectorStyle = {
-                        'z-index': options.zIndex,
+                    connectorAttribs = {
+                        zIndex: options.zIndex,
                         'stroke-width': options.connectorWidth
                     },
-                    labelStyle = this.getLabelStyles(),
+                    labelAttribs = {
+                        align: (this.legend.options.rtl ||
+                            options.labels.align === 'left') ? 'right' : 'left',
+                        zIndex: options.zIndex
+                    },
                     fillOpacity = series.options.marker.fillOpacity,
                     styledMode = this.chart.styledMode;
                 // Allow to parts of styles be used individually for range
                 ranges.forEach(function (range, i) {
                     if (!styledMode) {
-                        bubbleStyle.stroke = pick(range.borderColor, options.borderColor, series.color);
-                        bubbleStyle.fill = pick(range.color, options.color, fillOpacity !== 1 ?
+                        bubbleAttribs.stroke = pick(range.borderColor, options.borderColor, series.color);
+                        bubbleAttribs.fill = pick(range.color, options.color, fillOpacity !== 1 ?
                             color(series.color).setOpacity(fillOpacity)
                                 .get('rgba') :
                             series.color);
-                        connectorStyle.stroke = pick(range.connectorColor, options.connectorColor, series.color);
+                        connectorAttribs.stroke = pick(range.connectorColor, options.connectorColor, series.color);
                     }
                     // Set options needed for rendering each range
                     ranges[i].radius = this.getRangeRadius(range.value);
@@ -4798,39 +4868,12 @@
                     });
                     if (!styledMode) {
                         merge(true, ranges[i], {
-                            bubbleStyle: merge(false, bubbleStyle),
-                            connectorStyle: merge(false, connectorStyle),
-                            labelStyle: labelStyle
+                            bubbleAttribs: merge(bubbleAttribs),
+                            connectorAttribs: merge(connectorAttribs),
+                            labelAttribs: labelAttribs
                         });
                     }
                 }, this);
-            };
-            /**
-             * Merge options for bubbleLegend labels.
-             *
-             * @private
-             * @function Highcharts.BubbleLegend#getLabelStyles
-             * @return {Highcharts.CSSObject}
-             */
-            BubbleLegend.prototype.getLabelStyles = function () {
-                var options = this.options,
-                    additionalLabelsStyle = {},
-                    labelsOnLeft = options.labels.align === 'left',
-                    rtl = this.legend.options.rtl;
-                // To separate additional style options
-                objectEach(options.labels.style, function (value, key) {
-                    if (key !== 'color' &&
-                        key !== 'fontSize' &&
-                        key !== 'z-index') {
-                        additionalLabelsStyle[key] = value;
-                    }
-                });
-                return merge(false, additionalLabelsStyle, {
-                    'font-size': options.labels.style.fontSize,
-                    fill: pick(options.labels.style.color, palette.neutralColor100),
-                    'z-index': options.zIndex,
-                    align: rtl || labelsOnLeft ? 'right' : 'left'
-                });
             };
             /**
              * Calculate radius for each bubble range,
@@ -4901,6 +4944,7 @@
                     options = this.options,
                     labelsOptions = options.labels,
                     chart = this.chart,
+                    bubbleSeries = chart.series[options.seriesIndex],
                     renderer = chart.renderer,
                     symbols = this.symbols,
                     labels = symbols.labels,
@@ -4910,7 +4954,6 @@
                     connectorDistance = options.connectorDistance || 0,
                     labelsAlign = labelsOptions.align,
                     rtl = legend.options.rtl,
-                    fontSize = labelsOptions.style.fontSize,
                     connectorLength = rtl || labelsAlign === 'left' ?
                         -connectorDistance : connectorDistance,
                     borderWidth = options.borderWidth,
@@ -4921,7 +4964,8 @@
                     labelY,
                     labelX,
                     fontMetrics = this.fontMetrics,
-                    labelMovement = fontSize / 2 - (fontMetrics.h - fontSize) / 2,
+                    labelMovement = fontMetrics.f / 2 -
+                        (fontMetrics.h - fontMetrics.f) / 2,
                     crispMovement = (posY % 1 ? 1 : 0.5) -
                         (connectorWidth % 2 ? 0 : 0.5),
                     styledMode = renderer.styledMode;
@@ -4929,17 +4973,17 @@
                 if (labelsAlign === 'center') {
                     connectorLength = 0; // do not use connector
                     options.connectorDistance = 0;
-                    range.labelStyle.align = 'center';
+                    range.labelAttribs.align = 'center';
                 }
                 labelY = posY + options.labels.y;
                 labelX = posX + connectorLength + options.labels.x;
                 // Render bubble symbol
                 symbols.bubbleItems.push(renderer
                     .circle(posX, elementCenter + crispMovement, absoluteRadius)
-                    .attr(styledMode ? {} : range.bubbleStyle)
+                    .attr(styledMode ? {} : range.bubbleAttribs)
                     .addClass((styledMode ?
                     'highcharts-color-' +
-                        this.options.seriesIndex + ' ' :
+                        bubbleSeries.colorIndex + ' ' :
                     '') +
                     'highcharts-bubble-legend-symbol ' +
                     (options.className || '')).add(this.legendSymbol));
@@ -4949,7 +4993,7 @@
                     ['M', posX, posY],
                     ['L', posX + connectorLength, posY]
                 ], options.connectorWidth))
-                    .attr(styledMode ? {} : range.connectorStyle)
+                    .attr((styledMode ? {} : range.connectorAttribs))
                     .addClass((styledMode ?
                     'highcharts-color-' +
                         this.options.seriesIndex + ' ' : '') +
@@ -4958,7 +5002,8 @@
                 // Render label
                 label = renderer
                     .text(this.formatLabel(range), labelX, labelY + labelMovement)
-                    .attr(styledMode ? {} : range.labelStyle)
+                    .attr((styledMode ? {} : range.labelAttribs))
+                    .css(styledMode ? {} : labelsOptions.style)
                     .addClass('highcharts-bubble-legend-labels ' +
                     (options.labels.className || '')).add(this.legendSymbol);
                 labels.push(label);
@@ -5007,7 +5052,7 @@
                     formatter = options.labels.formatter,
                     format = options.labels.format;
                 var numberFormatter = this.chart.numberFormatter;
-                return format ? U.format(format, range) :
+                return format ? F.format(format, range) :
                     formatter ? formatter.call(range) :
                         numberFormatter(range.value, 1);
             };
@@ -5083,7 +5128,7 @@
                 // Merge ranges values with user options
                 ranges.forEach(function (range, i) {
                     if (rangesOptions && rangesOptions[i]) {
-                        ranges[i] = merge(false, rangesOptions[i], range);
+                        ranges[i] = merge(rangesOptions[i], range);
                     }
                 });
                 return ranges;
@@ -6575,7 +6620,7 @@
         }(ScatterPoint));
         extend(HeatmapPoint.prototype, {
             dataLabelOnNull: colorMapPointMixin.dataLabelOnNull,
-            setState: colorMapPointMixin.setState
+            moveToTopOnHover: colorMapPointMixin.moveToTopOnHover
         });
         /* *
          *
@@ -6730,8 +6775,7 @@
                 this.yAxis.axisPointRange = options.rowsize || 1;
                 // Bind new symbol names
                 extend(symbols, {
-                    ellipse: symbols.circle,
-                    rect: symbols.square
+                    ellipse: symbols.circle
                 });
             };
             /**
@@ -6764,8 +6808,10 @@
                             shapeArgs[dimension[0]]) + (pointStateOptions[dimension[0] + 'Plus'] ||
                             seriesStateOptions[dimension[0] + 'Plus'] || 0);
                         // Align marker by a new size.
-                        attribs[dimension[1]] = shapeArgs[dimension[1]] +
-                            (shapeArgs[dimension[0]] - attribs[dimension[0]]) / 2;
+                        attribs[dimension[1]] =
+                            shapeArgs[dimension[1]] +
+                                (shapeArgs[dimension[0]] -
+                                    attribs[dimension[0]]) / 2;
                     });
                 }
                 return state ? attribs : shapeArgs;
@@ -6823,7 +6869,7 @@
                 if (series.options.clip !== false || animation) {
                     series.markerGroup
                         .clip((animation || series.clipBox) && series.sharedClipKey ?
-                        chart[series.sharedClipKey] :
+                        chart.sharedClips[series.sharedClipKey] :
                         chart.clipRect);
                 }
             };
@@ -6831,21 +6877,18 @@
              * @private
              */
             HeatmapSeries.prototype.translate = function () {
-                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || '', shape = symbols[symbol] ? symbol : 'rect', options = series.options, hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || '', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
                 series.generatePoints();
                 series.points.forEach(function (point) {
                     var pointAttr,
                         sizeDiff,
                         hasImage,
                         cellAttr = point.getCellAttributes(),
-                        shapeArgs = {
-                            x: Math.min(cellAttr.x1,
-                        cellAttr.x2),
-                            y: Math.min(cellAttr.y1,
-                        cellAttr.y2),
-                            width: Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0),
-                            height: Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0)
-                        };
+                        shapeArgs = {};
+                    shapeArgs.x = Math.min(cellAttr.x1, cellAttr.x2);
+                    shapeArgs.y = Math.min(cellAttr.y1, cellAttr.y2);
+                    shapeArgs.width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0);
+                    shapeArgs.height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
                     hasImage = point.hasImage =
                         (point.marker && point.marker.symbol || symbol || '')
                             .indexOf('url') === 0;
@@ -7158,14 +7201,8 @@
              * @private
              */
             drawLegendSymbol: LegendSymbolMixin.drawRectangle,
-            /**
-             * @ignore
-             * @deprecated
-             */
-            getBox: noop,
             getExtremesFromAll: true,
             getSymbol: Series.prototype.getSymbol,
-            hasPointSpecificOptions: true,
             parallelArrays: colorMapSeriesMixin.parallelArrays,
             pointArrayMap: ['y', 'value'],
             pointClass: HeatmapPoint,
@@ -7542,7 +7579,7 @@
 
         return HeatmapSeries;
     });
-    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, H, U) {
+    _registerModule(_modules, 'Extensions/GeoJSON.js', [_modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Chart, F, H, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -7552,10 +7589,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var format = F.format;
         var win = H.win;
         var error = U.error,
             extend = U.extend,
-            format = U.format,
             merge = U.merge,
             wrap = U.wrap;
         /**
@@ -7747,8 +7784,9 @@
              * @product    highmaps
              * @apioption  chart.proj4
              */
-            var _a;
-            var proj4 = (((_a = this.userOptions.chart) === null || _a === void 0 ? void 0 : _a.proj4) || win.proj4);
+            var proj4 = (this.userOptions.chart &&
+                    this.userOptions.chart.proj4 ||
+                    win.proj4);
             if (!proj4) {
                 error(21, false, this);
                 return {
@@ -8027,8 +8065,11 @@
         });
 
     });
-    _registerModule(_modules, 'masters/modules/map.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/map.src.js', [_modules['Core/Globals.js'], _modules['Core/Chart/MapChart.js']], function (Highcharts, MapChart) {
 
+        Highcharts.MapChart = MapChart;
+        Highcharts.mapChart = Highcharts.Map = MapChart.mapChart;
+        Highcharts.maps = MapChart.maps;
 
     });
 }));

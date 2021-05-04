@@ -22,7 +22,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
-var _a = SeriesRegistry.seriesTypes, SMAIndicator = _a.sma, LinearRegressionIndicator = _a.linearRegression;
+var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
 import U from '../../../Core/Utilities.js';
 var extend = U.extend, merge = U.merge;
 /* *
@@ -85,7 +85,7 @@ var LinearRegressionAngleIndicator = /** @class */ (function (_super) {
      * @requires     stock/indicators/linearregressionangle
      * @optionparent plotOptions.linearregressionangle
      */
-    LinearRegressionAngleIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+    LinearRegressionAngleIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions, {
         tooltip: {
             pointFormat: '<span style="color:{point.color}">\u25CF</span>' +
                 '{series.name}: <b>{point.y}°</b><br/>'

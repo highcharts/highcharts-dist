@@ -135,7 +135,7 @@ var HeatmapPoint = /** @class */ (function (_super) {
 }(ScatterPoint));
 extend(HeatmapPoint.prototype, {
     dataLabelOnNull: colorMapPointMixin.dataLabelOnNull,
-    setState: colorMapPointMixin.setState
+    moveToTopOnHover: colorMapPointMixin.moveToTopOnHover
 });
 /* *
  *

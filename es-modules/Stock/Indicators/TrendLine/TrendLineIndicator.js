@@ -109,6 +109,7 @@ var TrendLineIndicator = /** @class */ (function (_super) {
          * @excluding period
          */
         params: {
+            period: void 0,
             /**
              * The point index which indicator calculations will base. For
              * example using OHLC data, index=2 means the indicator will be

@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Sebastian Bochan
  *
@@ -57,6 +57,7 @@
         var defined = U.defined,
             extend = U.extend,
             isArray = U.isArray,
+            isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach;
         /* eslint-disable require-jsdoc */
@@ -109,8 +110,8 @@
                     sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
                     sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
                     // First degree Bézier parameters
-                    u,
-                    t;
+                    u = void 0,
+                    t = void 0;
                 u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY);
                 t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
                 if (u >= 0 && u <= 1 && t >= 0 && t <= 1) {
@@ -238,15 +239,16 @@
                 var indicator = this;
                 SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
                 indicator.points.forEach(function (point) {
-                    indicator.pointArrayMap.forEach(function (value) {
-                        if (defined(point[value])) {
-                            point['plot' + value] = indicator.yAxis.toPixels(point[value], true);
+                    indicator.pointArrayMap.forEach(function (key) {
+                        var pointValue = point[key];
+                        if (isNumber(pointValue)) {
+                            point['plot' + key] = indicator.yAxis.toPixels(pointValue, true);
                             // Add extra parameters for support tooltip in moved
                             // lines
-                            point.plotY = point['plot' + value];
+                            point.plotY = point['plot' + key];
                             point.tooltipPos = [
                                 point.plotX,
-                                point['plot' + value]
+                                point['plot' + key]
                             ];
                             point.isNull = false;
                         }
@@ -594,7 +596,11 @@
              * @optionparent plotOptions.ikh
              */
             IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * @excluding index
+                 */
                 params: {
+                    index: void 0,
                     period: 26,
                     /**
                      * The base period for Tenkan calculations.

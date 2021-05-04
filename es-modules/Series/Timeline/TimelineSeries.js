@@ -374,7 +374,7 @@ var TimelineSeries = /** @class */ (function (_super) {
             /**
              * @type    {Highcharts.TimelineDataLabelsFormatterCallbackFunction}
              * @default function () {
-             *   var format;
+             *   let format;
              *
              *   if (!this.series.chart.styledMode) {
              *       format = '<span style="color:' + this.point.color +

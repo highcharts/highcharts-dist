@@ -119,12 +119,12 @@ var Funnel3DSeries = /** @class */ (function (_super) {
         extend(this.xAxis.options, {
             gridLineWidth: 0,
             lineWidth: 0,
-            title: null,
+            title: void 0,
             tickPositions: []
         });
-        extend(this.yAxis.options, {
+        merge(true, this.yAxis.options, {
             gridLineWidth: 0,
-            title: null,
+            title: void 0,
             labels: {
                 enabled: false
             }
@@ -140,7 +140,7 @@ var Funnel3DSeries = /** @class */ (function (_super) {
         //
         y1, y3, y5, 
         //
-        h, shapeArgs;
+        h, shapeArgs; // @todo: Type it. It's an extended SVGAttributes.
         // Return the width at a specific y coordinate
         series.getWidthAt = getWidthAt = function (y) {
             var top = (centerY - height / 2);
@@ -252,7 +252,7 @@ var Funnel3DSeries = /** @class */ (function (_super) {
                 x: centerX,
                 width: getWidthAt(point.plotY),
                 y: y1,
-                bottom: shapeArgs.height,
+                bottom: shapeArgs.height || 0,
                 fullWidth: width
             };
             if (!ignoreHiddenPoint || point.visible !== false) {

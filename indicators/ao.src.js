@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Wojciech Chmiel
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/AO/AOIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/AO/AOIndicator.js', [_modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Color/Palette.js']], function (H, SeriesRegistry, U, palette) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -194,6 +194,11 @@
              * @optionparent plotOptions.ao
              */
             AOIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                params: {
+                    // Index and period are unchangeable, do not inherit (#15362)
+                    index: void 0,
+                    period: void 0
+                },
                 /**
                  * Color of the Awesome oscillator series bar that is greater than the
                  * previous one. Note that if a `color` is defined, the `color`
@@ -205,7 +210,7 @@
                  * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @since 7.0.0
                  */
-                greaterBarColor: '#06B535',
+                greaterBarColor: palette.positiveColor,
                 /**
                  * Color of the Awesome oscillator series bar that is lower than the
                  * previous one. Note that if a `color` is defined, the `color`
@@ -217,7 +222,7 @@
                  * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @since 7.0.0
                  */
-                lowerBarColor: '#F21313',
+                lowerBarColor: palette.negativeColor,
                 threshold: 0,
                 groupPadding: 0.2,
                 pointPadding: 0.2,

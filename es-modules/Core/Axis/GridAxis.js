@@ -23,9 +23,11 @@ var argsToArray = function (args) {
 var applyGridOptions = function applyGridOptions(axis) {
     var options = axis.options;
     // Center-align by default
+    /*
     if (!options.labels) {
         options.labels = {};
     }
+    */
     options.labels.align = pick(options.labels.align, 'center');
     // @todo: Check against tickLabelPlacement between/on etc
     /* Prevents adding the last tick label if the axis is not a category
@@ -260,6 +262,32 @@ addEvent(Tick, 'afterGetLabelPosition', function (e) {
         e.pos.x += (axis.horiz && labelOpts.x || 0);
     }
 });
+addEvent(Tick, 'labelFormat', function (ctx) {
+    var axis = ctx.axis, value = ctx.value;
+    if (axis.options.grid &&
+        axis.options.grid.enabled) {
+        var tickPos = axis.tickPositions;
+        var series = (axis.linkedParent || axis).series[0];
+        var isFirst = value === tickPos[0];
+        var isLast = value === tickPos[tickPos.length - 1];
+        var point = series && find(series.options.data, function (p) {
+            return p[axis.isXAxis ? 'x' : 'y'] === value;
+        });
+        var pointCopy = void 0;
+        if (point && series.is('gantt')) {
+            // For the Gantt set point aliases to the pointCopy
+            // to do not change the original point
+            pointCopy = merge(point);
+            H.seriesTypes.gantt.prototype.pointClass
+                .setGanttPointAliases(pointCopy);
+        }
+        // Make additional properties available for the
+        // formatter
+        ctx.isFirst = isFirst;
+        ctx.isLast = isLast;
+        ctx.point = pointCopy;
+    }
+});
 /* eslint-enable no-invalid-this */
 /**
  * Additions for grid axes.
@@ -394,14 +422,13 @@ var GridAxis = /** @class */ (function () {
         var gridOptions = options.grid || {};
         if (gridOptions.enabled === true) {
             // compute anchor points for each of the title align options
-            var title = axis.axisTitle, axisHeight = axis.height, horiz = axis.horiz, axisLeft = axis.left, offset = axis.offset, opposite = axis.opposite, _a = axis.options.title, axisTitleOptions = _a === void 0 ? {} : _a, axisTop = axis.top, axisWidth = axis.width;
+            var axisTitle = axis.axisTitle, axisHeight = axis.height, horiz = axis.horiz, axisLeft = axis.left, offset = axis.offset, opposite = axis.opposite, options_1 = axis.options, axisTop = axis.top, axisWidth = axis.width;
             var tickSize = axis.tickSize();
-            var titleWidth = title && title.getBBox().width;
-            var xOption = axisTitleOptions.x || 0;
-            var yOption = axisTitleOptions.y || 0;
-            var titleMargin = pick(axisTitleOptions.margin, horiz ? 5 : 10);
-            var titleFontSize = axis.chart.renderer.fontMetrics(axisTitleOptions.style &&
-                axisTitleOptions.style.fontSize, title).f;
+            var titleWidth = axisTitle && axisTitle.getBBox().width;
+            var xOption = options_1.title.x;
+            var yOption = options_1.title.y;
+            var titleMargin = pick(options_1.title.margin, horiz ? 5 : 10);
+            var titleFontSize = axis.chart.renderer.fontMetrics(options_1.title.style.fontSize, axisTitle).f;
             var crispCorr = tickSize ? tickSize[0] / 2 : 0;
             // TODO account for alignment
             // the position in the perpendicular direction of the axis
@@ -411,7 +438,7 @@ var GridAxis = /** @class */ (function () {
                     crispCorr +
                 (axis.side === GridAxis.Side.bottom ? titleFontSize : 0));
             e.titlePosition.x = horiz ?
-                axisLeft - titleWidth / 2 - titleMargin + xOption :
+                axisLeft - (titleWidth || 0) / 2 - titleMargin + xOption :
                 offAxis + (opposite ? axisWidth : 0) + offset + xOption;
             e.titlePosition.y = horiz ?
                 (offAxis -
@@ -430,35 +457,6 @@ var GridAxis = /** @class */ (function () {
         var chart = axis.chart, _a = axis.options.grid, gridOptions = _a === void 0 ? {} : _a, userOptions = axis.userOptions;
         if (gridOptions.enabled) {
             applyGridOptions(axis);
-            /* eslint-disable no-invalid-this */
-            // TODO: wrap the axis instead
-            wrap(axis, 'labelFormatter', function (proceed) {
-                var _a = this, axis = _a.axis, value = _a.value;
-                var tickPos = axis.tickPositions;
-                var series = (axis.isLinked ?
-                    axis.linkedParent :
-                    axis).series[0];
-                var isFirst = value === tickPos[0];
-                var isLast = value === tickPos[tickPos.length - 1];
-                var point = series && find(series.options.data, function (p) {
-                    return p[axis.isXAxis ? 'x' : 'y'] === value;
-                });
-                var pointCopy;
-                if (point && series.is('gantt')) {
-                    // For the Gantt set point aliases to the pointCopy
-                    // to do not change the original point
-                    pointCopy = merge(point);
-                    H.seriesTypes.gantt.prototype.pointClass.setGanttPointAliases(pointCopy);
-                }
-                // Make additional properties available for the
-                // formatter
-                this.isFirst = isFirst;
-                this.isLast = isLast;
-                this.point = pointCopy;
-                // Call original labelFormatter
-                return proceed.call(this);
-            });
-            /* eslint-enable no-invalid-this */
         }
         if (gridOptions.columns) {
             var columns = axis.grid.columns = [], columnIndex = axis.grid.columnIndex = 0;
@@ -499,7 +497,6 @@ var GridAxis = /** @class */ (function () {
      * @private
      */
     GridAxis.onAfterRender = function () {
-        var _a;
         var axis = this, grid = axis.grid, options = axis.options, gridOptions = options.grid || {};
         if (gridOptions.enabled === true) {
             // @todo acutual label padding (top, bottom, left, right)
@@ -576,7 +573,10 @@ var GridAxis = /** @class */ (function () {
             });
             // Manipulate the tick mark visibility
             // based on the axis.max- allows smooth scrolling.
-            if (!axis.horiz && axis.chart.hasRendered && (axis.scrollbar || ((_a = axis.linkedParent) === null || _a === void 0 ? void 0 : _a.scrollbar))) {
+            if (!axis.horiz &&
+                axis.chart.hasRendered &&
+                (axis.scrollbar ||
+                    (axis.linkedParent && axis.linkedParent.scrollbar))) {
                 var max = axis.max, min = axis.min, tickmarkOffset = axis.tickmarkOffset, lastTick = axis.tickPositions[axis.tickPositions.length - 1], firstTick = axis.tickPositions[0];
                 // Hide/show firts tick label.
                 if (min - firstTick > tickmarkOffset) {
@@ -605,7 +605,6 @@ var GridAxis = /** @class */ (function () {
      * @private
      */
     GridAxis.onAfterSetAxisTranslation = function () {
-        var _a;
         var axis = this;
         var tickInfo = axis.tickPositions && axis.tickPositions.info;
         var options = axis.options;
@@ -637,7 +636,9 @@ var GridAxis = /** @class */ (function () {
             else {
                 // Don't trim ticks which not in min/max range but
                 // they are still in the min/max plus tickInterval.
-                if (this.options.type !== 'treegrid' && ((_a = axis.grid) === null || _a === void 0 ? void 0 : _a.columns)) {
+                if (this.options.type !== 'treegrid' &&
+                    axis.grid &&
+                    axis.grid.columns) {
                     this.minPointOffset = this.tickInterval;
                 }
             }
@@ -739,7 +740,7 @@ var GridAxis = /** @class */ (function () {
                             this.linkedParent.tickPositions &&
                             this.linkedParent.tickPositions.info);
                         if (parentInfo) {
-                            var unitIdx, count, unitName, i, units = gridAxisOptions.units, unitRange;
+                            var unitIdx = void 0, count = void 0, unitName = void 0, i = void 0, units = gridAxisOptions.units, unitRange = void 0;
                             for (i = 0; i < units.length; i++) {
                                 if (units[i][0] ===
                                     parentInfo.unitName) {
@@ -787,7 +788,8 @@ var GridAxis = /** @class */ (function () {
             // If borderWidth is set, then use its value for tick and
             // line width.
             if (isNumber(options.grid.borderWidth)) {
-                options.tickWidth = options.lineWidth = gridOptions.borderWidth;
+                options.tickWidth = options.lineWidth =
+                    gridOptions.borderWidth;
             }
         }
     };

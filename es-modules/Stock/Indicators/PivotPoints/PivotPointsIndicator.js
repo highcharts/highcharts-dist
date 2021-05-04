@@ -253,6 +253,7 @@ var PivotPointsIndicator = /** @class */ (function (_super) {
          * @excluding index
          */
         params: {
+            index: void 0,
             period: 28,
             /**
              * Algorithm used to calculate ressistance and support lines based

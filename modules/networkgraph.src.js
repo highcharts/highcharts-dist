@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Force directed graph module
  *
@@ -1429,7 +1429,7 @@
                 */
                 // Exponential:
                 /*
-                var alpha = 0.1;
+                let alpha = 0.1;
                 layout.temperature = Math.sqrt(layout.nodes.length) *
                     Math.pow(alpha, layout.diffTemperature);
                 */
@@ -1591,8 +1591,8 @@
                         normalizedEvent = chart.pointer.normalize(event),
                         diffX = point.fixedPosition.chartX - normalizedEvent.chartX,
                         diffY = point.fixedPosition.chartY - normalizedEvent.chartY,
-                        newPlotX,
-                        newPlotY,
+                        newPlotX = void 0,
+                        newPlotY = void 0,
                         graphLayoutsLookup = chart.graphLayoutsLookup;
                     // At least 5px to apply change (avoids simple click):
                     if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
@@ -2169,7 +2169,7 @@
              */
             forces: ['barycenter', 'repulsive', 'attractive'],
             hasDraggableNodes: true,
-            drawGraph: null,
+            drawGraph: void 0,
             isCartesian: false,
             requireSorting: false,
             directTouch: true,
@@ -2178,7 +2178,7 @@
             trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
             drawTracker: seriesTypes.column.prototype.drawTracker,
             // Animation is run in `series.simulation`.
-            animate: null,
+            animate: void 0,
             buildKDTree: H.noop,
             /**
              * Create a single node that holds information on incoming and outgoing
@@ -2199,11 +2199,19 @@
              * @private
              */
             init: function () {
+                var _this = this;
                 Series.prototype.init.apply(this, arguments);
                 addEvent(this, 'updatedData', function () {
-                    if (this.layout) {
-                        this.layout.stop();
+                    if (_this.layout) {
+                        _this.layout.stop();
                     }
+                });
+                addEvent(this, 'afterUpdate', function () {
+                    _this.nodes.forEach(function (node) {
+                        if (node && node.series) {
+                            node.resolveColor();
+                        }
+                    });
                 });
                 return this;
             },
@@ -2274,7 +2282,7 @@
                 if (!defined(point.plotY)) {
                     attribs.y = 0;
                 }
-                attribs.x = (point.plotX || 0) - (attribs.width / 2 || 0);
+                attribs.x = (point.plotX || 0) - (attribs.width || 0) / 2;
                 return attribs;
             },
             /**
@@ -2540,6 +2548,7 @@
                 if (!this.graphic) {
                     this.graphic = this.series.chart.renderer
                         .path(this.getLinkPath())
+                        .addClass(this.getClassName(), true)
                         .add(this.series.group);
                     if (!this.series.chart.styledMode) {
                         attribs = this.series.pointAttribs(this);

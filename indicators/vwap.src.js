@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Paweł Dalek
  *
@@ -33,7 +33,7 @@
          *
          *  (c) 2010-2021 Paweł Dalek
          *
-         *  Volume Weighted Average Price (VWAP) indicator for Highstock
+         *  Volume Weighted Average Price (VWAP) indicator for Highcharts Stock
          *
          *  License: www.highcharts.com/license
          *
@@ -199,6 +199,7 @@
                  * @excluding index
                  */
                 params: {
+                    index: void 0,
                     period: 30,
                     /**
                      * The id of volume series which is mandatory. For example using

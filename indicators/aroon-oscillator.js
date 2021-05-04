@@ -1,7 +1,7 @@
 /*
- Highstock JS v9.0.1 (2021-02-15)
+ Highstock JS v9.1.0 (2021-05-03)
 
- Indicator series type for Highstock
+ Indicator series type for Highcharts Stock
 
  (c) 2010-2021 Wojciech Chmiel
 
@@ -13,6 +13,6 @@ arguments);a.points.forEach(function(g){c.forEach(function(b,l){k=g[b];null!==k&
 b+' in DOCS options declared. Check if linesApiNames are consistent with your DOCS line names." at mixin/multiple-line.js:34'),a.graph=a["graph"+b],h.prototype.drawGraph.call(a),a["graph"+b]=a.graph):c('Error: "'+b+" doesn't have equivalent in pointArrayMap. To many elements in linesApiNames relative to pointArrayMap.\"")});a.points=d;a.options=p;a.graph=b;h.prototype.drawGraph.call(a)}}});e(a,"Mixins/IndicatorRequired.js",[a["Core/Utilities.js"]],function(a){var f=a.error;return{isParentLoaded:function(a,
 c,e,h,g){if(a)return h?h(a):!0;f(g||this.generateMessage(e,c));return!1},generateMessage:function(a,c){return'Error: "'+a+'" indicator type requires "'+c+'" indicator loaded before. Please read docs: https://api.highcharts.com/highstock/plotOptions.'+a}}});e(a,"Stock/Indicators/AroonOscillator/AroonOscillatorIndicator.js",[a["Mixins/MultipleLines.js"],a["Mixins/IndicatorRequired.js"],a["Core/Series/SeriesRegistry.js"],a["Core/Utilities.js"]],function(a,f,e,c){var m=this&&this.__extends||function(){var a=
 function(d,b){a=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(a,b){a.__proto__=b}||function(a,b){for(var d in b)b.hasOwnProperty(d)&&(a[d]=b[d])};return a(d,b)};return function(d,b){function l(){this.constructor=d}a(d,b);d.prototype=null===b?Object.create(b):(l.prototype=b.prototype,new l)}}(),h=e.seriesTypes.aroon,g=c.extend,r=c.merge,d=e.seriesTypes.aroon;c=function(a){function c(){var b=null!==a&&a.apply(this,arguments)||this;b.data=void 0;b.options=void 0;b.points=void 0;return b}
-m(c,a);c.prototype.getValues=function(a,c){var b=[],e=[],f=[];a=d.prototype.getValues.call(this,a,c);for(c=0;c<a.yData.length;c++){var g=a.yData[c][0];var h=a.yData[c][1];g-=h;b.push([a.xData[c],g]);e.push(a.xData[c]);f.push(g)}return{values:b,xData:e,yData:f}};c.prototype.init=function(){var a=arguments,c=this;f.isParentLoaded(d,"aroon",c.type,function(b){b.prototype.init.apply(c,a)})};c.defaultOptions=r(h.defaultOptions,{params:{period:25},tooltip:{pointFormat:'<span style="color:{point.color}">\u25cf</span><b> {series.name}</b>: {point.y}'}});
+m(c,a);c.prototype.getValues=function(a,c){var b=[],e=[],f=[];a=d.prototype.getValues.call(this,a,c);for(c=0;c<a.yData.length;c++){var g=a.yData[c][0];var h=a.yData[c][1];g-=h;b.push([a.xData[c],g]);e.push(a.xData[c]);f.push(g)}return{values:b,xData:e,yData:f}};c.prototype.init=function(){var a=arguments,c=this;f.isParentLoaded(d,"aroon",c.type,function(b){b.prototype.init.apply(c,a)})};c.defaultOptions=r(h.defaultOptions,{tooltip:{pointFormat:'<span style="color:{point.color}">\u25cf</span><b> {series.name}</b>: {point.y}'}});
 return c}(h);g(c.prototype,r(a,{nameBase:"Aroon Oscillator",pointArrayMap:["y"],pointValKey:"y",linesApiNames:[]}));e.registerSeriesType("aroonoscillator",c);"";return c});e(a,"masters/indicators/aroon-oscillator.src.js",[],function(){})});
 //# sourceMappingURL=aroon-oscillator.js.map

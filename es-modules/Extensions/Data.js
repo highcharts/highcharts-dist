@@ -1118,7 +1118,7 @@ var Data = /** @class */ (function () {
                 options.dateFormat = deduceDateFormat(columns[0]);
             }
             // lines.forEach(function (line, rowNo) {
-            //    var trimmed = self.trim(line),
+            //    let trimmed = self.trim(line),
             //        isComment = trimmed.indexOf('#') === 0,
             //        isBlank = trimmed === '',
             //        items;

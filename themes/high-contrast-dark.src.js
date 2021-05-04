@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * (c) 2009-2021 Highsoft AS
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/HighContrastDark.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Extensions/Themes/HighContrastDark.js', [_modules['Core/Globals.js'], _modules['Core/Options.js']], function (H, O) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -42,7 +42,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var setOptions = U.setOptions;
+        var setOptions = O.setOptions;
         var textBright = '#F0F0F3';
         H.theme = {
             colors: [

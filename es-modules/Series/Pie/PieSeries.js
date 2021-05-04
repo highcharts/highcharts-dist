@@ -134,8 +134,7 @@ var PieSeries = /** @class */ (function (_super) {
                 this.graph.attr({
                     'stroke-width': options.borderWidth,
                     fill: options.fillColor || 'none',
-                    stroke: options.color ||
-                        palette.neutralColor20
+                    stroke: options.color || palette.neutralColor20
                 });
             }
         }
@@ -219,13 +218,14 @@ var PieSeries = /** @class */ (function (_super) {
             var animateTo = {};
             graphic = point.graphic;
             if (!point.isNull && graphic) {
+                var shadowGroup = void 0;
                 shapeArgs = point.shapeArgs;
                 // If the point is sliced, use special translation, else use
                 // plot area translation
                 groupTranslation = point.getTranslate();
                 if (!chart.styledMode) {
                     // Put the shadow behind all points
-                    var shadowGroup = point.shadowGroup;
+                    shadowGroup = point.shadowGroup;
                     if (shadow && !shadowGroup) {
                         shadowGroup = point.shadowGroup = renderer
                             .g('shadow')
@@ -307,8 +307,7 @@ var PieSeries = /** @class */ (function (_super) {
             }
             end = startAngleRad + (cumulative * circ);
             // set the shape
-            point.shapeType = 'arc';
-            point.shapeArgs = {
+            var shapeArgs = {
                 x: positions[0],
                 y: positions[1],
                 r: positions[2] / 2,
@@ -316,12 +315,14 @@ var PieSeries = /** @class */ (function (_super) {
                 start: Math.round(start * precision) / precision,
                 end: Math.round(end * precision) / precision
             };
+            point.shapeType = 'arc';
+            point.shapeArgs = shapeArgs;
             // Used for distance calculation for specific point.
             point.labelDistance = pick((point.options.dataLabels &&
                 point.options.dataLabels.distance), labelDistance);
             // Compute point.labelDistance if it's defined as percentage
             // of slice radius (#8854)
-            point.labelDistance = relativeLength(point.labelDistance, point.shapeArgs.r);
+            point.labelDistance = relativeLength(point.labelDistance, shapeArgs.r);
             // Saved for later dataLabels distance calculation.
             series.maxLabelDistance = Math.max(series.maxLabelDistance || 0, point.labelDistance);
             // The angle must stay within -90 and 270 (#2645)
@@ -956,7 +957,7 @@ var PieSeries = /** @class */ (function (_super) {
 extend(PieSeries.prototype, {
     axisTypes: [],
     directTouch: true,
-    drawGraph: null,
+    drawGraph: void 0,
     drawLegendSymbol: LegendSymbolMixin.drawRectangle,
     drawTracker: ColumnSeries.prototype.drawTracker,
     getCenter: CenteredSeriesMixin.getCenter,

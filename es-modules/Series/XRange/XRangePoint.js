@@ -25,9 +25,11 @@ var __extends = (this && this.__extends) || (function () {
 import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var ColumnSeries = SeriesRegistry.seriesTypes.column;
+import U from '../../Core/Utilities.js';
+var extend = U.extend;
 /* *
  *
- *  Declarations
+ *  Class
  *
  * */
 var XRangePoint = /** @class */ (function (_super) {
@@ -41,7 +43,6 @@ var XRangePoint = /** @class */ (function (_super) {
          * */
         _this.options = void 0;
         _this.series = void 0;
-        _this.tooltipDateKeys = ['x', 'x2'];
         return _this;
         /* eslint-enable valid-jsdoc */
     }
@@ -161,6 +162,9 @@ var XRangePoint = /** @class */ (function (_super) {
     };
     return XRangePoint;
 }(ColumnSeries.prototype.pointClass));
+extend(XRangePoint.prototype, {
+    tooltipDateKeys: ['x', 'x2']
+});
 /* *
  *
  *  Default Export

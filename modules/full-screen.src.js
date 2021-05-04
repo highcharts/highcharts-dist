@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Advanced Highstock tools
+ * Advanced Highcharts Stock tools
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Torstein Honsi
@@ -138,15 +138,13 @@
                 }
                 // Unbind event as it's necessary only before exiting from fullscreen.
                 if (fullscreen.unbindFullscreenEvent) {
-                    fullscreen.unbindFullscreenEvent();
+                    fullscreen.unbindFullscreenEvent = fullscreen.unbindFullscreenEvent();
                 }
                 chart.setSize(fullscreen.origWidth, fullscreen.origHeight, false);
                 fullscreen.origWidth = void 0;
                 fullscreen.origHeight = void 0;
-                if (optionsChart) {
-                    optionsChart.width = fullscreen.origWidthOption;
-                    optionsChart.height = fullscreen.origHeightOption;
-                }
+                optionsChart.width = fullscreen.origWidthOption;
+                optionsChart.height = fullscreen.origHeightOption;
                 fullscreen.origWidthOption = void 0;
                 fullscreen.origHeightOption = void 0;
                 fullscreen.isOpen = false;
@@ -176,11 +174,12 @@
                 fullscreen.origHeight = chart.chartHeight;
                 // Handle exitFullscreen() method when user clicks 'Escape' button.
                 if (fullscreen.browserProps) {
-                    fullscreen.unbindFullscreenEvent = addEvent(chart.container.ownerDocument, // chart's document
-                    fullscreen.browserProps.fullscreenChange, function () {
-                        // Handle lack of async of browser's fullScreenChange event.
-                        if (fullscreen.isOpen) {
-                            fullscreen.isOpen = false;
+                    var unbindChange_1 = addEvent(chart.container.ownerDocument, // chart's document
+                        fullscreen.browserProps.fullscreenChange,
+                        function () {
+                            // Handle lack of async of browser's fullScreenChange event.
+                            if (fullscreen.isOpen) {
+                                fullscreen.isOpen = false;
                             fullscreen.close();
                         }
                         else {
@@ -189,6 +188,12 @@
                             fullscreen.setButtonText();
                         }
                     });
+                    var unbindDestroy_1 = addEvent(chart, 'destroy',
+                        unbindChange_1);
+                    fullscreen.unbindFullscreenEvent = function () {
+                        unbindChange_1();
+                        unbindDestroy_1();
+                    };
                     var promise = chart.renderTo[fullscreen.browserProps.requestFullscreen]();
                     if (promise) {
                         // No dot notation because of IE8 compatibility
@@ -197,7 +202,6 @@
                             'Full screen is not supported inside a frame.');
                         });
                     }
-                    addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
                 }
             };
             /**
@@ -212,13 +216,17 @@
              * @return {void}
              */
             Fullscreen.prototype.setButtonText = function () {
-                var _a;
                 var chart = this.chart,
                     exportDivElements = chart.exportDivElements,
                     exportingOptions = chart.options.exporting,
-                    menuItems = (_a = exportingOptions === null || exportingOptions === void 0 ? void 0 : exportingOptions.buttons) === null || _a === void 0 ? void 0 : _a.contextButton.menuItems,
+                    menuItems = (exportingOptions &&
+                        exportingOptions.buttons &&
+                        exportingOptions.buttons.contextButton.menuItems),
                     lang = chart.options.lang;
-                if ((exportingOptions === null || exportingOptions === void 0 ? void 0 : exportingOptions.menuItemDefinitions) && (lang === null || lang === void 0 ? void 0 : lang.exitFullscreen) &&
+                if (exportingOptions &&
+                    exportingOptions.menuItemDefinitions &&
+                    lang &&
+                    lang.exitFullscreen &&
                     lang.viewFullscreen &&
                     menuItems &&
                     exportDivElements &&

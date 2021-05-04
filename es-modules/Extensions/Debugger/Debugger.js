@@ -8,10 +8,19 @@
  *
  * */
 'use strict';
-import H from '../Core/Globals.js';
-import Chart from '../Core/Chart/Chart.js';
-import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, isNumber = U.isNumber, setOptions = U.setOptions;
+import Chart from '../../Core/Chart/Chart.js';
+import ErrorMessages from './ErrorMessages.js';
+import H from '../../Core/Globals.js';
+var charts = H.charts;
+import O from '../../Core/Options.js';
+var setOptions = O.setOptions;
+import U from '../../Core/Utilities.js';
+var addEvent = U.addEvent, find = U.find, isNumber = U.isNumber;
+/* *
+ *
+ *  Compositions
+ *
+ * */
 setOptions({
     /**
      * @optionparent chart
@@ -31,10 +40,16 @@ setOptions({
     }
 });
 /* eslint-disable no-invalid-this */
-addEvent(Chart, 'displayError', function (e) {
-    var chart = this, code = e.code, msg, options = chart.options.chart, renderer = chart.renderer, chartWidth, chartHeight;
+addEvent(Highcharts, 'displayError', function (e) {
+    // Display error on the chart causing the error or the last created chart.
+    var chart = e.chart ||
+        find(charts.slice().reverse(), function (c) { return !!c; });
+    if (!chart) {
+        return;
+    }
+    var code = e.code, msg, options = chart.options.chart, renderer = chart.renderer, chartWidth, chartHeight;
     if (chart.errorElements) {
-        (chart.errorElements).forEach(function (el) {
+        chart.errorElements.forEach(function (el) {
             if (el) {
                 el.destroy();
             }
@@ -44,7 +59,7 @@ addEvent(Chart, 'displayError', function (e) {
         chart.errorElements = [];
         msg = isNumber(code) ?
             ('Highcharts error #' + code + ': ' +
-                H.errorMessages[code].text) :
+                ErrorMessages[code].text) :
             code;
         chartWidth = chart.chartWidth;
         chartHeight = chart.chartHeight;
@@ -71,7 +86,7 @@ addEvent(Chart, 'displayError', function (e) {
             zIndex: 10
         }).add();
         chart.errorElements[1].attr({
-            y: chartHeight - this.errorElements[1].getBBox().height
+            y: chartHeight - chart.errorElements[1].getBBox().height
         });
     }
 });
@@ -82,5 +97,5 @@ addEvent(Chart, 'beforeRedraw', function () {
             el.destroy();
         });
     }
-    this.errorElements = null;
+    delete this.errorElements;
 });

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Exporting module
  *
@@ -137,15 +137,13 @@
                 }
                 // Unbind event as it's necessary only before exiting from fullscreen.
                 if (fullscreen.unbindFullscreenEvent) {
-                    fullscreen.unbindFullscreenEvent();
+                    fullscreen.unbindFullscreenEvent = fullscreen.unbindFullscreenEvent();
                 }
                 chart.setSize(fullscreen.origWidth, fullscreen.origHeight, false);
                 fullscreen.origWidth = void 0;
                 fullscreen.origHeight = void 0;
-                if (optionsChart) {
-                    optionsChart.width = fullscreen.origWidthOption;
-                    optionsChart.height = fullscreen.origHeightOption;
-                }
+                optionsChart.width = fullscreen.origWidthOption;
+                optionsChart.height = fullscreen.origHeightOption;
                 fullscreen.origWidthOption = void 0;
                 fullscreen.origHeightOption = void 0;
                 fullscreen.isOpen = false;
@@ -175,11 +173,12 @@
                 fullscreen.origHeight = chart.chartHeight;
                 // Handle exitFullscreen() method when user clicks 'Escape' button.
                 if (fullscreen.browserProps) {
-                    fullscreen.unbindFullscreenEvent = addEvent(chart.container.ownerDocument, // chart's document
-                    fullscreen.browserProps.fullscreenChange, function () {
-                        // Handle lack of async of browser's fullScreenChange event.
-                        if (fullscreen.isOpen) {
-                            fullscreen.isOpen = false;
+                    var unbindChange_1 = addEvent(chart.container.ownerDocument, // chart's document
+                        fullscreen.browserProps.fullscreenChange,
+                        function () {
+                            // Handle lack of async of browser's fullScreenChange event.
+                            if (fullscreen.isOpen) {
+                                fullscreen.isOpen = false;
                             fullscreen.close();
                         }
                         else {
@@ -188,6 +187,12 @@
                             fullscreen.setButtonText();
                         }
                     });
+                    var unbindDestroy_1 = addEvent(chart, 'destroy',
+                        unbindChange_1);
+                    fullscreen.unbindFullscreenEvent = function () {
+                        unbindChange_1();
+                        unbindDestroy_1();
+                    };
                     var promise = chart.renderTo[fullscreen.browserProps.requestFullscreen]();
                     if (promise) {
                         // No dot notation because of IE8 compatibility
@@ -196,7 +201,6 @@
                             'Full screen is not supported inside a frame.');
                         });
                     }
-                    addEvent(chart, 'destroy', fullscreen.unbindFullscreenEvent);
                 }
             };
             /**
@@ -211,13 +215,17 @@
              * @return {void}
              */
             Fullscreen.prototype.setButtonText = function () {
-                var _a;
                 var chart = this.chart,
                     exportDivElements = chart.exportDivElements,
                     exportingOptions = chart.options.exporting,
-                    menuItems = (_a = exportingOptions === null || exportingOptions === void 0 ? void 0 : exportingOptions.buttons) === null || _a === void 0 ? void 0 : _a.contextButton.menuItems,
+                    menuItems = (exportingOptions &&
+                        exportingOptions.buttons &&
+                        exportingOptions.buttons.contextButton.menuItems),
                     lang = chart.options.lang;
-                if ((exportingOptions === null || exportingOptions === void 0 ? void 0 : exportingOptions.menuItemDefinitions) && (lang === null || lang === void 0 ? void 0 : lang.exitFullscreen) &&
+                if (exportingOptions &&
+                    exportingOptions.menuItemDefinitions &&
+                    lang &&
+                    lang.exitFullscreen &&
                     lang.viewFullscreen &&
                     menuItems &&
                     exportDivElements &&
@@ -631,14 +639,14 @@
             }
         });
         // Presentational attributes
-        merge(true, defaultOptions.navigation
+        merge(true, defaultOptions.navigation, 
         /**
          * A collection of options for buttons and menus appearing in the exporting
          * module.
          *
          * @optionparent navigation
          */
-        , {
+        {
             /**
              * CSS styles for the popup menu appearing by default when the export
              * icon is clicked. This menu is rendered in HTML.
@@ -1455,10 +1463,20 @@
                         options.series.push(seriesOptions);
                     }
                 });
-                // Assign an internal key to ensure a one-to-one mapping (#5924)
+                var colls = {};
                 chart.axes.forEach(function (axis) {
+                    // Assign an internal key to ensure a one-to-one mapping (#5924)
                     if (!axis.userOptions.internalKey) { // #6444
                         axis.userOptions.internalKey = uniqueKey();
+                    }
+                    if (!axis.options.isInternal) {
+                        if (!colls[axis.coll]) {
+                            colls[axis.coll] = true;
+                            options[axis.coll] = [];
+                        }
+                        options[axis.coll].push(merge(axis.userOptions, {
+                            visible: axis.visible
+                        }));
                     }
                 });
                 // generate the chart copy
@@ -1559,7 +1577,7 @@
              * @sample highcharts/members/chart-exportchart-custom-background/
              *         Different chart background in export
              * @sample stock/members/chart-exportchart/
-             *         Export with Highstock
+             *         Export with Highcharts Stock
              *
              * @function Highcharts.Chart#exportChart
              *
@@ -1797,7 +1815,9 @@
                             button.setState(0);
                         }
                         chart.openMenu = false;
-                        css(chart.renderTo, { overflow: 'hidden' }); // #10361
+                        // #10361, #9998
+                        css(chart.renderTo, { overflow: 'hidden' });
+                        css(chart.container, { overflow: 'hidden' });
                         U.clearTimeout(menu.hideTimer);
                         fireEvent(chart, 'exportMenuHidden');
                     };
@@ -1825,7 +1845,7 @@
                                 .menuItemDefinitions[item];
                         }
                         if (isObject(item, true)) {
-                            var element;
+                            var element = void 0;
                             if (item.separator) {
                                 element = createElement('hr', null, null, innerMenu);
                             }
@@ -1889,7 +1909,9 @@
                     menuStyle.top = (y + height - menuPadding) + 'px';
                 }
                 css(menu, menuStyle);
-                css(chart.renderTo, { overflow: '' }); // #10361
+                // #10361, #9998
+                css(chart.renderTo, { overflow: '' });
+                css(chart.container, { overflow: '' });
                 chart.openMenu = true;
                 fireEvent(chart, 'exportMenuShown');
             },
@@ -1920,7 +1942,7 @@
                     chart.exportDivElements = [];
                     chart.exportSVGElements = [];
                 }
-                if (btnOptions.enabled === false) {
+                if (btnOptions.enabled === false || !btnOptions.theme) {
                     return;
                 }
                 var attr = btnOptions.theme,
@@ -2193,7 +2215,8 @@
                         // If parent node has the same style, it gets inherited, no need
                         // to inline it. Top-level props should be diffed against parent
                         // (#7687).
-                        if ((parentStyles[prop] !== val || node.nodeName === 'svg') &&
+                        if ((parentStyles[prop] !== val ||
+                            node.nodeName === 'svg') &&
                             defaultStyles[node.nodeName][prop] !== val) {
                             // Attributes
                             if (!inlineToAttributes ||
@@ -2377,18 +2400,16 @@
             // Uncomment this to see a button directly below the chart, for quick
             // testing of export
             /*
-            var button,
-                viewImage,
-                viewSource;
+            let button, viewImage, viewSource;
             if (!chart.renderer.forExport) {
                 viewImage = function () {
-                    var div = doc.createElement('div');
+                    let div = doc.createElement('div');
                     div.innerHTML = chart.getSVGForExport();
                     chart.renderTo.parentNode.appendChild(div);
                 };
 
                 viewSource = function () {
-                    var pre = doc.createElement('pre');
+                    let pre = doc.createElement('pre');
                     pre.innerHTML = chart.getSVGForExport()
                         .replace(/</g, '\n&lt;')
                         .replace(/>/g, '&gt;');

@@ -591,6 +591,7 @@ var RangeSelector = /** @class */ (function () {
         }
         // Set the fixed range before range is altered
         chart.fixedRange = range;
+        rangeSelector.setSelected(i);
         // Apply dataGrouping associated to button
         if (dataGrouping) {
             this.forcedDataGrouping = true;
@@ -665,7 +666,6 @@ var RangeSelector = /** @class */ (function () {
         if (defined(newMax)) {
             newMax += rangeOptions._offsetMax;
         }
-        rangeSelector.setSelected(i);
         if (this.dropdown) {
             this.dropdown.selectedIndex = i + 1;
         }
@@ -957,12 +957,13 @@ var RangeSelector = /** @class */ (function () {
         if (input && dateBox && this.inputGroup) {
             var isTextInput = input.type === 'text';
             var _a = this.inputGroup, translateX = _a.translateX, translateY = _a.translateY;
+            var inputBoxWidth = this.options.inputBoxWidth;
             css(input, {
-                width: isTextInput ? ((dateBox.width - 2) + 'px') : 'auto',
+                width: isTextInput ? ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') : 'auto',
                 height: isTextInput ? ((dateBox.height - 2) + 'px') : 'auto',
                 border: '2px solid silver'
             });
-            if (isTextInput) {
+            if (isTextInput && inputBoxWidth) {
                 css(input, {
                     left: (translateX + dateBox.x) + 'px',
                     top: translateY + 'px'
@@ -975,7 +976,7 @@ var RangeSelector = /** @class */ (function () {
                     left: Math.min(Math.round(dateBox.x +
                         translateX -
                         (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                    top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                    top: (translateY - 1 - (input.offsetHeight - dateBox.height) / 2) + 'px'
                 });
             }
         }
@@ -1026,7 +1027,7 @@ var RangeSelector = /** @class */ (function () {
             var parts = inputDate.split('-');
             date = Date.UTC(pInt(parts[0]), pInt(parts[1]) - 1, pInt(parts[2]));
         }
-        if (time && useUTC) {
+        if (time && useUTC && isNumber(date)) {
             date += time.getTimezoneOffset(date);
         }
         return date;
@@ -1158,9 +1159,9 @@ var RangeSelector = /** @class */ (function () {
         var keyDown = false;
         // handle changes in the input boxes
         input.onchange = function () {
-            updateExtremes();
-            // Blur input when clicking date input calendar
+            // Update extremes and blur input when clicking date input calendar
             if (!keyDown) {
+                updateExtremes();
                 rangeSelector.hideInput(name);
                 input.blur();
             }
@@ -1171,8 +1172,12 @@ var RangeSelector = /** @class */ (function () {
                 updateExtremes();
             }
         };
-        input.onkeydown = function () {
+        input.onkeydown = function (event) {
             keyDown = true;
+            // Arrow keys
+            if (event.keyCode === 38 || event.keyCode === 40) {
+                updateExtremes();
+            }
         };
         input.onkeyup = function () {
             keyDown = false;
@@ -1296,9 +1301,12 @@ var RangeSelector = /** @class */ (function () {
                     this.maxLabel,
                     this.maxDateBox
                 ].forEach(function (label) {
-                    if (label && label.width) {
-                        label.attr({ x: x_1 });
-                        x_1 += label.width + options.inputSpacing;
+                    if (label) {
+                        var width = label.getBBox().width;
+                        if (width) {
+                            label.attr({ x: x_1 });
+                            x_1 += width + options.inputSpacing;
+                        }
                     }
                 });
             }
@@ -1326,6 +1334,7 @@ var RangeSelector = /** @class */ (function () {
         // the buttons
         var width = buttonTheme.width || 28;
         delete buttonTheme.width;
+        delete buttonTheme.states;
         this.buttonGroup = renderer.g('range-selector-buttons').add(this.group);
         var dropdown = this.dropdown = createElement('select', void 0, {
             position: 'absolute',
@@ -1702,8 +1711,7 @@ var RangeSelector = /** @class */ (function () {
      * @return {void}
      */
     RangeSelector.prototype.collapseButtons = function (xOffsetForExportButton) {
-        var _a;
-        var _b = this, buttons = _b.buttons, buttonOptions = _b.buttonOptions, dropdown = _b.dropdown, options = _b.options, zoomText = _b.zoomText;
+        var _a = this, buttons = _a.buttons, buttonOptions = _a.buttonOptions, dropdown = _a.dropdown, options = _a.options, zoomText = _a.zoomText;
         var getAttribs = function (text) { return ({
             text: text ? text + " \u25BE" : '▾',
             width: 'auto',
@@ -1730,7 +1738,7 @@ var RangeSelector = /** @class */ (function () {
                 dropdown.selectedIndex = 0;
             }
             buttons[0].show();
-            buttons[0].attr(getAttribs((_a = this.zoomText) === null || _a === void 0 ? void 0 : _a.textStr));
+            buttons[0].attr(getAttribs(this.zoomText && this.zoomText.textStr));
         }
         var align = options.buttonPosition.align;
         this.positionButtons();
@@ -2048,7 +2056,8 @@ if (!H.RangeSelector) {
             if (rangeSelector) {
                 extremes = chart.xAxis[0].getExtremes();
                 legend = chart.legend;
-                verticalAlign = rangeSelector === null || rangeSelector === void 0 ? void 0 : rangeSelector.options.verticalAlign;
+                verticalAlign = (rangeSelector &&
+                    rangeSelector.options.verticalAlign);
                 if (isNumber(extremes.min)) {
                     rangeSelector.render(extremes.min, extremes.max);
                 }
@@ -2089,8 +2098,8 @@ if (!H.RangeSelector) {
     };
     // Initialize rangeselector for stock charts
     addEvent(Chart, 'afterGetContainer', function () {
-        var _a;
-        if ((_a = this.options.rangeSelector) === null || _a === void 0 ? void 0 : _a.enabled) {
+        if (this.options.rangeSelector &&
+            this.options.rangeSelector.enabled) {
             this.rangeSelector = new RangeSelector(this);
         }
     });

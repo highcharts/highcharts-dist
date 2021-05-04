@@ -171,9 +171,11 @@ extend(LegendComponent.prototype, /** @lends Highcharts.LegendComponent */ {
      * @private
      */
     updateLegendTitle: function () {
-        var _a, _b;
         var chart = this.chart;
-        var legendTitle = stripHTMLTags((((_b = (_a = chart.legend) === null || _a === void 0 ? void 0 : _a.options.title) === null || _b === void 0 ? void 0 : _b.text) || '').replace(/<br ?\/?>/g, ' '));
+        var legendTitle = stripHTMLTags((chart.legend &&
+            chart.legend.options.title &&
+            chart.legend.options.title.text ||
+            '').replace(/<br ?\/?>/g, ' '));
         var legendLabel = chart.langFormat('accessibility.legend.legendLabel' + (legendTitle ? '' : 'NoTitle'), {
             chart: chart,
             legendTitle: legendTitle
@@ -215,7 +217,8 @@ extend(LegendComponent.prototype, /** @lends Highcharts.LegendComponent */ {
         }
         var itemLabel = this.chart.langFormat('accessibility.legend.legendItem', {
             chart: this.chart,
-            itemName: stripHTMLTags(item.name)
+            itemName: stripHTMLTags(item.name),
+            item: item
         }), attribs = {
             tabindex: -1,
             'aria-pressed': item.visible,
@@ -247,7 +250,10 @@ extend(LegendComponent.prototype, /** @lends Highcharts.LegendComponent */ {
                 ],
                 [
                     [keys.enter, keys.space],
-                    function () {
+                    function (keyCode) {
+                        if (H.isFirefox && keyCode === keys.space) { // #15520
+                            return this.response.success;
+                        }
                         return component.onKbdClick(this);
                     }
                 ]

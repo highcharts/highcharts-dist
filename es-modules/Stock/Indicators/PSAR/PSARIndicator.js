@@ -1,6 +1,6 @@
 /* *
  *
- *  Parabolic SAR indicator for Highstock
+ *  Parabolic SAR indicator for Highcharts Stock
  *
  *  (c) 2010-2021 Grzegorz Blachliński
  *
@@ -216,6 +216,7 @@ var PSARIndicator = /** @class */ (function (_super) {
          * @excluding period
          */
         params: {
+            period: void 0,
             /**
              * The initial value for acceleration factor.
              * Acceleration factor is starting with this value
@@ -255,7 +256,7 @@ var PSARIndicator = /** @class */ (function (_super) {
     return PSARIndicator;
 }(SMAIndicator));
 extend(PSARIndicator.prototype, {
-    nameComponents: false
+    nameComponents: void 0
 });
 SeriesRegistry.registerSeriesType('psar', PSARIndicator);
 /* *

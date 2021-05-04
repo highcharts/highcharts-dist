@@ -293,7 +293,7 @@ var VennSeries = /** @class */ (function (_super) {
     /* eslint-disable valid-jsdoc */
     VennSeries.prototype.animate = function (init) {
         if (!init) {
-            var series = this, animOptions = animObject(series.options.animation);
+            var series = this, animOptions_1 = animObject(series.options.animation);
             series.points.forEach(function (point) {
                 var args = point.shapeArgs;
                 if (point.graphic && args) {
@@ -309,7 +309,7 @@ var VennSeries = /** @class */ (function (_super) {
                     }
                     point.graphic
                         .attr(attr)
-                        .animate(animate, animOptions);
+                        .animate(animate, animOptions_1);
                     // If shape is path, then fade it in after the circles
                     // animation
                     if (args.d) {
@@ -319,7 +319,7 @@ var VennSeries = /** @class */ (function (_super) {
                                     opacity: 1
                                 });
                             }
-                        }, animOptions.duration);
+                        }, animOptions_1.duration);
                     }
                 }
             }, series);
@@ -453,7 +453,7 @@ var VennSeries = /** @class */ (function (_super) {
                     style: {
                         width: dataLabelWidth
                     }
-                }, isObject(dlOptions) && dlOptions);
+                }, isObject(dlOptions, true) ? dlOptions : void 0);
             }
             // Set name for usage in tooltip and in data label.
             point.name = point.options.name || sets.join('∩');

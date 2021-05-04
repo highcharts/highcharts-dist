@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.0.1 (2021-02-16)
+ * @license Highmaps JS v9.1.0 (2021-05-04)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -224,7 +224,7 @@
                     horiz = userOptions.layout ?
                         userOptions.layout !== 'vertical' :
                         legend.layout !== 'vertical';
-                var options = merge(ColorAxis.defaultOptions,
+                var options = merge(ColorAxis.defaultColorAxisOptions,
                     userOptions, {
                         showEmpty: false,
                         title: null,
@@ -235,9 +235,6 @@
                 axis.side = userOptions.side || horiz ? 2 : 1;
                 axis.reversed = userOptions.reversed || !horiz;
                 axis.opposite = !horiz;
-                // Keep the options structure updated for export. Unlike xAxis and
-                // yAxis, the colorAxis is not an array. (#3207)
-                chart.options[axis.coll] = options;
                 _super.prototype.init.call(this, chart, options);
                 // Base init() pushes it to the xAxis array, now pop it again
                 // chart[this.isXAxis ? 'xAxis' : 'yAxis'].pop();
@@ -613,7 +610,7 @@
                             .add(axis.legendGroup);
                         axis.cross.addedToColorAxis = true;
                         if (!axis.chart.styledMode &&
-                            axis.crosshair) {
+                            typeof axis.crosshair === 'object') {
                             axis.cross.attr({
                                 fill: axis.crosshair.color
                             });
@@ -835,7 +832,7 @@
              * @optionparent colorAxis
              * @ignore
              */
-            ColorAxis.defaultOptions = {
+            ColorAxis.defaultColorAxisOptions = {
                 /**
                  * Whether to allow decimals on the color axis.
                  * @type      {boolean}
@@ -1251,10 +1248,19 @@
         // Add the color axis. This also removes the axis' own series to prevent
         // them from showing up individually.
         addEvent(Legend, 'afterGetAllItems', function (e) {
+            var _this = this;
             var colorAxisItems = [],
                 colorAxes = this.chart.colorAxis || [],
                 options,
                 i;
+            var destroyItem = function (item) {
+                    var i = e.allItems.indexOf(item);
+                if (i !== -1) {
+                    // #15436
+                    _this.destroyItem(e.allItems[i]);
+                    e.allItems.splice(i, 1);
+                }
+            };
             colorAxes.forEach(function (colorAxis) {
                 options = colorAxis.options;
                 if (options && options.showInLegend) {
@@ -1273,11 +1279,11 @@
                         if (!series.options.showInLegend || options.dataClasses) {
                             if (series.options.legendType === 'point') {
                                 series.points.forEach(function (point) {
-                                    erase(e.allItems, point);
+                                    destroyItem(point);
                                 });
                             }
                             else {
-                                erase(e.allItems, series);
+                                destroyItem(series);
                             }
                         }
                     });
@@ -1325,9 +1331,19 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
+        var defined = U.defined,
+            addEvent = U.addEvent;
         var noop = H.noop,
             seriesTypes = H.seriesTypes;
+        // Move points to the top of the z-index order when hovered
+        addEvent(Point, 'afterSetState', function (e) {
+            var point = this; // eslint-disable-line no-invalid-this
+                if (point.moveToTopOnHover && point.graphic) {
+                    point.graphic.attr({
+                        zIndex: e && e.state === 'hover' ? 1 : 0
+                    });
+            }
+        });
         /**
          * Mixin for maps and heatmaps
          *
@@ -1336,6 +1352,7 @@
          */
         var colorMapPointMixin = {
                 dataLabelOnNull: true,
+                moveToTopOnHover: true,
                 /* eslint-disable valid-jsdoc */
                 /**
                  * Color points have a value option that determines whether or not it is
@@ -1347,17 +1364,6 @@
                     return (this.value !== null &&
                         this.value !== Infinity &&
                         this.value !== -Infinity);
-            },
-            /**
-             * @private
-             */
-            setState: function (state) {
-                Point.prototype.setState.call(this, state);
-                if (this.graphic) {
-                    this.graphic.attr({
-                        zIndex: state === 'hover' ? 1 : 0
-                    });
-                }
             }
             /* eslint-enable valid-jsdoc */
         };
@@ -1567,7 +1573,7 @@
         }(ScatterPoint));
         extend(HeatmapPoint.prototype, {
             dataLabelOnNull: colorMapPointMixin.dataLabelOnNull,
-            setState: colorMapPointMixin.setState
+            moveToTopOnHover: colorMapPointMixin.moveToTopOnHover
         });
         /* *
          *
@@ -1722,8 +1728,7 @@
                 this.yAxis.axisPointRange = options.rowsize || 1;
                 // Bind new symbol names
                 extend(symbols, {
-                    ellipse: symbols.circle,
-                    rect: symbols.square
+                    ellipse: symbols.circle
                 });
             };
             /**
@@ -1756,8 +1761,10 @@
                             shapeArgs[dimension[0]]) + (pointStateOptions[dimension[0] + 'Plus'] ||
                             seriesStateOptions[dimension[0] + 'Plus'] || 0);
                         // Align marker by a new size.
-                        attribs[dimension[1]] = shapeArgs[dimension[1]] +
-                            (shapeArgs[dimension[0]] - attribs[dimension[0]]) / 2;
+                        attribs[dimension[1]] =
+                            shapeArgs[dimension[1]] +
+                                (shapeArgs[dimension[0]] -
+                                    attribs[dimension[0]]) / 2;
                     });
                 }
                 return state ? attribs : shapeArgs;
@@ -1815,7 +1822,7 @@
                 if (series.options.clip !== false || animation) {
                     series.markerGroup
                         .clip((animation || series.clipBox) && series.sharedClipKey ?
-                        chart[series.sharedClipKey] :
+                        chart.sharedClips[series.sharedClipKey] :
                         chart.clipRect);
                 }
             };
@@ -1823,21 +1830,18 @@
              * @private
              */
             HeatmapSeries.prototype.translate = function () {
-                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || '', shape = symbols[symbol] ? symbol : 'rect', options = series.options, hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || '', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
                 series.generatePoints();
                 series.points.forEach(function (point) {
                     var pointAttr,
                         sizeDiff,
                         hasImage,
                         cellAttr = point.getCellAttributes(),
-                        shapeArgs = {
-                            x: Math.min(cellAttr.x1,
-                        cellAttr.x2),
-                            y: Math.min(cellAttr.y1,
-                        cellAttr.y2),
-                            width: Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0),
-                            height: Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0)
-                        };
+                        shapeArgs = {};
+                    shapeArgs.x = Math.min(cellAttr.x1, cellAttr.x2);
+                    shapeArgs.y = Math.min(cellAttr.y1, cellAttr.y2);
+                    shapeArgs.width = Math.max(Math.abs(cellAttr.x2 - cellAttr.x1), 0);
+                    shapeArgs.height = Math.max(Math.abs(cellAttr.y2 - cellAttr.y1), 0);
                     hasImage = point.hasImage =
                         (point.marker && point.marker.symbol || symbol || '')
                             .indexOf('url') === 0;
@@ -2150,14 +2154,8 @@
              * @private
              */
             drawLegendSymbol: LegendSymbolMixin.drawRectangle,
-            /**
-             * @ignore
-             * @deprecated
-             */
-            getBox: noop,
             getExtremesFromAll: true,
             getSymbol: Series.prototype.getSymbol,
-            hasPointSpecificOptions: true,
             parallelArrays: colorMapSeriesMixin.parallelArrays,
             pointArrayMap: ['y', 'value'],
             pointClass: HeatmapPoint,

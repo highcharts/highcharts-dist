@@ -109,6 +109,7 @@ var PCIndicator = /** @class */ (function (_super) {
          * @excluding index
          */
         params: {
+            index: void 0,
             period: 20
         },
         lineWidth: 1,

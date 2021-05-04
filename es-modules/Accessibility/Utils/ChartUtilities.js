@@ -110,9 +110,11 @@ function getAxisTimeLengthDesc(axis) {
  * @return {string}
  */
 function getAxisFromToDescription(axis) {
-    var _a, _b;
     var chart = axis.chart;
-    var dateRangeFormat = ((_b = (_a = chart.options) === null || _a === void 0 ? void 0 : _a.accessibility) === null || _b === void 0 ? void 0 : _b.screenReaderSection.axisRangeDateFormat) || '';
+    var dateRangeFormat = (chart.options &&
+        chart.options.accessibility &&
+        chart.options.accessibility.screenReaderSection.axisRangeDateFormat ||
+        '');
     var format = function (axisKey) {
         return axis.dateTime ? chart.time.dateFormat(dateRangeFormat, axis[axisKey]) : axis[axisKey];
     };
@@ -132,10 +134,11 @@ function getAxisFromToDescription(axis) {
  * The DOM element for the point.
  */
 function getSeriesFirstPointElement(series) {
-    var _a, _b;
-    if ((_a = series.points) === null || _a === void 0 ? void 0 : _a.length) {
+    if (series.points && series.points.length) {
         var firstPointWithGraphic = find(series.points, function (p) { return !!p.graphic; });
-        return (_b = firstPointWithGraphic === null || firstPointWithGraphic === void 0 ? void 0 : firstPointWithGraphic.graphic) === null || _b === void 0 ? void 0 : _b.element;
+        return (firstPointWithGraphic &&
+            firstPointWithGraphic.graphic &&
+            firstPointWithGraphic.graphic.element);
     }
 }
 /**
@@ -247,8 +250,8 @@ function getRelativePointAxisPosition(axis, point) {
 function scrollToPoint(point) {
     var xAxis = point.series.xAxis;
     var yAxis = point.series.yAxis;
-    var axis = (xAxis === null || xAxis === void 0 ? void 0 : xAxis.scrollbar) ? xAxis : yAxis;
-    var scrollbar = axis === null || axis === void 0 ? void 0 : axis.scrollbar;
+    var axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis);
+    var scrollbar = (axis && axis.scrollbar);
     if (scrollbar && defined(scrollbar.to) && defined(scrollbar.from)) {
         var range = scrollbar.to - scrollbar.from;
         var pos = getRelativePointAxisPosition(axis, point);

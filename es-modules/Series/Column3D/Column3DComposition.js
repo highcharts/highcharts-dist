@@ -79,40 +79,40 @@ columnProto.translate3dShapes = function () {
         // #7103 Reset outside3dPlot flag
         point.outside3dPlot = null;
         if (point.y !== null) {
-            var shapeArgs = point.shapeArgs, tooltipPos = point.tooltipPos, 
+            var shapeArgs_1 = point.shapeArgs, tooltipPos = point.tooltipPos, 
             // Array for final shapeArgs calculation.
             // We are checking two dimensions (x and y).
-            dimensions = [['x', 'width'], ['y', 'height']], borderlessBase; // Crisped rects can have +/- 0.5 pixels offset.
+            dimensions = [['x', 'width'], ['y', 'height']], borderlessBase_1; // Crisped rects can have +/- 0.5 pixels offset.
             // #3131 We need to check if column is inside plotArea.
             dimensions.forEach(function (d) {
-                borderlessBase = shapeArgs[d[0]] - borderCrisp;
-                if (borderlessBase < 0) {
+                borderlessBase_1 = shapeArgs_1[d[0]] - borderCrisp;
+                if (borderlessBase_1 < 0) {
                     // If borderLessBase is smaller than 0, it is needed to set
                     // its value to 0 or 0.5 depending on borderWidth
                     // borderWidth may be even or odd.
-                    shapeArgs[d[1]] +=
-                        shapeArgs[d[0]] + borderCrisp;
-                    shapeArgs[d[0]] = -borderCrisp;
-                    borderlessBase = 0;
+                    shapeArgs_1[d[1]] +=
+                        shapeArgs_1[d[0]] + borderCrisp;
+                    shapeArgs_1[d[0]] = -borderCrisp;
+                    borderlessBase_1 = 0;
                 }
-                if ((borderlessBase + shapeArgs[d[1]] >
+                if ((borderlessBase_1 + shapeArgs_1[d[1]] >
                     series[d[0] + 'Axis'].len) &&
                     // Do not change height/width of column if 0 (#6708)
-                    shapeArgs[d[1]] !== 0) {
-                    shapeArgs[d[1]] =
+                    shapeArgs_1[d[1]] !== 0) {
+                    shapeArgs_1[d[1]] =
                         series[d[0] + 'Axis'].len -
-                            shapeArgs[d[0]];
+                            shapeArgs_1[d[0]];
                 }
                 if (
                 // Do not remove columns with zero height/width.
-                (shapeArgs[d[1]] !== 0) &&
-                    (shapeArgs[d[0]] >=
+                (shapeArgs_1[d[1]] !== 0) &&
+                    (shapeArgs_1[d[0]] >=
                         series[d[0] + 'Axis'].len ||
-                        shapeArgs[d[0]] + shapeArgs[d[1]] <=
+                        shapeArgs_1[d[0]] + shapeArgs_1[d[1]] <=
                             borderCrisp)) {
                     // Set args to 0 if column is outside the chart.
-                    for (var key in shapeArgs) { // eslint-disable-line guard-for-in
-                        shapeArgs[key] = 0;
+                    for (var key in shapeArgs_1) { // eslint-disable-line guard-for-in
+                        shapeArgs_1[key] = 0;
                     }
                     // #7103 outside3dPlot flag is set on Points which are
                     // currently outside of plot.
@@ -123,18 +123,18 @@ columnProto.translate3dShapes = function () {
             if (point.shapeType === 'rect') {
                 point.shapeType = 'cuboid';
             }
-            shapeArgs.z = z;
-            shapeArgs.depth = depth;
-            shapeArgs.insidePlotArea = true;
+            shapeArgs_1.z = z;
+            shapeArgs_1.depth = depth;
+            shapeArgs_1.insidePlotArea = true;
             // Point's position in 2D
             point2dPos = {
-                x: shapeArgs.x + shapeArgs.width / 2,
-                y: shapeArgs.y,
+                x: shapeArgs_1.x + shapeArgs_1.width / 2,
+                y: shapeArgs_1.y,
                 z: z + depth / 2 // The center of column in Z dimension
             };
             // Recalculate point positions for inverted graphs
             if (chart.inverted) {
-                point2dPos.x = shapeArgs.height;
+                point2dPos.x = shapeArgs_1.height;
                 point2dPos.y = point.clientX;
             }
             // Calculate and store point's position in 3D,
@@ -157,19 +157,19 @@ wrap(columnProto, 'animate', function (proceed) {
         proceed.apply(this, [].slice.call(arguments, 1));
     }
     else {
-        var args = arguments, init = args[1], yAxis = this.yAxis, series = this, reversed = this.yAxis.reversed;
+        var args = arguments, init = args[1], yAxis_1 = this.yAxis, series_1 = this, reversed_1 = this.yAxis.reversed;
         if (svg) { // VML is too slow anyway
             if (init) {
-                series.data.forEach(function (point) {
+                series_1.data.forEach(function (point) {
                     if (point.y !== null) {
                         point.height = point.shapeArgs.height;
                         point.shapey = point.shapeArgs.y; // #2968
                         point.shapeArgs.height = 1;
-                        if (!reversed) {
+                        if (!reversed_1) {
                             if (point.stackY) {
                                 point.shapeArgs.y =
                                     point.plotY +
-                                        yAxis.translate(point.stackY);
+                                        yAxis_1.translate(point.stackY);
                             }
                             else {
                                 point.shapeArgs.y =
@@ -183,13 +183,13 @@ wrap(columnProto, 'animate', function (proceed) {
                 });
             }
             else { // run the animation
-                series.data.forEach(function (point) {
+                series_1.data.forEach(function (point) {
                     if (point.y !== null) {
                         point.shapeArgs.height = point.height;
                         point.shapeArgs.y = point.shapey; // #2968
                         // null value do not have a graphic
                         if (point.graphic) {
-                            point.graphic.animate(point.shapeArgs, series.options.animation);
+                            point.graphic.animate(point.shapeArgs, series_1.options.animation);
                         }
                     }
                 });
@@ -228,18 +228,17 @@ wrap(columnProto, 'plotGroup', function (proceed, prop, _name, _visibility, _zIn
 // When series is not added to group it is needed to change setVisible method to
 // allow correct Legend funcionality. This wrap is basing on pie chart series.
 wrap(columnProto, 'setVisible', function (proceed, vis) {
-    var series = this, pointVis;
+    var series = this;
     if (series.chart.is3d()) {
         series.data.forEach(function (point) {
             point.visible = point.options.visible = vis =
                 typeof vis === 'undefined' ?
                     !pick(series.visible, point.visible) : vis;
-            pointVis = vis ? 'visible' : 'hidden';
             series.options.data[series.data.indexOf(point)] =
                 point.options;
             if (point.graphic) {
                 point.graphic.attr({
-                    visibility: pointVis
+                    visibility: vis ? 'visible' : 'hidden'
                 });
             }
         });
@@ -248,10 +247,11 @@ wrap(columnProto, 'setVisible', function (proceed, vis) {
 });
 addEvent(ColumnSeries, 'afterInit', function () {
     if (this.chart.is3d()) {
-        var series = this, seriesOptions = this.options, grouping = seriesOptions.grouping, stacking = seriesOptions.stacking, reversedStacks = pick(this.yAxis.options.reversedStacks, true), z = 0;
+        var series = this, seriesOptions = this.options, grouping = seriesOptions.grouping, stacking = seriesOptions.stacking, reversedStacks = this.yAxis.options.reversedStacks, z = 0;
         // @todo grouping === true ?
         if (!(typeof grouping !== 'undefined' && !grouping)) {
-            var stacks = retrieveStacks(this.chart, stacking), stack = seriesOptions.stack || 0, i; // position within the stack
+            var stacks = retrieveStacks(this.chart, stacking), stack = seriesOptions.stack || 0, i = // position within the stack
+             void 0; // position within the stack
             for (i = 0; i < stacks[stack].series.length; i++) {
                 if (stacks[stack].series[i] === this) {
                     break;
@@ -406,10 +406,10 @@ wrap(StackItem.prototype, 'getStackBox', function (proceed, chart, stackItem, x,
     Not supported
 */
 /*
-var defaultOptions = H.getOptions();
+let defaultOptions = H.getOptions();
 defaultOptions.plotOptions.cylinder =
     merge(defaultOptions.plotOptions.column);
-var CylinderSeries = extendClass(seriesTypes.column, {
+let CylinderSeries = extendClass(seriesTypes.column, {
     type: 'cylinder'
 });
 seriesTypes.cylinder = CylinderSeries;
@@ -422,7 +422,7 @@ wrap(seriesTypes.cylinder.prototype, 'translate', function (proceed) {
         return;
     }
 
-    var series = this,
+    let series = this,
         chart = series.chart,
         options = chart.options,
         cylOptions = options.plotOptions.cylinder,
@@ -430,7 +430,7 @@ wrap(seriesTypes.cylinder.prototype, 'translate', function (proceed) {
         depth = cylOptions.depth || 0,
         alpha = chart.alpha3d;
 
-    var z = cylOptions.stacking ?
+    let z = cylOptions.stacking ?
         (this.options.stack || 0) * depth :
         series._i * depth;
     z += depth / 2;
@@ -438,7 +438,7 @@ wrap(seriesTypes.cylinder.prototype, 'translate', function (proceed) {
     if (cylOptions.grouping !== false) { z = 0; }
 
     each(series.data, function (point) {
-        var shapeArgs = point.shapeArgs,
+        let shapeArgs = point.shapeArgs,
             deg2rad = H.deg2rad;
         point.shapeType = 'arc3d';
         shapeArgs.x += depth / 2;

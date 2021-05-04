@@ -439,7 +439,7 @@ function getStateId() {
 //     series: Highcharts.Series,
 //     options: Highcharts.MarkerClusterLayoutAlgorithmOptions
 // ): void {
-//     var chart = series.chart,
+//     let chart = series.chart,
 //         xAxis = series.xAxis,
 //         yAxis = series.yAxis,
 //         xAxisLen = series.xAxis.len,
@@ -484,7 +484,7 @@ function getStateId() {
 //                     gridOffset.plotTop + currentY < yAxisLen
 //                 ) {
 //                     if (j % 2 === 0 && i % 2 === 0) {
-//                         var rect = chart.renderer
+//                         let rect = chart.renderer
 //                             .rect(
 //                                 gridOffset.plotLeft + currentX,
 //                                 gridOffset.plotTop + currentY,

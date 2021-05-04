@@ -165,7 +165,7 @@ var RadialAxis = /** @class */ (function () {
                 this.pane.updateCenter(this);
                 // In case when the innerSize is set in a polar chart, the axis'
                 // center cannot be a reference to pane's center
-                center = this.center = extend([], this.pane.center);
+                center = this.center = this.pane.center.slice();
                 // The sector is used in Axis.translate to compute the
                 // translation of reversed axis points (#2570)
                 if (this.isCircular) {
@@ -537,6 +537,7 @@ var RadialAxis = /** @class */ (function () {
                 // Apply the stack labels for yAxis in case of inverted chart
                 if (inverted && coll === 'yAxis') {
                     axis.defaultPolarOptions.stackLabels = AxisClass.defaultYAxisOptions.stackLabels;
+                    axis.defaultPolarOptions.reversedStacks = true;
                 }
             }
             // Disable certain features on angular and polar axes
@@ -622,7 +623,7 @@ var RadialAxis = /** @class */ (function () {
             align = labelOptions.align, angle = ((axis.translate(this.pos) + axis.startAngleRad +
                 Math.PI / 2) / Math.PI * 180) % 360, correctAngle = Math.round(angle), labelDir = 'end', // Direction of the label 'start' or 'end'
             reducedAngle1 = correctAngle < 0 ?
-                correctAngle + 360 : correctAngle, reducedAngle2 = reducedAngle1, translateY = 0, translateX = 0, labelYPosCorrection = labelOptions.y === null ? -labelBBox.height * 0.3 : 0;
+                correctAngle + 360 : correctAngle, reducedAngle2 = reducedAngle1, translateY = 0, translateX = 0, labelYPosCorrection = !defined(optionsY) ? -labelBBox.height * 0.3 : 0;
             if (axis.isRadial) { // Both X and Y axes in a polar chart
                 ret = axis.getPosition(this.pos, (axis.center[2] / 2) +
                     relativeLength(pick(labelOptions.distance, -25), axis.center[2] / 2, -axis.center[2] / 2));
@@ -633,13 +634,13 @@ var RadialAxis = /** @class */ (function () {
                     });
                     // Vertically centered
                 }
-                else if (optionsY === null) {
+                else if (!defined(optionsY)) {
                     optionsY = (axis.chart.renderer
                         .fontMetrics(label.styles && label.styles.fontSize).b -
                         labelBBox.height / 2);
                 }
                 // Automatic alignment
-                if (align === null) {
+                if (!defined(align)) {
                     if (axis.isCircular) { // Y axis
                         if (labelBBox.width >
                             axis.len * axis.tickInterval / (axis.max - axis.min)) { // #3506
@@ -728,8 +729,8 @@ var RadialAxis = /** @class */ (function () {
                     label.attr({ align: align });
                     label.translate(translateX, translateY + labelYPosCorrection);
                 }
-                e.pos.x = ret.x + labelOptions.x;
-                e.pos.y = ret.y + optionsY;
+                e.pos.x = ret.x + (labelOptions.x || 0);
+                e.pos.y = ret.y + (optionsY || 0);
             }
         });
         // Wrap the getMarkPath function to return the path of the radial marker
@@ -766,10 +767,10 @@ var RadialAxis = /** @class */ (function () {
     RadialAxis.defaultCircularOptions = {
         gridLineWidth: 1,
         labels: {
-            align: null,
+            align: void 0,
             distance: 15,
             x: 0,
-            y: null,
+            y: void 0,
             style: {
                 textOverflow: 'none' // wrap lines by default (#7248)
             }
@@ -787,7 +788,7 @@ var RadialAxis = /** @class */ (function () {
         labels: {
             align: 'center',
             x: 0,
-            y: null // auto
+            y: void 0 // auto
         },
         minorGridLineWidth: 0,
         minorTickInterval: 'auto',

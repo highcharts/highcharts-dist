@@ -52,14 +52,13 @@ var TRIXIndicator = /** @class */ (function (_super) {
     // TRIX is calculated using TEMA so we just extend getTemaPoint method.
     TRIXIndicator.prototype.getTemaPoint = function (xVal, tripledPeriod, EMAlevels, i) {
         if (i > tripledPeriod) {
-            var TRIXPoint = [
+            return [
                 xVal[i - 3],
                 EMAlevels.prevLevel3 !== 0 ?
                     correctFloat(EMAlevels.level3 - EMAlevels.prevLevel3) /
                         EMAlevels.prevLevel3 * 100 : null
             ];
         }
-        return TRIXPoint;
     };
     /**
      * Triple exponential average (TRIX) oscillator. This series requires
@@ -91,10 +90,10 @@ SeriesRegistry.registerSeriesType('trix', TRIXIndicator);
  * */
 export default TRIXIndicator;
 /**
- * A `TRIX` series. If the [type](#series.tema.type) option is not specified, it
+ * A `TRIX` series. If the [type](#series.trix.type) option is not specified, it
  * is inherited from [chart.type](#chart.type).
  *
- * @extends   series,plotOptions.tema
+ * @extends   series,plotOptions.trix
  * @since     7.0.0
  * @product   highstock
  * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,

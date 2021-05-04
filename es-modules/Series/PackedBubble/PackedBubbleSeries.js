@@ -323,10 +323,10 @@ var PackedBubbleSeries = /** @class */ (function (_super) {
             opacity: nodeMarker.fillOpacity,
             stroke: nodeMarker.lineColor || series.color,
             'stroke-width': nodeMarker.lineWidth
-        }, visibility = series.visible ? 'inherit' : 'hidden';
+        };
         // create the group for parent Nodes if doesn't exist
         if (!this.parentNodesGroup) {
-            series.parentNodesGroup = series.plotGroup('parentNodesGroup', 'parentNode', visibility, 0.1, chart.seriesGroup);
+            series.parentNodesGroup = series.plotGroup('parentNodesGroup', 'parentNode', series.visible ? 'inherit' : 'hidden', 0.1, chart.seriesGroup);
             series.group.attr({
                 zIndex: 2
             });
@@ -433,21 +433,21 @@ var PackedBubbleSeries = /** @class */ (function (_super) {
      */
     PackedBubbleSeries.prototype.onMouseUp = function (point) {
         if (point.fixedPosition && !point.removed) {
-            var distanceXY, distanceR, layout = this.layout, parentNodeLayout = this.parentNodeLayout;
-            if (parentNodeLayout && layout.options.dragBetweenSeries) {
+            var distanceXY_1, distanceR_1, layout_1 = this.layout, parentNodeLayout = this.parentNodeLayout;
+            if (parentNodeLayout && layout_1.options.dragBetweenSeries) {
                 parentNodeLayout.nodes.forEach(function (node) {
                     if (point && point.marker &&
                         node !== point.series.parentNode) {
-                        distanceXY = layout.getDistXY(point, node);
-                        distanceR = (layout.vectorLength(distanceXY) -
+                        distanceXY_1 = layout_1.getDistXY(point, node);
+                        distanceR_1 = (layout_1.vectorLength(distanceXY_1) -
                             node.marker.radius -
                             point.marker.radius);
-                        if (distanceR < 0) {
+                        if (distanceR_1 < 0) {
                             node.series.addPoint(merge(point.options, {
                                 plotX: point.plotX,
                                 plotY: point.plotY
                             }), false);
-                            layout.removeElementFromCollection(point, layout.nodes);
+                            layout_1.removeElementFromCollection(point, layout_1.nodes);
                             point.remove();
                         }
                     }
@@ -751,19 +751,21 @@ var PackedBubbleSeries = /** @class */ (function (_super) {
                 // update the series points with the val from positions
                 // array
                 point = data[positions[i][4]];
-                radius = positions[i][2];
+                radius = pick(positions[i][2], void 0);
                 if (!useSimulation) {
                     point.plotX = (positions[i][0] - chart.plotLeft +
                         chart.diffX);
                     point.plotY = (positions[i][1] - chart.plotTop +
                         chart.diffY);
                 }
-                point.marker = extend(point.marker, {
-                    radius: radius,
-                    width: 2 * radius,
-                    height: 2 * radius
-                });
-                point.radius = radius;
+                if (isNumber(radius)) {
+                    point.marker = extend(point.marker, {
+                        radius: radius,
+                        width: 2 * radius,
+                        height: 2 * radius
+                    });
+                    point.radius = radius;
+                }
             }
         }
         if (useSimulation) {

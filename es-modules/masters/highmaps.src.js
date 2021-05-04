@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.0.1 (2021-02-16)
+ * @license Highmaps JS v9.1.0 (2021-05-04)
  * @module highcharts/highmaps
  *
  * (c) 2011-2021 Torstein Honsi
@@ -9,6 +9,5 @@
 'use strict';
 import Highcharts from './highcharts.src.js';
 import './modules/map.src.js';
-
 Highcharts.product = 'Highmaps';
 export default Highcharts;

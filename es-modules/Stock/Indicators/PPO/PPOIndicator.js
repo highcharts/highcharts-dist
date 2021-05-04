@@ -133,6 +133,7 @@ var PPOIndicator = /** @class */ (function (_super) {
          * @excluding period
          */
         params: {
+            period: void 0,
             /**
              * Periods for Percentage Price Oscillator calculations.
              *

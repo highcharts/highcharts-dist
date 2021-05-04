@@ -25,7 +25,7 @@ import H from '../../../Core/Globals.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
-var defined = U.defined, extend = U.extend, isArray = U.isArray, merge = U.merge, objectEach = U.objectEach;
+var defined = U.defined, extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach;
 /* eslint-disable require-jsdoc */
 // Utils:
 function maxHigh(arr) {
@@ -72,7 +72,7 @@ function checkLineIntersection(a1, a2, b1, b2) {
         sabX = a1.plotX - b1.plotX, // Auxiliary section a1-b1 X
         sabY = a1.plotY - b1.plotY, // Auxiliary section a1-b1 Y
         // First degree Bézier parameters
-        u, t;
+        u = void 0, t = void 0;
         u = (-saY * sabX + saX * sabY) / (-sbX * saY + saX * sbY);
         t = (sbX * sabY - sbY * sabX) / (-sbX * saY + saX * sbY);
         if (u >= 0 && u <= 1 && t >= 0 && t <= 1) {
@@ -198,15 +198,16 @@ var IKHIndicator = /** @class */ (function (_super) {
         var indicator = this;
         SeriesRegistry.seriesTypes.sma.prototype.translate.apply(indicator);
         indicator.points.forEach(function (point) {
-            indicator.pointArrayMap.forEach(function (value) {
-                if (defined(point[value])) {
-                    point['plot' + value] = indicator.yAxis.toPixels(point[value], true);
+            indicator.pointArrayMap.forEach(function (key) {
+                var pointValue = point[key];
+                if (isNumber(pointValue)) {
+                    point['plot' + key] = indicator.yAxis.toPixels(pointValue, true);
                     // Add extra parameters for support tooltip in moved
                     // lines
-                    point.plotY = point['plot' + value];
+                    point.plotY = point['plot' + key];
                     point.tooltipPos = [
                         point.plotX,
-                        point['plot' + value]
+                        point['plot' + key]
                     ];
                     point.isNull = false;
                 }
@@ -496,7 +497,11 @@ var IKHIndicator = /** @class */ (function (_super) {
      * @optionparent plotOptions.ikh
      */
     IKHIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+        /**
+         * @excluding index
+         */
         params: {
+            index: void 0,
             period: 26,
             /**
              * The base period for Tenkan calculations.

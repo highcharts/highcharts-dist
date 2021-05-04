@@ -113,7 +113,7 @@ var MapPoint = /** @class */ (function (_super) {
 extend(MapPoint.prototype, {
     dataLabelOnNull: colorMapPointMixin.dataLabelOnNull,
     isValid: colorMapPointMixin.isValid,
-    setState: colorMapPointMixin.setState
+    moveToTopOnHover: colorMapPointMixin.moveToTopOnHover
 });
 /* *
  *

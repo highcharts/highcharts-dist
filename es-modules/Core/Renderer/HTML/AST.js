@@ -306,6 +306,7 @@ var AST = /** @class */ (function () {
         'td',
         'th',
         'tr',
+        'u',
         'ul',
         '#text'
     ];
@@ -318,7 +319,7 @@ var AST = /** @class */ (function () {
      * // Allow a custom, trusted attribute
      * Highcharts.AST.allowedAttributes.push('data-value');
      *
-     * @name Highcharts.AST.allowedTags
+     * @name Highcharts.AST.allowedAttributes
      * @static
      */
     AST.allowedAttributes = [
@@ -383,7 +384,7 @@ var AST = /** @class */ (function () {
         'width',
         'x',
         'x1',
-        'xy',
+        'x2',
         'y',
         'y1',
         'y2',

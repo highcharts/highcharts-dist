@@ -11,8 +11,17 @@
 import H from '../Core/Globals.js';
 import Point from '../Core/Series/Point.js';
 import U from '../Core/Utilities.js';
-var defined = U.defined;
+var defined = U.defined, addEvent = U.addEvent;
 var noop = H.noop, seriesTypes = H.seriesTypes;
+// Move points to the top of the z-index order when hovered
+addEvent(Point, 'afterSetState', function (e) {
+    var point = this; // eslint-disable-line no-invalid-this
+    if (point.moveToTopOnHover && point.graphic) {
+        point.graphic.attr({
+            zIndex: e && e.state === 'hover' ? 1 : 0
+        });
+    }
+});
 /**
  * Mixin for maps and heatmaps
  *
@@ -21,6 +30,7 @@ var noop = H.noop, seriesTypes = H.seriesTypes;
  */
 var colorMapPointMixin = {
     dataLabelOnNull: true,
+    moveToTopOnHover: true,
     /* eslint-disable valid-jsdoc */
     /**
      * Color points have a value option that determines whether or not it is
@@ -32,17 +42,6 @@ var colorMapPointMixin = {
         return (this.value !== null &&
             this.value !== Infinity &&
             this.value !== -Infinity);
-    },
-    /**
-     * @private
-     */
-    setState: function (state) {
-        Point.prototype.setState.call(this, state);
-        if (this.graphic) {
-            this.graphic.attr({
-                zIndex: state === 'hover' ? 1 : 0
-            });
-        }
     }
     /* eslint-enable valid-jsdoc */
 };

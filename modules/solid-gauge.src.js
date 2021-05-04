@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Solid angular gauge module
  *
@@ -456,16 +456,16 @@
                             options.radius, 100)) * center[2]) / 200),
                             innerRadius = ((pInt(pick(point.options.innerRadius,
                             options.innerRadius, 60)) * center[2]) / 200),
-                            shapeArgs,
-                            d,
+                            shapeArgs = void 0,
+                            d = void 0,
                             toColor = yAxis.toColor(point.y,
                             point),
                             axisMinAngle = Math.min(yAxis.startAngleRad,
                             yAxis.endAngleRad),
                             axisMaxAngle = Math.max(yAxis.startAngleRad,
                             yAxis.endAngleRad),
-                            minAngle,
-                            maxAngle;
+                            minAngle = void 0,
+                            maxAngle = void 0;
                         if (toColor === 'none') { // #3708
                             toColor = point.color || series.color || 'none';
                         }

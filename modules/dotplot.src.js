@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Dot plot series type for Highcharts
  *
@@ -28,23 +28,6 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/DotPlot/DotPlotSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
-        /* *
-         *
-         *  (c) 2009-2021 Torstein Honsi
-         *
-         *  Dot plot series type for Highcharts
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        SVGRenderer.prototype.symbols.rect = function (x, y, w, h, options) {
-            return SVGRenderer.prototype.symbols.callout(x, y, w, h, options);
-        };
-
-    });
     _registerModule(_modules, 'Series/DotPlot/DotPlotSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, SeriesRegistry, U) {
         /* *
          *

@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Paweł Fus
  *
@@ -53,7 +53,7 @@
             };
         })();
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
-        var isArray = U.isArray,
+        var isNumber = U.isNumber,
             merge = U.merge;
         /* eslint-disable require-jsdoc */
         // Utils:
@@ -102,22 +102,31 @@
                     RSI = [],
                     xData = [],
                     yData = [],
-                    index = 3,
+                    index = params.index,
                     gain = 0,
                     loss = 0,
                     RSIPoint,
                     change,
                     avgGain,
                     avgLoss,
-                    i;
-                // RSI requires close value
-                if ((xVal.length < period) || !isArray(yVal[0]) ||
-                    yVal[0].length !== 4) {
+                    i,
+                    values;
+                if ((xVal.length < period)) {
                     return;
+                }
+                if (isNumber(yVal[0])) {
+                    values = yVal;
+                }
+                else {
+                    // in case of the situation, where the series type has data length
+                    // longer then 4 (HLC, range), this ensures that we are not trying
+                    // to reach the index out of bounds
+                    index = Math.min(index, yVal[0].length - 1);
+                    values = yVal.map(function (value) { return value[index]; });
                 }
                 // Calculate changes for first N points
                 while (range < period) {
-                    change = toFixed(yVal[range][index] - yVal[range - 1][index], decimals);
+                    change = toFixed(values[range] - values[range - 1], decimals);
                     if (change > 0) {
                         gain += change;
                     }
@@ -130,7 +139,7 @@
                 avgGain = toFixed(gain / (period - 1), decimals);
                 avgLoss = toFixed(loss / (period - 1), decimals);
                 for (i = range; i < yValLen; i++) {
-                    change = toFixed(yVal[i][index] - yVal[i - 1][index], decimals);
+                    change = toFixed(values[i] - values[i - 1], decimals);
                     if (change > 0) {
                         gain = change;
                         loss = 0;
@@ -182,8 +191,8 @@
              */
             RSIIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
                 params: {
-                    period: 14,
-                    decimals: 4
+                    decimals: 4,
+                    index: 3
                 }
             });
             return RSIIndicator;

@@ -362,13 +362,11 @@ var TreeGridAxis;
      * The original function
      */
     function wrapGetMaxLabelDimensions(proceed) {
-        var axis = this, options = axis.options, labelOptions = options && options.labels, indentation = (labelOptions && isNumber(labelOptions.indentation) ?
-            labelOptions.indentation :
-            0), retVal = proceed.apply(axis, Array.prototype.slice.call(arguments, 1)), isTreeGrid = axis.options.type === 'treegrid';
+        var axis = this, options = axis.options, retVal = proceed.apply(axis, Array.prototype.slice.call(arguments, 1)), isTreeGrid = options.type === 'treegrid';
         var treeDepth;
         if (isTreeGrid && axis.treeGrid.mapOfPosToGridNode) {
             treeDepth = axis.treeGrid.mapOfPosToGridNode[-1].height || 0;
-            retVal.width += indentation * (treeDepth - 1);
+            retVal.width += options.labels.indentation * (treeDepth - 1);
         }
         return retVal;
     }
@@ -416,8 +414,9 @@ var TreeGridAxis;
             // and chart height is set, set axis.isDirty
             // to ensure collapsing works (#12012)
             addEvent(axis, 'afterBreaks', function () {
-                var _a;
-                if (axis.coll === 'yAxis' && !axis.staticScale && ((_a = axis.chart.options.chart) === null || _a === void 0 ? void 0 : _a.height)) {
+                if (axis.coll === 'yAxis' &&
+                    !axis.staticScale &&
+                    axis.chart.options.chart.height) {
                     axis.isDirty = true;
                 }
             });

@@ -18,8 +18,10 @@ import Chart from '../Core/Chart/Chart.js';
 import AST from '../Core/Renderer/HTML/AST.js';
 import H from '../Core/Globals.js';
 var doc = H.doc, seriesTypes = H.seriesTypes, win = H.win;
+import O from '../Core/Options.js';
+var getOptions = O.getOptions, setOptions = O.setOptions;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, extend = U.extend, find = U.find, fireEvent = U.fireEvent, getOptions = U.getOptions, isNumber = U.isNumber, pick = U.pick, setOptions = U.setOptions;
+var addEvent = U.addEvent, defined = U.defined, extend = U.extend, find = U.find, fireEvent = U.fireEvent, isNumber = U.isNumber, pick = U.pick;
 /**
  * Function callback to execute while data rows are processed for exporting.
  * This allows the modification of data rows before processed into the final
@@ -114,7 +116,7 @@ setOptions({
          * converter, as demonstrated in the sample below.
          *
          * @sample  highcharts/export-data/categorized/ Categorized data
-         * @sample  highcharts/export-data/stock-timeaxis/ Highstock time axis
+         * @sample  highcharts/export-data/stock-timeaxis/ Highcharts Stock time axis
          * @sample  highcharts/export-data/xlsx/
          *          Using a third party XLSX converter
          *
@@ -637,7 +639,8 @@ Chart.prototype.getTable = function (useLocalDecimalPoint) {
         var html = "<" + node.tagName;
         if (attributes) {
             Object.keys(attributes).forEach(function (key) {
-                html += " " + key + "=\"" + attributes[key] + "\"";
+                var value = attributes[key];
+                html += " " + key + "=\"" + value + "\"";
             });
         }
         html += '>';
@@ -954,7 +957,9 @@ Chart.prototype.toggleDataTable = function (show) {
         options.buttons &&
         options.buttons.contextButton.menuItems, lang = this.options.lang;
     if (exportingOptions &&
-        exportingOptions.menuItemDefinitions && (lang === null || lang === void 0 ? void 0 : lang.viewData) &&
+        exportingOptions.menuItemDefinitions &&
+        lang &&
+        lang.viewData &&
         lang.hideData &&
         menuItems &&
         exportDivElements &&

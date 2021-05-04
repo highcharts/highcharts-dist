@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Sebastian Bochan
  *
@@ -57,10 +57,9 @@
             isArray = U.isArray,
             merge = U.merge;
         /* eslint-disable require-jsdoc */
-        function populateAverage(points, xVal, yVal, i, period) {
-            var mmY = yVal[i - 1][3] - yVal[i - period - 1][3],
+        function populateAverage(xVal, yVal, i, period, index) {
+            var mmY = yVal[i - 1][index] - yVal[i - period - 1][index],
                 mmX = xVal[i - 1];
-            points.shift(); // remove point until range < period
             return [mmX, mmY];
         }
         /* eslint-enable require-jsdoc */
@@ -85,40 +84,34 @@
             }
             MomentumIndicator.prototype.getValues = function (series, params) {
                 var period = params.period,
+                    index = params.index,
                     xVal = series.xData,
                     yVal = series.yData,
                     yValLen = yVal ? yVal.length : 0,
-                    xValue = xVal[0],
                     yValue = yVal[0],
                     MM = [],
                     xData = [],
                     yData = [],
-                    index,
                     i,
-                    points,
                     MMPoint;
                 if (xVal.length <= period) {
                     return;
                 }
                 // Switch index for OHLC / Candlestick / Arearange
                 if (isArray(yVal[0])) {
-                    yValue = yVal[0][3];
+                    yValue = yVal[0][index];
                 }
                 else {
                     return;
                 }
-                // Starting point
-                points = [
-                    [xValue, yValue]
-                ];
                 // Calculate value one-by-one for each period in visible data
                 for (i = (period + 1); i < yValLen; i++) {
-                    MMPoint = populateAverage(points, xVal, yVal, i, period, index);
+                    MMPoint = populateAverage(xVal, yVal, i, period, index);
                     MM.push(MMPoint);
                     xData.push(MMPoint[0]);
                     yData.push(MMPoint[1]);
                 }
-                MMPoint = populateAverage(points, xVal, yVal, i, period, index);
+                MMPoint = populateAverage(xVal, yVal, i, period, index);
                 MM.push(MMPoint);
                 xData.push(MMPoint[0]);
                 yData.push(MMPoint[1]);
@@ -143,7 +136,7 @@
              */
             MomentumIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
                 params: {
-                    period: 14
+                    index: 3
                 }
             });
             return MomentumIndicator;

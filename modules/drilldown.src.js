@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Highcharts Drilldown module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Drilldown.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, Color, ColumnSeries, H, O, palette, Point, Series, SeriesRegistry, SVGRenderer, Tick, U) {
+    _registerModule(_modules, 'Extensions/Drilldown.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, Color, ColumnSeries, F, H, O, palette, Point, Series, SeriesRegistry, SVGRenderer, Tick, U) {
         /* *
          *
          *  Highcharts Drilldown module
@@ -41,6 +41,7 @@
          *
          * */
         var animObject = A.animObject;
+        var format = F.format;
         var noop = H.noop;
         var defaultOptions = O.defaultOptions;
         var seriesTypes = SeriesRegistry.seriesTypes;
@@ -48,7 +49,6 @@
             removeEvent = U.removeEvent,
             extend = U.extend,
             fireEvent = U.fireEvent,
-            format = U.format,
             merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick,
@@ -581,7 +581,7 @@
             }
             // Run fancy cross-animation on supported and equal types
             if (oldSeries.type === newSeries.type) {
-                newSeries.animate = newSeries.animateDrilldown || noop;
+                newSeries.animate = (newSeries.animateDrilldown || noop);
                 newSeries.options.animation = true;
             }
         };
@@ -628,11 +628,16 @@
                 backText = this.getDrilldownBackText(),
                 buttonOptions = chart.options.drilldown.drillUpButton,
                 attr,
-                states;
+                states,
+                alignTo = (buttonOptions.relativeTo === 'chart' ||
+                    buttonOptions.relativeTo === 'spacingBox' ?
+                    null :
+                    'scrollablePlotBox');
             if (!this.drillUpButton) {
                 attr = buttonOptions.theme;
                 states = attr && attr.states;
-                this.drillUpButton = this.renderer.button(backText, null, null, function () {
+                this.drillUpButton = this.renderer
+                    .button(backText, null, null, function () {
                     chart.drillUp();
                 }, attr, states && states.hover, states && states.select)
                     .addClass('highcharts-drillup-button')
@@ -641,7 +646,7 @@
                     zIndex: 7
                 })
                     .add()
-                    .align(buttonOptions.position, false, buttonOptions.relativeTo || 'plotBox');
+                    .align(buttonOptions.position, false, alignTo);
             }
             else {
                 this.drillUpButton.attr({
@@ -819,8 +824,8 @@
          */
         ColumnSeries.prototype.animateDrillupTo = function (init) {
             if (!init) {
-                var newSeries = this,
-                    level = newSeries.drilldownLevel;
+                var newSeries_1 = this,
+                    level_1 = newSeries_1.drilldownLevel;
                 // First hide all items before animating in again
                 this.points.forEach(function (point) {
                     var dataLabel = point.dataLabel;
@@ -841,18 +846,18 @@
                 });
                 // Do dummy animation on first point to get to complete
                 syncTimeout(function () {
-                    if (newSeries.points) { // May be destroyed in the meantime, #3389
+                    if (newSeries_1.points) { // May be destroyed in the meantime, #3389
                         // Unable to drillup with nodes, #13711
-                        var pointsWithNodes = [];
-                        newSeries.data.forEach(function (el) {
-                            pointsWithNodes.push(el);
+                        var pointsWithNodes_1 = [];
+                        newSeries_1.data.forEach(function (el) {
+                            pointsWithNodes_1.push(el);
                         });
-                        if (newSeries.nodes) {
-                            pointsWithNodes = pointsWithNodes.concat(newSeries.nodes);
+                        if (newSeries_1.nodes) {
+                            pointsWithNodes_1 = pointsWithNodes_1.concat(newSeries_1.nodes);
                         }
-                        pointsWithNodes.forEach(function (point, i) {
+                        pointsWithNodes_1.forEach(function (point, i) {
                             // Fade in other points
-                            var verb = i === (level && level.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
+                            var verb = i === (level_1 && level_1.pointIndex) ? 'show' : 'fadeIn', inherit = verb === 'show' ? true : void 0, dataLabel = point.dataLabel;
                             if (point.graphic) { // #3407
                                 point.graphic[verb](inherit);
                             }
@@ -970,23 +975,23 @@
                     }
                     // Unable to drill down in the horizontal item series #13372
                     if (this.center) {
-                        var animateFrom = level.shapeArgs,
-                            start = animateFrom.start,
-                            angle = animateFrom.end - start,
-                            startAngle = angle / this.points.length,
-                            styledMode = this.chart.styledMode;
+                        var animateFrom_1 = level.shapeArgs,
+                            start_1 = animateFrom_1.start,
+                            angle = animateFrom_1.end - start_1,
+                            startAngle_1 = angle / this.points.length,
+                            styledMode_1 = this.chart.styledMode;
                         if (!init) {
                             this.points.forEach(function (point, i) {
                                 var animateTo = point.shapeArgs;
-                                if (!styledMode) {
-                                    animateFrom.fill = level.color;
+                                if (!styledMode_1) {
+                                    animateFrom_1.fill = level.color;
                                     animateTo.fill = point.color;
                                 }
                                 if (point.graphic) {
                                     point.graphic
-                                        .attr(merge(animateFrom, {
-                                        start: start + i * startAngle,
-                                        end: start + (i + 1) * startAngle
+                                        .attr(merge(animateFrom_1, {
+                                        start: start_1 + i * startAngle_1,
+                                        end: start_1 + (i + 1) * startAngle_1
                                     }))[animationOptions ? 'animate' : 'attr'](animateTo, animationOptions);
                                 }
                             });

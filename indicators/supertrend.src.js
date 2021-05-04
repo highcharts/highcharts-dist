@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Wojciech Chmiel
  *
@@ -446,6 +446,7 @@
                  * @excluding index
                  */
                 params: {
+                    index: void 0,
                     /**
                      * Multiplier for Supertrend Indicator.
                      */
@@ -465,7 +466,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                risingTrendColor: palette.indicatorPositiveLine,
+                risingTrendColor: palette.positiveColor,
                 /**
                  * Color of the Supertrend series line that is above the main series.
                  *
@@ -474,7 +475,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                fallingTrendColor: palette.indicatorNegativeLine,
+                fallingTrendColor: palette.negativeColor,
                 /**
                  * The styles for the Supertrend line that intersect main series.
                  *

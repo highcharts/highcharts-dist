@@ -80,11 +80,15 @@ var BulletSeries = /** @class */ (function (_super) {
         var series = this, chart = series.chart, options = series.options, animationLimit = options.animationLimit || 250;
         _super.prototype.drawPoints.apply(this, arguments);
         series.points.forEach(function (point) {
-            var pointOptions = point.options, shapeArgs, targetGraphic = point.targetGraphic, targetShapeArgs, targetVal = point.target, pointVal = point.y, width, height, targetOptions, y;
+            var pointOptions = point.options, targetGraphic = point.targetGraphic, targetShapeArgs, targetVal = point.target, pointVal = point.y, width, height, targetOptions, y;
             if (isNumber(targetVal) && targetVal !== null) {
                 targetOptions = merge(options.targetOptions, pointOptions.targetOptions);
                 height = targetOptions.height;
-                shapeArgs = point.shapeArgs;
+                var shapeArgs = point.shapeArgs;
+                // #15547
+                if (point.dlBox && shapeArgs && !isNumber(shapeArgs.width)) {
+                    shapeArgs = point.dlBox;
+                }
                 width = relativeLength(targetOptions.width, shapeArgs.width);
                 y = series.yAxis.translate(targetVal, false, true, false, true) - targetOptions.height / 2 - 0.5;
                 targetShapeArgs = series.crispCol.apply({

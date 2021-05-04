@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -267,6 +267,14 @@
                     }
                 }
                 point.connector[verb](series.getConnectorAttribs(point));
+            };
+            DumbbellPoint.prototype.destroy = function () {
+                // #15560
+                if (!this.graphic) {
+                    this.graphic = this.connector;
+                    this.connector = void 0;
+                }
+                return _super.prototype.destroy.call(this);
             };
             return DumbbellPoint;
         }(AreaRangePoint));
@@ -569,8 +577,8 @@
             DumbbellSeries.prototype.markerAttribs = function () {
                 var ret = areaRangeProto.markerAttribs.apply(this,
                     arguments);
-                ret.x = Math.floor(ret.x);
-                ret.y = Math.floor(ret.y);
+                ret.x = Math.floor(ret.x || 0);
+                ret.y = Math.floor(ret.y || 0);
                 return ret;
             };
             /**

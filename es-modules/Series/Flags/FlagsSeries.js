@@ -107,6 +107,10 @@ var FlagsSeries = /** @class */ (function (_super) {
             if (typeof plotY !== 'undefined' &&
                 plotX >= 0 &&
                 !outsideRight) {
+                // #15384
+                if (graphic && point.hasNewShapeType()) {
+                    graphic = graphic.destroy();
+                }
                 // Create the flag
                 if (!graphic) {
                     graphic = point.graphic = renderer.label('', null, null, shape, null, null, options.useHTML)
@@ -226,7 +230,10 @@ var FlagsSeries = /** @class */ (function (_super) {
         points.forEach(function (point) {
             var graphic = point.graphic;
             if (graphic) {
-                addEvent(graphic.element, 'mouseover', function () {
+                if (point.unbindMouseOver) {
+                    point.unbindMouseOver();
+                }
+                point.unbindMouseOver = addEvent(graphic.element, 'mouseover', function () {
                     // Raise this point
                     if (point.stackIndex > 0 &&
                         !point.raised) {
@@ -273,9 +280,10 @@ var FlagsSeries = /** @class */ (function (_super) {
      */
     FlagsSeries.prototype.setClip = function () {
         Series.prototype.setClip.apply(this, arguments);
-        if (this.options.clip !== false && this.sharedClipKey) {
-            this.markerGroup
-                .clip(this.chart[this.sharedClipKey]);
+        if (this.options.clip !== false &&
+            this.sharedClipKey &&
+            this.markerGroup) {
+            this.markerGroup.clip(this.chart.sharedClips[this.sharedClipKey]);
         }
     };
     /**
@@ -373,7 +381,7 @@ var FlagsSeries = /** @class */ (function (_super) {
          * @product   highstock
          */
         tooltip: {
-            pointFormat: '{point.text}<br/>'
+            pointFormat: '{point.text}'
         },
         threshold: null,
         /**

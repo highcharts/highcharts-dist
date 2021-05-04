@@ -84,6 +84,14 @@ var DumbbellPoint = /** @class */ (function (_super) {
         }
         point.connector[verb](series.getConnectorAttribs(point));
     };
+    DumbbellPoint.prototype.destroy = function () {
+        // #15560
+        if (!this.graphic) {
+            this.graphic = this.connector;
+            this.connector = void 0;
+        }
+        return _super.prototype.destroy.call(this);
+    };
     return DumbbellPoint;
 }(AreaRangePoint));
 extend(DumbbellPoint.prototype, {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -37,9 +37,19 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defined = U.defined;
+        var defined = U.defined,
+            addEvent = U.addEvent;
         var noop = H.noop,
             seriesTypes = H.seriesTypes;
+        // Move points to the top of the z-index order when hovered
+        addEvent(Point, 'afterSetState', function (e) {
+            var point = this; // eslint-disable-line no-invalid-this
+                if (point.moveToTopOnHover && point.graphic) {
+                    point.graphic.attr({
+                        zIndex: e && e.state === 'hover' ? 1 : 0
+                    });
+            }
+        });
         /**
          * Mixin for maps and heatmaps
          *
@@ -48,6 +58,7 @@
          */
         var colorMapPointMixin = {
                 dataLabelOnNull: true,
+                moveToTopOnHover: true,
                 /* eslint-disable valid-jsdoc */
                 /**
                  * Color points have a value option that determines whether or not it is
@@ -59,17 +70,6 @@
                     return (this.value !== null &&
                         this.value !== Infinity &&
                         this.value !== -Infinity);
-            },
-            /**
-             * @private
-             */
-            setState: function (state) {
-                Point.prototype.setState.call(this, state);
-                if (this.graphic) {
-                    this.graphic.attr({
-                        zIndex: state === 'hover' ? 1 : 0
-                    });
-                }
             }
             /* eslint-enable valid-jsdoc */
         };
@@ -227,17 +227,21 @@
          * @todo export this function to enable usage
          */
         var draw = function draw(params) {
-                var _a;
-            var component = this,
-                graphic = component.graphic,
-                animatableAttribs = params.animatableAttribs,
+                var _this = this;
+            var animatableAttribs = params.animatableAttribs,
                 onComplete = params.onComplete,
                 css = params.css,
-                renderer = params.renderer,
-                animation = (_a = component.series) === null || _a === void 0 ? void 0 : _a.options.animation;
-            if (component.shouldDraw()) {
+                renderer = params.renderer;
+            var animation = (this.series && this.series.chart.hasRendered) ?
+                    // Chart-level animation on updates
+                    void 0 :
+                    // Series-level animation on new points
+                    (this.series &&
+                        this.series.options.animation);
+            var graphic = this.graphic;
+            if (this.shouldDraw()) {
                 if (!graphic) {
-                    component.graphic = graphic =
+                    this.graphic = graphic =
                         renderer[params.shapeType](params.shapeArgs)
                             .add(params.group);
                 }
@@ -247,8 +251,8 @@
                     .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
             }
             else if (graphic) {
-                var destroy = function () {
-                        component.graphic = graphic = graphic.destroy();
+                var destroy_1 = function () {
+                        _this.graphic = graphic = (graphic && graphic.destroy());
                     if (isFn(onComplete)) {
                         onComplete();
                     }
@@ -256,11 +260,11 @@
                 // animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, void 0, function () {
-                        destroy();
+                        destroy_1();
                     });
                 }
                 else {
-                    destroy();
+                    destroy_1();
                 }
             }
         };
@@ -508,12 +512,10 @@
             childrenTotal = 0,
             children = [],
             value;
-            extend(tree, {
-                levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
-                name: pick(point && point.name, ''),
-                visible: (idRoot === tree.id ||
-                    (isBoolean(options.visible) ? options.visible : false))
-            });
+            tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
+            tree.name = pick(point && point.name, '');
+            tree.visible = (idRoot === tree.id ||
+                (isBoolean(options.visible) ? options.visible : false));
             if (isFn(before)) {
                 tree = before(tree, options);
             }
@@ -535,12 +537,10 @@
             tree.visible = childrenTotal > 0 || tree.visible;
             // Set the values
             value = pick(optionsPoint.value, childrenTotal);
-            extend(tree, {
-                children: children,
-                childrenTotal: childrenTotal,
-                isLeaf: tree.visible && !childrenTotal,
-                val: value
-            });
+            tree.children = children;
+            tree.childrenTotal = childrenTotal;
+            tree.isLeaf = tree.visible && !childrenTotal;
+            tree.val = value;
             return tree;
         };
         /**
@@ -737,13 +737,13 @@
                         gridLineWidth: 0,
                         lineWidth: 0,
                         min: 0,
-                        dataMin: 0,
+                        // dataMin: 0,
                         minPadding: 0,
                         max: TreemapUtilities.AXIS_MAX,
-                        dataMax: TreemapUtilities.AXIS_MAX,
+                        // dataMax: TreemapUtilities.AXIS_MAX,
                         maxPadding: 0,
                         startOnTick: false,
-                        title: null,
+                        title: void 0,
                         tickPositions: []
                     };
                     extend(yAxis.options, treeAxis);
@@ -1004,7 +1004,8 @@
                 // boundaries in treemaps by applying ellipsis overflow.
                 // The issue was happening when datalabel's text contained a
                 // long sequence of characters without a whitespace.
-                if (!defined(style.textOverflow) &&
+                if (style &&
+                    !defined(style.textOverflow) &&
                     dataLabel.text &&
                     dataLabel.getBBox().width > dataLabel.text.textWidth) {
                     dataLabel.css({
@@ -1173,6 +1174,7 @@
                         shapeArgs = point.shapeArgs;
                     // Don't bother with calculate styling if the point is not drawn
                     if (point.shouldDraw()) {
+                        point.isInside = true;
                         if (borderRadius) {
                             attribs.r = borderRadius;
                         }
@@ -1548,16 +1550,17 @@
                         var y2 = Math.round(yAxis.toPixels(y + height,
                             true)) - crispCorr;
                         // Set point values
-                        point.shapeArgs = {
-                            x: Math.min(x1, x2),
-                            y: Math.min(y1, y2),
-                            width: Math.abs(x2 - x1),
-                            height: Math.abs(y2 - y1)
-                        };
-                        point.plotX =
-                            point.shapeArgs.x + (point.shapeArgs.width / 2);
-                        point.plotY =
-                            point.shapeArgs.y + (point.shapeArgs.height / 2);
+                        var shapeArgs = {
+                                x: Math.min(x1,
+                            x2),
+                                y: Math.min(y1,
+                            y2),
+                                width: Math.abs(x2 - x1),
+                                height: Math.abs(y2 - y1)
+                            };
+                        point.plotX = shapeArgs.x + (shapeArgs.width / 2);
+                        point.plotY = shapeArgs.y + (shapeArgs.height / 2);
+                        point.shapeArgs = shapeArgs;
                     }
                     else {
                         // Reset visibility
@@ -1718,6 +1721,12 @@
                 // @todo Only if series.isDirtyData is true
                 tree = series.tree = series.getTree();
                 rootNode = series.nodeMap[rootId];
+                if (rootId !== '' &&
+                    (!rootNode || !rootNode.children.length)) {
+                    series.setRootNode('', false);
+                    rootId = series.rootNode;
+                    rootNode = series.nodeMap[rootId];
+                }
                 series.renderTraverseUpButton(rootId);
                 series.mapOptionsToLevel = getLevelOptions({
                     from: rootNode.level + 1,
@@ -1728,12 +1737,6 @@
                         colorByPoint: options.colorByPoint
                     }
                 });
-                if (rootId !== '' &&
-                    (!rootNode || !rootNode.children.length)) {
-                    series.setRootNode('', false);
-                    rootId = series.rootNode;
-                    rootNode = series.nodeMap[rootId];
-                }
                 // Parents of the root node is by default visible
                 TreemapUtilities.recursive(series.nodeMap[series.rootNode], function (node) {
                     var next = false,
@@ -3146,6 +3149,7 @@
                         plotX: shape.plotX,
                         plotY: shape.plotY,
                         value: node.val,
+                        isInside: visible,
                         isNull: !visible // used for dataLabels & point.draw
                     });
                     point.dlOptions = getDlOptions({

@@ -216,8 +216,8 @@ var defaultInstrumentOptions = {
  * @return {void}
  */
 function pointSonify(options) {
-    var _a;
-    var point = this, chart = point.series.chart, masterVolume = pick(options.masterVolume, (_a = chart.options.sonification) === null || _a === void 0 ? void 0 : _a.masterVolume), dataExtremes = options.dataExtremes || {}, 
+    var point = this, chart = point.series.chart, masterVolume = pick(options.masterVolume, chart.options.sonification &&
+        chart.options.sonification.masterVolume), dataExtremes = options.dataExtremes || {}, 
     // Get the value to pass to instrument.play from the mapping value
     // passed in.
     getMappingValue = function (value, makeFunction, allowedExtremes) {

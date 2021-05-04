@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Wojciech Chmiel
  *
@@ -395,20 +395,6 @@
              * @optionparent plotOptions.aroonoscillator
              */
             AroonOscillatorIndicator.defaultOptions = merge(AroonIndicator.defaultOptions, {
-                /**
-                 * Paramters used in calculation of aroon oscillator series points.
-                 *
-                 * @excluding periods, index
-                 */
-                params: {
-                    /**
-                     * Period for Aroon Oscillator
-                     *
-                     * @since   7.0.0
-                     * @product highstock
-                     */
-                    period: 25
-                },
                 tooltip: {
                     pointFormat: '<span style="color:{point.color}">\u25CF</span><b> {series.name}</b>: {point.y}'
                 }

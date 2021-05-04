@@ -247,20 +247,21 @@ AccessibilityComponent.prototype = {
      */
     setProxyButtonStyle: function (button) {
         merge(true, button.style, {
-            'border-width': 0,
-            'background-color': 'transparent',
+            borderWidth: '0',
+            backgroundColor: 'transparent',
             cursor: 'pointer',
             outline: 'none',
-            opacity: 0.001,
+            opacity: '0.001',
             filter: 'alpha(opacity=1)',
-            '-ms-filter': 'progid:DXImageTransform.Microsoft.Alpha(Opacity=1)',
-            zIndex: 999,
+            zIndex: '999',
             overflow: 'hidden',
-            padding: 0,
-            margin: 0,
+            padding: '0',
+            margin: '0',
             display: 'block',
             position: 'absolute'
         });
+        button.style['-ms-filter'] =
+            'progid:DXImageTransform.Microsoft.Alpha(Opacity=1)';
     },
     /**
      * @private
@@ -297,7 +298,11 @@ AccessibilityComponent.prototype = {
                     component.fireEventOnWrappedOrUnwrappedElement(source, clonedEvent);
                 }
                 e.stopPropagation();
-                e.preventDefault();
+                // #9682, #15318: Touch scrolling didnt work when touching a
+                // component
+                if (evtType !== 'touchstart' && evtType !== 'touchmove' && evtType !== 'touchend') {
+                    e.preventDefault();
+                }
             }, { passive: false });
         });
     },

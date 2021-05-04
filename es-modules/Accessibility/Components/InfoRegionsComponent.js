@@ -9,11 +9,13 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
+import AST from '../../Core/Renderer/HTML/AST.js';
+import F from '../../Core/FormatUtilities.js';
+var format = F.format;
 import H from '../../Core/Globals.js';
 var doc = H.doc;
-import AST from '../../Core/Renderer/HTML/AST.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, format = U.format, pick = U.pick;
+var extend = U.extend, pick = U.pick;
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import Announcer from '../Utils/Announcer.js';
 import AnnotationsA11y from './AnnotationsA11y.js';
@@ -239,9 +241,10 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
      * @return {string}
      */
     defaultBeforeChartFormatter: function () {
-        var _a;
         var chart = this.chart, format = chart.options.accessibility
-            .screenReaderSection.beforeChartFormat, axesDesc = this.getAxesDescription(), shouldHaveSonifyBtn = chart.sonify && ((_a = chart.options.sonification) === null || _a === void 0 ? void 0 : _a.enabled), sonifyButtonId = 'highcharts-a11y-sonify-data-btn-' +
+            .screenReaderSection.beforeChartFormat, axesDesc = this.getAxesDescription(), shouldHaveSonifyBtn = (chart.sonify &&
+            chart.options.sonification &&
+            chart.options.sonification.enabled), sonifyButtonId = 'highcharts-a11y-sonify-data-btn-' +
             chart.index, dataTableButtonId = 'hc-linkto-highcharts-data-table-' +
             chart.index, annotationsList = getAnnotationsInfoHTML(chart), annotationsTitleStr = chart.langFormat('accessibility.screenReaderSection.annotations.heading', { chart: chart }), context = {
             headingTagName: getHeadingTagNameForElement(chart.renderTo),
@@ -317,9 +320,9 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
      * @return {string}
      */
     getSonifyButtonText: function (buttonId) {
-        var _a;
         var chart = this.chart;
-        if (((_a = chart.options.sonification) === null || _a === void 0 ? void 0 : _a.enabled) === false) {
+        if (chart.options.sonification &&
+            chart.options.sonification.enabled === false) {
             return '';
         }
         var buttonText = chart.langFormat('accessibility.sonification.playAsSoundButtonText', { chart: chart, chartTitle: getChartTitle(chart) });
@@ -375,15 +378,19 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
         var el = this.sonifyButton = getElement(sonifyButtonId);
         var chart = this.chart;
         var defaultHandler = function (e) {
-            el === null || el === void 0 ? void 0 : el.setAttribute('aria-hidden', 'true');
-            el === null || el === void 0 ? void 0 : el.setAttribute('aria-label', '');
+            if (el) {
+                el.setAttribute('aria-hidden', 'true');
+                el.setAttribute('aria-label', '');
+            }
             e.preventDefault();
             e.stopPropagation();
             var announceMsg = chart.langFormat('accessibility.sonification.playAsSoundClickAnnouncement', { chart: chart });
             _this.announcer.announce(announceMsg);
             setTimeout(function () {
-                el === null || el === void 0 ? void 0 : el.removeAttribute('aria-hidden');
-                el === null || el === void 0 ? void 0 : el.removeAttribute('aria-label');
+                if (el) {
+                    el.removeAttribute('aria-hidden');
+                    el.removeAttribute('aria-label');
+                }
                 if (chart.sonify) {
                     chart.sonify();
                 }
@@ -391,11 +398,11 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
         };
         if (el && chart) {
             setElAttrs(el, {
-                tabindex: '-1'
+                tabindex: -1
             });
             el.onclick = function (e) {
-                var _a;
-                var onPlayAsSoundClick = (_a = chart.options.accessibility) === null || _a === void 0 ? void 0 : _a.screenReaderSection.onPlayAsSoundClick;
+                var onPlayAsSoundClick = (chart.options.accessibility &&
+                    chart.options.accessibility.screenReaderSection.onPlayAsSoundClick);
                 (onPlayAsSoundClick || defaultHandler).call(this, e, chart);
             };
         }
@@ -409,7 +416,7 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
         var el = this.viewDataTableButton = getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
         if (el) {
             setElAttrs(el, {
-                tabindex: '-1',
+                tabindex: -1,
                 'aria-expanded': !!getElement(tableId)
             });
             el.onclick = chart.options.accessibility
@@ -462,8 +469,9 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
      * Remove component traces
      */
     destroy: function () {
-        var _a;
-        (_a = this.announcer) === null || _a === void 0 ? void 0 : _a.destroy();
+        if (this.announcer) {
+            this.announcer.destroy();
+        }
     }
 });
 export default InfoRegionsComponent;

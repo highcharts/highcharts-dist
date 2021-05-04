@@ -1,7 +1,7 @@
 /*
- Highstock JS v9.0.1 (2021-02-15)
+ Highstock JS v9.1.0 (2021-05-03)
 
- Indicator series type for Highstock
+ Indicator series type for Highcharts Stock
 
  (c) 2010-2021 Wojciech Chmiel
 
@@ -14,6 +14,6 @@ u;v=0<v?v:0;for(var F={options:{gapSize:d.gapSize}},m={top:[],bottom:[],intersec
 1,3)),!p&&k&&a.yData[k.index+1]&&(p=t(a,k.index+1,3)),!f&&h&&a.yData[h.index+1]?f=t(a,h.index+1,3):!f&&k&&a.yData[k.index-1]&&(f=t(a,k.index-1,3)),b&&f&&k&&h&&b.x!==f.x&&(b.x===k.x?(h=f,f=k):b.x===h.x?(f=h,h={close:a.yData[f.index-1][3],x:a.xData[f.index-1]}):p&&b.x===p.x&&(f=p,h=k)),l&&h&&f?(k={x:l.x,plotX:l.plotX,plotY:l.plotY,isNull:!1},b.y>=f.close&&l.y>=h.close?(b.color=q||d.fallingTrendColor||d.color,m.top.push(r)):b.y<f.close&&l.y<h.close?(b.color=q||d.risingTrendColor||d.color,m.bottom.push(r)):
 (m.intersect.push(r),m.intersect.push(k),m.intersect.push(x(k,{isNull:!0})),b.y>=f.close&&l.y<h.close?(b.color=q||d.fallingTrendColor||d.color,l.color=q||d.risingTrendColor||d.color,m.top.push(r),m.top.push(x(k,{isNull:!0}))):b.y<f.close&&l.y>=h.close&&(b.color=q||d.risingTrendColor||d.color,l.color=q||d.fallingTrendColor||d.color,m.bottom.push(r),m.bottom.push(x(k,{isNull:!0}))))):f&&(b.y>=f.close?(b.color=q||d.fallingTrendColor||d.color,m.top.push(r)):(b.color=q||d.risingTrendColor||d.color,m.bottom.push(r)));
 E(m,function(a,b){c.points=a;c.options=x(w[b].styles,F);c.graph=c["graph"+b+"Line"];z.prototype.drawGraph.call(c);c["graph"+b+"Line"]=c.graph});c.points=g;c.options=d;c.graph=n};e.prototype.getValues=function(a,d){var c=d.period;d=d.multiplier;var e=a.xData,g=a.yData,n=[],u=[],v=[],t=0===c?0:c-1,m=[],w=[],b;if(!(e.length<=c||!D(g[0])||4!==g[0].length||0>c)){a=C.prototype.getValues.call(this,a,{period:c}).yData;for(b=0;b<a.length;b++){var l=g[t+b];var f=g[t+b-1]||[];var h=m[b-1];var k=w[b-1];var p=
-v[b-1];0===b&&(h=k=p=0);c=A((l[1]+l[2])/2+d*a[b]);var q=A((l[1]+l[2])/2-d*a[b]);m[b]=c<h||f[3]>h?c:h;w[b]=q>k||f[3]<k?q:k;if(p===h&&l[3]<m[b]||p===k&&l[3]<w[b])var r=m[b];else if(p===h&&l[3]>m[b]||p===k&&l[3]>w[b])r=w[b];n.push([e[t+b],r]);u.push(e[t+b]);v.push(r)}return{values:n,xData:u,yData:v}}};e.defaultOptions=x(z.defaultOptions,{params:{multiplier:3,period:10},risingTrendColor:a.indicatorPositiveLine,fallingTrendColor:a.indicatorNegativeLine,changeTrendLine:{styles:{lineWidth:1,lineColor:a.neutralColor80,
+v[b-1];0===b&&(h=k=p=0);c=A((l[1]+l[2])/2+d*a[b]);var q=A((l[1]+l[2])/2-d*a[b]);m[b]=c<h||f[3]>h?c:h;w[b]=q>k||f[3]<k?q:k;if(p===h&&l[3]<m[b]||p===k&&l[3]<w[b])var r=m[b];else if(p===h&&l[3]>m[b]||p===k&&l[3]>w[b])r=w[b];n.push([e[t+b],r]);u.push(e[t+b]);v.push(r)}return{values:n,xData:u,yData:v}}};e.defaultOptions=x(z.defaultOptions,{params:{index:void 0,multiplier:3,period:10},risingTrendColor:a.positiveColor,fallingTrendColor:a.negativeColor,changeTrendLine:{styles:{lineWidth:1,lineColor:a.neutralColor80,
 dashStyle:"LongDash"}}});return e}(z);y(n.prototype,{nameBase:"Supertrend",nameComponents:["multiplier","period"],requiredIndicators:["atr"]});g.registerSeriesType("supertrend",n);"";return n});g(a,"masters/indicators/supertrend.src.js",[],function(){})});
 //# sourceMappingURL=supertrend.js.map

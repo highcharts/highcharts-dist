@@ -112,7 +112,7 @@ var VectorSeries = /** @class */ (function (_super) {
     };
     /*
     drawLegendSymbol: function (legend, item) {
-        var options = legend.options,
+        let options = legend.options,
             symbolHeight = legend.symbolHeight,
             square = options.squareSymbol,
             symbolWidth = square ? symbolHeight : legend.symbolWidth,
@@ -143,7 +143,7 @@ var VectorSeries = /** @class */ (function (_super) {
         this.points.forEach(function (point) {
             var plotX = point.plotX, plotY = point.plotY;
             if (this.options.clip === false ||
-                chart.isInsidePlot(plotX, plotY, chart.inverted)) {
+                chart.isInsidePlot(plotX, plotY, { inverted: chart.inverted })) {
                 if (!point.graphic) {
                     point.graphic = this.chart.renderer
                         .path()

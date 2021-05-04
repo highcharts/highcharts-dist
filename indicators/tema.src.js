@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Rafal Sebestjanski
  *
@@ -286,10 +286,10 @@
          *
          * */
         /**
-         * A `TEMA` series. If the [type](#series.ema.type) option is not
+         * A `TEMA` series. If the [type](#series.tema.type) option is not
          * specified, it is inherited from [chart.type](#chart.type).
          *
-         * @extends   series,plotOptions.ema
+         * @extends   series,plotOptions.tema
          * @since     7.0.0
          * @product   highstock
          * @excluding allAreas, colorAxis, compare, compareBase, dataParser, dataURL,

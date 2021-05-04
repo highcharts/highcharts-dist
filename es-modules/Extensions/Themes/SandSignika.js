@@ -12,8 +12,10 @@
 'use strict';
 /* global document */
 import Highcharts from '../../Core/Globals.js';
+import O from '../../Core/Options.js';
+var setOptions = O.setOptions;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, createElement = U.createElement, setOptions = U.setOptions;
+var addEvent = U.addEvent, createElement = U.createElement;
 // Load the fonts
 createElement('link', {
     href: 'https://fonts.googleapis.com/css?family=Signika:400,700',
@@ -87,7 +89,7 @@ Highcharts.theme = {
             shadow: false
         }
     },
-    // Highstock specific
+    // Highcharts Stock specific
     navigator: {
         xAxis: {
             gridLineColor: '#D0D0D8'

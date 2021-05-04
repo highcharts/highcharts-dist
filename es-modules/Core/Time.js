@@ -92,7 +92,7 @@ var defined = U.defined, error = U.error, extend = U.extend, isObject = U.isObje
  * });
  *
  * // Apply time settings by instance
- * var chart = Highcharts.chart('container', {
+ * let chart = Highcharts.chart('container', {
  *     time: {
  *         timezone: 'America/New_York'
  *     },
@@ -402,14 +402,15 @@ var Time = /** @class */ (function () {
      *         The formatted date.
      */
     Time.prototype.dateFormat = function (format, timestamp, capitalize) {
-        var _a;
         if (!defined(timestamp) || isNaN(timestamp)) {
-            return ((_a = H.defaultOptions.lang) === null || _a === void 0 ? void 0 : _a.invalidDate) || '';
+            return (H.defaultOptions.lang &&
+                H.defaultOptions.lang.invalidDate ||
+                '');
         }
         format = pick(format, '%Y-%m-%d %H:%M:%S');
         var time = this, date = new this.Date(timestamp), 
         // get the basic time values
-        hours = this.get('Hours', date), day = this.get('Day', date), dayOfMonth = this.get('Date', date), month = this.get('Month', date), fullYear = this.get('FullYear', date), lang = H.defaultOptions.lang, langWeekdays = lang === null || lang === void 0 ? void 0 : lang.weekdays, shortWeekdays = lang === null || lang === void 0 ? void 0 : lang.shortWeekdays, 
+        hours = this.get('Hours', date), day = this.get('Day', date), dayOfMonth = this.get('Date', date), month = this.get('Month', date), fullYear = this.get('FullYear', date), lang = H.defaultOptions.lang, langWeekdays = (lang && lang.weekdays), shortWeekdays = (lang && lang.shortWeekdays), 
         // List all format keys. Custom formats can be added from the
         // outside.
         replacements = extend({

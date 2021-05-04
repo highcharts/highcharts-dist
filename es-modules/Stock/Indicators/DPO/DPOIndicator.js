@@ -127,6 +127,7 @@ var DPOIndicator = /** @class */ (function (_super) {
          * points.
          */
         params: {
+            index: 0,
             /**
              * Period for Detrended Price Oscillator
              */

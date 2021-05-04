@@ -209,10 +209,10 @@ var SMAIndicator = /** @class */ (function (_super) {
             recalculateValues();
         }
         else {
-            var unbinder = addEvent(indicator.chart, indicator.calculateOn, function () {
+            var unbinder_1 = addEvent(indicator.chart, indicator.calculateOn, function () {
                 recalculateValues();
                 // Call this just once, on init
-                unbinder();
+                unbinder_1();
             });
         }
         // return indicator;

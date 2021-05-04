@@ -114,8 +114,8 @@ var Series = /** @class */ (function () {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    Series.prototype.init = function (chart, options) {
-        fireEvent(this, 'init', { options: options });
+    Series.prototype.init = function (chart, userOptions) {
+        fireEvent(this, 'init', { options: userOptions });
         var series = this, events, chartSeries = chart.series, lastSeries;
         // A lookup over those events that are added by _options_ (not
         // programmatically). These are updated through Series.update()
@@ -147,11 +147,11 @@ var Series = /** @class */ (function () {
          * @name Highcharts.Series#options
          * @type {Highcharts.SeriesOptionsType}
          */
-        series.options = options = series.setOptions(options);
+        series.options = series.setOptions(userOptions);
+        var options = series.options;
         series.linkedSeries = [];
         // bind the axes
         series.bindAxes();
-        // set some variables
         extend(series, {
             /**
              * The series name as given in the options. Defaults to
@@ -296,14 +296,15 @@ var Series = /** @class */ (function () {
         fireEvent(this, 'bindAxes', null, function () {
             // repeat for xAxis and yAxis
             (series.axisTypes || []).forEach(function (AXIS) {
+                var index = 0;
                 // loop through the chart's axis objects
                 chart[AXIS].forEach(function (axis) {
                     axisOptions = axis.options;
                     // apply if the series xAxis or yAxis option mathches
                     // the number of the axis, or if undefined, use the
                     // first axis
-                    if (seriesOptions[AXIS] ===
-                        axisOptions.index ||
+                    if ((seriesOptions[AXIS] === index &&
+                        !axisOptions.isInternal) ||
                         (typeof seriesOptions[AXIS] !==
                             'undefined' &&
                             seriesOptions[AXIS] === axisOptions.id) ||
@@ -330,6 +331,9 @@ var Series = /** @class */ (function () {
                         series[AXIS] = axis;
                         // mark dirty for redraw
                         axis.isDirty = true;
+                    }
+                    if (!axisOptions.isInternal) {
+                        index++;
                     }
                 });
                 // The series needs an X and an Y axis
@@ -580,9 +584,7 @@ var Series = /** @class */ (function () {
             this.getCyclic('color');
         }
         else if (this.options.colorByPoint) {
-            // #4359, selected slice got series.color even when colorByPoint
-            // was set.
-            this.options.color = null;
+            this.color = palette.neutralColor20;
         }
         else {
             this.getCyclic('color', this.options.color ||
@@ -789,7 +791,7 @@ var Series = /** @class */ (function () {
      * @sample highcharts/members/series-setdata-pie/
      *         Set data in a pie
      * @sample stock/members/series-setdata/
-     *         Set new data in Highstock
+     *         Set new data in Highcharts Stock
      * @sample maps/members/series-setdata/
      *         Set new data in Highmaps
      *
@@ -1068,7 +1070,7 @@ var Series = /** @class */ (function () {
     };
     /**
      * Internal function to apply processed data.
-     * In Highstock, this function is extended to provide data grouping.
+     * In Highcharts Stock, this function is extended to provide data grouping.
      *
      * @private
      * @function Highcharts.Series#processData
@@ -1143,7 +1145,10 @@ var Series = /** @class */ (function () {
      * @function Highcharts.Series#generatePoints
      */
     Series.prototype.generatePoints = function () {
-        var series = this, options = series.options, dataOptions = options.data, data = series.data, dataLength, processedXData = series.processedXData, processedYData = series.processedYData, PointClass = series.pointClass, processedDataLength = processedXData.length, cropStart = series.cropStart || 0, cursor, hasGroupedData = series.hasGroupedData, keys = options.keys, point, points = [], i;
+        var series = this, options = series.options, dataOptions = options.data, data = series.data, dataLength, processedXData = series.processedXData, processedYData = series.processedYData, PointClass = series.pointClass, processedDataLength = processedXData.length, cropStart = series.cropStart || 0, cursor, hasGroupedData = series.hasGroupedData, keys = options.keys, point, points = [], i, groupCropStartIndex = (options.dataGrouping &&
+            options.dataGrouping.groupAll ?
+            cropStart :
+            0);
         if (!data && !hasGroupedData) {
             var arr = [];
             arr.length = dataOptions.length;
@@ -1167,7 +1172,7 @@ var Series = /** @class */ (function () {
                 // splat the y data in case of ohlc data array
                 point = (new PointClass()).init(series, [processedXData[i]].concat(splat(processedYData[i])));
                 /**
-                 * Highstock only. If a point object is created by data
+                 * Highcharts Stock only. If a point object is created by data
                  * grouping, it doesn't reflect actual points in the raw
                  * data. In this case, the `dataGroup` property holds
                  * information that points back to the raw data.
@@ -1183,7 +1188,7 @@ var Series = /** @class */ (function () {
                  * @name Highcharts.Point#dataGroup
                  * @type {Highcharts.DataGroupingInfoObject|undefined}
                  */
-                point.dataGroup = series.groupMap[i];
+                point.dataGroup = series.groupMap[groupCropStartIndex + i];
                 if (point.dataGroup.options) {
                     point.options = point.dataGroup.options;
                     extend(point, point.dataGroup.options);
@@ -1199,7 +1204,8 @@ var Series = /** @class */ (function () {
                  * @type {number}
                  * @readonly
                  */
-                point.index = cursor; // For faster access in Point.update
+                // For faster access in Point.update
+                point.index = hasGroupedData ? (groupCropStartIndex + i) : cursor;
                 points[i] = point;
             }
         }
@@ -1417,7 +1423,7 @@ var Series = /** @class */ (function () {
                 yValue <
                     (stackThreshold ? 0 : threshold) ?
                 '-' :
-                '') + series.stackKey], pointStack, stackValues;
+                '') + series.stackKey], pointStack = void 0, stackValues = void 0;
             if (yAxis.positiveValuesOnly && !yAxis.validatePositiveValue(yValue) ||
                 xAxis.positiveValuesOnly && !xAxis.validatePositiveValue(xValue)) {
                 point.isNull = true;
@@ -1470,7 +1476,7 @@ var Series = /** @class */ (function () {
             point.yBottom = defined(yBottom) ?
                 limitedRange(yAxis.translate(yBottom, 0, 1, 0, 1)) :
                 null;
-            // general hook, used for Highstock compare mode
+            // general hook, used for Highcharts Stock compare mode
             if (hasModifyValue) {
                 yValue = series.modifyValue(yValue, point);
             }
@@ -1536,7 +1542,7 @@ var Series = /** @class */ (function () {
         var chart = this.chart;
         // #3916, #5029, #5085
         return (points || this.points || []).filter(function (point) {
-            if (insideOnly && !chart.isInsidePlot(point.plotX, point.plotY, chart.inverted)) {
+            if (insideOnly && !chart.isInsidePlot(point.plotX, point.plotY, { inverted: chart.inverted })) {
                 return false;
             }
             return point.visible !== false &&
@@ -1591,6 +1597,29 @@ var Series = /** @class */ (function () {
         };
     };
     /**
+     * Get the shared clip key, creating it if it doesn't exist.
+     *
+     * @private
+     * @function Highcharts.Series#getSharedClipKey
+     */
+    Series.prototype.getSharedClipKey = function (animation) {
+        if (this.sharedClipKey) {
+            return this.sharedClipKey;
+        }
+        var sharedClipKey = [
+            animation && animation.duration,
+            animation && animation.easing,
+            animation && animation.defer,
+            this.getClipBox(animation).height,
+            this.options.xAxis,
+            this.options.yAxis
+        ].join(',');
+        if (this.options.clip !== false || animation) {
+            this.sharedClipKey = sharedClipKey;
+        }
+        return sharedClipKey;
+    };
+    /**
      * Set the clipping for the series. For animated series it is called
      * twice, first to initiate animating the clip then the second time
      * without the animation to set the final clip.
@@ -1599,17 +1628,8 @@ var Series = /** @class */ (function () {
      * @function Highcharts.Series#setClip
      */
     Series.prototype.setClip = function (animation) {
-        var chart = this.chart, options = this.options, renderer = chart.renderer, inverted = chart.inverted, seriesClipBox = this.clipBox, clipBox = this.getClipBox(animation), sharedClipKey = this.sharedClipKey ||
-            [
-                '_sharedClip',
-                animation && animation.duration,
-                animation && animation.easing,
-                animation && animation.defer,
-                clipBox.height,
-                options.xAxis,
-                options.yAxis
-            ].join(','), // #4526
-        clipRect = chart[sharedClipKey], markerClipRect = chart[sharedClipKey + 'm'];
+        var chart = this.chart, options = this.options, renderer = chart.renderer, inverted = chart.inverted, seriesClipBox = this.clipBox, clipBox = this.getClipBox(animation), sharedClipKey = this.getSharedClipKey(animation), // #4526
+        clipRect = chart.sharedClips[sharedClipKey], markerClipRect = chart.sharedClips[sharedClipKey + 'm'];
         if (animation) {
             clipBox.width = 0;
             if (inverted) {
@@ -1622,12 +1642,12 @@ var Series = /** @class */ (function () {
         if (!clipRect) {
             // When animation is set, prepare the initial positions
             if (animation) {
-                chart[sharedClipKey + 'm'] = markerClipRect =
+                chart.sharedClips[sharedClipKey + 'm'] = markerClipRect =
                     renderer.clipRect(
                     // include the width of the first marker
-                    inverted ? chart.plotSizeX + 99 : -99, inverted ? -chart.plotLeft : -chart.plotTop, 99, inverted ? chart.chartWidth : chart.chartHeight);
+                    inverted ? (chart.plotSizeX || 0) + 99 : -99, inverted ? -chart.plotLeft : -chart.plotTop, 99, inverted ? chart.chartWidth : chart.chartHeight);
             }
-            chart[sharedClipKey] = clipRect = renderer.clipRect(clipBox);
+            chart.sharedClips[sharedClipKey] = clipRect = renderer.clipRect(clipBox);
             // Create hashmap for series indexes
             clipRect.count = { length: 0 };
             // When the series is rendered again before starting animating, in
@@ -1645,7 +1665,6 @@ var Series = /** @class */ (function () {
         if (options.clip !== false || animation) {
             this.group.clip(animation || seriesClipBox ? clipRect : chart.clipRect);
             this.markerGroup.clip(markerClipRect);
-            this.sharedClipKey = sharedClipKey;
         }
         // Remove the shared clipping rectangle when all series are shown
         if (!animation) {
@@ -1653,16 +1672,12 @@ var Series = /** @class */ (function () {
                 delete clipRect.count[this.index];
                 clipRect.count.length -= 1;
             }
-            if (clipRect.count.length === 0 &&
-                sharedClipKey &&
-                chart[sharedClipKey]) {
+            if (clipRect.count.length === 0) {
                 if (!seriesClipBox) {
-                    chart[sharedClipKey] =
-                        chart[sharedClipKey].destroy();
+                    chart.sharedClips[sharedClipKey] = clipRect.destroy();
                 }
-                if (chart[sharedClipKey + 'm']) {
-                    chart[sharedClipKey + 'm'] =
-                        chart[sharedClipKey + 'm'].destroy();
+                if (markerClipRect) {
+                    chart.sharedClips[sharedClipKey + 'm'] = markerClipRect.destroy();
                 }
             }
         }
@@ -1680,21 +1695,21 @@ var Series = /** @class */ (function () {
      * Initialize the animation.
      */
     Series.prototype.animate = function (init) {
-        var series = this, chart = series.chart, animation = animObject(series.options.animation), clipRect, sharedClipKey, finalBox;
+        var series = this, chart = series.chart, animation = animObject(series.options.animation), sharedClipKey = this.sharedClipKey;
         // Initialize the animation. Set up the clipping rectangle.
         if (init) {
             series.setClip(animation);
             // Run the animation
         }
-        else {
-            sharedClipKey = this.sharedClipKey;
-            clipRect = chart[sharedClipKey];
-            finalBox = series.getClipBox(animation, true);
+        else if (sharedClipKey) {
+            var clipRect = chart.sharedClips[sharedClipKey];
+            var markerClipRect = chart.sharedClips[sharedClipKey + 'm'];
+            var finalBox = series.getClipBox(animation, true);
             if (clipRect) {
                 clipRect.animate(finalBox, animation);
             }
-            if (chart[sharedClipKey + 'm']) {
-                chart[sharedClipKey + 'm'].animate({
+            if (markerClipRect) {
+                markerClipRect.animate({
                     width: finalBox.width + 99,
                     x: finalBox.x - (chart.inverted ? 0 : 99)
                 }, animation);
@@ -1747,7 +1762,7 @@ var Series = /** @class */ (function () {
                     // Set starting position for point sliding animation.
                     if (series.enabledDataSorting) {
                         point.startXPos = xAxis.reversed ?
-                            -markerAttribs.width :
+                            -(markerAttribs.width || 0) :
                             xAxis.width;
                     }
                     var isInside = point.isInside !== false;
@@ -1758,7 +1773,7 @@ var Series = /** @class */ (function () {
                             .animate(markerAttribs);
                     }
                     else if (isInside &&
-                        (markerAttribs.width > 0 || point.hasImage)) {
+                        ((markerAttribs.width || 0) > 0 || point.hasImage)) {
                         /**
                          * The graphic representation of the point.
                          * Typically this is a simple shape, like a `rect`
@@ -1842,7 +1857,7 @@ var Series = /** @class */ (function () {
         attribs = {
             // Math.floor for #1843:
             x: seriesOptions.crisp ?
-                Math.floor(point.plotX) - radius :
+                Math.floor(point.plotX - radius) :
                 point.plotX - radius,
             y: point.plotY - radius
         };
@@ -1938,7 +1953,9 @@ var Series = /** @class */ (function () {
                 point.destroy();
             }
         }
-        series.points = null;
+        if (series.clips) {
+            series.clips.forEach(function (clip) { return clip.destroy(); });
+        }
         // Clear the animation timeout if we are destroying the series
         // during initial animation
         U.clearTimeout(series.animationTimeout);
@@ -1955,7 +1972,7 @@ var Series = /** @class */ (function () {
         });
         // remove from hoverSeries
         if (chart.hoverSeries === series) {
-            chart.hoverSeries = null;
+            chart.hoverSeries = void 0;
         }
         erase(chart.series, series);
         chart.orderSeries();
@@ -2223,7 +2240,8 @@ var Series = /** @class */ (function () {
         // hidden, and looks bad in other oldIE
         animDuration = (!series.finishedAnimating &&
             chart.renderer.isSVG &&
-            animOptions.duration), visibility = series.visible ? 'inherit' : 'hidden', // #2597
+            animOptions.duration), visibility = series.visible ?
+            'inherit' : 'hidden', // #2597
         zIndex = options.zIndex, hasRendered = series.hasRendered, chartSeriesGroup = chart.seriesGroup, inverted = chart.inverted;
         fireEvent(this, 'render');
         // the group
@@ -2543,17 +2561,23 @@ var Series = /** @class */ (function () {
             // The tracker is added to the series group, which is clipped, but
             // is covered by the marker group. So the marker group also needs to
             // capture events.
-            [series.tracker, series.markerGroup].forEach(function (tracker) {
-                tracker.addClass('highcharts-tracker')
-                    .on('mouseover', onMouseOver)
-                    .on('mouseout', function (e) {
-                    pointer.onTrackerMouseOut(e);
-                });
-                if (options.cursor && !chart.styledMode) {
-                    tracker.css({ cursor: options.cursor });
-                }
-                if (hasTouch) {
-                    tracker.on('touchstart', onMouseOver);
+            [
+                series.tracker,
+                series.markerGroup,
+                series.dataLabelsGroup
+            ].forEach(function (tracker) {
+                if (tracker) {
+                    tracker.addClass('highcharts-tracker')
+                        .on('mouseover', onMouseOver)
+                        .on('mouseout', function (e) {
+                        pointer.onTrackerMouseOut(e);
+                    });
+                    if (options.cursor && !chart.styledMode) {
+                        tracker.css({ cursor: options.cursor });
+                    }
+                    if (hasTouch) {
+                        tracker.on('touchstart', onMouseOver);
+                    }
                 }
             });
         }
@@ -2573,9 +2597,9 @@ var Series = /** @class */ (function () {
      * @sample highcharts/members/series-addpoint-pie/
      *         Append pie slice
      * @sample stock/members/series-addpoint/
-     *         Append 100 points in Highstock
+     *         Append 100 points in Highcharts Stock
      * @sample stock/members/series-addpoint-shift/
-     *         Append and shift in Highstock
+     *         Append and shift in Highcharts Stock
      * @sample maps/members/series-addpoint/
      *         Add a point in Highmaps
      *
@@ -2668,7 +2692,7 @@ var Series = /** @class */ (function () {
      * Remove a point from the series. Unlike the
      * {@link Highcharts.Point#remove} method, this can also be done on a point
      * that is not instanciated because it is outside the view or subject to
-     * Highstock data grouping.
+     * Highcharts Stock data grouping.
      *
      * @sample highcharts/members/series-removepoint/
      *         Remove cropped point
@@ -2827,8 +2851,9 @@ var Series = /** @class */ (function () {
         // directly after chart initialization, or when applying responsive
         // rules (#6912).
         animation = series.finishedAnimating && { animation: false }, kinds = {};
+        newType = newType || initialType;
         if (keepPoints) {
-            preserve.push('data', 'isDirtyData', 'points', 'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 
+            preserve.push('data', 'isDirtyData', 'points', 'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 'clips', // #15420
             // Networkgraph (#14397)
             'nodes', 'layout', 
             // Map specific, consider moving it to series-specific preserve-
@@ -2872,15 +2897,18 @@ var Series = /** @class */ (function () {
             preserve[prop] = series[prop];
             delete series[prop];
         });
-        if (seriesTypes[newType || initialType]) {
-            var casting = newType !== series.type;
+        var casting = false;
+        if (seriesTypes[newType]) {
+            casting = newType !== series.type;
             // Destroy the series and delete all properties, it will be
             // reinserted within the `init` call below
             series.remove(false, false, false, true);
             if (casting) {
                 // Modern browsers including IE11
+                // @todo slow, consider alternatives mentioned:
+                // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
                 if (Object.setPrototypeOf) {
-                    Object.setPrototypeOf(series, seriesTypes[newType || initialType].prototype);
+                    Object.setPrototypeOf(series, seriesTypes[newType].prototype);
                     // Legacy (IE < 11)
                 }
                 else {
@@ -2891,7 +2919,7 @@ var Series = /** @class */ (function () {
                     }
                     // Reinsert all methods and properties from the new type
                     // prototype (#2270, #3719).
-                    extend(series, seriesTypes[newType || initialType].prototype);
+                    extend(series, seriesTypes[newType].prototype);
                     // The events are tied to the prototype chain, don't copy if
                     // they're not the series' own
                     if (ownEvents) {
@@ -2904,7 +2932,7 @@ var Series = /** @class */ (function () {
             }
         }
         else {
-            error(17, true, chart, { missingModuleFor: (newType || initialType) });
+            error(17, true, chart, { missingModuleFor: newType });
         }
         // Re-register groups (#3094) and other preserved properties
         preserve.forEach(function (prop) {
@@ -2950,6 +2978,11 @@ var Series = /** @class */ (function () {
         }
         series.initialType = initialType;
         chart.linkSeries(); // Links are lost in series.remove (#3028)
+        // #15383: Fire updatedData if the type has changed to keep linked
+        // series such as indicators updated
+        if (casting && series.linkedSeries.length) {
+            series.isDirtyData = true;
+        }
         fireEvent(this, 'afterUpdate');
         if (pick(redraw, true)) {
             chart.redraw(keepPoints ? void 0 : false);
@@ -3260,6 +3293,21 @@ var Series = /** @class */ (function () {
             series.checkbox.checked = selected;
         }
         fireEvent(series, selected ? 'select' : 'unselect');
+    };
+    /**
+     * Checks if a tooltip should be shown for a given point.
+     *
+     * @private
+     * @param {number} plotX
+     * @param {number} plotY
+     * @param {Highcharts.ChartIsInsideOptionsObject} [options]
+     * @return {boolean}
+     */
+    Series.prototype.shouldShowTooltip = function (plotX, plotY, options) {
+        if (options === void 0) { options = {}; }
+        options.series = this;
+        options.visiblePlotOnly = true;
+        return this.chart.isInsidePlot(plotX, plotY, options);
     };
     /**
      * General options for all series types.
@@ -4208,6 +4256,8 @@ var Series = /** @class */ (function () {
              *         Bigger markers
              *
              * @default {highstock} 2
+             * @default {highcharts} 4
+             *
              */
             radius: 4,
             /**
@@ -4710,11 +4760,13 @@ var Series = /** @class */ (function () {
              * series animation has finished. Setting to `false` renders the
              * data label immediately. If set to `true` inherits the defer
              * time set in [plotOptions.series.animation](#plotOptions.series.animation).
+             * If set to a number, a defer time is specified in milliseconds.
              *
              * @sample highcharts/plotoptions/animation-defer
              *         Set defer time
              *
              * @since     4.0.0
+             * @type      {boolean|number}
              * @product   highcharts highstock gantt
              */
             defer: true,
@@ -5529,7 +5581,7 @@ export default Series;
  * */
 /**
  * This is a placeholder type of the possible series options for
- * [Highcharts](../highcharts/series), [Highstock](../highstock/series),
+ * [Highcharts](../highcharts/series), [Highcharts Stock](../highstock/series),
  * [Highmaps](../highmaps/series), and [Gantt](../gantt/series).
  *
  * In TypeScript is this dynamically generated to reference all possible types

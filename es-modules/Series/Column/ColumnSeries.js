@@ -90,7 +90,7 @@ var ColumnSeries = /** @class */ (function (_super) {
             else {
                 attr.translateY = translatedThreshold;
             }
-            // apply finnal clipping (used in Highstock) (#7083)
+            // apply finnal clipping (used in Highcharts Stock) (#7083)
             // animation is done by scaleY, so cliping is for panes
             if (series.clipBox) {
                 series.setClip();
@@ -98,7 +98,7 @@ var ColumnSeries = /** @class */ (function (_super) {
             series.group.attr(attr);
         }
         else { // run the animation
-            translateStart = series.group.attr(translateProp);
+            translateStart = Number(series.group.attr(translateProp));
             series.group.animate({ scaleY: 1 }, extend(animObject(series.options.animation), {
                 // Do the scale synchronously to ensure smooth
                 // updating (#5030, #7228)
@@ -121,7 +121,8 @@ var ColumnSeries = /** @class */ (function (_super) {
      */
     ColumnSeries.prototype.init = function (chart, options) {
         _super.prototype.init.apply(this, arguments);
-        var series = this, chart = series.chart;
+        var series = this;
+        chart = series.chart;
         // if the series is added dynamically, force redraw of other
         // series affected by a new column
         if (chart.hasRendered) {
@@ -157,8 +158,7 @@ var ColumnSeries = /** @class */ (function (_super) {
                 var otherYAxis = otherSeries.yAxis, otherOptions = otherSeries.options, columnIndex;
                 if (otherSeries.type === series.type &&
                     (otherSeries.visible ||
-                        !series.chart.options.chart
-                            .ignoreHiddenSeries) &&
+                        !series.chart.options.chart.ignoreHiddenSeries) &&
                     yAxis.len === otherYAxis.len &&
                     yAxis.pos === otherYAxis.pos) { // #642, #2086
                     if (otherOptions.stacking && otherOptions.stacking !== 'group') {
@@ -378,7 +378,7 @@ var ColumnSeries = /** @class */ (function (_super) {
             point.tooltipPos = chart.inverted ?
                 [
                     clamp(yAxis.len + yAxis.pos - chart.plotLeft - plotY, yAxis.pos - chart.plotLeft, yAxis.len + yAxis.pos - chart.plotLeft),
-                    xAxis.len + xAxis.pos - chart.plotTop - (plotX || 0) - seriesXOffset - barW / 2,
+                    xAxis.len + xAxis.pos - chart.plotTop - barX - barW / 2,
                     barH
                 ] :
                 [
@@ -418,7 +418,6 @@ var ColumnSeries = /** @class */ (function (_super) {
         // set to fill when borderColor null:
         stroke = ((point && point[strokeOption]) ||
             options[strokeOption] ||
-            this.color ||
             fill), strokeWidth = (point && point[strokeWidthOption]) ||
             options[strokeWidthOption] ||
             this[strokeWidthOption] || 0, dashstyle = (point && point.options.dashStyle) || options.dashStyle, opacity = pick(point && point.opacity, options.opacity, 1), zone, brightness;
@@ -490,7 +489,7 @@ var ColumnSeries = /** @class */ (function (_super) {
                 // Set starting position for point sliding animation.
                 if (series.enabledDataSorting) {
                     point.startXPos = series.xAxis.reversed ?
-                        -(shapeArgs ? shapeArgs.width : 0) :
+                        -(shapeArgs ? (shapeArgs.width || 0) : 0) :
                         series.xAxis.width;
                 }
                 if (!graphic) {

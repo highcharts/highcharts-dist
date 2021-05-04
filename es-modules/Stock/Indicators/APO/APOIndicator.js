@@ -131,6 +131,7 @@ var APOIndicator = /** @class */ (function (_super) {
          * @excluding period
          */
         params: {
+            period: void 0,
             /**
              * Periods for Absolute Price Oscillator calculations.
              *

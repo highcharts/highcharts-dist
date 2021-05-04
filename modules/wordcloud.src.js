@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -373,17 +373,21 @@
          * @todo export this function to enable usage
          */
         var draw = function draw(params) {
-                var _a;
-            var component = this,
-                graphic = component.graphic,
-                animatableAttribs = params.animatableAttribs,
+                var _this = this;
+            var animatableAttribs = params.animatableAttribs,
                 onComplete = params.onComplete,
                 css = params.css,
-                renderer = params.renderer,
-                animation = (_a = component.series) === null || _a === void 0 ? void 0 : _a.options.animation;
-            if (component.shouldDraw()) {
+                renderer = params.renderer;
+            var animation = (this.series && this.series.chart.hasRendered) ?
+                    // Chart-level animation on updates
+                    void 0 :
+                    // Series-level animation on new points
+                    (this.series &&
+                        this.series.options.animation);
+            var graphic = this.graphic;
+            if (this.shouldDraw()) {
                 if (!graphic) {
-                    component.graphic = graphic =
+                    this.graphic = graphic =
                         renderer[params.shapeType](params.shapeArgs)
                             .add(params.group);
                 }
@@ -393,8 +397,8 @@
                     .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
             }
             else if (graphic) {
-                var destroy = function () {
-                        component.graphic = graphic = graphic.destroy();
+                var destroy_1 = function () {
+                        _this.graphic = graphic = (graphic && graphic.destroy());
                     if (isFn(onComplete)) {
                         onComplete();
                     }
@@ -402,11 +406,11 @@
                 // animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, void 0, function () {
-                        destroy();
+                        destroy_1();
                     });
                 }
                 else {
-                    destroy();
+                    destroy_1();
                 }
             }
         };
@@ -1160,7 +1164,7 @@
                         lineWidth: 0,
                         maxPadding: 0,
                         startOnTick: false,
-                        title: null,
+                        title: void 0,
                         tickPositions: []
                     };
                 Series.prototype.bindAxes.call(this);
@@ -1284,7 +1288,9 @@
                             x: placement.x,
                             y: placement.y,
                             text: point.name,
-                            rotation: placement.rotation
+                            rotation: isNumber(placement.rotation) ?
+                                placement.rotation :
+                                void 0
                         }),
                         polygon = getPolygon(placement.x,
                         placement.y,
@@ -1318,8 +1324,8 @@
                     // Check if point was placed, if so delete it, otherwise place it
                     // on the correct positions.
                     if (isObject(delta)) {
-                        attr.x += delta.x;
-                        attr.y += delta.y;
+                        attr.x = (attr.x || 0) + delta.x;
+                        attr.y = (attr.y || 0) + delta.y;
                         rectangle.left += delta.x;
                         rectangle.right += delta.x;
                         rectangle.top += delta.y;
@@ -1327,6 +1333,7 @@
                         field = WordcloudUtils.updateFieldBoundaries(field, rectangle);
                         placed.push(point);
                         point.isNull = false;
+                        point.isInside = true; // #15447
                     }
                     else {
                         point.isNull = true;

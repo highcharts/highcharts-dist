@@ -64,7 +64,7 @@ var Pie3DSeries = /** @class */ (function (_super) {
             _super.prototype.animate.apply(this, arguments);
         }
         else {
-            var animation = this.options.animation, attribs, center = this.center, group = this.group, markerGroup = this.markerGroup;
+            var animation = this.options.animation, attribs = void 0, center = this.center, group = this.group, markerGroup = this.markerGroup;
             if (svg) { // VML is too slow anyway
                 if (animation === true) {
                     animation = {};
@@ -107,11 +107,11 @@ var Pie3DSeries = /** @class */ (function (_super) {
      */
     Pie3DSeries.prototype.drawDataLabels = function () {
         if (this.chart.is3d()) {
-            var series = this, chart = series.chart, options3d = chart.options.chart.options3d;
+            var series = this, chart = series.chart, options3d_1 = chart.options.chart.options3d;
             series.data.forEach(function (point) {
                 var shapeArgs = point.shapeArgs, r = shapeArgs.r, 
                 // #3240 issue with datalabels for 0 and null values
-                a1 = (shapeArgs.alpha || options3d.alpha) * deg2rad, b1 = (shapeArgs.beta || options3d.beta) * deg2rad, a2 = (shapeArgs.start + shapeArgs.end) / 2, labelPosition = point.labelPosition, connectorPosition = labelPosition.connectorPosition, yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)), xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
+                a1 = (shapeArgs.alpha || options3d_1.alpha) * deg2rad, b1 = (shapeArgs.beta || options3d_1.beta) * deg2rad, a2 = (shapeArgs.start + shapeArgs.end) / 2, labelPosition = point.labelPosition, connectorPosition = labelPosition.connectorPosition, yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)), xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
                 // Apply perspective on label positions
                 [
                     labelPosition.natural,
@@ -173,7 +173,7 @@ var Pie3DSeries = /** @class */ (function (_super) {
     };
     return Pie3DSeries;
 }(PieSeries));
-extend(Pie3DSeries, {
+extend(Pie3DSeries.prototype, {
     pointClass: Pie3DPoint
 });
 /* *

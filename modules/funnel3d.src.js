@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Highcharts funnel module
  *
@@ -366,7 +366,8 @@
              * Generates paths and zIndexes.
              * @private
              */
-            funnel3dPath: function (shapeArgs) {
+            funnel3dPath: function (shapeArgs // @todo: Type it. It's an extended SVGAttributes.
+            ) {
                 // Check getCylinderEnd for better error message if
                 // the cylinder module is missing
                 if (!this.getCylinderEnd) {
@@ -601,12 +602,12 @@
                 extend(this.xAxis.options, {
                     gridLineWidth: 0,
                     lineWidth: 0,
-                    title: null,
+                    title: void 0,
                     tickPositions: []
                 });
-                extend(this.yAxis.options, {
+                merge(true, this.yAxis.options, {
                     gridLineWidth: 0,
-                    title: null,
+                    title: void 0,
                     labels: {
                         enabled: false
                     }
@@ -651,10 +652,10 @@
                     y5, 
                     //
                     h,
-                    shapeArgs;
-                // Return the width at a specific y coordinate
-                series.getWidthAt = getWidthAt = function (y) {
-                    var top = (centerY - height / 2);
+                    shapeArgs; // @todo: Type it. It's an extended SVGAttributes.
+                    // Return the width at a specific y coordinate
+                    series.getWidthAt = getWidthAt = function (y) {
+                        var top = (centerY - height / 2);
                     return (y > neckY || height === neckHeight) ?
                         neckWidth :
                         neckWidth + (width - neckWidth) *
@@ -763,7 +764,7 @@
                         x: centerX,
                         width: getWidthAt(point.plotY),
                         y: y1,
-                        bottom: shapeArgs.height,
+                        bottom: shapeArgs.height || 0,
                         fullWidth: width
                     };
                     if (!ignoreHiddenPoint || point.visible !== false) {

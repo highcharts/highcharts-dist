@@ -14,11 +14,13 @@ import AnnotationsA11y from '../AnnotationsA11y.js';
 var getPointAnnotationTexts = AnnotationsA11y.getPointAnnotationTexts;
 import ChartUtilities from '../../Utils/ChartUtilities.js';
 var getAxisDescription = ChartUtilities.getAxisDescription, getSeriesFirstPointElement = ChartUtilities.getSeriesFirstPointElement, getSeriesA11yElement = ChartUtilities.getSeriesA11yElement, unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
+import F from '../../../Core/FormatUtilities.js';
+var format = F.format, numberFormat = F.numberFormat;
 import HTMLUtilities from '../../Utils/HTMLUtilities.js';
 var reverseChildNodes = HTMLUtilities.reverseChildNodes, stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
 import Tooltip from '../../../Core/Tooltip.js';
 import U from '../../../Core/Utilities.js';
-var find = U.find, format = U.format, isNumber = U.isNumber, numberFormat = U.numberFormat, pick = U.pick, defined = U.defined;
+var find = U.find, isNumber = U.isNumber, pick = U.pick, defined = U.defined;
 /* eslint-disable valid-jsdoc */
 /**
  * @private
@@ -121,7 +123,7 @@ function shouldSetKeyboardNavPropsOnPoints(series) {
  * @return {boolean}
  */
 function shouldDescribeSeriesElement(series) {
-    var chart = series.chart, chartOptions = chart.options.chart || {}, chartHas3d = chartOptions.options3d && chartOptions.options3d.enabled, hasMultipleSeries = chart.series.length > 1, describeSingleSeriesOption = chart.options.accessibility.series.describeSingleSeries, exposeAsGroupOnlyOption = (series.options.accessibility || {}).exposeAsGroupOnly, noDescribe3D = chartHas3d && hasMultipleSeries;
+    var chart = series.chart, chartOptions = chart.options.chart, chartHas3d = chartOptions.options3d && chartOptions.options3d.enabled, hasMultipleSeries = chart.series.length > 1, describeSingleSeriesOption = chart.options.accessibility.series.describeSingleSeries, exposeAsGroupOnlyOption = (series.options.accessibility || {}).exposeAsGroupOnly, noDescribe3D = chartHas3d && hasMultipleSeries;
     return !noDescribe3D && (hasMultipleSeries || describeSingleSeriesOption ||
         exposeAsGroupOnlyOption || hasMorePointsThanDescriptionThreshold(series));
 }
@@ -305,10 +307,11 @@ function describePointsInSeries(series) {
     var setScreenReaderProps = shouldSetScreenReaderPropsOnPoints(series), setKeyboardProps = shouldSetKeyboardNavPropsOnPoints(series);
     if (setScreenReaderProps || setKeyboardProps) {
         series.points.forEach(function (point) {
-            var _a, _b;
             var pointEl = point.graphic && point.graphic.element ||
                 shouldAddDummyPoint(point) && addDummyPointElement(point);
-            var pointA11yDisabled = ((_b = (_a = point.options) === null || _a === void 0 ? void 0 : _a.accessibility) === null || _b === void 0 ? void 0 : _b.enabled) === false;
+            var pointA11yDisabled = (point.options &&
+                point.options.accessibility &&
+                point.options.accessibility.enabled === false);
             if (pointEl) {
                 // We always set tabindex, as long as we are setting props.
                 // When setting tabindex, also remove default outline to

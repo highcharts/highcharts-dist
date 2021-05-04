@@ -11,11 +11,13 @@
 import AST from '../Renderer/HTML/AST.js';
 import A from '../Animation/AnimationUtilities.js';
 var animObject = A.animObject;
+import F from '../FormatUtilities.js';
+var format = F.format;
 import H from '../Globals.js';
 import O from '../Options.js';
 var defaultOptions = O.defaultOptions;
 import U from '../Utilities.js';
-var addEvent = U.addEvent, defined = U.defined, erase = U.erase, extend = U.extend, fireEvent = U.fireEvent, format = U.format, getNestedProperty = U.getNestedProperty, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, syncTimeout = U.syncTimeout, removeEvent = U.removeEvent, uniqueKey = U.uniqueKey;
+var addEvent = U.addEvent, defined = U.defined, erase = U.erase, extend = U.extend, fireEvent = U.fireEvent, getNestedProperty = U.getNestedProperty, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, syncTimeout = U.syncTimeout, removeEvent = U.removeEvent, uniqueKey = U.uniqueKey;
 /**
  * Function callback when a series point is clicked. Return false to cancel the
  * action.
@@ -754,22 +756,13 @@ var Point = /** @class */ (function () {
      * @return {void}
      */
     Point.prototype.resolveColor = function () {
-        var series = this.series, colors, optionsChart = series.chart.options.chart, colorCount = optionsChart.colorCount, styledMode = series.chart.styledMode, colorIndex;
+        var series = this.series, colors, optionsChart = series.chart.options.chart, colorCount = optionsChart.colorCount, styledMode = series.chart.styledMode, colorIndex, color;
         // remove points nonZonedColor for later recalculation
         delete this.nonZonedColor;
-        /**
-         * The point's current color.
-         *
-         * @name Highcharts.Point#color
-         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
-         */
-        if (!styledMode && !this.options.color) {
-            this.color = series.color; // #3445
-        }
         if (series.options.colorByPoint) {
             if (!styledMode) {
                 colors = series.options.colors || series.chart.options.colors;
-                this.color = this.color || colors[series.colorCounter];
+                color = colors[series.colorCounter];
                 colorCount = colors.length;
             }
             colorIndex = series.colorCounter;
@@ -780,9 +773,19 @@ var Point = /** @class */ (function () {
             }
         }
         else {
+            if (!styledMode) {
+                color = series.color;
+            }
             colorIndex = series.colorIndex;
         }
         this.colorIndex = pick(this.options.colorIndex, colorIndex);
+        /**
+         * The point's current color.
+         *
+         * @name Highcharts.Point#color
+         * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject|undefined}
+         */
+        this.color = pick(this.options.color, color);
     };
     /**
      * Set a value in an object, on the property defined by key. The key
@@ -1081,11 +1084,11 @@ var Point = /** @class */ (function () {
      */
     Point.prototype.importEvents = function () {
         if (!this.hasImportedEvents) {
-            var point = this, options = merge(point.series.options.point, point.options), events = options.events;
-            point.events = events;
+            var point_1 = this, options = merge(point_1.series.options.point, point_1.options), events = options.events;
+            point_1.events = events;
             objectEach(events, function (event, eventType) {
                 if (isFunction(event)) {
-                    addEvent(point, eventType, event);
+                    addEvent(point_1, eventType, event);
                 }
             });
             this.hasImportedEvents = true;
@@ -1136,7 +1139,8 @@ var Point = /** @class */ (function () {
             markerAttribs = series.markerAttribs(point, state);
         }
         // Apply hover styles to the existing point
-        if (point.graphic) {
+        // Prevent from dummy null points (#14966)
+        if (point.graphic && !point.hasDummyGraphic) {
             if (previousState) {
                 point.graphic.removeClass('highcharts-point-' + previousState);
             }
@@ -1148,7 +1152,7 @@ var Point = /** @class */ (function () {
                 pointAttribsAnimation = pick(chart.options.chart.animation, stateOptions.animation);
                 // Some inactive points (e.g. slices in pie) should apply
                 // oppacity also for it's labels
-                if (series.options.inactiveOtherPoints && pointAttribs.opacity) {
+                if (series.options.inactiveOtherPoints && isNumber(pointAttribs.opacity)) {
                     (point.dataLabels || []).forEach(function (label) {
                         if (label) {
                             label.animate({
@@ -1252,7 +1256,7 @@ var Point = /** @class */ (function () {
             // halo's context (#7681).
             halo.hide);
         }
-        fireEvent(point, 'afterSetState');
+        fireEvent(point, 'afterSetState', { state: state });
     };
     /**
      * Get the path definition for the halo, which is usually a shadow-like

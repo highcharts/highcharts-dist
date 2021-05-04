@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Money Flow Index indicator for Highstock
+ * Money Flow Index indicator for Highcharts Stock
  *
  * (c) 2010-2021 Grzegorz Blachliński
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Stock/Indicators/MFI/MFIIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  Money Flow Index indicator for Highstock
+         *  Money Flow Index indicator for Highcharts Stock
          *
          *  (c) 2010-2021 Grzegorz Blachliński
          *
@@ -213,7 +213,7 @@
                  * @excluding index
                  */
                 params: {
-                    period: 14,
+                    index: void 0,
                     /**
                      * The id of volume series which is mandatory.
                      * For example using OHLC data, volumeSeriesID='volume' means

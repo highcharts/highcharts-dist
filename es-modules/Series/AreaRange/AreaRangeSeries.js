@@ -66,7 +66,6 @@ var AreaRangeSeries = /** @class */ (function (_super) {
         _this.points = void 0;
         _this.lowerStateMarkerGraphic = void 0;
         _this.xAxis = void 0;
-        _this.setStackedPoints = noop;
         return _this;
         /* eslint-enable valid-jsdoc */
     }
@@ -88,7 +87,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
      */
     AreaRangeSeries.prototype.highToXY = function (point) {
         // Find the polar plotX and plotY
-        var chart = this.chart, xy = this.xAxis.postTranslate(point.rectPlotX, this.yAxis.len - point.plotHigh);
+        var chart = this.chart, xy = this.xAxis.postTranslate(point.rectPlotX || 0, this.yAxis.len - point.plotHigh);
         point.plotHighX = xy.x - chart.plotLeft;
         point.plotHigh = xy.y - chart.plotTop;
         point.plotLowX = point.plotX;
@@ -214,129 +213,131 @@ var AreaRangeSeries = /** @class */ (function (_super) {
      */
     AreaRangeSeries.prototype.drawDataLabels = function () {
         var data = this.points, length = data.length, i, originalDataLabels = [], dataLabelOptions = this.options.dataLabels, point, up, inverted = this.chart.inverted, upperDataLabelOptions, lowerDataLabelOptions;
-        // Split into upper and lower options. If data labels is an array, the
-        // first element is the upper label, the second is the lower.
-        //
-        // TODO: We want to change this and allow multiple labels for both upper
-        // and lower values in the future - introducing some options for which
-        // point value to use as Y for the dataLabel, so that this could be
-        // handled in Series.drawDataLabels. This would also improve performance
-        // since we now have to loop over all the points multiple times to work
-        // around the data label logic.
-        if (isArray(dataLabelOptions)) {
-            upperDataLabelOptions = dataLabelOptions[0] || { enabled: false };
-            lowerDataLabelOptions = dataLabelOptions[1] || { enabled: false };
-        }
-        else {
-            // Make copies
-            upperDataLabelOptions = extend({}, dataLabelOptions);
-            upperDataLabelOptions.x = dataLabelOptions.xHigh;
-            upperDataLabelOptions.y = dataLabelOptions.yHigh;
-            lowerDataLabelOptions = extend({}, dataLabelOptions);
-            lowerDataLabelOptions.x = dataLabelOptions.xLow;
-            lowerDataLabelOptions.y = dataLabelOptions.yLow;
-        }
-        // Draw upper labels
-        if (upperDataLabelOptions.enabled || this._hasPointLabels) {
-            // Set preliminary values for plotY and dataLabel
-            // and draw the upper labels
-            i = length;
-            while (i--) {
-                point = data[i];
-                if (point) {
-                    up = upperDataLabelOptions.inside ?
-                        point.plotHigh < point.plotLow :
-                        point.plotHigh > point.plotLow;
-                    point.y = point.high;
-                    point._plotY = point.plotY;
-                    point.plotY = point.plotHigh;
-                    // Store original data labels and set preliminary label
-                    // objects to be picked up in the uber method
-                    originalDataLabels[i] = point.dataLabel;
-                    point.dataLabel = point.dataLabelUpper;
-                    // Set the default offset
-                    point.below = up;
-                    if (inverted) {
-                        if (!upperDataLabelOptions.align) {
-                            upperDataLabelOptions.align = up ? 'right' : 'left';
-                        }
-                    }
-                    else {
-                        if (!upperDataLabelOptions.verticalAlign) {
-                            upperDataLabelOptions.verticalAlign = up ?
-                                'top' :
-                                'bottom';
-                        }
-                    }
-                }
+        if (dataLabelOptions) {
+            // Split into upper and lower options. If data labels is an array,
+            // the first element is the upper label, the second is the lower.
+            //
+            // TODO: We want to change this and allow multiple labels for both
+            // upper and lower values in the future - introducing some options
+            // for which point value to use as Y for the dataLabel, so that
+            // this could be handled in Series.drawDataLabels. This would also
+            // improve performance since we now have to loop over all the
+            // points multiple times to work around the data label logic.
+            if (isArray(dataLabelOptions)) {
+                upperDataLabelOptions = dataLabelOptions[0] || { enabled: false };
+                lowerDataLabelOptions = dataLabelOptions[1] || { enabled: false };
             }
-            this.options.dataLabels = upperDataLabelOptions;
-            if (seriesProto.drawDataLabels) {
-                // #1209:
-                seriesProto.drawDataLabels.apply(this, arguments);
+            else {
+                // Make copies
+                upperDataLabelOptions = extend({}, dataLabelOptions);
+                upperDataLabelOptions.x = dataLabelOptions.xHigh;
+                upperDataLabelOptions.y = dataLabelOptions.yHigh;
+                lowerDataLabelOptions = extend({}, dataLabelOptions);
+                lowerDataLabelOptions.x = dataLabelOptions.xLow;
+                lowerDataLabelOptions.y = dataLabelOptions.yLow;
             }
-            // Reset state after the upper labels were created. Move
-            // it to point.dataLabelUpper and reassign the originals.
-            // We do this here to support not drawing a lower label.
-            i = length;
-            while (i--) {
-                point = data[i];
-                if (point) {
-                    point.dataLabelUpper = point.dataLabel;
-                    point.dataLabel = originalDataLabels[i];
-                    delete point.dataLabels;
-                    point.y = point.low;
-                    point.plotY = point._plotY;
-                }
-            }
-        }
-        // Draw lower labels
-        if (lowerDataLabelOptions.enabled || this._hasPointLabels) {
-            i = length;
-            while (i--) {
-                point = data[i];
-                if (point) {
-                    up = lowerDataLabelOptions.inside ?
-                        point.plotHigh < point.plotLow :
-                        point.plotHigh > point.plotLow;
-                    // Set the default offset
-                    point.below = !up;
-                    if (inverted) {
-                        if (!lowerDataLabelOptions.align) {
-                            lowerDataLabelOptions.align = up ? 'left' : 'right';
+            // Draw upper labels
+            if (upperDataLabelOptions.enabled || this._hasPointLabels) {
+                // Set preliminary values for plotY and dataLabel
+                // and draw the upper labels
+                i = length;
+                while (i--) {
+                    point = data[i];
+                    if (point) {
+                        up = upperDataLabelOptions.inside ?
+                            point.plotHigh < point.plotLow :
+                            point.plotHigh > point.plotLow;
+                        point.y = point.high;
+                        point._plotY = point.plotY;
+                        point.plotY = point.plotHigh;
+                        // Store original data labels and set preliminary label
+                        // objects to be picked up in the uber method
+                        originalDataLabels[i] = point.dataLabel;
+                        point.dataLabel = point.dataLabelUpper;
+                        // Set the default offset
+                        point.below = up;
+                        if (inverted) {
+                            if (!upperDataLabelOptions.align) {
+                                upperDataLabelOptions.align = up ? 'right' : 'left';
+                            }
                         }
-                    }
-                    else {
-                        if (!lowerDataLabelOptions.verticalAlign) {
-                            lowerDataLabelOptions.verticalAlign = up ?
-                                'bottom' :
-                                'top';
+                        else {
+                            if (!upperDataLabelOptions.verticalAlign) {
+                                upperDataLabelOptions.verticalAlign = up ?
+                                    'top' :
+                                    'bottom';
+                            }
                         }
                     }
                 }
-            }
-            this.options.dataLabels = lowerDataLabelOptions;
-            if (seriesProto.drawDataLabels) {
-                seriesProto.drawDataLabels.apply(this, arguments);
-            }
-        }
-        // Merge upper and lower into point.dataLabels for later destroying
-        if (upperDataLabelOptions.enabled) {
-            i = length;
-            while (i--) {
-                point = data[i];
-                if (point) {
-                    point.dataLabels = [
-                        point.dataLabelUpper,
-                        point.dataLabel
-                    ].filter(function (label) {
-                        return !!label;
-                    });
+                this.options.dataLabels = upperDataLabelOptions;
+                if (seriesProto.drawDataLabels) {
+                    // #1209:
+                    seriesProto.drawDataLabels.apply(this, arguments);
+                }
+                // Reset state after the upper labels were created. Move
+                // it to point.dataLabelUpper and reassign the originals.
+                // We do this here to support not drawing a lower label.
+                i = length;
+                while (i--) {
+                    point = data[i];
+                    if (point) {
+                        point.dataLabelUpper = point.dataLabel;
+                        point.dataLabel = originalDataLabels[i];
+                        delete point.dataLabels;
+                        point.y = point.low;
+                        point.plotY = point._plotY;
+                    }
                 }
             }
+            // Draw lower labels
+            if (lowerDataLabelOptions.enabled || this._hasPointLabels) {
+                i = length;
+                while (i--) {
+                    point = data[i];
+                    if (point) {
+                        up = lowerDataLabelOptions.inside ?
+                            point.plotHigh < point.plotLow :
+                            point.plotHigh > point.plotLow;
+                        // Set the default offset
+                        point.below = !up;
+                        if (inverted) {
+                            if (!lowerDataLabelOptions.align) {
+                                lowerDataLabelOptions.align = up ? 'left' : 'right';
+                            }
+                        }
+                        else {
+                            if (!lowerDataLabelOptions.verticalAlign) {
+                                lowerDataLabelOptions.verticalAlign = up ?
+                                    'bottom' :
+                                    'top';
+                            }
+                        }
+                    }
+                }
+                this.options.dataLabels = lowerDataLabelOptions;
+                if (seriesProto.drawDataLabels) {
+                    seriesProto.drawDataLabels.apply(this, arguments);
+                }
+            }
+            // Merge upper and lower into point.dataLabels for later destroying
+            if (upperDataLabelOptions.enabled) {
+                i = length;
+                while (i--) {
+                    point = data[i];
+                    if (point) {
+                        point.dataLabels = [
+                            point.dataLabelUpper,
+                            point.dataLabel
+                        ].filter(function (label) {
+                            return !!label;
+                        });
+                    }
+                }
+            }
+            // Reset options
+            this.options.dataLabels = dataLabelOptions;
         }
-        // Reset options
-        this.options.dataLabels = dataLabelOptions;
     };
     AreaRangeSeries.prototype.alignDataLabel = function () {
         columnProto.alignDataLabel.apply(this, arguments);
@@ -344,8 +345,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
     AreaRangeSeries.prototype.drawPoints = function () {
         var series = this, pointLength = series.points.length, point, i;
         // Draw bottom points
-        seriesProto.drawPoints
-            .apply(series, arguments);
+        seriesProto.drawPoints.apply(series, arguments);
         // Prepare drawing top points
         i = 0;
         while (i < pointLength) {
@@ -366,9 +366,11 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             if (defined(point.plotHighX)) {
                 point.plotX = point.plotHighX;
             }
-            point.y = point.high;
-            point.negative = point.high < (series.options.threshold || 0);
-            point.zone = (series.zones.length && point.getZone());
+            point.y = pick(point.high, point.origProps.y); // #15523
+            point.negative = point.y < (series.options.threshold || 0);
+            if (series.zones.length) {
+                point.zone = point.getZone();
+            }
             if (!series.chart.polar) {
                 point.isInside = point.isTopInside = (typeof point.plotY !== 'undefined' &&
                     point.plotY >= 0 &&
@@ -386,8 +388,10 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             point = series.points[i];
             point.upperGraphic = point.graphic;
             point.graphic = point.lowerGraphic;
-            extend(point, point.origProps);
-            delete point.origProps;
+            if (point.origProps) {
+                extend(point, point.origProps);
+                delete point.origProps;
+            }
             i++;
         }
     };
@@ -517,7 +521,8 @@ extend(AreaRangeSeries.prototype, {
     pointArrayMap: ['low', 'high'],
     pointValKey: 'low',
     deferTranslatePolar: true,
-    pointClass: AreaRangePoint
+    pointClass: AreaRangePoint,
+    setStackedPoints: noop
 });
 SeriesRegistry.registerSeriesType('arearange', AreaRangeSeries);
 /* *

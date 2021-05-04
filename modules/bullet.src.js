@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * Bullet graph series type for Highcharts
  *
@@ -186,7 +186,6 @@
                 _super.prototype.drawPoints.apply(this, arguments);
                 series.points.forEach(function (point) {
                     var pointOptions = point.options,
-                        shapeArgs,
                         targetGraphic = point.targetGraphic,
                         targetShapeArgs,
                         targetVal = point.target,
@@ -198,7 +197,11 @@
                     if (isNumber(targetVal) && targetVal !== null) {
                         targetOptions = merge(options.targetOptions, pointOptions.targetOptions);
                         height = targetOptions.height;
-                        shapeArgs = point.shapeArgs;
+                        var shapeArgs = point.shapeArgs;
+                        // #15547
+                        if (point.dlBox && shapeArgs && !isNumber(shapeArgs.width)) {
+                            shapeArgs = point.dlBox;
+                        }
                         width = relativeLength(targetOptions.width, shapeArgs.width);
                         y = series.yAxis.translate(targetVal, false, true, false, true) - targetOptions.height / 2 - 0.5;
                         targetShapeArgs = series.crispCol.apply({

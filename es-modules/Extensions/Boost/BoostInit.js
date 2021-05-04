@@ -115,6 +115,9 @@ function init() {
              */
             function processPoint(d, i) {
                 var x, y, clientX, plotY, isNull, low = false, chartDestroyed = typeof chart.index === 'undefined', isYInside = true;
+                if (typeof d === 'undefined') {
+                    return true;
+                }
                 if (!chartDestroyed) {
                     if (useRaw) {
                         x = d[0];
@@ -291,6 +294,24 @@ function init() {
         //     chart.boostForceChartBoost =
         //         shouldForceChartSeriesBoosting(chart);
         // });
+        var prevX = -1;
+        var prevY = -1;
+        addEvent(chart.pointer, 'afterGetHoverData', function () {
+            var series = chart.hoverSeries;
+            if (chart.markerGroup && series) {
+                var xAxis = chart.inverted ? series.yAxis : series.xAxis;
+                var yAxis = chart.inverted ? series.xAxis : series.yAxis;
+                if ((xAxis && xAxis.pos !== prevX) ||
+                    (yAxis && yAxis.pos !== prevY)) {
+                    // #10464: Keep the marker group position in sync with the
+                    // position of the hovered series axes since there is only
+                    // one shared marker group when boosting.
+                    chart.markerGroup.translate(xAxis.pos, yAxis.pos);
+                    prevX = xAxis.pos;
+                    prevY = yAxis.pos;
+                }
+            }
+        });
     });
     /* eslint-enable no-invalid-this */
 }

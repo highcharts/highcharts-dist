@@ -4,7 +4,7 @@
  *
  *  Author: Sebastian Domas
  *
- *  Chaikin Money Flow indicator for Highstock
+ *  Chaikin Money Flow indicator for Highcharts Stock
  *
  *  License: www.highcharts.com/license
  *
@@ -187,8 +187,11 @@ var CMFIndicator = /** @class */ (function (_super) {
      * @optionparent plotOptions.cmf
      */
     CMFIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+        /**
+         * @excluding index
+         */
         params: {
-            period: 14,
+            index: void 0,
             /**
              * The id of another series to use its data as volume data for the
              * indiator calculation.

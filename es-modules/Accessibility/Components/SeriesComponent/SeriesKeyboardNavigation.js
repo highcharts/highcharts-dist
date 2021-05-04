@@ -15,6 +15,8 @@ import Point from '../../../Core/Series/Point.js';
 import Series from '../../../Core/Series/Series.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var seriesTypes = SeriesRegistry.seriesTypes;
+import H from '../../../Core/Globals.js';
+var doc = H.doc;
 import U from '../../../Core/Utilities.js';
 var defined = U.defined, extend = U.extend, fireEvent = U.fireEvent;
 import KeyboardNavigationHandler from '../../KeyboardNavigationHandler.js';
@@ -93,9 +95,9 @@ function isSkipSeries(series) {
  * @return {boolean|number|undefined}
  */
 function isSkipPoint(point) {
-    var _a;
     var a11yOptions = point.series.chart.options.accessibility;
-    var pointA11yDisabled = ((_a = point.options.accessibility) === null || _a === void 0 ? void 0 : _a.enabled) === false;
+    var pointA11yDisabled = (point.options.accessibility &&
+        point.options.accessibility.enabled === false);
     return point.isNull &&
         a11yOptions.keyboardNavigation.seriesNavigation.skipNullPoints ||
         point.visible === false ||
@@ -425,6 +427,18 @@ extend(SeriesKeyboardNavigation.prototype, /** @lends Highcharts.SeriesKeyboardN
                 keyboardNavigation.onDrillupAll();
             }, 10);
         });
+        // Heatmaps et al. alter z-index in setState, causing elements
+        // to lose focus
+        e.addEvent(Point, 'afterSetState', function () {
+            var point = this;
+            var pointEl = point.graphic && point.graphic.element;
+            if (chart.highlightedPoint === point &&
+                doc.activeElement !== pointEl &&
+                pointEl &&
+                pointEl.focus) {
+                pointEl.focus();
+            }
+        });
     },
     onDrillupAll: function () {
         // After drillup we want to find the point that was drilled down to and
@@ -460,9 +474,8 @@ extend(SeriesKeyboardNavigation.prototype, /** @lends Highcharts.SeriesKeyboardN
                 [[keys.enter, keys.space], function (keyCode, event) {
                         var point = chart.highlightedPoint;
                         if (point) {
-                            fireEvent(point.series, 'click', extend(event, {
-                                point: point
-                            }));
+                            event.point = point;
+                            fireEvent(point.series, 'click', event);
                             point.firePointEvent('click');
                         }
                         return this.response.success;
@@ -530,11 +543,14 @@ extend(SeriesKeyboardNavigation.prototype, /** @lends Highcharts.SeriesKeyboardN
      * @private
      */
     onHandlerTerminate: function () {
-        var _a, _b;
         var chart = this.chart;
         var curPoint = chart.highlightedPoint;
-        (_a = chart.tooltip) === null || _a === void 0 ? void 0 : _a.hide(0);
-        (_b = curPoint === null || curPoint === void 0 ? void 0 : curPoint.onMouseOut) === null || _b === void 0 ? void 0 : _b.call(curPoint);
+        if (chart.tooltip) {
+            chart.tooltip.hide(0);
+        }
+        if (chart.highlightedPoint && chart.highlightedPoint.onMouseOut) {
+            chart.highlightedPoint.onMouseOut();
+        }
         delete chart.highlightedPoint;
     },
     /**

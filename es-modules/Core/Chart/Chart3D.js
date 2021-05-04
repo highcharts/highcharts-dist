@@ -631,7 +631,7 @@ var Chart3D;
          * Whether it is a 3D chart.
          */
         chartProto.is3d = function () {
-            return (this.options.chart.options3d &&
+            return Boolean(this.options.chart.options3d &&
                 this.options.chart.options3d.enabled); // #4280
         };
         chartProto.propsRequireDirtyBox.push('chart.options3d');

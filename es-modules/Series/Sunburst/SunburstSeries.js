@@ -425,6 +425,7 @@ var SunburstSeries = /** @class */ (function (_super) {
                 plotX: shape.plotX,
                 plotY: shape.plotY,
                 value: node.val,
+                isInside: visible,
                 isNull: !visible // used for dataLabels & point.draw
             });
             point.dlOptions = getDlOptions({

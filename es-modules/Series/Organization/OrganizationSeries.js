@@ -133,20 +133,20 @@ var OrganizationSeries = /** @class */ (function (_super) {
     OrganizationSeries.prototype.alignDataLabel = function (point, dataLabel, options) {
         // Align the data label to the point graphic
         if (options.useHTML) {
-            var width = point.shapeArgs.width, height = point.shapeArgs.height, padjust = (this.options.borderWidth +
+            var width_1 = point.shapeArgs.width, height_1 = point.shapeArgs.height, padjust = (this.options.borderWidth +
                 2 * this.options.dataLabels.padding);
             if (this.chart.inverted) {
-                width = height;
-                height = point.shapeArgs.width;
+                width_1 = height_1;
+                height_1 = point.shapeArgs.width;
             }
-            height -= padjust;
-            width -= padjust;
+            height_1 -= padjust;
+            width_1 -= padjust;
             // Set the size of the surrounding div emulating `g`
             var text = dataLabel.text;
             if (text) {
                 css(text.element.parentNode, {
-                    width: width + 'px',
-                    height: height + 'px'
+                    width: width_1 + 'px',
+                    height: height_1 + 'px'
                 });
                 // Set properties for the span emulating `text`
                 css(text.element, {
@@ -161,13 +161,13 @@ var OrganizationSeries = /** @class */ (function (_super) {
             // inside the box
             dataLabel.getBBox = function () {
                 return {
-                    width: width,
-                    height: height
+                    width: width_1,
+                    height: height_1
                 };
             };
             // Overwrite dataLabel dimensions (#13100).
-            dataLabel.width = width;
-            dataLabel.height = height;
+            dataLabel.width = width_1;
+            dataLabel.height = height_1;
         }
         _super.prototype.alignDataLabel.apply(this, arguments);
     };

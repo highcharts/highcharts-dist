@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Parabolic SAR Indicator for Highstock
+ * Parabolic SAR Indicator for Highcharts Stock
  *
  * (c) 2010-2021 Grzegorz Blachliński
  *
@@ -31,7 +31,7 @@
     _registerModule(_modules, 'Stock/Indicators/PSAR/PSARIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
-         *  Parabolic SAR indicator for Highstock
+         *  Parabolic SAR indicator for Highcharts Stock
          *
          *  (c) 2010-2021 Grzegorz Blachliński
          *
@@ -272,6 +272,7 @@
                  * @excluding period
                  */
                 params: {
+                    period: void 0,
                     /**
                      * The initial value for acceleration factor.
                      * Acceleration factor is starting with this value
@@ -311,7 +312,7 @@
             return PSARIndicator;
         }(SMAIndicator));
         extend(PSARIndicator.prototype, {
-            nameComponents: false
+            nameComponents: void 0
         });
         SeriesRegistry.registerSeriesType('psar', PSARIndicator);
         /* *

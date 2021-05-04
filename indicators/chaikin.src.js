@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Wojciech Chmiel
  *
@@ -225,7 +225,11 @@
              * @optionparent plotOptions.ad
              */
             ADIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * @excluding index
+                 */
                 params: {
+                    index: void 0,
                     /**
                      * The id of volume series which is mandatory.
                      * For example using OHLC data, volumeSeriesID='volume' means
@@ -420,15 +424,22 @@
                  * Paramters used in calculation of Chaikin Oscillator
                  * series points.
                  *
-                 * @excluding index, period
+                 * @excluding index
                  */
                 params: {
+                    index: void 0,
                     /**
                      * The id of volume series which is mandatory.
                      * For example using OHLC data, volumeSeriesID='volume' means
                      * the indicator will be calculated using OHLC and volume values.
                      */
                     volumeSeriesID: 'volume',
+                    /**
+                     * Parameter used indirectly for calculating the `AD` indicator.
+                     * Decides about the number of data points that are taken
+                     * into account for the indicator calculations.
+                     */
+                    period: 9,
                     /**
                      * Periods for Chaikin Oscillator calculations.
                      *

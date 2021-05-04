@@ -100,6 +100,7 @@ var WilliamsRIndicator = /** @class */ (function (_super) {
          * @excluding index
          */
         params: {
+            index: void 0,
             /**
              * Period for Williams %R oscillator
              */

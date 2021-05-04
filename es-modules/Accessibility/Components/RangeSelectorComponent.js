@@ -45,10 +45,12 @@ function shouldRunInputNavigation(chart) {
  * @return {boolean}
  */
 H.Chart.prototype.highlightRangeSelectorButton = function (ix) {
-    var _a, _b;
-    var buttons = ((_a = this.rangeSelector) === null || _a === void 0 ? void 0 : _a.buttons) || [];
+    var buttons = (this.rangeSelector &&
+        this.rangeSelector.buttons ||
+        []);
     var curHighlightedIx = this.highlightedRangeSelectorItemIx;
-    var curSelectedIx = (_b = this.rangeSelector) === null || _b === void 0 ? void 0 : _b.selected;
+    var curSelectedIx = (this.rangeSelector &&
+        this.rangeSelector.selected);
     // Deselect old
     if (typeof curHighlightedIx !== 'undefined' &&
         buttons[curHighlightedIx] &&
@@ -70,9 +72,10 @@ H.Chart.prototype.highlightRangeSelectorButton = function (ix) {
 // Range selector does not have destroy-setup for class instance events - so
 // we set it on the class and call the component from here.
 addEvent(RangeSelector, 'afterBtnClick', function () {
-    var _a;
-    var component = (_a = this.chart.accessibility) === null || _a === void 0 ? void 0 : _a.components.rangeSelector;
-    return component === null || component === void 0 ? void 0 : component.onAfterBtnClick();
+    if (this.chart.accessibility &&
+        this.chart.accessibility.components.rangeSelector) {
+        return this.chart.accessibility.components.rangeSelector.onAfterBtnClick();
+    }
 });
 /**
  * The RangeSelectorComponent class
@@ -96,14 +99,14 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
      * Called on first render/updates to the chart, including options changes.
      */
     onChartUpdate: function () {
-        var _a;
         var chart = this.chart, component = this, rangeSelector = chart.rangeSelector;
         if (!rangeSelector) {
             return;
         }
         this.updateSelectorVisibility();
         this.setDropdownAttrs();
-        if ((_a = rangeSelector.buttons) === null || _a === void 0 ? void 0 : _a.length) {
+        if (rangeSelector.buttons &&
+            rangeSelector.buttons.length) {
             rangeSelector.buttons.forEach(function (button) {
                 component.setRangeButtonAttrs(button);
             });
@@ -127,10 +130,15 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
     updateSelectorVisibility: function () {
         var chart = this.chart;
         var rangeSelector = chart.rangeSelector;
-        var dropdown = rangeSelector === null || rangeSelector === void 0 ? void 0 : rangeSelector.dropdown;
-        var buttons = (rangeSelector === null || rangeSelector === void 0 ? void 0 : rangeSelector.buttons) || [];
+        var dropdown = (rangeSelector &&
+            rangeSelector.dropdown);
+        var buttons = (rangeSelector &&
+            rangeSelector.buttons ||
+            []);
         var hideFromAT = function (el) { return el.setAttribute('aria-hidden', true); };
-        if ((rangeSelector === null || rangeSelector === void 0 ? void 0 : rangeSelector.hasVisibleDropdown) && dropdown) {
+        if (rangeSelector &&
+            rangeSelector.hasVisibleDropdown &&
+            dropdown) {
             unhideChartElementFromAT(chart, dropdown);
             buttons.forEach(function (btn) { return hideFromAT(btn.element); });
         }
@@ -146,9 +154,9 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
      * @private
      */
     setDropdownAttrs: function () {
-        var _a;
         var chart = this.chart;
-        var dropdown = (_a = chart.rangeSelector) === null || _a === void 0 ? void 0 : _a.dropdown;
+        var dropdown = (chart.rangeSelector &&
+            chart.rangeSelector.dropdown);
         if (dropdown) {
             var label = chart.langFormat('accessibility.rangeSelector.dropdownLabel', { rangeTitle: chart.options.lang.rangeSelectorZoom });
             dropdown.setAttribute('aria-label', label);
@@ -220,14 +228,15 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
      * @private
      */
     onInputKbdMove: function (direction) {
-        var _a, _b;
         var chart = this.chart;
         var rangeSel = chart.rangeSelector;
         var newIx = chart.highlightedInputRangeIx = (chart.highlightedInputRangeIx || 0) + direction;
         var newIxOutOfRange = newIx > 1 || newIx < 0;
         if (newIxOutOfRange) {
-            (_a = chart.accessibility) === null || _a === void 0 ? void 0 : _a.keyboardNavigation.tabindexContainer.focus();
-            (_b = chart.accessibility) === null || _b === void 0 ? void 0 : _b.keyboardNavigation[direction < 0 ? 'prev' : 'next']();
+            if (chart.accessibility) {
+                chart.accessibility.keyboardNavigation.tabindexContainer.focus();
+                chart.accessibility.keyboardNavigation[direction < 0 ? 'prev' : 'next']();
+            }
         }
         else if (rangeSel) {
             var svgEl = rangeSel[newIx ? 'maxDateBox' : 'minDateBox'];
@@ -247,9 +256,10 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
         var chart = this.chart;
         var buttonIxToHighlight = direction > 0 ? 0 : 1;
         var rangeSel = chart.rangeSelector;
-        var svgEl = rangeSel === null || rangeSel === void 0 ? void 0 : rangeSel[buttonIxToHighlight ? 'maxDateBox' : 'minDateBox'];
-        var minInput = rangeSel === null || rangeSel === void 0 ? void 0 : rangeSel.minInput;
-        var maxInput = rangeSel === null || rangeSel === void 0 ? void 0 : rangeSel.maxInput;
+        var svgEl = (rangeSel &&
+            rangeSel[buttonIxToHighlight ? 'maxDateBox' : 'minDateBox']);
+        var minInput = (rangeSel && rangeSel.minInput);
+        var maxInput = (rangeSel && rangeSel.maxInput);
         var inputEl = buttonIxToHighlight ? maxInput : minInput;
         chart.highlightedInputRangeIx = buttonIxToHighlight;
         if (svgEl && minInput && maxInput) {
@@ -298,7 +308,7 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
         var _this = this;
         var chart = this.chart;
         var rangeSelector = chart.rangeSelector;
-        var dropdown = rangeSelector === null || rangeSelector === void 0 ? void 0 : rangeSelector.dropdown;
+        var dropdown = (rangeSelector && rangeSelector.dropdown);
         if (rangeSelector && dropdown) {
             chart.setFocusToElement(rangeSelector.buttonGroup, dropdown);
             if (this.removeDropdownKeydownHandler) {
@@ -307,13 +317,14 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
             // Tab-press with dropdown focused does not propagate to chart
             // automatically, so we manually catch and handle it when relevant.
             this.removeDropdownKeydownHandler = addEvent(dropdown, 'keydown', function (e) {
-                var _a, _b;
                 var isTab = (e.which || e.keyCode) === _this.keyCodes.tab;
                 if (isTab) {
                     e.preventDefault();
                     e.stopPropagation();
-                    (_a = chart.accessibility) === null || _a === void 0 ? void 0 : _a.keyboardNavigation.tabindexContainer.focus();
-                    (_b = chart.accessibility) === null || _b === void 0 ? void 0 : _b.keyboardNavigation[e.shiftKey ? 'prev' : 'next']();
+                    if (chart.accessibility) {
+                        chart.accessibility.keyboardNavigation.tabindexContainer.focus();
+                        chart.accessibility.keyboardNavigation[e.shiftKey ? 'prev' : 'next']();
+                    }
                 }
             });
         }
@@ -343,12 +354,13 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
                 ]
             ],
             validate: function () {
-                var _a, _b;
-                return !!((_b = (_a = chart.rangeSelector) === null || _a === void 0 ? void 0 : _a.buttons) === null || _b === void 0 ? void 0 : _b.length);
+                return !!(chart.rangeSelector &&
+                    chart.rangeSelector.buttons &&
+                    chart.rangeSelector.buttons.length);
             },
             init: function (direction) {
                 var rangeSelector = chart.rangeSelector;
-                if (rangeSelector === null || rangeSelector === void 0 ? void 0 : rangeSelector.hasVisibleDropdown) {
+                if (rangeSelector && rangeSelector.hasVisibleDropdown) {
                     component.initDropdownNav();
                 }
                 else if (rangeSelector) {
@@ -401,14 +413,15 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
      * Remove component traces
      */
     destroy: function () {
-        var _a;
         if (this.removeDropdownKeydownHandler) {
             this.removeDropdownKeydownHandler();
         }
         if (this.removeInputKeydownHandler) {
             this.removeInputKeydownHandler();
         }
-        (_a = this.announcer) === null || _a === void 0 ? void 0 : _a.destroy();
+        if (this.announcer) {
+            this.announcer.destroy();
+        }
     }
 });
 export default RangeSelectorComponent;

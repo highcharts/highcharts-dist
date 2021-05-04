@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.0.1 (2021-02-16)
+ * @license Highcharts Gantt JS v9.1.0 (2021-05-04)
  *
  * Tree Grid
  *
@@ -261,10 +261,10 @@
                     renderer = params.renderer,
                     labelBox = params.xy,
                     options = params.options,
-                    width = options.width,
-                    height = options.height,
+                    width = options.width || 0,
+                    height = options.height || 0,
                     iconCenter = {
-                        x: labelBox.x - (width / 2) - options.padding,
+                        x: labelBox.x - (width / 2) - (options.padding || 0),
                         y: labelBox.y - (height / 2)
                     },
                     rotation = params.collapsed ? 90 : 180,
@@ -272,25 +272,21 @@
                 var icon = treeGrid.labelIcon;
                 if (!icon) {
                     treeGrid.labelIcon = icon = renderer
-                        .path(renderer.symbols[options.type](options.x, options.y, width, height))
+                        .path(renderer.symbols[options.type](options.x || 0, options.y || 0, width, height))
                         .addClass('highcharts-label-icon')
                         .add(params.group);
                 }
                 // Set the new position, and show or hide
-                if (!shouldRender) {
-                    icon.attr({ y: -9999 }); // #1338
-                }
+                icon.attr({ y: shouldRender ? 0 : -9999 }); // #14904, #1338
                 // Presentational attributes
                 if (!renderer.styledMode) {
                     icon
                         .attr({
-                        'stroke-width': 1,
-                        'fill': pick(params.color, palette.neutralColor60)
-                    })
-                        .css({
                         cursor: 'pointer',
+                        'fill': pick(params.color, palette.neutralColor60),
+                        'stroke-width': 1,
                         stroke: options.lineColor,
-                        strokeWidth: options.lineWidth
+                        strokeWidth: options.lineWidth || 0
                     });
                 }
                 // Update the icon positions
@@ -337,7 +333,8 @@
                     level = (node && node.depth) || 1;
                     result.x += (
                     // Add space for symbols
-                    ((symbolOptions.width) + (symbolOptions.padding * 2)) +
+                    ((symbolOptions.width || 0) +
+                        ((symbolOptions.padding || 0) * 2)) +
                         // Apply indentation
                         ((level - 1) * indentation));
                 }
@@ -553,12 +550,10 @@
             childrenTotal = 0,
             children = [],
             value;
-            extend(tree, {
-                levelDynamic: tree.level - (levelIsConstant ? 0 : nodeRoot.level),
-                name: pick(point && point.name, ''),
-                visible: (idRoot === tree.id ||
-                    (isBoolean(options.visible) ? options.visible : false))
-            });
+            tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
+            tree.name = pick(point && point.name, '');
+            tree.visible = (idRoot === tree.id ||
+                (isBoolean(options.visible) ? options.visible : false));
             if (isFn(before)) {
                 tree = before(tree, options);
             }
@@ -580,12 +575,10 @@
             tree.visible = childrenTotal > 0 || tree.visible;
             // Set the values
             value = pick(optionsPoint.value, childrenTotal);
-            extend(tree, {
-                children: children,
-                childrenTotal: childrenTotal,
-                isLeaf: tree.visible && !childrenTotal,
-                val: value
-            });
+            tree.children = children;
+            tree.childrenTotal = childrenTotal;
+            tree.isLeaf = tree.visible && !childrenTotal;
+            tree.val = value;
             return tree;
         };
         /**
@@ -773,9 +766,11 @@
         var applyGridOptions = function applyGridOptions(axis) {
                 var options = axis.options;
             // Center-align by default
+            /*
             if (!options.labels) {
                 options.labels = {};
             }
+            */
             options.labels.align = pick(options.labels.align, 'center');
             // @todo: Check against tickLabelPlacement between/on etc
             /* Prevents adding the last tick label if the axis is not a category
@@ -1037,6 +1032,34 @@
                 e.pos.x += (axis.horiz && labelOpts.x || 0);
             }
         });
+        addEvent(Tick, 'labelFormat', function (ctx) {
+            var axis = ctx.axis,
+                value = ctx.value;
+            if (axis.options.grid &&
+                axis.options.grid.enabled) {
+                var tickPos = axis.tickPositions;
+                var series = (axis.linkedParent || axis).series[0];
+                var isFirst = value === tickPos[0];
+                var isLast = value === tickPos[tickPos.length - 1];
+                var point = series && find(series.options.data,
+                    function (p) {
+                        return p[axis.isXAxis ? 'x' : 'y'] === value;
+                });
+                var pointCopy = void 0;
+                if (point && series.is('gantt')) {
+                    // For the Gantt set point aliases to the pointCopy
+                    // to do not change the original point
+                    pointCopy = merge(point);
+                    H.seriesTypes.gantt.prototype.pointClass
+                        .setGanttPointAliases(pointCopy);
+                }
+                // Make additional properties available for the
+                // formatter
+                ctx.isFirst = isFirst;
+                ctx.isLast = isLast;
+                ctx.point = pointCopy;
+            }
+        });
         /* eslint-enable no-invalid-this */
         /**
          * Additions for grid axes.
@@ -1175,25 +1198,23 @@
                 var gridOptions = options.grid || {};
                 if (gridOptions.enabled === true) {
                     // compute anchor points for each of the title align options
-                    var title = axis.axisTitle,
+                    var axisTitle = axis.axisTitle,
                         axisHeight = axis.height,
                         horiz = axis.horiz,
                         axisLeft = axis.left,
                         offset = axis.offset,
                         opposite = axis.opposite,
-                        _a = axis.options.title,
-                        axisTitleOptions = _a === void 0 ? {} : _a,
+                        options_1 = axis.options,
                         axisTop = axis.top,
                         axisWidth = axis.width;
                     var tickSize = axis.tickSize();
-                    var titleWidth = title && title.getBBox().width;
-                    var xOption = axisTitleOptions.x || 0;
-                    var yOption = axisTitleOptions.y || 0;
-                    var titleMargin = pick(axisTitleOptions.margin,
+                    var titleWidth = axisTitle && axisTitle.getBBox().width;
+                    var xOption = options_1.title.x;
+                    var yOption = options_1.title.y;
+                    var titleMargin = pick(options_1.title.margin,
                         horiz ? 5 : 10);
-                    var titleFontSize = axis.chart.renderer.fontMetrics(axisTitleOptions.style &&
-                            axisTitleOptions.style.fontSize,
-                        title).f;
+                    var titleFontSize = axis.chart.renderer.fontMetrics(options_1.title.style.fontSize,
+                        axisTitle).f;
                     var crispCorr = tickSize ? tickSize[0] / 2 : 0;
                     // TODO account for alignment
                     // the position in the perpendicular direction of the axis
@@ -1203,7 +1224,7 @@
                                 crispCorr +
                             (axis.side === GridAxis.Side.bottom ? titleFontSize : 0));
                     e.titlePosition.x = horiz ?
-                        axisLeft - titleWidth / 2 - titleMargin + xOption :
+                        axisLeft - (titleWidth || 0) / 2 - titleMargin + xOption :
                         offAxis + (opposite ? axisWidth : 0) + offset + xOption;
                     e.titlePosition.y = horiz ?
                         (offAxis -
@@ -1225,38 +1246,6 @@
                     userOptions = axis.userOptions;
                 if (gridOptions.enabled) {
                     applyGridOptions(axis);
-                    /* eslint-disable no-invalid-this */
-                    // TODO: wrap the axis instead
-                    wrap(axis, 'labelFormatter', function (proceed) {
-                        var _a = this,
-                            axis = _a.axis,
-                            value = _a.value;
-                        var tickPos = axis.tickPositions;
-                        var series = (axis.isLinked ?
-                                axis.linkedParent :
-                                axis).series[0];
-                        var isFirst = value === tickPos[0];
-                        var isLast = value === tickPos[tickPos.length - 1];
-                        var point = series && find(series.options.data,
-                            function (p) {
-                                return p[axis.isXAxis ? 'x' : 'y'] === value;
-                        });
-                        var pointCopy;
-                        if (point && series.is('gantt')) {
-                            // For the Gantt set point aliases to the pointCopy
-                            // to do not change the original point
-                            pointCopy = merge(point);
-                            H.seriesTypes.gantt.prototype.pointClass.setGanttPointAliases(pointCopy);
-                        }
-                        // Make additional properties available for the
-                        // formatter
-                        this.isFirst = isFirst;
-                        this.isLast = isLast;
-                        this.point = pointCopy;
-                        // Call original labelFormatter
-                        return proceed.call(this);
-                    });
-                    /* eslint-enable no-invalid-this */
                 }
                 if (gridOptions.columns) {
                     var columns = axis.grid.columns = [],
@@ -1300,7 +1289,6 @@
              * @private
              */
             GridAxis.onAfterRender = function () {
-                var _a;
                 var axis = this,
                     grid = axis.grid,
                     options = axis.options,
@@ -1383,7 +1371,10 @@
                     });
                     // Manipulate the tick mark visibility
                     // based on the axis.max- allows smooth scrolling.
-                    if (!axis.horiz && axis.chart.hasRendered && (axis.scrollbar || ((_a = axis.linkedParent) === null || _a === void 0 ? void 0 : _a.scrollbar))) {
+                    if (!axis.horiz &&
+                        axis.chart.hasRendered &&
+                        (axis.scrollbar ||
+                            (axis.linkedParent && axis.linkedParent.scrollbar))) {
                         var max = axis.max,
                             min = axis.min,
                             tickmarkOffset = axis.tickmarkOffset,
@@ -1416,7 +1407,6 @@
              * @private
              */
             GridAxis.onAfterSetAxisTranslation = function () {
-                var _a;
                 var axis = this;
                 var tickInfo = axis.tickPositions && axis.tickPositions.info;
                 var options = axis.options;
@@ -1448,7 +1438,9 @@
                     else {
                         // Don't trim ticks which not in min/max range but
                         // they are still in the min/max plus tickInterval.
-                        if (this.options.type !== 'treegrid' && ((_a = axis.grid) === null || _a === void 0 ? void 0 : _a.columns)) {
+                        if (this.options.type !== 'treegrid' &&
+                            axis.grid &&
+                            axis.grid.columns) {
                             this.minPointOffset = this.tickInterval;
                         }
                     }
@@ -1553,12 +1545,12 @@
                                         this.linkedParent.tickPositions &&
                                         this.linkedParent.tickPositions.info);
                                 if (parentInfo) {
-                                    var unitIdx,
-                                        count,
-                                        unitName,
-                                        i,
+                                    var unitIdx = void 0,
+                                        count = void 0,
+                                        unitName = void 0,
+                                        i = void 0,
                                         units = gridAxisOptions.units,
-                                        unitRange;
+                                        unitRange = void 0;
                                     for (i = 0; i < units.length; i++) {
                                         if (units[i][0] ===
                                             parentInfo.unitName) {
@@ -1606,7 +1598,8 @@
                     // If borderWidth is set, then use its value for tick and
                     // line width.
                     if (isNumber(options.grid.borderWidth)) {
-                        options.tickWidth = options.lineWidth = gridOptions.borderWidth;
+                        options.tickWidth = options.lineWidth =
+                            gridOptions.borderWidth;
                     }
                 }
             };
@@ -1826,7 +1819,7 @@
                 var axis = this;
                 var brokenAxis = axis.brokenAxis;
                 var breakArray = brokenAxis && brokenAxis.breakArray;
-                if (!breakArray) {
+                if (!breakArray || !isNumber(val)) {
                     return val;
                 }
                 var nval = val,
@@ -1853,7 +1846,7 @@
                 var axis = this;
                 var brokenAxis = axis.brokenAxis;
                 var breakArray = brokenAxis && brokenAxis.breakArray;
-                if (!breakArray) {
+                if (!breakArray || !isNumber(val)) {
                     return val;
                 }
                 var nval = val,
@@ -1904,12 +1897,12 @@
             BrokenAxisAdditions.prototype.isInAnyBreak = function (val, testKeep) {
                 var brokenAxis = this;
                 var axis = brokenAxis.axis;
-                var breaks = axis.options.breaks,
-                    i = breaks && breaks.length,
+                var breaks = axis.options.breaks || [],
+                    i = breaks.length,
                     inbrk,
                     keep,
                     ret;
-                if (i) {
+                if (i && isNumber(val)) {
                     while (i--) {
                         if (BrokenAxisAdditions.isInBreak(breaks[i], val)) {
                             inbrk = true;
@@ -1967,12 +1960,12 @@
                         // If trying to set extremes inside a break, extend min to
                         // after, and max to before the break ( #3857 )
                         if (brokenAxis.hasBreaks) {
-                            var axisBreak,
-                                breaks = this.options.breaks;
-                            while ((axisBreak = brokenAxis.findBreakAt(newMin, breaks))) {
+                            var axisBreak = void 0,
+                                breaks_1 = this.options.breaks;
+                            while ((axisBreak = brokenAxis.findBreakAt(newMin, breaks_1))) {
                                 newMin = axisBreak.to;
                             }
-                            while ((axisBreak = brokenAxis.findBreakAt(newMax, breaks))) {
+                            while ((axisBreak = brokenAxis.findBreakAt(newMax, breaks_1))) {
                                 newMax = axisBreak.from;
                             }
                             // If both min and max is within the same break.
@@ -1984,104 +1977,101 @@
                     };
                     axis.setAxisTranslation = function () {
                         Axis.prototype.setAxisTranslation.call(this);
-                        brokenAxis.unitLength = null;
+                        brokenAxis.unitLength = void 0;
                         if (brokenAxis.hasBreaks) {
-                            var breaks = axis.options.breaks || [], 
+                            var breaks_2 = axis.options.breaks || [], 
                                 // Temporary one:
-                                breakArrayT = [],
-                                breakArray = [],
-                                length = 0,
-                                inBrk,
-                                repeat,
-                                min = axis.userMin || axis.min,
-                                max = axis.userMax || axis.max,
+                                breakArrayT_1 = [],
+                                breakArray_1 = [],
+                                length_1 = 0,
+                                inBrk_1,
+                                repeat_1,
+                                min_1 = axis.userMin || axis.min,
+                                max_1 = axis.userMax || axis.max,
                                 pointRangePadding = pick(axis.pointRangePadding, 0),
-                                start,
-                                i;
+                                start_1,
+                                i_1;
                             // Min & max check (#4247)
-                            breaks.forEach(function (brk) {
-                                repeat = brk.repeat || Infinity;
-                                if (BrokenAxisAdditions.isInBreak(brk, min)) {
-                                    min +=
-                                        (brk.to % repeat) -
-                                            (min % repeat);
-                                }
-                                if (BrokenAxisAdditions.isInBreak(brk, max)) {
-                                    max -=
-                                        (max % repeat) -
-                                            (brk.from % repeat);
+                            breaks_2.forEach(function (brk) {
+                                repeat_1 = brk.repeat || Infinity;
+                                if (isNumber(min_1) && isNumber(max_1)) {
+                                    if (BrokenAxisAdditions.isInBreak(brk, min_1)) {
+                                        min_1 += (brk.to % repeat_1) - (min_1 % repeat_1);
+                                    }
+                                    if (BrokenAxisAdditions.isInBreak(brk, max_1)) {
+                                        max_1 -= (max_1 % repeat_1) - (brk.from % repeat_1);
+                                    }
                                 }
                             });
                             // Construct an array holding all breaks in the axis
-                            breaks.forEach(function (brk) {
-                                start = brk.from;
-                                repeat = brk.repeat || Infinity;
-                                while (start - repeat > min) {
-                                    start -= repeat;
-                                }
-                                while (start < min) {
-                                    start += repeat;
-                                }
-                                for (i = start; i < max; i += repeat) {
-                                    breakArrayT.push({
-                                        value: i,
-                                        move: 'in'
-                                    });
-                                    breakArrayT.push({
-                                        value: i + (brk.to - brk.from),
-                                        move: 'out',
-                                        size: brk.breakSize
-                                    });
+                            breaks_2.forEach(function (brk) {
+                                start_1 = brk.from;
+                                repeat_1 = brk.repeat || Infinity;
+                                if (isNumber(min_1) && isNumber(max_1)) {
+                                    while (start_1 - repeat_1 > min_1) {
+                                        start_1 -= repeat_1;
+                                    }
+                                    while (start_1 < min_1) {
+                                        start_1 += repeat_1;
+                                    }
+                                    for (i_1 = start_1; i_1 < max_1; i_1 += repeat_1) {
+                                        breakArrayT_1.push({
+                                            value: i_1,
+                                            move: 'in'
+                                        });
+                                        breakArrayT_1.push({
+                                            value: i_1 + brk.to - brk.from,
+                                            move: 'out',
+                                            size: brk.breakSize
+                                        });
+                                    }
                                 }
                             });
-                            breakArrayT.sort(function (a, b) {
+                            breakArrayT_1.sort(function (a, b) {
                                 return ((a.value === b.value) ?
                                     ((a.move === 'in' ? 0 : 1) -
                                         (b.move === 'in' ? 0 : 1)) :
                                     a.value - b.value);
                             });
                             // Simplify the breaks
-                            inBrk = 0;
-                            start = min;
-                            breakArrayT.forEach(function (brk) {
-                                inBrk += (brk.move === 'in' ? 1 : -1);
-                                if (inBrk === 1 && brk.move === 'in') {
-                                    start = brk.value;
+                            inBrk_1 = 0;
+                            start_1 = min_1;
+                            breakArrayT_1.forEach(function (brk) {
+                                inBrk_1 += (brk.move === 'in' ? 1 : -1);
+                                if (inBrk_1 === 1 && brk.move === 'in') {
+                                    start_1 = brk.value;
                                 }
-                                if (inBrk === 0) {
-                                    breakArray.push({
-                                        from: start,
+                                if (inBrk_1 === 0 && isNumber(start_1)) {
+                                    breakArray_1.push({
+                                        from: start_1,
                                         to: brk.value,
-                                        len: brk.value - start - (brk.size || 0)
+                                        len: brk.value - start_1 - (brk.size || 0)
                                     });
-                                    length += brk.value - start - (brk.size || 0);
+                                    length_1 += brk.value - start_1 - (brk.size || 0);
                                 }
                             });
-                            /**
-                             * HC <= 8 backwards compatibility, used by demo samples.
-                             * @deprecated
-                             * @private
-                             * @requires modules/broken-axis
-                             */
-                            axis.breakArray = brokenAxis.breakArray = breakArray;
+                            brokenAxis.breakArray = breakArray_1;
                             // Used with staticScale, and below the actual axis length,
                             // when breaks are substracted.
-                            brokenAxis.unitLength = max - min - length + pointRangePadding;
-                            fireEvent(axis, 'afterBreaks');
-                            if (axis.staticScale) {
-                                axis.transA = axis.staticScale;
+                            if (isNumber(min_1) && isNumber(max_1) && isNumber(axis.min)) {
+                                brokenAxis.unitLength = max_1 - min_1 - length_1 +
+                                    pointRangePadding;
+                                fireEvent(axis, 'afterBreaks');
+                                if (axis.staticScale) {
+                                    axis.transA = axis.staticScale;
+                                }
+                                else if (brokenAxis.unitLength) {
+                                    axis.transA *=
+                                        (max_1 - axis.min + pointRangePadding) /
+                                            brokenAxis.unitLength;
+                                }
+                                if (pointRangePadding) {
+                                    axis.minPixelPadding =
+                                        axis.transA * (axis.minPointOffset || 0);
+                                }
+                                axis.min = min_1;
+                                axis.max = max_1;
                             }
-                            else if (brokenAxis.unitLength) {
-                                axis.transA *=
-                                    (max - axis.min + pointRangePadding) /
-                                        brokenAxis.unitLength;
-                            }
-                            if (pointRangePadding) {
-                                axis.minPixelPadding =
-                                    axis.transA * axis.minPointOffset;
-                            }
-                            axis.min = min;
-                            axis.max = max;
                         }
                     };
                 }
@@ -2285,7 +2275,7 @@
                         var tickPositions = this.tickPositions,
                             info = this.tickPositions.info,
                             newPositions = [],
-                            i;
+                            i = void 0;
                         for (i = 0; i < tickPositions.length; i++) {
                             if (!brokenAxis.isInAnyBreak(tickPositions[i])) {
                                 newPositions.push(tickPositions[i]);
@@ -2745,17 +2735,13 @@
             function wrapGetMaxLabelDimensions(proceed) {
                 var axis = this,
                     options = axis.options,
-                    labelOptions = options && options.labels,
-                    indentation = (labelOptions && isNumber(labelOptions.indentation) ?
-                        labelOptions.indentation :
-                        0),
                     retVal = proceed.apply(axis,
                     Array.prototype.slice.call(arguments, 1)),
-                    isTreeGrid = axis.options.type === 'treegrid';
+                    isTreeGrid = options.type === 'treegrid';
                 var treeDepth;
                 if (isTreeGrid && axis.treeGrid.mapOfPosToGridNode) {
                     treeDepth = axis.treeGrid.mapOfPosToGridNode[-1].height || 0;
-                    retVal.width += indentation * (treeDepth - 1);
+                    retVal.width += options.labels.indentation * (treeDepth - 1);
                 }
                 return retVal;
             }
@@ -2805,8 +2791,9 @@
                     // and chart height is set, set axis.isDirty
                     // to ensure collapsing works (#12012)
                     addEvent(axis, 'afterBreaks', function () {
-                        var _a;
-                        if (axis.coll === 'yAxis' && !axis.staticScale && ((_a = axis.chart.options.chart) === null || _a === void 0 ? void 0 : _a.height)) {
+                        if (axis.coll === 'yAxis' &&
+                            !axis.staticScale &&
+                            axis.chart.options.chart.height) {
                             axis.isDirty = true;
                         }
                     });

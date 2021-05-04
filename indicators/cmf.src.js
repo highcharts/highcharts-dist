@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas
@@ -34,7 +34,7 @@
          *
          *  Author: Sebastian Domas
          *
-         *  Chaikin Money Flow indicator for Highstock
+         *  Chaikin Money Flow indicator for Highcharts Stock
          *
          *  License: www.highcharts.com/license
          *
@@ -234,8 +234,11 @@
              * @optionparent plotOptions.cmf
              */
             CMFIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * @excluding index
+                 */
                 params: {
-                    period: 14,
+                    index: void 0,
                     /**
                      * The id of another series to use its data as volume data for the
                      * indiator calculation.

@@ -1,5 +1,5 @@
 /*
- Highcharts JS v9.0.1 (2021-02-15)
+ Highcharts JS v9.1.0 (2021-05-03)
 
  Highcharts variwide module
 

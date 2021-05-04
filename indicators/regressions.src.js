@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Kamil Kulig
  *
@@ -236,11 +236,11 @@
                     /**
                      * Unit (in milliseconds) for the x axis distances used to
                      * compute the regression line paramters (slope & intercept) for
-                     * every range. In Highstock the x axis values are always
+                     * every range. In Highcharts Stock the x axis values are always
                      * represented in milliseconds which may cause that distances
                      * between points are "big" integer numbers.
                      *
-                     * Highstock's linear regression algorithm (least squares
+                     * Highcharts Stock's linear regression algorithm (least squares
                      * method) will utilize these "big" integers for finding the
                      * slope and the intercept of the regression line for each
                      * period. In consequence, this value may be a very "small"
@@ -253,6 +253,9 @@
                      *
                      * Default value is the closest distance between two data
                      * points.
+                     *
+                     * In `v9.0.2`, the default value has been changed
+                     * from `undefined` to `null`.
                      *
                      * @sample {highstock} stock/plotoptions/linear-regression-xaxisunit
                      *         xAxisUnit set to 1 minute
@@ -274,10 +277,10 @@
                      * // indicator's point will be `2.3148148148148148e-8` which is
                      * // harder to interpert for a human.
                      *
-                     * @type    {number}
+                     * @type    {null|number}
                      * @product highstock
                      */
-                    xAxisUnit: void 0
+                    xAxisUnit: null
                 },
                 tooltip: {
                     valueDecimals: 4
@@ -337,11 +340,8 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            SMAIndicator = _a.sma,
-            LinearRegressionIndicator = _a.linearRegression;
-        var isArray = U.isArray,
-            extend = U.extend,
+        var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
+        var extend = U.extend,
             merge = U.merge;
         /* *
          *
@@ -449,11 +449,8 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            SMAIndicator = _a.sma,
-            LinearRegressionIndicator = _a.linearRegression;
-        var isArray = U.isArray,
-            extend = U.extend,
+        var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
+        var extend = U.extend,
             merge = U.merge;
         /* *
          *
@@ -561,9 +558,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var _a = SeriesRegistry.seriesTypes,
-            SMAIndicator = _a.sma,
-            LinearRegressionIndicator = _a.linearRegression;
+        var LinearRegressionIndicator = SeriesRegistry.seriesTypes.linearRegression;
         var extend = U.extend,
             merge = U.merge;
         /* *
@@ -627,7 +622,7 @@
              * @requires     stock/indicators/linearregressionangle
              * @optionparent plotOptions.linearregressionangle
              */
-            LinearRegressionAngleIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+            LinearRegressionAngleIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions, {
                 tooltip: {
                     pointFormat: '<span style="color:{point.color}">\u25CF</span>' +
                         '{series.name}: <b>{point.y}°</b><br/>'
@@ -662,7 +657,6 @@
         return LinearRegressionAngleIndicator;
     });
     _registerModule(_modules, 'masters/indicators/regressions.src.js', [], function () {
-
 
         // eslint-disable-next-line max-len
         // eslint-disable-next-line max-len

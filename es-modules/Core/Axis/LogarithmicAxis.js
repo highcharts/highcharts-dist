@@ -55,7 +55,7 @@ var LogarithmicAxisAdditions = /** @class */ (function () {
             // 1, 2, 4, 6, 8, 10, 20, 40 etc.
         }
         else if (interval >= 0.08) {
-            var roundedMin = Math.floor(min), intermediate, i, j, len, pos, lastPos, break2;
+            var roundedMin = Math.floor(min), intermediate = void 0, i = void 0, j = void 0, len = void 0, pos = void 0, lastPos = void 0, break2 = void 0;
             if (interval > 0.3) {
                 intermediate = [1, 2, 4];
                 // 0.2 equals five minor ticks per 1, 10, 100 etc

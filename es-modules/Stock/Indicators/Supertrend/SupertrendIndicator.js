@@ -378,6 +378,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
          * @excluding index
          */
         params: {
+            index: void 0,
             /**
              * Multiplier for Supertrend Indicator.
              */
@@ -397,7 +398,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        risingTrendColor: palette.indicatorPositiveLine,
+        risingTrendColor: palette.positiveColor,
         /**
          * Color of the Supertrend series line that is above the main series.
          *
@@ -406,7 +407,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        fallingTrendColor: palette.indicatorNegativeLine,
+        fallingTrendColor: palette.negativeColor,
         /**
          * The styles for the Supertrend line that intersect main series.
          *

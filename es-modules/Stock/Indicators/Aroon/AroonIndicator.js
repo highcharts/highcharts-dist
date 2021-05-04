@@ -126,12 +126,10 @@ var AroonIndicator = /** @class */ (function (_super) {
         /**
          * Paramters used in calculation of aroon series points.
          *
-         * @excluding periods, index
+         * @excluding index
          */
         params: {
-            /**
-             * Period for Aroon indicator
-             */
+            index: void 0,
             period: 25
         },
         marker: {

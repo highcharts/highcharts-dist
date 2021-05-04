@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * 3D features for Highcharts JS
  *
@@ -586,10 +586,9 @@
                         this.insidePlotArea),
                         path = renderer.toLinePath(vertexes2d,
                         true),
-                        area = shapeArea(vertexes2d),
-                        visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
+                        area = shapeArea(vertexes2d);
                     hash.d = path;
-                    hash.visibility = visibility;
+                    hash.visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
                 }
                 return SVGElement.prototype.attr.apply(this, arguments);
             };
@@ -698,15 +697,15 @@
         };
         // Generates a cuboid path and zIndexes
         SVGRenderer.prototype.cuboidPath = function (shapeArgs) {
-            var x = shapeArgs.x,
-                y = shapeArgs.y,
+            var x = shapeArgs.x || 0,
+                y = shapeArgs.y || 0,
                 z = shapeArgs.z || 0, 
                 // For side calculation (right/left)
                 // there is a need for height (and other shapeArgs arguments)
                 // to be at least 1px
-                h = shapeArgs.height,
-                w = shapeArgs.width,
-                d = shapeArgs.depth,
+                h = shapeArgs.height || 0,
+                w = shapeArgs.width || 0,
+                d = shapeArgs.depth || 0,
                 chart = charts[this.chartIndex],
                 front,
                 back,
@@ -1112,15 +1111,15 @@
         };
         // Generate the paths required to draw a 3D arc
         SVGRenderer.prototype.arc3dPath = function (shapeArgs) {
-            var cx = shapeArgs.x, // x coordinate of the center
-                cy = shapeArgs.y, // y coordinate of the center
-                start = shapeArgs.start, // start angle
-                end = shapeArgs.end - 0.00001, // end angle
-                r = shapeArgs.r, // radius
+            var cx = shapeArgs.x || 0, // x coordinate of the center
+                cy = shapeArgs.y || 0, // y coordinate of the center
+                start = shapeArgs.start || 0, // start angle
+                end = (shapeArgs.end || 0) - 0.00001, // end angle
+                r = shapeArgs.r || 0, // radius
                 ir = shapeArgs.innerR || 0, // inner radius
                 d = shapeArgs.depth || 0, // depth
-                alpha = shapeArgs.alpha, // alpha rotation of the chart
-                beta = shapeArgs.beta; // beta rotation of the chart
+                alpha = shapeArgs.alpha || 0, // alpha rotation of the chart
+                beta = shapeArgs.beta || 0; // beta rotation of the chart
                 // Derived Variables
                 var cs = Math.cos(start), // cosinus of the start angle
                 ss = Math.sin(start), // sinus of the start angle
@@ -1887,16 +1886,16 @@
                     var firstGridLine = gridGroup.element.childNodes[0].getBBox(),
                         frame3DLeft = chart.frameShapes.left.getBBox(),
                         options3d = chart.options.chart.options3d,
-                        origin = {
+                        origin_1 = {
                             x: chart.plotWidth / 2,
                             y: chart.plotHeight / 2,
                             z: options3d.depth / 2,
                             vd: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0)
                         },
-                        labelPos,
-                        prevLabelPos,
-                        nextLabelPos,
-                        slotWidth,
+                        labelPos = void 0,
+                        prevLabelPos = void 0,
+                        nextLabelPos = void 0,
+                        slotWidth = void 0,
                         tickId = tick.pos,
                         prevTick = ticks[tickId - 1],
                         nextTick = ticks[tickId + 1];
@@ -1907,7 +1906,7 @@
                             x: prevTick.label.xy.x,
                             y: prevTick.label.xy.y,
                             z: null
-                        }, origin, origin.vd);
+                        }, origin_1, origin_1.vd);
                     }
                     // If next label position is defined, then recalculate its position
                     // basing on the perspective.
@@ -1916,14 +1915,14 @@
                             x: nextTick.label.xy.x,
                             y: nextTick.label.xy.y,
                             z: null
-                        }, origin, origin.vd);
+                        }, origin_1, origin_1.vd);
                     }
                     labelPos = {
                         x: tick.label.xy.x,
                         y: tick.label.xy.y,
                         z: null
                     };
-                    labelPos = perspective3D(labelPos, origin, origin.vd);
+                    labelPos = perspective3D(labelPos, origin_1, origin_1.vd);
                     // If tick is first one, check whether next label position is
                     // already calculated, then return difference between the first and
                     // the second label. If there is no next label position calculated,
@@ -2178,10 +2177,9 @@
                 // loop through this axis' series
                 axis.series.forEach(function (series) {
                     if (series.visible ||
-                        !(chart.options.chart &&
-                            chart.options.chart.ignoreHiddenSeries)) {
+                        !chart.options.chart.ignoreHiddenSeries) {
                         var seriesOptions = series.options,
-                            zData,
+                            zData = void 0,
                             threshold = seriesOptions.threshold;
                         axis.hasVisibleSeries = true;
                         // Validate threshold in logarithmic axes
@@ -2203,8 +2201,7 @@
                 var axis = this;
                 var chart = axis.chart;
                 _super.prototype.setAxisSize.call(this);
-                axis.width = axis.len = (chart.options.chart &&
-                    chart.options.chart.options3d &&
+                axis.width = axis.len = (chart.options.chart.options3d &&
                     chart.options.chart.options3d.depth) || 0;
                 axis.right = chart.chartWidth - axis.width - axis.left;
             };
@@ -2906,7 +2903,7 @@
                  * Whether it is a 3D chart.
                  */
                 chartProto.is3d = function () {
-                    return (this.options.chart.options3d &&
+                    return Boolean(this.options.chart.options3d &&
                         this.options.chart.options3d.enabled); // #4280
                 };
                 chartProto.propsRequireDirtyBox.push('chart.options3d');
@@ -4203,40 +4200,40 @@
                 // #7103 Reset outside3dPlot flag
                 point.outside3dPlot = null;
                 if (point.y !== null) {
-                    var shapeArgs = point.shapeArgs, tooltipPos = point.tooltipPos, 
+                    var shapeArgs_1 = point.shapeArgs, tooltipPos = point.tooltipPos, 
                         // Array for final shapeArgs calculation.
                         // We are checking two dimensions (x and y).
-                        dimensions = [['x', 'width'], ['y', 'height']], borderlessBase; // Crisped rects can have +/- 0.5 pixels offset.
+                        dimensions = [['x', 'width'], ['y', 'height']], borderlessBase_1; // Crisped rects can have +/- 0.5 pixels offset.
                         // #3131 We need to check if column is inside plotArea.
                         dimensions.forEach(function (d) {
-                            borderlessBase = shapeArgs[d[0]] - borderCrisp;
-                        if (borderlessBase < 0) {
+                            borderlessBase_1 = shapeArgs_1[d[0]] - borderCrisp;
+                        if (borderlessBase_1 < 0) {
                             // If borderLessBase is smaller than 0, it is needed to set
                             // its value to 0 or 0.5 depending on borderWidth
                             // borderWidth may be even or odd.
-                            shapeArgs[d[1]] +=
-                                shapeArgs[d[0]] + borderCrisp;
-                            shapeArgs[d[0]] = -borderCrisp;
-                            borderlessBase = 0;
+                            shapeArgs_1[d[1]] +=
+                                shapeArgs_1[d[0]] + borderCrisp;
+                            shapeArgs_1[d[0]] = -borderCrisp;
+                            borderlessBase_1 = 0;
                         }
-                        if ((borderlessBase + shapeArgs[d[1]] >
+                        if ((borderlessBase_1 + shapeArgs_1[d[1]] >
                             series[d[0] + 'Axis'].len) &&
                             // Do not change height/width of column if 0 (#6708)
-                            shapeArgs[d[1]] !== 0) {
-                            shapeArgs[d[1]] =
+                            shapeArgs_1[d[1]] !== 0) {
+                            shapeArgs_1[d[1]] =
                                 series[d[0] + 'Axis'].len -
-                                    shapeArgs[d[0]];
+                                    shapeArgs_1[d[0]];
                         }
                         if (
                         // Do not remove columns with zero height/width.
-                        (shapeArgs[d[1]] !== 0) &&
-                            (shapeArgs[d[0]] >=
+                        (shapeArgs_1[d[1]] !== 0) &&
+                            (shapeArgs_1[d[0]] >=
                                 series[d[0] + 'Axis'].len ||
-                                shapeArgs[d[0]] + shapeArgs[d[1]] <=
+                                shapeArgs_1[d[0]] + shapeArgs_1[d[1]] <=
                                     borderCrisp)) {
                             // Set args to 0 if column is outside the chart.
-                            for (var key in shapeArgs) { // eslint-disable-line guard-for-in
-                                shapeArgs[key] = 0;
+                            for (var key in shapeArgs_1) { // eslint-disable-line guard-for-in
+                                shapeArgs_1[key] = 0;
                             }
                             // #7103 outside3dPlot flag is set on Points which are
                             // currently outside of plot.
@@ -4247,18 +4244,18 @@
                     if (point.shapeType === 'rect') {
                         point.shapeType = 'cuboid';
                     }
-                    shapeArgs.z = z;
-                    shapeArgs.depth = depth;
-                    shapeArgs.insidePlotArea = true;
+                    shapeArgs_1.z = z;
+                    shapeArgs_1.depth = depth;
+                    shapeArgs_1.insidePlotArea = true;
                     // Point's position in 2D
                     point2dPos = {
-                        x: shapeArgs.x + shapeArgs.width / 2,
-                        y: shapeArgs.y,
+                        x: shapeArgs_1.x + shapeArgs_1.width / 2,
+                        y: shapeArgs_1.y,
                         z: z + depth / 2 // The center of column in Z dimension
                     };
                     // Recalculate point positions for inverted graphs
                     if (chart.inverted) {
-                        point2dPos.x = shapeArgs.height;
+                        point2dPos.x = shapeArgs_1.height;
                         point2dPos.y = point.clientX;
                     }
                     // Calculate and store point's position in 3D,
@@ -4283,21 +4280,21 @@
             else {
                 var args = arguments,
                     init = args[1],
-                    yAxis = this.yAxis,
-                    series = this,
-                    reversed = this.yAxis.reversed;
+                    yAxis_1 = this.yAxis,
+                    series_1 = this,
+                    reversed_1 = this.yAxis.reversed;
                 if (svg) { // VML is too slow anyway
                     if (init) {
-                        series.data.forEach(function (point) {
+                        series_1.data.forEach(function (point) {
                             if (point.y !== null) {
                                 point.height = point.shapeArgs.height;
                                 point.shapey = point.shapeArgs.y; // #2968
                                 point.shapeArgs.height = 1;
-                                if (!reversed) {
+                                if (!reversed_1) {
                                     if (point.stackY) {
                                         point.shapeArgs.y =
                                             point.plotY +
-                                                yAxis.translate(point.stackY);
+                                                yAxis_1.translate(point.stackY);
                                     }
                                     else {
                                         point.shapeArgs.y =
@@ -4311,13 +4308,13 @@
                         });
                     }
                     else { // run the animation
-                        series.data.forEach(function (point) {
+                        series_1.data.forEach(function (point) {
                             if (point.y !== null) {
                                 point.shapeArgs.height = point.height;
                                 point.shapeArgs.y = point.shapey; // #2968
                                 // null value do not have a graphic
                                 if (point.graphic) {
-                                    point.graphic.animate(point.shapeArgs, series.options.animation);
+                                    point.graphic.animate(point.shapeArgs, series_1.options.animation);
                                 }
                             }
                         });
@@ -4356,19 +4353,17 @@
         // When series is not added to group it is needed to change setVisible method to
         // allow correct Legend funcionality. This wrap is basing on pie chart series.
         wrap(columnProto, 'setVisible', function (proceed, vis) {
-            var series = this,
-                pointVis;
+            var series = this;
             if (series.chart.is3d()) {
                 series.data.forEach(function (point) {
                     point.visible = point.options.visible = vis =
                         typeof vis === 'undefined' ?
                             !pick(series.visible, point.visible) : vis;
-                    pointVis = vis ? 'visible' : 'hidden';
                     series.options.data[series.data.indexOf(point)] =
                         point.options;
                     if (point.graphic) {
                         point.graphic.attr({
-                            visibility: pointVis
+                            visibility: vis ? 'visible' : 'hidden'
                         });
                     }
                 });
@@ -4381,15 +4376,15 @@
                     seriesOptions = this.options,
                     grouping = seriesOptions.grouping,
                     stacking = seriesOptions.stacking,
-                    reversedStacks = pick(this.yAxis.options.reversedStacks,
-                    true),
+                    reversedStacks = this.yAxis.options.reversedStacks,
                     z = 0;
                 // @todo grouping === true ?
                 if (!(typeof grouping !== 'undefined' && !grouping)) {
                     var stacks = retrieveStacks(this.chart,
                         stacking),
                         stack = seriesOptions.stack || 0,
-                        i; // position within the stack
+                        i = // position within the stack
+                         void 0; // position within the stack
                         for (i = 0; i < stacks[stack].series.length; i++) {
                             if (stacks[stack].series[i] === this) {
                                 break;
@@ -4550,12 +4545,12 @@
             Not supported
         */
         /*
-        var defaultOptions = H.getOptions();
+        let defaultOptions = H.getOptions();
         defaultOptions.plotOptions.cylinder =
             merge(defaultOptions.plotOptions.column);
-        var CylinderSeries = extendClass(seriesTypes.column, {
-                type: 'cylinder'
-            });
+        let CylinderSeries = extendClass(seriesTypes.column, {
+            type: 'cylinder'
+        });
         seriesTypes.cylinder = CylinderSeries;
 
         wrap(seriesTypes.cylinder.prototype, 'translate', function (proceed) {
@@ -4566,24 +4561,24 @@
                 return;
             }
 
-            var series = this,
-                    chart = series.chart,
-                    options = chart.options,
-                    cylOptions = options.plotOptions.cylinder,
-                    options3d = options.chart.options3d,
-                    depth = cylOptions.depth || 0,
-                    alpha = chart.alpha3d;
+            let series = this,
+                chart = series.chart,
+                options = chart.options,
+                cylOptions = options.plotOptions.cylinder,
+                options3d = options.chart.options3d,
+                depth = cylOptions.depth || 0,
+                alpha = chart.alpha3d;
 
-            var z = cylOptions.stacking ?
-                    (this.options.stack || 0) * depth :
-                    series._i * depth;
+            let z = cylOptions.stacking ?
+                (this.options.stack || 0) * depth :
+                series._i * depth;
             z += depth / 2;
 
             if (cylOptions.grouping !== false) { z = 0; }
 
             each(series.data, function (point) {
-                var shapeArgs = point.shapeArgs,
-                        deg2rad = H.deg2rad;
+                let shapeArgs = point.shapeArgs,
+                    deg2rad = H.deg2rad;
                 point.shapeType = 'arc3d';
                 shapeArgs.x += depth / 2;
                 shapeArgs.z = z;
@@ -4794,7 +4789,7 @@
                 }
                 else {
                     var animation = this.options.animation,
-                        attribs,
+                        attribs = void 0,
                         center = this.center,
                         group = this.group,
                         markerGroup = this.markerGroup;
@@ -4842,13 +4837,13 @@
                 if (this.chart.is3d()) {
                     var series = this,
                         chart = series.chart,
-                        options3d = chart.options.chart.options3d;
+                        options3d_1 = chart.options.chart.options3d;
                     series.data.forEach(function (point) {
                         var shapeArgs = point.shapeArgs,
                             r = shapeArgs.r, 
                             // #3240 issue with datalabels for 0 and null values
-                            a1 = (shapeArgs.alpha || options3d.alpha) * deg2rad,
-                            b1 = (shapeArgs.beta || options3d.beta) * deg2rad,
+                            a1 = (shapeArgs.alpha || options3d_1.alpha) * deg2rad,
+                            b1 = (shapeArgs.beta || options3d_1.beta) * deg2rad,
                             a2 = (shapeArgs.start + shapeArgs.end) / 2,
                             labelPosition = point.labelPosition,
                             connectorPosition = labelPosition.connectorPosition,
@@ -4924,7 +4919,7 @@
             };
             return Pie3DSeries;
         }(PieSeries));
-        extend(Pie3DSeries, {
+        extend(Pie3DSeries.prototype, {
             pointClass: Pie3DPoint
         });
         /* *
@@ -5285,34 +5280,32 @@
                 series.yAxis.getThreshold(options.threshold)),
                 options3d;
             if (series.rawPointsX) {
-                for (var i = 0; i < series.points.length; i++) {
+                for (var i_1 = 0; i_1 < series.points.length; i_1++) {
                     bottomPoints.push({
-                        x: series.rawPointsX[i],
-                        y: options.stacking ? series.points[i].yBottom : translatedThreshold,
+                        x: series.rawPointsX[i_1],
+                        y: options.stacking ? series.points[i_1].yBottom : translatedThreshold,
                         z: series.zPadding
                     });
                 }
             }
-            if (series.chart.options && series.chart.options.chart) {
-                options3d = series.chart.options.chart.options3d;
-                bottomPoints = perspective(bottomPoints, series.chart, true).map(function (point) {
-                    return { plotX: point.x, plotY: point.y, plotZ: point.z };
-                });
-                if (series.group && options3d && options3d.depth && options3d.beta) {
-                    // Markers should take the global zIndex of series group.
-                    if (series.markerGroup) {
-                        series.markerGroup.add(series.group);
-                        series.markerGroup.attr({
-                            translateX: 0,
-                            translateY: 0
-                        });
-                    }
-                    series.group.attr({
-                        zIndex: Math.max(1, (options3d.beta > 270 || options3d.beta < 90) ?
-                            options3d.depth - Math.round(series.zPadding || 0) :
-                            Math.round(series.zPadding || 0))
+            options3d = series.chart.options.chart.options3d;
+            bottomPoints = perspective(bottomPoints, series.chart, true).map(function (point) {
+                return { plotX: point.x, plotY: point.y, plotZ: point.z };
+            });
+            if (series.group && options3d && options3d.depth && options3d.beta) {
+                // Markers should take the global zIndex of series group.
+                if (series.markerGroup) {
+                    series.markerGroup.add(series.group);
+                    series.markerGroup.attr({
+                        translateX: 0,
+                        translateY: 0
                     });
                 }
+                series.group.attr({
+                    zIndex: Math.max(1, (options3d.beta > 270 || options3d.beta < 90) ?
+                        options3d.depth - Math.round(series.zPadding || 0) :
+                        Math.round(series.zPadding || 0))
+                });
             }
             bottomPoints.reversed = true;
             bottomPath = getGraphPath.call(series, bottomPoints, true, true);

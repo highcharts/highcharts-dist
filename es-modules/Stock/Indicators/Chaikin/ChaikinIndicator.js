@@ -137,15 +137,22 @@ var ChaikinIndicator = /** @class */ (function (_super) {
          * Paramters used in calculation of Chaikin Oscillator
          * series points.
          *
-         * @excluding index, period
+         * @excluding index
          */
         params: {
+            index: void 0,
             /**
              * The id of volume series which is mandatory.
              * For example using OHLC data, volumeSeriesID='volume' means
              * the indicator will be calculated using OHLC and volume values.
              */
             volumeSeriesID: 'volume',
+            /**
+             * Parameter used indirectly for calculating the `AD` indicator.
+             * Decides about the number of data points that are taken
+             * into account for the indicator calculations.
+             */
+            period: 9,
             /**
              * Periods for Chaikin Oscillator calculations.
              *

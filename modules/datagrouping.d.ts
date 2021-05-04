@@ -15,8 +15,8 @@ export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
     interface Axis {
         /**
-         * (Highstock) Highstock only. Force data grouping on all the axis'
-         * series.
+         * (Highstock) Highcharts Stock only. Force data grouping on all the
+         * axis' series.
          *
          * @param dataGrouping
          *        A `dataGrouping` configuration. Use `false` to disable data

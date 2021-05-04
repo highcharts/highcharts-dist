@@ -57,6 +57,13 @@ var FlagsPoint = /** @class */ (function (_super) {
         // they have no y values defined).
         return isNumber(this.y) || typeof this.y === 'undefined';
     };
+    /**
+     * @private
+     */
+    FlagsPoint.prototype.hasNewShapeType = function () {
+        var shape = this.options.shape || this.series.options.shape;
+        return this.graphic && shape && shape !== this.graphic.symbolKey;
+    };
     return FlagsPoint;
 }(ColumnSeries.prototype.pointClass));
 /* *

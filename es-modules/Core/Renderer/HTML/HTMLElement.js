@@ -8,6 +8,7 @@
  *
  * */
 import H from '../../Globals.js';
+var isFirefox = H.isFirefox, isMS = H.isMS, isWebKit = H.isWebKit, win = H.win;
 import SVGElement from '../SVG/SVGElement.js';
 import U from '../../Utilities.js';
 var css = U.css, defined = U.defined, extend = U.extend, pick = U.pick, pInt = U.pInt;
@@ -16,7 +17,6 @@ var css = U.css, defined = U.defined, extend = U.extend, pick = U.pick, pInt = U
  * @private
  */
 var HTMLElement = SVGElement;
-var isFirefox = H.isFirefox;
 /* eslint-disable valid-jsdoc */
 // Extend SvgElement for useHTML option.
 extend(HTMLElement.prototype, /** @lends SVGElement.prototype */ {
@@ -127,7 +127,7 @@ extend(HTMLElement.prototype, /** @lends SVGElement.prototype */ {
             });
         }
         if (elem.tagName === 'SPAN') {
-            var rotation = wrapper.rotation, baseline, textWidth = wrapper.textWidth && pInt(wrapper.textWidth), currentTextTransform = [
+            var rotation = wrapper.rotation, baseline = void 0, textWidth = wrapper.textWidth && pInt(wrapper.textWidth), currentTextTransform = [
                 rotation,
                 align,
                 elem.innerHTML,
@@ -194,13 +194,24 @@ extend(HTMLElement.prototype, /** @lends SVGElement.prototype */ {
      * @return {void}
      */
     setSpanRotation: function (rotation, alignCorrection, baseline) {
-        var rotationStyle = {}, cssTransformKey = this.renderer.getTransformKey();
-        rotationStyle[cssTransformKey] = rotationStyle.transform =
-            'rotate(' + rotation + 'deg)';
-        rotationStyle[cssTransformKey + (isFirefox ? 'Origin' : '-origin')] =
-            rotationStyle.transformOrigin =
+        var getTransformKey = function () { return (isMS &&
+            !/Edge/.test(win.navigator.userAgent) ?
+            '-ms-transform' :
+            isWebKit ?
+                '-webkit-transform' :
+                isFirefox ?
+                    'MozTransform' :
+                    win.opera ?
+                        '-o-transform' :
+                        void 0); };
+        var rotationStyle = {}, cssTransformKey = getTransformKey();
+        if (cssTransformKey) {
+            rotationStyle[cssTransformKey] = rotationStyle.transform =
+                'rotate(' + rotation + 'deg)';
+            rotationStyle[cssTransformKey + (isFirefox ? 'Origin' : '-origin')] = rotationStyle.transformOrigin =
                 (alignCorrection * 100) + '% ' + baseline + 'px';
-        css(this.element, rotationStyle);
+            css(this.element, rotationStyle);
+        }
     },
     /**
      * Get the correction in X and Y positioning as the element is rotated.

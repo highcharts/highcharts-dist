@@ -14,8 +14,8 @@
  * */
 'use strict';
 import H from '../../Core/Globals.js';
-import U from '../../Core/Utilities.js';
-var setOptions = U.setOptions;
+import O from '../../Core/Options.js';
+var setOptions = O.setOptions;
 H.theme = {
     colors: ['#FDD089', '#FF7F79', '#A0446E', '#251535'],
     colorAxis: {

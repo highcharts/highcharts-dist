@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Pawel Fus, Sebastian Bochan
  *
@@ -115,7 +115,7 @@
                 options.id !== 'highcharts-navigator-series') {
                 extend(series, {
                     pointValKey: ohlcProto.pointValKey,
-                    keys: ohlcProto.keys,
+                    // keys: ohlcProto.keys, // @todo potentially nonsense
                     pointArrayMap: ohlcProto.pointArrayMap,
                     toYData: ohlcProto.toYData
                 });
@@ -373,12 +373,12 @@
                     recalculateValues();
                 }
                 else {
-                    var unbinder = addEvent(indicator.chart,
+                    var unbinder_1 = addEvent(indicator.chart,
                         indicator.calculateOn,
                         function () {
                             recalculateValues();
                         // Call this just once, on init
-                        unbinder();
+                        unbinder_1();
                     });
                 }
                 // return indicator;

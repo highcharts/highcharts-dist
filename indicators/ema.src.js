@@ -1,7 +1,7 @@
 /**
- * @license Highstock JS v9.0.1 (2021-02-16)
+ * @license Highstock JS v9.1.0 (2021-05-04)
  *
- * Indicator series type for Highstock
+ * Indicator series type for Highcharts Stock
  *
  * (c) 2010-2021 Sebastian Bochan
  *
@@ -174,9 +174,10 @@
                      * example using OHLC data, index=2 means the indicator will be
                      * calculated using Low values.
                      *
-                     * By default index value used to be set to 0. Since Highstock 7
-                     * by default index is set to 3 which means that the ema
-                     * indicator will be calculated using Close values.
+                     * By default index value used to be set to 0. Since
+                     * Highcharts Stock 7 by default index is set to 3
+                     * which means that the ema indicator will be
+                     * calculated using Close values.
                      */
                     index: 3,
                     period: 9 // @merge 14 in v6.2

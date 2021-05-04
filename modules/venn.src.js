@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.0.1 (2021-02-16)
+ * @license Highcharts JS v9.1.0 (2021-05-04)
  *
  * (c) 2017-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -561,7 +561,7 @@
                 else if (reflected.fx >= simplex[simplex.length - 2].fx) {
                     // If the reflected point is worse than the second worse, then
                     // contract.
-                    var contracted;
+                    var contracted = void 0;
                     if (reflected.fx > worst.fx) {
                         // If the reflected is worse than the worst point, do a
                         // contraction
@@ -621,17 +621,21 @@
          * @todo export this function to enable usage
          */
         var draw = function draw(params) {
-                var _a;
-            var component = this,
-                graphic = component.graphic,
-                animatableAttribs = params.animatableAttribs,
+                var _this = this;
+            var animatableAttribs = params.animatableAttribs,
                 onComplete = params.onComplete,
                 css = params.css,
-                renderer = params.renderer,
-                animation = (_a = component.series) === null || _a === void 0 ? void 0 : _a.options.animation;
-            if (component.shouldDraw()) {
+                renderer = params.renderer;
+            var animation = (this.series && this.series.chart.hasRendered) ?
+                    // Chart-level animation on updates
+                    void 0 :
+                    // Series-level animation on new points
+                    (this.series &&
+                        this.series.options.animation);
+            var graphic = this.graphic;
+            if (this.shouldDraw()) {
                 if (!graphic) {
-                    component.graphic = graphic =
+                    this.graphic = graphic =
                         renderer[params.shapeType](params.shapeArgs)
                             .add(params.group);
                 }
@@ -641,8 +645,8 @@
                     .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
             }
             else if (graphic) {
-                var destroy = function () {
-                        component.graphic = graphic = graphic.destroy();
+                var destroy_1 = function () {
+                        _this.graphic = graphic = (graphic && graphic.destroy());
                     if (isFn(onComplete)) {
                         onComplete();
                     }
@@ -650,11 +654,11 @@
                 // animate only runs complete callback if something was animated.
                 if (Object.keys(animatableAttribs).length) {
                     graphic.animate(animatableAttribs, void 0, function () {
-                        destroy();
+                        destroy_1();
                     });
                 }
                 else {
-                    destroy();
+                    destroy_1();
                 }
             }
         };
@@ -1625,7 +1629,7 @@
             VennSeries.prototype.animate = function (init) {
                 if (!init) {
                     var series = this,
-                        animOptions = animObject(series.options.animation);
+                        animOptions_1 = animObject(series.options.animation);
                     series.points.forEach(function (point) {
                         var args = point.shapeArgs;
                         if (point.graphic && args) {
@@ -1642,7 +1646,7 @@
                             }
                             point.graphic
                                 .attr(attr)
-                                .animate(animate, animOptions);
+                                .animate(animate, animOptions_1);
                             // If shape is path, then fade it in after the circles
                             // animation
                             if (args.d) {
@@ -1652,7 +1656,7 @@
                                             opacity: 1
                                         });
                                     }
-                                }, animOptions.duration);
+                                }, animOptions_1.duration);
                             }
                         }
                     }, series);
@@ -1804,7 +1808,7 @@
                             style: {
                                 width: dataLabelWidth
                             }
-                        }, isObject(dlOptions) && dlOptions);
+                        }, isObject(dlOptions, true) ? dlOptions : void 0);
                     }
                     // Set name for usage in tooltip and in data label.
                     point.name = point.options.name || sets.join('∩');
