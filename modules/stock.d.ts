@@ -55,7 +55,7 @@ declare module "../highcharts" {
     /**
      * Stock-optimized chart. Use Chart for common charts.
      */
-    class StockChart {
+    class StockChart extends Chart {
         /**
          * Initializes the chart. The constructor's arguments are passed on
          * directly.
@@ -128,6 +128,12 @@ declare module "../highcharts" {
      * @return Rotated path.
      */
     function swapXY(path: SVGPathArray, vertical?: boolean): SVGPathArray;
+    /**
+     * The symbol callbacks are generated on the SVGRenderer object in all
+     * browsers. Even VML browsers need this in order to generate shapes in
+     * export. Now share them with the VMLRenderer.
+     */
+    let Renderer: any;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

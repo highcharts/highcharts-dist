@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.1.0 (2021-05-04)
+ * @license Highmaps JS v9.1.1 (2021-06-04)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -1556,7 +1556,9 @@
                  */
                 colorAttribs: function (point) {
                     var ret = {};
-                if (defined(point.color)) {
+                if (defined(point.color) &&
+                    (!point.state || point.state === 'normal') // #15746
+                ) {
                     ret[this.colorProp || 'fill'] = point.color;
                 }
                 return ret;
@@ -1569,7 +1571,7 @@
 
         return exports;
     });
-    _registerModule(_modules, 'Maps/MapNavigationOptionsDefault.js', [_modules['Core/Options.js'], _modules['Core/Utilities.js']], function (O, U) {
+    _registerModule(_modules, 'Maps/MapNavigationOptionsDefault.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (D, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1816,12 +1818,12 @@
          *
          * */
         // Add language
-        extend(O.defaultOptions.lang, {
+        extend(D.defaultOptions.lang, {
             zoomIn: 'Zoom in',
             zoomOut: 'Zoom out'
         });
         // Set the default map navigation options
-        O.defaultOptions.mapNavigation = defaultOptions;
+        D.defaultOptions.mapNavigation = defaultOptions;
         /* *
          *
          *  Default Export
@@ -2257,7 +2259,7 @@
         });
 
     });
-    _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer.js']], function (H, SVGRenderer) {
+    _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2267,14 +2269,17 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var Renderer = H.Renderer,
-            VMLRenderer = H.VMLRenderer;
+        var symbols = SVGRenderer.prototype.symbols;
         /* *
          *
          *  Functions
          *
          * */
-        // eslint-disable-next-line valid-jsdoc
+        /* eslint-disable require-jsdoc, valid-jsdoc */
+        function bottomButton(x, y, w, h, options) {
+            var r = (options && options.r) || 0;
+            return selectiveRoundedRect(x - 1, y - 1, w, h, 0, 0, r, r);
+        }
         /**
          * Create symbols for the zoom buttons
          * @private
@@ -2301,26 +2306,21 @@
                 ['Z']
             ];
         }
-        SVGRenderer.prototype.symbols.topbutton = function (x, y, w, h, options) {
+        function topButton(x, y, w, h, options) {
             var r = (options && options.r) || 0;
             return selectiveRoundedRect(x - 1, y - 1, w, h, r, r, 0, 0);
-        };
-        SVGRenderer.prototype.symbols.bottombutton = function (x, y, w, h, options) {
-            var r = (options && options.r) || 0;
-            return selectiveRoundedRect(x - 1, y - 1, w, h, 0, 0, r, r);
-        };
-        // The symbol callbacks are generated on the SVGRenderer object in all browsers.
-        // Even VML browsers need this in order to generate shapes in export. Now share
-        // them with the VMLRenderer.
-        if (Renderer !== SVGRenderer) {
-            ['topbutton', 'bottombutton'].forEach(function (shape) {
-                Renderer.prototype.symbols[shape] = SVGRenderer.prototype.symbols[shape];
-            });
         }
+        symbols.bottombutton = bottomButton;
+        symbols.topbutton = topButton;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return SVGRenderer.prototype.symbols;
+        return symbols;
     });
-    _registerModule(_modules, 'Core/Chart/MapChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, O, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Chart/MapChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, D, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2346,7 +2346,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var getOptions = O.getOptions;
+        var getOptions = D.getOptions;
         var merge = U.merge,
             pick = U.pick;
         /**
@@ -2389,42 +2389,39 @@
                         maxPadding: 0,
                         startOnTick: false
                     },
-                    seriesOptions = userOptions.series,
                     defaultCreditsOptions = getOptions().credits;
                 /* For visual testing
                 hiddenAxis.gridLineWidth = 1;
                 hiddenAxis.gridZIndex = 10;
                 hiddenAxis.tickPositions = undefined;
                 // */
-                // Don't merge the data
-                userOptions.series = void 0;
-                userOptions = merge({
-                    chart: {
-                        panning: {
-                            enabled: true,
-                            type: 'xy'
+                var options = merge({
+                        chart: {
+                            panning: {
+                                enabled: true,
+                                type: 'xy'
+                            },
+                            type: 'map'
                         },
-                        type: 'map'
+                        credits: {
+                            mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
+                                '{geojson.copyrightShort}</a>'),
+                            mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
+                        },
+                        tooltip: {
+                            followTouchMove: false
+                        },
+                        xAxis: hiddenAxis,
+                        yAxis: merge(hiddenAxis, { reversed: true })
                     },
-                    credits: {
-                        mapText: pick(defaultCreditsOptions.mapText, ' \u00a9 <a href="{geojson.copyrightUrl}">' +
-                            '{geojson.copyrightShort}</a>'),
-                        mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
-                    },
-                    tooltip: {
-                        followTouchMove: false
-                    },
-                    xAxis: hiddenAxis,
-                    yAxis: merge(hiddenAxis, { reversed: true })
-                }, userOptions, // user's options
-                {
-                    chart: {
-                        inverted: false,
-                        alignTicks: false
-                    }
-                });
-                userOptions.series = seriesOptions;
-                _super.prototype.init.call(this, userOptions, callback);
+                    userOptions, // user's options
+                    {
+                        chart: {
+                            inverted: false,
+                            alignTicks: false
+                        }
+                    });
+                _super.prototype.init.call(this, options, callback);
             };
             return MapChart;
         }(Chart));
@@ -4426,7 +4423,7 @@
 
         return BubblePoint;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Chart, Color, F, H, Legend, O, palette, Series, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Chart, Color, F, H, Legend, D, palette, Series, U) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -4440,7 +4437,7 @@
          * */
         var color = Color.parse;
         var noop = H.noop;
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
@@ -6630,7 +6627,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, H, HeatmapPoint, LegendSymbolMixin, palette, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, HeatmapPoint, LegendSymbolMixin, palette, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -6657,7 +6654,6 @@
             };
         })();
         var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
-        var noop = H.noop;
         var Series = SeriesRegistry.series,
             _a = SeriesRegistry.seriesTypes,
             ColumnSeries = _a.column,
@@ -6721,8 +6717,17 @@
                 if (seriesMarkerOptions.enabled || this._hasPointMarkers) {
                     Series.prototype.drawPoints.call(this);
                     this.points.forEach(function (point) {
-                        point.graphic &&
+                        if (point.graphic) {
                             point.graphic[_this.chart.styledMode ? 'css' : 'animate'](_this.colorAttribs(point));
+                            if (_this.options.borderRadius) {
+                                point.graphic.attr({
+                                    r: _this.options.borderRadius
+                                });
+                            }
+                            if (point.value === null) { // #15708
+                                point.graphic.addClass('highcharts-null-point');
+                            }
+                        }
                     });
                 }
             };
@@ -6774,9 +6779,7 @@
                 // general point range
                 this.yAxis.axisPointRange = options.rowsize || 1;
                 // Bind new symbol names
-                extend(symbols, {
-                    ellipse: symbols.circle
-                });
+                symbols.ellipse = symbols.circle;
             };
             /**
              * @private
@@ -6854,7 +6857,7 @@
                     brightness = stateOptions.brightness;
                     attr.fill =
                         stateOptions.color ||
-                            H.color(attr.fill).brighten(brightness || 0).get();
+                            Color.parse(attr.fill).brighten(brightness || 0).get();
                     attr.stroke = stateOptions.lineColor;
                 }
                 return attr;
@@ -6877,7 +6880,7 @@
              * @private
              */
             HeatmapSeries.prototype.translate = function () {
-                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || '', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
                 series.generatePoints();
                 series.points.forEach(function (point) {
                     var pointAttr,
@@ -6949,7 +6952,11 @@
                  */
                 animation: false,
                 /**
-                 * The border width for each heat map item.
+                 * The border radius for each heatmap item.
+                 */
+                borderRadius: 0,
+                /**
+                 * The border width for each heatmap item.
                  */
                 borderWidth: 0,
                 /**

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Solid angular gauge module
  *
@@ -166,7 +166,7 @@
 
         return SolidGaugeAxis;
     });
-    _registerModule(_modules, 'Series/SolidGauge/SolidGaugeComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/SolidGauge/SolidGaugeComposition.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
         /* *
          *
          *  Solid angular gauge module
@@ -178,8 +178,9 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var Renderer = H.Renderer;
-        var wrap = U.wrap;
+        var _a = SVGRenderer.prototype,
+            symbols = _a.symbols,
+            arc = _a.symbols.arc;
         /**
          * Additional options, depending on the actual symbol drawn.
          *
@@ -213,14 +214,13 @@
          * @return {Highcharts.SVGPathArray}
          *         Path of the created arc.
          */
-        wrap(Renderer.prototype.symbols, 'arc', function (proceed, x, y, w, h, options) {
-            var arc = proceed,
-                path = arc(x,
+        symbols.arc = function (x, y, w, h, options) {
+            var path = arc(x,
                 y,
                 w,
                 h,
                 options);
-            if (options.rounded) {
+            if (options && options.rounded) {
                 var r = options.r || w,
                     smallR = (r - (options.innerR || 0)) / 2,
                     outerArcStart = path[0],
@@ -233,7 +233,7 @@
                 }
             }
             return path;
-        });
+        };
 
     });
     _registerModule(_modules, 'Series/SolidGauge/SolidGaugeSeries.js', [_modules['Mixins/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/SolidGaugeAxis.js'], _modules['Core/Utilities.js']], function (LegendSymbolMixin, SeriesRegistry, SolidGaugeAxis, U) {

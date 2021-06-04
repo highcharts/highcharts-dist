@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.1.0 (2021-05-04)
+ * @license Highstock JS v9.1.1 (2021-06-04)
  *
  * Drag-panes module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/DragPanes.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Color/Palette.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, Axis, palette, Pointer, U) {
+    _registerModule(_modules, 'Extensions/DragPanes.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Color/Palette.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, Axis, AxisDefaults, palette, Pointer, U) {
         /* *
          *
          *  Plugin for resizing axes / panes in a chart.
@@ -51,6 +51,11 @@
             objectEach = U.objectEach,
             relativeLength = U.relativeLength,
             wrap = U.wrap;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * The AxisResizer class.
@@ -569,7 +574,7 @@
                 proceed.apply(this, Array.prototype.slice.call(arguments, 1));
             }
         });
-        merge(true, Axis.defaultYAxisOptions, AxisResizer.resizerOptions);
+        merge(true, AxisDefaults.defaultYAxisOptions, AxisResizer.resizerOptions);
         H.AxisResizer = AxisResizer;
 
         return H.AxisResizer;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Options.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, F, O, Series, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/SeriesLabel.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Chart, F, D, Series, SVGRenderer, U) {
         /* *
          *
          *  (c) 2009-2021 Torstein Honsi
@@ -38,7 +38,8 @@
          * */
         var animObject = A.animObject;
         var format = F.format;
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
+        var symbols = SVGRenderer.prototype.symbols;
         var addEvent = U.addEvent,
             extend = U.extend,
             fireEvent = U.fireEvent,
@@ -226,14 +227,11 @@
         }
         /**
          * General symbol definition for labels with connector.
-         *
-         * @private
-         * @function Highcharts.SVGRenderer#symbols.connector
          */
-        SVGRenderer.prototype.symbols.connector = function (x, y, w, h, options) {
+        symbols.connector = function (x, y, w, h, options) {
             var anchorX = options && options.anchorX,
-                anchorY = options && options.anchorY,
-                path,
+                anchorY = options && options.anchorY;
+            var path,
                 yOffset,
                 lateral = w / 2;
             if (isNumber(anchorX) && isNumber(anchorY)) {
@@ -278,17 +276,7 @@
             }
             var distance = 16,
                 points = this.points,
-                point,
-                last,
                 interpolated = [],
-                i,
-                deltaX,
-                deltaY,
-                delta,
-                len,
-                n,
-                j,
-                d,
                 graph = this.graph || this.area,
                 node = graph.element,
                 inverted = this.chart.inverted,
@@ -299,6 +287,16 @@
                 onArea = pick(this.options.label.onArea, !!this.area),
                 translatedThreshold = yAxis.getThreshold(this.options.threshold),
                 grid = {};
+            var point,
+                last,
+                i,
+                deltaX,
+                deltaY,
+                delta,
+                len,
+                n,
+                j,
+                d;
             /**
              * Push the point to the interpolated points, but only if that position in
              * the grid has not been occupied. As a performance optimization, we divide
@@ -422,16 +420,16 @@
          * @function Highcharts.Series#checkClearPoint
          */
         Series.prototype.checkClearPoint = function (x, y, bBox, checkDistance) {
+            var chart = this.chart,
+                onArea = pick(this.options.label.onArea, !!this.area),
+                findDistanceToOthers = (onArea || this.options.label.connectorAllowed),
+                leastDistance = 16;
             var distToOthersSquared = Number.MAX_VALUE, // distance to other graphs
                 distToPointSquared = Number.MAX_VALUE,
                 dist,
                 connectorPoint,
-                onArea = pick(this.options.label.onArea, !!this.area),
-                findDistanceToOthers = (onArea || this.options.label.connectorAllowed),
-                chart = this.chart,
                 series,
                 points,
-                leastDistance = 16,
                 withinRange,
                 xDist,
                 yDist,
@@ -561,7 +559,17 @@
                 if (!labelOptions || (!series.xAxis && !series.yAxis)) {
                     return;
                 }
-                var bBox, x, y, results = [], clearPoint, i, best, inverted = chart.inverted, paneLeft = (inverted ? series.yAxis.pos : series.xAxis.pos), paneTop = (inverted ? series.xAxis.pos : series.yAxis.pos), paneWidth = chart.inverted ? series.yAxis.len : series.xAxis.len, paneHeight = chart.inverted ? series.xAxis.len : series.yAxis.len, points = series.interpolatedPoints, onArea = pick(labelOptions.onArea, !!series.area), label = series.labelBySeries, isNew = !label, minFontSize = labelOptions.minFontSize, maxFontSize = labelOptions.maxFontSize, dataExtremes, areaMin, areaMax, colorClass = 'highcharts-color-' + pick(series.colorIndex, 'none');
+                var colorClass = 'highcharts-color-' + pick(series.colorIndex, 'none'), isNew = !series.labelBySeries, minFontSize = labelOptions.minFontSize, maxFontSize = labelOptions.maxFontSize, inverted = chart.inverted, paneLeft = (inverted ? series.yAxis.pos : series.xAxis.pos), paneTop = (inverted ? series.xAxis.pos : series.yAxis.pos), paneWidth = chart.inverted ? series.yAxis.len : series.xAxis.len, paneHeight = chart.inverted ? series.xAxis.len : series.yAxis.len, points = series.interpolatedPoints, onArea = pick(labelOptions.onArea, !!series.area), results = [];
+                var bBox,
+                    x,
+                    y,
+                    clearPoint,
+                    i,
+                    best,
+                    label = series.labelBySeries,
+                    dataExtremes,
+                    areaMin,
+                    areaMax;
                 // Stay within the area data bounds (#10038)
                 if (onArea && !inverted) {
                     dataExtremes = [
@@ -785,8 +793,8 @@
          */
         function drawLabels(e) {
             if (this.renderer) {
-                var chart_1 = this,
-                    delay_1 = animObject(chart_1.renderer.globalAnimation).duration;
+                var chart_1 = this;
+                var delay_1 = animObject(chart_1.renderer.globalAnimation).duration;
                 chart_1.labelSeries = [];
                 chart_1.labelSeriesMaxSum = 0;
                 U.clearTimeout(chart_1.seriesLabelTimer);

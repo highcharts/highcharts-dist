@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -1740,9 +1740,9 @@
                 var bBox = point.graphic && point.graphic.getBBox() || point.shapeArgs;
                 if (bBox && (bBox.width || bBox.height || bBox.x || bBox.y)) {
                     changed = true;
-                    minX = Math.min(bBox.x || 0, minX);
+                    minX = Math.min(point.plotX || 0, bBox.x || 0, minX);
                     maxX = Math.max((bBox.x || 0) + (bBox.width || 0), maxX);
-                    minY = Math.min(bBox.y || 0, minY);
+                    minY = Math.min(point.plotY || 0, bBox.y || 0, minY);
                     maxY = Math.max((bBox.y || 0) + (bBox.height || 0), maxY);
                 }
             });

@@ -20,8 +20,8 @@ import F from '../Core/FormatUtilities.js';
 var format = F.format;
 import H from '../Core/Globals.js';
 var noop = H.noop;
-import O from '../Core/Options.js';
-var defaultOptions = O.defaultOptions;
+import D from '../Core/DefaultOptions.js';
+var defaultOptions = D.defaultOptions;
 import palette from '../Core/Color/Palette.js';
 import Point from '../Core/Series/Point.js';
 import Series from '../Core/Series/Series.js';
@@ -749,7 +749,10 @@ addEvent(Chart, 'render', function () {
                         if (!axis.ddPoints[xData[i]]) {
                             axis.ddPoints[xData[i]] = [];
                         }
-                        axis.ddPoints[xData[i]].push(points ? points[i] : true);
+                        var index = i - (series.cropStart || 0);
+                        axis.ddPoints[xData[i]].push((points && index >= 0 && index < points.length) ?
+                            points[index] :
+                            true);
                     }
                 }
             }
@@ -1117,7 +1120,7 @@ addEvent(Point, 'afterSetState', function () {
     }
 });
 // After zooming out, shift the drillUpButton to the previous position, #8095.
-addEvent(H.Chart, 'selection', function (event) {
+addEvent(Chart, 'selection', function (event) {
     if (event.resetSelection === true && this.drillUpButton) {
         var buttonOptions = this.options.drilldown && this.options.drilldown.drillUpButton;
         if (buttonOptions && buttonOptions.position) {
@@ -1129,7 +1132,7 @@ addEvent(H.Chart, 'selection', function (event) {
         }
     }
 });
-addEvent(H.Chart, 'drillup', function () {
+addEvent(Chart, 'drillup', function () {
     if (this.resetZoomButton) {
         this.resetZoomButton = this.resetZoomButton.destroy();
     }

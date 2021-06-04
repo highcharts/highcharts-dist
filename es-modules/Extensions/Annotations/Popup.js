@@ -12,8 +12,8 @@
 import H from '../../Core/Globals.js';
 var doc = H.doc, isFirefox = H.isFirefox;
 import NavigationBindings from './NavigationBindings.js';
-import O from '../../Core/Options.js';
-var getOptions = O.getOptions;
+import D from '../../Core/DefaultOptions.js';
+var getOptions = D.getOptions;
 import Pointer from '../../Core/Pointer.js';
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, createElement = U.createElement, defined = U.defined, fireEvent = U.fireEvent, isArray = U.isArray, isObject = U.isObject, isString = U.isString, objectEach = U.objectEach, pick = U.pick, stableSort = U.stableSort, wrap = U.wrap;
@@ -45,7 +45,7 @@ H.Popup.prototype = {
         this.chart = chart;
         // create popup div
         this.container = createElement(DIV, {
-            className: PREFIX + 'popup'
+            className: PREFIX + 'popup highcharts-no-tooltip'
         }, null, parentDiv);
         this.lang = this.getLangpack();
         this.iconsURL = iconsURL;
@@ -58,15 +58,22 @@ H.Popup.prototype = {
      */
     addCloseBtn: function () {
         var _self = this, closeBtn;
+        var iconsURL = this.iconsURL;
         // create close popup btn
         closeBtn = createElement(DIV, {
             className: PREFIX + 'popup-close'
         }, null, this.container);
         closeBtn.style['background-image'] = 'url(' +
-            this.iconsURL + 'close.svg)';
+            (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
+                iconsURL : iconsURL + 'close.svg') + ')';
         ['click', 'touchstart'].forEach(function (eventName) {
             addEvent(closeBtn, eventName, function () {
-                fireEvent(_self.chart.navigationBindings, 'closePopup');
+                if (_self.chart) {
+                    fireEvent(_self.chart.navigationBindings, 'closePopup');
+                }
+                else {
+                    _self.closePopup();
+                }
             });
         });
     },
@@ -212,7 +219,8 @@ H.Popup.prototype = {
      * @private
      */
     closePopup: function () {
-        this.popup.container.style.display = 'none';
+        var container = pick(this.popup && this.popup.container, this.container);
+        container.style.display = 'none';
     },
     /**
      * Create content and show popup.
@@ -223,6 +231,9 @@ H.Popup.prototype = {
      * @param {Function} - on click callback
      */
     showForm: function (type, chart, options, callback) {
+        if (!chart) {
+            return;
+        }
         this.popup = chart.navigationBindings.popup;
         // show blank popup
         this.showPopup();
@@ -267,7 +278,9 @@ H.Popup.prototype = {
                 popupDiv.className += ' ' + toolbarClass;
             }
             // set position
-            popupDiv.style.top = chart.plotTop + 10 + 'px';
+            if (chart) {
+                popupDiv.style.top = chart.plotTop + 10 + 'px';
+            }
             // create label
             createElement(SPAN, void 0, void 0, popupDiv).appendChild(doc.createTextNode(pick(
             // Advanced annotations:
@@ -301,6 +314,9 @@ H.Popup.prototype = {
          */
         addForm: function (chart, options, callback, isInit) {
             var popupDiv = this.popup.container, lang = this.lang, bottomRow, lhsCol;
+            if (!chart) {
+                return;
+            }
             // create title of annotations
             lhsCol = createElement('h2', {
                 className: PREFIX + 'popup-main-title'
@@ -336,6 +352,9 @@ H.Popup.prototype = {
          */
         addFormFields: function (parentDiv, chart, parentNode, options, storage, isRoot) {
             var _self = this, addFormFields = this.annotations.addFormFields, addInput = this.addInput, lang = this.lang, parentFullName, titleName;
+            if (!chart) {
+                return;
+            }
             objectEach(options, function (value, option) {
                 // create name like params.styles.fontSize
                 parentFullName = parentNode !== '' ?
@@ -395,6 +414,9 @@ H.Popup.prototype = {
          */
         addForm: function (chart, _options, callback) {
             var tabsContainers, indicators = this.indicators, lang = this.lang, buttonParentDiv;
+            if (!chart) {
+                return;
+            }
             // add tabs
             this.tabs.init.call(this, chart);
             // get all tabs content divs
@@ -424,6 +446,9 @@ H.Popup.prototype = {
                 chart.series : // EDIT mode
                 chart.options.plotOptions // ADD mode
             ), addFormFields = this.indicators.addFormFields, rhsColWrapper, indicatorList, item;
+            if (!chart) {
+                return;
+            }
             // create wrapper for list
             indicatorList = createElement(UL, {
                 className: PREFIX + 'indicator-list'
@@ -501,6 +526,9 @@ H.Popup.prototype = {
          */
         listAllSeries: function (type, optionName, chart, parentDiv, selectedOption) {
             var selectName = PREFIX + optionName + '-type-' + type, lang = this.lang, selectBox, seriesOptions;
+            if (!chart) {
+                return;
+            }
             createElement(LABEL, {
                 htmlFor: selectName
             }, null, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
@@ -581,6 +609,9 @@ H.Popup.prototype = {
          */
         addParamInputs: function (chart, parentNode, fields, type, parentDiv) {
             var _self = this, addParamInputs = this.indicators.addParamInputs, addInput = this.addInput, parentFullName;
+            if (!chart) {
+                return;
+            }
             objectEach(fields, function (value, fieldName) {
                 // create name like params.styles.fontSize
                 parentFullName = parentNode + '.' + fieldName;
@@ -623,6 +654,9 @@ H.Popup.prototype = {
          */
         init: function (chart) {
             var tabs = this.tabs, indicatorsCount = this.indicators.getAmount.call(chart), firstTab; // run by default
+            if (!chart) {
+                return;
+            }
             // create menu items
             firstTab = tabs.addMenuItem.call(this, 'add');
             tabs.addMenuItem.call(this, 'edit', indicatorsCount);
@@ -722,7 +756,7 @@ addEvent(NavigationBindings, 'showPopup', function (config) {
         this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/9.1.0/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/9.1.1/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 });
@@ -731,3 +765,4 @@ addEvent(NavigationBindings, 'closePopup', function () {
         this.popup.closePopup();
     }
 });
+export default H.Popup;

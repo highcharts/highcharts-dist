@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Debugger module
  *
@@ -136,7 +136,7 @@
 
         return errorMessages;
     });
-    _registerModule(_modules, 'Extensions/Debugger/Debugger.js', [_modules['Core/Chart/Chart.js'], _modules['Extensions/Debugger/ErrorMessages.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (Chart, ErrorMessages, H, O, U) {
+    _registerModule(_modules, 'Extensions/Debugger/Debugger.js', [_modules['Core/Chart/Chart.js'], _modules['Extensions/Debugger/ErrorMessages.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Chart, ErrorMessages, H, D, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -147,7 +147,7 @@
          *
          * */
         var charts = H.charts;
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
         var addEvent = U.addEvent,
             find = U.find,
             isNumber = U.isNumber;
@@ -175,7 +175,7 @@
             }
         });
         /* eslint-disable no-invalid-this */
-        addEvent(Highcharts, 'displayError', function (e) {
+        addEvent(H, 'displayError', function (e) {
             // Display error on the chart causing the error or the last created chart.
             var chart = e.chart ||
                     find(charts.slice().reverse(),

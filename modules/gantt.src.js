@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.1.0 (2021-05-04)
+ * @license Highcharts Gantt JS v9.1.1 (2021-06-04)
  *
  * Gantt series
  *
@@ -1065,6 +1065,1736 @@
 
         return GanttPoint;
     });
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, Series, StackItem, U) {
+        /* *
+         *
+         *  (c) 2009-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var addEvent = U.addEvent,
+            find = U.find,
+            fireEvent = U.fireEvent,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            pick = U.pick;
+        /**
+         * Axis with support of broken data rows.
+         * @private
+         * @class
+         */
+        var BrokenAxis;
+        (function (BrokenAxis) {
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Adds support for broken axes.
+             * @private
+             */
+            function compose(AxisClass, SeriesClass) {
+                if (AxisClass.keepProps.indexOf('brokenAxis') === -1) {
+                    AxisClass.keepProps.push('brokenAxis');
+                    var seriesProto = Series.prototype;
+                    seriesProto.drawBreaks = seriesDrawBreaks;
+                    seriesProto.gappedPath = seriesGappedPath;
+                    addEvent(AxisClass, 'init', onInit);
+                    addEvent(AxisClass, 'afterInit', onAfterInit);
+                    addEvent(AxisClass, 'afterSetTickPositions', onAfterSetTickPositions);
+                    addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions);
+                    addEvent(SeriesClass, 'afterGeneratePoints', onSeriesAfterGeneratePoints);
+                    addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
+                }
+                return AxisClass;
+            }
+            BrokenAxis.compose = compose;
+            /**
+             * @private
+             */
+            function onAfterInit() {
+                if (typeof this.brokenAxis !== 'undefined') {
+                    this.brokenAxis.setBreaks(this.options.breaks, false);
+                }
+            }
+            /**
+             * Force Axis to be not-ordinal when breaks are defined.
+             * @private
+             */
+            function onAfterSetOptions() {
+                var axis = this;
+                if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
+                    axis.options.ordinal = false;
+                }
+            }
+            /**
+             * @private
+             */
+            function onAfterSetTickPositions() {
+                var axis = this,
+                    brokenAxis = axis.brokenAxis;
+                if (brokenAxis &&
+                    brokenAxis.hasBreaks) {
+                    var tickPositions = axis.tickPositions,
+                        info = axis.tickPositions.info,
+                        newPositions = [];
+                    for (var i = 0; i < tickPositions.length; i++) {
+                        if (!brokenAxis.isInAnyBreak(tickPositions[i])) {
+                            newPositions.push(tickPositions[i]);
+                        }
+                    }
+                    axis.tickPositions = newPositions;
+                    axis.tickPositions.info = info;
+                }
+            }
+            /**
+             * @private
+             */
+            function onInit() {
+                var axis = this;
+                if (!axis.brokenAxis) {
+                    axis.brokenAxis = new Additions(axis);
+                }
+            }
+            /**
+             * @private
+             */
+            function onSeriesAfterGeneratePoints() {
+                var _a = this,
+                    isDirty = _a.isDirty,
+                    connectNulls = _a.options.connectNulls,
+                    points = _a.points,
+                    xAxis = _a.xAxis,
+                    yAxis = _a.yAxis;
+                // Set, or reset visibility of the points. Axis.setBreaks marks
+                // the series as isDirty
+                if (isDirty) {
+                    var i = points.length;
+                    while (i--) {
+                        var point = points[i];
+                        // Respect nulls inside the break (#4275)
+                        var nullGap = point.y === null && connectNulls === false;
+                        var isPointInBreak = (!nullGap && ((xAxis &&
+                                xAxis.brokenAxis &&
+                                xAxis.brokenAxis.isInAnyBreak(point.x,
+                            true)) || (yAxis &&
+                                yAxis.brokenAxis &&
+                                yAxis.brokenAxis.isInAnyBreak(point.y,
+                            true))));
+                        // Set point.visible if in any break.
+                        // If not in break, reset visible to original value.
+                        point.visible = isPointInBreak ?
+                            false :
+                            point.options.visible !== false;
+                    }
+                }
+            }
+            /**
+             * @private
+             */
+            function onSeriesAfterRender() {
+                this.drawBreaks(this.xAxis, ['x']);
+                this.drawBreaks(this.yAxis, pick(this.pointArrayMap, ['y']));
+            }
+            /**
+             * @private
+             */
+            function seriesDrawBreaks(axis, keys) {
+                var series = this,
+                    points = series.points;
+                var breaks,
+                    threshold,
+                    eventName,
+                    y;
+                if (axis && // #5950
+                    axis.brokenAxis &&
+                    axis.brokenAxis.hasBreaks) {
+                    var brokenAxis_1 = axis.brokenAxis;
+                    keys.forEach(function (key) {
+                        breaks = brokenAxis_1 && brokenAxis_1.breakArray || [];
+                        threshold = axis.isXAxis ?
+                            axis.min :
+                            pick(series.options.threshold, axis.min);
+                        points.forEach(function (point) {
+                            y = pick(point['stack' + key.toUpperCase()], point[key]);
+                            breaks.forEach(function (brk) {
+                                if (isNumber(threshold) && isNumber(y)) {
+                                    eventName = false;
+                                    if ((threshold < brk.from && y > brk.to) ||
+                                        (threshold > brk.from && y < brk.from)) {
+                                        eventName = 'pointBreak';
+                                    }
+                                    else if ((threshold < brk.from && y > brk.from && y < brk.to) ||
+                                        (threshold > brk.from && y > brk.to && y < brk.from)) {
+                                        eventName = 'pointInBreak';
+                                    }
+                                    if (eventName) {
+                                        fireEvent(axis, eventName, { point: point, brk: brk });
+                                    }
+                                }
+                            });
+                        });
+                    });
+                }
+            }
+            /**
+             * Extend getGraphPath by identifying gaps in the data so that we
+             * can draw a gap in the line or area. This was moved from ordinal
+             * axis module to broken axis module as of #5045.
+             *
+             * @private
+             * @function Highcharts.Series#gappedPath
+             *
+             * @return {Highcharts.SVGPathArray}
+             * Gapped path
+             */
+            function seriesGappedPath() {
+                var currentDataGrouping = this.currentDataGrouping,
+                    groupingSize = currentDataGrouping && currentDataGrouping.gapSize,
+                    points = this.points.slice(),
+                    yAxis = this.yAxis;
+                var gapSize = this.options.gapSize,
+                    i = points.length - 1,
+                    stack;
+                /**
+                 * Defines when to display a gap in the graph, together with the
+                 * [gapUnit](plotOptions.series.gapUnit) option.
+                 *
+                 * In case when `dataGrouping` is enabled, points can be grouped
+                 * into a larger time span. This can make the grouped points to
+                 * have a greater distance than the absolute value of `gapSize`
+                 * property, which will result in disappearing graph completely.
+                 * To prevent this situation the mentioned distance between
+                 * grouped points is used instead of previously defined
+                 * `gapSize`.
+                 *
+                 * In practice, this option is most often used to visualize gaps
+                 * in time series. In a stock chart, intraday data is available
+                 * for daytime hours, while gaps will appear in nights and
+                 * weekends.
+                 *
+                 * @see [gapUnit](plotOptions.series.gapUnit)
+                 * @see [xAxis.breaks](#xAxis.breaks)
+                 *
+                 * @sample {highstock} stock/plotoptions/series-gapsize/
+                 * Setting the gap size to 2 introduces gaps for weekends in
+                 * daily datasets.
+                 *
+                 * @type      {number}
+                 * @default   0
+                 * @product   highstock
+                 * @requires  modules/broken-axis
+                 * @apioption plotOptions.series.gapSize
+                 */
+                /**
+                 * Together with [gapSize](plotOptions.series.gapSize), this
+                 * option defines where to draw gaps in the graph.
+                 *
+                 * When the `gapUnit` is `"relative"` (default), a gap size of 5
+                 * means that if the distance between two points is greater than
+                 * 5 times that of the two closest points, the graph will be
+                 * broken.
+                 *
+                 * When the `gapUnit` is `"value"`, the gap is based on absolute
+                 * axis values, which on a datetime axis is milliseconds. This
+                 * also applies to the navigator series that inherits gap
+                 * options from the base series.
+                 *
+                 * @see [gapSize](plotOptions.series.gapSize)
+                 *
+                 * @type       {string}
+                 * @default    relative
+                 * @since      5.0.13
+                 * @product    highstock
+                 * @validvalue ["relative", "value"]
+                 * @requires   modules/broken-axis
+                 * @apioption  plotOptions.series.gapUnit
+                 */
+                if (gapSize && i > 0) { // #5008
+                    // Gap unit is relative
+                    if (this.options.gapUnit !== 'value') {
+                        gapSize *= this.basePointRange;
+                    }
+                    // Setting a new gapSize in case dataGrouping is enabled
+                    // (#7686)
+                    if (groupingSize &&
+                        groupingSize > gapSize &&
+                        // Except when DG is forced (e.g. from other series)
+                        // and has lower granularity than actual points (#11351)
+                        groupingSize >= this.basePointRange) {
+                        gapSize = groupingSize;
+                    }
+                    // extension for ordinal breaks
+                    var current = void 0,
+                        next = void 0;
+                    while (i--) {
+                        // Reassign next if it is not visible
+                        if (!(next && next.visible !== false)) {
+                            next = points[i + 1];
+                        }
+                        current = points[i];
+                        // Skip iteration if one of the points is not visible
+                        if (next.visible === false || current.visible === false) {
+                            continue;
+                        }
+                        if (next.x - current.x > gapSize) {
+                            var xRange = (current.x + next.x) / 2;
+                            points.splice(// insert after this one
+                            i + 1, 0, {
+                                isNull: true,
+                                x: xRange
+                            });
+                            // For stacked chart generate empty stack items,
+                            // #6546
+                            if (yAxis.stacking && this.options.stacking) {
+                                stack = yAxis.stacking.stacks[this.stackKey][xRange] =
+                                    new StackItem(yAxis, yAxis.options
+                                        .stackLabels, false, xRange, this.stack);
+                                stack.total = 0;
+                            }
+                        }
+                        // Assign current to next for the upcoming iteration
+                        next = current;
+                    }
+                }
+                // Call base method
+                return this.getGraphPath(points);
+            }
+            /* *
+             *
+             *  Class
+             *
+             * */
+            /**
+             * Provides support for broken axes.
+             * @private
+             * @class
+             */
+            var Additions = /** @class */ (function () {
+                    /* *
+                     *
+                     *  Constructors
+                     *
+                     * */
+                    function Additions(axis) {
+                        this.hasBreaks = false;
+                    this.axis = axis;
+                }
+                /* *
+                 *
+                 *  Static Functions
+                 *
+                 * */
+                /**
+                 * @private
+                 */
+                Additions.isInBreak = function (brk, val) {
+                    var repeat = brk.repeat || Infinity,
+                        from = brk.from,
+                        length = brk.to - brk.from,
+                        test = (val >= from ?
+                            (val - from) % repeat :
+                            repeat - ((from - val) % repeat));
+                    var ret;
+                    if (!brk.inclusive) {
+                        ret = test < length && test !== 0;
+                    }
+                    else {
+                        ret = test <= length;
+                    }
+                    return ret;
+                };
+                /**
+                 * @private
+                 */
+                Additions.lin2Val = function (val) {
+                    var axis = this;
+                    var brokenAxis = axis.brokenAxis;
+                    var breakArray = brokenAxis && brokenAxis.breakArray;
+                    if (!breakArray || !isNumber(val)) {
+                        return val;
+                    }
+                    var nval = val,
+                        brk,
+                        i;
+                    for (i = 0; i < breakArray.length; i++) {
+                        brk = breakArray[i];
+                        if (brk.from >= nval) {
+                            break;
+                        }
+                        else if (brk.to < nval) {
+                            nval += brk.len;
+                        }
+                        else if (Additions.isInBreak(brk, nval)) {
+                            nval += brk.len;
+                        }
+                    }
+                    return nval;
+                };
+                /**
+                 * @private
+                 */
+                Additions.val2Lin = function (val) {
+                    var axis = this;
+                    var brokenAxis = axis.brokenAxis;
+                    var breakArray = brokenAxis && brokenAxis.breakArray;
+                    if (!breakArray || !isNumber(val)) {
+                        return val;
+                    }
+                    var nval = val,
+                        brk,
+                        i;
+                    for (i = 0; i < breakArray.length; i++) {
+                        brk = breakArray[i];
+                        if (brk.to <= val) {
+                            nval -= brk.len;
+                        }
+                        else if (brk.from >= val) {
+                            break;
+                        }
+                        else if (Additions.isInBreak(brk, val)) {
+                            nval -= (val - brk.from);
+                            break;
+                        }
+                    }
+                    return nval;
+                };
+                /* *
+                 *
+                 *  Functions
+                 *
+                 * */
+                /**
+                 * Returns the first break found where the x is larger then break.from
+                 * and smaller then break.to.
+                 *
+                 * @param {number} x
+                 * The number which should be within a break.
+                 *
+                 * @param {Array<Highcharts.XAxisBreaksOptions>} breaks
+                 * The array of breaks to search within.
+                 *
+                 * @return {Highcharts.XAxisBreaksOptions|undefined}
+                 * Returns the first break found that matches, returns false if no break
+                 * is found.
+                 */
+                Additions.prototype.findBreakAt = function (x, breaks) {
+                    return find(breaks, function (b) {
+                        return b.from < x && x < b.to;
+                    });
+                };
+                /**
+                 * @private
+                 */
+                Additions.prototype.isInAnyBreak = function (val, testKeep) {
+                    var brokenAxis = this,
+                        axis = brokenAxis.axis,
+                        breaks = axis.options.breaks || [];
+                    var i = breaks.length,
+                        inbrk,
+                        keep,
+                        ret;
+                    if (i && isNumber(val)) {
+                        while (i--) {
+                            if (Additions.isInBreak(breaks[i], val)) {
+                                inbrk = true;
+                                if (!keep) {
+                                    keep = pick(breaks[i].showPoints, !axis.isXAxis);
+                                }
+                            }
+                        }
+                        if (inbrk && testKeep) {
+                            ret = inbrk && !keep;
+                        }
+                        else {
+                            ret = inbrk;
+                        }
+                    }
+                    return ret;
+                };
+                /**
+                 * Dynamically set or unset breaks in an axis. This function in lighter
+                 * than usin Axis.update, and it also preserves animation.
+                 *
+                 * @private
+                 * @function Highcharts.Axis#setBreaks
+                 *
+                 * @param {Array<Highcharts.XAxisBreaksOptions>} [breaks]
+                 * The breaks to add. When `undefined` it removes existing breaks.
+                 *
+                 * @param {boolean} [redraw=true]
+                 * Whether to redraw the chart immediately.
+                 */
+                Additions.prototype.setBreaks = function (breaks, redraw) {
+                    var brokenAxis = this;
+                    var axis = brokenAxis.axis;
+                    var hasBreaks = (isArray(breaks) && !!breaks.length);
+                    axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
+                    brokenAxis.hasBreaks = hasBreaks;
+                    axis.options.breaks = axis.userOptions.breaks = breaks;
+                    axis.forceRedraw = true; // Force recalculation in setScale
+                    // Recalculate series related to the axis.
+                    axis.series.forEach(function (series) {
+                        series.isDirty = true;
+                    });
+                    if (!hasBreaks && axis.val2lin === Additions.val2Lin) {
+                        // Revert to prototype functions
+                        delete axis.val2lin;
+                        delete axis.lin2val;
+                    }
+                    if (hasBreaks) {
+                        axis.userOptions.ordinal = false;
+                        axis.lin2val = Additions.lin2Val;
+                        axis.val2lin = Additions.val2Lin;
+                        axis.setExtremes = function (newMin, newMax, redraw, animation, eventArguments) {
+                            // If trying to set extremes inside a break, extend min to
+                            // after, and max to before the break ( #3857 )
+                            if (brokenAxis.hasBreaks) {
+                                var breaks_1 = (this.options.breaks || []);
+                                var axisBreak = void 0;
+                                while ((axisBreak = brokenAxis.findBreakAt(newMin, breaks_1))) {
+                                    newMin = axisBreak.to;
+                                }
+                                while ((axisBreak = brokenAxis.findBreakAt(newMax, breaks_1))) {
+                                    newMax = axisBreak.from;
+                                }
+                                // If both min and max is within the same break.
+                                if (newMax < newMin) {
+                                    newMax = newMin;
+                                }
+                            }
+                            Axis.prototype.setExtremes.call(this, newMin, newMax, redraw, animation, eventArguments);
+                        };
+                        axis.setAxisTranslation = function () {
+                            Axis.prototype.setAxisTranslation.call(this);
+                            brokenAxis.unitLength = void 0;
+                            if (brokenAxis.hasBreaks) {
+                                var breaks_2 = axis.options.breaks || [], 
+                                    // Temporary one:
+                                    breakArrayT_1 = [],
+                                    breakArray_1 = [],
+                                    pointRangePadding = pick(axis.pointRangePadding, 0);
+                                var length_1 = 0,
+                                    inBrk_1,
+                                    repeat_1,
+                                    min_1 = axis.userMin || axis.min,
+                                    max_1 = axis.userMax || axis.max,
+                                    start_1,
+                                    i_1;
+                                // Min & max check (#4247)
+                                breaks_2.forEach(function (brk) {
+                                    repeat_1 = brk.repeat || Infinity;
+                                    if (isNumber(min_1) && isNumber(max_1)) {
+                                        if (Additions.isInBreak(brk, min_1)) {
+                                            min_1 += (brk.to % repeat_1) - (min_1 % repeat_1);
+                                        }
+                                        if (Additions.isInBreak(brk, max_1)) {
+                                            max_1 -= (max_1 % repeat_1) - (brk.from % repeat_1);
+                                        }
+                                    }
+                                });
+                                // Construct an array holding all breaks in the axis
+                                breaks_2.forEach(function (brk) {
+                                    start_1 = brk.from;
+                                    repeat_1 = brk.repeat || Infinity;
+                                    if (isNumber(min_1) && isNumber(max_1)) {
+                                        while (start_1 - repeat_1 > min_1) {
+                                            start_1 -= repeat_1;
+                                        }
+                                        while (start_1 < min_1) {
+                                            start_1 += repeat_1;
+                                        }
+                                        for (i_1 = start_1; i_1 < max_1; i_1 += repeat_1) {
+                                            breakArrayT_1.push({
+                                                value: i_1,
+                                                move: 'in'
+                                            });
+                                            breakArrayT_1.push({
+                                                value: i_1 + brk.to - brk.from,
+                                                move: 'out',
+                                                size: brk.breakSize
+                                            });
+                                        }
+                                    }
+                                });
+                                breakArrayT_1.sort(function (a, b) {
+                                    return ((a.value === b.value) ?
+                                        ((a.move === 'in' ? 0 : 1) -
+                                            (b.move === 'in' ? 0 : 1)) :
+                                        a.value - b.value);
+                                });
+                                // Simplify the breaks
+                                inBrk_1 = 0;
+                                start_1 = min_1;
+                                breakArrayT_1.forEach(function (brk) {
+                                    inBrk_1 += (brk.move === 'in' ? 1 : -1);
+                                    if (inBrk_1 === 1 && brk.move === 'in') {
+                                        start_1 = brk.value;
+                                    }
+                                    if (inBrk_1 === 0 && isNumber(start_1)) {
+                                        breakArray_1.push({
+                                            from: start_1,
+                                            to: brk.value,
+                                            len: brk.value - start_1 - (brk.size || 0)
+                                        });
+                                        length_1 += brk.value - start_1 - (brk.size || 0);
+                                    }
+                                });
+                                brokenAxis.breakArray = breakArray_1;
+                                // Used with staticScale, and below the actual axis
+                                // length, when breaks are substracted.
+                                if (isNumber(min_1) && isNumber(max_1) && isNumber(axis.min)) {
+                                    brokenAxis.unitLength = max_1 - min_1 - length_1 +
+                                        pointRangePadding;
+                                    fireEvent(axis, 'afterBreaks');
+                                    if (axis.staticScale) {
+                                        axis.transA = axis.staticScale;
+                                    }
+                                    else if (brokenAxis.unitLength) {
+                                        axis.transA *=
+                                            (max_1 - axis.min + pointRangePadding) /
+                                                brokenAxis.unitLength;
+                                    }
+                                    if (pointRangePadding) {
+                                        axis.minPixelPadding =
+                                            axis.transA * (axis.minPointOffset || 0);
+                                    }
+                                    axis.min = min_1;
+                                    axis.max = max_1;
+                                }
+                            }
+                        };
+                    }
+                    if (pick(redraw, true)) {
+                        axis.chart.redraw();
+                    }
+                };
+                return Additions;
+            }());
+            BrokenAxis.Additions = Additions;
+        })(BrokenAxis || (BrokenAxis = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return BrokenAxis;
+    });
+    _registerModule(_modules, 'Core/Axis/GridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Axis, AxisDefaults, H, U) {
+        /* *
+         *
+         *  (c) 2016 Highsoft AS
+         *  Authors: Lars A. V. Cabrera
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var dateFormats = H.dateFormats;
+        var addEvent = U.addEvent,
+            defined = U.defined,
+            erase = U.erase,
+            find = U.find,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
+            timeUnits = U.timeUnits,
+            wrap = U.wrap;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /* eslint-disable require-jsdoc */
+        function argsToArray(args) {
+            return Array.prototype.slice.call(args, 1);
+        }
+        function isObject(x) {
+            // Always use strict mode
+            return U.isObject(x, true);
+        }
+        function applyGridOptions(axis) {
+            var options = axis.options;
+            // Center-align by default
+            /*
+            if (!options.labels) {
+                options.labels = {};
+            }
+            */
+            options.labels.align = pick(options.labels.align, 'center');
+            // @todo: Check against tickLabelPlacement between/on etc
+            /* Prevents adding the last tick label if the axis is not a category
+               axis.
+               Since numeric labels are normally placed at starts and ends of a
+               range of value, and this module makes the label point at the value,
+               an "extra" label would appear. */
+            if (!axis.categories) {
+                options.showLastLabel = false;
+            }
+            // Prevents rotation of labels when squished, as rotating them would not
+            // help.
+            axis.labelRotation = 0;
+            options.labels.rotation = 0;
+        }
+        /**
+         * Axis with grid support.
+         * @private
+         */
+        var GridAxis;
+        (function (GridAxis) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /**
+             * Enum for which side the axis is on. Maps to axis.side.
+             * @private
+             */
+            var Side;
+            (function (Side) {
+                Side[Side["top"] = 0] = "top";
+                Side[Side["right"] = 1] = "right";
+                Side[Side["bottom"] = 2] = "bottom";
+                Side[Side["left"] = 3] = "left";
+            })(Side = GridAxis.Side || (GridAxis.Side = {}));
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Extends axis class with grid support.
+             * @private
+             */
+            function compose(AxisClass, ChartClass, TickClass) {
+                if (AxisClass.keepProps.indexOf('grid') === -1) {
+                    AxisClass.keepProps.push('grid');
+                    AxisClass.prototype.getMaxLabelDimensions = getMaxLabelDimensions;
+                    wrap(AxisClass.prototype, 'unsquish', wrapUnsquish);
+                    // Add event handlers
+                    addEvent(AxisClass, 'init', onInit);
+                    addEvent(AxisClass, 'afterGetOffset', onAfterGetOffset);
+                    addEvent(AxisClass, 'afterGetTitlePosition', onAfterGetTitlePosition);
+                    addEvent(AxisClass, 'afterInit', onAfterInit);
+                    addEvent(AxisClass, 'afterRender', onAfterRender);
+                    addEvent(AxisClass, 'afterSetAxisTranslation', onAfterSetAxisTranslation);
+                    addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions);
+                    addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions2);
+                    addEvent(AxisClass, 'afterSetScale', onAfterSetScale);
+                    addEvent(AxisClass, 'afterTickSize', onAfterTickSize);
+                    addEvent(AxisClass, 'trimTicks', onTrimTicks);
+                    addEvent(AxisClass, 'destroy', onDestroy);
+                }
+                addEvent(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
+                addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
+                addEvent(TickClass, 'labelFormat', onTickLabelFormat);
+                return AxisClass;
+            }
+            GridAxis.compose = compose;
+            /**
+             * Get the largest label width and height.
+             *
+             * @private
+             * @function Highcharts.Axis#getMaxLabelDimensions
+             *
+             * @param {Highcharts.Dictionary<Highcharts.Tick>} ticks
+             * All the ticks on one axis.
+             *
+             * @param {Array<number|string>} tickPositions
+             * All the tick positions on one axis.
+             *
+             * @return {Highcharts.SizeObject}
+             * Object containing the properties height and width.
+             *
+             * @todo Move this to the generic axis implementation, as it is used there.
+             */
+            function getMaxLabelDimensions(ticks, tickPositions) {
+                var dimensions = {
+                        width: 0,
+                        height: 0
+                    };
+                tickPositions.forEach(function (pos) {
+                    var tick = ticks[pos];
+                    var labelHeight = 0,
+                        labelWidth = 0,
+                        label;
+                    if (isObject(tick)) {
+                        label = isObject(tick.label) ? tick.label : {};
+                        // Find width and height of label
+                        labelHeight = label.getBBox ? label.getBBox().height : 0;
+                        if (label.textStr && !isNumber(label.textPxLength)) {
+                            label.textPxLength = label.getBBox().width;
+                        }
+                        labelWidth = isNumber(label.textPxLength) ?
+                            // Math.round ensures crisp lines
+                            Math.round(label.textPxLength) :
+                            0;
+                        if (label.textStr) {
+                            // Set the tickWidth same as the label width after ellipsis
+                            // applied #10281
+                            labelWidth = Math.round(label.getBBox().width);
+                        }
+                        // Update the result if width and/or height are larger
+                        dimensions.height = Math.max(labelHeight, dimensions.height);
+                        dimensions.width = Math.max(labelWidth, dimensions.width);
+                    }
+                });
+                // For tree grid, add indentation
+                if (this.options.type === 'treegrid' &&
+                    this.treeGrid &&
+                    this.treeGrid.mapOfPosToGridNode) {
+                    var treeDepth = this.treeGrid.mapOfPosToGridNode[-1].height || 0;
+                    dimensions.width += this.options.labels.indentation * (treeDepth - 1);
+                }
+                return dimensions;
+            }
+            /**
+             * Handle columns and getOffset.
+             * @private
+             */
+            function onAfterGetOffset() {
+                var grid = this.grid;
+                (grid && grid.columns || []).forEach(function (column) {
+                    column.getOffset();
+                });
+            }
+            /**
+             * @private
+             */
+            function onAfterGetTitlePosition(e) {
+                var axis = this;
+                var options = axis.options;
+                var gridOptions = options.grid || {};
+                if (gridOptions.enabled === true) {
+                    // compute anchor points for each of the title align options
+                    var axisTitle = axis.axisTitle,
+                        axisHeight = axis.height,
+                        horiz = axis.horiz,
+                        axisLeft = axis.left,
+                        offset = axis.offset,
+                        opposite = axis.opposite,
+                        options_1 = axis.options,
+                        axisTop = axis.top,
+                        axisWidth = axis.width;
+                    var tickSize = axis.tickSize();
+                    var titleWidth = axisTitle && axisTitle.getBBox().width;
+                    var xOption = options_1.title.x;
+                    var yOption = options_1.title.y;
+                    var titleMargin = pick(options_1.title.margin,
+                        horiz ? 5 : 10);
+                    var titleFontSize = axis.chart.renderer.fontMetrics(options_1.title.style.fontSize,
+                        axisTitle).f;
+                    var crispCorr = tickSize ? tickSize[0] / 2 : 0;
+                    // TODO account for alignment
+                    // the position in the perpendicular direction of the axis
+                    var offAxis = ((horiz ? axisTop + axisHeight : axisLeft) +
+                            (horiz ? 1 : -1) * // horizontal axis reverses the margin
+                                (opposite ? -1 : 1) * // so does opposite axes
+                                crispCorr +
+                            (axis.side === GridAxis.Side.bottom ? titleFontSize : 0));
+                    e.titlePosition.x = horiz ?
+                        axisLeft - (titleWidth || 0) / 2 - titleMargin + xOption :
+                        offAxis + (opposite ? axisWidth : 0) + offset + xOption;
+                    e.titlePosition.y = horiz ?
+                        (offAxis -
+                            (opposite ? axisHeight : 0) +
+                            (opposite ? titleFontSize : -titleFontSize) / 2 +
+                            offset +
+                            yOption) :
+                        axisTop - titleMargin + yOption;
+                }
+            }
+            /**
+             * @private
+             */
+            function onAfterInit() {
+                var axis = this;
+                var chart = axis.chart,
+                    _a = axis.options.grid,
+                    gridOptions = _a === void 0 ? {} : _a,
+                    userOptions = axis.userOptions;
+                if (gridOptions.enabled) {
+                    applyGridOptions(axis);
+                }
+                if (gridOptions.columns) {
+                    var columns = axis.grid.columns = [];
+                    var columnIndex = axis.grid.columnIndex = 0;
+                    // Handle columns, each column is a grid axis
+                    while (++columnIndex < gridOptions.columns.length) {
+                        var columnOptions = merge(userOptions,
+                            gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
+                                linkedTo: 0,
+                                // Force to behave like category axis
+                                type: 'category',
+                                // Disable by default the scrollbar on the grid axis
+                                scrollbar: {
+                                    enabled: false
+                                }
+                            });
+                        delete columnOptions.grid.columns; // Prevent recursion
+                        var column = new Axis(axis.chart,
+                            columnOptions);
+                        column.grid.isColumn = true;
+                        column.grid.columnIndex = columnIndex;
+                        // Remove column axis from chart axes array, and place it
+                        // in the columns array.
+                        erase(chart.axes, column);
+                        erase(chart[axis.coll], column);
+                        columns.push(column);
+                    }
+                }
+            }
+            /**
+             * Draw an extra line on the far side of the outermost axis,
+             * creating floor/roof/wall of a grid. And some padding.
+             * ```
+             * Make this:
+             *             (axis.min) __________________________ (axis.max)
+             *                           |    |    |    |    |
+             * Into this:
+             *             (axis.min) __________________________ (axis.max)
+             *                        ___|____|____|____|____|__
+             * ```
+             * @private
+             */
+            function onAfterRender() {
+                var axis = this,
+                    grid = axis.grid,
+                    options = axis.options,
+                    gridOptions = options.grid || {};
+                if (gridOptions.enabled === true) {
+                    var min = axis.min || 0,
+                        max = axis.max || 0;
+                    // @todo acutual label padding (top, bottom, left, right)
+                    axis.maxLabelDimensions = axis.getMaxLabelDimensions(axis.ticks, axis.tickPositions);
+                    // Remove right wall before rendering if updating
+                    if (axis.rightWall) {
+                        axis.rightWall.destroy();
+                    }
+                    /*
+                    Draw an extra axis line on outer axes
+                                >
+                    Make this:    |______|______|______|___
+
+                                > _________________________
+                    Into this:    |______|______|______|__|
+                                                            */
+                    if (axis.grid && axis.grid.isOuterAxis() && axis.axisLine) {
+                        var lineWidth = options.lineWidth;
+                        if (lineWidth) {
+                            var linePath = axis.getLinePath(lineWidth),
+                                startPoint = linePath[0],
+                                endPoint = linePath[1], 
+                                // Negate distance if top or left axis
+                                // Subtract 1px to draw the line at the end of the tick
+                                tickLength = (axis.tickSize('tick') || [1])[0],
+                                distance = (tickLength - 1) * ((axis.side === GridAxis.Side.top ||
+                                    axis.side === GridAxis.Side.left) ? -1 : 1);
+                            // If axis is horizontal, reposition line path vertically
+                            if (startPoint[0] === 'M' && endPoint[0] === 'L') {
+                                if (axis.horiz) {
+                                    startPoint[2] += distance;
+                                    endPoint[2] += distance;
+                                }
+                                else {
+                                    startPoint[1] += distance;
+                                    endPoint[1] += distance;
+                                }
+                            }
+                            // If it doesn't exist, add an upper and lower border
+                            // for the vertical grid axis.
+                            if (!axis.horiz && axis.chart.marginRight) {
+                                var upperBorderStartPoint = startPoint,
+                                    upperBorderEndPoint = [
+                                        'L',
+                                        axis.left,
+                                        startPoint[2] || 0
+                                    ],
+                                    upperBorderPath = [upperBorderStartPoint,
+                                    upperBorderEndPoint],
+                                    lowerBorderEndPoint = [
+                                        'L',
+                                        axis.chart.chartWidth - axis.chart.marginRight,
+                                        axis.toPixels(max + axis.tickmarkOffset)
+                                    ],
+                                    lowerBorderStartPoint = [
+                                        'M',
+                                        endPoint[1] || 0,
+                                        axis.toPixels(max + axis.tickmarkOffset)
+                                    ],
+                                    lowerBorderPath = [lowerBorderStartPoint,
+                                    lowerBorderEndPoint];
+                                if (!axis.grid.upperBorder && min % 1 !== 0) {
+                                    axis.grid.upperBorder = axis.grid.renderBorder(upperBorderPath);
+                                }
+                                if (axis.grid.upperBorder) {
+                                    axis.grid.upperBorder.attr({
+                                        stroke: options.lineColor,
+                                        'stroke-width': options.lineWidth
+                                    });
+                                    axis.grid.upperBorder.animate({
+                                        d: upperBorderPath
+                                    });
+                                }
+                                if (!axis.grid.lowerBorder && max % 1 !== 0) {
+                                    axis.grid.lowerBorder = axis.grid.renderBorder(lowerBorderPath);
+                                }
+                                if (axis.grid.lowerBorder) {
+                                    axis.grid.lowerBorder.attr({
+                                        stroke: options.lineColor,
+                                        'stroke-width': options.lineWidth
+                                    });
+                                    axis.grid.lowerBorder.animate({
+                                        d: lowerBorderPath
+                                    });
+                                }
+                            }
+                            // Render an extra line parallel to the existing axes,
+                            // to close the grid.
+                            if (!axis.grid.axisLineExtra) {
+                                axis.grid.axisLineExtra = axis.grid.renderBorder(linePath);
+                            }
+                            else {
+                                axis.grid.axisLineExtra.attr({
+                                    stroke: options.lineColor,
+                                    'stroke-width': options.lineWidth
+                                });
+                                axis.grid.axisLineExtra.animate({
+                                    d: linePath
+                                });
+                            }
+                            // show or hide the line depending on
+                            // options.showEmpty
+                            axis.axisLine[axis.showAxis ? 'show' : 'hide'](true);
+                        }
+                    }
+                    (grid && grid.columns || []).forEach(function (column) {
+                        column.render();
+                    });
+                    // Manipulate the tick mark visibility
+                    // based on the axis.max- allows smooth scrolling.
+                    if (!axis.horiz &&
+                        axis.chart.hasRendered &&
+                        (axis.scrollbar ||
+                            (axis.linkedParent && axis.linkedParent.scrollbar))) {
+                        var tickmarkOffset = axis.tickmarkOffset,
+                            lastTick = axis.tickPositions[axis.tickPositions.length - 1],
+                            firstTick = axis.tickPositions[0];
+                        // Hide/show firts tick label.
+                        var label = axis.ticks[firstTick].label;
+                        if (label) {
+                            if (min - firstTick > tickmarkOffset) {
+                                label.hide();
+                            }
+                            else {
+                                label.show();
+                            }
+                        }
+                        // Hide/show last tick mark/label.
+                        label = axis.ticks[lastTick].label;
+                        if (label) {
+                            if (lastTick - max > tickmarkOffset) {
+                                label.hide();
+                            }
+                            else {
+                                label.show();
+                            }
+                        }
+                        var mark = axis.ticks[lastTick].mark;
+                        if (mark) {
+                            if (lastTick - max < tickmarkOffset && lastTick - max > 0 && axis.ticks[lastTick].isLast) {
+                                mark.hide();
+                            }
+                            else if (axis.ticks[lastTick - 1]) {
+                                mark.show();
+                            }
+                        }
+                    }
+                }
+            }
+            /**
+             * @private
+             */
+            function onAfterSetAxisTranslation() {
+                var axis = this;
+                var tickInfo = axis.tickPositions && axis.tickPositions.info;
+                var options = axis.options;
+                var gridOptions = options.grid || {};
+                var userLabels = axis.userOptions.labels || {};
+                // Fire this only for the Gantt type chart, #14868.
+                if (gridOptions.enabled) {
+                    if (axis.horiz) {
+                        axis.series.forEach(function (series) {
+                            series.options.pointRange = 0;
+                        });
+                        // Lower level time ticks, like hours or minutes, represent
+                        // points in time and not ranges. These should be aligned
+                        // left in the grid cell by default. The same applies to
+                        // years of higher order.
+                        if (tickInfo &&
+                            options.dateTimeLabelFormats &&
+                            options.labels &&
+                            !defined(userLabels.align) &&
+                            (options.dateTimeLabelFormats[tickInfo.unitName].range === false ||
+                                tickInfo.count > 1 // years
+                            )) {
+                            options.labels.align = 'left';
+                            if (!defined(userLabels.x)) {
+                                options.labels.x = 3;
+                            }
+                        }
+                    }
+                    else {
+                        // Don't trim ticks which not in min/max range but
+                        // they are still in the min/max plus tickInterval.
+                        if (this.options.type !== 'treegrid' &&
+                            axis.grid &&
+                            axis.grid.columns) {
+                            this.minPointOffset = this.tickInterval;
+                        }
+                    }
+                }
+            }
+            /**
+             * Creates a left and right wall on horizontal axes:
+             * - Places leftmost tick at the start of the axis, to create a left
+             *   wall
+             * - Ensures that the rightmost tick is at the end of the axis, to
+             *   create a right wall.
+             * @private
+             */
+            function onAfterSetOptions(e) {
+                var options = this.options,
+                    userOptions = e.userOptions,
+                    gridOptions = ((options && isObject(options.grid)) ? options.grid : {});
+                var gridAxisOptions;
+                if (gridOptions.enabled === true) {
+                    // Merge the user options into default grid axis options so
+                    // that when a user option is set, it takes presedence.
+                    gridAxisOptions = merge(true, {
+                        className: ('highcharts-grid-axis ' + (userOptions.className || '')),
+                        dateTimeLabelFormats: {
+                            hour: {
+                                list: ['%H:%M', '%H']
+                            },
+                            day: {
+                                list: ['%A, %e. %B', '%a, %e. %b', '%E']
+                            },
+                            week: {
+                                list: ['Week %W', 'W%W']
+                            },
+                            month: {
+                                list: ['%B', '%b', '%o']
+                            }
+                        },
+                        grid: {
+                            borderWidth: 1
+                        },
+                        labels: {
+                            padding: 2,
+                            style: {
+                                fontSize: '13px'
+                            }
+                        },
+                        margin: 0,
+                        title: {
+                            text: null,
+                            reserveSpace: false,
+                            rotation: 0
+                        },
+                        // In a grid axis, only allow one unit of certain types,
+                        // for example we shouln't have one grid cell spanning
+                        // two days.
+                        units: [[
+                                'millisecond',
+                                [1, 10, 100]
+                            ], [
+                                'second',
+                                [1, 10]
+                            ], [
+                                'minute',
+                                [1, 5, 15]
+                            ], [
+                                'hour',
+                                [1, 6]
+                            ], [
+                                'day',
+                                [1]
+                            ], [
+                                'week',
+                                [1]
+                            ], [
+                                'month',
+                                [1]
+                            ], [
+                                'year',
+                                null
+                            ]]
+                    }, userOptions);
+                    // X-axis specific options
+                    if (this.coll === 'xAxis') {
+                        // For linked axes, tickPixelInterval is used only if
+                        // the tickPositioner below doesn't run or returns
+                        // undefined (like multiple years)
+                        if (defined(userOptions.linkedTo) &&
+                            !defined(userOptions.tickPixelInterval)) {
+                            gridAxisOptions.tickPixelInterval = 350;
+                        }
+                        // For the secondary grid axis, use the primary axis'
+                        // tick intervals and return ticks one level higher.
+                        if (
+                        // Check for tick pixel interval in options
+                        !defined(userOptions.tickPixelInterval) &&
+                            // Only for linked axes
+                            defined(userOptions.linkedTo) &&
+                            !defined(userOptions.tickPositioner) &&
+                            !defined(userOptions.tickInterval)) {
+                            gridAxisOptions.tickPositioner = function (min, max) {
+                                var parentInfo = (this.linkedParent &&
+                                        this.linkedParent.tickPositions &&
+                                        this.linkedParent.tickPositions.info);
+                                if (parentInfo) {
+                                    var units = (gridAxisOptions.units || []);
+                                    var unitIdx = void 0,
+                                        count = void 0,
+                                        unitName = void 0;
+                                    for (var i = 0; i < units.length; i++) {
+                                        if (units[i][0] ===
+                                            parentInfo.unitName) {
+                                            unitIdx = i;
+                                            break;
+                                        }
+                                    }
+                                    // Get the first allowed count on the next
+                                    // unit.
+                                    if (units[unitIdx + 1]) {
+                                        unitName = units[unitIdx + 1][0];
+                                        count =
+                                            (units[unitIdx + 1][1] || [1])[0];
+                                        // In case the base X axis shows years, make
+                                        // the secondary axis show ten times the
+                                        // years (#11427)
+                                    }
+                                    else if (parentInfo.unitName === 'year') {
+                                        unitName = 'year';
+                                        count = parentInfo.count * 10;
+                                    }
+                                    var unitRange = timeUnits[unitName];
+                                    this.tickInterval = unitRange * count;
+                                    return this.getTimeTicks({
+                                        unitRange: unitRange,
+                                        count: count,
+                                        unitName: unitName
+                                    }, min, max, this.options.startOfWeek);
+                                }
+                            };
+                        }
+                    }
+                    // Now merge the combined options into the axis options
+                    merge(true, this.options, gridAxisOptions);
+                    if (this.horiz) {
+                        /*               _________________________
+                        Make this:    ___|_____|_____|_____|__|
+                                        ^                     ^
+                                        _________________________
+                        Into this:    |_____|_____|_____|_____|
+                                            ^                 ^    */
+                        options.minPadding = pick(userOptions.minPadding, 0);
+                        options.maxPadding = pick(userOptions.maxPadding, 0);
+                    }
+                    // If borderWidth is set, then use its value for tick and
+                    // line width.
+                    if (isNumber(options.grid.borderWidth)) {
+                        options.tickWidth = options.lineWidth =
+                            gridOptions.borderWidth;
+                    }
+                }
+            }
+            /**
+             * @private
+             */
+            function onAfterSetOptions2(e) {
+                var axis = this;
+                var userOptions = e.userOptions;
+                var gridOptions = userOptions && userOptions.grid || {};
+                var columns = gridOptions.columns;
+                // Add column options to the parent axis. Children has their column
+                // options set on init in onGridAxisAfterInit.
+                if (gridOptions.enabled && columns) {
+                    merge(true, axis.options, columns[columns.length - 1]);
+                }
+            }
+            /**
+             * Handle columns and setScale.
+             * @private
+             */
+            function onAfterSetScale() {
+                var axis = this;
+                (axis.grid.columns || []).forEach(function (column) {
+                    column.setScale();
+                });
+            }
+            /**
+             * Draw vertical axis ticks extra long to create cell floors and roofs.
+             * Overrides the tickLength for vertical axes.
+             * @private
+             */
+            function onAfterTickSize(e) {
+                var defaultLeftAxisOptions = AxisDefaults.defaultLeftAxisOptions;
+                var _a = this,
+                    horiz = _a.horiz,
+                    maxLabelDimensions = _a.maxLabelDimensions,
+                    _b = _a.options.grid,
+                    gridOptions = _b === void 0 ? {} : _b;
+                if (gridOptions.enabled && maxLabelDimensions) {
+                    var labelPadding = (Math.abs(defaultLeftAxisOptions.labels.x) * 2);
+                    var distance = horiz ?
+                            gridOptions.cellHeight || labelPadding + maxLabelDimensions.height :
+                            labelPadding + maxLabelDimensions.width;
+                    if (isArray(e.tickSize)) {
+                        e.tickSize[0] = distance;
+                    }
+                    else {
+                        e.tickSize = [distance, 0];
+                    }
+                }
+            }
+            /**
+             * @private
+             */
+            function onChartAfterSetChartSize() {
+                this.axes.forEach(function (axis) {
+                    (axis.grid && axis.grid.columns || []).forEach(function (column) {
+                        column.setAxisSize();
+                        column.setAxisTranslation();
+                    });
+                });
+            }
+            /**
+             * @private
+             */
+            function onDestroy(e) {
+                var grid = this.grid;
+                (grid.columns || []).forEach(function (column) {
+                    column.destroy(e.keepEvents);
+                });
+                grid.columns = void 0;
+            }
+            /**
+             * Wraps axis init to draw cell walls on vertical axes.
+             * @private
+             */
+            function onInit(e) {
+                var axis = this;
+                var userOptions = e.userOptions || {};
+                var gridOptions = userOptions.grid || {};
+                if (gridOptions.enabled && defined(gridOptions.borderColor)) {
+                    userOptions.tickColor = userOptions.lineColor = gridOptions.borderColor;
+                }
+                if (!axis.grid) {
+                    axis.grid = new Additions(axis);
+                }
+            }
+            /**
+             * Center tick labels in cells.
+             * @private
+             */
+            function onTickAfterGetLabelPosition(e) {
+                var tick = this,
+                    label = tick.label,
+                    axis = tick.axis,
+                    reversed = axis.reversed,
+                    chart = axis.chart,
+                    options = axis.options,
+                    gridOptions = options.grid || {},
+                    labelOpts = axis.options.labels,
+                    align = labelOpts.align, 
+                    // verticalAlign is currently not supported for axis.labels.
+                    verticalAlign = 'middle', // labelOpts.verticalAlign,
+                    side = GridAxis.Side[axis.side],
+                    tickmarkOffset = e.tickmarkOffset,
+                    tickPositions = axis.tickPositions,
+                    tickPos = tick.pos - tickmarkOffset,
+                    nextTickPos = (isNumber(tickPositions[e.index + 1]) ?
+                        tickPositions[e.index + 1] - tickmarkOffset :
+                        (axis.max || 0) + tickmarkOffset),
+                    tickSize = axis.tickSize('tick'),
+                    tickWidth = tickSize ? tickSize[0] : 0,
+                    crispCorr = tickSize ? tickSize[1] / 2 : 0;
+                var labelHeight,
+                    lblMetrics,
+                    lines,
+                    bottom,
+                    top,
+                    left,
+                    right;
+                // Only center tick labels in grid axes
+                if (gridOptions.enabled === true) {
+                    // Calculate top and bottom positions of the cell.
+                    if (side === 'top') {
+                        bottom = axis.top + axis.offset;
+                        top = bottom - tickWidth;
+                    }
+                    else if (side === 'bottom') {
+                        top = chart.chartHeight - axis.bottom + axis.offset;
+                        bottom = top + tickWidth;
+                    }
+                    else {
+                        bottom = axis.top + axis.len - (axis.translate(reversed ? nextTickPos : tickPos) || 0);
+                        top = axis.top + axis.len - (axis.translate(reversed ? tickPos : nextTickPos) || 0);
+                    }
+                    // Calculate left and right positions of the cell.
+                    if (side === 'right') {
+                        left = chart.chartWidth - axis.right + axis.offset;
+                        right = left + tickWidth;
+                    }
+                    else if (side === 'left') {
+                        right = axis.left + axis.offset;
+                        left = right - tickWidth;
+                    }
+                    else {
+                        left = Math.round(axis.left + (axis.translate(reversed ? nextTickPos : tickPos) || 0)) - crispCorr;
+                        right = Math.min(// #15742
+                        Math.round(axis.left + (axis.translate(reversed ? tickPos : nextTickPos) || 0)) - crispCorr, axis.left + axis.len);
+                    }
+                    tick.slotWidth = right - left;
+                    // Calculate the positioning of the label based on
+                    // alignment.
+                    e.pos.x = (align === 'left' ?
+                        left :
+                        align === 'right' ?
+                            right :
+                            left + ((right - left) / 2) // default to center
+                    );
+                    e.pos.y = (verticalAlign === 'top' ?
+                        top :
+                        verticalAlign === 'bottom' ?
+                            bottom :
+                            top + ((bottom - top) / 2) // default to middle
+                    );
+                    lblMetrics = chart.renderer.fontMetrics(labelOpts.style.fontSize, label && label.element);
+                    labelHeight = label ? label.getBBox().height : 0;
+                    // Adjustment to y position to align the label correctly.
+                    // Would be better to have a setter or similar for this.
+                    if (!labelOpts.useHTML) {
+                        lines = Math.round(labelHeight / lblMetrics.h);
+                        e.pos.y += (
+                        // Center the label
+                        // TODO: why does this actually center the label?
+                        ((lblMetrics.b - (lblMetrics.h - lblMetrics.f)) / 2) +
+                            // Adjust for height of additional lines.
+                            -(((lines - 1) * lblMetrics.h) / 2));
+                    }
+                    else {
+                        e.pos.y += (
+                        // Readjust yCorr in htmlUpdateTransform
+                        lblMetrics.b +
+                            // Adjust for height of html label
+                            -(labelHeight / 2));
+                    }
+                    e.pos.x += (axis.horiz && labelOpts.x) || 0;
+                }
+            }
+            /**
+             * @private
+             */
+            function onTickLabelFormat(ctx) {
+                var axis = ctx.axis,
+                    value = ctx.value;
+                if (axis.options.grid &&
+                    axis.options.grid.enabled) {
+                    var tickPos = axis.tickPositions;
+                    var series = (axis.linkedParent || axis).series[0];
+                    var isFirst = value === tickPos[0];
+                    var isLast = value === tickPos[tickPos.length - 1];
+                    var point = series && find(series.options.data,
+                        function (p) {
+                            return p[axis.isXAxis ? 'x' : 'y'] === value;
+                    });
+                    var pointCopy = void 0;
+                    if (point && series.is('gantt')) {
+                        // For the Gantt set point aliases to the pointCopy
+                        // to do not change the original point
+                        pointCopy = merge(point);
+                        H.seriesTypes.gantt.prototype.pointClass
+                            .setGanttPointAliases(pointCopy);
+                    }
+                    // Make additional properties available for the
+                    // formatter
+                    ctx.isFirst = isFirst;
+                    ctx.isLast = isLast;
+                    ctx.point = pointCopy;
+                }
+            }
+            /**
+             * Makes tick labels which are usually ignored in a linked axis
+             * displayed if they are within range of linkedParent.min.
+             * ```
+             *                        _____________________________
+             *                        |   |       |       |       |
+             * Make this:             |   |   2   |   3   |   4   |
+             *                        |___|_______|_______|_______|
+             *                          ^
+             *                        _____________________________
+             *                        |   |       |       |       |
+             * Into this:             | 1 |   2   |   3   |   4   |
+             *                        |___|_______|_______|_______|
+             *                          ^
+             * ```
+             * @private
+             * @todo Does this function do what the drawing says? Seems to affect
+             *       ticks and not the labels directly?
+             */
+            function onTrimTicks() {
+                var axis = this;
+                var options = axis.options;
+                var gridOptions = options.grid || {};
+                var categoryAxis = axis.categories;
+                var tickPositions = axis.tickPositions;
+                var firstPos = tickPositions[0];
+                var lastPos = tickPositions[tickPositions.length - 1];
+                var linkedMin = axis.linkedParent && axis.linkedParent.min;
+                var linkedMax = axis.linkedParent && axis.linkedParent.max;
+                var min = linkedMin || axis.min;
+                var max = linkedMax || axis.max;
+                var tickInterval = axis.tickInterval;
+                var endMoreThanMin = (firstPos < min &&
+                        firstPos + tickInterval > min);
+                var startLessThanMax = (lastPos > max &&
+                        lastPos - tickInterval < max);
+                if (gridOptions.enabled === true &&
+                    !categoryAxis &&
+                    (axis.horiz || axis.isLinked)) {
+                    if (endMoreThanMin && !options.startOnTick) {
+                        tickPositions[0] = min;
+                    }
+                    if (startLessThanMax && !options.endOnTick) {
+                        tickPositions[tickPositions.length - 1] = max;
+                    }
+                }
+            }
+            /**
+             * Avoid altering tickInterval when reserving space.
+             * @private
+             */
+            function wrapUnsquish(proceed) {
+                var axis = this;
+                var _a = axis.options.grid,
+                    gridOptions = _a === void 0 ? {} : _a;
+                if (gridOptions.enabled === true && axis.categories) {
+                    return axis.tickInterval;
+                }
+                return proceed.apply(axis, argsToArray(arguments));
+            }
+            /* *
+             *
+             *  Class
+             *
+             * */
+            /**
+             * Additions for grid axes.
+             * @private
+             * @class
+             */
+            var Additions = /** @class */ (function () {
+                    /* *
+                    *
+                    *  Constructors
+                    *
+                    * */
+                    function Additions(axis) {
+                        this.axis = axis;
+                }
+                /* *
+                *
+                *  Functions
+                *
+                * */
+                /**
+                 * Checks if an axis is the outer axis in its dimension. Since
+                 * axes are placed outwards in order, the axis with the highest
+                 * index is the outermost axis.
+                 *
+                 * Example: If there are multiple x-axes at the top of the chart,
+                 * this function returns true if the axis supplied is the last
+                 * of the x-axes.
+                 *
+                 * @private
+                 *
+                 * @return {boolean}
+                 * True if the axis is the outermost axis in its dimension; false if
+                 * not.
+                 */
+                Additions.prototype.isOuterAxis = function () {
+                    var axis = this.axis;
+                    var chart = axis.chart;
+                    var columnIndex = axis.grid.columnIndex;
+                    var columns = (axis.linkedParent && axis.linkedParent.grid.columns ||
+                            axis.grid.columns);
+                    var parentAxis = columnIndex ? axis.linkedParent : axis;
+                    var thisIndex = -1,
+                        lastIndex = 0;
+                    chart[axis.coll].forEach(function (otherAxis, index) {
+                        if (otherAxis.side === axis.side && !otherAxis.options.isInternal) {
+                            lastIndex = index;
+                            if (otherAxis === parentAxis) {
+                                // Get the index of the axis in question
+                                thisIndex = index;
+                            }
+                        }
+                    });
+                    return (lastIndex === thisIndex &&
+                        (isNumber(columnIndex) ? columns.length === columnIndex : true));
+                };
+                /**
+                 * Add extra border based on the provided path.
+                 *  *
+                 * @private
+                 *
+                 * @param {SVGPath} path
+                 * The path of the border.
+                 *
+                 * @return {Highcharts.SVGElement}
+                 */
+                Additions.prototype.renderBorder = function (path) {
+                    var axis = this.axis,
+                        renderer = axis.chart.renderer,
+                        options = axis.options,
+                        extraBorderLine = renderer.path(path)
+                            .addClass('highcharts-axis-line')
+                            .add(axis.axisBorder);
+                    if (!renderer.styledMode) {
+                        extraBorderLine.attr({
+                            stroke: options.lineColor,
+                            'stroke-width': options.lineWidth,
+                            zIndex: 7
+                        });
+                    }
+                    return extraBorderLine;
+                };
+                return Additions;
+            }());
+            GridAxis.Additions = Additions;
+        })(GridAxis || (GridAxis = {}));
+        /* *
+         *
+         *  Registry
+         *
+         * */
+        // First letter of the day of the week, e.g. 'M' for 'Monday'.
+        dateFormats.E = function (timestamp) {
+            return this.dateFormat('%a', timestamp, true).charAt(0);
+        };
+        // Adds week date format
+        dateFormats.W = function (timestamp) {
+            var d = new this.Date(timestamp);
+            var firstDay = (this.get('Day',
+                d) + 6) % 7;
+            var thursday = new this.Date(d.valueOf());
+            this.set('Date', thursday, this.get('Date', d) - firstDay + 3);
+            var firstThursday = new this.Date(this.get('FullYear',
+                thursday), 0, 1);
+            if (this.get('Day', firstThursday) !== 4) {
+                this.set('Month', d, 0);
+                this.set('Date', d, 1 + (11 - this.get('Day', firstThursday)) % 7);
+            }
+            return (1 +
+                Math.floor((thursday.valueOf() - firstThursday.valueOf()) / 604800000)).toString();
+        };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * @productdesc {gantt}
+         * For grid axes (like in Gantt charts),
+         * it is possible to declare as a list to provide different
+         * formats depending on available space.
+         *
+         * Defaults to:
+         * ```js
+         * {
+         *     hour: { list: ['%H:%M', '%H'] },
+         *     day: { list: ['%A, %e. %B', '%a, %e. %b', '%E'] },
+         *     week: { list: ['Week %W', 'W%W'] },
+         *     month: { list: ['%B', '%b', '%o'] }
+         * }
+         * ```
+         *
+         * @sample {gantt} gantt/grid-axis/date-time-label-formats
+         *         Gantt chart with custom axis date format.
+         *
+         * @apioption xAxis.dateTimeLabelFormats
+         */
+        /**
+         * Set grid options for the axis labels. Requires Highcharts Gantt.
+         *
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption xAxis.grid
+         */
+        /**
+         * Enable grid on the axis labels. Defaults to true for Gantt charts.
+         *
+         * @type      {boolean}
+         * @default   true
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption xAxis.grid.enabled
+         */
+        /**
+         * Set specific options for each column (or row for horizontal axes) in the
+         * grid. Each extra column/row is its own axis, and the axis options can be set
+         * here.
+         *
+         * @sample gantt/demo/left-axis-table
+         *         Left axis as a table
+         *
+         * @type      {Array<Highcharts.XAxisOptions>}
+         * @apioption xAxis.grid.columns
+         */
+        /**
+         * Set border color for the label grid lines.
+         *
+         * @type      {Highcharts.ColorString}
+         * @apioption xAxis.grid.borderColor
+         */
+        /**
+         * Set border width of the label grid lines.
+         *
+         * @type      {number}
+         * @default   1
+         * @apioption xAxis.grid.borderWidth
+         */
+        /**
+         * Set cell height for grid axis labels. By default this is calculated from font
+         * size. This option only applies to horizontal axes.
+         *
+         * @sample gantt/grid-axis/cellheight
+         *         Gant chart with custom cell height
+         * @type      {number}
+         * @apioption xAxis.grid.cellHeight
+         */
+        ''; // keeps doclets above in JS file
+
+        return GridAxis;
+    });
     _registerModule(_modules, 'Gantt/Tree.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
@@ -1211,11 +2941,11 @@
          *
          * */
         var addEvent = U.addEvent,
-            defined = U.defined,
             isObject = U.isObject,
             isNumber = U.isNumber,
             pick = U.pick,
             wrap = U.wrap;
+        /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * @private
          */
@@ -1773,1603 +3503,7 @@
 
         return result;
     });
-    _registerModule(_modules, 'Core/Axis/GridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (Axis, H, Tick, U) {
-        /* *
-         *
-         *  (c) 2016 Highsoft AS
-         *  Authors: Lars A. V. Cabrera
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var addEvent = U.addEvent,
-            defined = U.defined,
-            erase = U.erase,
-            find = U.find,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            merge = U.merge,
-            pick = U.pick,
-            timeUnits = U.timeUnits,
-            wrap = U.wrap;
-        var argsToArray = function (args) {
-                return Array.prototype.slice.call(args, 1);
-        }, isObject = function (x) {
-            // Always use strict mode
-            return U.isObject(x, true);
-        }, Chart = H.Chart;
-        var applyGridOptions = function applyGridOptions(axis) {
-                var options = axis.options;
-            // Center-align by default
-            /*
-            if (!options.labels) {
-                options.labels = {};
-            }
-            */
-            options.labels.align = pick(options.labels.align, 'center');
-            // @todo: Check against tickLabelPlacement between/on etc
-            /* Prevents adding the last tick label if the axis is not a category
-               axis.
-               Since numeric labels are normally placed at starts and ends of a
-               range of value, and this module makes the label point at the value,
-               an "extra" label would appear. */
-            if (!axis.categories) {
-                options.showLastLabel = false;
-            }
-            // Prevents rotation of labels when squished, as rotating them would not
-            // help.
-            axis.labelRotation = 0;
-            options.labels.rotation = 0;
-        };
-        /**
-         * @productdesc {gantt}
-         * For grid axes (like in Gantt charts),
-         * it is possible to declare as a list to provide different
-         * formats depending on available space.
-         *
-         * Defaults to:
-         * ```js
-         * {
-         *     hour: { list: ['%H:%M', '%H'] },
-         *     day: { list: ['%A, %e. %B', '%a, %e. %b', '%E'] },
-         *     week: { list: ['Week %W', 'W%W'] },
-         *     month: { list: ['%B', '%b', '%o'] }
-         * }
-         * ```
-         *
-         * @sample {gantt} gantt/grid-axis/date-time-label-formats
-         *         Gantt chart with custom axis date format.
-         *
-         * @apioption xAxis.dateTimeLabelFormats
-         */
-        /**
-         * Set grid options for the axis labels. Requires Highcharts Gantt.
-         *
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption xAxis.grid
-         */
-        /**
-         * Enable grid on the axis labels. Defaults to true for Gantt charts.
-         *
-         * @type      {boolean}
-         * @default   true
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption xAxis.grid.enabled
-         */
-        /**
-         * Set specific options for each column (or row for horizontal axes) in the
-         * grid. Each extra column/row is its own axis, and the axis options can be set
-         * here.
-         *
-         * @sample gantt/demo/left-axis-table
-         *         Left axis as a table
-         *
-         * @type      {Array<Highcharts.XAxisOptions>}
-         * @apioption xAxis.grid.columns
-         */
-        /**
-         * Set border color for the label grid lines.
-         *
-         * @type      {Highcharts.ColorString}
-         * @apioption xAxis.grid.borderColor
-         */
-        /**
-         * Set border width of the label grid lines.
-         *
-         * @type      {number}
-         * @default   1
-         * @apioption xAxis.grid.borderWidth
-         */
-        /**
-         * Set cell height for grid axis labels. By default this is calculated from font
-         * size. This option only applies to horizontal axes.
-         *
-         * @sample gantt/grid-axis/cellheight
-         *         Gant chart with custom cell height
-         * @type      {number}
-         * @apioption xAxis.grid.cellHeight
-         */
-        ''; // detach doclets above
-        /**
-         * Get the largest label width and height.
-         *
-         * @private
-         * @function Highcharts.Axis#getMaxLabelDimensions
-         *
-         * @param {Highcharts.Dictionary<Highcharts.Tick>} ticks
-         * All the ticks on one axis.
-         *
-         * @param {Array<number|string>} tickPositions
-         * All the tick positions on one axis.
-         *
-         * @return {Highcharts.SizeObject}
-         * Object containing the properties height and width.
-         *
-         * @todo Move this to the generic axis implementation, as it is used there.
-         */
-        Axis.prototype.getMaxLabelDimensions = function (ticks, tickPositions) {
-            var dimensions = {
-                    width: 0,
-                    height: 0
-                };
-            tickPositions.forEach(function (pos) {
-                var tick = ticks[pos],
-                    labelHeight = 0,
-                    labelWidth = 0,
-                    label;
-                if (isObject(tick)) {
-                    label = isObject(tick.label) ? tick.label : {};
-                    // Find width and height of label
-                    labelHeight = label.getBBox ? label.getBBox().height : 0;
-                    if (label.textStr && !isNumber(label.textPxLength)) {
-                        label.textPxLength = label.getBBox().width;
-                    }
-                    labelWidth = isNumber(label.textPxLength) ?
-                        // Math.round ensures crisp lines
-                        Math.round(label.textPxLength) :
-                        0;
-                    if (label.textStr) {
-                        // Set the tickWidth same as the label width after ellipsis
-                        // applied #10281
-                        labelWidth = Math.round(label.getBBox().width);
-                    }
-                    // Update the result if width and/or height are larger
-                    dimensions.height = Math.max(labelHeight, dimensions.height);
-                    dimensions.width = Math.max(labelWidth, dimensions.width);
-                }
-            });
-            return dimensions;
-        };
-        // Adds week date format
-        H.dateFormats.W = function (timestamp) {
-            var d = new this.Date(timestamp);
-            var firstDay = (this.get('Day',
-                d) + 6) % 7;
-            var thursday = new this.Date(d.valueOf());
-            this.set('Date', thursday, this.get('Date', d) - firstDay + 3);
-            var firstThursday = new this.Date(this.get('FullYear',
-                thursday), 0, 1);
-            if (this.get('Day', firstThursday) !== 4) {
-                this.set('Month', d, 0);
-                this.set('Date', d, 1 + (11 - this.get('Day', firstThursday)) % 7);
-            }
-            return (1 +
-                Math.floor((thursday.valueOf() - firstThursday.valueOf()) / 604800000)).toString();
-        };
-        // First letter of the day of the week, e.g. 'M' for 'Monday'.
-        H.dateFormats.E = function (timestamp) {
-            return this.dateFormat('%a', timestamp, true).charAt(0);
-        };
-        /* eslint-disable no-invalid-this */
-        addEvent(Chart, 'afterSetChartSize', function () {
-            this.axes.forEach(function (axis) {
-                (axis.grid && axis.grid.columns || []).forEach(function (column) {
-                    column.setAxisSize();
-                    column.setAxisTranslation();
-                });
-            });
-        });
-        // Center tick labels in cells.
-        addEvent(Tick, 'afterGetLabelPosition', function (e) {
-            var tick = this,
-                label = tick.label,
-                axis = tick.axis,
-                reversed = axis.reversed,
-                chart = axis.chart,
-                options = axis.options,
-                gridOptions = options.grid || {},
-                labelOpts = axis.options.labels,
-                align = labelOpts.align, 
-                // verticalAlign is currently not supported for axis.labels.
-                verticalAlign = 'middle', // labelOpts.verticalAlign,
-                side = GridAxis.Side[axis.side],
-                tickmarkOffset = e.tickmarkOffset,
-                tickPositions = axis.tickPositions,
-                tickPos = tick.pos - tickmarkOffset,
-                nextTickPos = (isNumber(tickPositions[e.index + 1]) ?
-                    tickPositions[e.index + 1] - tickmarkOffset :
-                    axis.max + tickmarkOffset),
-                tickSize = axis.tickSize('tick'),
-                tickWidth = tickSize ? tickSize[0] : 0,
-                crispCorr = tickSize ? tickSize[1] / 2 : 0,
-                labelHeight,
-                lblMetrics,
-                lines,
-                bottom,
-                top,
-                left,
-                right;
-            // Only center tick labels in grid axes
-            if (gridOptions.enabled === true) {
-                // Calculate top and bottom positions of the cell.
-                if (side === 'top') {
-                    bottom = axis.top + axis.offset;
-                    top = bottom - tickWidth;
-                }
-                else if (side === 'bottom') {
-                    top = chart.chartHeight - axis.bottom + axis.offset;
-                    bottom = top + tickWidth;
-                }
-                else {
-                    bottom = axis.top + axis.len - axis.translate(reversed ? nextTickPos : tickPos);
-                    top = axis.top + axis.len - axis.translate(reversed ? tickPos : nextTickPos);
-                }
-                // Calculate left and right positions of the cell.
-                if (side === 'right') {
-                    left = chart.chartWidth - axis.right + axis.offset;
-                    right = left + tickWidth;
-                }
-                else if (side === 'left') {
-                    right = axis.left + axis.offset;
-                    left = right - tickWidth;
-                }
-                else {
-                    left = Math.round(axis.left + axis.translate(reversed ? nextTickPos : tickPos)) - crispCorr;
-                    right = Math.round(axis.left + axis.translate(reversed ? tickPos : nextTickPos)) - crispCorr;
-                }
-                tick.slotWidth = right - left;
-                // Calculate the positioning of the label based on
-                // alignment.
-                e.pos.x = (align === 'left' ?
-                    left :
-                    align === 'right' ?
-                        right :
-                        left + ((right - left) / 2) // default to center
-                );
-                e.pos.y = (verticalAlign === 'top' ?
-                    top :
-                    verticalAlign === 'bottom' ?
-                        bottom :
-                        top + ((bottom - top) / 2) // default to middle
-                );
-                lblMetrics = chart.renderer.fontMetrics(labelOpts.style.fontSize, label.element);
-                labelHeight = label.getBBox().height;
-                // Adjustment to y position to align the label correctly.
-                // Would be better to have a setter or similar for this.
-                if (!labelOpts.useHTML) {
-                    lines = Math.round(labelHeight / lblMetrics.h);
-                    e.pos.y += (
-                    // Center the label
-                    // TODO: why does this actually center the label?
-                    ((lblMetrics.b - (lblMetrics.h - lblMetrics.f)) / 2) +
-                        // Adjust for height of additional lines.
-                        -(((lines - 1) * lblMetrics.h) / 2));
-                }
-                else {
-                    e.pos.y += (
-                    // Readjust yCorr in htmlUpdateTransform
-                    lblMetrics.b +
-                        // Adjust for height of html label
-                        -(labelHeight / 2));
-                }
-                e.pos.x += (axis.horiz && labelOpts.x || 0);
-            }
-        });
-        addEvent(Tick, 'labelFormat', function (ctx) {
-            var axis = ctx.axis,
-                value = ctx.value;
-            if (axis.options.grid &&
-                axis.options.grid.enabled) {
-                var tickPos = axis.tickPositions;
-                var series = (axis.linkedParent || axis).series[0];
-                var isFirst = value === tickPos[0];
-                var isLast = value === tickPos[tickPos.length - 1];
-                var point = series && find(series.options.data,
-                    function (p) {
-                        return p[axis.isXAxis ? 'x' : 'y'] === value;
-                });
-                var pointCopy = void 0;
-                if (point && series.is('gantt')) {
-                    // For the Gantt set point aliases to the pointCopy
-                    // to do not change the original point
-                    pointCopy = merge(point);
-                    H.seriesTypes.gantt.prototype.pointClass
-                        .setGanttPointAliases(pointCopy);
-                }
-                // Make additional properties available for the
-                // formatter
-                ctx.isFirst = isFirst;
-                ctx.isLast = isLast;
-                ctx.point = pointCopy;
-            }
-        });
-        /* eslint-enable no-invalid-this */
-        /**
-         * Additions for grid axes.
-         * @private
-         * @class
-         */
-        var GridAxisAdditions = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                function GridAxisAdditions(axis) {
-                    this.axis = axis;
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Checks if an axis is the outer axis in its dimension. Since
-             * axes are placed outwards in order, the axis with the highest
-             * index is the outermost axis.
-             *
-             * Example: If there are multiple x-axes at the top of the chart,
-             * this function returns true if the axis supplied is the last
-             * of the x-axes.
-             *
-             * @private
-             *
-             * @return {boolean}
-             * True if the axis is the outermost axis in its dimension; false if
-             * not.
-             */
-            GridAxisAdditions.prototype.isOuterAxis = function () {
-                var axis = this.axis;
-                var chart = axis.chart;
-                var columnIndex = axis.grid.columnIndex;
-                var columns = (axis.linkedParent && axis.linkedParent.grid.columns ||
-                        axis.grid.columns);
-                var parentAxis = columnIndex ? axis.linkedParent : axis;
-                var thisIndex = -1,
-                    lastIndex = 0;
-                chart[axis.coll].forEach(function (otherAxis, index) {
-                    if (otherAxis.side === axis.side && !otherAxis.options.isInternal) {
-                        lastIndex = index;
-                        if (otherAxis === parentAxis) {
-                            // Get the index of the axis in question
-                            thisIndex = index;
-                        }
-                    }
-                });
-                return (lastIndex === thisIndex &&
-                    (isNumber(columnIndex) ? columns.length === columnIndex : true));
-            };
-            /**
-             * Add extra border based on the provided path.
-             *  *
-             * @private
-             *
-             * @param {SVGPath} path
-             * The path of the border.
-             *
-             * @return {Highcharts.SVGElement}
-             */
-            GridAxisAdditions.prototype.renderBorder = function (path) {
-                var axis = this.axis,
-                    renderer = axis.chart.renderer,
-                    options = axis.options,
-                    extraBorderLine = renderer.path(path)
-                        .addClass('highcharts-axis-line')
-                        .add(axis.axisBorder);
-                if (!renderer.styledMode) {
-                    extraBorderLine.attr({
-                        stroke: options.lineColor,
-                        'stroke-width': options.lineWidth,
-                        zIndex: 7
-                    });
-                }
-                return extraBorderLine;
-            };
-            return GridAxisAdditions;
-        }());
-        /**
-         * Axis with grid support.
-         * @private
-         * @class
-         */
-        var GridAxis = /** @class */ (function () {
-                function GridAxis() {
-                }
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Extends axis class with grid support.
-                 * @private
-                 */
-                GridAxis.compose = function (AxisClass) {
-                    Axis.keepProps.push('grid');
-                wrap(AxisClass.prototype, 'unsquish', GridAxis.wrapUnsquish);
-                // Add event handlers
-                addEvent(AxisClass, 'init', GridAxis.onInit);
-                addEvent(AxisClass, 'afterGetOffset', GridAxis.onAfterGetOffset);
-                addEvent(AxisClass, 'afterGetTitlePosition', GridAxis.onAfterGetTitlePosition);
-                addEvent(AxisClass, 'afterInit', GridAxis.onAfterInit);
-                addEvent(AxisClass, 'afterRender', GridAxis.onAfterRender);
-                addEvent(AxisClass, 'afterSetAxisTranslation', GridAxis.onAfterSetAxisTranslation);
-                addEvent(AxisClass, 'afterSetOptions', GridAxis.onAfterSetOptions);
-                addEvent(AxisClass, 'afterSetOptions', GridAxis.onAfterSetOptions2);
-                addEvent(AxisClass, 'afterSetScale', GridAxis.onAfterSetScale);
-                addEvent(AxisClass, 'afterTickSize', GridAxis.onAfterTickSize);
-                addEvent(AxisClass, 'trimTicks', GridAxis.onTrimTicks);
-                addEvent(AxisClass, 'destroy', GridAxis.onDestroy);
-            };
-            /**
-             * Handle columns and getOffset.
-             * @private
-             */
-            GridAxis.onAfterGetOffset = function () {
-                var grid = this.grid;
-                (grid && grid.columns || []).forEach(function (column) {
-                    column.getOffset();
-                });
-            };
-            /**
-             * @private
-             */
-            GridAxis.onAfterGetTitlePosition = function (e) {
-                var axis = this;
-                var options = axis.options;
-                var gridOptions = options.grid || {};
-                if (gridOptions.enabled === true) {
-                    // compute anchor points for each of the title align options
-                    var axisTitle = axis.axisTitle,
-                        axisHeight = axis.height,
-                        horiz = axis.horiz,
-                        axisLeft = axis.left,
-                        offset = axis.offset,
-                        opposite = axis.opposite,
-                        options_1 = axis.options,
-                        axisTop = axis.top,
-                        axisWidth = axis.width;
-                    var tickSize = axis.tickSize();
-                    var titleWidth = axisTitle && axisTitle.getBBox().width;
-                    var xOption = options_1.title.x;
-                    var yOption = options_1.title.y;
-                    var titleMargin = pick(options_1.title.margin,
-                        horiz ? 5 : 10);
-                    var titleFontSize = axis.chart.renderer.fontMetrics(options_1.title.style.fontSize,
-                        axisTitle).f;
-                    var crispCorr = tickSize ? tickSize[0] / 2 : 0;
-                    // TODO account for alignment
-                    // the position in the perpendicular direction of the axis
-                    var offAxis = ((horiz ? axisTop + axisHeight : axisLeft) +
-                            (horiz ? 1 : -1) * // horizontal axis reverses the margin
-                                (opposite ? -1 : 1) * // so does opposite axes
-                                crispCorr +
-                            (axis.side === GridAxis.Side.bottom ? titleFontSize : 0));
-                    e.titlePosition.x = horiz ?
-                        axisLeft - (titleWidth || 0) / 2 - titleMargin + xOption :
-                        offAxis + (opposite ? axisWidth : 0) + offset + xOption;
-                    e.titlePosition.y = horiz ?
-                        (offAxis -
-                            (opposite ? axisHeight : 0) +
-                            (opposite ? titleFontSize : -titleFontSize) / 2 +
-                            offset +
-                            yOption) :
-                        axisTop - titleMargin + yOption;
-                }
-            };
-            /**
-             * @private
-             */
-            GridAxis.onAfterInit = function () {
-                var axis = this;
-                var chart = axis.chart,
-                    _a = axis.options.grid,
-                    gridOptions = _a === void 0 ? {} : _a,
-                    userOptions = axis.userOptions;
-                if (gridOptions.enabled) {
-                    applyGridOptions(axis);
-                }
-                if (gridOptions.columns) {
-                    var columns = axis.grid.columns = [],
-                        columnIndex = axis.grid.columnIndex = 0;
-                    // Handle columns, each column is a grid axis
-                    while (++columnIndex < gridOptions.columns.length) {
-                        var columnOptions = merge(userOptions,
-                            gridOptions.columns[gridOptions.columns.length - columnIndex - 1], {
-                                linkedTo: 0,
-                                // Force to behave like category axis
-                                type: 'category',
-                                // Disable by default the scrollbar on the grid axis
-                                scrollbar: {
-                                    enabled: false
-                                }
-                            });
-                        delete columnOptions.grid.columns; // Prevent recursion
-                        var column = new Axis(axis.chart,
-                            columnOptions);
-                        column.grid.isColumn = true;
-                        column.grid.columnIndex = columnIndex;
-                        // Remove column axis from chart axes array, and place it
-                        // in the columns array.
-                        erase(chart.axes, column);
-                        erase(chart[axis.coll], column);
-                        columns.push(column);
-                    }
-                }
-            };
-            /**
-             * Draw an extra line on the far side of the outermost axis,
-             * creating floor/roof/wall of a grid. And some padding.
-             * ```
-             * Make this:
-             *             (axis.min) __________________________ (axis.max)
-             *                           |    |    |    |    |
-             * Into this:
-             *             (axis.min) __________________________ (axis.max)
-             *                        ___|____|____|____|____|__
-             * ```
-             * @private
-             */
-            GridAxis.onAfterRender = function () {
-                var axis = this,
-                    grid = axis.grid,
-                    options = axis.options,
-                    gridOptions = options.grid || {};
-                if (gridOptions.enabled === true) {
-                    // @todo acutual label padding (top, bottom, left, right)
-                    axis.maxLabelDimensions = axis.getMaxLabelDimensions(axis.ticks, axis.tickPositions);
-                    // Remove right wall before rendering if updating
-                    if (axis.rightWall) {
-                        axis.rightWall.destroy();
-                    }
-                    /*
-                    Draw an extra axis line on outer axes
-                                >
-                    Make this:    |______|______|______|___
-
-                                > _________________________
-                    Into this:    |______|______|______|__|
-                                                            */
-                    if (axis.grid && axis.grid.isOuterAxis() && axis.axisLine) {
-                        var lineWidth = options.lineWidth;
-                        if (lineWidth) {
-                            var linePath = axis.getLinePath(lineWidth),
-                                startPoint = linePath[0],
-                                endPoint = linePath[1], 
-                                // Negate distance if top or left axis
-                                // Subtract 1px to draw the line at the end of the tick
-                                tickLength = (axis.tickSize('tick') || [1])[0],
-                                distance = (tickLength - 1) * ((axis.side === GridAxis.Side.top ||
-                                    axis.side === GridAxis.Side.left) ? -1 : 1);
-                            // If axis is horizontal, reposition line path vertically
-                            if (startPoint[0] === 'M' && endPoint[0] === 'L') {
-                                if (axis.horiz) {
-                                    startPoint[2] += distance;
-                                    endPoint[2] += distance;
-                                }
-                                else {
-                                    startPoint[1] += distance;
-                                    endPoint[1] += distance;
-                                }
-                            }
-                            // If it doesn't exist, add an upper and lower border
-                            // for the vertical grid axis.
-                            if (!axis.horiz && axis.chart.marginRight) {
-                                var upperBorderStartPoint = startPoint, upperBorderEndPoint = ['L', axis.left, startPoint[2]], upperBorderPath = [upperBorderStartPoint, upperBorderEndPoint], lowerBorderEndPoint = ['L', axis.chart.chartWidth - axis.chart.marginRight, axis.toPixels(axis.max + axis.tickmarkOffset)], lowerBorderStartPoint = ['M', endPoint[1], axis.toPixels(axis.max + axis.tickmarkOffset)], lowerBorderPath = [lowerBorderStartPoint, lowerBorderEndPoint];
-                                if (!axis.grid.upperBorder && axis.min % 1 !== 0) {
-                                    axis.grid.upperBorder = axis.grid.renderBorder(upperBorderPath);
-                                }
-                                if (axis.grid.upperBorder) {
-                                    axis.grid.upperBorder.animate({
-                                        d: upperBorderPath
-                                    });
-                                }
-                                if (!axis.grid.lowerBorder && axis.max % 1 !== 0) {
-                                    axis.grid.lowerBorder = axis.grid.renderBorder(lowerBorderPath);
-                                }
-                                if (axis.grid.lowerBorder) {
-                                    axis.grid.lowerBorder.animate({
-                                        d: lowerBorderPath
-                                    });
-                                }
-                            }
-                            // Render an extra line parallel to the existing axes,
-                            // to close the grid.
-                            if (!axis.grid.axisLineExtra) {
-                                axis.grid.axisLineExtra = axis.grid.renderBorder(linePath);
-                            }
-                            else {
-                                axis.grid.axisLineExtra.animate({
-                                    d: linePath
-                                });
-                            }
-                            // show or hide the line depending on
-                            // options.showEmpty
-                            axis.axisLine[axis.showAxis ? 'show' : 'hide'](true);
-                        }
-                    }
-                    (grid && grid.columns || []).forEach(function (column) {
-                        column.render();
-                    });
-                    // Manipulate the tick mark visibility
-                    // based on the axis.max- allows smooth scrolling.
-                    if (!axis.horiz &&
-                        axis.chart.hasRendered &&
-                        (axis.scrollbar ||
-                            (axis.linkedParent && axis.linkedParent.scrollbar))) {
-                        var max = axis.max,
-                            min = axis.min,
-                            tickmarkOffset = axis.tickmarkOffset,
-                            lastTick = axis.tickPositions[axis.tickPositions.length - 1],
-                            firstTick = axis.tickPositions[0];
-                        // Hide/show firts tick label.
-                        if (min - firstTick > tickmarkOffset) {
-                            axis.ticks[firstTick].label.hide();
-                        }
-                        else {
-                            axis.ticks[firstTick].label.show();
-                        }
-                        // Hide/show last tick mark/label.
-                        if (lastTick - max > tickmarkOffset) {
-                            axis.ticks[lastTick].label.hide();
-                        }
-                        else {
-                            axis.ticks[lastTick].label.show();
-                        }
-                        if (lastTick - max < tickmarkOffset && lastTick - max > 0 && axis.ticks[lastTick].isLast) {
-                            axis.ticks[lastTick].mark.hide();
-                        }
-                        else if (axis.ticks[lastTick - 1]) {
-                            axis.ticks[lastTick - 1].mark.show();
-                        }
-                    }
-                }
-            };
-            /**
-             * @private
-             */
-            GridAxis.onAfterSetAxisTranslation = function () {
-                var axis = this;
-                var tickInfo = axis.tickPositions && axis.tickPositions.info;
-                var options = axis.options;
-                var gridOptions = options.grid || {};
-                var userLabels = axis.userOptions.labels || {};
-                // Fire this only for the Gantt type chart, #14868.
-                if (gridOptions.enabled) {
-                    if (axis.horiz) {
-                        axis.series.forEach(function (series) {
-                            series.options.pointRange = 0;
-                        });
-                        // Lower level time ticks, like hours or minutes, represent
-                        // points in time and not ranges. These should be aligned
-                        // left in the grid cell by default. The same applies to
-                        // years of higher order.
-                        if (tickInfo &&
-                            options.dateTimeLabelFormats &&
-                            options.labels &&
-                            !defined(userLabels.align) &&
-                            (options.dateTimeLabelFormats[tickInfo.unitName].range === false ||
-                                tickInfo.count > 1 // years
-                            )) {
-                            options.labels.align = 'left';
-                            if (!defined(userLabels.x)) {
-                                options.labels.x = 3;
-                            }
-                        }
-                    }
-                    else {
-                        // Don't trim ticks which not in min/max range but
-                        // they are still in the min/max plus tickInterval.
-                        if (this.options.type !== 'treegrid' &&
-                            axis.grid &&
-                            axis.grid.columns) {
-                            this.minPointOffset = this.tickInterval;
-                        }
-                    }
-                }
-            };
-            /**
-             * Creates a left and right wall on horizontal axes:
-             * - Places leftmost tick at the start of the axis, to create a left
-             *   wall
-             * - Ensures that the rightmost tick is at the end of the axis, to
-             *   create a right wall.
-             * @private
-             */
-            GridAxis.onAfterSetOptions = function (e) {
-                var options = this.options,
-                    userOptions = e.userOptions,
-                    gridAxisOptions,
-                    gridOptions = ((options && isObject(options.grid)) ? options.grid : {});
-                if (gridOptions.enabled === true) {
-                    // Merge the user options into default grid axis options so
-                    // that when a user option is set, it takes presedence.
-                    gridAxisOptions = merge(true, {
-                        className: ('highcharts-grid-axis ' + (userOptions.className || '')),
-                        dateTimeLabelFormats: {
-                            hour: {
-                                list: ['%H:%M', '%H']
-                            },
-                            day: {
-                                list: ['%A, %e. %B', '%a, %e. %b', '%E']
-                            },
-                            week: {
-                                list: ['Week %W', 'W%W']
-                            },
-                            month: {
-                                list: ['%B', '%b', '%o']
-                            }
-                        },
-                        grid: {
-                            borderWidth: 1
-                        },
-                        labels: {
-                            padding: 2,
-                            style: {
-                                fontSize: '13px'
-                            }
-                        },
-                        margin: 0,
-                        title: {
-                            text: null,
-                            reserveSpace: false,
-                            rotation: 0
-                        },
-                        // In a grid axis, only allow one unit of certain types,
-                        // for example we shouln't have one grid cell spanning
-                        // two days.
-                        units: [[
-                                'millisecond',
-                                [1, 10, 100]
-                            ], [
-                                'second',
-                                [1, 10]
-                            ], [
-                                'minute',
-                                [1, 5, 15]
-                            ], [
-                                'hour',
-                                [1, 6]
-                            ], [
-                                'day',
-                                [1]
-                            ], [
-                                'week',
-                                [1]
-                            ], [
-                                'month',
-                                [1]
-                            ], [
-                                'year',
-                                null
-                            ]]
-                    }, userOptions);
-                    // X-axis specific options
-                    if (this.coll === 'xAxis') {
-                        // For linked axes, tickPixelInterval is used only if
-                        // the tickPositioner below doesn't run or returns
-                        // undefined (like multiple years)
-                        if (defined(userOptions.linkedTo) &&
-                            !defined(userOptions.tickPixelInterval)) {
-                            gridAxisOptions.tickPixelInterval = 350;
-                        }
-                        // For the secondary grid axis, use the primary axis'
-                        // tick intervals and return ticks one level higher.
-                        if (
-                        // Check for tick pixel interval in options
-                        !defined(userOptions.tickPixelInterval) &&
-                            // Only for linked axes
-                            defined(userOptions.linkedTo) &&
-                            !defined(userOptions.tickPositioner) &&
-                            !defined(userOptions.tickInterval)) {
-                            gridAxisOptions.tickPositioner = function (min, max) {
-                                var parentInfo = (this.linkedParent &&
-                                        this.linkedParent.tickPositions &&
-                                        this.linkedParent.tickPositions.info);
-                                if (parentInfo) {
-                                    var unitIdx = void 0,
-                                        count = void 0,
-                                        unitName = void 0,
-                                        i = void 0,
-                                        units = gridAxisOptions.units,
-                                        unitRange = void 0;
-                                    for (i = 0; i < units.length; i++) {
-                                        if (units[i][0] ===
-                                            parentInfo.unitName) {
-                                            unitIdx = i;
-                                            break;
-                                        }
-                                    }
-                                    // Get the first allowed count on the next
-                                    // unit.
-                                    if (units[unitIdx + 1]) {
-                                        unitName = units[unitIdx + 1][0];
-                                        count =
-                                            (units[unitIdx + 1][1] || [1])[0];
-                                        // In case the base X axis shows years, make
-                                        // the secondary axis show ten times the
-                                        // years (#11427)
-                                    }
-                                    else if (parentInfo.unitName === 'year') {
-                                        unitName = 'year';
-                                        count = parentInfo.count * 10;
-                                    }
-                                    unitRange = timeUnits[unitName];
-                                    this.tickInterval = unitRange * count;
-                                    return this.getTimeTicks({
-                                        unitRange: unitRange,
-                                        count: count,
-                                        unitName: unitName
-                                    }, min, max, this.options.startOfWeek);
-                                }
-                            };
-                        }
-                    }
-                    // Now merge the combined options into the axis options
-                    merge(true, this.options, gridAxisOptions);
-                    if (this.horiz) {
-                        /*               _________________________
-                        Make this:    ___|_____|_____|_____|__|
-                                        ^                     ^
-                                        _________________________
-                        Into this:    |_____|_____|_____|_____|
-                                            ^                 ^    */
-                        options.minPadding = pick(userOptions.minPadding, 0);
-                        options.maxPadding = pick(userOptions.maxPadding, 0);
-                    }
-                    // If borderWidth is set, then use its value for tick and
-                    // line width.
-                    if (isNumber(options.grid.borderWidth)) {
-                        options.tickWidth = options.lineWidth =
-                            gridOptions.borderWidth;
-                    }
-                }
-            };
-            /**
-             * @private
-             */
-            GridAxis.onAfterSetOptions2 = function (e) {
-                var axis = this;
-                var userOptions = e.userOptions;
-                var gridOptions = userOptions && userOptions.grid || {};
-                var columns = gridOptions.columns;
-                // Add column options to the parent axis. Children has their column
-                // options set on init in onGridAxisAfterInit.
-                if (gridOptions.enabled && columns) {
-                    merge(true, axis.options, columns[columns.length - 1]);
-                }
-            };
-            /**
-             * Handle columns and setScale.
-             * @private
-             */
-            GridAxis.onAfterSetScale = function () {
-                var axis = this;
-                (axis.grid.columns || []).forEach(function (column) {
-                    column.setScale();
-                });
-            };
-            /**
-             * Draw vertical axis ticks extra long to create cell floors and roofs.
-             * Overrides the tickLength for vertical axes.
-             * @private
-             */
-            GridAxis.onAfterTickSize = function (e) {
-                var defaultLeftAxisOptions = Axis.defaultLeftAxisOptions;
-                var _a = this,
-                    horiz = _a.horiz,
-                    maxLabelDimensions = _a.maxLabelDimensions,
-                    _b = _a.options.grid,
-                    gridOptions = _b === void 0 ? {} : _b;
-                if (gridOptions.enabled && maxLabelDimensions) {
-                    var labelPadding = (Math.abs(defaultLeftAxisOptions.labels.x) * 2);
-                    var distance = horiz ?
-                            gridOptions.cellHeight || labelPadding + maxLabelDimensions.height :
-                            labelPadding + maxLabelDimensions.width;
-                    if (isArray(e.tickSize)) {
-                        e.tickSize[0] = distance;
-                    }
-                    else {
-                        e.tickSize = [distance, 0];
-                    }
-                }
-            };
-            /**
-             * @private
-             */
-            GridAxis.onDestroy = function (e) {
-                var grid = this.grid;
-                (grid.columns || []).forEach(function (column) {
-                    column.destroy(e.keepEvents);
-                });
-                grid.columns = void 0;
-            };
-            /**
-             * Wraps axis init to draw cell walls on vertical axes.
-             * @private
-             */
-            GridAxis.onInit = function (e) {
-                var axis = this;
-                var userOptions = e.userOptions || {};
-                var gridOptions = userOptions.grid || {};
-                if (gridOptions.enabled && defined(gridOptions.borderColor)) {
-                    userOptions.tickColor = userOptions.lineColor = gridOptions.borderColor;
-                }
-                if (!axis.grid) {
-                    axis.grid = new GridAxisAdditions(axis);
-                }
-            };
-            /**
-             * Makes tick labels which are usually ignored in a linked axis
-             * displayed if they are within range of linkedParent.min.
-             * ```
-             *                        _____________________________
-             *                        |   |       |       |       |
-             * Make this:             |   |   2   |   3   |   4   |
-             *                        |___|_______|_______|_______|
-             *                          ^
-             *                        _____________________________
-             *                        |   |       |       |       |
-             * Into this:             | 1 |   2   |   3   |   4   |
-             *                        |___|_______|_______|_______|
-             *                          ^
-             * ```
-             * @private
-             * @todo Does this function do what the drawing says? Seems to affect
-             *       ticks and not the labels directly?
-             */
-            GridAxis.onTrimTicks = function () {
-                var axis = this;
-                var options = axis.options;
-                var gridOptions = options.grid || {};
-                var categoryAxis = axis.categories;
-                var tickPositions = axis.tickPositions;
-                var firstPos = tickPositions[0];
-                var lastPos = tickPositions[tickPositions.length - 1];
-                var linkedMin = axis.linkedParent && axis.linkedParent.min;
-                var linkedMax = axis.linkedParent && axis.linkedParent.max;
-                var min = linkedMin || axis.min;
-                var max = linkedMax || axis.max;
-                var tickInterval = axis.tickInterval;
-                var endMoreThanMin = (firstPos < min &&
-                        firstPos + tickInterval > min);
-                var startLessThanMax = (lastPos > max &&
-                        lastPos - tickInterval < max);
-                if (gridOptions.enabled === true &&
-                    !categoryAxis &&
-                    (axis.horiz || axis.isLinked)) {
-                    if (endMoreThanMin && !options.startOnTick) {
-                        tickPositions[0] = min;
-                    }
-                    if (startLessThanMax && !options.endOnTick) {
-                        tickPositions[tickPositions.length - 1] = max;
-                    }
-                }
-            };
-            /**
-             * Avoid altering tickInterval when reserving space.
-             * @private
-             */
-            GridAxis.wrapUnsquish = function (proceed) {
-                var axis = this;
-                var _a = axis.options.grid,
-                    gridOptions = _a === void 0 ? {} : _a;
-                if (gridOptions.enabled === true && axis.categories) {
-                    return axis.tickInterval;
-                }
-                return proceed.apply(axis, argsToArray(arguments));
-            };
-            return GridAxis;
-        }());
-        (function (GridAxis) {
-            /**
-             * Enum for which side the axis is on. Maps to axis.side.
-             * @private
-             */
-            var Side;
-            (function (Side) {
-                Side[Side["top"] = 0] = "top";
-                Side[Side["right"] = 1] = "right";
-                Side[Side["bottom"] = 2] = "bottom";
-                Side[Side["left"] = 3] = "left";
-            })(Side = GridAxis.Side || (GridAxis.Side = {}));
-        })(GridAxis || (GridAxis = {}));
-        GridAxis.compose(Axis);
-
-        return GridAxis;
-    });
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, Series, StackItem, U) {
-        /* *
-         *
-         *  (c) 2009-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var addEvent = U.addEvent,
-            find = U.find,
-            fireEvent = U.fireEvent,
-            isArray = U.isArray,
-            isNumber = U.isNumber,
-            pick = U.pick;
-        /* eslint-disable valid-jsdoc */
-        /**
-         * Provides support for broken axes.
-         * @private
-         * @class
-         */
-        var BrokenAxisAdditions = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                function BrokenAxisAdditions(axis) {
-                    this.hasBreaks = false;
-                this.axis = axis;
-            }
-            /* *
-             *
-             *  Static Functions
-             *
-             * */
-            /**
-             * @private
-             */
-            BrokenAxisAdditions.isInBreak = function (brk, val) {
-                var ret,
-                    repeat = brk.repeat || Infinity,
-                    from = brk.from,
-                    length = brk.to - brk.from,
-                    test = (val >= from ?
-                        (val - from) % repeat :
-                        repeat - ((from - val) % repeat));
-                if (!brk.inclusive) {
-                    ret = test < length && test !== 0;
-                }
-                else {
-                    ret = test <= length;
-                }
-                return ret;
-            };
-            /**
-             * @private
-             */
-            BrokenAxisAdditions.lin2Val = function (val) {
-                var axis = this;
-                var brokenAxis = axis.brokenAxis;
-                var breakArray = brokenAxis && brokenAxis.breakArray;
-                if (!breakArray || !isNumber(val)) {
-                    return val;
-                }
-                var nval = val,
-                    brk,
-                    i;
-                for (i = 0; i < breakArray.length; i++) {
-                    brk = breakArray[i];
-                    if (brk.from >= nval) {
-                        break;
-                    }
-                    else if (brk.to < nval) {
-                        nval += brk.len;
-                    }
-                    else if (BrokenAxisAdditions.isInBreak(brk, nval)) {
-                        nval += brk.len;
-                    }
-                }
-                return nval;
-            };
-            /**
-             * @private
-             */
-            BrokenAxisAdditions.val2Lin = function (val) {
-                var axis = this;
-                var brokenAxis = axis.brokenAxis;
-                var breakArray = brokenAxis && brokenAxis.breakArray;
-                if (!breakArray || !isNumber(val)) {
-                    return val;
-                }
-                var nval = val,
-                    brk,
-                    i;
-                for (i = 0; i < breakArray.length; i++) {
-                    brk = breakArray[i];
-                    if (brk.to <= val) {
-                        nval -= brk.len;
-                    }
-                    else if (brk.from >= val) {
-                        break;
-                    }
-                    else if (BrokenAxisAdditions.isInBreak(brk, val)) {
-                        nval -= (val - brk.from);
-                        break;
-                    }
-                }
-                return nval;
-            };
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * Returns the first break found where the x is larger then break.from and
-             * smaller then break.to.
-             *
-             * @param {number} x
-             * The number which should be within a break.
-             *
-             * @param {Array<Highcharts.XAxisBreaksOptions>} breaks
-             * The array of breaks to search within.
-             *
-             * @return {Highcharts.XAxisBreaksOptions|undefined}
-             * Returns the first break found that matches, returns false if no break is
-             * found.
-             */
-            BrokenAxisAdditions.prototype.findBreakAt = function (x, breaks) {
-                return find(breaks, function (b) {
-                    return b.from < x && x < b.to;
-                });
-            };
-            /**
-             * @private
-             */
-            BrokenAxisAdditions.prototype.isInAnyBreak = function (val, testKeep) {
-                var brokenAxis = this;
-                var axis = brokenAxis.axis;
-                var breaks = axis.options.breaks || [],
-                    i = breaks.length,
-                    inbrk,
-                    keep,
-                    ret;
-                if (i && isNumber(val)) {
-                    while (i--) {
-                        if (BrokenAxisAdditions.isInBreak(breaks[i], val)) {
-                            inbrk = true;
-                            if (!keep) {
-                                keep = pick(breaks[i].showPoints, !axis.isXAxis);
-                            }
-                        }
-                    }
-                    if (inbrk && testKeep) {
-                        ret = inbrk && !keep;
-                    }
-                    else {
-                        ret = inbrk;
-                    }
-                }
-                return ret;
-            };
-            /**
-             * Dynamically set or unset breaks in an axis. This function in lighter than
-             * usin Axis.update, and it also preserves animation.
-             *
-             * @private
-             * @function Highcharts.Axis#setBreaks
-             *
-             * @param {Array<Highcharts.XAxisBreaksOptions>} [breaks]
-             *        The breaks to add. When `undefined` it removes existing breaks.
-             *
-             * @param {boolean} [redraw=true]
-             *        Whether to redraw the chart immediately.
-             *
-             * @return {void}
-             */
-            BrokenAxisAdditions.prototype.setBreaks = function (breaks, redraw) {
-                var brokenAxis = this;
-                var axis = brokenAxis.axis;
-                var hasBreaks = (isArray(breaks) && !!breaks.length);
-                axis.isDirty = brokenAxis.hasBreaks !== hasBreaks;
-                brokenAxis.hasBreaks = hasBreaks;
-                axis.options.breaks = axis.userOptions.breaks = breaks;
-                axis.forceRedraw = true; // Force recalculation in setScale
-                // Recalculate series related to the axis.
-                axis.series.forEach(function (series) {
-                    series.isDirty = true;
-                });
-                if (!hasBreaks && axis.val2lin === BrokenAxisAdditions.val2Lin) {
-                    // Revert to prototype functions
-                    delete axis.val2lin;
-                    delete axis.lin2val;
-                }
-                if (hasBreaks) {
-                    axis.userOptions.ordinal = false;
-                    axis.lin2val = BrokenAxisAdditions.lin2Val;
-                    axis.val2lin = BrokenAxisAdditions.val2Lin;
-                    axis.setExtremes = function (newMin, newMax, redraw, animation, eventArguments) {
-                        // If trying to set extremes inside a break, extend min to
-                        // after, and max to before the break ( #3857 )
-                        if (brokenAxis.hasBreaks) {
-                            var axisBreak = void 0,
-                                breaks_1 = this.options.breaks;
-                            while ((axisBreak = brokenAxis.findBreakAt(newMin, breaks_1))) {
-                                newMin = axisBreak.to;
-                            }
-                            while ((axisBreak = brokenAxis.findBreakAt(newMax, breaks_1))) {
-                                newMax = axisBreak.from;
-                            }
-                            // If both min and max is within the same break.
-                            if (newMax < newMin) {
-                                newMax = newMin;
-                            }
-                        }
-                        Axis.prototype.setExtremes.call(this, newMin, newMax, redraw, animation, eventArguments);
-                    };
-                    axis.setAxisTranslation = function () {
-                        Axis.prototype.setAxisTranslation.call(this);
-                        brokenAxis.unitLength = void 0;
-                        if (brokenAxis.hasBreaks) {
-                            var breaks_2 = axis.options.breaks || [], 
-                                // Temporary one:
-                                breakArrayT_1 = [],
-                                breakArray_1 = [],
-                                length_1 = 0,
-                                inBrk_1,
-                                repeat_1,
-                                min_1 = axis.userMin || axis.min,
-                                max_1 = axis.userMax || axis.max,
-                                pointRangePadding = pick(axis.pointRangePadding, 0),
-                                start_1,
-                                i_1;
-                            // Min & max check (#4247)
-                            breaks_2.forEach(function (brk) {
-                                repeat_1 = brk.repeat || Infinity;
-                                if (isNumber(min_1) && isNumber(max_1)) {
-                                    if (BrokenAxisAdditions.isInBreak(brk, min_1)) {
-                                        min_1 += (brk.to % repeat_1) - (min_1 % repeat_1);
-                                    }
-                                    if (BrokenAxisAdditions.isInBreak(brk, max_1)) {
-                                        max_1 -= (max_1 % repeat_1) - (brk.from % repeat_1);
-                                    }
-                                }
-                            });
-                            // Construct an array holding all breaks in the axis
-                            breaks_2.forEach(function (brk) {
-                                start_1 = brk.from;
-                                repeat_1 = brk.repeat || Infinity;
-                                if (isNumber(min_1) && isNumber(max_1)) {
-                                    while (start_1 - repeat_1 > min_1) {
-                                        start_1 -= repeat_1;
-                                    }
-                                    while (start_1 < min_1) {
-                                        start_1 += repeat_1;
-                                    }
-                                    for (i_1 = start_1; i_1 < max_1; i_1 += repeat_1) {
-                                        breakArrayT_1.push({
-                                            value: i_1,
-                                            move: 'in'
-                                        });
-                                        breakArrayT_1.push({
-                                            value: i_1 + brk.to - brk.from,
-                                            move: 'out',
-                                            size: brk.breakSize
-                                        });
-                                    }
-                                }
-                            });
-                            breakArrayT_1.sort(function (a, b) {
-                                return ((a.value === b.value) ?
-                                    ((a.move === 'in' ? 0 : 1) -
-                                        (b.move === 'in' ? 0 : 1)) :
-                                    a.value - b.value);
-                            });
-                            // Simplify the breaks
-                            inBrk_1 = 0;
-                            start_1 = min_1;
-                            breakArrayT_1.forEach(function (brk) {
-                                inBrk_1 += (brk.move === 'in' ? 1 : -1);
-                                if (inBrk_1 === 1 && brk.move === 'in') {
-                                    start_1 = brk.value;
-                                }
-                                if (inBrk_1 === 0 && isNumber(start_1)) {
-                                    breakArray_1.push({
-                                        from: start_1,
-                                        to: brk.value,
-                                        len: brk.value - start_1 - (brk.size || 0)
-                                    });
-                                    length_1 += brk.value - start_1 - (brk.size || 0);
-                                }
-                            });
-                            brokenAxis.breakArray = breakArray_1;
-                            // Used with staticScale, and below the actual axis length,
-                            // when breaks are substracted.
-                            if (isNumber(min_1) && isNumber(max_1) && isNumber(axis.min)) {
-                                brokenAxis.unitLength = max_1 - min_1 - length_1 +
-                                    pointRangePadding;
-                                fireEvent(axis, 'afterBreaks');
-                                if (axis.staticScale) {
-                                    axis.transA = axis.staticScale;
-                                }
-                                else if (brokenAxis.unitLength) {
-                                    axis.transA *=
-                                        (max_1 - axis.min + pointRangePadding) /
-                                            brokenAxis.unitLength;
-                                }
-                                if (pointRangePadding) {
-                                    axis.minPixelPadding =
-                                        axis.transA * (axis.minPointOffset || 0);
-                                }
-                                axis.min = min_1;
-                                axis.max = max_1;
-                            }
-                        }
-                    };
-                }
-                if (pick(redraw, true)) {
-                    axis.chart.redraw();
-                }
-            };
-            return BrokenAxisAdditions;
-        }());
-        /**
-         * Axis with support of broken data rows.
-         * @private
-         * @class
-         */
-        var BrokenAxis = /** @class */ (function () {
-                function BrokenAxis() {
-                }
-                /**
-                 * Adds support for broken axes.
-                 * @private
-                 */
-                BrokenAxis.compose = function (AxisClass, SeriesClass) {
-                    AxisClass.keepProps.push('brokenAxis');
-                var seriesProto = Series.prototype;
-                /**
-                 * @private
-                 */
-                seriesProto.drawBreaks = function (axis, keys) {
-                    var series = this,
-                        points = series.points,
-                        breaks,
-                        threshold,
-                        eventName,
-                        y;
-                    if (axis && // #5950
-                        axis.brokenAxis &&
-                        axis.brokenAxis.hasBreaks) {
-                        var brokenAxis_1 = axis.brokenAxis;
-                        keys.forEach(function (key) {
-                            breaks = brokenAxis_1 && brokenAxis_1.breakArray || [];
-                            threshold = axis.isXAxis ?
-                                axis.min :
-                                pick(series.options.threshold, axis.min);
-                            points.forEach(function (point) {
-                                y = pick(point['stack' + key.toUpperCase()], point[key]);
-                                breaks.forEach(function (brk) {
-                                    if (isNumber(threshold) && isNumber(y)) {
-                                        eventName = false;
-                                        if ((threshold < brk.from && y > brk.to) ||
-                                            (threshold > brk.from && y < brk.from)) {
-                                            eventName = 'pointBreak';
-                                        }
-                                        else if ((threshold < brk.from && y > brk.from && y < brk.to) ||
-                                            (threshold > brk.from && y > brk.to && y < brk.from)) {
-                                            eventName = 'pointInBreak';
-                                        }
-                                        if (eventName) {
-                                            fireEvent(axis, eventName, { point: point, brk: brk });
-                                        }
-                                    }
-                                });
-                            });
-                        });
-                    }
-                };
-                /**
-                 * Extend getGraphPath by identifying gaps in the data so that we can
-                 * draw a gap in the line or area. This was moved from ordinal axis
-                 * module to broken axis module as of #5045.
-                 *
-                 * @private
-                 * @function Highcharts.Series#gappedPath
-                 *
-                 * @return {Highcharts.SVGPathArray}
-                 * Gapped path
-                 */
-                seriesProto.gappedPath = function () {
-                    var currentDataGrouping = this.currentDataGrouping,
-                        groupingSize = currentDataGrouping && currentDataGrouping.gapSize,
-                        gapSize = this.options.gapSize,
-                        points = this.points.slice(),
-                        i = points.length - 1,
-                        yAxis = this.yAxis,
-                        stack;
-                    /**
-                     * Defines when to display a gap in the graph, together with the
-                     * [gapUnit](plotOptions.series.gapUnit) option.
-                     *
-                     * In case when `dataGrouping` is enabled, points can be grouped
-                     * into a larger time span. This can make the grouped points to have
-                     * a greater distance than the absolute value of `gapSize` property,
-                     * which will result in disappearing graph completely. To prevent
-                     * this situation the mentioned distance between grouped points is
-                     * used instead of previously defined `gapSize`.
-                     *
-                     * In practice, this option is most often used to visualize gaps in
-                     * time series. In a stock chart, intraday data is available for
-                     * daytime hours, while gaps will appear in nights and weekends.
-                     *
-                     * @see [gapUnit](plotOptions.series.gapUnit)
-                     * @see [xAxis.breaks](#xAxis.breaks)
-                     *
-                     * @sample {highstock} stock/plotoptions/series-gapsize/
-                     *         Setting the gap size to 2 introduces gaps for weekends
-                     *         in daily datasets.
-                     *
-                     * @type      {number}
-                     * @default   0
-                     * @product   highstock
-                     * @requires  modules/broken-axis
-                     * @apioption plotOptions.series.gapSize
-                     */
-                    /**
-                     * Together with [gapSize](plotOptions.series.gapSize), this option
-                     * defines where to draw gaps in the graph.
-                     *
-                     * When the `gapUnit` is `"relative"` (default), a gap size of 5
-                     * means that if the distance between two points is greater than
-                     * 5 times that of the two closest points, the graph will be broken.
-                     *
-                     * When the `gapUnit` is `"value"`, the gap is based on absolute
-                     * axis values, which on a datetime axis is milliseconds. This also
-                     * applies to the navigator series that inherits gap options from
-                     * the base series.
-                     *
-                     * @see [gapSize](plotOptions.series.gapSize)
-                     *
-                     * @type       {string}
-                     * @default    relative
-                     * @since      5.0.13
-                     * @product    highstock
-                     * @validvalue ["relative", "value"]
-                     * @requires   modules/broken-axis
-                     * @apioption  plotOptions.series.gapUnit
-                     */
-                    if (gapSize && i > 0) { // #5008
-                        // Gap unit is relative
-                        if (this.options.gapUnit !== 'value') {
-                            gapSize *= this.basePointRange;
-                        }
-                        // Setting a new gapSize in case dataGrouping is enabled (#7686)
-                        if (groupingSize &&
-                            groupingSize > gapSize &&
-                            // Except when DG is forced (e.g. from other series)
-                            // and has lower granularity than actual points (#11351)
-                            groupingSize >= this.basePointRange) {
-                            gapSize = groupingSize;
-                        }
-                        // extension for ordinal breaks
-                        var current = void 0,
-                            next = void 0;
-                        while (i--) {
-                            // Reassign next if it is not visible
-                            if (!(next && next.visible !== false)) {
-                                next = points[i + 1];
-                            }
-                            current = points[i];
-                            // Skip iteration if one of the points is not visible
-                            if (next.visible === false || current.visible === false) {
-                                continue;
-                            }
-                            if (next.x - current.x > gapSize) {
-                                var xRange = (current.x + next.x) / 2;
-                                points.splice(// insert after this one
-                                i + 1, 0, {
-                                    isNull: true,
-                                    x: xRange
-                                });
-                                // For stacked chart generate empty stack items, #6546
-                                if (yAxis.stacking && this.options.stacking) {
-                                    stack = yAxis.stacking.stacks[this.stackKey][xRange] =
-                                        new StackItem(yAxis, yAxis.options
-                                            .stackLabels, false, xRange, this.stack);
-                                    stack.total = 0;
-                                }
-                            }
-                            // Assign current to next for the upcoming iteration
-                            next = current;
-                        }
-                    }
-                    // Call base method
-                    return this.getGraphPath(points);
-                };
-                /* eslint-disable no-invalid-this */
-                addEvent(AxisClass, 'init', function () {
-                    var axis = this;
-                    if (!axis.brokenAxis) {
-                        axis.brokenAxis = new BrokenAxisAdditions(axis);
-                    }
-                });
-                addEvent(AxisClass, 'afterInit', function () {
-                    if (typeof this.brokenAxis !== 'undefined') {
-                        this.brokenAxis.setBreaks(this.options.breaks, false);
-                    }
-                });
-                addEvent(AxisClass, 'afterSetTickPositions', function () {
-                    var axis = this;
-                    var brokenAxis = axis.brokenAxis;
-                    if (brokenAxis &&
-                        brokenAxis.hasBreaks) {
-                        var tickPositions = this.tickPositions,
-                            info = this.tickPositions.info,
-                            newPositions = [],
-                            i = void 0;
-                        for (i = 0; i < tickPositions.length; i++) {
-                            if (!brokenAxis.isInAnyBreak(tickPositions[i])) {
-                                newPositions.push(tickPositions[i]);
-                            }
-                        }
-                        this.tickPositions = newPositions;
-                        this.tickPositions.info = info;
-                    }
-                });
-                // Force Axis to be not-ordinal when breaks are defined
-                addEvent(AxisClass, 'afterSetOptions', function () {
-                    if (this.brokenAxis && this.brokenAxis.hasBreaks) {
-                        this.options.ordinal = false;
-                    }
-                });
-                addEvent(SeriesClass, 'afterGeneratePoints', function () {
-                    var _a = this,
-                        isDirty = _a.isDirty,
-                        connectNulls = _a.options.connectNulls,
-                        points = _a.points,
-                        xAxis = _a.xAxis,
-                        yAxis = _a.yAxis;
-                    // Set, or reset visibility of the points. Axis.setBreaks marks the
-                    // series as isDirty
-                    if (isDirty) {
-                        var i = points.length;
-                        while (i--) {
-                            var point = points[i];
-                            // Respect nulls inside the break (#4275)
-                            var nullGap = point.y === null && connectNulls === false;
-                            var isPointInBreak = (!nullGap && ((xAxis &&
-                                    xAxis.brokenAxis &&
-                                    xAxis.brokenAxis.isInAnyBreak(point.x,
-                                true)) || (yAxis &&
-                                    yAxis.brokenAxis &&
-                                    yAxis.brokenAxis.isInAnyBreak(point.y,
-                                true))));
-                            // Set point.visible if in any break.
-                            // If not in break, reset visible to original value.
-                            point.visible = isPointInBreak ?
-                                false :
-                                point.options.visible !== false;
-                        }
-                    }
-                });
-                addEvent(SeriesClass, 'afterRender', function drawPointsWrapped() {
-                    this.drawBreaks(this.xAxis, ['x']);
-                    this.drawBreaks(this.yAxis, pick(this.pointArrayMap, ['y']));
-                });
-            };
-            return BrokenAxis;
-        }());
-        BrokenAxis.compose(Axis, Series); // @todo remove automatism
-
-        return BrokenAxis;
-    });
-    _registerModule(_modules, 'Core/Axis/TreeGridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Tick.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGridTick.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Axis, Tick, Tree, TreeGridTick, mixinTreeSeries, U) {
+    _registerModule(_modules, 'Core/Axis/TreeGridAxis.js', [_modules['Core/Axis/BrokenAxis.js'], _modules['Core/Axis/GridAxis.js'], _modules['Gantt/Tree.js'], _modules['Core/Axis/TreeGridTick.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (BrokenAxis, GridAxis, Tree, TreeGridTick, mixinTreeSeries, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -3385,7 +3519,6 @@
             find = U.find,
             fireEvent = U.fireEvent,
             isArray = U.isArray,
-            isNumber = U.isNumber,
             isObject = U.isObject,
             isString = U.isString,
             merge = U.merge,
@@ -3398,7 +3531,7 @@
         (function (TreeGridAxis) {
             /* *
              *
-             *  Interfaces
+             *  Declarations
              *
              * */
             /* *
@@ -3406,7 +3539,7 @@
              *  Variables
              *
              * */
-            var applied = false;
+            var TickConstructor;
             /* *
              *
              *  Functions
@@ -3415,23 +3548,30 @@
             /**
              * @private
              */
-            function compose(AxisClass) {
-                if (!applied) {
+            function compose(AxisClass, ChartClass, SeriesClass, TickClass) {
+                if (AxisClass.keepProps.indexOf('treeGrid') === -1) {
+                    AxisClass.keepProps.push('treeGrid');
+                    TickConstructor = TickClass;
                     wrap(AxisClass.prototype, 'generateTick', wrapGenerateTick);
-                    wrap(AxisClass.prototype, 'getMaxLabelDimensions', wrapGetMaxLabelDimensions);
                     wrap(AxisClass.prototype, 'init', wrapInit);
                     wrap(AxisClass.prototype, 'setTickInterval', wrapSetTickInterval);
-                    TreeGridTick.compose(Tick);
-                    applied = true;
+                    // Make utility functions available for testing.
+                    AxisClass.prototype.utils = {
+                        getNode: Tree.getNode
+                    };
+                    GridAxis.compose(AxisClass, ChartClass, TickClass);
+                    BrokenAxis.compose(AxisClass, SeriesClass);
+                    TreeGridTick.compose(TickClass);
                 }
+                return AxisClass;
             }
             TreeGridAxis.compose = compose;
             /**
              * @private
              */
             function getBreakFromNode(node, max) {
-                var from = node.collapseStart || 0,
-                    to = node.collapseEnd || 0;
+                var to = node.collapseEnd || 0;
+                var from = node.collapseStart || 0;
                 // In broken-axis, the axis.max is minimized until it is not within a
                 // break. Therefore, if break.to is larger than axis.max, the axis.to
                 // should not add the 0.5 axis.tickMarkOffset, to avoid adding a break
@@ -3475,17 +3615,16 @@
                 var categories = [],
                     collapsedNodes = [],
                     mapOfIdToNode = {},
-                    mapOfPosToGridNode = {},
-                    posIterator = -1,
-                    uniqueNamesEnabled = typeof uniqueNames === 'boolean' ? uniqueNames : false,
-                    tree;
+                    uniqueNamesEnabled = typeof uniqueNames === 'boolean' ? uniqueNames : false;
+                var mapOfPosToGridNode = {},
+                    posIterator = -1;
                 // Build the tree from the series data.
                 var treeParams = {
                         // After the children has been created.
                         after: function (node) {
-                            var gridNode = mapOfPosToGridNode[node.pos],
-                    height = 0,
-                    descendants = 0;
+                            var gridNode = mapOfPosToGridNode[node.pos];
+                        var height = 0,
+                            descendants = 0;
                         gridNode.children.forEach(function (child) {
                             descendants += (child.descendants || 0) + 1;
                             height = Math.max((child.height || 0) + 1, height);
@@ -3508,7 +3647,9 @@
                                 null),
                             hasSameName = function (x) {
                                 return x.name === name;
-                        }, gridNode, pos;
+                        };
+                        var gridNode,
+                            pos;
                         // If not unique names, look for sibling node with the same name
                         if (uniqueNamesEnabled &&
                             isObject(parentGridNode, true) &&
@@ -3561,10 +3702,10 @@
                     start,
                     result) {
                             var nodes = gridNode.nodes,
-                    end = start + (start === -1 ? 0 : numberOfSeries - 1),
-                    diff = (end - start) / 2,
-                    padding = 0.5,
-                    pos = start + diff;
+                    padding = 0.5;
+                        var end = start + (start === -1 ? 0 : numberOfSeries - 1);
+                        var diff = (end - start) / 2,
+                            pos = start + diff;
                         nodes.forEach(function (node) {
                             var data = node.data;
                             if (isObject(data, true)) {
@@ -3590,7 +3731,8 @@
                     return setValues(map['-1'], -1, {});
                 };
                 // Create tree from data
-                tree = Tree.getTree(data, treeParams);
+                var tree = Tree.getTree(data,
+                    treeParams);
                 // Update y values of data, and set calculate tick positions.
                 mapOfPosToGridNode = updateYValuesAndTickPos(mapOfPosToGridNode, numberOfSeries);
                 // Return the resulting data.
@@ -3618,21 +3760,20 @@
                     var options = axis.options || {},
                         labelOptions = options.labels,
                         uniqueNames = options.uniqueNames,
-                        numberOfSeries = 0,
-                        isDirty,
-                        data,
-                        treeGrid,
-                        max = options.max;
-                    // Check whether any of series is rendering for the first time,
-                    // visibility has changed, or its data is dirty,
-                    // and only then update. #10570, #10580
-                    // Also check if mapOfPosToGridNode exists. #10887
-                    isDirty = (!axis.treeGrid.mapOfPosToGridNode ||
-                        axis.series.some(function (series) {
-                            return !series.hasRendered ||
-                                series.isDirtyData ||
-                                series.isDirty;
+                        max = options.max, 
+                        // Check whether any of series is rendering for the first
+                        // time, visibility has changed, or its data is dirty, and
+                        // only then update. #10570, #10580
+                        // Also check if mapOfPosToGridNode exists. #10887
+                        isDirty = (!axis.treeGrid.mapOfPosToGridNode ||
+                            axis.series.some(function (series) {
+                                return !series.hasRendered ||
+                                    series.isDirtyData ||
+                                    series.isDirty;
                         }));
+                    var numberOfSeries = 0,
+                        data,
+                        treeGrid;
                     if (isDirty) {
                         // Concatenate data from all series assigned to this axis.
                         data = axis.series.reduce(function (arr, s) {
@@ -3741,9 +3882,10 @@
                             labels: levelOptions
                         };
                     }
-                    if (!tick) {
+                    if (!tick &&
+                        TickConstructor) {
                         ticks[pos] = tick =
-                            new Tick(axis, pos, void 0, void 0, {
+                            new TickConstructor(axis, pos, void 0, void 0, {
                                 category: gridNode.name,
                                 tickmarkOffset: gridNode.tickmarkOffset,
                                 options: options
@@ -3759,28 +3901,6 @@
                 else {
                     proceed.apply(axis, Array.prototype.slice.call(arguments, 1));
                 }
-            }
-            /**
-             * Override to add indentation to axis.maxLabelDimensions.
-             *
-             * @private
-             * @function Highcharts.GridAxis#getMaxLabelDimensions
-             *
-             * @param {Function} proceed
-             * The original function
-             */
-            function wrapGetMaxLabelDimensions(proceed) {
-                var axis = this,
-                    options = axis.options,
-                    retVal = proceed.apply(axis,
-                    Array.prototype.slice.call(arguments, 1)),
-                    isTreeGrid = options.type === 'treegrid';
-                var treeDepth;
-                if (isTreeGrid && axis.treeGrid.mapOfPosToGridNode) {
-                    treeDepth = axis.treeGrid.mapOfPosToGridNode[-1].height || 0;
-                    retVal.width += options.labels.indentation * (treeDepth - 1);
-                }
-                return retVal;
             }
             /**
              * @private
@@ -4142,15 +4262,10 @@
             }());
             TreeGridAxis.Additions = Additions;
         })(TreeGridAxis || (TreeGridAxis = {}));
-        // Make utility functions available for testing.
-        Axis.prototype.utils = {
-            getNode: Tree.getNode
-        };
-        TreeGridAxis.compose(Axis);
 
         return TreeGridAxis;
     });
-    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Color/Palette.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/PlotLineOrBand.js']], function (Axis, palette, U, PlotLineOrBand) {
+    _registerModule(_modules, 'Extensions/CurrentDateIndication.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Color/Palette.js'], _modules['Core/Axis/PlotLineOrBand.js'], _modules['Core/Utilities.js']], function (Axis, Palette, PlotLineOrBand, U) {
         /* *
          *
          *  (c) 2016-2021 Highsoft AS
@@ -4184,7 +4299,7 @@
          * @apioption xAxis.currentDateIndicator
          */
         var defaultOptions = {
-                color: palette.highlightColor20,
+                color: Palette.highlightColor20,
                 width: 2,
                 /**
                  * @declare Highcharts.AxisCurrentDateIndicatorLabelOptions
@@ -4346,6 +4461,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var symbols = SVGRenderer.prototype.symbols;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Creates an arrow symbol. Like a triangle, except not filled.
          * ```
@@ -4376,14 +4497,14 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
+        function arrow(x, y, w, h) {
             return [
                 ['M', x, y + h / 2],
                 ['L', x + w, y],
                 ['L', x, y + h / 2],
                 ['L', x + w, y + h]
             ];
-        };
+        }
         /**
          * Creates a half-width arrow symbol. Like a triangle, except not filled.
          * ```
@@ -4412,9 +4533,9 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['arrow-half'] = function (x, y, w, h) {
-            return SVGRenderer.prototype.symbols.arrow(x, y, w / 2, h);
-        };
+        function arrowHalf(x, y, w, h) {
+            return arrow(x, y, w / 2, h);
+        }
         /**
          * Creates a left-oriented triangle.
          * ```
@@ -4443,36 +4564,14 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
+        function triangleLeft(x, y, w, h) {
             return [
                 ['M', x + w, y],
                 ['L', x, y + h / 2],
                 ['L', x + w, y + h],
                 ['Z']
             ];
-        };
-        /**
-         * Alias function for triangle-left.
-         *
-         * @private
-         * @function
-         *
-         * @param {number} x
-         *        x position of the arrow
-         *
-         * @param {number} y
-         *        y position of the arrow
-         *
-         * @param {number} w
-         *        width of the arrow
-         *
-         * @param {number} h
-         *        height of the arrow
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path array
-         */
-        SVGRenderer.prototype.symbols['arrow-filled'] = SVGRenderer.prototype.symbols['triangle-left'];
+        }
         /**
          * Creates a half-width, left-oriented triangle.
          * ```
@@ -4501,34 +4600,24 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['triangle-left-half'] = function (x, y, w, h) {
-            return SVGRenderer.prototype.symbols['triangle-left'](x, y, w / 2, h);
-        };
-        /**
-         * Alias function for triangle-left-half.
+        function triangleLeftHalf(x, y, w, h) {
+            return triangleLeft(x, y, w / 2, h);
+        }
+        symbols.arrow = arrow;
+        symbols['arrow-filled'] = triangleLeft;
+        symbols['arrow-filled-half'] = triangleLeftHalf;
+        symbols['arrow-half'] = arrowHalf;
+        symbols['triangle-left'] = triangleLeft;
+        symbols['triangle-left-half'] = triangleLeftHalf;
+        /* *
          *
-         * @private
-         * @function
+         *  Default Export
          *
-         * @param {number} x
-         *        x position of the arrow
-         *
-         * @param {number} y
-         *        y position of the arrow
-         *
-         * @param {number} w
-         *        width of the arrow
-         *
-         * @param {number} h
-         *        height of the arrow
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path array
-         */
-        SVGRenderer.prototype.symbols['arrow-filled-half'] = SVGRenderer.prototype.symbols['triangle-left-half'];
+         * */
 
+        return symbols;
     });
-    _registerModule(_modules, 'Gantt/Connection.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, O, Point, U) {
+    _registerModule(_modules, 'Gantt/Connection.js', [_modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, D, Point, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -4562,7 +4651,7 @@
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
         ''; // detach doclets above
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             defined = U.defined,
             error = U.error,
@@ -6159,7 +6248,7 @@
 
         return algorithms;
     });
-    _registerModule(_modules, 'Gantt/Pathfinder.js', [_modules['Gantt/Connection.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Gantt/PathfinderAlgorithms.js']], function (Connection, Chart, H, O, Point, U, pathfinderAlgorithms) {
+    _registerModule(_modules, 'Gantt/Pathfinder.js', [_modules['Gantt/Connection.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Gantt/PathfinderAlgorithms.js']], function (Connection, Chart, H, D, Point, U, pathfinderAlgorithms) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -6193,7 +6282,7 @@
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
         ''; // detach doclets above
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             defined = U.defined,
             error = U.error,
@@ -7018,7 +7107,7 @@
 
         return Pathfinder;
     });
-    _registerModule(_modules, 'Series/Gantt/GanttSeries.js', [_modules['Series/Gantt/GanttPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (GanttPoint, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Gantt/GanttSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Series/Gantt/GanttPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/TreeGridAxis.js']], function (Axis, Chart, GanttPoint, SeriesRegistry, Tick, U, TreeGridAxis) {
         /* *
          *
          *  (c) 2016-2021 Highsoft AS
@@ -7052,6 +7141,7 @@
             isNumber = U.isNumber,
             merge = U.merge,
             splat = U.splat;
+        TreeGridAxis.compose(Axis, Chart, Series, Tick);
         /* *
          *
          *  Class
@@ -7390,7 +7480,7 @@
 
         return GanttSeries;
     });
-    _registerModule(_modules, 'Core/Chart/GanttChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (Chart, O, U) {
+    _registerModule(_modules, 'Core/Chart/GanttChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Chart, D, U) {
         /* *
          *
          *  (c) 2016-2021 Highsoft AS
@@ -7418,10 +7508,15 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var getOptions = O.getOptions;
+        var getOptions = D.getOptions;
         var isArray = U.isArray,
             merge = U.merge,
             splat = U.splat;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * Gantt-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
          *
@@ -7455,16 +7550,43 @@
              * @fires Highcharts.GanttChart#event:afterInit
              */
             GanttChart.prototype.init = function (userOptions, callback) {
-                var seriesOptions = userOptions.series,
-                    defaultOptions = getOptions(),
-                    defaultLinkedTo;
+                var defaultOptions = getOptions(),
+                    xAxisOptions = userOptions.xAxis,
+                    yAxisOptions = userOptions.yAxis;
+                var defaultLinkedTo;
+                // Avoid doing these twice
+                userOptions.xAxis = userOptions.yAxis = void 0;
+                var options = merge(true, {
+                        chart: {
+                            type: 'gantt'
+                        },
+                        title: {
+                            text: null
+                        },
+                        legend: {
+                            enabled: false
+                        },
+                        navigator: {
+                            series: { type: 'gantt' },
+                            // Bars were clipped, #14060.
+                            yAxis: {
+                                type: 'category'
+                            }
+                        }
+                    },
+                    userOptions, // user's options
+                    // forced options
+                    {
+                        isGantt: true
+                    });
+                userOptions.xAxis = xAxisOptions;
+                userOptions.yAxis = yAxisOptions;
+                // apply X axis options to both single and multi x axes
                 // If user hasn't defined axes as array, make it into an array and add a
                 // second axis by default.
-                if (!isArray(userOptions.xAxis)) {
-                    userOptions.xAxis = [userOptions.xAxis || {}, {}];
-                }
-                // apply X axis options to both single and multi x axes
-                userOptions.xAxis = userOptions.xAxis.map(function (xAxisOptions, i) {
+                options.xAxis = (!isArray(userOptions.xAxis) ?
+                    [userOptions.xAxis || {}, {}] :
+                    userOptions.xAxis).map(function (xAxisOptions, i) {
                     if (i === 1) { // Second xAxis
                         defaultLinkedTo = 0;
                     }
@@ -7480,7 +7602,7 @@
                     });
                 });
                 // apply Y axis options to both single and multi y axes
-                userOptions.yAxis = (splat(userOptions.yAxis || {})).map(function (yAxisOptions) {
+                options.yAxis = (splat(userOptions.yAxis || {})).map(function (yAxisOptions) {
                     return merge(defaultOptions.yAxis, // #3802
                     {
                         grid: {
@@ -7494,31 +7616,7 @@
                     }, yAxisOptions // user options
                     );
                 });
-                delete userOptions.series;
-                userOptions = merge(true, {
-                    chart: {
-                        type: 'gantt'
-                    },
-                    title: {
-                        text: null
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    navigator: {
-                        series: { type: 'gantt' },
-                        // Bars were clipped, #14060.
-                        yAxis: {
-                            type: 'category'
-                        }
-                    }
-                }, userOptions, // user's options
-                // forced options
-                {
-                    isGantt: true
-                });
-                userOptions.series = seriesOptions;
-                _super.prototype.init.call(this, userOptions, callback);
+                _super.prototype.init.call(this, options, callback);
             };
             return GanttChart;
         }(Chart));
@@ -7578,10 +7676,14 @@
         var addEvent = U.addEvent,
             defined = U.defined,
             pick = U.pick;
+        /* *
+         *
+         *  Composition
+         *
+         * */
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * Creates scrollbars if enabled.
-         *
          * @private
          */
         var ScrollbarAxis = /** @class */ (function () {
@@ -7737,13 +7839,14 @@
                             scrollbar.size + scrollbar.options.margin;
                     }
                 });
+                return AxisClass;
             };
             return ScrollbarAxis;
         }());
 
         return ScrollbarAxis;
     });
-    _registerModule(_modules, 'Core/Scrollbar.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Axis/ScrollbarAxis.js'], _modules['Core/Utilities.js'], _modules['Core/Options.js']], function (Axis, H, palette, ScrollbarAxis, U, O) {
+    _registerModule(_modules, 'Core/ScrollbarDefaults.js', [_modules['Core/Globals.js'], _modules['Core/Color/Palette.js']], function (H, Palette) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -7753,6 +7856,225 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var isTouchDevice = H.isTouchDevice;
+        /* *
+         *
+         *  Constant
+         *
+         * */
+        /**
+         *
+         * The scrollbar is a means of panning over the X axis of a stock chart.
+         * Scrollbars can  also be applied to other types of axes.
+         *
+         * Another approach to scrollable charts is the [chart.scrollablePlotArea](
+         * https://api.highcharts.com/highcharts/chart.scrollablePlotArea) option that
+         * is especially suitable for simpler cartesian charts on mobile.
+         *
+         * In styled mode, all the presentational options for the
+         * scrollbar are replaced by the classes `.highcharts-scrollbar-thumb`,
+         * `.highcharts-scrollbar-arrow`, `.highcharts-scrollbar-button`,
+         * `.highcharts-scrollbar-rifles` and `.highcharts-scrollbar-track`.
+         *
+         * @sample stock/yaxis/inverted-bar-scrollbar/
+         *         A scrollbar on a simple bar chart
+         *
+         * @product highstock gantt
+         * @optionparent scrollbar
+         *
+         * @private
+         */
+        var ScrollbarDefaults = {
+                /**
+                 * The height of the scrollbar. The height also applies to the width
+                 * of the scroll arrows so that they are always squares. Defaults to
+                 * 20 for touch devices and 14 for mouse devices.
+                 *
+                 * @sample stock/scrollbar/height/
+                 *         A 30px scrollbar
+                 *
+                 * @type    {number}
+                 * @default 20/14
+                 */
+                height: isTouchDevice ? 20 : 14,
+                /**
+                 * The border rounding radius of the bar.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 */
+                barBorderRadius: 0,
+                /**
+                 * The corner radius of the scrollbar buttons.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 */
+                buttonBorderRadius: 0,
+                /**
+                 * Enable or disable the scrollbar.
+                 *
+                 * @sample stock/scrollbar/enabled/
+                 *         Disable the scrollbar,
+            only use navigator
+                 *
+                 * @type      {boolean}
+                 * @default   true
+                 * @apioption scrollbar.enabled
+                 */
+                /**
+                 * Whether to redraw the main chart as the scrollbar or the navigator
+                 * zoomed window is moved. Defaults to `true` for modern browsers and
+                 * `false` for legacy IE browsers as well as mobile devices.
+                 *
+                 * @sample stock/scrollbar/liveredraw
+                 *         Setting live redraw to false
+                 *
+                 * @type  {boolean}
+                 * @since 1.3
+                 */
+                liveRedraw: void 0,
+                /**
+                 * The margin between the scrollbar and its axis when the scrollbar is
+                 * applied directly to an axis.
+                 */
+                margin: 10,
+                /**
+                 * The minimum width of the scrollbar.
+                 *
+                 * @since 1.2.5
+                 */
+                minWidth: 6,
+                /**
+                 * Whether to show or hide the scrollbar when the scrolled content is
+                 * zoomed out to it full extent.
+                 *
+                 * @type      {boolean}
+                 * @default   true
+                 * @apioption scrollbar.showFull
+                 */
+                step: 0.2,
+                /**
+                 * The z index of the scrollbar group.
+                 */
+                zIndex: 3,
+                /**
+                 * The background color of the scrollbar itself.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 *
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                barBackgroundColor: Palette.neutralColor20,
+                /**
+                 * The width of the bar's border.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 */
+                barBorderWidth: 1,
+                /**
+                 * The color of the scrollbar's border.
+                 *
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                barBorderColor: Palette.neutralColor20,
+                /**
+                 * The color of the small arrow inside the scrollbar buttons.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 *
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                buttonArrowColor: Palette.neutralColor80,
+                /**
+                 * The color of scrollbar buttons.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 *
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                buttonBackgroundColor: Palette.neutralColor10,
+                /**
+                 * The color of the border of the scrollbar buttons.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 *
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                buttonBorderColor: Palette.neutralColor20,
+                /**
+                 * The border width of the scrollbar buttons.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 */
+                buttonBorderWidth: 1,
+                /**
+                 * The color of the small rifles in the middle of the scrollbar.
+                 *
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                rifleColor: Palette.neutralColor80,
+                /**
+                 * The color of the track background.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 *
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                trackBackgroundColor: Palette.neutralColor5,
+                /**
+                 * The color of the border of the scrollbar track.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 *
+                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 */
+                trackBorderColor: Palette.neutralColor5,
+                /**
+                 * The corner radius of the border of the scrollbar track.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 *
+                 * @type      {number}
+                 * @default   0
+                 * @apioption scrollbar.trackBorderRadius
+                 */
+                /**
+                 * The width of the border of the scrollbar track.
+                 *
+                 * @sample stock/scrollbar/style/
+                 *         Scrollbar styling
+                 */
+                trackBorderWidth: 1
+            };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ScrollbarDefaults;
+    });
+    _registerModule(_modules, 'Core/Scrollbar.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Globals.js'], _modules['Core/Axis/ScrollbarAxis.js'], _modules['Core/ScrollbarDefaults.js'], _modules['Core/Utilities.js']], function (D, H, ScrollbarAxis, ScrollbarDefaults, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             correctFloat = U.correctFloat,
             defined = U.defined,
@@ -7761,42 +8083,11 @@
             merge = U.merge,
             pick = U.pick,
             removeEvent = U.removeEvent;
-        var defaultOptions = O.defaultOptions;
-        var isTouchDevice = H.isTouchDevice;
-        /**
-         * When we have vertical scrollbar, rifles and arrow in buttons should be
-         * rotated. The same method is used in Navigator's handles, to rotate them.
+        /* *
          *
-         * @function Highcharts.swapXY
+         *  Constants
          *
-         * @param {Highcharts.SVGPathArray} path
-         * Path to be rotated.
-         *
-         * @param {boolean} [vertical]
-         * If vertical scrollbar, swap x-y values.
-         *
-         * @return {Highcharts.SVGPathArray}
-         * Rotated path.
-         *
-         * @requires modules/stock
-         */
-        var swapXY = H.swapXY = function (path,
-            vertical) {
-                if (vertical) {
-                    path.forEach(function (seg) {
-                        var len = seg.length;
-                    var temp;
-                    for (var i = 0; i < len; i += 2) {
-                        temp = seg[i + 1];
-                        if (typeof temp === 'number') {
-                            seg[i + 1] = seg[i + 2];
-                            seg[i + 2] = temp;
-                        }
-                    }
-                });
-            }
-            return path;
-        };
+         * */
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
          * A reusable scrollbar, internally used in Highcharts Stock's
@@ -7822,10 +8113,13 @@
                      *
                      * */
                     this._events = [];
+                this.chart = void 0;
                 this.chartX = 0;
                 this.chartY = 0;
                 this.from = 0;
                 this.group = void 0;
+                this.options = void 0;
+                this.renderer = void 0;
                 this.scrollbar = void 0;
                 this.scrollbarButtons = [];
                 this.scrollbarGroup = void 0;
@@ -7837,14 +8131,52 @@
                 this.to = 0;
                 this.track = void 0;
                 this.trackBorderWidth = 1;
-                this.userOptions = {};
+                this.userOptions = void 0;
                 this.x = 0;
                 this.y = 0;
-                this.chart = chart;
-                this.options = options;
-                this.renderer = chart.renderer;
                 this.init(renderer, options, chart);
             }
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            Scrollbar.compose = function (AxisClass) {
+                ScrollbarAxis.compose(AxisClass, Scrollbar);
+            };
+            /**
+             * When we have vertical scrollbar, rifles and arrow in buttons should be
+             * rotated. The same method is used in Navigator's handles, to rotate them.
+             *
+             * @function Highcharts.swapXY
+             *
+             * @param {Highcharts.SVGPathArray} path
+             * Path to be rotated.
+             *
+             * @param {boolean} [vertical]
+             * If vertical scrollbar, swap x-y values.
+             *
+             * @return {Highcharts.SVGPathArray}
+             * Rotated path.
+             *
+             * @requires modules/stock
+             */
+            Scrollbar.swapXY = function (path, vertical) {
+                if (vertical) {
+                    path.forEach(function (seg) {
+                        var len = seg.length;
+                        var temp;
+                        for (var i = 0; i < len; i += 2) {
+                            temp = seg[i + 1];
+                            if (typeof temp === 'number') {
+                                seg[i + 1] = seg[i + 2];
+                                seg[i + 2] = temp;
+                            }
+                        }
+                    });
+                }
+                return path;
+            };
             /* *
              *
              *  Functions
@@ -7855,7 +8187,6 @@
              *
              * @private
              * @function Highcharts.Scrollbar#addEvents
-             * @return {void}
              */
             Scrollbar.prototype.addEvents = function () {
                 var buttonsOrder = this.options.inverted ? [1, 0] : [0, 1],
@@ -7864,17 +8195,22 @@
                     track = this.track.element,
                     mouseDownHandler = this.mouseDownHandler.bind(this),
                     mouseMoveHandler = this.mouseMoveHandler.bind(this),
-                    mouseUpHandler = this.mouseUpHandler.bind(this),
-                    _events;
+                    mouseUpHandler = this.mouseUpHandler.bind(this);
                 // Mouse events
-                _events = [
-                    [buttons[buttonsOrder[0]].element, 'click', this.buttonToMinClick.bind(this)],
-                    [buttons[buttonsOrder[1]].element, 'click', this.buttonToMaxClick.bind(this)],
-                    [track, 'click', this.trackClick.bind(this)],
-                    [bar, 'mousedown', mouseDownHandler],
-                    [bar.ownerDocument, 'mousemove', mouseMoveHandler],
-                    [bar.ownerDocument, 'mouseup', mouseUpHandler]
-                ];
+                var _events = [
+                        [buttons[buttonsOrder[0]].element, 'click',
+                    this.buttonToMinClick.bind(this)],
+                        [buttons[buttonsOrder[1]].element, 'click',
+                    this.buttonToMaxClick.bind(this)],
+                        [track, 'click',
+                    this.trackClick.bind(this)],
+                        [bar, 'mousedown',
+                    mouseDownHandler],
+                        [bar.ownerDocument, 'mousemove',
+                    mouseMoveHandler],
+                        [bar.ownerDocument, 'mouseup',
+                    mouseUpHandler]
+                    ];
                 // Touch events
                 if (H.hasTouch) {
                     _events.push([bar, 'touchstart', mouseDownHandler], [bar.ownerDocument, 'touchmove', mouseMoveHandler], [bar.ownerDocument, 'touchend', mouseUpHandler]);
@@ -7943,9 +8279,10 @@
              * @return {void}
              */
             Scrollbar.prototype.destroy = function () {
-                var scroller = this.chart.scroller;
+                var scroller = this,
+                    navigator = scroller.chart.scroller;
                 // Disconnect events added in addEvents
-                this.removeEvents();
+                scroller.removeEvents();
                 // Destroy properties
                 [
                     'track',
@@ -7954,15 +8291,15 @@
                     'scrollbarGroup',
                     'group'
                 ].forEach(function (prop) {
-                    if (this[prop] && this[prop].destroy) {
-                        this[prop] = this[prop].destroy();
+                    if (scroller[prop] && scroller[prop].destroy) {
+                        scroller[prop] = scroller[prop].destroy();
                     }
-                }, this);
+                });
                 // #6421, chart may have more scrollbars
-                if (scroller && this === scroller.scrollbar) {
-                    scroller.scrollbar = null;
+                if (navigator && scroller === navigator.scrollbar) {
+                    navigator.scrollbar = null;
                     // Destroy elements in collection
-                    destroyObjectProperties(scroller.scrollbarButtons);
+                    destroyObjectProperties(navigator.scrollbarButtons);
                 }
             };
             /**
@@ -7980,16 +8317,15 @@
                     scrollbarButtons = scroller.scrollbarButtons,
                     options = scroller.options,
                     size = scroller.size,
-                    group,
-                    tempElem;
-                group = renderer.g().add(scroller.group);
+                    group = renderer.g().add(scroller.group);
+                var tempElem;
                 scrollbarButtons.push(group);
                 // Create a rectangle for the scrollbar button
                 tempElem = renderer.rect()
                     .addClass('highcharts-scrollbar-button')
                     .add(group);
                 // Presentational attributes
-                if (!this.chart.styledMode) {
+                if (!scroller.chart.styledMode) {
                     tempElem.attr({
                         stroke: options.buttonBorderColor,
                         'stroke-width': options.buttonBorderWidth,
@@ -8006,7 +8342,7 @@
                 }, tempElem.strokeWidth()));
                 // Button arrow
                 tempElem = renderer
-                    .path(swapXY([[
+                    .path(Scrollbar.swapXY([[
                         'M',
                         size / 2 + (index ? -1 : 1),
                         size / 2 - 3
@@ -8021,7 +8357,7 @@
                     ]], options.vertical))
                     .addClass('highcharts-scrollbar-arrow')
                     .add(scrollbarButtons[index]);
-                if (!this.chart.styledMode) {
+                if (!scroller.chart.styledMode) {
                     tempElem.attr({
                         fill: options.buttonArrowColor
                     });
@@ -8035,22 +8371,23 @@
              * @param {Highcharts.Chart} chart
              */
             Scrollbar.prototype.init = function (renderer, options, chart) {
-                this.scrollbarButtons = [];
-                this.renderer = renderer;
-                this.userOptions = options;
-                this.options = merge(Scrollbar.defaultOptions, options);
-                this.chart = chart;
+                var scroller = this;
+                scroller.scrollbarButtons = [];
+                scroller.renderer = renderer;
+                scroller.userOptions = options;
+                scroller.options = merge(ScrollbarDefaults, defaultOptions.scrollbar, options);
+                scroller.chart = chart;
                 // backward compatibility
-                this.size = pick(this.options.size, this.options.height);
+                scroller.size = pick(scroller.options.size, scroller.options.height);
                 // Init
                 if (options.enabled) {
-                    this.render();
-                    this.addEvents();
+                    scroller.render();
+                    scroller.addEvents();
                 }
             };
             Scrollbar.prototype.mouseDownHandler = function (e) {
-                var scroller = this;
-                var normalizedEvent = scroller.chart.pointer.normalize(e),
+                var scroller = this,
+                    normalizedEvent = scroller.chart.pointer.normalize(e),
                     mousePosition = scroller.cursorToScrollbarPosition(normalizedEvent);
                 scroller.chartX = mousePosition.chartX;
                 scroller.chartY = mousePosition.chartY;
@@ -8062,12 +8399,12 @@
              * @private
              */
             Scrollbar.prototype.mouseMoveHandler = function (e) {
-                var scroller = this;
-                var normalizedEvent = scroller.chart.pointer.normalize(e),
+                var scroller = this,
+                    normalizedEvent = scroller.chart.pointer.normalize(e),
                     options = scroller.options,
                     direction = options.vertical ? 'chartY' : 'chartX',
-                    initPositions = scroller.initPositions || [],
-                    scrollPosition,
+                    initPositions = scroller.initPositions || [];
+                var scrollPosition,
                     chartPosition,
                     change;
                 // In iOS, a mousemove event with e.pageX === 0 is fired when
@@ -8132,9 +8469,9 @@
                 var scroller = this,
                     options = scroller.options,
                     vertical = options.vertical,
-                    xOffset = height,
-                    yOffset = 0,
                     method = scroller.rendered ? 'animate' : 'attr';
+                var xOffset = height,
+                    yOffset = 0;
                 scroller.x = x;
                 scroller.y = y + this.trackBorderWidth;
                 scroller.width = width; // width with buttons
@@ -8194,13 +8531,13 @@
                     renderer = scroller.renderer,
                     options = scroller.options,
                     size = scroller.size,
-                    styledMode = this.chart.styledMode,
-                    group;
+                    styledMode = scroller.chart.styledMode,
+                    group = renderer.g('scrollbar').attr({
+                        zIndex: options.zIndex,
+                        translateY: -99999
+                    }).add();
                 // Draw the scrollbar group
-                scroller.group = group = renderer.g('scrollbar').attr({
-                    zIndex: options.zIndex,
-                    translateY: -99999
-                }).add();
+                scroller.group = group;
                 // Draw the scrollbar track:
                 scroller.track = renderer.rect()
                     .addClass('highcharts-scrollbar-track')
@@ -8217,7 +8554,7 @@
                         'stroke-width': options.trackBorderWidth
                     });
                 }
-                this.trackBorderWidth = scroller.track.strokeWidth();
+                scroller.trackBorderWidth = scroller.track.strokeWidth();
                 scroller.track.attr({
                     y: -this.trackBorderWidth % 2 / 2
                 });
@@ -8231,7 +8568,7 @@
                     r: options.barBorderRadius || 0
                 }).add(scroller.scrollbarGroup);
                 scroller.scrollbarRifles = renderer
-                    .path(swapXY([
+                    .path(Scrollbar.swapXY([
                     ['M', -3, size / 4],
                     ['L', -3, 2 * size / 3],
                     ['M', 0, size / 4],
@@ -8275,30 +8612,27 @@
                     vertical = options.vertical,
                     minWidth = options.minWidth,
                     fullWidth = scroller.barWidth,
-                    fromPX,
-                    toPX,
-                    newPos,
-                    newSize,
-                    newRiflesPos,
                     method = (this.rendered &&
                         !this.hasDragged &&
                         !(this.chart.navigator && this.chart.navigator.hasDragged)) ? 'animate' : 'attr';
                 if (!defined(fullWidth)) {
                     return;
                 }
+                var toPX = fullWidth * Math.min(to, 1);
+                var fromPX,
+                    newSize;
                 from = Math.max(from, 0);
                 fromPX = Math.ceil(fullWidth * from);
-                toPX = fullWidth * Math.min(to, 1);
                 scroller.calculatedWidth = newSize = correctFloat(toPX - fromPX);
                 // We need to recalculate position, if minWidth is used
                 if (newSize < minWidth) {
                     fromPX = (fullWidth - minWidth + newSize) * from;
                     newSize = minWidth;
                 }
-                newPos = Math.floor(fromPX + scroller.xOffset + scroller.yOffset);
-                newRiflesPos = newSize / 2 - 0.5; // -0.5 -> rifle line width / 2
-                // Store current position:
-                scroller.from = from;
+                var newPos = Math.floor(fromPX + scroller.xOffset + scroller.yOffset);
+                var newRiflesPos = newSize / 2 - 0.5; // -0.5 -> rifle line width / 2
+                    // Store current position:
+                    scroller.from = from;
                 scroller.to = to;
                 if (!vertical) {
                     scroller.scrollbarGroup[method]({
@@ -8349,7 +8683,7 @@
              *
              * @private
              * @function Highcharts.Scrollbar#shouldUpdateExtremes
-             * @param  {string} eventType
+             * @param {string} [eventType]
              * @return {boolean}
              */
             Scrollbar.prototype.shouldUpdateExtremes = function (eventType) {
@@ -8388,7 +8722,6 @@
              * @private
              * @function Highcharts.Scrollbar#update
              * @param  {Highcharts.ScrollbarOptions} options
-             * @return {void}
              */
             Scrollbar.prototype.update = function (options) {
                 this.destroy();
@@ -8420,210 +8753,24 @@
              *  Static Properties
              *
              * */
-            /**
-             *
-             * The scrollbar is a means of panning over the X axis of a stock chart.
-             * Scrollbars can  also be applied to other types of axes.
-             *
-             * Another approach to scrollable charts is the [chart.scrollablePlotArea](
-             * https://api.highcharts.com/highcharts/chart.scrollablePlotArea) option that
-             * is especially suitable for simpler cartesian charts on mobile.
-             *
-             * In styled mode, all the presentational options for the
-             * scrollbar are replaced by the classes `.highcharts-scrollbar-thumb`,
-             * `.highcharts-scrollbar-arrow`, `.highcharts-scrollbar-button`,
-             * `.highcharts-scrollbar-rifles` and `.highcharts-scrollbar-track`.
-             *
-             * @sample stock/yaxis/inverted-bar-scrollbar/
-             *         A scrollbar on a simple bar chart
-             *
-             * @product highstock gantt
-             * @optionparent scrollbar
-             *
-             * @private
-             */
-            Scrollbar.defaultOptions = {
-                /**
-                 * The height of the scrollbar. The height also applies to the width
-                 * of the scroll arrows so that they are always squares. Defaults to
-                 * 20 for touch devices and 14 for mouse devices.
-                 *
-                 * @sample stock/scrollbar/height/
-                 *         A 30px scrollbar
-                 *
-                 * @type    {number}
-                 * @default 20/14
-                 */
-                height: isTouchDevice ? 20 : 14,
-                /**
-                 * The border rounding radius of the bar.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 */
-                barBorderRadius: 0,
-                /**
-                 * The corner radius of the scrollbar buttons.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 */
-                buttonBorderRadius: 0,
-                /**
-                 * Enable or disable the scrollbar.
-                 *
-                 * @sample stock/scrollbar/enabled/
-                 *         Disable the scrollbar, only use navigator
-                 *
-                 * @type      {boolean}
-                 * @default   true
-                 * @apioption scrollbar.enabled
-                 */
-                /**
-                 * Whether to redraw the main chart as the scrollbar or the navigator
-                 * zoomed window is moved. Defaults to `true` for modern browsers and
-                 * `false` for legacy IE browsers as well as mobile devices.
-                 *
-                 * @sample stock/scrollbar/liveredraw
-                 *         Setting live redraw to false
-                 *
-                 * @type  {boolean}
-                 * @since 1.3
-                 */
-                liveRedraw: void 0,
-                /**
-                 * The margin between the scrollbar and its axis when the scrollbar is
-                 * applied directly to an axis.
-                 */
-                margin: 10,
-                /**
-                 * The minimum width of the scrollbar.
-                 *
-                 * @since 1.2.5
-                 */
-                minWidth: 6,
-                /**
-                 * Whether to show or hide the scrollbar when the scrolled content is
-                 * zoomed out to it full extent.
-                 *
-                 * @type      {boolean}
-                 * @default   true
-                 * @apioption scrollbar.showFull
-                 */
-                step: 0.2,
-                /**
-                 * The z index of the scrollbar group.
-                 */
-                zIndex: 3,
-                /**
-                 * The background color of the scrollbar itself.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                barBackgroundColor: palette.neutralColor20,
-                /**
-                 * The width of the bar's border.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 */
-                barBorderWidth: 1,
-                /**
-                 * The color of the scrollbar's border.
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                barBorderColor: palette.neutralColor20,
-                /**
-                 * The color of the small arrow inside the scrollbar buttons.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                buttonArrowColor: palette.neutralColor80,
-                /**
-                 * The color of scrollbar buttons.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                buttonBackgroundColor: palette.neutralColor10,
-                /**
-                 * The color of the border of the scrollbar buttons.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                buttonBorderColor: palette.neutralColor20,
-                /**
-                 * The border width of the scrollbar buttons.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 */
-                buttonBorderWidth: 1,
-                /**
-                 * The color of the small rifles in the middle of the scrollbar.
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                rifleColor: palette.neutralColor80,
-                /**
-                 * The color of the track background.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                trackBackgroundColor: palette.neutralColor5,
-                /**
-                 * The color of the border of the scrollbar track.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 *
-                 * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                 */
-                trackBorderColor: palette.neutralColor5,
-                /**
-                 * The corner radius of the border of the scrollbar track.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 *
-                 * @type      {number}
-                 * @default   0
-                 * @apioption scrollbar.trackBorderRadius
-                 */
-                /**
-                 * The width of the border of the scrollbar track.
-                 *
-                 * @sample stock/scrollbar/style/
-                 *         Scrollbar styling
-                 */
-                trackBorderWidth: 1
-            };
+            Scrollbar.defaultOptions = ScrollbarDefaults;
             return Scrollbar;
         }());
-        if (!H.Scrollbar) {
-            defaultOptions.scrollbar = merge(true, Scrollbar.defaultOptions, defaultOptions.scrollbar);
-            H.Scrollbar = Scrollbar;
-            ScrollbarAxis.compose(Axis, Scrollbar);
-        }
+        /* *
+         *
+         *  Registry
+         *
+         * */
+        defaultOptions.scrollbar = merge(true, Scrollbar.defaultOptions, defaultOptions.scrollbar);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return H.Scrollbar;
+        return Scrollbar;
     });
-    _registerModule(_modules, 'Extensions/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, O, palette, SVGElement, U) {
+    _registerModule(_modules, 'Extensions/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, D, palette, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -8633,7 +8780,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             createElement = U.createElement,
             css = U.css,
@@ -9308,6 +9455,11 @@
                     }
                 }
                 else if (type === 'all' && baseAxis) {
+                    // If the navigator exist and the axis range is declared reset that
+                    // range and from now on only use the range set by a user, #14742.
+                    if (chart.navigator && chart.navigator.baseSeries[0]) {
+                        chart.navigator.baseSeries[0].xAxis.options.range = void 0;
+                    }
                     newMin = dataMin;
                     newMax = dataMax;
                 }
@@ -9663,7 +9815,7 @@
                             left: Math.min(Math.round(dateBox.x +
                                 translateX -
                                 (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                            top: (translateY - 1 - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                            top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
                         });
                     }
                 }
@@ -9784,7 +9936,8 @@
                         .label(text, 0)
                         .addClass('highcharts-range-label')
                         .attr({
-                        padding: text ? 2 : 0
+                        padding: text ? 2 : 0,
+                        height: text ? options.inputBoxHeight : 0
                     })
                         .add(inputGroup);
                 // Create an SVG label that shows updated date ranges and and records
@@ -10087,7 +10240,13 @@
                     });
                 });
                 this.zoomText = renderer
-                    .text(lang.rangeSelectorZoom, 0, 15)
+                    .label((lang && lang.rangeSelectorZoom) || '', 0)
+                    .attr({
+                    padding: options.buttonTheme.padding,
+                    height: options.buttonTheme.height,
+                    paddingLeft: 0,
+                    paddingRight: 0
+                })
                     .add(this.buttonGroup);
                 if (!this.chart.styledMode) {
                     this.zoomText.css(options.labelStyle);
@@ -10465,14 +10624,19 @@
                 var _a = this,
                     buttons = _a.buttons,
                     buttonOptions = _a.buttonOptions,
+                    chart = _a.chart,
                     dropdown = _a.dropdown,
                     options = _a.options,
                     zoomText = _a.zoomText;
+                var userButtonTheme = (chart.userOptions.rangeSelector &&
+                        chart.userOptions.rangeSelector.buttonTheme) || {};
                 var getAttribs = function (text) { return ({
                         text: text ? text + " \u25BE" : '▾',
                         width: 'auto',
-                        paddingLeft: 8,
-                        paddingRight: 8
+                        paddingLeft: pick(options.buttonTheme.paddingLeft,
+                    userButtonTheme.padding, 8),
+                        paddingRight: pick(options.buttonTheme.paddingRight,
+                    userButtonTheme.padding, 8)
                     }); };
                 if (zoomText) {
                     zoomText.hide();
@@ -10526,8 +10690,8 @@
                     button.attr({
                         text: rangeOptions.text,
                         width: options.buttonTheme.width || 28,
-                        paddingLeft: 'unset',
-                        paddingRight: 'unset'
+                        paddingLeft: pick(options.buttonTheme.paddingLeft, 'unset'),
+                        paddingRight: pick(options.buttonTheme.paddingRight, 'unset')
                     });
                     if (button.state < 2) {
                         button.setState(0);
@@ -10997,7 +11161,7 @@
             H.RangeSelector = RangeSelector;
         }
 
-        return H.RangeSelector;
+        return RangeSelector;
     });
     _registerModule(_modules, 'Core/Axis/NavigatorAxis.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
         /* *
@@ -11175,7 +11339,7 @@
 
         return NavigatorAxis;
     });
-    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Scrollbar.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, O, palette, Scrollbar, Series, SeriesRegistry, U) {
+    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Scrollbar.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, D, Palette, RendererRegistry, Scrollbar, Series, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -11188,7 +11352,7 @@
         var color = Color.parse;
         var hasTouch = H.hasTouch,
             isTouchDevice = H.isTouchDevice;
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var seriesTypes = SeriesRegistry.seriesTypes;
         var addEvent = U.addEvent,
             clamp = U.clamp,
@@ -11383,13 +11547,13 @@
                      *
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      */
-                    backgroundColor: palette.neutralColor5,
+                    backgroundColor: Palette.neutralColor5,
                     /**
                      * The stroke for the handle border and the stripes inside.
                      *
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      */
-                    borderColor: palette.neutralColor40
+                    borderColor: Palette.neutralColor40
                 },
                 /**
                  * The color of the mask covering the areas of the navigator series
@@ -11406,7 +11570,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @default rgba(102,133,194,0.3)
                  */
-                maskFill: color(palette.highlightColor60).setOpacity(0.3).get(),
+                maskFill: color(Palette.highlightColor60).setOpacity(0.3).get(),
                 /**
                  * The color of the line marking the currently zoomed area in the
                  * navigator.
@@ -11417,7 +11581,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @default #cccccc
                  */
-                outlineColor: palette.neutralColor20,
+                outlineColor: Palette.neutralColor20,
                 /**
                  * The width of the line marking the currently zoomed area in the
                  * navigator.
@@ -11608,7 +11772,7 @@
                     className: 'highcharts-navigator-xaxis',
                     tickLength: 0,
                     lineWidth: 0,
-                    gridLineColor: palette.neutralColor10,
+                    gridLineColor: Palette.neutralColor10,
                     gridLineWidth: 1,
                     tickPixelInterval: 200,
                     labels: {
@@ -11618,7 +11782,7 @@
                          */
                         style: {
                             /** @ignore */
-                            color: palette.neutralColor40
+                            color: Palette.neutralColor40
                         },
                         x: 3,
                         y: -4
@@ -11683,7 +11847,7 @@
          * @return {Highcharts.SVGPathArray}
          *         Path to be used in a handle
          */
-        H.Renderer.prototype.symbols['navigator-handle'] = function (x, y, w, h, options) {
+        RendererRegistry.getRendererType().prototype.symbols['navigator-handle'] = function (_x, _y, _w, _h, options) {
             var halfWidth = (options && options.width || 0) / 2,
                 markerPosition = Math.round(halfWidth / 3) + 0.5,
                 height = options && options.height || 0;
@@ -13015,24 +13179,45 @@
             Navigator.prototype.updatedDataHandler = function () {
                 var navigator = this.chart.navigator,
                     baseSeries = this,
-                    navigatorSeries = this.navigatorSeries,
-                    xDataMin = navigator.getBaseSeriesMin(baseSeries.xData[0]);
+                    navigatorSeries = this.navigatorSeries;
                 // If the scrollbar is scrolled all the way to the right, keep right as
                 // new data  comes in.
                 navigator.stickToMax = navigator.reversedExtremes ?
                     Math.round(navigator.zoomedMin) === 0 :
                     Math.round(navigator.zoomedMax) >= Math.round(navigator.size);
-                // Detect whether the zoomed area should stick to the minimum or
-                // maximum. If the current axis minimum falls outside the new updated
-                // dataset, we must adjust.
-                navigator.stickToMin = isNumber(baseSeries.xAxis.min) &&
-                    (baseSeries.xAxis.min <= xDataMin) &&
-                    (!this.chart.fixedRange || !navigator.stickToMax);
+                navigator.stickToMin = navigator.shouldStickToMin(baseSeries, navigator);
                 // Set the navigator series data to the new data of the base series
                 if (navigatorSeries && !navigator.hasNavigatorData) {
                     navigatorSeries.options.pointStart = baseSeries.xData[0];
                     navigatorSeries.setData(baseSeries.options.data, false, null, false); // #5414
                 }
+            };
+            /**
+             * Detect if the zoomed area should stick to the minimum, #14742.
+             *
+             * @private
+             * @function Highcharts.Navigator#shouldStickToMin
+             */
+            Navigator.prototype.shouldStickToMin = function (baseSeries, navigator) {
+                var xDataMin = navigator.getBaseSeriesMin(baseSeries.xData[0]),
+                    xAxis = baseSeries.xAxis,
+                    max = xAxis.max,
+                    min = xAxis.min,
+                    range = xAxis.options.range;
+                var stickToMin = true;
+                if (isNumber(max) && isNumber(min)) {
+                    // If range declared, stick to the minimum only if the range
+                    // is smaller than the data set range.
+                    if (range && max - xDataMin > 0) {
+                        stickToMin = max - xDataMin < range && (!this.chart.fixedRange);
+                    }
+                    else {
+                        // If the current axis minimum falls outside the new
+                        // updated dataset, we must adjust.
+                        stickToMin = min <= xDataMin;
+                    }
+                }
+                return stickToMin;
             };
             /**
              * Add chart events, like redrawing navigator, when chart requires that.
@@ -13167,7 +13352,7 @@
                         navigator.top = this.plotTop + scrollbarHeight;
                     }
                     else {
-                        navigator.left = this.plotLeft + scrollbarHeight;
+                        navigator.left = pick(xAxis.left, this.plotLeft + scrollbarHeight);
                         navigator.top = navigator.navigatorOptions.top ||
                             this.chartHeight -
                                 navigator.height -

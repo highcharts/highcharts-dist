@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Bullet graph series type for Highcharts
  *
@@ -122,6 +122,11 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
+        /* *
+         *
+         *  Imports
+         *
+         * */
         var ColumnSeries = SeriesRegistry.seriesTypes.column;
         var extend = U.extend,
             isNumber = U.isNumber,
@@ -186,10 +191,10 @@
                 _super.prototype.drawPoints.apply(this, arguments);
                 series.points.forEach(function (point) {
                     var pointOptions = point.options,
-                        targetGraphic = point.targetGraphic,
-                        targetShapeArgs,
                         targetVal = point.target,
-                        pointVal = point.y,
+                        pointVal = point.y;
+                    var targetShapeArgs,
+                        targetGraphic = point.targetGraphic,
                         width,
                         height,
                         targetOptions,
@@ -247,7 +252,8 @@
                                     options: {}
                                 }).color || series.color)) || void 0, point.color, series.color),
                                 stroke: pick(targetOptions.borderColor, point.borderColor, series.options.borderColor),
-                                'stroke-width': targetOptions.borderWidth
+                                'stroke-width': targetOptions.borderWidth,
+                                r: targetOptions.borderRadius
                             });
                         }
                         // Add tooltip reference
@@ -270,12 +276,12 @@
              * @function Highcharts.Series#getExtremes
              */
             BulletSeries.prototype.getExtremes = function (yData) {
-                var series = this,
-                    targetData = series.targetData,
-                    yMax,
-                    yMin;
                 var dataExtremes = _super.prototype.getExtremes.call(this,
-                    yData);
+                    yData),
+                    series = this,
+                    targetData = series.targetData;
+                var yMax,
+                    yMin;
                 if (targetData && targetData.length) {
                     var targetExtremes = _super.prototype.getExtremes.call(this,
                         targetData);
@@ -359,7 +365,11 @@
                      *
                      * @since   6.0.0
                      */
-                    borderWidth: 0
+                    borderWidth: 0,
+                    /**
+                     * The border radius of the rectangle representing the target.
+                     */
+                    borderRadius: 0
                 },
                 tooltip: {
                     pointFormat: '<span style="color:{series.color}">\u25CF</span>' +

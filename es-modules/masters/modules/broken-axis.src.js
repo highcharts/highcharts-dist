@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  * @module highcharts/modules/broken-axis
  * @requires highcharts
  *
@@ -8,4 +8,8 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Core/Axis/BrokenAxis.js';
+import Highcharts from '../../Core/Globals.js';
+import BrokenAxis from '../../Core/Axis/BrokenAxis.js';
+var G = Highcharts;
+// Compositions
+BrokenAxis.compose(G.Axis, G.Series);

@@ -138,7 +138,7 @@ declare module "../highcharts.src" {
     /**
      * Map-optimized chart. Use Chart for common charts.
      */
-    class MapChart {
+    class MapChart extends Chart {
         /**
          * Initializes the chart. The constructor's arguments are passed on
          * directly.

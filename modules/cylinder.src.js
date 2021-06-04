@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Highcharts cylinder module
  *
@@ -92,7 +92,7 @@
 
         return CylinderPoint;
     });
-    _registerModule(_modules, 'Series/Cylinder/CylinderComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, U) {
+    _registerModule(_modules, 'Series/Cylinder/CylinderComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Utilities.js']], function (Color, H, Math3D, RendererRegistry, U) {
         /* *
          *
          *  Highcharts cylinder - a 3D series
@@ -108,8 +108,7 @@
          * */
         var color = Color.parse;
         var charts = H.charts,
-            deg2rad = H.deg2rad,
-            RendererProto = H.Renderer.prototype;
+            deg2rad = H.deg2rad;
         var perspective = Math3D.perspective;
         var merge = U.merge,
             pick = U.pick;
@@ -118,14 +117,15 @@
          *  Composition
          *
          * */
-        var cuboidPath = RendererProto.cuboidPath;
+        var rendererProto = RendererRegistry.getRendererType().prototype,
+            cuboidPath = rendererProto.cuboidPath;
         // Check if a path is simplified. The simplified path contains only lineTo
         // segments, whereas non-simplified contain curves.
         var isSimplified = function (path) {
                 return !path.some(function (seg) { return seg[0] === 'C'; });
         };
         // cylinder extends cuboid
-        var cylinderMethods = merge(RendererProto.elements3d.cuboid, {
+        var cylinderMethods = merge(rendererProto.elements3d.cuboid, {
                 parts: ['top', 'bottom', 'front', 'back'],
                 pathType: 'cylinder',
                 fillSetter: function (fill) {
@@ -140,12 +140,12 @@
                 return this;
             }
         });
-        RendererProto.elements3d.cylinder = cylinderMethods;
-        RendererProto.cylinder = function (shapeArgs) {
+        rendererProto.elements3d.cylinder = cylinderMethods;
+        rendererProto.cylinder = function (shapeArgs) {
             return this.element3d('cylinder', shapeArgs);
         };
         // Generates paths and zIndexes.
-        RendererProto.cylinderPath = function (shapeArgs) {
+        rendererProto.cylinderPath = function (shapeArgs) {
             var renderer = this,
                 chart = charts[renderer.chartIndex], 
                 // decide zIndexes of parts based on cubiod logic, for consistency.
@@ -173,7 +173,7 @@
             };
         };
         // Returns cylinder Front path
-        RendererProto.getCylinderFront = function (topPath, bottomPath) {
+        rendererProto.getCylinderFront = function (topPath, bottomPath) {
             var path = topPath.slice(0, 3);
             if (isSimplified(bottomPath)) {
                 var move = bottomPath[0];
@@ -197,7 +197,7 @@
             return path;
         };
         // Returns cylinder Back path
-        RendererProto.getCylinderBack = function (topPath, bottomPath) {
+        rendererProto.getCylinderBack = function (topPath, bottomPath) {
             var path = [];
             if (isSimplified(topPath)) {
                 var move = topPath[0],
@@ -237,7 +237,7 @@
             return path;
         };
         // Retruns cylinder path for top or bottom
-        RendererProto.getCylinderEnd = function (chart, shapeArgs, isBottom) {
+        rendererProto.getCylinderEnd = function (chart, shapeArgs, isBottom) {
             var _a = shapeArgs.width,
                 width = _a === void 0 ? 0 : _a,
                 _b = shapeArgs.height,
@@ -350,7 +350,7 @@
         // Returns curved path in format of:
         // [ M, x, y, ...[C, cp1x, cp2y, cp2x, cp2y, epx, epy]*n_times ]
         // (cp - control point, ep - end point)
-        RendererProto.getCurvedPath = function (points) {
+        rendererProto.getCurvedPath = function (points) {
             var path = [['M',
                 points[0].x,
                 points[0].y]],

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * (c) 2014-2021 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -95,7 +95,9 @@
                  */
                 colorAttribs: function (point) {
                     var ret = {};
-                if (defined(point.color)) {
+                if (defined(point.color) &&
+                    (!point.state || point.state === 'normal') // #15746
+                ) {
                     ret[this.colorProp || 'fill'] = point.color;
                 }
                 return ret;
@@ -1830,6 +1832,10 @@
                  */
                 allowTraversingTree: false,
                 animationLimit: 250,
+                /**
+                 * The border radius for each treemap item.
+                 */
+                borderRadius: 0,
                 /**
                  * When the series contains less points than the crop threshold, all
                  * points are drawn, event if the points fall outside the visible plot

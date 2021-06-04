@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -489,7 +489,7 @@
 
         return HiddenAxis;
     });
-    _registerModule(_modules, 'Core/Axis/RadialAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Axis/HiddenAxis.js'], _modules['Core/Utilities.js']], function (Axis, Tick, HiddenAxis, U) {
+    _registerModule(_modules, 'Core/Axis/RadialAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Axis/HiddenAxis.js'], _modules['Core/Utilities.js']], function (Axis, AxisDefaults, Tick, HiddenAxis, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -504,10 +504,8 @@
             defined = U.defined,
             extend = U.extend,
             fireEvent = U.fireEvent,
-            isNumber = U.isNumber,
             merge = U.merge,
             pick = U.pick,
-            pInt = U.pInt,
             relativeLength = U.relativeLength,
             wrap = U.wrap;
         /**
@@ -1008,6 +1006,7 @@
                         if (axis.isRadial &&
                             axis.tickPositions &&
                             // undocumented option for now, but working
+                            axis.options.labels &&
                             axis.options.labels.allowOverlap !== true) {
                             return axis.tickPositions
                                 .map(function (pos) {
@@ -1035,8 +1034,8 @@
                 /* eslint-disable no-invalid-this */
                 // Actions before axis init.
                 addEvent(AxisClass, 'init', function (e) {
-                    var axis = this;
-                    var chart = axis.chart;
+                    var axis = this,
+                        chart = axis.chart;
                     var inverted = chart.inverted,
                         angular = chart.angular,
                         polar = chart.polar,
@@ -1046,8 +1045,7 @@
                         isCircular,
                         chartOptions = chart.options,
                         paneIndex = e.userOptions.pane || 0,
-                        pane = this.pane =
-                            chart.pane && chart.pane[paneIndex];
+                        pane = axis.pane = chart.pane && chart.pane[paneIndex];
                     // Prevent changes for colorAxis
                     if (coll === 'colorAxis') {
                         this.isRadial = false;
@@ -1073,11 +1071,11 @@
                         axis.defaultPolarOptions = isCircular ?
                             RadialAxis.defaultCircularOptions :
                             merge(coll === 'xAxis' ?
-                                AxisClass.defaultOptions :
-                                AxisClass.defaultYAxisOptions, RadialAxis.defaultRadialOptions);
+                                AxisDefaults.defaultXAxisOptions :
+                                AxisDefaults.defaultYAxisOptions, RadialAxis.defaultRadialOptions);
                         // Apply the stack labels for yAxis in case of inverted chart
                         if (inverted && coll === 'yAxis') {
-                            axis.defaultPolarOptions.stackLabels = AxisClass.defaultYAxisOptions.stackLabels;
+                            axis.defaultPolarOptions.stackLabels = AxisDefaults.defaultYAxisOptions.stackLabels;
                             axis.defaultPolarOptions.reversedStacks = true;
                         }
                     }
@@ -1158,9 +1156,9 @@
                 });
                 // Find the center position of the label based on the distance option.
                 addEvent(TickClass, 'afterGetLabelPosition', function (e) {
-                    var tick = this;
-                    var axis = tick.axis;
-                    var label = tick.label;
+                    var tick = this,
+                        axis = tick.axis,
+                        label = tick.label;
                     if (!label) {
                         return;
                     }
@@ -5020,7 +5018,7 @@
 
         return WaterfallPoint;
     });
-    _registerModule(_modules, 'Series/Waterfall/WaterfallSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/WaterfallAxis.js'], _modules['Series/Waterfall/WaterfallPoint.js']], function (Chart, H, palette, SeriesRegistry, U, WaterfallAxis, WaterfallPoint) {
+    _registerModule(_modules, 'Series/Waterfall/WaterfallSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/WaterfallAxis.js'], _modules['Series/Waterfall/WaterfallPoint.js']], function (Axis, Chart, palette, SeriesRegistry, U, WaterfallAxis, WaterfallPoint) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -5733,7 +5731,7 @@
             pointClass: WaterfallPoint
         });
         SeriesRegistry.registerSeriesType('waterfall', WaterfallSeries);
-        WaterfallAxis.compose(H.Axis, Chart);
+        WaterfallAxis.compose(Axis, Chart);
         /* *
          *
          * Export
@@ -6120,7 +6118,7 @@
 
         return BubblePoint;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Chart, Color, F, H, Legend, O, palette, Series, U) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegend.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Chart, Color, F, H, Legend, D, palette, Series, U) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -6134,7 +6132,7 @@
          * */
         var color = Color.parse;
         var noop = H.noop;
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,

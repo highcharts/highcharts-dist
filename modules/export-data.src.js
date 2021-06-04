@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Exporting module
  *
@@ -40,6 +40,7 @@
          *  Mixin for downloading content in the browser
          *
          * */
+        var isSafari = Highcharts.isSafari;
         var win = Highcharts.win,
             doc = win.document,
             domurl = win.URL || win.webkitURL || win;
@@ -87,9 +88,8 @@
          */
         var downloadURL = Highcharts.downloadURL = function (dataURL,
             filename) {
-                var nav = win.navigator;
-            var a = doc.createElement('a'),
-                windowRef;
+                var nav = win.navigator,
+            a = doc.createElement('a');
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -101,8 +101,12 @@
             dataURL = "" + dataURL;
             // Some browsers have limitations for data URL lengths. Try to convert to
             // Blob or fall back. Edge always needs that blob.
-            var isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
-            if (isEdgeBrowser || dataURL.length > 2000000) {
+            var isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
+            // Safari on iOS needs Blob in order to download PDF
+            var safariBlob = (isSafari &&
+                    typeof dataURL === 'string' &&
+                    dataURL.indexOf('data:application/pdf') === 0);
+            if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
                 dataURL = dataURLtoBlob(dataURL) || '';
                 if (!dataURL) {
                     throw new Error('Failed to convert to blob');
@@ -119,7 +123,7 @@
             else {
                 // No download attr, just opening data URI
                 try {
-                    windowRef = win.open(dataURL, 'chart');
+                    var windowRef = win.open(dataURL, 'chart');
                     if (typeof windowRef === 'undefined' || windowRef === null) {
                         throw new Error('Failed to open window');
                     }
@@ -137,7 +141,7 @@
 
         return exports;
     });
-    _registerModule(_modules, 'Extensions/ExportData.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js'], _modules['Extensions/DownloadURL.js']], function (Axis, Chart, AST, H, O, U, DownloadURL) {
+    _registerModule(_modules, 'Extensions/ExportData.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js'], _modules['Extensions/DownloadURL.js']], function (Axis, Chart, AST, H, D, U, DownloadURL) {
         /* *
          *
          *  Experimental data export module for Highcharts
@@ -155,8 +159,8 @@
         var doc = H.doc,
             seriesTypes = H.seriesTypes,
             win = H.win;
-        var getOptions = O.getOptions,
-            setOptions = O.setOptions;
+        var getOptions = D.getOptions,
+            setOptions = D.setOptions;
         var addEvent = U.addEvent,
             defined = U.defined,
             extend = U.extend,
@@ -188,22 +192,6 @@
         * @type {Array<Array<string>>}
         */
         var downloadURL = DownloadURL.downloadURL;
-        // Can we add this to utils? Also used in screen-reader.js
-        /**
-         * HTML encode some characters vulnerable for XSS.
-         * @private
-         * @param  {string} html The input string
-         * @return {string} The excaped string
-         */
-        function htmlencode(html) {
-            return html
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#x27;')
-                .replace(/\//g, '&#x2F;');
-        }
         setOptions({
             /**
              * Callback that fires while exporting data. This allows the modification of
@@ -596,8 +584,8 @@
                     xAxis),
                     valueCount = pointArrayMap.length,
                     xTaken = !series.requireSorting && {},
-                    xAxisIndex = xAxes.indexOf(xAxis),
-                    categoryAndDatetimeMap = getCategoryAndDateTimeMap(series,
+                    xAxisIndex = xAxes.indexOf(xAxis);
+                var categoryAndDatetimeMap = getCategoryAndDateTimeMap(series,
                     pointArrayMap),
                     mockSeries,
                     j;
@@ -757,7 +745,8 @@
          *         CSV representation of the data
          */
         Chart.prototype.getCSV = function (useLocalDecimalPoint) {
-            var csv = '', rows = this.getDataRows(), csvOptions = this.options.exporting.csv, decimalPoint = pick(csvOptions.decimalPoint, csvOptions.itemDelimiter !== ',' && useLocalDecimalPoint ?
+            var csv = '';
+            var rows = this.getDataRows(), csvOptions = this.options.exporting.csv, decimalPoint = pick(csvOptions.decimalPoint, csvOptions.itemDelimiter !== ',' && useLocalDecimalPoint ?
                     (1.1).toLocaleString()[1] :
                     '.'), 
                 // use ';' for direct to Excel
@@ -849,13 +838,13 @@
          *         The abstract syntax tree
          */
         Chart.prototype.getTableAST = function (useLocalDecimalPoint) {
+            var rowLength = 0;
             var treeChildren = [];
             var options = this.options,
                 decimalPoint = useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.',
                 useMultiLevelHeaders = pick(options.exporting.useMultiLevelHeaders,
                 true),
                 rows = this.getDataRows(useMultiLevelHeaders),
-                rowLength = 0,
                 topHeaders = useMultiLevelHeaders ? rows.shift() : null,
                 subHeaders = rows.shift(), 
                 // Compare two rows for equality
@@ -983,7 +972,7 @@
                         'class': 'highcharts-table-caption'
                     },
                     textContent: pick(options.exporting.tableCaption, (options.title.text ?
-                        htmlencode(options.title.text) :
+                        options.title.text :
                         'Chart'))
                 });
             }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Boost module
  *
@@ -178,7 +178,7 @@
                         target.boostClipRect = chart.renderer.clipRect();
                         target.renderTarget.clip(target.boostClipRect);
                     }
-                    else if (!(target instanceof H.Chart)) {
+                    else if (!(target instanceof Chart)) {
                         // ctx.clearRect(0, 0, width, height);
                     }
                     if (target.canvas.width !== width) {

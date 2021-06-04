@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.1.0 (2021-05-04)
+ * @license Highstock JS v9.1.1 (2021-06-04)
  * @module highcharts/modules/stock
  * @requires highcharts
  *
@@ -17,8 +17,13 @@ import '../../Extensions/DataGrouping.js';
 import '../../Series/OHLC/OHLCSeries.js';
 import '../../Series/Candlestick/CandlestickSeries.js';
 import '../../Series/Flags/FlagsSeries.js';
-import '../../Core/Scrollbar.js';
+import Scrollbar from '../../Core/Scrollbar.js';
 import '../../Core/Navigator.js';
 import '../../Extensions/RangeSelector.js';
 import StockChart from '../../Core/Chart/StockChart.js';
-Highcharts.StockChart = Highcharts.stockChart = StockChart.stockChart;
+var G = Highcharts;
+// Classes
+G.Scrollbar = Scrollbar;
+G.StockChart = G.stockChart = StockChart.stockChart;
+// Compositions
+Scrollbar.compose(G.Axis);

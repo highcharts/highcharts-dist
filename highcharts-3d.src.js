@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * 3D features for Highcharts JS
  *
@@ -305,158 +305,156 @@
             pick = U.pick;
         /* *
          *
-         *  Namespace
+         *  Constants
          *
          * */
-        var SVGElement3D;
-        (function (SVGElement3D) {
-            /* *
-             *
-             *  Functions
-             *
-             * */
+        var SVGElement3D = {};
+        SVGElement3D.base = {
             /* eslint-disable valid-jsdoc */
-            SVGElement3D.base = {
-                /**
-                 * The init is used by base - renderer.Element
-                 * @private
-                 */
-                initArgs: function (args) {
-                    var elem3d = this,
-                        renderer = elem3d.renderer,
-                        paths = renderer[elem3d.pathType + 'Path'](args),
-                        zIndexes = paths.zIndexes;
-                    // build parts
-                    elem3d.parts.forEach(function (part) {
-                        elem3d[part] = renderer.path(paths[part]).attr({
-                            'class': 'highcharts-3d-' + part,
-                            zIndex: zIndexes[part] || 0
-                        }).add(elem3d);
-                    });
-                    elem3d.attr({
-                        'stroke-linejoin': 'round',
-                        zIndex: zIndexes.group
-                    });
-                    // store original destroy
-                    elem3d.originalDestroy = elem3d.destroy;
-                    elem3d.destroy = elem3d.destroyParts;
-                    // Store information if any side of element was rendered by force.
-                    elem3d.forcedSides = paths.forcedSides;
-                },
-                /**
-                 * Single property setter that applies options to each part
-                 * @private
-                 */
-                singleSetterForParts: function (prop, val, values, verb, duration, complete) {
-                    var elem3d = this,
-                        newAttr = {},
-                        optionsToApply = [null,
-                        null, (verb || 'attr'),
-                        duration,
-                        complete],
-                        hasZIndexes = values && values.zIndexes;
-                    if (!values) {
-                        newAttr[prop] = val;
-                        optionsToApply[0] = newAttr;
-                    }
-                    else {
-                        // It is needed to deal with the whole group zIndexing
-                        // in case of graph rotation
-                        if (hasZIndexes && hasZIndexes.group) {
-                            this.attr({
-                                zIndex: hasZIndexes.group
-                            });
-                        }
-                        objectEach(values, function (partVal, part) {
-                            newAttr[part] = {};
-                            newAttr[part][prop] = partVal;
-                            // include zIndexes if provided
-                            if (hasZIndexes) {
-                                newAttr[part].zIndex = values.zIndexes[part] || 0;
-                            }
-                        });
-                        optionsToApply[1] = newAttr;
-                    }
-                    return elem3d.processParts.apply(elem3d, optionsToApply);
-                },
-                /**
-                 * Calls function for each part. Used for attr, animate and destroy.
-                 * @private
-                 */
-                processParts: function (props, partsProps, verb, duration, complete) {
-                    var elem3d = this;
-                    elem3d.parts.forEach(function (part) {
-                        // if different props for different parts
-                        if (partsProps) {
-                            props = pick(partsProps[part], false);
-                        }
-                        // only if something to set, but allow undefined
-                        if (props !== false) {
-                            elem3d[part][verb](props, duration, complete);
-                        }
-                    });
-                    return elem3d;
-                },
-                /**
-                 * Destroy all parts
-                 * @private
-                 */
-                destroyParts: function () {
-                    this.processParts(null, null, 'destroy');
-                    return this.originalDestroy();
+            /**
+             * The init is used by base - renderer.Element
+             * @private
+             */
+            initArgs: function (args) {
+                var elem3d = this,
+                    renderer = elem3d.renderer,
+                    paths = renderer[elem3d.pathType + 'Path'](args),
+                    zIndexes = paths.zIndexes;
+                // build parts
+                elem3d.parts.forEach(function (part) {
+                    elem3d[part] = renderer.path(paths[part]).attr({
+                        'class': 'highcharts-3d-' + part,
+                        zIndex: zIndexes[part] || 0
+                    }).add(elem3d);
+                });
+                elem3d.attr({
+                    'stroke-linejoin': 'round',
+                    zIndex: zIndexes.group
+                });
+                // store original destroy
+                elem3d.originalDestroy = elem3d.destroy;
+                elem3d.destroy = elem3d.destroyParts;
+                // Store information if any side of element was rendered by force.
+                elem3d.forcedSides = paths.forcedSides;
+            },
+            /**
+             * Single property setter that applies options to each part
+             * @private
+             */
+            singleSetterForParts: function (prop, val, values, verb, duration, complete) {
+                var elem3d = this,
+                    newAttr = {},
+                    optionsToApply = [null,
+                    null, (verb || 'attr'),
+                    duration,
+                    complete],
+                    hasZIndexes = values && values.zIndexes;
+                if (!values) {
+                    newAttr[prop] = val;
+                    optionsToApply[0] = newAttr;
                 }
-            };
-            SVGElement3D.cuboid = merge(SVGElement3D.base, {
-                parts: ['front', 'top', 'side'],
-                pathType: 'cuboid',
-                attr: function (args, val, complete, continueAnimation) {
-                    // Resolve setting attributes by string name
-                    if (typeof args === 'string' && typeof val !== 'undefined') {
-                        var key = args;
-                        args = {};
-                        args[key] = val;
-                    }
-                    if (args.shapeArgs || defined(args.x)) {
-                        return this.singleSetterForParts('d', null, this.renderer[this.pathType + 'Path'](args.shapeArgs || args));
-                    }
-                    return SVGElement.prototype.attr.call(this, args, void 0, complete, continueAnimation);
-                },
-                animate: function (args, duration, complete) {
-                    if (defined(args.x) && defined(args.y)) {
-                        var paths = this.renderer[this.pathType + 'Path'](args),
-                            forcedSides = paths.forcedSides;
-                        this.singleSetterForParts('d', null, paths, 'animate', duration, complete);
+                else {
+                    // It is needed to deal with the whole group zIndexing
+                    // in case of graph rotation
+                    if (hasZIndexes && hasZIndexes.group) {
                         this.attr({
-                            zIndex: paths.zIndexes.group
+                            zIndex: hasZIndexes.group
                         });
-                        // If sides that are forced to render changed, recalculate
-                        // colors.
-                        if (forcedSides !== this.forcedSides) {
-                            this.forcedSides = forcedSides;
-                            SVGElement3D.cuboid.fillSetter.call(this, this.fill);
+                    }
+                    objectEach(values, function (partVal, part) {
+                        newAttr[part] = {};
+                        newAttr[part][prop] = partVal;
+                        // include zIndexes if provided
+                        if (hasZIndexes) {
+                            newAttr[part].zIndex = values.zIndexes[part] || 0;
                         }
-                    }
-                    else {
-                        SVGElement.prototype.animate.call(this, args, duration, complete);
-                    }
-                    return this;
-                },
-                fillSetter: function (fill) {
-                    var elem3d = this;
-                    elem3d.forcedSides = elem3d.forcedSides || [];
-                    elem3d.singleSetterForParts('fill', null, {
-                        front: fill,
-                        // Do not change color if side was forced to render.
-                        top: color(fill).brighten(elem3d.forcedSides.indexOf('top') >= 0 ? 0 : 0.1).get(),
-                        side: color(fill).brighten(elem3d.forcedSides.indexOf('side') >= 0 ? 0 : -0.1).get()
                     });
-                    // fill for animation getter (#6776)
-                    elem3d.color = elem3d.fill = fill;
-                    return elem3d;
+                    optionsToApply[1] = newAttr;
                 }
-            });
+                return elem3d.processParts.apply(elem3d, optionsToApply);
+            },
+            /**
+             * Calls function for each part. Used for attr, animate and destroy.
+             * @private
+             */
+            processParts: function (props, partsProps, verb, duration, complete) {
+                var elem3d = this;
+                elem3d.parts.forEach(function (part) {
+                    // if different props for different parts
+                    if (partsProps) {
+                        props = pick(partsProps[part], false);
+                    }
+                    // only if something to set, but allow undefined
+                    if (props !== false) {
+                        elem3d[part][verb](props, duration, complete);
+                    }
+                });
+                return elem3d;
+            },
+            /**
+             * Destroy all parts
+             * @private
+             */
+            destroyParts: function () {
+                this.processParts(null, null, 'destroy');
+                return this.originalDestroy();
+            }
             /* eslint-enable valid-jsdoc */
-        })(SVGElement3D || (SVGElement3D = {}));
+        };
+        SVGElement3D.cuboid = merge(SVGElement3D.base, {
+            parts: ['front', 'top', 'side'],
+            pathType: 'cuboid',
+            attr: function (args, val, complete, continueAnimation) {
+                // Resolve setting attributes by string name
+                if (typeof args === 'string' && typeof val !== 'undefined') {
+                    var key = args;
+                    args = {};
+                    args[key] = val;
+                }
+                if (args.shapeArgs || defined(args.x)) {
+                    return this.singleSetterForParts('d', null, this.renderer[this.pathType + 'Path'](args.shapeArgs || args));
+                }
+                return SVGElement.prototype.attr.call(this, args, void 0, complete, continueAnimation);
+            },
+            animate: function (args, duration, complete) {
+                if (defined(args.x) && defined(args.y)) {
+                    var paths = this.renderer[this.pathType + 'Path'](args),
+                        forcedSides = paths.forcedSides;
+                    this.singleSetterForParts('d', null, paths, 'animate', duration, complete);
+                    this.attr({
+                        zIndex: paths.zIndexes.group
+                    });
+                    // If sides that are forced to render changed, recalculate
+                    // colors.
+                    if (forcedSides !== this.forcedSides) {
+                        this.forcedSides = forcedSides;
+                        SVGElement3D.cuboid.fillSetter.call(this, this.fill);
+                    }
+                }
+                else {
+                    SVGElement.prototype.animate.call(this, args, duration, complete);
+                }
+                return this;
+            },
+            fillSetter: function (fill) {
+                var elem3d = this;
+                elem3d.forcedSides = elem3d.forcedSides || [];
+                elem3d.singleSetterForParts('fill', null, {
+                    front: fill,
+                    // Do not change color if side was forced to render.
+                    top: color(fill).brighten(elem3d.forcedSides.indexOf('top') >= 0 ? 0 : 0.1).get(),
+                    side: color(fill).brighten(elem3d.forcedSides.indexOf('side') >= 0 ? 0 : -0.1).get()
+                });
+                // fill for animation getter (#6776)
+                elem3d.color = elem3d.fill = fill;
+                return elem3d;
+            }
+        });
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return SVGElement3D;
     });
@@ -472,6 +470,22 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var animObject = A.animObject;
         var color = Color.parse;
         var charts = H.charts,
@@ -497,1739 +511,879 @@
          *
          * */
         /* eslint-disable valid-jsdoc */
-        /**
-         * Method to construct a curved path. Can 'wrap' around more then 180 degrees.
-         * @private
-         */
-        function curveTo(cx, cy, rx, ry, start, end, dx, dy) {
-            var result = [],
-                arcAngle = end - start;
-            if ((end > start) && (end - start > Math.PI / 2 + 0.0001)) {
-                result = result.concat(curveTo(cx, cy, rx, ry, start, start + (Math.PI / 2), dx, dy));
-                result = result.concat(curveTo(cx, cy, rx, ry, start + (Math.PI / 2), end, dx, dy));
-                return result;
-            }
-            if ((end < start) && (start - end > Math.PI / 2 + 0.0001)) {
-                result = result.concat(curveTo(cx, cy, rx, ry, start, start - (Math.PI / 2), dx, dy));
-                result = result.concat(curveTo(cx, cy, rx, ry, start - (Math.PI / 2), end, dx, dy));
-                return result;
-            }
-            return [[
-                    'C',
-                    cx + (rx * Math.cos(start)) -
-                        ((rx * dFactor * arcAngle) * Math.sin(start)) + dx,
-                    cy + (ry * Math.sin(start)) +
-                        ((ry * dFactor * arcAngle) * Math.cos(start)) + dy,
-                    cx + (rx * Math.cos(end)) +
-                        ((rx * dFactor * arcAngle) * Math.sin(end)) + dx,
-                    cy + (ry * Math.sin(end)) -
-                        ((ry * dFactor * arcAngle) * Math.cos(end)) + dy,
-                    cx + (rx * Math.cos(end)) + dx,
-                    cy + (ry * Math.sin(end)) + dy
-                ]];
-        }
         /* *
          *
-         *  Composition
+         *  Class
          *
          * */
-        SVGRenderer.prototype.elements3d = SVGElement3D;
-        SVGRenderer.prototype.toLinePath = function (points, closed) {
-            var result = [];
-            // Put "L x y" for each point
-            points.forEach(function (point) {
-                result.push(['L', point.x, point.y]);
-            });
-            if (points.length) {
-                // Set the first element to M
-                result[0][0] = 'M';
-                // If it is a closed line, add Z
-                if (closed) {
-                    result.push(['Z']);
-                }
+        var SVGRenderer3D = /** @class */ (function (_super) {
+                __extends(SVGRenderer3D, _super);
+            function SVGRenderer3D() {
+                return _super !== null && _super.apply(this, arguments) || this;
             }
-            return result;
-        };
-        SVGRenderer.prototype.toLineSegments = function (points) {
-            var result = [],
-                m = true;
-            points.forEach(function (point) {
-                result.push(m ? ['M', point.x, point.y] : ['L', point.x, point.y]);
-                m = !m;
-            });
-            return result;
-        };
-        // A 3-D Face is defined by it's 3D vertexes, and is only visible if it's
-        // vertexes are counter-clockwise (Back-face culling). It is used as a
-        // polyhedron Element
-        SVGRenderer.prototype.face3d = function (args) {
-            var renderer = this,
-                ret = this.createElement('path');
-            ret.vertexes = [];
-            ret.insidePlotArea = false;
-            ret.enabled = true;
-            /* eslint-disable no-invalid-this */
-            ret.attr = function (hash) {
-                if (typeof hash === 'object' &&
-                    (defined(hash.enabled) ||
-                        defined(hash.vertexes) ||
-                        defined(hash.insidePlotArea))) {
-                    this.enabled = pick(hash.enabled, this.enabled);
-                    this.vertexes = pick(hash.vertexes, this.vertexes);
-                    this.insidePlotArea = pick(hash.insidePlotArea, this.insidePlotArea);
-                    delete hash.enabled;
-                    delete hash.vertexes;
-                    delete hash.insidePlotArea;
-                    var chart = charts[renderer.chartIndex],
-                        vertexes2d = perspective(this.vertexes,
-                        chart,
-                        this.insidePlotArea),
-                        path = renderer.toLinePath(vertexes2d,
-                        true),
-                        area = shapeArea(vertexes2d);
-                    hash.d = path;
-                    hash.visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
-                }
-                return SVGElement.prototype.attr.apply(this, arguments);
+            /* *
+             *
+             *  Static Functions
+             *
+             * */
+            /** @private */
+            SVGRenderer3D.compose = function (SVGRendererClass) {
+                var svgRendererProto = SVGRendererClass.prototype,
+                    svgRenderer3dProto = SVGRenderer3D.prototype;
+                svgRendererProto.elements3d = SVGElement3D;
+                svgRendererProto.arc3d = svgRenderer3dProto.arc3d;
+                svgRendererProto.arc3dPath = svgRenderer3dProto.arc3dPath;
+                svgRendererProto.cuboid = svgRenderer3dProto.cuboid;
+                svgRendererProto.cuboidPath = svgRenderer3dProto.cuboidPath;
+                svgRendererProto.element3d = svgRenderer3dProto.element3d;
+                svgRendererProto.face3d = svgRenderer3dProto.face3d;
+                svgRendererProto.polyhedron = svgRenderer3dProto.polyhedron;
+                svgRendererProto.toLinePath = svgRenderer3dProto.toLinePath;
+                svgRendererProto.toLineSegments = svgRenderer3dProto.toLineSegments;
             };
-            ret.animate = function (params) {
-                if (typeof params === 'object' &&
-                    (defined(params.enabled) ||
-                        defined(params.vertexes) ||
-                        defined(params.insidePlotArea))) {
-                    this.enabled = pick(params.enabled, this.enabled);
-                    this.vertexes = pick(params.vertexes, this.vertexes);
-                    this.insidePlotArea = pick(params.insidePlotArea, this.insidePlotArea);
-                    delete params.enabled;
-                    delete params.vertexes;
-                    delete params.insidePlotArea;
-                    var chart = charts[renderer.chartIndex],
-                        vertexes2d = perspective(this.vertexes,
-                        chart,
-                        this.insidePlotArea),
-                        path = renderer.toLinePath(vertexes2d,
-                        true),
-                        area = shapeArea(vertexes2d),
-                        visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
-                    params.d = path;
-                    this.attr('visibility', visibility);
+            /**
+             * Method to construct a curved path. Can 'wrap' around more then 180
+             * degrees.
+             * @private
+             */
+            SVGRenderer3D.curveTo = function (cx, cy, rx, ry, start, end, dx, dy) {
+                var result = [],
+                    arcAngle = end - start;
+                if ((end > start) && (end - start > Math.PI / 2 + 0.0001)) {
+                    result = result.concat(this.curveTo(cx, cy, rx, ry, start, start + (Math.PI / 2), dx, dy));
+                    result = result.concat(this.curveTo(cx, cy, rx, ry, start + (Math.PI / 2), end, dx, dy));
+                    return result;
                 }
-                return SVGElement.prototype.animate.apply(this, arguments);
+                if ((end < start) && (start - end > Math.PI / 2 + 0.0001)) {
+                    result = result.concat(this.curveTo(cx, cy, rx, ry, start, start - (Math.PI / 2), dx, dy));
+                    result = result.concat(this.curveTo(cx, cy, rx, ry, start - (Math.PI / 2), end, dx, dy));
+                    return result;
+                }
+                return [[
+                        'C',
+                        cx + (rx * Math.cos(start)) -
+                            ((rx * dFactor * arcAngle) * Math.sin(start)) + dx,
+                        cy + (ry * Math.sin(start)) +
+                            ((ry * dFactor * arcAngle) * Math.cos(start)) + dy,
+                        cx + (rx * Math.cos(end)) +
+                            ((rx * dFactor * arcAngle) * Math.sin(end)) + dx,
+                        cy + (ry * Math.sin(end)) -
+                            ((ry * dFactor * arcAngle) * Math.cos(end)) + dy,
+                        cx + (rx * Math.cos(end)) + dx,
+                        cy + (ry * Math.sin(end)) + dy
+                    ]];
             };
-            /* eslint-enable no-invalid-this */
-            return ret.attr(args);
-        };
-        // A Polyhedron is a handy way of defining a group of 3-D faces. It's only
-        // attribute is `faces`, an array of attributes of each one of it's Face3D
-        // instances.
-        SVGRenderer.prototype.polyhedron = function (args) {
-            var renderer = this,
-                result = this.g(),
-                destroy = result.destroy;
-            if (!this.styledMode) {
-                result.attr({
-                    'stroke-linejoin': 'round'
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /** @private */
+            SVGRenderer3D.prototype.toLinePath = function (points, closed) {
+                var result = [];
+                // Put "L x y" for each point
+                points.forEach(function (point) {
+                    result.push(['L', point.x, point.y]);
                 });
-            }
-            result.faces = [];
-            /* eslint-disable no-invalid-this */
-            // destroy all children
-            result.destroy = function () {
-                for (var i = 0; i < result.faces.length; i++) {
-                    result.faces[i].destroy();
+                if (points.length) {
+                    // Set the first element to M
+                    result[0][0] = 'M';
+                    // If it is a closed line, add Z
+                    if (closed) {
+                        result.push(['Z']);
+                    }
                 }
-                return destroy.call(this);
+                return result;
             };
-            result.attr = function (hash, val, complete, continueAnimation) {
-                if (typeof hash === 'object' && defined(hash.faces)) {
-                    while (result.faces.length > hash.faces.length) {
-                        result.faces.pop().destroy();
+            /** @private */
+            SVGRenderer3D.prototype.toLineSegments = function (points) {
+                var result = [],
+                    m = true;
+                points.forEach(function (point) {
+                    result.push(m ? ['M', point.x, point.y] : ['L', point.x, point.y]);
+                    m = !m;
+                });
+                return result;
+            };
+            /**
+             * A 3-D Face is defined by it's 3D vertexes, and is only visible if it's
+             * vertexes are counter-clockwise (Back-face culling). It is used as a
+             * polyhedron Element.
+             * @private
+             */
+            SVGRenderer3D.prototype.face3d = function (args) {
+                var renderer = this,
+                    ret = this.createElement('path');
+                ret.vertexes = [];
+                ret.insidePlotArea = false;
+                ret.enabled = true;
+                /* eslint-disable no-invalid-this */
+                ret.attr = function (hash) {
+                    if (typeof hash === 'object' &&
+                        (defined(hash.enabled) ||
+                            defined(hash.vertexes) ||
+                            defined(hash.insidePlotArea))) {
+                        this.enabled = pick(hash.enabled, this.enabled);
+                        this.vertexes = pick(hash.vertexes, this.vertexes);
+                        this.insidePlotArea = pick(hash.insidePlotArea, this.insidePlotArea);
+                        delete hash.enabled;
+                        delete hash.vertexes;
+                        delete hash.insidePlotArea;
+                        var chart = charts[renderer.chartIndex],
+                            vertexes2d = perspective(this.vertexes,
+                            chart,
+                            this.insidePlotArea),
+                            path = renderer.toLinePath(vertexes2d,
+                            true),
+                            area = shapeArea(vertexes2d);
+                        hash.d = path;
+                        hash.visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
                     }
-                    while (result.faces.length < hash.faces.length) {
-                        result.faces.push(renderer.face3d().add(result));
+                    return SVGElement.prototype.attr.apply(this, arguments);
+                };
+                ret.animate = function (params) {
+                    if (typeof params === 'object' &&
+                        (defined(params.enabled) ||
+                            defined(params.vertexes) ||
+                            defined(params.insidePlotArea))) {
+                        this.enabled = pick(params.enabled, this.enabled);
+                        this.vertexes = pick(params.vertexes, this.vertexes);
+                        this.insidePlotArea = pick(params.insidePlotArea, this.insidePlotArea);
+                        delete params.enabled;
+                        delete params.vertexes;
+                        delete params.insidePlotArea;
+                        var chart = charts[renderer.chartIndex],
+                            vertexes2d = perspective(this.vertexes,
+                            chart,
+                            this.insidePlotArea),
+                            path = renderer.toLinePath(vertexes2d,
+                            true),
+                            area = shapeArea(vertexes2d),
+                            visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
+                        params.d = path;
+                        this.attr('visibility', visibility);
                     }
-                    for (var i = 0; i < hash.faces.length; i++) {
-                        if (renderer.styledMode) {
-                            delete hash.faces[i].fill;
+                    return SVGElement.prototype.animate.apply(this, arguments);
+                };
+                /* eslint-enable no-invalid-this */
+                return ret.attr(args);
+            };
+            /**
+             * A Polyhedron is a handy way of defining a group of 3-D faces. It's only
+             * attribute is `faces`, an array of attributes of each one of it's Face3D
+             * instances.
+             * @private
+             */
+            SVGRenderer3D.prototype.polyhedron = function (args) {
+                var renderer = this,
+                    result = this.g(),
+                    destroy = result.destroy;
+                if (!this.styledMode) {
+                    result.attr({
+                        'stroke-linejoin': 'round'
+                    });
+                }
+                result.faces = [];
+                /* eslint-disable no-invalid-this */
+                // destroy all children
+                result.destroy = function () {
+                    for (var i = 0; i < result.faces.length; i++) {
+                        result.faces[i].destroy();
+                    }
+                    return destroy.call(this);
+                };
+                result.attr = function (hash, val, complete, continueAnimation) {
+                    if (typeof hash === 'object' && defined(hash.faces)) {
+                        while (result.faces.length > hash.faces.length) {
+                            result.faces.pop().destroy();
                         }
-                        result.faces[i].attr(hash.faces[i], null, complete, continueAnimation);
+                        while (result.faces.length < hash.faces.length) {
+                            result.faces.push(renderer.face3d().add(result));
+                        }
+                        for (var i = 0; i < hash.faces.length; i++) {
+                            if (renderer.styledMode) {
+                                delete hash.faces[i].fill;
+                            }
+                            result.faces[i].attr(hash.faces[i], null, complete, continueAnimation);
+                        }
+                        delete hash.faces;
                     }
-                    delete hash.faces;
-                }
-                return SVGElement.prototype.attr.apply(this, arguments);
+                    return SVGElement.prototype.attr.apply(this, arguments);
+                };
+                result.animate = function (params, duration, complete) {
+                    if (params && params.faces) {
+                        while (result.faces.length > params.faces.length) {
+                            result.faces.pop().destroy();
+                        }
+                        while (result.faces.length < params.faces.length) {
+                            result.faces.push(renderer.face3d().add(result));
+                        }
+                        for (var i = 0; i < params.faces.length; i++) {
+                            result.faces[i].animate(params.faces[i], duration, complete);
+                        }
+                        delete params.faces;
+                    }
+                    return SVGElement.prototype.animate.apply(this, arguments);
+                };
+                /* eslint-enable no-invalid-this */
+                return result.attr(args);
             };
-            result.animate = function (params, duration, complete) {
-                if (params && params.faces) {
-                    while (result.faces.length > params.faces.length) {
-                        result.faces.pop().destroy();
-                    }
-                    while (result.faces.length < params.faces.length) {
-                        result.faces.push(renderer.face3d().add(result));
-                    }
-                    for (var i = 0; i < params.faces.length; i++) {
-                        result.faces[i].animate(params.faces[i], duration, complete);
-                    }
-                    delete params.faces;
-                }
-                return SVGElement.prototype.animate.apply(this, arguments);
-            };
-            /* eslint-enable no-invalid-this */
-            return result.attr(args);
-        };
-        /**
-         * return result, generalization
-         * @private
-         * @requires highcharts-3d
-         */
-        SVGRenderer.prototype.element3d = function (type, shapeArgs) {
-            // base
-            var ret = this.g();
-            // extend
-            extend(ret, this.elements3d[type]);
-            // init
-            ret.initArgs(shapeArgs);
-            // return
-            return ret;
-        };
-        // generelized, so now use simply
-        SVGRenderer.prototype.cuboid = function (shapeArgs) {
-            return this.element3d('cuboid', shapeArgs);
-        };
-        // Generates a cuboid path and zIndexes
-        SVGRenderer.prototype.cuboidPath = function (shapeArgs) {
-            var x = shapeArgs.x || 0,
-                y = shapeArgs.y || 0,
-                z = shapeArgs.z || 0, 
-                // For side calculation (right/left)
-                // there is a need for height (and other shapeArgs arguments)
-                // to be at least 1px
-                h = shapeArgs.height || 0,
-                w = shapeArgs.width || 0,
-                d = shapeArgs.depth || 0,
-                chart = charts[this.chartIndex],
-                front,
-                back,
-                top,
-                bottom,
-                left,
-                right,
-                shape,
-                path1,
-                path2,
-                path3,
-                isFront,
-                isTop,
-                isRight,
-                options3d = chart.options.chart.options3d,
-                alpha = options3d.alpha, 
-                // Priority for x axis is the biggest,
-                // because of x direction has biggest influence on zIndex
-                incrementX = 1000000, 
-                // y axis has the smallest priority in case of our charts
-                // (needs to be set because of stacking)
-                incrementY = 10,
-                incrementZ = 100,
-                zIndex = 0, 
-                // The 8 corners of the cube
-                pArr = [{
-                        x: x,
-                        y: y,
-                        z: z
-                    }, {
-                        x: x + w,
-                        y: y,
-                        z: z
-                    }, {
-                        x: x + w,
-                        y: y + h,
-                        z: z
-                    }, {
-                        x: x,
-                        y: y + h,
-                        z: z
-                    }, {
-                        x: x,
-                        y: y + h,
-                        z: z + d
-                    }, {
-                        x: x + w,
-                        y: y + h,
-                        z: z + d
-                    }, {
-                        x: x + w,
-                        y: y,
-                        z: z + d
-                    }, {
-                        x: x,
-                        y: y,
-                        z: z + d
-                    }],
-                forcedSides = [],
-                pickShape;
-            // apply perspective
-            pArr = perspective(pArr, chart, shapeArgs.insidePlotArea);
             /**
-             * helper method to decide which side is visible
+             * return result, generalization
              * @private
+             * @requires highcharts-3d
              */
-            function mapSidePath(i) {
-                // Added support for 0 value in columns, where height is 0
-                // but the shape is rendered.
-                // Height is used from 1st to 6th element of pArr
-                if (h === 0 && i > 1 && i < 6) { // [2, 3, 4, 5]
-                    return {
-                        x: pArr[i].x,
-                        // when height is 0 instead of cuboid we render plane
-                        // so it is needed to add fake 10 height to imitate cuboid
-                        // for side calculation
-                        y: pArr[i].y + 10,
-                        z: pArr[i].z
-                    };
-                }
-                // It is needed to calculate dummy sides (front/back) for breaking
-                // points in case of x and depth values. If column has side,
-                // it means that x values of front and back side are different.
-                if (pArr[0].x === pArr[7].x && i >= 4) { // [4, 5, 6, 7]
-                    return {
-                        x: pArr[i].x + 10,
-                        // when height is 0 instead of cuboid we render plane
-                        // so it is needed to add fake 10 height to imitate cuboid
-                        // for side calculation
-                        y: pArr[i].y,
-                        z: pArr[i].z
-                    };
-                }
-                // Added dummy depth
-                if (d === 0 && i < 2 || i > 5) { // [0, 1, 6, 7]
-                    return {
-                        x: pArr[i].x,
-                        // when height is 0 instead of cuboid we render plane
-                        // so it is needed to add fake 10 height to imitate cuboid
-                        // for side calculation
-                        y: pArr[i].y,
-                        z: pArr[i].z + 10
-                    };
-                }
-                return pArr[i];
-            }
-            /**
-             * method creating the final side
-             * @private
-             */
-            function mapPath(i) {
-                return pArr[i];
-            }
-            /**
-             * First value - path with specific face
-             * Second  value - added information about side for later calculations.
-             * Possible second values are 0 for path1, 1 for path2 and -1 for no path
-             * chosen.
-             * Third value - string containing information about current side
-             * of cuboid for forcing side rendering.
-             * @private
-             */
-            pickShape = function (verticesIndex1, verticesIndex2, side) {
-                var ret = [[], -1], 
-                    // An array of vertices for cuboid face
-                    face1 = verticesIndex1.map(mapPath),
-                    face2 = verticesIndex2.map(mapPath), 
-                    // dummy face is calculated the same way as standard face,
-                    // but if cuboid height is 0 additional height is added so it is
-                    // possible to use this vertices array for visible face calculation
-                    dummyFace1 = verticesIndex1.map(mapSidePath),
-                    dummyFace2 = verticesIndex2.map(mapSidePath);
-                if (shapeArea(face1) < 0) {
-                    ret = [face1, 0];
-                }
-                else if (shapeArea(face2) < 0) {
-                    ret = [face2, 1];
-                }
-                else if (side) {
-                    forcedSides.push(side);
-                    if (shapeArea(dummyFace1) < 0) {
-                        ret = [face1, 0];
-                    }
-                    else if (shapeArea(dummyFace2) < 0) {
-                        ret = [face2, 1];
-                    }
-                    else {
-                        ret = [face1, 0]; // force side calculation.
-                    }
-                }
+            SVGRenderer3D.prototype.element3d = function (type, shapeArgs) {
+                // base
+                var ret = this.g();
+                // extend
+                extend(ret, this.elements3d[type]);
+                // init
+                ret.initArgs(shapeArgs);
+                // return
                 return ret;
             };
-            // front or back
-            front = [3, 2, 1, 0];
-            back = [7, 6, 5, 4];
-            shape = pickShape(front, back, 'front');
-            path1 = shape[0];
-            isFront = shape[1];
-            // top or bottom
-            top = [1, 6, 7, 0];
-            bottom = [4, 5, 2, 3];
-            shape = pickShape(top, bottom, 'top');
-            path2 = shape[0];
-            isTop = shape[1];
-            // side
-            right = [1, 2, 5, 6];
-            left = [0, 7, 4, 3];
-            shape = pickShape(right, left, 'side');
-            path3 = shape[0];
-            isRight = shape[1];
-            /* New block used for calculating zIndex. It is basing on X, Y and Z
-               position of specific columns. All zIndexes (for X, Y and Z values) are
-               added to the final zIndex, where every value has different priority. The
-               biggest priority is in X and Z directions, the lowest index is for
-               stacked columns (Y direction and the same X and Z positions). Big
-               differences between priorities is made because we need to ensure that
-               even for big changes in Y and Z parameters all columns will be drawn
-               correctly. */
-            if (isRight === 1) {
-                // It is needed to connect value with current chart width
-                // for big chart size.
-                zIndex += incrementX * (chart.plotWidth - x);
-            }
-            else if (!isRight) {
-                zIndex += incrementX * x;
-            }
-            zIndex += incrementY * (!isTop ||
-                // Numbers checked empirically
-                (alpha >= 0 && alpha <= 180 || alpha < 360 && alpha > 357.5) ?
-                chart.plotHeight - y : 10 + y);
-            if (isFront === 1) {
-                zIndex += incrementZ * (z);
-            }
-            else if (!isFront) {
-                zIndex += incrementZ * (1000 - z);
-            }
-            return {
-                front: this.toLinePath(path1, true),
-                top: this.toLinePath(path2, true),
-                side: this.toLinePath(path3, true),
-                zIndexes: {
-                    group: Math.round(zIndex)
-                },
-                forcedSides: forcedSides,
-                // additional info about zIndexes
-                isFront: isFront,
-                isTop: isTop
-            }; // #4774
-        };
-        // SECTORS //
-        SVGRenderer.prototype.arc3d = function (attribs) {
-            var wrapper = this.g(), renderer = wrapper.renderer, customAttribs = ['x', 'y', 'r', 'innerR', 'start', 'end', 'depth'];
             /**
-             * Get custom attributes. Don't mutate the original object and return an
-             * object with only custom attr.
+             * generelized, so now use simply
              * @private
              */
-            function suckOutCustom(params) {
-                var hasCA = false,
-                    ca = {},
-                    key;
-                params = merge(params); // Don't mutate the original object
-                for (key in params) {
-                    if (customAttribs.indexOf(key) !== -1) {
-                        ca[key] = params[key];
-                        delete params[key];
-                        hasCA = true;
-                    }
-                }
-                return hasCA ? [ca, params] : false;
-            }
-            attribs = merge(attribs);
-            attribs.alpha = (attribs.alpha || 0) * deg2rad;
-            attribs.beta = (attribs.beta || 0) * deg2rad;
-            // Create the different sub sections of the shape
-            wrapper.top = renderer.path();
-            wrapper.side1 = renderer.path();
-            wrapper.side2 = renderer.path();
-            wrapper.inn = renderer.path();
-            wrapper.out = renderer.path();
-            /* eslint-disable no-invalid-this */
-            // Add all faces
-            wrapper.onAdd = function () {
-                var parent = wrapper.parentGroup,
-                    className = wrapper.attr('class');
-                wrapper.top.add(wrapper);
-                // These faces are added outside the wrapper group because the z index
-                // relates to neighbour elements as well
-                ['out', 'inn', 'side1', 'side2'].forEach(function (face) {
-                    wrapper[face]
-                        .attr({
-                        'class': className + ' highcharts-3d-side'
-                    })
-                        .add(parent);
-                });
+            SVGRenderer3D.prototype.cuboid = function (shapeArgs) {
+                return this.element3d('cuboid', shapeArgs);
             };
-            // Cascade to faces
-            ['addClass', 'removeClass'].forEach(function (fn) {
-                wrapper[fn] = function () {
-                    var args = arguments;
-                    ['top', 'out', 'inn', 'side1', 'side2'].forEach(function (face) {
-                        wrapper[face][fn].apply(wrapper[face], args);
-                    });
-                };
-            });
             /**
-             * Compute the transformed paths and set them to the composite shapes
+             * Generates a cuboid path and zIndexes
              * @private
              */
-            wrapper.setPaths = function (attribs) {
-                var paths = wrapper.renderer.arc3dPath(attribs),
-                    zIndex = paths.zTop * 100;
-                wrapper.attribs = attribs;
-                wrapper.top.attr({ d: paths.top, zIndex: paths.zTop });
-                wrapper.inn.attr({ d: paths.inn, zIndex: paths.zInn });
-                wrapper.out.attr({ d: paths.out, zIndex: paths.zOut });
-                wrapper.side1.attr({ d: paths.side1, zIndex: paths.zSide1 });
-                wrapper.side2.attr({ d: paths.side2, zIndex: paths.zSide2 });
-                // show all children
-                wrapper.zIndex = zIndex;
-                wrapper.attr({ zIndex: zIndex });
-                // Set the radial gradient center the first time
-                if (attribs.center) {
-                    wrapper.top.setRadialReference(attribs.center);
-                    delete attribs.center;
-                }
-            };
-            wrapper.setPaths(attribs);
-            /**
-             * Apply the fill to the top and a darker shade to the sides
-             * @private
-             */
-            wrapper.fillSetter = function (value) {
-                var darker = color(value).brighten(-0.1).get();
-                this.fill = value;
-                this.side1.attr({ fill: darker });
-                this.side2.attr({ fill: darker });
-                this.inn.attr({ fill: darker });
-                this.out.attr({ fill: darker });
-                this.top.attr({ fill: value });
-                return this;
-            };
-            // Apply the same value to all. These properties cascade down to the
-            // children when set to the composite arc3d.
-            ['opacity', 'translateX', 'translateY', 'visibility'].forEach(function (setter) {
-                wrapper[setter + 'Setter'] = function (value, key) {
-                    wrapper[key] = value;
-                    ['out', 'inn', 'side1', 'side2', 'top'].forEach(function (el) {
-                        wrapper[el].attr(key, value);
-                    });
-                };
-            });
-            // Override attr to remove shape attributes and use those to set child paths
-            wrapper.attr = function (params) {
-                var ca,
-                    paramArr;
-                if (typeof params === 'object') {
-                    paramArr = suckOutCustom(params);
-                    if (paramArr) {
-                        ca = paramArr[0];
-                        arguments[0] = paramArr[1];
-                        extend(wrapper.attribs, ca);
-                        wrapper.setPaths(wrapper.attribs);
-                    }
-                }
-                return SVGElement.prototype.attr.apply(wrapper, arguments);
-            };
-            // Override the animate function by sucking out custom parameters related to
-            // the shapes directly, and update the shapes from the animation step.
-            wrapper.animate = function (params, animation, complete) {
-                var paramArr,
-                    from = this.attribs,
-                    to,
-                    anim,
-                    randomProp = 'data-' + Math.random().toString(26).substring(2, 9);
-                // Attribute-line properties connected to 3D. These shouldn't have been
-                // in the attribs collection in the first place.
-                delete params.center;
-                delete params.z;
-                delete params.alpha;
-                delete params.beta;
-                anim = animObject(pick(animation, this.renderer.globalAnimation));
-                if (anim.duration) {
-                    paramArr = suckOutCustom(params);
-                    // Params need to have a property in order for the step to run
-                    // (#5765, #7097, #7437)
-                    wrapper[randomProp] = 0;
-                    params[randomProp] = 1;
-                    wrapper[randomProp + 'Setter'] = H.noop;
-                    if (paramArr) {
-                        to = paramArr[0]; // custom attr
-                        anim.step = function (a, fx) {
-                            /**
-                             * @private
-                             */
-                            function interpolate(key) {
-                                return from[key] + (pick(to[key], from[key]) -
-                                    from[key]) * fx.pos;
-                            }
-                            if (fx.prop === randomProp) {
-                                fx.elem.setPaths(merge(from, {
-                                    x: interpolate('x'),
-                                    y: interpolate('y'),
-                                    r: interpolate('r'),
-                                    innerR: interpolate('innerR'),
-                                    start: interpolate('start'),
-                                    end: interpolate('end'),
-                                    depth: interpolate('depth')
-                                }));
-                            }
+            SVGRenderer3D.prototype.cuboidPath = function (shapeArgs) {
+                var x = shapeArgs.x || 0,
+                    y = shapeArgs.y || 0,
+                    z = shapeArgs.z || 0, 
+                    // For side calculation (right/left)
+                    // there is a need for height (and other shapeArgs arguments)
+                    // to be at least 1px
+                    h = shapeArgs.height || 0,
+                    w = shapeArgs.width || 0,
+                    d = shapeArgs.depth || 0,
+                    chart = charts[this.chartIndex],
+                    front,
+                    back,
+                    top,
+                    bottom,
+                    left,
+                    right,
+                    shape,
+                    path1,
+                    path2,
+                    path3,
+                    isFront,
+                    isTop,
+                    isRight,
+                    options3d = chart.options.chart.options3d,
+                    alpha = options3d.alpha, 
+                    // Priority for x axis is the biggest,
+                    // because of x direction has biggest influence on zIndex
+                    incrementX = 1000000, 
+                    // y axis has the smallest priority in case of our charts
+                    // (needs to be set because of stacking)
+                    incrementY = 10,
+                    incrementZ = 100,
+                    zIndex = 0, 
+                    // The 8 corners of the cube
+                    pArr = [{
+                            x: x,
+                            y: y,
+                            z: z
+                        }, {
+                            x: x + w,
+                            y: y,
+                            z: z
+                        }, {
+                            x: x + w,
+                            y: y + h,
+                            z: z
+                        }, {
+                            x: x,
+                            y: y + h,
+                            z: z
+                        }, {
+                            x: x,
+                            y: y + h,
+                            z: z + d
+                        }, {
+                            x: x + w,
+                            y: y + h,
+                            z: z + d
+                        }, {
+                            x: x + w,
+                            y: y,
+                            z: z + d
+                        }, {
+                            x: x,
+                            y: y,
+                            z: z + d
+                        }],
+                    forcedSides = [],
+                    pickShape;
+                // apply perspective
+                pArr = perspective(pArr, chart, shapeArgs.insidePlotArea);
+                /**
+                 * helper method to decide which side is visible
+                 * @private
+                 */
+                function mapSidePath(i) {
+                    // Added support for 0 value in columns, where height is 0
+                    // but the shape is rendered.
+                    // Height is used from 1st to 6th element of pArr
+                    if (h === 0 && i > 1 && i < 6) { // [2, 3, 4, 5]
+                        return {
+                            x: pArr[i].x,
+                            // when height is 0 instead of cuboid we render plane
+                            // so it is needed to add fake 10 height to imitate cuboid
+                            // for side calculation
+                            y: pArr[i].y + 10,
+                            z: pArr[i].z
                         };
                     }
-                    animation = anim; // Only when duration (#5572)
+                    // It is needed to calculate dummy sides (front/back) for breaking
+                    // points in case of x and depth values. If column has side,
+                    // it means that x values of front and back side are different.
+                    if (pArr[0].x === pArr[7].x && i >= 4) { // [4, 5, 6, 7]
+                        return {
+                            x: pArr[i].x + 10,
+                            // when height is 0 instead of cuboid we render plane
+                            // so it is needed to add fake 10 height to imitate cuboid
+                            // for side calculation
+                            y: pArr[i].y,
+                            z: pArr[i].z
+                        };
+                    }
+                    // Added dummy depth
+                    if (d === 0 && i < 2 || i > 5) { // [0, 1, 6, 7]
+                        return {
+                            x: pArr[i].x,
+                            // when height is 0 instead of cuboid we render plane
+                            // so it is needed to add fake 10 height to imitate cuboid
+                            // for side calculation
+                            y: pArr[i].y,
+                            z: pArr[i].z + 10
+                        };
+                    }
+                    return pArr[i];
                 }
-                return SVGElement.prototype.animate.call(this, params, animation, complete);
+                /**
+                 * method creating the final side
+                 * @private
+                 */
+                function mapPath(i) {
+                    return pArr[i];
+                }
+                /**
+                 * First value - path with specific face
+                 * Second  value - added information about side for later calculations.
+                 * Possible second values are 0 for path1, 1 for path2 and -1 for no
+                 * path chosen.
+                 * Third value - string containing information about current side
+                 * of cuboid for forcing side rendering.
+                 * @private
+                 */
+                pickShape = function (verticesIndex1, verticesIndex2, side) {
+                    var ret = [[], -1], 
+                        // An array of vertices for cuboid face
+                        face1 = verticesIndex1.map(mapPath),
+                        face2 = verticesIndex2.map(mapPath), 
+                        // dummy face is calculated the same way as standard face, but
+                        // if cuboid height is 0 additional height is added so it is
+                        // possible to use this vertices array for visible face
+                        // calculation
+                        dummyFace1 = verticesIndex1.map(mapSidePath),
+                        dummyFace2 = verticesIndex2.map(mapSidePath);
+                    if (shapeArea(face1) < 0) {
+                        ret = [face1, 0];
+                    }
+                    else if (shapeArea(face2) < 0) {
+                        ret = [face2, 1];
+                    }
+                    else if (side) {
+                        forcedSides.push(side);
+                        if (shapeArea(dummyFace1) < 0) {
+                            ret = [face1, 0];
+                        }
+                        else if (shapeArea(dummyFace2) < 0) {
+                            ret = [face2, 1];
+                        }
+                        else {
+                            ret = [face1, 0]; // force side calculation.
+                        }
+                    }
+                    return ret;
+                };
+                // front or back
+                front = [3, 2, 1, 0];
+                back = [7, 6, 5, 4];
+                shape = pickShape(front, back, 'front');
+                path1 = shape[0];
+                isFront = shape[1];
+                // top or bottom
+                top = [1, 6, 7, 0];
+                bottom = [4, 5, 2, 3];
+                shape = pickShape(top, bottom, 'top');
+                path2 = shape[0];
+                isTop = shape[1];
+                // side
+                right = [1, 2, 5, 6];
+                left = [0, 7, 4, 3];
+                shape = pickShape(right, left, 'side');
+                path3 = shape[0];
+                isRight = shape[1];
+                /* New block used for calculating zIndex. It is basing on X, Y and Z
+                position of specific columns. All zIndexes (for X, Y and Z values) are
+                added to the final zIndex, where every value has different priority. The
+                biggest priority is in X and Z directions, the lowest index is for
+                stacked columns (Y direction and the same X and Z positions). Big
+                differences between priorities is made because we need to ensure that
+                even for big changes in Y and Z parameters all columns will be drawn
+                correctly. */
+                if (isRight === 1) {
+                    // It is needed to connect value with current chart width
+                    // for big chart size.
+                    zIndex += incrementX * (chart.plotWidth - x);
+                }
+                else if (!isRight) {
+                    zIndex += incrementX * x;
+                }
+                zIndex += incrementY * (!isTop ||
+                    // Numbers checked empirically
+                    (alpha >= 0 && alpha <= 180 || alpha < 360 && alpha > 357.5) ?
+                    chart.plotHeight - y : 10 + y);
+                if (isFront === 1) {
+                    zIndex += incrementZ * (z);
+                }
+                else if (!isFront) {
+                    zIndex += incrementZ * (1000 - z);
+                }
+                return {
+                    front: this.toLinePath(path1, true),
+                    top: this.toLinePath(path2, true),
+                    side: this.toLinePath(path3, true),
+                    zIndexes: {
+                        group: Math.round(zIndex)
+                    },
+                    forcedSides: forcedSides,
+                    // additional info about zIndexes
+                    isFront: isFront,
+                    isTop: isTop
+                }; // #4774
             };
-            // destroy all children
-            wrapper.destroy = function () {
-                this.top.destroy();
-                this.out.destroy();
-                this.inn.destroy();
-                this.side1.destroy();
-                this.side2.destroy();
-                return SVGElement.prototype.destroy.call(this);
+            /** @private */
+            SVGRenderer3D.prototype.arc3d = function (attribs) {
+                var wrapper = this.g(), renderer = wrapper.renderer, customAttribs = ['x', 'y', 'r', 'innerR', 'start', 'end', 'depth'];
+                /**
+                 * Get custom attributes. Don't mutate the original object and return an
+                 * object with only custom attr.
+                 * @private
+                 */
+                function suckOutCustom(params) {
+                    var hasCA = false,
+                        ca = {},
+                        key;
+                    params = merge(params); // Don't mutate the original object
+                    for (key in params) {
+                        if (customAttribs.indexOf(key) !== -1) {
+                            ca[key] = params[key];
+                            delete params[key];
+                            hasCA = true;
+                        }
+                    }
+                    return hasCA ? [ca, params] : false;
+                }
+                attribs = merge(attribs);
+                attribs.alpha = (attribs.alpha || 0) * deg2rad;
+                attribs.beta = (attribs.beta || 0) * deg2rad;
+                // Create the different sub sections of the shape
+                wrapper.top = renderer.path();
+                wrapper.side1 = renderer.path();
+                wrapper.side2 = renderer.path();
+                wrapper.inn = renderer.path();
+                wrapper.out = renderer.path();
+                /* eslint-disable no-invalid-this */
+                // Add all faces
+                wrapper.onAdd = function () {
+                    var parent = wrapper.parentGroup,
+                        className = wrapper.attr('class');
+                    wrapper.top.add(wrapper);
+                    // These faces are added outside the wrapper group because the
+                    // z-index relates to neighbour elements as well
+                    ['out', 'inn', 'side1', 'side2'].forEach(function (face) {
+                        wrapper[face]
+                            .attr({
+                            'class': className + ' highcharts-3d-side'
+                        })
+                            .add(parent);
+                    });
+                };
+                // Cascade to faces
+                ['addClass', 'removeClass'].forEach(function (fn) {
+                    wrapper[fn] = function () {
+                        var args = arguments;
+                        ['top', 'out', 'inn', 'side1', 'side2'].forEach(function (face) {
+                            wrapper[face][fn].apply(wrapper[face], args);
+                        });
+                    };
+                });
+                /**
+                 * Compute the transformed paths and set them to the composite shapes
+                 * @private
+                 */
+                wrapper.setPaths = function (attribs) {
+                    var paths = wrapper.renderer.arc3dPath(attribs),
+                        zIndex = paths.zTop * 100;
+                    wrapper.attribs = attribs;
+                    wrapper.top.attr({ d: paths.top, zIndex: paths.zTop });
+                    wrapper.inn.attr({ d: paths.inn, zIndex: paths.zInn });
+                    wrapper.out.attr({ d: paths.out, zIndex: paths.zOut });
+                    wrapper.side1.attr({ d: paths.side1, zIndex: paths.zSide1 });
+                    wrapper.side2.attr({ d: paths.side2, zIndex: paths.zSide2 });
+                    // show all children
+                    wrapper.zIndex = zIndex;
+                    wrapper.attr({ zIndex: zIndex });
+                    // Set the radial gradient center the first time
+                    if (attribs.center) {
+                        wrapper.top.setRadialReference(attribs.center);
+                        delete attribs.center;
+                    }
+                };
+                wrapper.setPaths(attribs);
+                /**
+                 * Apply the fill to the top and a darker shade to the sides
+                 * @private
+                 */
+                wrapper.fillSetter = function (value) {
+                    var darker = color(value).brighten(-0.1).get();
+                    this.fill = value;
+                    this.side1.attr({ fill: darker });
+                    this.side2.attr({ fill: darker });
+                    this.inn.attr({ fill: darker });
+                    this.out.attr({ fill: darker });
+                    this.top.attr({ fill: value });
+                    return this;
+                };
+                // Apply the same value to all. These properties cascade down to the
+                // children when set to the composite arc3d.
+                ['opacity', 'translateX', 'translateY', 'visibility'].forEach(function (setter) {
+                    wrapper[setter + 'Setter'] = function (value, key) {
+                        wrapper[key] = value;
+                        ['out', 'inn', 'side1', 'side2', 'top'].forEach(function (el) {
+                            wrapper[el].attr(key, value);
+                        });
+                    };
+                });
+                // Override attr to remove shape attributes and use those to set child
+                // paths
+                wrapper.attr = function (params) {
+                    var ca,
+                        paramArr;
+                    if (typeof params === 'object') {
+                        paramArr = suckOutCustom(params);
+                        if (paramArr) {
+                            ca = paramArr[0];
+                            arguments[0] = paramArr[1];
+                            extend(wrapper.attribs, ca);
+                            wrapper.setPaths(wrapper.attribs);
+                        }
+                    }
+                    return SVGElement.prototype.attr.apply(wrapper, arguments);
+                };
+                // Override the animate function by sucking out custom parameters
+                // related to the shapes directly, and update the shapes from the
+                // animation step.
+                wrapper.animate = function (params, animation, complete) {
+                    var paramArr,
+                        from = this.attribs,
+                        to,
+                        anim,
+                        randomProp = 'data-' + Math.random().toString(26).substring(2, 9);
+                    // Attribute-line properties connected to 3D. These shouldn't have
+                    // been in the attribs collection in the first place.
+                    delete params.center;
+                    delete params.z;
+                    delete params.alpha;
+                    delete params.beta;
+                    anim = animObject(pick(animation, this.renderer.globalAnimation));
+                    if (anim.duration) {
+                        paramArr = suckOutCustom(params);
+                        // Params need to have a property in order for the step to run
+                        // (#5765, #7097, #7437)
+                        wrapper[randomProp] = 0;
+                        params[randomProp] = 1;
+                        wrapper[randomProp + 'Setter'] = H.noop;
+                        if (paramArr) {
+                            to = paramArr[0]; // custom attr
+                            anim.step = function (a, fx) {
+                                /**
+                                 * @private
+                                 */
+                                function interpolate(key) {
+                                    return from[key] + (pick(to[key], from[key]) -
+                                        from[key]) * fx.pos;
+                                }
+                                if (fx.prop === randomProp) {
+                                    fx.elem.setPaths(merge(from, {
+                                        x: interpolate('x'),
+                                        y: interpolate('y'),
+                                        r: interpolate('r'),
+                                        innerR: interpolate('innerR'),
+                                        start: interpolate('start'),
+                                        end: interpolate('end'),
+                                        depth: interpolate('depth')
+                                    }));
+                                }
+                            };
+                        }
+                        animation = anim; // Only when duration (#5572)
+                    }
+                    return SVGElement.prototype.animate.call(this, params, animation, complete);
+                };
+                // destroy all children
+                wrapper.destroy = function () {
+                    this.top.destroy();
+                    this.out.destroy();
+                    this.inn.destroy();
+                    this.side1.destroy();
+                    this.side2.destroy();
+                    return SVGElement.prototype.destroy.call(this);
+                };
+                // hide all children
+                wrapper.hide = function () {
+                    this.top.hide();
+                    this.out.hide();
+                    this.inn.hide();
+                    this.side1.hide();
+                    this.side2.hide();
+                };
+                wrapper.show = function (inherit) {
+                    this.top.show(inherit);
+                    this.out.show(inherit);
+                    this.inn.show(inherit);
+                    this.side1.show(inherit);
+                    this.side2.show(inherit);
+                };
+                /* eslint-enable no-invalid-this */
+                return wrapper;
             };
-            // hide all children
-            wrapper.hide = function () {
-                this.top.hide();
-                this.out.hide();
-                this.inn.hide();
-                this.side1.hide();
-                this.side2.hide();
-            };
-            wrapper.show = function (inherit) {
-                this.top.show(inherit);
-                this.out.show(inherit);
-                this.inn.show(inherit);
-                this.side1.show(inherit);
-                this.side2.show(inherit);
-            };
-            /* eslint-enable no-invalid-this */
-            return wrapper;
-        };
-        // Generate the paths required to draw a 3D arc
-        SVGRenderer.prototype.arc3dPath = function (shapeArgs) {
-            var cx = shapeArgs.x || 0, // x coordinate of the center
-                cy = shapeArgs.y || 0, // y coordinate of the center
-                start = shapeArgs.start || 0, // start angle
-                end = (shapeArgs.end || 0) - 0.00001, // end angle
-                r = shapeArgs.r || 0, // radius
-                ir = shapeArgs.innerR || 0, // inner radius
-                d = shapeArgs.depth || 0, // depth
-                alpha = shapeArgs.alpha || 0, // alpha rotation of the chart
-                beta = shapeArgs.beta || 0; // beta rotation of the chart
-                // Derived Variables
-                var cs = Math.cos(start), // cosinus of the start angle
-                ss = Math.sin(start), // sinus of the start angle
-                ce = Math.cos(end), // cosinus of the end angle
-                se = Math.sin(end), // sinus of the end angle
-                rx = r * Math.cos(beta), // x-radius
-                ry = r * Math.cos(alpha), // y-radius
-                irx = ir * Math.cos(beta), // x-radius (inner)
-                iry = ir * Math.cos(alpha), // y-radius (inner)
-                dx = d * Math.sin(beta), // distance between top and bottom in x
-                dy = d * Math.sin(alpha); // distance between top and bottom in y
-                // TOP
-                var top = [
-                    ['M',
-                cx + (rx * cs),
-                cy + (ry * ss)]
-                ];
-            top = top.concat(curveTo(cx, cy, rx, ry, start, end, 0, 0));
-            top.push([
-                'L', cx + (irx * ce), cy + (iry * se)
-            ]);
-            top = top.concat(curveTo(cx, cy, irx, iry, end, start, 0, 0));
-            top.push(['Z']);
-            // OUTSIDE
-            var b = (beta > 0 ? Math.PI / 2 : 0),
-                a = (alpha > 0 ? 0 : Math.PI / 2);
-            var start2 = start > -b ? start : (end > -b ? -b : start),
-                end2 = end < PI - a ? end : (start < PI - a ? PI - a : end),
-                midEnd = 2 * PI - a;
-            // When slice goes over bottom middle, need to add both, left and right
-            // outer side. Additionally, when we cross right hand edge, create sharp
-            // edge. Outer shape/wall:
-            //
-            //            -------
-            //          /    ^    \
-            //    4)   /   /   \   \  1)
-            //        /   /     \   \
-            //       /   /       \   \
-            // (c)=> ====         ==== <=(d)
-            //       \   \       /   /
-            //        \   \<=(a)/   /
-            //         \   \   /   / <=(b)
-            //    3)    \    v    /  2)
-            //            -------
-            //
-            // (a) - inner side
-            // (b) - outer side
-            // (c) - left edge (sharp)
-            // (d) - right edge (sharp)
-            // 1..n - rendering order for startAngle = 0, when set to e.g 90, order
-            // changes clockwise (1->2, 2->3, n->1) and counterclockwise for negative
-            // startAngle
-            var out = [
-                    ['M',
-                cx + (rx * cos(start2)),
-                cy + (ry * sin(start2))]
-                ];
-            out = out.concat(curveTo(cx, cy, rx, ry, start2, end2, 0, 0));
-            // When shape is wide, it can cross both, (c) and (d) edges, when using
-            // startAngle
-            if (end > midEnd && start < midEnd) {
-                // Go to outer side
-                out.push([
-                    'L', cx + (rx * cos(end2)) + dx, cy + (ry * sin(end2)) + dy
-                ]);
-                // Curve to the right edge of the slice (d)
-                out = out.concat(curveTo(cx, cy, rx, ry, end2, midEnd, dx, dy));
-                // Go to the inner side
-                out.push([
-                    'L', cx + (rx * cos(midEnd)), cy + (ry * sin(midEnd))
-                ]);
-                // Curve to the true end of the slice
-                out = out.concat(curveTo(cx, cy, rx, ry, midEnd, end, 0, 0));
-                // Go to the outer side
-                out.push([
-                    'L', cx + (rx * cos(end)) + dx, cy + (ry * sin(end)) + dy
-                ]);
-                // Go back to middle (d)
-                out = out.concat(curveTo(cx, cy, rx, ry, end, midEnd, dx, dy));
-                out.push([
-                    'L', cx + (rx * cos(midEnd)), cy + (ry * sin(midEnd))
-                ]);
-                // Go back to the left edge
-                out = out.concat(curveTo(cx, cy, rx, ry, midEnd, end2, 0, 0));
-                // But shape can cross also only (c) edge:
-            }
-            else if (end > PI - a && start < PI - a) {
-                // Go to outer side
-                out.push([
-                    'L',
-                    cx + (rx * Math.cos(end2)) + dx,
-                    cy + (ry * Math.sin(end2)) + dy
-                ]);
-                // Curve to the true end of the slice
-                out = out.concat(curveTo(cx, cy, rx, ry, end2, end, dx, dy));
-                // Go to the inner side
-                out.push([
-                    'L', cx + (rx * Math.cos(end)), cy + (ry * Math.sin(end))
-                ]);
-                // Go back to the artifical end2
-                out = out.concat(curveTo(cx, cy, rx, ry, end, end2, 0, 0));
-            }
-            out.push([
-                'L', cx + (rx * Math.cos(end2)) + dx, cy + (ry * Math.sin(end2)) + dy
-            ]);
-            out = out.concat(curveTo(cx, cy, rx, ry, end2, start2, dx, dy));
-            out.push(['Z']);
-            // INSIDE
-            var inn = [
-                    ['M',
-                cx + (irx * cs),
-                cy + (iry * ss)]
-                ];
-            inn = inn.concat(curveTo(cx, cy, irx, iry, start, end, 0, 0));
-            inn.push([
-                'L', cx + (irx * Math.cos(end)) + dx, cy + (iry * Math.sin(end)) + dy
-            ]);
-            inn = inn.concat(curveTo(cx, cy, irx, iry, end, start, dx, dy));
-            inn.push(['Z']);
-            // SIDES
-            var side1 = [
-                    ['M',
-                cx + (rx * cs),
-                cy + (ry * ss)],
-                    ['L',
-                cx + (rx * cs) + dx,
-                cy + (ry * ss) + dy],
-                    ['L',
-                cx + (irx * cs) + dx,
-                cy + (iry * ss) + dy],
-                    ['L',
-                cx + (irx * cs),
-                cy + (iry * ss)],
-                    ['Z']
-                ];
-            var side2 = [
-                    ['M',
-                cx + (rx * ce),
-                cy + (ry * se)],
-                    ['L',
-                cx + (rx * ce) + dx,
-                cy + (ry * se) + dy],
-                    ['L',
-                cx + (irx * ce) + dx,
-                cy + (iry * se) + dy],
-                    ['L',
-                cx + (irx * ce),
-                cy + (iry * se)],
-                    ['Z']
-                ];
-            // correction for changed position of vanishing point caused by alpha and
-            // beta rotations
-            var angleCorr = Math.atan2(dy, -dx),
-                angleEnd = Math.abs(end + angleCorr),
-                angleStart = Math.abs(start + angleCorr),
-                angleMid = Math.abs((start + end) / 2 + angleCorr);
             /**
-             * set to 0-PI range
+             * Generate the paths required to draw a 3D arc.
              * @private
              */
-            function toZeroPIRange(angle) {
-                angle = angle % (2 * Math.PI);
-                if (angle > Math.PI) {
-                    angle = 2 * Math.PI - angle;
+            SVGRenderer3D.prototype.arc3dPath = function (shapeArgs) {
+                var cx = shapeArgs.x || 0, // x coordinate of the center
+                    cy = shapeArgs.y || 0, // y coordinate of the center
+                    start = shapeArgs.start || 0, // start angle
+                    end = (shapeArgs.end || 0) - 0.00001, // end angle
+                    r = shapeArgs.r || 0, // radius
+                    ir = shapeArgs.innerR || 0, // inner radius
+                    d = shapeArgs.depth || 0, // depth
+                    alpha = shapeArgs.alpha || 0, // alpha rotation of the chart
+                    beta = shapeArgs.beta || 0; // beta rotation of the chart
+                    // Derived Variables
+                    var cs = Math.cos(start), // cosinus of the start angle
+                    ss = Math.sin(start), // sinus of the start angle
+                    ce = Math.cos(end), // cosinus of the end angle
+                    se = Math.sin(end), // sinus of the end angle
+                    rx = r * Math.cos(beta), // x-radius
+                    ry = r * Math.cos(alpha), // y-radius
+                    irx = ir * Math.cos(beta), // x-radius (inner)
+                    iry = ir * Math.cos(alpha), // y-radius (inner)
+                    dx = d * Math.sin(beta), // distance between top and bottom in x
+                    dy = d * Math.sin(alpha); // distance between top and bottom in y
+                    // TOP
+                    var top = [
+                        ['M',
+                    cx + (rx * cs),
+                    cy + (ry * ss)]
+                    ];
+                top = top.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, start, end, 0, 0));
+                top.push([
+                    'L', cx + (irx * ce), cy + (iry * se)
+                ]);
+                top = top.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, end, start, 0, 0));
+                top.push(['Z']);
+                // OUTSIDE
+                var b = (beta > 0 ? Math.PI / 2 : 0),
+                    a = (alpha > 0 ? 0 : Math.PI / 2);
+                var start2 = start > -b ? start : (end > -b ? -b : start),
+                    end2 = end < PI - a ? end : (start < PI - a ? PI - a : end),
+                    midEnd = 2 * PI - a;
+                // When slice goes over bottom middle, need to add both, left and right
+                // outer side. Additionally, when we cross right hand edge, create sharp
+                // edge. Outer shape/wall:
+                //
+                //            -------
+                //          /    ^    \
+                //    4)   /   /   \   \  1)
+                //        /   /     \   \
+                //       /   /       \   \
+                // (c)=> ====         ==== <=(d)
+                //       \   \       /   /
+                //        \   \<=(a)/   /
+                //         \   \   /   / <=(b)
+                //    3)    \    v    /  2)
+                //            -------
+                //
+                // (a) - inner side
+                // (b) - outer side
+                // (c) - left edge (sharp)
+                // (d) - right edge (sharp)
+                // 1..n - rendering order for startAngle = 0, when set to e.g 90, order
+                // changes clockwise (1->2, 2->3, n->1) and counterclockwise for
+                // negative startAngle
+                var out = [
+                        ['M',
+                    cx + (rx * cos(start2)),
+                    cy + (ry * sin(start2))]
+                    ];
+                out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, start2, end2, 0, 0));
+                // When shape is wide, it can cross both, (c) and (d) edges, when using
+                // startAngle
+                if (end > midEnd && start < midEnd) {
+                    // Go to outer side
+                    out.push([
+                        'L', cx + (rx * cos(end2)) + dx, cy + (ry * sin(end2)) + dy
+                    ]);
+                    // Curve to the right edge of the slice (d)
+                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end2, midEnd, dx, dy));
+                    // Go to the inner side
+                    out.push([
+                        'L', cx + (rx * cos(midEnd)), cy + (ry * sin(midEnd))
+                    ]);
+                    // Curve to the true end of the slice
+                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, midEnd, end, 0, 0));
+                    // Go to the outer side
+                    out.push([
+                        'L', cx + (rx * cos(end)) + dx, cy + (ry * sin(end)) + dy
+                    ]);
+                    // Go back to middle (d)
+                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end, midEnd, dx, dy));
+                    out.push([
+                        'L', cx + (rx * cos(midEnd)), cy + (ry * sin(midEnd))
+                    ]);
+                    // Go back to the left edge
+                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, midEnd, end2, 0, 0));
+                    // But shape can cross also only (c) edge:
                 }
-                return angle;
-            }
-            angleEnd = toZeroPIRange(angleEnd);
-            angleStart = toZeroPIRange(angleStart);
-            angleMid = toZeroPIRange(angleMid);
-            // *1e5 is to compensate pInt in zIndexSetter
-            var incPrecision = 1e5,
-                a1 = angleMid * incPrecision,
-                a2 = angleStart * incPrecision,
-                a3 = angleEnd * incPrecision;
-            return {
-                top: top,
-                // max angle is PI, so this is always higher
-                zTop: Math.PI * incPrecision + 1,
-                out: out,
-                zOut: Math.max(a1, a2, a3),
-                inn: inn,
-                zInn: Math.max(a1, a2, a3),
-                side1: side1,
-                zSide1: a3 * 0.99,
-                side2: side2,
-                zSide2: a2 * 0.99
+                else if (end > PI - a && start < PI - a) {
+                    // Go to outer side
+                    out.push([
+                        'L',
+                        cx + (rx * Math.cos(end2)) + dx,
+                        cy + (ry * Math.sin(end2)) + dy
+                    ]);
+                    // Curve to the true end of the slice
+                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end2, end, dx, dy));
+                    // Go to the inner side
+                    out.push([
+                        'L', cx + (rx * Math.cos(end)), cy + (ry * Math.sin(end))
+                    ]);
+                    // Go back to the artifical end2
+                    out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end, end2, 0, 0));
+                }
+                out.push([
+                    'L', cx + (rx * Math.cos(end2)) + dx, cy + (ry * Math.sin(end2)) + dy
+                ]);
+                out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end2, start2, dx, dy));
+                out.push(['Z']);
+                // INSIDE
+                var inn = [
+                        ['M',
+                    cx + (irx * cs),
+                    cy + (iry * ss)]
+                    ];
+                inn = inn.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, start, end, 0, 0));
+                inn.push([
+                    'L', cx + (irx * Math.cos(end)) + dx, cy + (iry * Math.sin(end)) + dy
+                ]);
+                inn = inn.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, end, start, dx, dy));
+                inn.push(['Z']);
+                // SIDES
+                var side1 = [
+                        ['M',
+                    cx + (rx * cs),
+                    cy + (ry * ss)],
+                        ['L',
+                    cx + (rx * cs) + dx,
+                    cy + (ry * ss) + dy],
+                        ['L',
+                    cx + (irx * cs) + dx,
+                    cy + (iry * ss) + dy],
+                        ['L',
+                    cx + (irx * cs),
+                    cy + (iry * ss)],
+                        ['Z']
+                    ];
+                var side2 = [
+                        ['M',
+                    cx + (rx * ce),
+                    cy + (ry * se)],
+                        ['L',
+                    cx + (rx * ce) + dx,
+                    cy + (ry * se) + dy],
+                        ['L',
+                    cx + (irx * ce) + dx,
+                    cy + (iry * se) + dy],
+                        ['L',
+                    cx + (irx * ce),
+                    cy + (iry * se)],
+                        ['Z']
+                    ];
+                // correction for changed position of vanishing point caused by alpha
+                // and beta rotations
+                var angleCorr = Math.atan2(dy, -dx),
+                    angleEnd = Math.abs(end + angleCorr),
+                    angleStart = Math.abs(start + angleCorr),
+                    angleMid = Math.abs((start + end) / 2 + angleCorr);
+                /**
+                 * set to 0-PI range
+                 * @private
+                 */
+                function toZeroPIRange(angle) {
+                    angle = angle % (2 * Math.PI);
+                    if (angle > Math.PI) {
+                        angle = 2 * Math.PI - angle;
+                    }
+                    return angle;
+                }
+                angleEnd = toZeroPIRange(angleEnd);
+                angleStart = toZeroPIRange(angleStart);
+                angleMid = toZeroPIRange(angleMid);
+                // *1e5 is to compensate pInt in zIndexSetter
+                var incPrecision = 1e5,
+                    a1 = angleMid * incPrecision,
+                    a2 = angleStart * incPrecision,
+                    a3 = angleEnd * incPrecision;
+                return {
+                    top: top,
+                    // max angle is PI, so this is always higher
+                    zTop: Math.PI * incPrecision + 1,
+                    out: out,
+                    zOut: Math.max(a1, a2, a3),
+                    inn: inn,
+                    zInn: Math.max(a1, a2, a3),
+                    side1: side1,
+                    zSide1: a3 * 0.99,
+                    side2: side2,
+                    zSide2: a2 * 0.99
+                };
             };
-        };
+            return SVGRenderer3D;
+        }(SVGRenderer));
         /* *
          *
          *  Default Export
          *
          * */
 
-        return SVGRenderer;
+        return SVGRenderer3D;
     });
-    _registerModule(_modules, 'Core/Axis/Tick3D.js', [_modules['Core/Utilities.js']], function (U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  Extenstion for 3d axes
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var addEvent = U.addEvent,
-            extend = U.extend,
-            wrap = U.wrap;
-        /* eslint-disable valid-jsdoc */
-        /**
-         * Tick with 3D support
-         * @private
-         * @class
-         */
-        var Tick3D = /** @class */ (function () {
-                function Tick3D() {
-                }
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                /**
-                 * @private
-                 */
-                Tick3D.compose = function (TickClass) {
-                    addEvent(TickClass, 'afterGetLabelPosition', Tick3D.onAfterGetLabelPosition);
-                var tickProto = TickClass.prototype;
-                wrap(tickProto, 'getMarkPath', Tick3D.wrapGetMarkPath);
-            };
-            /**
-             * @private
-             */
-            Tick3D.onAfterGetLabelPosition = function (e) {
-                var axis3D = this.axis.axis3D;
-                if (axis3D) {
-                    extend(e.pos, axis3D.fix3dPosition(e.pos));
-                }
-            };
-            /**
-             * @private
-             */
-            Tick3D.wrapGetMarkPath = function (proceed) {
-                var chart = this.axis.chart;
-                var axis3D = this.axis.axis3D;
-                var path = proceed.apply(this,
-                    [].slice.call(arguments, 1));
-                if (axis3D) {
-                    var start = path[0];
-                    var end = path[1];
-                    if (start[0] === 'M' && end[0] === 'L') {
-                        var pArr = [
-                                axis3D.fix3dPosition({ x: start[1],
-                            y: start[2],
-                            z: 0 }),
-                                axis3D.fix3dPosition({ x: end[1],
-                            y: end[2],
-                            z: 0 })
-                            ];
-                        return this.axis.chart.renderer.toLineSegments(pArr);
-                    }
-                }
-                return path;
-            };
-            return Tick3D;
-        }());
-
-        return Tick3D;
-    });
-    _registerModule(_modules, 'Core/Axis/Axis3D.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Axis/Tick3D.js'], _modules['Core/Utilities.js']], function (H, Math3D, Tick, Tick3D, U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  Extenstion for 3d axes
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var perspective = Math3D.perspective,
-            perspective3D = Math3D.perspective3D,
-            shapeArea = Math3D.shapeArea;
-        var addEvent = U.addEvent,
-            merge = U.merge,
-            pick = U.pick,
-            wrap = U.wrap;
-        var deg2rad = H.deg2rad;
-        /* eslint-disable valid-jsdoc */
-        /**
-         * Adds 3D support to axes.
-         * @private
-         * @class
-         */
-        var Axis3DAdditions = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                /**
-                 * @private
-                 */
-                function Axis3DAdditions(axis) {
-                    this.axis = axis;
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /**
-             * @private
-             * @param {Highcharts.Axis} axis
-             * Related axis.
-             * @param {Highcharts.Position3DObject} pos
-             * Position to fix.
-             * @param {boolean} [isTitle]
-             * Whether this is a title position.
-             * @return {Highcharts.Position3DObject}
-             * Fixed position.
-             */
-            Axis3DAdditions.prototype.fix3dPosition = function (pos, isTitle) {
-                var axis3D = this;
-                var axis = axis3D.axis;
-                var chart = axis.chart;
-                // Do not do this if the chart is not 3D
-                if (axis.coll === 'colorAxis' ||
-                    !chart.chart3d ||
-                    !chart.is3d()) {
-                    return pos;
-                }
-                var alpha = deg2rad * chart.options.chart.options3d.alpha,
-                    beta = deg2rad * chart.options.chart.options3d.beta,
-                    positionMode = pick(isTitle && axis.options.title.position3d,
-                    axis.options.labels.position3d),
-                    skew = pick(isTitle && axis.options.title.skew3d,
-                    axis.options.labels.skew3d),
-                    frame = chart.chart3d.frame3d,
-                    plotLeft = chart.plotLeft,
-                    plotRight = chart.plotWidth + plotLeft,
-                    plotTop = chart.plotTop,
-                    plotBottom = chart.plotHeight + plotTop, 
-                    // Indicates that we are labelling an X or Z axis on the "back" of
-                    // the chart
-                    reverseFlap = false,
-                    offsetX = 0,
-                    offsetY = 0,
-                    vecX,
-                    vecY = { x: 0,
-                    y: 1,
-                    z: 0 };
-                pos = axis.axis3D.swapZ({ x: pos.x, y: pos.y, z: 0 });
-                if (axis.isZAxis) { // Z Axis
-                    if (axis.opposite) {
-                        if (frame.axes.z.top === null) {
-                            return {};
-                        }
-                        offsetY = pos.y - plotTop;
-                        pos.x = frame.axes.z.top.x;
-                        pos.y = frame.axes.z.top.y;
-                        vecX = frame.axes.z.top.xDir;
-                        reverseFlap = !frame.top.frontFacing;
-                    }
-                    else {
-                        if (frame.axes.z.bottom === null) {
-                            return {};
-                        }
-                        offsetY = pos.y - plotBottom;
-                        pos.x = frame.axes.z.bottom.x;
-                        pos.y = frame.axes.z.bottom.y;
-                        vecX = frame.axes.z.bottom.xDir;
-                        reverseFlap = !frame.bottom.frontFacing;
-                    }
-                }
-                else if (axis.horiz) { // X Axis
-                    if (axis.opposite) {
-                        if (frame.axes.x.top === null) {
-                            return {};
-                        }
-                        offsetY = pos.y - plotTop;
-                        pos.y = frame.axes.x.top.y;
-                        pos.z = frame.axes.x.top.z;
-                        vecX = frame.axes.x.top.xDir;
-                        reverseFlap = !frame.top.frontFacing;
-                    }
-                    else {
-                        if (frame.axes.x.bottom === null) {
-                            return {};
-                        }
-                        offsetY = pos.y - plotBottom;
-                        pos.y = frame.axes.x.bottom.y;
-                        pos.z = frame.axes.x.bottom.z;
-                        vecX = frame.axes.x.bottom.xDir;
-                        reverseFlap = !frame.bottom.frontFacing;
-                    }
-                }
-                else { // Y Axis
-                    if (axis.opposite) {
-                        if (frame.axes.y.right === null) {
-                            return {};
-                        }
-                        offsetX = pos.x - plotRight;
-                        pos.x = frame.axes.y.right.x;
-                        pos.z = frame.axes.y.right.z;
-                        vecX = frame.axes.y.right.xDir;
-                        // Rotate 90º on opposite edge
-                        vecX = { x: vecX.z, y: vecX.y, z: -vecX.x };
-                    }
-                    else {
-                        if (frame.axes.y.left === null) {
-                            return {};
-                        }
-                        offsetX = pos.x - plotLeft;
-                        pos.x = frame.axes.y.left.x;
-                        pos.z = frame.axes.y.left.z;
-                        vecX = frame.axes.y.left.xDir;
-                    }
-                }
-                if (positionMode === 'chart') {
-                    // Labels preserve their direction relative to the chart
-                    // nothing to do
-                }
-                else if (positionMode === 'flap') {
-                    // Labels are rotated around the axis direction to face the screen
-                    if (!axis.horiz) { // Y Axis
-                        vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
-                    }
-                    else { // X and Z Axis
-                        var sin = Math.sin(alpha);
-                        var cos = Math.cos(alpha);
-                        if (axis.opposite) {
-                            sin = -sin;
-                        }
-                        if (reverseFlap) {
-                            sin = -sin;
-                        }
-                        vecY = { x: vecX.z * sin, y: cos, z: -vecX.x * sin };
-                    }
-                }
-                else if (positionMode === 'ortho') {
-                    // Labels will be rotated to be ortogonal to the axis
-                    if (!axis.horiz) { // Y Axis
-                        vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
-                    }
-                    else { // X and Z Axis
-                        var sina = Math.sin(alpha);
-                        var cosa = Math.cos(alpha);
-                        var sinb = Math.sin(beta);
-                        var cosb = Math.cos(beta);
-                        var vecZ = { x: sinb * cosa,
-                            y: -sina,
-                            z: -cosa * cosb };
-                        vecY = {
-                            x: vecX.y * vecZ.z - vecX.z * vecZ.y,
-                            y: vecX.z * vecZ.x - vecX.x * vecZ.z,
-                            z: vecX.x * vecZ.y - vecX.y * vecZ.x
-                        };
-                        var scale = 1 / Math.sqrt(vecY.x * vecY.x + vecY.y * vecY.y + vecY.z * vecY.z);
-                        if (reverseFlap) {
-                            scale = -scale;
-                        }
-                        vecY = { x: scale * vecY.x, y: scale * vecY.y, z: scale * vecY.z };
-                    }
-                }
-                else { // positionMode  == 'offset'
-                    // Labels will be skewd to maintain vertical / horizontal offsets
-                    // from axis
-                    if (!axis.horiz) { // Y Axis
-                        vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
-                    }
-                    else { // X and Z Axis
-                        vecY = {
-                            x: Math.sin(beta) * Math.sin(alpha),
-                            y: Math.cos(alpha),
-                            z: -Math.cos(beta) * Math.sin(alpha)
-                        };
-                    }
-                }
-                pos.x += offsetX * vecX.x + offsetY * vecY.x;
-                pos.y += offsetX * vecX.y + offsetY * vecY.y;
-                pos.z += offsetX * vecX.z + offsetY * vecY.z;
-                var projected = perspective([pos],
-                    axis.chart)[0];
-                if (skew) {
-                    // Check if the label text would be mirrored
-                    var isMirrored = shapeArea(perspective([
-                            pos,
-                            { x: pos.x + vecX.x,
-                        y: pos.y + vecX.y,
-                        z: pos.z + vecX.z },
-                            { x: pos.x + vecY.x,
-                        y: pos.y + vecY.y,
-                        z: pos.z + vecY.z }
-                        ],
-                        axis.chart)) < 0;
-                    if (isMirrored) {
-                        vecX = { x: -vecX.x, y: -vecX.y, z: -vecX.z };
-                    }
-                    var pointsProjected = perspective([
-                            { x: pos.x,
-                        y: pos.y,
-                        z: pos.z },
-                            { x: pos.x + vecX.x,
-                        y: pos.y + vecX.y,
-                        z: pos.z + vecX.z },
-                            { x: pos.x + vecY.x,
-                        y: pos.y + vecY.y,
-                        z: pos.z + vecY.z }
-                        ],
-                        axis.chart);
-                    projected.matrix = [
-                        pointsProjected[1].x - pointsProjected[0].x,
-                        pointsProjected[1].y - pointsProjected[0].y,
-                        pointsProjected[2].x - pointsProjected[0].x,
-                        pointsProjected[2].y - pointsProjected[0].y,
-                        projected.x,
-                        projected.y
-                    ];
-                    projected.matrix[4] -= projected.x * projected.matrix[0] +
-                        projected.y * projected.matrix[2];
-                    projected.matrix[5] -= projected.x * projected.matrix[1] +
-                        projected.y * projected.matrix[3];
-                }
-                return projected;
-            };
-            /**
-             * @private
-             */
-            Axis3DAdditions.prototype.swapZ = function (p, insidePlotArea) {
-                var axis = this.axis;
-                if (axis.isZAxis) {
-                    var plotLeft = insidePlotArea ? 0 : axis.chart.plotLeft;
-                    return {
-                        x: plotLeft + p.z,
-                        y: p.y,
-                        z: p.x - plotLeft
-                    };
-                }
-                return p;
-            };
-            return Axis3DAdditions;
-        }());
-        /**
-         * Axis with 3D support.
-         * @private
-         * @class
-         */
-        var Axis3D = /** @class */ (function () {
-                function Axis3D() {
-                }
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                /**
-                 * Extends axis class with 3D support.
-                 * @private
-                 */
-                Axis3D.compose = function (AxisClass) {
-                    merge(true, AxisClass.defaultOptions, Axis3D.defaultOptions);
-                AxisClass.keepProps.push('axis3D');
-                addEvent(AxisClass, 'init', Axis3D.onInit);
-                addEvent(AxisClass, 'afterSetOptions', Axis3D.onAfterSetOptions);
-                addEvent(AxisClass, 'drawCrosshair', Axis3D.onDrawCrosshair);
-                addEvent(AxisClass, 'destroy', Axis3D.onDestroy);
-                var axisProto = AxisClass.prototype;
-                wrap(axisProto, 'getLinePath', Axis3D.wrapGetLinePath);
-                wrap(axisProto, 'getPlotBandPath', Axis3D.wrapGetPlotBandPath);
-                wrap(axisProto, 'getPlotLinePath', Axis3D.wrapGetPlotLinePath);
-                wrap(axisProto, 'getSlotWidth', Axis3D.wrapGetSlotWidth);
-                wrap(axisProto, 'getTitlePosition', Axis3D.wrapGetTitlePosition);
-                Tick3D.compose(Tick);
-            };
-            /**
-             * @private
-             */
-            Axis3D.onAfterSetOptions = function () {
-                var axis = this;
-                var chart = axis.chart;
-                var options = axis.options;
-                if (chart.is3d && chart.is3d() && axis.coll !== 'colorAxis') {
-                    options.tickWidth = pick(options.tickWidth, 0);
-                    options.gridLineWidth = pick(options.gridLineWidth, 1);
-                }
-            };
-            /**
-             * @private
-             */
-            Axis3D.onDestroy = function () {
-                ['backFrame', 'bottomFrame', 'sideFrame'].forEach(function (prop) {
-                    if (this[prop]) {
-                        this[prop] = this[prop].destroy();
-                    }
-                }, this);
-            };
-            /**
-             * @private
-             */
-            Axis3D.onDrawCrosshair = function (e) {
-                var axis = this;
-                if (axis.chart.is3d() &&
-                    axis.coll !== 'colorAxis') {
-                    if (e.point) {
-                        e.point.crosshairPos = axis.isXAxis ?
-                            e.point.axisXpos :
-                            axis.len - e.point.axisYpos;
-                    }
-                }
-            };
-            /**
-             * @private
-             */
-            Axis3D.onInit = function () {
-                var axis = this;
-                if (!axis.axis3D) {
-                    axis.axis3D = new Axis3DAdditions(axis);
-                }
-            };
-            /**
-             * Do not draw axislines in 3D.
-             * @private
-             */
-            Axis3D.wrapGetLinePath = function (proceed) {
-                var axis = this;
-                // Do not do this if the chart is not 3D
-                if (!axis.chart.is3d() || axis.coll === 'colorAxis') {
-                    return proceed.apply(axis, [].slice.call(arguments, 1));
-                }
-                return [];
-            };
-            /**
-             * @private
-             */
-            Axis3D.wrapGetPlotBandPath = function (proceed) {
-                // Do not do this if the chart is not 3D
-                if (!this.chart.is3d() || this.coll === 'colorAxis') {
-                    return proceed.apply(this, [].slice.call(arguments, 1));
-                }
-                var args = arguments,
-                    from = args[1],
-                    to = args[2],
-                    path = [],
-                    fromPath = this.getPlotLinePath({ value: from }),
-                    toPath = this.getPlotLinePath({ value: to });
-                if (fromPath && toPath) {
-                    for (var i = 0; i < fromPath.length; i += 2) {
-                        var fromStartSeg = fromPath[i],
-                            fromEndSeg = fromPath[i + 1],
-                            toStartSeg = toPath[i],
-                            toEndSeg = toPath[i + 1];
-                        if (fromStartSeg[0] === 'M' &&
-                            fromEndSeg[0] === 'L' &&
-                            toStartSeg[0] === 'M' &&
-                            toEndSeg[0] === 'L') {
-                            path.push(fromStartSeg, fromEndSeg, toEndSeg, 
-                            // lineTo instead of moveTo
-                            ['L', toStartSeg[1], toStartSeg[2]], ['Z']);
-                        }
-                    }
-                }
-                return path;
-            };
-            /**
-             * @private
-             */
-            Axis3D.wrapGetPlotLinePath = function (proceed) {
-                var axis = this;
-                var axis3D = axis.axis3D;
-                var chart = axis.chart;
-                var path = proceed.apply(axis,
-                    [].slice.call(arguments, 1));
-                // Do not do this if the chart is not 3D
-                if (axis.coll === 'colorAxis' ||
-                    !chart.chart3d ||
-                    !chart.is3d()) {
-                    return path;
-                }
-                if (path === null) {
-                    return path;
-                }
-                var options3d = chart.options.chart.options3d,
-                    d = axis.isZAxis ? chart.plotWidth : options3d.depth,
-                    frame = chart.chart3d.frame3d,
-                    startSegment = path[0],
-                    endSegment = path[1],
-                    pArr,
-                    pathSegments = [];
-                if (startSegment[0] === 'M' && endSegment[0] === 'L') {
-                    pArr = [
-                        axis3D.swapZ({ x: startSegment[1], y: startSegment[2], z: 0 }),
-                        axis3D.swapZ({ x: startSegment[1], y: startSegment[2], z: d }),
-                        axis3D.swapZ({ x: endSegment[1], y: endSegment[2], z: 0 }),
-                        axis3D.swapZ({ x: endSegment[1], y: endSegment[2], z: d })
-                    ];
-                    if (!this.horiz) { // Y-Axis
-                        if (frame.front.visible) {
-                            pathSegments.push(pArr[0], pArr[2]);
-                        }
-                        if (frame.back.visible) {
-                            pathSegments.push(pArr[1], pArr[3]);
-                        }
-                        if (frame.left.visible) {
-                            pathSegments.push(pArr[0], pArr[1]);
-                        }
-                        if (frame.right.visible) {
-                            pathSegments.push(pArr[2], pArr[3]);
-                        }
-                    }
-                    else if (this.isZAxis) { // Z-Axis
-                        if (frame.left.visible) {
-                            pathSegments.push(pArr[0], pArr[2]);
-                        }
-                        if (frame.right.visible) {
-                            pathSegments.push(pArr[1], pArr[3]);
-                        }
-                        if (frame.top.visible) {
-                            pathSegments.push(pArr[0], pArr[1]);
-                        }
-                        if (frame.bottom.visible) {
-                            pathSegments.push(pArr[2], pArr[3]);
-                        }
-                    }
-                    else { // X-Axis
-                        if (frame.front.visible) {
-                            pathSegments.push(pArr[0], pArr[2]);
-                        }
-                        if (frame.back.visible) {
-                            pathSegments.push(pArr[1], pArr[3]);
-                        }
-                        if (frame.top.visible) {
-                            pathSegments.push(pArr[0], pArr[1]);
-                        }
-                        if (frame.bottom.visible) {
-                            pathSegments.push(pArr[2], pArr[3]);
-                        }
-                    }
-                    pathSegments = perspective(pathSegments, this.chart, false);
-                }
-                return chart.renderer.toLineSegments(pathSegments);
-            };
-            /**
-             * Wrap getSlotWidth function to calculate individual width value for each
-             * slot (#8042).
-             * @private
-             */
-            Axis3D.wrapGetSlotWidth = function (proceed, tick) {
-                var axis = this;
-                var chart = axis.chart;
-                var ticks = axis.ticks;
-                var gridGroup = axis.gridGroup;
-                if (axis.categories &&
-                    chart.frameShapes &&
-                    chart.is3d() &&
-                    gridGroup &&
-                    tick &&
-                    tick.label) {
-                    var firstGridLine = gridGroup.element.childNodes[0].getBBox(),
-                        frame3DLeft = chart.frameShapes.left.getBBox(),
-                        options3d = chart.options.chart.options3d,
-                        origin_1 = {
-                            x: chart.plotWidth / 2,
-                            y: chart.plotHeight / 2,
-                            z: options3d.depth / 2,
-                            vd: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0)
-                        },
-                        labelPos = void 0,
-                        prevLabelPos = void 0,
-                        nextLabelPos = void 0,
-                        slotWidth = void 0,
-                        tickId = tick.pos,
-                        prevTick = ticks[tickId - 1],
-                        nextTick = ticks[tickId + 1];
-                    // Check whether the tick is not the first one and previous tick
-                    // exists, then calculate position of previous label.
-                    if (tickId !== 0 && prevTick && prevTick.label && prevTick.label.xy) {
-                        prevLabelPos = perspective3D({
-                            x: prevTick.label.xy.x,
-                            y: prevTick.label.xy.y,
-                            z: null
-                        }, origin_1, origin_1.vd);
-                    }
-                    // If next label position is defined, then recalculate its position
-                    // basing on the perspective.
-                    if (nextTick && nextTick.label && nextTick.label.xy) {
-                        nextLabelPos = perspective3D({
-                            x: nextTick.label.xy.x,
-                            y: nextTick.label.xy.y,
-                            z: null
-                        }, origin_1, origin_1.vd);
-                    }
-                    labelPos = {
-                        x: tick.label.xy.x,
-                        y: tick.label.xy.y,
-                        z: null
-                    };
-                    labelPos = perspective3D(labelPos, origin_1, origin_1.vd);
-                    // If tick is first one, check whether next label position is
-                    // already calculated, then return difference between the first and
-                    // the second label. If there is no next label position calculated,
-                    // return the difference between the first grid line and left 3d
-                    // frame.
-                    slotWidth = Math.abs(prevLabelPos ?
-                        labelPos.x - prevLabelPos.x : nextLabelPos ?
-                        nextLabelPos.x - labelPos.x :
-                        firstGridLine.x - frame3DLeft.x);
-                    return slotWidth;
-                }
-                return proceed.apply(axis, [].slice.call(arguments, 1));
-            };
-            /**
-             * @private
-             */
-            Axis3D.wrapGetTitlePosition = function (proceed) {
-                var pos = proceed.apply(this,
-                    [].slice.call(arguments, 1));
-                return this.axis3D ?
-                    this.axis3D.fix3dPosition(pos, true) :
-                    pos;
-            };
-            /* *
-             *
-             *  Static Properties
-             *
-             * */
-            /**
-             * @optionparent xAxis
-             */
-            Axis3D.defaultOptions = {
-                labels: {
-                    /**
-                     * Defines how the labels are be repositioned according to the 3D
-                     * chart orientation.
-                     *
-                     * - `'offset'`: Maintain a fixed horizontal/vertical distance from
-                     *   the tick marks, despite the chart orientation. This is the
-                     *   backwards compatible behavior, and causes skewing of X and Z
-                     *   axes.
-                     *
-                     * - `'chart'`: Preserve 3D position relative to the chart. This
-                     *   looks nice, but hard to read if the text isn't forward-facing.
-                     *
-                     * - `'flap'`: Rotated text along the axis to compensate for the
-                     *   chart orientation. This tries to maintain text as legible as
-                     *   possible on all orientations.
-                     *
-                     * - `'ortho'`: Rotated text along the axis direction so that the
-                     *   labels are orthogonal to the axis. This is very similar to
-                     *   `'flap'`, but prevents skewing the labels (X and Y scaling are
-                     *   still present).
-                     *
-                     * @sample highcharts/3d/skewed-labels/
-                     *         Skewed labels
-                     *
-                     * @since      5.0.15
-                     * @validvalue ['offset', 'chart', 'flap', 'ortho']
-                     * @product    highcharts
-                     * @requires   highcharts-3d
-                     */
-                    position3d: 'offset',
-                    /**
-                     * If enabled, the axis labels will skewed to follow the
-                     * perspective.
-                     *
-                     * This will fix overlapping labels and titles, but texts become
-                     * less legible due to the distortion.
-                     *
-                     * The final appearance depends heavily on `labels.position3d`.
-                     *
-                     * @sample highcharts/3d/skewed-labels/
-                     *         Skewed labels
-                     *
-                     * @since    5.0.15
-                     * @product  highcharts
-                     * @requires highcharts-3d
-                     */
-                    skew3d: false
-                },
-                title: {
-                    /**
-                     * Defines how the title is repositioned according to the 3D chart
-                     * orientation.
-                     *
-                     * - `'offset'`: Maintain a fixed horizontal/vertical distance from
-                     *   the tick marks, despite the chart orientation. This is the
-                     *   backwards compatible behavior, and causes skewing of X and Z
-                     *   axes.
-                     *
-                     * - `'chart'`: Preserve 3D position relative to the chart. This
-                     *   looks nice, but hard to read if the text isn't forward-facing.
-                     *
-                     * - `'flap'`: Rotated text along the axis to compensate for the
-                     *   chart orientation. This tries to maintain text as legible as
-                     *   possible on all orientations.
-                     *
-                     * - `'ortho'`: Rotated text along the axis direction so that the
-                     *   labels are orthogonal to the axis. This is very similar to
-                     *   `'flap'`, but prevents skewing the labels (X and Y scaling are
-                     *   still present).
-                     *
-                     * - `undefined`: Will use the config from `labels.position3d`
-                     *
-                     * @sample highcharts/3d/skewed-labels/
-                     *         Skewed labels
-                     *
-                     * @type     {"offset"|"chart"|"flap"|"ortho"|null}
-                     * @since    5.0.15
-                     * @product  highcharts
-                     * @requires highcharts-3d
-                     */
-                    position3d: null,
-                    /**
-                     * If enabled, the axis title will skewed to follow the perspective.
-                     *
-                     * This will fix overlapping labels and titles, but texts become
-                     * less legible due to the distortion.
-                     *
-                     * The final appearance depends heavily on `title.position3d`.
-                     *
-                     * A `null` value will use the config from `labels.skew3d`.
-                     *
-                     * @sample highcharts/3d/skewed-labels/
-                     *         Skewed labels
-                     *
-                     * @type     {boolean|null}
-                     * @since    5.0.15
-                     * @product  highcharts
-                     * @requires highcharts-3d
-                     */
-                    skew3d: null
-                }
-            };
-            return Axis3D;
-        }());
-
-        return Axis3D;
-    });
-    _registerModule(_modules, 'Core/Axis/ZAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var __extends = (this && this.__extends) || (function () {
-                var extendStatics = function (d,
-            b) {
-                    extendStatics = Object.setPrototypeOf ||
-                        ({ __proto__: [] } instanceof Array && function (d,
-            b) { d.__proto__ = b; }) ||
-                        function (d,
-            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-                return extendStatics(d, b);
-            };
-            return function (d, b) {
-                extendStatics(d, b);
-                function __() { this.constructor = d; }
-                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-            };
-        })();
-        var addEvent = U.addEvent,
-            merge = U.merge,
-            pick = U.pick,
-            splat = U.splat;
-        /* eslint-disable valid-jsdoc */
-        /**
-         * 3D chart with support of z coordinates.
-         * @private
-         * @class
-         */
-        var ZChart = /** @class */ (function () {
-                function ZChart() {
-                }
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                ZChart.compose = function (ChartClass) {
-                    addEvent(ChartClass, 'afterGetAxes', ZChart.onAfterGetAxes);
-                var chartProto = ChartClass.prototype;
-                chartProto.addZAxis = ZChart.wrapAddZAxis;
-                chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
-                chartProto.collectionsWithUpdate.push('zAxis');
-            };
-            /**
-             * Get the Z axis in addition to the default X and Y.
-             * @private
-             */
-            ZChart.onAfterGetAxes = function () {
-                var chart = this;
-                var options = this.options;
-                var zAxisOptions = options.zAxis = splat(options.zAxis || {});
-                if (!chart.is3d()) {
-                    return;
-                }
-                chart.zAxis = [];
-                zAxisOptions.forEach(function (axisOptions, i) {
-                    axisOptions.index = i;
-                    // Z-Axis is shown horizontally, so it's kind of a X-Axis
-                    axisOptions.isX = true;
-                    chart
-                        .addZAxis(axisOptions)
-                        .setScale();
-                });
-            };
-            /**
-             * @private
-             */
-            ZChart.wrapAddZAxis = function (options) {
-                return new ZAxis(this, options);
-            };
-            return ZChart;
-        }());
-        /**
-         * 3D axis for z coordinates.
-         */
-        var ZAxis = /** @class */ (function (_super) {
-                __extends(ZAxis, _super);
-            /* *
-             *
-             *  Constructors
-             *
-             * */
-            function ZAxis(chart, userOptions) {
-                var _this = _super.call(this,
-                    chart,
-                    userOptions) || this;
-                _this.isZAxis = true;
-                return _this;
-            }
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            ZAxis.prototype.getSeriesExtremes = function () {
-                var axis = this;
-                var chart = axis.chart;
-                axis.hasVisibleSeries = false;
-                // Reset properties in case we're redrawing (#3353)
-                axis.dataMin = axis.dataMax = axis.ignoreMinPadding = axis.ignoreMaxPadding = void 0;
-                if (axis.stacking) {
-                    axis.stacking.buildStacks();
-                }
-                // loop through this axis' series
-                axis.series.forEach(function (series) {
-                    if (series.visible ||
-                        !chart.options.chart.ignoreHiddenSeries) {
-                        var seriesOptions = series.options,
-                            zData = void 0,
-                            threshold = seriesOptions.threshold;
-                        axis.hasVisibleSeries = true;
-                        // Validate threshold in logarithmic axes
-                        if (axis.positiveValuesOnly && threshold <= 0) {
-                            threshold = void 0;
-                        }
-                        zData = series.zData;
-                        if (zData.length) {
-                            axis.dataMin = Math.min(pick(axis.dataMin, zData[0]), Math.min.apply(null, zData));
-                            axis.dataMax = Math.max(pick(axis.dataMax, zData[0]), Math.max.apply(null, zData));
-                        }
-                    }
-                });
-            };
-            /**
-             * @private
-             */
-            ZAxis.prototype.setAxisSize = function () {
-                var axis = this;
-                var chart = axis.chart;
-                _super.prototype.setAxisSize.call(this);
-                axis.width = axis.len = (chart.options.chart.options3d &&
-                    chart.options.chart.options3d.depth) || 0;
-                axis.right = chart.chartWidth - axis.width - axis.left;
-            };
-            /**
-             * @private
-             */
-            ZAxis.prototype.setOptions = function (userOptions) {
-                userOptions = merge({
-                    offset: 0,
-                    lineWidth: 0
-                }, userOptions);
-                // #14793, this used to be set on the prototype
-                this.isZAxis = true;
-                _super.prototype.setOptions.call(this, userOptions);
-                this.coll = 'zAxis';
-            };
-            /* *
-             *
-             *  Static Properties
-             *
-             * */
-            ZAxis.ZChartComposition = ZChart;
-            return ZAxis;
-        }(Axis));
-
-        return ZAxis;
-    });
-    _registerModule(_modules, 'Core/Chart/Chart3D.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/Axis3D.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Animation/Fx.js'], _modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/ZAxis.js']], function (Axis, Axis3D, Chart, Fx, H, Math3D, O, U, ZAxis) {
+    _registerModule(_modules, 'Core/Chart/Chart3D.js', [_modules['Core/Color/Color.js'], _modules['Extensions/Math3D.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Color, Math3D, D, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2241,9 +1395,10 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var color = Color.parse;
         var perspective = Math3D.perspective,
             shapeArea3D = Math3D.shapeArea3D;
-        var genericDefaultOptions = O.defaultOptions;
+        var genericDefaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             isArray = U.isArray,
             merge = U.merge,
@@ -2267,9 +1422,6 @@
                      *  Constructors
                      *
                      * */
-                    /**
-                     * @private
-                     */
                     function Composition(chart) {
                         this.frame3d = void 0;
                     this.chart = chart;
@@ -2330,7 +1482,11 @@
                         { x: xp, y: ym, z: zp },
                         { x: xp, y: yp, z: zp },
                         { x: xm, y: yp, z: zp }
-                    ]), defaultShowBottom = false, defaultShowTop = false, defaultShowLeft = false, defaultShowRight = false, defaultShowFront = false, defaultShowBack = true;
+                    ]), defaultShowFront = false, defaultShowBack = true;
+                    var defaultShowBottom = false,
+                        defaultShowTop = false,
+                        defaultShowLeft = false,
+                        defaultShowRight = false;
                     // The 'default' criteria to visible faces of the frame is looking
                     // up every axis to decide whenever the left/right//top/bottom sides
                     // of the frame will be shown
@@ -2357,8 +1513,7 @@
                         }
                     });
                     var getFaceOptions = function (sources, faceOrientation, defaultVisible) {
-                            var faceAttrs = ['size', 'color', 'visible'];
-                        var options = {};
+                            var faceAttrs = ['size', 'color', 'visible'], options = {};
                         for (var i = 0; i < faceAttrs.length; i++) {
                             var attr = faceAttrs[i];
                             for (var j = 0; j < sources.length; j++) {
@@ -2554,10 +1709,10 @@
                             if (edges.length === 1) {
                                 return edges[0];
                             }
-                            var best = 0,
-                                projections = perspective(edges,
+                            var projections = perspective(edges,
                                 chart,
                                 false);
+                            var best = 0;
                             for (var i = 1; i < projections.length; i++) {
                                 if (mult * projections[i][axis] >
                                     mult * projections[best][axis]) {
@@ -2650,8 +1805,8 @@
                             maxX: -Number.MAX_VALUE,
                             minY: Number.MAX_VALUE,
                             maxY: -Number.MAX_VALUE
-                        },
-                        corners,
+                        };
+                    var corners,
                         scale = 1;
                     // Top left corners:
                     corners = [{
@@ -2890,6 +2045,7 @@
              *  Functions
              *
              * */
+            /* eslint-disable no-invalid-this, valid-jsdoc */
             /**
              * @private
              */
@@ -2916,8 +2072,8 @@
                     var interpolated;
                     if (this.pos < 1 &&
                         (isArray(this.start) || isArray(this.end))) {
-                        var start = this.start || [1, 0, 0, 1, 0, 0];
-                        var end = this.end || [1, 0, 0, 1, 0, 0];
+                        var start = this.start || [1, 0, 0, 1, 0, 0],
+                            end = this.end || [1, 0, 0, 1, 0, 0];
                         interpolated = [];
                         for (var i = 0; i < 6; i++) {
                             interpolated.push(this.pos * end[i] + (1 - this.pos) * start[i]);
@@ -2937,7 +2093,7 @@
                 addEvent(ChartClass, 'afterSetChartSize', onAfterSetChartSize);
                 addEvent(ChartClass, 'beforeRedraw', onBeforeRedraw);
                 addEvent(ChartClass, 'beforeRender', onBeforeRender);
-                wrap(H.Chart.prototype, 'isInsidePlot', wrapIsInsidePlot);
+                wrap(chartProto, 'isInsidePlot', wrapIsInsidePlot);
                 wrap(ChartClass, 'renderSeries', wrapRenderSeries);
                 wrap(ChartClass, 'setClassName', wrapSetClassName);
             }
@@ -2962,12 +2118,12 @@
                     this.is3d()) {
                     var chart = this,
                         renderer = chart.renderer,
-                        options3d = this.options.chart.options3d,
-                        frame = this.chart3d.get3dFrame(),
-                        xm = this.plotLeft,
-                        xp = this.plotLeft + this.plotWidth,
-                        ym = this.plotTop,
-                        yp = this.plotTop + this.plotHeight,
+                        options3d = chart.options.chart.options3d,
+                        frame = chart.chart3d.get3dFrame(),
+                        xm = chart.plotLeft,
+                        xp = chart.plotLeft + chart.plotWidth,
+                        ym = chart.plotTop,
+                        yp = chart.plotTop + chart.plotHeight,
                         zm = 0,
                         zp = options3d.depth,
                         xmm = xm - (frame.left.visible ? frame.left.size : 0),
@@ -2977,9 +2133,9 @@
                         zmm = zm - (frame.front.visible ? frame.front.size : 0),
                         zpp = zp + (frame.back.visible ? frame.back.size : 0),
                         verb = chart.hasRendered ? 'animate' : 'attr';
-                    this.chart3d.frame3d = frame;
-                    if (!this.frameShapes) {
-                        this.frameShapes = {
+                    chart.chart3d.frame3d = frame;
+                    if (!chart.frameShapes) {
+                        chart.frameShapes = {
                             bottom: renderer.polyhedron().add(),
                             top: renderer.polyhedron().add(),
                             left: renderer.polyhedron().add(),
@@ -2988,11 +2144,11 @@
                             front: renderer.polyhedron().add()
                         };
                     }
-                    this.frameShapes.bottom[verb]({
+                    chart.frameShapes.bottom[verb]({
                         'class': 'highcharts-3d-frame highcharts-3d-frame-bottom',
                         zIndex: frame.bottom.frontFacing ? -1000 : 1000,
                         faces: [{
-                                fill: H.color(frame.bottom.color).brighten(0.1).get(),
+                                fill: color(frame.bottom.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3013,7 +2169,7 @@
                                 enabled: frame.bottom.visible
                             },
                             {
-                                fill: H.color(frame.bottom.color).brighten(0.1).get(),
+                                fill: color(frame.bottom.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xm,
                                         y: yp,
@@ -3034,7 +2190,7 @@
                                 enabled: frame.bottom.visible
                             },
                             {
-                                fill: H.color(frame.bottom.color).brighten(-0.1).get(),
+                                fill: color(frame.bottom.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3055,7 +2211,7 @@
                                 enabled: frame.bottom.visible && !frame.left.visible
                             },
                             {
-                                fill: H.color(frame.bottom.color).brighten(-0.1).get(),
+                                fill: color(frame.bottom.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ypp,
@@ -3076,7 +2232,7 @@
                                 enabled: frame.bottom.visible && !frame.right.visible
                             },
                             {
-                                fill: H.color(frame.bottom.color).get(),
+                                fill: color(frame.bottom.color).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ypp,
@@ -3097,7 +2253,7 @@
                                 enabled: frame.bottom.visible && !frame.front.visible
                             },
                             {
-                                fill: H.color(frame.bottom.color).get(),
+                                fill: color(frame.bottom.color).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3118,11 +2274,11 @@
                                 enabled: frame.bottom.visible && !frame.back.visible
                             }]
                     });
-                    this.frameShapes.top[verb]({
+                    chart.frameShapes.top[verb]({
                         'class': 'highcharts-3d-frame highcharts-3d-frame-top',
                         zIndex: frame.top.frontFacing ? -1000 : 1000,
                         faces: [{
-                                fill: H.color(frame.top.color).brighten(0.1).get(),
+                                fill: color(frame.top.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ymm,
@@ -3143,7 +2299,7 @@
                                 enabled: frame.top.visible
                             },
                             {
-                                fill: H.color(frame.top.color).brighten(0.1).get(),
+                                fill: color(frame.top.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xm,
                                         y: ym,
@@ -3164,7 +2320,7 @@
                                 enabled: frame.top.visible
                             },
                             {
-                                fill: H.color(frame.top.color).brighten(-0.1).get(),
+                                fill: color(frame.top.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ymm,
@@ -3185,7 +2341,7 @@
                                 enabled: frame.top.visible && !frame.left.visible
                             },
                             {
-                                fill: H.color(frame.top.color).brighten(-0.1).get(),
+                                fill: color(frame.top.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ymm,
@@ -3206,7 +2362,7 @@
                                 enabled: frame.top.visible && !frame.right.visible
                             },
                             {
-                                fill: H.color(frame.top.color).get(),
+                                fill: color(frame.top.color).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ymm,
@@ -3227,7 +2383,7 @@
                                 enabled: frame.top.visible && !frame.front.visible
                             },
                             {
-                                fill: H.color(frame.top.color).get(),
+                                fill: color(frame.top.color).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ymm,
@@ -3248,11 +2404,11 @@
                                 enabled: frame.top.visible && !frame.back.visible
                             }]
                     });
-                    this.frameShapes.left[verb]({
+                    chart.frameShapes.left[verb]({
                         'class': 'highcharts-3d-frame highcharts-3d-frame-left',
                         zIndex: frame.left.frontFacing ? -1000 : 1000,
                         faces: [{
-                                fill: H.color(frame.left.color).brighten(0.1).get(),
+                                fill: color(frame.left.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3273,7 +2429,7 @@
                                 enabled: frame.left.visible && !frame.bottom.visible
                             },
                             {
-                                fill: H.color(frame.left.color).brighten(0.1).get(),
+                                fill: color(frame.left.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ymm,
@@ -3294,7 +2450,7 @@
                                 enabled: frame.left.visible && !frame.top.visible
                             },
                             {
-                                fill: H.color(frame.left.color).brighten(-0.1).get(),
+                                fill: color(frame.left.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3315,7 +2471,7 @@
                                 enabled: frame.left.visible
                             },
                             {
-                                fill: H.color(frame.left.color).brighten(-0.1).get(),
+                                fill: color(frame.left.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xm,
                                         y: ym,
@@ -3336,7 +2492,7 @@
                                 enabled: frame.left.visible
                             },
                             {
-                                fill: H.color(frame.left.color).get(),
+                                fill: color(frame.left.color).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3357,7 +2513,7 @@
                                 enabled: frame.left.visible && !frame.front.visible
                             },
                             {
-                                fill: H.color(frame.left.color).get(),
+                                fill: color(frame.left.color).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ymm,
@@ -3378,11 +2534,11 @@
                                 enabled: frame.left.visible && !frame.back.visible
                             }]
                     });
-                    this.frameShapes.right[verb]({
+                    chart.frameShapes.right[verb]({
                         'class': 'highcharts-3d-frame highcharts-3d-frame-right',
                         zIndex: frame.right.frontFacing ? -1000 : 1000,
                         faces: [{
-                                fill: H.color(frame.right.color).brighten(0.1).get(),
+                                fill: color(frame.right.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ypp,
@@ -3403,7 +2559,7 @@
                                 enabled: frame.right.visible && !frame.bottom.visible
                             },
                             {
-                                fill: H.color(frame.right.color).brighten(0.1).get(),
+                                fill: color(frame.right.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ymm,
@@ -3424,7 +2580,7 @@
                                 enabled: frame.right.visible && !frame.top.visible
                             },
                             {
-                                fill: H.color(frame.right.color).brighten(-0.1).get(),
+                                fill: color(frame.right.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xp,
                                         y: ym,
@@ -3445,7 +2601,7 @@
                                 enabled: frame.right.visible
                             },
                             {
-                                fill: H.color(frame.right.color).brighten(-0.1).get(),
+                                fill: color(frame.right.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ypp,
@@ -3466,7 +2622,7 @@
                                 enabled: frame.right.visible
                             },
                             {
-                                fill: H.color(frame.right.color).get(),
+                                fill: color(frame.right.color).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ymm,
@@ -3487,7 +2643,7 @@
                                 enabled: frame.right.visible && !frame.front.visible
                             },
                             {
-                                fill: H.color(frame.right.color).get(),
+                                fill: color(frame.right.color).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ypp,
@@ -3508,11 +2664,11 @@
                                 enabled: frame.right.visible && !frame.back.visible
                             }]
                     });
-                    this.frameShapes.back[verb]({
+                    chart.frameShapes.back[verb]({
                         'class': 'highcharts-3d-frame highcharts-3d-frame-back',
                         zIndex: frame.back.frontFacing ? -1000 : 1000,
                         faces: [{
-                                fill: H.color(frame.back.color).brighten(0.1).get(),
+                                fill: color(frame.back.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ypp,
@@ -3533,7 +2689,7 @@
                                 enabled: frame.back.visible && !frame.bottom.visible
                             },
                             {
-                                fill: H.color(frame.back.color).brighten(0.1).get(),
+                                fill: color(frame.back.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ymm,
@@ -3554,7 +2710,7 @@
                                 enabled: frame.back.visible && !frame.top.visible
                             },
                             {
-                                fill: H.color(frame.back.color).brighten(-0.1).get(),
+                                fill: color(frame.back.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3575,7 +2731,7 @@
                                 enabled: frame.back.visible && !frame.left.visible
                             },
                             {
-                                fill: H.color(frame.back.color).brighten(-0.1).get(),
+                                fill: color(frame.back.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ymm,
@@ -3596,7 +2752,7 @@
                                 enabled: frame.back.visible && !frame.right.visible
                             },
                             {
-                                fill: H.color(frame.back.color).get(),
+                                fill: color(frame.back.color).get(),
                                 vertexes: [{
                                         x: xm,
                                         y: ym,
@@ -3617,7 +2773,7 @@
                                 enabled: frame.back.visible
                             },
                             {
-                                fill: H.color(frame.back.color).get(),
+                                fill: color(frame.back.color).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3638,11 +2794,11 @@
                                 enabled: frame.back.visible
                             }]
                     });
-                    this.frameShapes.front[verb]({
+                    chart.frameShapes.front[verb]({
                         'class': 'highcharts-3d-frame highcharts-3d-frame-front',
                         zIndex: frame.front.frontFacing ? -1000 : 1000,
                         faces: [{
-                                fill: H.color(frame.front.color).brighten(0.1).get(),
+                                fill: color(frame.front.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ypp,
@@ -3663,7 +2819,7 @@
                                 enabled: frame.front.visible && !frame.bottom.visible
                             },
                             {
-                                fill: H.color(frame.front.color).brighten(0.1).get(),
+                                fill: color(frame.front.color).brighten(0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ymm,
@@ -3684,7 +2840,7 @@
                                 enabled: frame.front.visible && !frame.top.visible
                             },
                             {
-                                fill: H.color(frame.front.color).brighten(-0.1).get(),
+                                fill: color(frame.front.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xmm,
                                         y: ymm,
@@ -3705,7 +2861,7 @@
                                 enabled: frame.front.visible && !frame.left.visible
                             },
                             {
-                                fill: H.color(frame.front.color).brighten(-0.1).get(),
+                                fill: color(frame.front.color).brighten(-0.1).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ypp,
@@ -3726,7 +2882,7 @@
                                 enabled: frame.front.visible && !frame.right.visible
                             },
                             {
-                                fill: H.color(frame.front.color).get(),
+                                fill: color(frame.front.color).get(),
                                 vertexes: [{
                                         x: xp,
                                         y: ym,
@@ -3747,7 +2903,7 @@
                                 enabled: frame.front.visible
                             },
                             {
-                                fill: H.color(frame.front.color).get(),
+                                fill: color(frame.front.color).get(),
                                 vertexes: [{
                                         x: xpp,
                                         y: ypp,
@@ -3834,9 +2990,9 @@
                 var options = this.options;
                 if (this.is3d()) {
                     (options.series || []).forEach(function (s) {
-                        var type = s.type ||
+                        var type = (s.type ||
                                 options.chart.type ||
-                                options.chart.defaultSeriesType;
+                                options.chart.defaultSeriesType);
                         if (type === 'scatter') {
                             s.type = 'scatter3d';
                         }
@@ -3859,10 +3015,8 @@
                     var inverted = chart.inverted, clipBox = chart.clipBox, margin = chart.margin, x = inverted ? 'y' : 'x', y = inverted ? 'x' : 'y', w = inverted ? 'height' : 'width', h = inverted ? 'width' : 'height';
                     clipBox[x] = -(margin[3] || 0);
                     clipBox[y] = -(margin[0] || 0);
-                    clipBox[w] =
-                        chart.chartWidth + (margin[3] || 0) + (margin[1] || 0);
-                    clipBox[h] =
-                        chart.chartHeight + (margin[0] || 0) + (margin[2] || 0);
+                    clipBox[w] = chart.chartWidth + (margin[3] || 0) + (margin[1] || 0);
+                    clipBox[h] = chart.chartHeight + (margin[0] || 0) + (margin[2] || 0);
                     // Set scale, used later in perspective method():
                     // getScale uses perspective, so scale3d has to be reset.
                     chart.scale3d = 1;
@@ -3934,9 +3088,16 @@
                 }
             }
         })(Chart3D || (Chart3D = {}));
-        Chart3D.compose(Chart, Fx);
-        ZAxis.ZChartComposition.compose(Chart);
-        Axis3D.compose(Axis);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
         /**
          * Note: As of v5.0.12, `frame.left` or `frame.right` should be used instead.
          *
@@ -3968,9 +3129,918 @@
          * @product   highcharts
          * @apioption chart.options3d.frame.side.size
          */
-        ''; // adds doclets above to transpiled file
+        ''; // keeps doclets above in JS file
 
         return Chart3D;
+    });
+    _registerModule(_modules, 'Core/Axis/ZAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var addEvent = U.addEvent,
+            merge = U.merge,
+            pick = U.pick,
+            splat = U.splat;
+        /* eslint-disable valid-jsdoc */
+        /**
+         * 3D chart with support of z coordinates.
+         * @private
+         * @class
+         */
+        var ZChart = /** @class */ (function () {
+                function ZChart() {
+                }
+                /* *
+                 *
+                 *  Static Functions
+                 *
+                 * */
+                ZChart.compose = function (ChartClass) {
+                    addEvent(ChartClass, 'afterGetAxes', ZChart.onAfterGetAxes);
+                var chartProto = ChartClass.prototype;
+                chartProto.addZAxis = ZChart.wrapAddZAxis;
+                chartProto.collectionsWithInit.zAxis = [chartProto.addZAxis];
+                chartProto.collectionsWithUpdate.push('zAxis');
+            };
+            /**
+             * Get the Z axis in addition to the default X and Y.
+             * @private
+             */
+            ZChart.onAfterGetAxes = function () {
+                var chart = this;
+                var options = this.options;
+                var zAxisOptions = options.zAxis = splat(options.zAxis || {});
+                if (!chart.is3d()) {
+                    return;
+                }
+                chart.zAxis = [];
+                zAxisOptions.forEach(function (axisOptions, i) {
+                    axisOptions.index = i;
+                    // Z-Axis is shown horizontally, so it's kind of a X-Axis
+                    axisOptions.isX = true;
+                    chart
+                        .addZAxis(axisOptions)
+                        .setScale();
+                });
+            };
+            /**
+             * @private
+             */
+            ZChart.wrapAddZAxis = function (options) {
+                return new ZAxis(this, options);
+            };
+            return ZChart;
+        }());
+        /**
+         * 3D axis for z coordinates.
+         */
+        var ZAxis = /** @class */ (function (_super) {
+                __extends(ZAxis, _super);
+            /* *
+             *
+             *  Constructors
+             *
+             * */
+            function ZAxis(chart, userOptions) {
+                var _this = _super.call(this,
+                    chart,
+                    userOptions) || this;
+                _this.isZAxis = true;
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            ZAxis.prototype.getSeriesExtremes = function () {
+                var axis = this;
+                var chart = axis.chart;
+                axis.hasVisibleSeries = false;
+                // Reset properties in case we're redrawing (#3353)
+                axis.dataMin = axis.dataMax = axis.ignoreMinPadding = axis.ignoreMaxPadding = void 0;
+                if (axis.stacking) {
+                    axis.stacking.buildStacks();
+                }
+                // loop through this axis' series
+                axis.series.forEach(function (series) {
+                    if (series.visible ||
+                        !chart.options.chart.ignoreHiddenSeries) {
+                        var seriesOptions = series.options,
+                            zData = void 0,
+                            threshold = seriesOptions.threshold;
+                        axis.hasVisibleSeries = true;
+                        // Validate threshold in logarithmic axes
+                        if (axis.positiveValuesOnly && threshold <= 0) {
+                            threshold = void 0;
+                        }
+                        zData = series.zData;
+                        if (zData.length) {
+                            axis.dataMin = Math.min(pick(axis.dataMin, zData[0]), Math.min.apply(null, zData));
+                            axis.dataMax = Math.max(pick(axis.dataMax, zData[0]), Math.max.apply(null, zData));
+                        }
+                    }
+                });
+            };
+            /**
+             * @private
+             */
+            ZAxis.prototype.setAxisSize = function () {
+                var axis = this;
+                var chart = axis.chart;
+                _super.prototype.setAxisSize.call(this);
+                axis.width = axis.len = (chart.options.chart.options3d &&
+                    chart.options.chart.options3d.depth) || 0;
+                axis.right = chart.chartWidth - axis.width - axis.left;
+            };
+            /**
+             * @private
+             */
+            ZAxis.prototype.setOptions = function (userOptions) {
+                userOptions = merge({
+                    offset: 0,
+                    lineWidth: 0
+                }, userOptions);
+                // #14793, this used to be set on the prototype
+                this.isZAxis = true;
+                _super.prototype.setOptions.call(this, userOptions);
+                this.coll = 'zAxis';
+            };
+            /* *
+             *
+             *  Static Properties
+             *
+             * */
+            ZAxis.ZChartComposition = ZChart;
+            return ZAxis;
+        }(Axis));
+
+        return ZAxis;
+    });
+    _registerModule(_modules, 'Core/Axis/Tick3D.js', [_modules['Core/Utilities.js']], function (U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  Extenstion for 3d axes
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var addEvent = U.addEvent,
+            extend = U.extend,
+            wrap = U.wrap;
+        /* eslint-disable valid-jsdoc */
+        /**
+         * Tick with 3D support
+         * @private
+         * @class
+         */
+        var Tick3D = /** @class */ (function () {
+                function Tick3D() {
+                }
+                /* *
+                 *
+                 *  Static Functions
+                 *
+                 * */
+                /**
+                 * @private
+                 */
+                Tick3D.compose = function (TickClass) {
+                    addEvent(TickClass, 'afterGetLabelPosition', Tick3D.onAfterGetLabelPosition);
+                var tickProto = TickClass.prototype;
+                wrap(tickProto, 'getMarkPath', Tick3D.wrapGetMarkPath);
+            };
+            /**
+             * @private
+             */
+            Tick3D.onAfterGetLabelPosition = function (e) {
+                var axis3D = this.axis.axis3D;
+                if (axis3D) {
+                    extend(e.pos, axis3D.fix3dPosition(e.pos));
+                }
+            };
+            /**
+             * @private
+             */
+            Tick3D.wrapGetMarkPath = function (proceed) {
+                var chart = this.axis.chart;
+                var axis3D = this.axis.axis3D;
+                var path = proceed.apply(this,
+                    [].slice.call(arguments, 1));
+                if (axis3D) {
+                    var start = path[0];
+                    var end = path[1];
+                    if (start[0] === 'M' && end[0] === 'L') {
+                        var pArr = [
+                                axis3D.fix3dPosition({ x: start[1],
+                            y: start[2],
+                            z: 0 }),
+                                axis3D.fix3dPosition({ x: end[1],
+                            y: end[2],
+                            z: 0 })
+                            ];
+                        return this.axis.chart.renderer.toLineSegments(pArr);
+                    }
+                }
+                return path;
+            };
+            return Tick3D;
+        }());
+
+        return Tick3D;
+    });
+    _registerModule(_modules, 'Core/Axis/Axis3D.js', [_modules['Core/Globals.js'], _modules['Extensions/Math3D.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Axis/Tick3D.js'], _modules['Core/Utilities.js']], function (H, Math3D, Tick, Tick3D, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  Extenstion for 3d axes
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var deg2rad = H.deg2rad;
+        var perspective = Math3D.perspective,
+            perspective3D = Math3D.perspective3D,
+            shapeArea = Math3D.shapeArea;
+        var addEvent = U.addEvent,
+            merge = U.merge,
+            pick = U.pick,
+            wrap = U.wrap;
+        /* *
+         *
+         *  Classes
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
+        /**
+         * Adds 3D support to axes.
+         * @private
+         * @class
+         */
+        var Axis3DAdditions = /** @class */ (function () {
+                /* *
+                 *
+                 *  Constructors
+                 *
+                 * */
+                /**
+                 * @private
+                 */
+                function Axis3DAdditions(axis) {
+                    this.axis = axis;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             * @param {Highcharts.Axis} axis
+             * Related axis.
+             * @param {Highcharts.Position3DObject} pos
+             * Position to fix.
+             * @param {boolean} [isTitle]
+             * Whether this is a title position.
+             * @return {Highcharts.Position3DObject}
+             * Fixed position.
+             */
+            Axis3DAdditions.prototype.fix3dPosition = function (pos, isTitle) {
+                var axis3D = this;
+                var axis = axis3D.axis;
+                var chart = axis.chart;
+                // Do not do this if the chart is not 3D
+                if (axis.coll === 'colorAxis' ||
+                    !chart.chart3d ||
+                    !chart.is3d()) {
+                    return pos;
+                }
+                var alpha = deg2rad * chart.options.chart.options3d.alpha,
+                    beta = deg2rad * chart.options.chart.options3d.beta,
+                    positionMode = pick(isTitle && axis.options.title.position3d,
+                    axis.options.labels.position3d),
+                    skew = pick(isTitle && axis.options.title.skew3d,
+                    axis.options.labels.skew3d),
+                    frame = chart.chart3d.frame3d,
+                    plotLeft = chart.plotLeft,
+                    plotRight = chart.plotWidth + plotLeft,
+                    plotTop = chart.plotTop,
+                    plotBottom = chart.plotHeight + plotTop;
+                var offsetX = 0,
+                    offsetY = 0,
+                    vecX,
+                    vecY = { x: 0,
+                    y: 1,
+                    z: 0 }, 
+                    // Indicates that we are labelling an X or Z axis on the "back" of
+                    // the chart
+                    reverseFlap = false;
+                pos = axis.axis3D.swapZ({ x: pos.x, y: pos.y, z: 0 });
+                if (axis.isZAxis) { // Z Axis
+                    if (axis.opposite) {
+                        if (frame.axes.z.top === null) {
+                            return {};
+                        }
+                        offsetY = pos.y - plotTop;
+                        pos.x = frame.axes.z.top.x;
+                        pos.y = frame.axes.z.top.y;
+                        vecX = frame.axes.z.top.xDir;
+                        reverseFlap = !frame.top.frontFacing;
+                    }
+                    else {
+                        if (frame.axes.z.bottom === null) {
+                            return {};
+                        }
+                        offsetY = pos.y - plotBottom;
+                        pos.x = frame.axes.z.bottom.x;
+                        pos.y = frame.axes.z.bottom.y;
+                        vecX = frame.axes.z.bottom.xDir;
+                        reverseFlap = !frame.bottom.frontFacing;
+                    }
+                }
+                else if (axis.horiz) { // X Axis
+                    if (axis.opposite) {
+                        if (frame.axes.x.top === null) {
+                            return {};
+                        }
+                        offsetY = pos.y - plotTop;
+                        pos.y = frame.axes.x.top.y;
+                        pos.z = frame.axes.x.top.z;
+                        vecX = frame.axes.x.top.xDir;
+                        reverseFlap = !frame.top.frontFacing;
+                    }
+                    else {
+                        if (frame.axes.x.bottom === null) {
+                            return {};
+                        }
+                        offsetY = pos.y - plotBottom;
+                        pos.y = frame.axes.x.bottom.y;
+                        pos.z = frame.axes.x.bottom.z;
+                        vecX = frame.axes.x.bottom.xDir;
+                        reverseFlap = !frame.bottom.frontFacing;
+                    }
+                }
+                else { // Y Axis
+                    if (axis.opposite) {
+                        if (frame.axes.y.right === null) {
+                            return {};
+                        }
+                        offsetX = pos.x - plotRight;
+                        pos.x = frame.axes.y.right.x;
+                        pos.z = frame.axes.y.right.z;
+                        vecX = frame.axes.y.right.xDir;
+                        // Rotate 90º on opposite edge
+                        vecX = { x: vecX.z, y: vecX.y, z: -vecX.x };
+                    }
+                    else {
+                        if (frame.axes.y.left === null) {
+                            return {};
+                        }
+                        offsetX = pos.x - plotLeft;
+                        pos.x = frame.axes.y.left.x;
+                        pos.z = frame.axes.y.left.z;
+                        vecX = frame.axes.y.left.xDir;
+                    }
+                }
+                if (positionMode === 'chart') {
+                    // Labels preserve their direction relative to the chart
+                    // nothing to do
+                }
+                else if (positionMode === 'flap') {
+                    // Labels are rotated around the axis direction to face the screen
+                    if (!axis.horiz) { // Y Axis
+                        vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
+                    }
+                    else { // X and Z Axis
+                        var sin = Math.sin(alpha);
+                        var cos = Math.cos(alpha);
+                        if (axis.opposite) {
+                            sin = -sin;
+                        }
+                        if (reverseFlap) {
+                            sin = -sin;
+                        }
+                        vecY = { x: vecX.z * sin, y: cos, z: -vecX.x * sin };
+                    }
+                }
+                else if (positionMode === 'ortho') {
+                    // Labels will be rotated to be ortogonal to the axis
+                    if (!axis.horiz) { // Y Axis
+                        vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
+                    }
+                    else { // X and Z Axis
+                        var sina = Math.sin(alpha);
+                        var cosa = Math.cos(alpha);
+                        var sinb = Math.sin(beta);
+                        var cosb = Math.cos(beta);
+                        var vecZ = { x: sinb * cosa,
+                            y: -sina,
+                            z: -cosa * cosb };
+                        vecY = {
+                            x: vecX.y * vecZ.z - vecX.z * vecZ.y,
+                            y: vecX.z * vecZ.x - vecX.x * vecZ.z,
+                            z: vecX.x * vecZ.y - vecX.y * vecZ.x
+                        };
+                        var scale = 1 / Math.sqrt(vecY.x * vecY.x + vecY.y * vecY.y + vecY.z * vecY.z);
+                        if (reverseFlap) {
+                            scale = -scale;
+                        }
+                        vecY = { x: scale * vecY.x, y: scale * vecY.y, z: scale * vecY.z };
+                    }
+                }
+                else { // positionMode  == 'offset'
+                    // Labels will be skewd to maintain vertical / horizontal offsets
+                    // from axis
+                    if (!axis.horiz) { // Y Axis
+                        vecX = { x: Math.cos(beta), y: 0, z: Math.sin(beta) };
+                    }
+                    else { // X and Z Axis
+                        vecY = {
+                            x: Math.sin(beta) * Math.sin(alpha),
+                            y: Math.cos(alpha),
+                            z: -Math.cos(beta) * Math.sin(alpha)
+                        };
+                    }
+                }
+                pos.x += offsetX * vecX.x + offsetY * vecY.x;
+                pos.y += offsetX * vecX.y + offsetY * vecY.y;
+                pos.z += offsetX * vecX.z + offsetY * vecY.z;
+                var projected = perspective([pos],
+                    axis.chart)[0];
+                if (skew) {
+                    // Check if the label text would be mirrored
+                    var isMirrored = shapeArea(perspective([
+                            pos,
+                            { x: pos.x + vecX.x,
+                        y: pos.y + vecX.y,
+                        z: pos.z + vecX.z },
+                            { x: pos.x + vecY.x,
+                        y: pos.y + vecY.y,
+                        z: pos.z + vecY.z }
+                        ],
+                        axis.chart)) < 0;
+                    if (isMirrored) {
+                        vecX = { x: -vecX.x, y: -vecX.y, z: -vecX.z };
+                    }
+                    var pointsProjected = perspective([
+                            { x: pos.x,
+                        y: pos.y,
+                        z: pos.z },
+                            { x: pos.x + vecX.x,
+                        y: pos.y + vecX.y,
+                        z: pos.z + vecX.z },
+                            { x: pos.x + vecY.x,
+                        y: pos.y + vecY.y,
+                        z: pos.z + vecY.z }
+                        ],
+                        axis.chart);
+                    projected.matrix = [
+                        pointsProjected[1].x - pointsProjected[0].x,
+                        pointsProjected[1].y - pointsProjected[0].y,
+                        pointsProjected[2].x - pointsProjected[0].x,
+                        pointsProjected[2].y - pointsProjected[0].y,
+                        projected.x,
+                        projected.y
+                    ];
+                    projected.matrix[4] -= projected.x * projected.matrix[0] +
+                        projected.y * projected.matrix[2];
+                    projected.matrix[5] -= projected.x * projected.matrix[1] +
+                        projected.y * projected.matrix[3];
+                }
+                return projected;
+            };
+            /**
+             * @private
+             */
+            Axis3DAdditions.prototype.swapZ = function (p, insidePlotArea) {
+                var axis = this.axis;
+                if (axis.isZAxis) {
+                    var plotLeft = insidePlotArea ? 0 : axis.chart.plotLeft;
+                    return {
+                        x: plotLeft + p.z,
+                        y: p.y,
+                        z: p.x - plotLeft
+                    };
+                }
+                return p;
+            };
+            return Axis3DAdditions;
+        }());
+        /**
+         * Axis with 3D support.
+         * @private
+         * @class
+         */
+        var Axis3D = /** @class */ (function () {
+                function Axis3D() {
+                }
+                /* *
+                 *
+                 *  Static Functions
+                 *
+                 * */
+                /**
+                 * Extends axis class with 3D support.
+                 * @private
+                 */
+                Axis3D.compose = function (AxisClass) {
+                    merge(true, AxisClass.defaultOptions, Axis3D.defaultOptions);
+                AxisClass.keepProps.push('axis3D');
+                addEvent(AxisClass, 'init', Axis3D.onInit);
+                addEvent(AxisClass, 'afterSetOptions', Axis3D.onAfterSetOptions);
+                addEvent(AxisClass, 'drawCrosshair', Axis3D.onDrawCrosshair);
+                var axisProto = AxisClass.prototype;
+                wrap(axisProto, 'getLinePath', Axis3D.wrapGetLinePath);
+                wrap(axisProto, 'getPlotBandPath', Axis3D.wrapGetPlotBandPath);
+                wrap(axisProto, 'getPlotLinePath', Axis3D.wrapGetPlotLinePath);
+                wrap(axisProto, 'getSlotWidth', Axis3D.wrapGetSlotWidth);
+                wrap(axisProto, 'getTitlePosition', Axis3D.wrapGetTitlePosition);
+                Tick3D.compose(Tick);
+            };
+            /**
+             * @private
+             */
+            Axis3D.onAfterSetOptions = function () {
+                var axis = this;
+                var chart = axis.chart;
+                var options = axis.options;
+                if (chart.is3d && chart.is3d() && axis.coll !== 'colorAxis') {
+                    options.tickWidth = pick(options.tickWidth, 0);
+                    options.gridLineWidth = pick(options.gridLineWidth, 1);
+                }
+            };
+            /**
+             * @private
+             */
+            Axis3D.onDrawCrosshair = function (e) {
+                var axis = this;
+                if (axis.chart.is3d() &&
+                    axis.coll !== 'colorAxis') {
+                    if (e.point) {
+                        e.point.crosshairPos = axis.isXAxis ?
+                            e.point.axisXpos :
+                            axis.len - e.point.axisYpos;
+                    }
+                }
+            };
+            /**
+             * @private
+             */
+            Axis3D.onInit = function () {
+                var axis = this;
+                if (!axis.axis3D) {
+                    axis.axis3D = new Axis3DAdditions(axis);
+                }
+            };
+            /**
+             * Do not draw axislines in 3D.
+             * @private
+             */
+            Axis3D.wrapGetLinePath = function (proceed) {
+                var axis = this;
+                // Do not do this if the chart is not 3D
+                if (!axis.chart.is3d() || axis.coll === 'colorAxis') {
+                    return proceed.apply(axis, [].slice.call(arguments, 1));
+                }
+                return [];
+            };
+            /**
+             * @private
+             */
+            Axis3D.wrapGetPlotBandPath = function (proceed) {
+                // Do not do this if the chart is not 3D
+                if (!this.chart.is3d() || this.coll === 'colorAxis') {
+                    return proceed.apply(this, [].slice.call(arguments, 1));
+                }
+                var args = arguments,
+                    from = args[1],
+                    to = args[2],
+                    path = [],
+                    fromPath = this.getPlotLinePath({ value: from }),
+                    toPath = this.getPlotLinePath({ value: to });
+                if (fromPath && toPath) {
+                    for (var i = 0; i < fromPath.length; i += 2) {
+                        var fromStartSeg = fromPath[i],
+                            fromEndSeg = fromPath[i + 1],
+                            toStartSeg = toPath[i],
+                            toEndSeg = toPath[i + 1];
+                        if (fromStartSeg[0] === 'M' &&
+                            fromEndSeg[0] === 'L' &&
+                            toStartSeg[0] === 'M' &&
+                            toEndSeg[0] === 'L') {
+                            path.push(fromStartSeg, fromEndSeg, toEndSeg, 
+                            // lineTo instead of moveTo
+                            ['L', toStartSeg[1], toStartSeg[2]], ['Z']);
+                        }
+                    }
+                }
+                return path;
+            };
+            /**
+             * @private
+             */
+            Axis3D.wrapGetPlotLinePath = function (proceed) {
+                var axis = this,
+                    axis3D = axis.axis3D,
+                    chart = axis.chart,
+                    path = proceed.apply(axis,
+                    [].slice.call(arguments, 1));
+                // Do not do this if the chart is not 3D
+                if (axis.coll === 'colorAxis' ||
+                    !chart.chart3d ||
+                    !chart.is3d()) {
+                    return path;
+                }
+                if (path === null) {
+                    return path;
+                }
+                var options3d = chart.options.chart.options3d,
+                    d = axis.isZAxis ? chart.plotWidth : options3d.depth,
+                    frame = chart.chart3d.frame3d,
+                    startSegment = path[0],
+                    endSegment = path[1];
+                var pArr,
+                    pathSegments = [];
+                if (startSegment[0] === 'M' && endSegment[0] === 'L') {
+                    pArr = [
+                        axis3D.swapZ({ x: startSegment[1], y: startSegment[2], z: 0 }),
+                        axis3D.swapZ({ x: startSegment[1], y: startSegment[2], z: d }),
+                        axis3D.swapZ({ x: endSegment[1], y: endSegment[2], z: 0 }),
+                        axis3D.swapZ({ x: endSegment[1], y: endSegment[2], z: d })
+                    ];
+                    if (!this.horiz) { // Y-Axis
+                        if (frame.front.visible) {
+                            pathSegments.push(pArr[0], pArr[2]);
+                        }
+                        if (frame.back.visible) {
+                            pathSegments.push(pArr[1], pArr[3]);
+                        }
+                        if (frame.left.visible) {
+                            pathSegments.push(pArr[0], pArr[1]);
+                        }
+                        if (frame.right.visible) {
+                            pathSegments.push(pArr[2], pArr[3]);
+                        }
+                    }
+                    else if (this.isZAxis) { // Z-Axis
+                        if (frame.left.visible) {
+                            pathSegments.push(pArr[0], pArr[2]);
+                        }
+                        if (frame.right.visible) {
+                            pathSegments.push(pArr[1], pArr[3]);
+                        }
+                        if (frame.top.visible) {
+                            pathSegments.push(pArr[0], pArr[1]);
+                        }
+                        if (frame.bottom.visible) {
+                            pathSegments.push(pArr[2], pArr[3]);
+                        }
+                    }
+                    else { // X-Axis
+                        if (frame.front.visible) {
+                            pathSegments.push(pArr[0], pArr[2]);
+                        }
+                        if (frame.back.visible) {
+                            pathSegments.push(pArr[1], pArr[3]);
+                        }
+                        if (frame.top.visible) {
+                            pathSegments.push(pArr[0], pArr[1]);
+                        }
+                        if (frame.bottom.visible) {
+                            pathSegments.push(pArr[2], pArr[3]);
+                        }
+                    }
+                    pathSegments = perspective(pathSegments, this.chart, false);
+                }
+                return chart.renderer.toLineSegments(pathSegments);
+            };
+            /**
+             * Wrap getSlotWidth function to calculate individual width value for each
+             * slot (#8042).
+             * @private
+             */
+            Axis3D.wrapGetSlotWidth = function (proceed, tick) {
+                var axis = this,
+                    chart = axis.chart,
+                    ticks = axis.ticks,
+                    gridGroup = axis.gridGroup;
+                if (axis.categories &&
+                    chart.frameShapes &&
+                    chart.is3d() &&
+                    gridGroup &&
+                    tick &&
+                    tick.label) {
+                    var firstGridLine = gridGroup.element.childNodes[0].getBBox(),
+                        frame3DLeft = chart.frameShapes.left.getBBox(),
+                        options3d = chart.options.chart.options3d,
+                        origin_1 = {
+                            x: chart.plotWidth / 2,
+                            y: chart.plotHeight / 2,
+                            z: options3d.depth / 2,
+                            vd: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0)
+                        },
+                        tickId = tick.pos,
+                        prevTick = ticks[tickId - 1],
+                        nextTick = ticks[tickId + 1];
+                    var labelPos = void 0,
+                        prevLabelPos = void 0,
+                        nextLabelPos = void 0;
+                    // Check whether the tick is not the first one and previous tick
+                    // exists, then calculate position of previous label.
+                    if (tickId !== 0 && prevTick && prevTick.label && prevTick.label.xy) {
+                        prevLabelPos = perspective3D({
+                            x: prevTick.label.xy.x,
+                            y: prevTick.label.xy.y,
+                            z: null
+                        }, origin_1, origin_1.vd);
+                    }
+                    // If next label position is defined, then recalculate its position
+                    // basing on the perspective.
+                    if (nextTick && nextTick.label && nextTick.label.xy) {
+                        nextLabelPos = perspective3D({
+                            x: nextTick.label.xy.x,
+                            y: nextTick.label.xy.y,
+                            z: null
+                        }, origin_1, origin_1.vd);
+                    }
+                    labelPos = {
+                        x: tick.label.xy.x,
+                        y: tick.label.xy.y,
+                        z: null
+                    };
+                    labelPos = perspective3D(labelPos, origin_1, origin_1.vd);
+                    // If tick is first one, check whether next label position is
+                    // already calculated, then return difference between the first and
+                    // the second label. If there is no next label position calculated,
+                    // return the difference between the first grid line and left 3d
+                    // frame.
+                    return Math.abs(prevLabelPos ?
+                        labelPos.x - prevLabelPos.x : nextLabelPos ?
+                        nextLabelPos.x - labelPos.x :
+                        firstGridLine.x - frame3DLeft.x);
+                }
+                return proceed.apply(axis, [].slice.call(arguments, 1));
+            };
+            /**
+             * @private
+             */
+            Axis3D.wrapGetTitlePosition = function (proceed) {
+                var pos = proceed.apply(this,
+                    [].slice.call(arguments, 1));
+                return this.axis3D ?
+                    this.axis3D.fix3dPosition(pos, true) :
+                    pos;
+            };
+            /* *
+             *
+             *  Static Properties
+             *
+             * */
+            /**
+             * @optionparent xAxis
+             */
+            Axis3D.defaultOptions = {
+                labels: {
+                    /**
+                     * Defines how the labels are be repositioned according to the 3D
+                     * chart orientation.
+                     *
+                     * - `'offset'`: Maintain a fixed horizontal/vertical distance from
+                     *   the tick marks, despite the chart orientation. This is the
+                     *   backwards compatible behavior, and causes skewing of X and Z
+                     *   axes.
+                     *
+                     * - `'chart'`: Preserve 3D position relative to the chart. This
+                     *   looks nice, but hard to read if the text isn't forward-facing.
+                     *
+                     * - `'flap'`: Rotated text along the axis to compensate for the
+                     *   chart orientation. This tries to maintain text as legible as
+                     *   possible on all orientations.
+                     *
+                     * - `'ortho'`: Rotated text along the axis direction so that the
+                     *   labels are orthogonal to the axis. This is very similar to
+                     *   `'flap'`, but prevents skewing the labels (X and Y scaling are
+                     *   still present).
+                     *
+                     * @sample highcharts/3d/skewed-labels/
+                     *         Skewed labels
+                     *
+                     * @since      5.0.15
+                     * @validvalue ['offset', 'chart', 'flap', 'ortho']
+                     * @product    highcharts
+                     * @requires   highcharts-3d
+                     */
+                    position3d: 'offset',
+                    /**
+                     * If enabled, the axis labels will skewed to follow the
+                     * perspective.
+                     *
+                     * This will fix overlapping labels and titles, but texts become
+                     * less legible due to the distortion.
+                     *
+                     * The final appearance depends heavily on `labels.position3d`.
+                     *
+                     * @sample highcharts/3d/skewed-labels/
+                     *         Skewed labels
+                     *
+                     * @since    5.0.15
+                     * @product  highcharts
+                     * @requires highcharts-3d
+                     */
+                    skew3d: false
+                },
+                title: {
+                    /**
+                     * Defines how the title is repositioned according to the 3D chart
+                     * orientation.
+                     *
+                     * - `'offset'`: Maintain a fixed horizontal/vertical distance from
+                     *   the tick marks, despite the chart orientation. This is the
+                     *   backwards compatible behavior, and causes skewing of X and Z
+                     *   axes.
+                     *
+                     * - `'chart'`: Preserve 3D position relative to the chart. This
+                     *   looks nice, but hard to read if the text isn't forward-facing.
+                     *
+                     * - `'flap'`: Rotated text along the axis to compensate for the
+                     *   chart orientation. This tries to maintain text as legible as
+                     *   possible on all orientations.
+                     *
+                     * - `'ortho'`: Rotated text along the axis direction so that the
+                     *   labels are orthogonal to the axis. This is very similar to
+                     *   `'flap'`, but prevents skewing the labels (X and Y scaling are
+                     *   still present).
+                     *
+                     * - `undefined`: Will use the config from `labels.position3d`
+                     *
+                     * @sample highcharts/3d/skewed-labels/
+                     *         Skewed labels
+                     *
+                     * @type     {"offset"|"chart"|"flap"|"ortho"|null}
+                     * @since    5.0.15
+                     * @product  highcharts
+                     * @requires highcharts-3d
+                     */
+                    position3d: null,
+                    /**
+                     * If enabled, the axis title will skewed to follow the perspective.
+                     *
+                     * This will fix overlapping labels and titles, but texts become
+                     * less legible due to the distortion.
+                     *
+                     * The final appearance depends heavily on `title.position3d`.
+                     *
+                     * A `null` value will use the config from `labels.skew3d`.
+                     *
+                     * @sample highcharts/3d/skewed-labels/
+                     *         Skewed labels
+                     *
+                     * @type     {boolean|null}
+                     * @since    5.0.15
+                     * @product  highcharts
+                     * @requires highcharts-3d
+                     */
+                    skew3d: null
+                }
+            };
+            return Axis3D;
+        }());
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return Axis3D;
     });
     _registerModule(_modules, 'Core/Series/Series3D.js', [_modules['Extensions/Math3D.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Math3D, Series, U) {
         /* *
@@ -4148,7 +4218,7 @@
          */
         function retrieveStacks(chart, stacking) {
             var series = chart.series,
-                stacks = {};
+                stacks = { totalStacks: 0 };
             var stackNumber,
                 i = 1;
             series.forEach(function (s) {
@@ -5323,8 +5393,14 @@
         });
 
     });
-    _registerModule(_modules, 'masters/highcharts-3d.src.js', [], function () {
+    _registerModule(_modules, 'masters/highcharts-3d.src.js', [_modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGRenderer3D.js'], _modules['Core/Chart/Chart3D.js'], _modules['Core/Axis/ZAxis.js'], _modules['Core/Axis/Axis3D.js']], function (Highcharts, SVGRenderer3D, Chart3D, ZAxis, Axis3D) {
 
+        var G = Highcharts;
+        // Compositions
+        SVGRenderer3D.compose(G.SVGRenderer);
+        Chart3D.compose(G.Chart, G.Fx);
+        ZAxis.ZChartComposition.compose(G.Chart);
+        Axis3D.compose(G.Axis);
 
     });
 }));

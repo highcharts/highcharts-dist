@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Item series type for Highcharts
  *
@@ -92,7 +92,7 @@
 
         return ItemPoint;
     });
-    _registerModule(_modules, 'Series/Item/ItemSeries.js', [_modules['Core/Globals.js'], _modules['Series/Item/ItemPoint.js'], _modules['Core/Options.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, ItemPoint, O, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Item/ItemSeries.js', [_modules['Core/Globals.js'], _modules['Series/Item/ItemPoint.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, ItemPoint, D, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2019-2021 Torstein Honsi
@@ -120,7 +120,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var PieSeries = SeriesRegistry.seriesTypes.pie;
         var defined = U.defined,
             extend = U.extend,

@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.1.0 (2021-05-04)
+ * @license Highmaps JS v9.1.1 (2021-06-04)
  *
  * Tilemap module
  *
@@ -444,7 +444,7 @@
 
         return TilemapShapes;
     });
-    _registerModule(_modules, 'Series/Tilemap/TilemapComposition.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Series/Tilemap/TilemapComposition.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
         /* *
          *
          *  Tilemaps module
@@ -472,7 +472,7 @@
         // Extension to add pixel padding for series. Uses getSeriesPixelPadding on each
         // series and adds the largest padding required. If no series has this function
         // defined, we add nothing.
-        addEvent(H.Axis, 'afterSetAxisTranslation', function () {
+        addEvent(Axis, 'afterSetAxisTranslation', function () {
             if (this.recomputingForTilemap || this.coll === 'colorAxis') {
                 return;
             }

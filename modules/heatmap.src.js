@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.1.0 (2021-05-04)
+ * @license Highmaps JS v9.1.1 (2021-06-04)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -1389,7 +1389,9 @@
                  */
                 colorAttribs: function (point) {
                     var ret = {};
-                if (defined(point.color)) {
+                if (defined(point.color) &&
+                    (!point.state || point.state === 'normal') // #15746
+                ) {
                     ret[this.colorProp || 'fill'] = point.color;
                 }
                 return ret;
@@ -1583,7 +1585,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, H, HeatmapPoint, LegendSymbolMixin, palette, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, HeatmapPoint, LegendSymbolMixin, palette, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -1610,7 +1612,6 @@
             };
         })();
         var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
-        var noop = H.noop;
         var Series = SeriesRegistry.series,
             _a = SeriesRegistry.seriesTypes,
             ColumnSeries = _a.column,
@@ -1674,8 +1675,17 @@
                 if (seriesMarkerOptions.enabled || this._hasPointMarkers) {
                     Series.prototype.drawPoints.call(this);
                     this.points.forEach(function (point) {
-                        point.graphic &&
+                        if (point.graphic) {
                             point.graphic[_this.chart.styledMode ? 'css' : 'animate'](_this.colorAttribs(point));
+                            if (_this.options.borderRadius) {
+                                point.graphic.attr({
+                                    r: _this.options.borderRadius
+                                });
+                            }
+                            if (point.value === null) { // #15708
+                                point.graphic.addClass('highcharts-null-point');
+                            }
+                        }
                     });
                 }
             };
@@ -1727,9 +1737,7 @@
                 // general point range
                 this.yAxis.axisPointRange = options.rowsize || 1;
                 // Bind new symbol names
-                extend(symbols, {
-                    ellipse: symbols.circle
-                });
+                symbols.ellipse = symbols.circle;
             };
             /**
              * @private
@@ -1807,7 +1815,7 @@
                     brightness = stateOptions.brightness;
                     attr.fill =
                         stateOptions.color ||
-                            H.color(attr.fill).brighten(brightness || 0).get();
+                            Color.parse(attr.fill).brighten(brightness || 0).get();
                     attr.stroke = stateOptions.lineColor;
                 }
                 return attr;
@@ -1830,7 +1838,7 @@
              * @private
              */
             HeatmapSeries.prototype.translate = function () {
-                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || '', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
+                var series = this, options = series.options, symbol = options.marker && options.marker.symbol || 'rect', shape = symbols[symbol] ? symbol : 'rect', hasRegularShape = ['circle', 'square'].indexOf(shape) !== -1;
                 series.generatePoints();
                 series.points.forEach(function (point) {
                     var pointAttr,
@@ -1902,7 +1910,11 @@
                  */
                 animation: false,
                 /**
-                 * The border width for each heat map item.
+                 * The border radius for each heatmap item.
+                 */
+                borderRadius: 0,
+                /**
+                 * The border width for each heatmap item.
                  */
                 borderWidth: 0,
                 /**

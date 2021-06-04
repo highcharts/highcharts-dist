@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.1.0 (2021-05-04)
+ * @license Highcharts Gantt JS v9.1.1 (2021-06-04)
  *
  * Pathfinder
  *
@@ -39,6 +39,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var symbols = SVGRenderer.prototype.symbols;
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /**
          * Creates an arrow symbol. Like a triangle, except not filled.
          * ```
@@ -69,14 +75,14 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols.arrow = function (x, y, w, h) {
+        function arrow(x, y, w, h) {
             return [
                 ['M', x, y + h / 2],
                 ['L', x + w, y],
                 ['L', x, y + h / 2],
                 ['L', x + w, y + h]
             ];
-        };
+        }
         /**
          * Creates a half-width arrow symbol. Like a triangle, except not filled.
          * ```
@@ -105,9 +111,9 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['arrow-half'] = function (x, y, w, h) {
-            return SVGRenderer.prototype.symbols.arrow(x, y, w / 2, h);
-        };
+        function arrowHalf(x, y, w, h) {
+            return arrow(x, y, w / 2, h);
+        }
         /**
          * Creates a left-oriented triangle.
          * ```
@@ -136,36 +142,14 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['triangle-left'] = function (x, y, w, h) {
+        function triangleLeft(x, y, w, h) {
             return [
                 ['M', x + w, y],
                 ['L', x, y + h / 2],
                 ['L', x + w, y + h],
                 ['Z']
             ];
-        };
-        /**
-         * Alias function for triangle-left.
-         *
-         * @private
-         * @function
-         *
-         * @param {number} x
-         *        x position of the arrow
-         *
-         * @param {number} y
-         *        y position of the arrow
-         *
-         * @param {number} w
-         *        width of the arrow
-         *
-         * @param {number} h
-         *        height of the arrow
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path array
-         */
-        SVGRenderer.prototype.symbols['arrow-filled'] = SVGRenderer.prototype.symbols['triangle-left'];
+        }
         /**
          * Creates a half-width, left-oriented triangle.
          * ```
@@ -194,34 +178,24 @@
          * @return {Highcharts.SVGPathArray}
          *         Path array
          */
-        SVGRenderer.prototype.symbols['triangle-left-half'] = function (x, y, w, h) {
-            return SVGRenderer.prototype.symbols['triangle-left'](x, y, w / 2, h);
-        };
-        /**
-         * Alias function for triangle-left-half.
+        function triangleLeftHalf(x, y, w, h) {
+            return triangleLeft(x, y, w / 2, h);
+        }
+        symbols.arrow = arrow;
+        symbols['arrow-filled'] = triangleLeft;
+        symbols['arrow-filled-half'] = triangleLeftHalf;
+        symbols['arrow-half'] = arrowHalf;
+        symbols['triangle-left'] = triangleLeft;
+        symbols['triangle-left-half'] = triangleLeftHalf;
+        /* *
          *
-         * @private
-         * @function
+         *  Default Export
          *
-         * @param {number} x
-         *        x position of the arrow
-         *
-         * @param {number} y
-         *        y position of the arrow
-         *
-         * @param {number} w
-         *        width of the arrow
-         *
-         * @param {number} h
-         *        height of the arrow
-         *
-         * @return {Highcharts.SVGPathArray}
-         *         Path array
-         */
-        SVGRenderer.prototype.symbols['arrow-filled-half'] = SVGRenderer.prototype.symbols['triangle-left-half'];
+         * */
 
+        return symbols;
     });
-    _registerModule(_modules, 'Gantt/Connection.js', [_modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, O, Point, U) {
+    _registerModule(_modules, 'Gantt/Connection.js', [_modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, D, Point, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -255,7 +229,7 @@
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
         ''; // detach doclets above
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             defined = U.defined,
             error = U.error,
@@ -1852,7 +1826,7 @@
 
         return algorithms;
     });
-    _registerModule(_modules, 'Gantt/Pathfinder.js', [_modules['Gantt/Connection.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Gantt/PathfinderAlgorithms.js']], function (Connection, Chart, H, O, Point, U, pathfinderAlgorithms) {
+    _registerModule(_modules, 'Gantt/Pathfinder.js', [_modules['Gantt/Connection.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js'], _modules['Gantt/PathfinderAlgorithms.js']], function (Connection, Chart, H, D, Point, U, pathfinderAlgorithms) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -1886,7 +1860,7 @@
          * @typedef {"fastAvoid"|"simpleConnect"|"straight"|string} Highcharts.PathfinderTypeValue
          */
         ''; // detach doclets above
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             defined = U.defined,
             error = U.error,

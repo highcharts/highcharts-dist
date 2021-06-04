@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Sonification module
  *
@@ -3250,7 +3250,7 @@
 
         return options;
     });
-    _registerModule(_modules, 'Extensions/Sonification/Sonification.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Extensions/Sonification/Instrument.js'], _modules['Extensions/Sonification/InstrumentDefinitions.js'], _modules['Extensions/Sonification/Earcon.js'], _modules['Extensions/Sonification/PointSonify.js'], _modules['Extensions/Sonification/ChartSonify.js'], _modules['Extensions/Sonification/Utilities.js'], _modules['Extensions/Sonification/Timeline.js'], _modules['Extensions/Sonification/Options.js']], function (Chart, H, O, Point, Series, U, Instrument, instruments, Earcon, pointSonifyFunctions, chartSonifyFunctions, utilities, TimelineClasses, sonificationOptions) {
+    _registerModule(_modules, 'Extensions/Sonification/Sonification.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Extensions/Sonification/Instrument.js'], _modules['Extensions/Sonification/InstrumentDefinitions.js'], _modules['Extensions/Sonification/Earcon.js'], _modules['Extensions/Sonification/PointSonify.js'], _modules['Extensions/Sonification/ChartSonify.js'], _modules['Extensions/Sonification/Utilities.js'], _modules['Extensions/Sonification/Timeline.js'], _modules['Extensions/Sonification/Options.js']], function (Chart, H, D, Point, Series, U, Instrument, instruments, Earcon, pointSonifyFunctions, chartSonifyFunctions, utilities, TimelineClasses, sonificationOptions) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -3262,7 +3262,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             extend = U.extend,
             merge = U.merge;

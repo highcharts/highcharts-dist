@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Data module
  *
@@ -1436,7 +1436,8 @@
                      * @private
                      */
                     function request(url, done, tp) {
-                        if (!url || url.indexOf('http') !== 0) {
+                        if (!url ||
+                            !/^(http|\/|\.\/|\.\.\/)/.test(url)) {
                             if (url && options.error) {
                                 options.error('Invalid URL');
                             }

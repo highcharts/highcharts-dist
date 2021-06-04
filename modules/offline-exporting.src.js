@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Client side exporting module
  *
@@ -40,6 +40,7 @@
          *  Mixin for downloading content in the browser
          *
          * */
+        var isSafari = Highcharts.isSafari;
         var win = Highcharts.win,
             doc = win.document,
             domurl = win.URL || win.webkitURL || win;
@@ -87,9 +88,8 @@
          */
         var downloadURL = Highcharts.downloadURL = function (dataURL,
             filename) {
-                var nav = win.navigator;
-            var a = doc.createElement('a'),
-                windowRef;
+                var nav = win.navigator,
+            a = doc.createElement('a');
             // IE specific blob implementation
             // Don't use for normal dataURLs
             if (typeof dataURL !== 'string' &&
@@ -101,8 +101,12 @@
             dataURL = "" + dataURL;
             // Some browsers have limitations for data URL lengths. Try to convert to
             // Blob or fall back. Edge always needs that blob.
-            var isEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
-            if (isEdgeBrowser || dataURL.length > 2000000) {
+            var isOldEdgeBrowser = /Edge\/\d+/.test(nav.userAgent);
+            // Safari on iOS needs Blob in order to download PDF
+            var safariBlob = (isSafari &&
+                    typeof dataURL === 'string' &&
+                    dataURL.indexOf('data:application/pdf') === 0);
+            if (safariBlob || isOldEdgeBrowser || dataURL.length > 2000000) {
                 dataURL = dataURLtoBlob(dataURL) || '';
                 if (!dataURL) {
                     throw new Error('Failed to convert to blob');
@@ -119,7 +123,7 @@
             else {
                 // No download attr, just opening data URI
                 try {
-                    windowRef = win.open(dataURL, 'chart');
+                    var windowRef = win.open(dataURL, 'chart');
                     if (typeof windowRef === 'undefined' || windowRef === null) {
                         throw new Error('Failed to open window');
                     }
@@ -137,7 +141,7 @@
 
         return exports;
     });
-    _registerModule(_modules, 'Extensions/OfflineExporting.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Extensions/DownloadURL.js']], function (Chart, H, O, SVGRenderer, U, DownloadURL) {
+    _registerModule(_modules, 'Extensions/OfflineExporting.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Extensions/DownloadURL.js']], function (Chart, H, D, SVGRenderer, U, DownloadURL) {
         /* *
          *
          *  Client side exporting module
@@ -151,7 +155,7 @@
          * */
         var win = H.win,
             doc = H.doc;
-        var getOptions = O.getOptions;
+        var getOptions = D.getOptions;
         var addEvent = U.addEvent,
             error = U.error,
             extend = U.extend,
@@ -199,8 +203,9 @@
             try {
                 // Safari requires data URI since it doesn't allow navigation to blob
                 // URLs. Firefox has an issue with Blobs and internal references,
-                // leading to gradients not working using Blobs (#4550)
-                if (!webKit && !H.isFirefox) {
+                // leading to gradients not working using Blobs (#4550).
+                // foreignObjects also dont work well in Blobs in Chrome (#14780).
+                if (!webKit && !H.isFirefox && svg.indexOf('<foreignObject') === -1) {
                     return domurl.createObjectURL(new win.Blob([svg], {
                         type: 'image/svg+xml;charset-utf-16'
                     }));
@@ -498,7 +503,8 @@
                     // Failed due to tainted canvas
                     // Create new and untainted canvas
                     var canvas = doc.createElement('canvas'), ctx = canvas.getContext('2d'), imageWidth = svg.match(/^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, imageHeight = svg.match(/^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/)[1] * scale, downloadWithCanVG = function () {
-                            ctx.drawSvg(svg, 0, 0, imageWidth, imageHeight);
+                            var v = win.canvg.Canvg.fromString(ctx, svg);
+                        v.start();
                         try {
                             downloadURL(win.navigator.msSaveOrOpenBlob ?
                                 canvas.msToBlob() :
@@ -525,11 +531,8 @@
                         // yet since we are doing things asynchronously. A cleaner
                         // solution would be nice, but this will do for now.
                         objectURLRevoke = true;
-                        // Get RGBColor.js first, then canvg
-                        getScript(libURL + 'rgbcolor.js', function () {
-                            getScript(libURL + 'canvg.js', function () {
-                                downloadWithCanVG();
-                            });
+                        getScript(libURL + 'canvg.js', function () {
+                            downloadWithCanVG();
                         });
                     }
                 }, 
@@ -669,10 +672,12 @@
                     chart.exportChart(options);
                 }
             }, svgSuccess = function (svg) {
-                // If SVG contains foreignObjects all exports except SVG will fail,
-                // as both CanVG and svg2pdf choke on this. Gracefully fall back.
+                // If SVG contains foreignObjects PDF fails in all browsers and all
+                // exports except SVG will fail in IE, as both CanVG and svg2pdf
+                // choke on this. Gracefully fall back.
                 if (svg.indexOf('<foreignObject') > -1 &&
-                    options.type !== 'image/svg+xml') {
+                    options.type !== 'image/svg+xml' &&
+                    (H.isMS || options.type === 'application/pdf')) {
                     fallbackToExportServer('Image type not supported' +
                         'for charts with embedded HTML');
                 }
@@ -739,7 +744,7 @@
         };
         // Extend the default options to use the local exporter logic
         merge(true, getOptions().exporting, {
-            libURL: 'https://code.highcharts.com/9.1.0/lib/',
+            libURL: 'https://code.highcharts.com/9.1.1/lib/',
             // When offline-exporting is loaded, redefine the menu item definitions
             // related to download.
             menuItemDefinitions: {

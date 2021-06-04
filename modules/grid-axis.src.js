@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.1.0 (2021-05-04)
+ * @license Highcharts Gantt JS v9.1.1 (2021-06-04)
  *
  * GridAxis
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Core/Axis/GridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (Axis, H, Tick, U) {
+    _registerModule(_modules, 'Core/Axis/GridAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (Axis, AxisDefaults, H, U) {
         /* *
          *
          *  (c) 2016 Highsoft AS
@@ -39,6 +39,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var dateFormats = H.dateFormats;
         var addEvent = U.addEvent,
             defined = U.defined,
             erase = U.erase,
@@ -49,14 +50,21 @@
             pick = U.pick,
             timeUnits = U.timeUnits,
             wrap = U.wrap;
-        var argsToArray = function (args) {
-                return Array.prototype.slice.call(args, 1);
-        }, isObject = function (x) {
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /* eslint-disable require-jsdoc */
+        function argsToArray(args) {
+            return Array.prototype.slice.call(args, 1);
+        }
+        function isObject(x) {
             // Always use strict mode
             return U.isObject(x, true);
-        }, Chart = H.Chart;
-        var applyGridOptions = function applyGridOptions(axis) {
-                var options = axis.options;
+        }
+        function applyGridOptions(axis) {
+            var options = axis.options;
             // Center-align by default
             /*
             if (!options.labels) {
@@ -77,414 +85,135 @@
             // help.
             axis.labelRotation = 0;
             options.labels.rotation = 0;
-        };
+        }
         /**
-         * @productdesc {gantt}
-         * For grid axes (like in Gantt charts),
-         * it is possible to declare as a list to provide different
-         * formats depending on available space.
-         *
-         * Defaults to:
-         * ```js
-         * {
-         *     hour: { list: ['%H:%M', '%H'] },
-         *     day: { list: ['%A, %e. %B', '%a, %e. %b', '%E'] },
-         *     week: { list: ['Week %W', 'W%W'] },
-         *     month: { list: ['%B', '%b', '%o'] }
-         * }
-         * ```
-         *
-         * @sample {gantt} gantt/grid-axis/date-time-label-formats
-         *         Gantt chart with custom axis date format.
-         *
-         * @apioption xAxis.dateTimeLabelFormats
-         */
-        /**
-         * Set grid options for the axis labels. Requires Highcharts Gantt.
-         *
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption xAxis.grid
-         */
-        /**
-         * Enable grid on the axis labels. Defaults to true for Gantt charts.
-         *
-         * @type      {boolean}
-         * @default   true
-         * @since     6.2.0
-         * @product   gantt
-         * @apioption xAxis.grid.enabled
-         */
-        /**
-         * Set specific options for each column (or row for horizontal axes) in the
-         * grid. Each extra column/row is its own axis, and the axis options can be set
-         * here.
-         *
-         * @sample gantt/demo/left-axis-table
-         *         Left axis as a table
-         *
-         * @type      {Array<Highcharts.XAxisOptions>}
-         * @apioption xAxis.grid.columns
-         */
-        /**
-         * Set border color for the label grid lines.
-         *
-         * @type      {Highcharts.ColorString}
-         * @apioption xAxis.grid.borderColor
-         */
-        /**
-         * Set border width of the label grid lines.
-         *
-         * @type      {number}
-         * @default   1
-         * @apioption xAxis.grid.borderWidth
-         */
-        /**
-         * Set cell height for grid axis labels. By default this is calculated from font
-         * size. This option only applies to horizontal axes.
-         *
-         * @sample gantt/grid-axis/cellheight
-         *         Gant chart with custom cell height
-         * @type      {number}
-         * @apioption xAxis.grid.cellHeight
-         */
-        ''; // detach doclets above
-        /**
-         * Get the largest label width and height.
-         *
+         * Axis with grid support.
          * @private
-         * @function Highcharts.Axis#getMaxLabelDimensions
-         *
-         * @param {Highcharts.Dictionary<Highcharts.Tick>} ticks
-         * All the ticks on one axis.
-         *
-         * @param {Array<number|string>} tickPositions
-         * All the tick positions on one axis.
-         *
-         * @return {Highcharts.SizeObject}
-         * Object containing the properties height and width.
-         *
-         * @todo Move this to the generic axis implementation, as it is used there.
          */
-        Axis.prototype.getMaxLabelDimensions = function (ticks, tickPositions) {
-            var dimensions = {
-                    width: 0,
-                    height: 0
-                };
-            tickPositions.forEach(function (pos) {
-                var tick = ticks[pos],
-                    labelHeight = 0,
-                    labelWidth = 0,
-                    label;
-                if (isObject(tick)) {
-                    label = isObject(tick.label) ? tick.label : {};
-                    // Find width and height of label
-                    labelHeight = label.getBBox ? label.getBBox().height : 0;
-                    if (label.textStr && !isNumber(label.textPxLength)) {
-                        label.textPxLength = label.getBBox().width;
-                    }
-                    labelWidth = isNumber(label.textPxLength) ?
-                        // Math.round ensures crisp lines
-                        Math.round(label.textPxLength) :
-                        0;
-                    if (label.textStr) {
-                        // Set the tickWidth same as the label width after ellipsis
-                        // applied #10281
-                        labelWidth = Math.round(label.getBBox().width);
-                    }
-                    // Update the result if width and/or height are larger
-                    dimensions.height = Math.max(labelHeight, dimensions.height);
-                    dimensions.width = Math.max(labelWidth, dimensions.width);
-                }
-            });
-            return dimensions;
-        };
-        // Adds week date format
-        H.dateFormats.W = function (timestamp) {
-            var d = new this.Date(timestamp);
-            var firstDay = (this.get('Day',
-                d) + 6) % 7;
-            var thursday = new this.Date(d.valueOf());
-            this.set('Date', thursday, this.get('Date', d) - firstDay + 3);
-            var firstThursday = new this.Date(this.get('FullYear',
-                thursday), 0, 1);
-            if (this.get('Day', firstThursday) !== 4) {
-                this.set('Month', d, 0);
-                this.set('Date', d, 1 + (11 - this.get('Day', firstThursday)) % 7);
-            }
-            return (1 +
-                Math.floor((thursday.valueOf() - firstThursday.valueOf()) / 604800000)).toString();
-        };
-        // First letter of the day of the week, e.g. 'M' for 'Monday'.
-        H.dateFormats.E = function (timestamp) {
-            return this.dateFormat('%a', timestamp, true).charAt(0);
-        };
-        /* eslint-disable no-invalid-this */
-        addEvent(Chart, 'afterSetChartSize', function () {
-            this.axes.forEach(function (axis) {
-                (axis.grid && axis.grid.columns || []).forEach(function (column) {
-                    column.setAxisSize();
-                    column.setAxisTranslation();
-                });
-            });
-        });
-        // Center tick labels in cells.
-        addEvent(Tick, 'afterGetLabelPosition', function (e) {
-            var tick = this,
-                label = tick.label,
-                axis = tick.axis,
-                reversed = axis.reversed,
-                chart = axis.chart,
-                options = axis.options,
-                gridOptions = options.grid || {},
-                labelOpts = axis.options.labels,
-                align = labelOpts.align, 
-                // verticalAlign is currently not supported for axis.labels.
-                verticalAlign = 'middle', // labelOpts.verticalAlign,
-                side = GridAxis.Side[axis.side],
-                tickmarkOffset = e.tickmarkOffset,
-                tickPositions = axis.tickPositions,
-                tickPos = tick.pos - tickmarkOffset,
-                nextTickPos = (isNumber(tickPositions[e.index + 1]) ?
-                    tickPositions[e.index + 1] - tickmarkOffset :
-                    axis.max + tickmarkOffset),
-                tickSize = axis.tickSize('tick'),
-                tickWidth = tickSize ? tickSize[0] : 0,
-                crispCorr = tickSize ? tickSize[1] / 2 : 0,
-                labelHeight,
-                lblMetrics,
-                lines,
-                bottom,
-                top,
-                left,
-                right;
-            // Only center tick labels in grid axes
-            if (gridOptions.enabled === true) {
-                // Calculate top and bottom positions of the cell.
-                if (side === 'top') {
-                    bottom = axis.top + axis.offset;
-                    top = bottom - tickWidth;
-                }
-                else if (side === 'bottom') {
-                    top = chart.chartHeight - axis.bottom + axis.offset;
-                    bottom = top + tickWidth;
-                }
-                else {
-                    bottom = axis.top + axis.len - axis.translate(reversed ? nextTickPos : tickPos);
-                    top = axis.top + axis.len - axis.translate(reversed ? tickPos : nextTickPos);
-                }
-                // Calculate left and right positions of the cell.
-                if (side === 'right') {
-                    left = chart.chartWidth - axis.right + axis.offset;
-                    right = left + tickWidth;
-                }
-                else if (side === 'left') {
-                    right = axis.left + axis.offset;
-                    left = right - tickWidth;
-                }
-                else {
-                    left = Math.round(axis.left + axis.translate(reversed ? nextTickPos : tickPos)) - crispCorr;
-                    right = Math.round(axis.left + axis.translate(reversed ? tickPos : nextTickPos)) - crispCorr;
-                }
-                tick.slotWidth = right - left;
-                // Calculate the positioning of the label based on
-                // alignment.
-                e.pos.x = (align === 'left' ?
-                    left :
-                    align === 'right' ?
-                        right :
-                        left + ((right - left) / 2) // default to center
-                );
-                e.pos.y = (verticalAlign === 'top' ?
-                    top :
-                    verticalAlign === 'bottom' ?
-                        bottom :
-                        top + ((bottom - top) / 2) // default to middle
-                );
-                lblMetrics = chart.renderer.fontMetrics(labelOpts.style.fontSize, label.element);
-                labelHeight = label.getBBox().height;
-                // Adjustment to y position to align the label correctly.
-                // Would be better to have a setter or similar for this.
-                if (!labelOpts.useHTML) {
-                    lines = Math.round(labelHeight / lblMetrics.h);
-                    e.pos.y += (
-                    // Center the label
-                    // TODO: why does this actually center the label?
-                    ((lblMetrics.b - (lblMetrics.h - lblMetrics.f)) / 2) +
-                        // Adjust for height of additional lines.
-                        -(((lines - 1) * lblMetrics.h) / 2));
-                }
-                else {
-                    e.pos.y += (
-                    // Readjust yCorr in htmlUpdateTransform
-                    lblMetrics.b +
-                        // Adjust for height of html label
-                        -(labelHeight / 2));
-                }
-                e.pos.x += (axis.horiz && labelOpts.x || 0);
-            }
-        });
-        addEvent(Tick, 'labelFormat', function (ctx) {
-            var axis = ctx.axis,
-                value = ctx.value;
-            if (axis.options.grid &&
-                axis.options.grid.enabled) {
-                var tickPos = axis.tickPositions;
-                var series = (axis.linkedParent || axis).series[0];
-                var isFirst = value === tickPos[0];
-                var isLast = value === tickPos[tickPos.length - 1];
-                var point = series && find(series.options.data,
-                    function (p) {
-                        return p[axis.isXAxis ? 'x' : 'y'] === value;
-                });
-                var pointCopy = void 0;
-                if (point && series.is('gantt')) {
-                    // For the Gantt set point aliases to the pointCopy
-                    // to do not change the original point
-                    pointCopy = merge(point);
-                    H.seriesTypes.gantt.prototype.pointClass
-                        .setGanttPointAliases(pointCopy);
-                }
-                // Make additional properties available for the
-                // formatter
-                ctx.isFirst = isFirst;
-                ctx.isLast = isLast;
-                ctx.point = pointCopy;
-            }
-        });
-        /* eslint-enable no-invalid-this */
-        /**
-         * Additions for grid axes.
-         * @private
-         * @class
-         */
-        var GridAxisAdditions = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                function GridAxisAdditions(axis) {
-                    this.axis = axis;
-            }
+        var GridAxis;
+        (function (GridAxis) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /**
+             * Enum for which side the axis is on. Maps to axis.side.
+             * @private
+             */
+            var Side;
+            (function (Side) {
+                Side[Side["top"] = 0] = "top";
+                Side[Side["right"] = 1] = "right";
+                Side[Side["bottom"] = 2] = "bottom";
+                Side[Side["left"] = 3] = "left";
+            })(Side = GridAxis.Side || (GridAxis.Side = {}));
             /* *
              *
              *  Functions
              *
              * */
+            /* eslint-disable valid-jsdoc */
             /**
-             * Checks if an axis is the outer axis in its dimension. Since
-             * axes are placed outwards in order, the axis with the highest
-             * index is the outermost axis.
-             *
-             * Example: If there are multiple x-axes at the top of the chart,
-             * this function returns true if the axis supplied is the last
-             * of the x-axes.
+             * Extends axis class with grid support.
+             * @private
+             */
+            function compose(AxisClass, ChartClass, TickClass) {
+                if (AxisClass.keepProps.indexOf('grid') === -1) {
+                    AxisClass.keepProps.push('grid');
+                    AxisClass.prototype.getMaxLabelDimensions = getMaxLabelDimensions;
+                    wrap(AxisClass.prototype, 'unsquish', wrapUnsquish);
+                    // Add event handlers
+                    addEvent(AxisClass, 'init', onInit);
+                    addEvent(AxisClass, 'afterGetOffset', onAfterGetOffset);
+                    addEvent(AxisClass, 'afterGetTitlePosition', onAfterGetTitlePosition);
+                    addEvent(AxisClass, 'afterInit', onAfterInit);
+                    addEvent(AxisClass, 'afterRender', onAfterRender);
+                    addEvent(AxisClass, 'afterSetAxisTranslation', onAfterSetAxisTranslation);
+                    addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions);
+                    addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions2);
+                    addEvent(AxisClass, 'afterSetScale', onAfterSetScale);
+                    addEvent(AxisClass, 'afterTickSize', onAfterTickSize);
+                    addEvent(AxisClass, 'trimTicks', onTrimTicks);
+                    addEvent(AxisClass, 'destroy', onDestroy);
+                }
+                addEvent(ChartClass, 'afterSetChartSize', onChartAfterSetChartSize);
+                addEvent(TickClass, 'afterGetLabelPosition', onTickAfterGetLabelPosition);
+                addEvent(TickClass, 'labelFormat', onTickLabelFormat);
+                return AxisClass;
+            }
+            GridAxis.compose = compose;
+            /**
+             * Get the largest label width and height.
              *
              * @private
+             * @function Highcharts.Axis#getMaxLabelDimensions
              *
-             * @return {boolean}
-             * True if the axis is the outermost axis in its dimension; false if
-             * not.
+             * @param {Highcharts.Dictionary<Highcharts.Tick>} ticks
+             * All the ticks on one axis.
+             *
+             * @param {Array<number|string>} tickPositions
+             * All the tick positions on one axis.
+             *
+             * @return {Highcharts.SizeObject}
+             * Object containing the properties height and width.
+             *
+             * @todo Move this to the generic axis implementation, as it is used there.
              */
-            GridAxisAdditions.prototype.isOuterAxis = function () {
-                var axis = this.axis;
-                var chart = axis.chart;
-                var columnIndex = axis.grid.columnIndex;
-                var columns = (axis.linkedParent && axis.linkedParent.grid.columns ||
-                        axis.grid.columns);
-                var parentAxis = columnIndex ? axis.linkedParent : axis;
-                var thisIndex = -1,
-                    lastIndex = 0;
-                chart[axis.coll].forEach(function (otherAxis, index) {
-                    if (otherAxis.side === axis.side && !otherAxis.options.isInternal) {
-                        lastIndex = index;
-                        if (otherAxis === parentAxis) {
-                            // Get the index of the axis in question
-                            thisIndex = index;
+            function getMaxLabelDimensions(ticks, tickPositions) {
+                var dimensions = {
+                        width: 0,
+                        height: 0
+                    };
+                tickPositions.forEach(function (pos) {
+                    var tick = ticks[pos];
+                    var labelHeight = 0,
+                        labelWidth = 0,
+                        label;
+                    if (isObject(tick)) {
+                        label = isObject(tick.label) ? tick.label : {};
+                        // Find width and height of label
+                        labelHeight = label.getBBox ? label.getBBox().height : 0;
+                        if (label.textStr && !isNumber(label.textPxLength)) {
+                            label.textPxLength = label.getBBox().width;
                         }
+                        labelWidth = isNumber(label.textPxLength) ?
+                            // Math.round ensures crisp lines
+                            Math.round(label.textPxLength) :
+                            0;
+                        if (label.textStr) {
+                            // Set the tickWidth same as the label width after ellipsis
+                            // applied #10281
+                            labelWidth = Math.round(label.getBBox().width);
+                        }
+                        // Update the result if width and/or height are larger
+                        dimensions.height = Math.max(labelHeight, dimensions.height);
+                        dimensions.width = Math.max(labelWidth, dimensions.width);
                     }
                 });
-                return (lastIndex === thisIndex &&
-                    (isNumber(columnIndex) ? columns.length === columnIndex : true));
-            };
-            /**
-             * Add extra border based on the provided path.
-             *  *
-             * @private
-             *
-             * @param {SVGPath} path
-             * The path of the border.
-             *
-             * @return {Highcharts.SVGElement}
-             */
-            GridAxisAdditions.prototype.renderBorder = function (path) {
-                var axis = this.axis,
-                    renderer = axis.chart.renderer,
-                    options = axis.options,
-                    extraBorderLine = renderer.path(path)
-                        .addClass('highcharts-axis-line')
-                        .add(axis.axisBorder);
-                if (!renderer.styledMode) {
-                    extraBorderLine.attr({
-                        stroke: options.lineColor,
-                        'stroke-width': options.lineWidth,
-                        zIndex: 7
-                    });
+                // For tree grid, add indentation
+                if (this.options.type === 'treegrid' &&
+                    this.treeGrid &&
+                    this.treeGrid.mapOfPosToGridNode) {
+                    var treeDepth = this.treeGrid.mapOfPosToGridNode[-1].height || 0;
+                    dimensions.width += this.options.labels.indentation * (treeDepth - 1);
                 }
-                return extraBorderLine;
-            };
-            return GridAxisAdditions;
-        }());
-        /**
-         * Axis with grid support.
-         * @private
-         * @class
-         */
-        var GridAxis = /** @class */ (function () {
-                function GridAxis() {
-                }
-                /* *
-                 *
-                 *  Static Functions
-                 *
-                 * */
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Extends axis class with grid support.
-                 * @private
-                 */
-                GridAxis.compose = function (AxisClass) {
-                    Axis.keepProps.push('grid');
-                wrap(AxisClass.prototype, 'unsquish', GridAxis.wrapUnsquish);
-                // Add event handlers
-                addEvent(AxisClass, 'init', GridAxis.onInit);
-                addEvent(AxisClass, 'afterGetOffset', GridAxis.onAfterGetOffset);
-                addEvent(AxisClass, 'afterGetTitlePosition', GridAxis.onAfterGetTitlePosition);
-                addEvent(AxisClass, 'afterInit', GridAxis.onAfterInit);
-                addEvent(AxisClass, 'afterRender', GridAxis.onAfterRender);
-                addEvent(AxisClass, 'afterSetAxisTranslation', GridAxis.onAfterSetAxisTranslation);
-                addEvent(AxisClass, 'afterSetOptions', GridAxis.onAfterSetOptions);
-                addEvent(AxisClass, 'afterSetOptions', GridAxis.onAfterSetOptions2);
-                addEvent(AxisClass, 'afterSetScale', GridAxis.onAfterSetScale);
-                addEvent(AxisClass, 'afterTickSize', GridAxis.onAfterTickSize);
-                addEvent(AxisClass, 'trimTicks', GridAxis.onTrimTicks);
-                addEvent(AxisClass, 'destroy', GridAxis.onDestroy);
-            };
+                return dimensions;
+            }
             /**
              * Handle columns and getOffset.
              * @private
              */
-            GridAxis.onAfterGetOffset = function () {
+            function onAfterGetOffset() {
                 var grid = this.grid;
                 (grid && grid.columns || []).forEach(function (column) {
                     column.getOffset();
                 });
-            };
+            }
             /**
              * @private
              */
-            GridAxis.onAfterGetTitlePosition = function (e) {
+            function onAfterGetTitlePosition(e) {
                 var axis = this;
                 var options = axis.options;
                 var gridOptions = options.grid || {};
@@ -526,11 +255,11 @@
                             yOption) :
                         axisTop - titleMargin + yOption;
                 }
-            };
+            }
             /**
              * @private
              */
-            GridAxis.onAfterInit = function () {
+            function onAfterInit() {
                 var axis = this;
                 var chart = axis.chart,
                     _a = axis.options.grid,
@@ -540,8 +269,8 @@
                     applyGridOptions(axis);
                 }
                 if (gridOptions.columns) {
-                    var columns = axis.grid.columns = [],
-                        columnIndex = axis.grid.columnIndex = 0;
+                    var columns = axis.grid.columns = [];
+                    var columnIndex = axis.grid.columnIndex = 0;
                     // Handle columns, each column is a grid axis
                     while (++columnIndex < gridOptions.columns.length) {
                         var columnOptions = merge(userOptions,
@@ -566,7 +295,7 @@
                         columns.push(column);
                     }
                 }
-            };
+            }
             /**
              * Draw an extra line on the far side of the outermost axis,
              * creating floor/roof/wall of a grid. And some padding.
@@ -580,12 +309,14 @@
              * ```
              * @private
              */
-            GridAxis.onAfterRender = function () {
+            function onAfterRender() {
                 var axis = this,
                     grid = axis.grid,
                     options = axis.options,
                     gridOptions = options.grid || {};
                 if (gridOptions.enabled === true) {
+                    var min = axis.min || 0,
+                        max = axis.max || 0;
                     // @todo acutual label padding (top, bottom, left, right)
                     axis.maxLabelDimensions = axis.getMaxLabelDimensions(axis.ticks, axis.tickPositions);
                     // Remove right wall before rendering if updating
@@ -625,19 +356,46 @@
                             // If it doesn't exist, add an upper and lower border
                             // for the vertical grid axis.
                             if (!axis.horiz && axis.chart.marginRight) {
-                                var upperBorderStartPoint = startPoint, upperBorderEndPoint = ['L', axis.left, startPoint[2]], upperBorderPath = [upperBorderStartPoint, upperBorderEndPoint], lowerBorderEndPoint = ['L', axis.chart.chartWidth - axis.chart.marginRight, axis.toPixels(axis.max + axis.tickmarkOffset)], lowerBorderStartPoint = ['M', endPoint[1], axis.toPixels(axis.max + axis.tickmarkOffset)], lowerBorderPath = [lowerBorderStartPoint, lowerBorderEndPoint];
-                                if (!axis.grid.upperBorder && axis.min % 1 !== 0) {
+                                var upperBorderStartPoint = startPoint,
+                                    upperBorderEndPoint = [
+                                        'L',
+                                        axis.left,
+                                        startPoint[2] || 0
+                                    ],
+                                    upperBorderPath = [upperBorderStartPoint,
+                                    upperBorderEndPoint],
+                                    lowerBorderEndPoint = [
+                                        'L',
+                                        axis.chart.chartWidth - axis.chart.marginRight,
+                                        axis.toPixels(max + axis.tickmarkOffset)
+                                    ],
+                                    lowerBorderStartPoint = [
+                                        'M',
+                                        endPoint[1] || 0,
+                                        axis.toPixels(max + axis.tickmarkOffset)
+                                    ],
+                                    lowerBorderPath = [lowerBorderStartPoint,
+                                    lowerBorderEndPoint];
+                                if (!axis.grid.upperBorder && min % 1 !== 0) {
                                     axis.grid.upperBorder = axis.grid.renderBorder(upperBorderPath);
                                 }
                                 if (axis.grid.upperBorder) {
+                                    axis.grid.upperBorder.attr({
+                                        stroke: options.lineColor,
+                                        'stroke-width': options.lineWidth
+                                    });
                                     axis.grid.upperBorder.animate({
                                         d: upperBorderPath
                                     });
                                 }
-                                if (!axis.grid.lowerBorder && axis.max % 1 !== 0) {
+                                if (!axis.grid.lowerBorder && max % 1 !== 0) {
                                     axis.grid.lowerBorder = axis.grid.renderBorder(lowerBorderPath);
                                 }
                                 if (axis.grid.lowerBorder) {
+                                    axis.grid.lowerBorder.attr({
+                                        stroke: options.lineColor,
+                                        'stroke-width': options.lineWidth
+                                    });
                                     axis.grid.lowerBorder.animate({
                                         d: lowerBorderPath
                                     });
@@ -649,6 +407,10 @@
                                 axis.grid.axisLineExtra = axis.grid.renderBorder(linePath);
                             }
                             else {
+                                axis.grid.axisLineExtra.attr({
+                                    stroke: options.lineColor,
+                                    'stroke-width': options.lineWidth
+                                });
                                 axis.grid.axisLineExtra.animate({
                                     d: linePath
                                 });
@@ -667,38 +429,45 @@
                         axis.chart.hasRendered &&
                         (axis.scrollbar ||
                             (axis.linkedParent && axis.linkedParent.scrollbar))) {
-                        var max = axis.max,
-                            min = axis.min,
-                            tickmarkOffset = axis.tickmarkOffset,
+                        var tickmarkOffset = axis.tickmarkOffset,
                             lastTick = axis.tickPositions[axis.tickPositions.length - 1],
                             firstTick = axis.tickPositions[0];
                         // Hide/show firts tick label.
-                        if (min - firstTick > tickmarkOffset) {
-                            axis.ticks[firstTick].label.hide();
-                        }
-                        else {
-                            axis.ticks[firstTick].label.show();
+                        var label = axis.ticks[firstTick].label;
+                        if (label) {
+                            if (min - firstTick > tickmarkOffset) {
+                                label.hide();
+                            }
+                            else {
+                                label.show();
+                            }
                         }
                         // Hide/show last tick mark/label.
-                        if (lastTick - max > tickmarkOffset) {
-                            axis.ticks[lastTick].label.hide();
+                        label = axis.ticks[lastTick].label;
+                        if (label) {
+                            if (lastTick - max > tickmarkOffset) {
+                                label.hide();
+                            }
+                            else {
+                                label.show();
+                            }
                         }
-                        else {
-                            axis.ticks[lastTick].label.show();
-                        }
-                        if (lastTick - max < tickmarkOffset && lastTick - max > 0 && axis.ticks[lastTick].isLast) {
-                            axis.ticks[lastTick].mark.hide();
-                        }
-                        else if (axis.ticks[lastTick - 1]) {
-                            axis.ticks[lastTick - 1].mark.show();
+                        var mark = axis.ticks[lastTick].mark;
+                        if (mark) {
+                            if (lastTick - max < tickmarkOffset && lastTick - max > 0 && axis.ticks[lastTick].isLast) {
+                                mark.hide();
+                            }
+                            else if (axis.ticks[lastTick - 1]) {
+                                mark.show();
+                            }
                         }
                     }
                 }
-            };
+            }
             /**
              * @private
              */
-            GridAxis.onAfterSetAxisTranslation = function () {
+            function onAfterSetAxisTranslation() {
                 var axis = this;
                 var tickInfo = axis.tickPositions && axis.tickPositions.info;
                 var options = axis.options;
@@ -737,7 +506,7 @@
                         }
                     }
                 }
-            };
+            }
             /**
              * Creates a left and right wall on horizontal axes:
              * - Places leftmost tick at the start of the axis, to create a left
@@ -746,11 +515,11 @@
              *   create a right wall.
              * @private
              */
-            GridAxis.onAfterSetOptions = function (e) {
+            function onAfterSetOptions(e) {
                 var options = this.options,
                     userOptions = e.userOptions,
-                    gridAxisOptions,
                     gridOptions = ((options && isObject(options.grid)) ? options.grid : {});
+                var gridAxisOptions;
                 if (gridOptions.enabled === true) {
                     // Merge the user options into default grid axis options so
                     // that when a user option is set, it takes presedence.
@@ -837,13 +606,11 @@
                                         this.linkedParent.tickPositions &&
                                         this.linkedParent.tickPositions.info);
                                 if (parentInfo) {
+                                    var units = (gridAxisOptions.units || []);
                                     var unitIdx = void 0,
                                         count = void 0,
-                                        unitName = void 0,
-                                        i = void 0,
-                                        units = gridAxisOptions.units,
-                                        unitRange = void 0;
-                                    for (i = 0; i < units.length; i++) {
+                                        unitName = void 0;
+                                    for (var i = 0; i < units.length; i++) {
                                         if (units[i][0] ===
                                             parentInfo.unitName) {
                                             unitIdx = i;
@@ -864,7 +631,7 @@
                                         unitName = 'year';
                                         count = parentInfo.count * 10;
                                     }
-                                    unitRange = timeUnits[unitName];
+                                    var unitRange = timeUnits[unitName];
                                     this.tickInterval = unitRange * count;
                                     return this.getTimeTicks({
                                         unitRange: unitRange,
@@ -894,11 +661,11 @@
                             gridOptions.borderWidth;
                     }
                 }
-            };
+            }
             /**
              * @private
              */
-            GridAxis.onAfterSetOptions2 = function (e) {
+            function onAfterSetOptions2(e) {
                 var axis = this;
                 var userOptions = e.userOptions;
                 var gridOptions = userOptions && userOptions.grid || {};
@@ -908,24 +675,24 @@
                 if (gridOptions.enabled && columns) {
                     merge(true, axis.options, columns[columns.length - 1]);
                 }
-            };
+            }
             /**
              * Handle columns and setScale.
              * @private
              */
-            GridAxis.onAfterSetScale = function () {
+            function onAfterSetScale() {
                 var axis = this;
                 (axis.grid.columns || []).forEach(function (column) {
                     column.setScale();
                 });
-            };
+            }
             /**
              * Draw vertical axis ticks extra long to create cell floors and roofs.
              * Overrides the tickLength for vertical axes.
              * @private
              */
-            GridAxis.onAfterTickSize = function (e) {
-                var defaultLeftAxisOptions = Axis.defaultLeftAxisOptions;
+            function onAfterTickSize(e) {
+                var defaultLeftAxisOptions = AxisDefaults.defaultLeftAxisOptions;
                 var _a = this,
                     horiz = _a.horiz,
                     maxLabelDimensions = _a.maxLabelDimensions,
@@ -943,22 +710,33 @@
                         e.tickSize = [distance, 0];
                     }
                 }
-            };
+            }
             /**
              * @private
              */
-            GridAxis.onDestroy = function (e) {
+            function onChartAfterSetChartSize() {
+                this.axes.forEach(function (axis) {
+                    (axis.grid && axis.grid.columns || []).forEach(function (column) {
+                        column.setAxisSize();
+                        column.setAxisTranslation();
+                    });
+                });
+            }
+            /**
+             * @private
+             */
+            function onDestroy(e) {
                 var grid = this.grid;
                 (grid.columns || []).forEach(function (column) {
                     column.destroy(e.keepEvents);
                 });
                 grid.columns = void 0;
-            };
+            }
             /**
              * Wraps axis init to draw cell walls on vertical axes.
              * @private
              */
-            GridAxis.onInit = function (e) {
+            function onInit(e) {
                 var axis = this;
                 var userOptions = e.userOptions || {};
                 var gridOptions = userOptions.grid || {};
@@ -966,9 +744,140 @@
                     userOptions.tickColor = userOptions.lineColor = gridOptions.borderColor;
                 }
                 if (!axis.grid) {
-                    axis.grid = new GridAxisAdditions(axis);
+                    axis.grid = new Additions(axis);
                 }
-            };
+            }
+            /**
+             * Center tick labels in cells.
+             * @private
+             */
+            function onTickAfterGetLabelPosition(e) {
+                var tick = this,
+                    label = tick.label,
+                    axis = tick.axis,
+                    reversed = axis.reversed,
+                    chart = axis.chart,
+                    options = axis.options,
+                    gridOptions = options.grid || {},
+                    labelOpts = axis.options.labels,
+                    align = labelOpts.align, 
+                    // verticalAlign is currently not supported for axis.labels.
+                    verticalAlign = 'middle', // labelOpts.verticalAlign,
+                    side = GridAxis.Side[axis.side],
+                    tickmarkOffset = e.tickmarkOffset,
+                    tickPositions = axis.tickPositions,
+                    tickPos = tick.pos - tickmarkOffset,
+                    nextTickPos = (isNumber(tickPositions[e.index + 1]) ?
+                        tickPositions[e.index + 1] - tickmarkOffset :
+                        (axis.max || 0) + tickmarkOffset),
+                    tickSize = axis.tickSize('tick'),
+                    tickWidth = tickSize ? tickSize[0] : 0,
+                    crispCorr = tickSize ? tickSize[1] / 2 : 0;
+                var labelHeight,
+                    lblMetrics,
+                    lines,
+                    bottom,
+                    top,
+                    left,
+                    right;
+                // Only center tick labels in grid axes
+                if (gridOptions.enabled === true) {
+                    // Calculate top and bottom positions of the cell.
+                    if (side === 'top') {
+                        bottom = axis.top + axis.offset;
+                        top = bottom - tickWidth;
+                    }
+                    else if (side === 'bottom') {
+                        top = chart.chartHeight - axis.bottom + axis.offset;
+                        bottom = top + tickWidth;
+                    }
+                    else {
+                        bottom = axis.top + axis.len - (axis.translate(reversed ? nextTickPos : tickPos) || 0);
+                        top = axis.top + axis.len - (axis.translate(reversed ? tickPos : nextTickPos) || 0);
+                    }
+                    // Calculate left and right positions of the cell.
+                    if (side === 'right') {
+                        left = chart.chartWidth - axis.right + axis.offset;
+                        right = left + tickWidth;
+                    }
+                    else if (side === 'left') {
+                        right = axis.left + axis.offset;
+                        left = right - tickWidth;
+                    }
+                    else {
+                        left = Math.round(axis.left + (axis.translate(reversed ? nextTickPos : tickPos) || 0)) - crispCorr;
+                        right = Math.min(// #15742
+                        Math.round(axis.left + (axis.translate(reversed ? tickPos : nextTickPos) || 0)) - crispCorr, axis.left + axis.len);
+                    }
+                    tick.slotWidth = right - left;
+                    // Calculate the positioning of the label based on
+                    // alignment.
+                    e.pos.x = (align === 'left' ?
+                        left :
+                        align === 'right' ?
+                            right :
+                            left + ((right - left) / 2) // default to center
+                    );
+                    e.pos.y = (verticalAlign === 'top' ?
+                        top :
+                        verticalAlign === 'bottom' ?
+                            bottom :
+                            top + ((bottom - top) / 2) // default to middle
+                    );
+                    lblMetrics = chart.renderer.fontMetrics(labelOpts.style.fontSize, label && label.element);
+                    labelHeight = label ? label.getBBox().height : 0;
+                    // Adjustment to y position to align the label correctly.
+                    // Would be better to have a setter or similar for this.
+                    if (!labelOpts.useHTML) {
+                        lines = Math.round(labelHeight / lblMetrics.h);
+                        e.pos.y += (
+                        // Center the label
+                        // TODO: why does this actually center the label?
+                        ((lblMetrics.b - (lblMetrics.h - lblMetrics.f)) / 2) +
+                            // Adjust for height of additional lines.
+                            -(((lines - 1) * lblMetrics.h) / 2));
+                    }
+                    else {
+                        e.pos.y += (
+                        // Readjust yCorr in htmlUpdateTransform
+                        lblMetrics.b +
+                            // Adjust for height of html label
+                            -(labelHeight / 2));
+                    }
+                    e.pos.x += (axis.horiz && labelOpts.x) || 0;
+                }
+            }
+            /**
+             * @private
+             */
+            function onTickLabelFormat(ctx) {
+                var axis = ctx.axis,
+                    value = ctx.value;
+                if (axis.options.grid &&
+                    axis.options.grid.enabled) {
+                    var tickPos = axis.tickPositions;
+                    var series = (axis.linkedParent || axis).series[0];
+                    var isFirst = value === tickPos[0];
+                    var isLast = value === tickPos[tickPos.length - 1];
+                    var point = series && find(series.options.data,
+                        function (p) {
+                            return p[axis.isXAxis ? 'x' : 'y'] === value;
+                    });
+                    var pointCopy = void 0;
+                    if (point && series.is('gantt')) {
+                        // For the Gantt set point aliases to the pointCopy
+                        // to do not change the original point
+                        pointCopy = merge(point);
+                        H.seriesTypes.gantt.prototype.pointClass
+                            .setGanttPointAliases(pointCopy);
+                    }
+                    // Make additional properties available for the
+                    // formatter
+                    ctx.isFirst = isFirst;
+                    ctx.isLast = isLast;
+                    ctx.point = pointCopy;
+                }
+            }
             /**
              * Makes tick labels which are usually ignored in a linked axis
              * displayed if they are within range of linkedParent.min.
@@ -988,7 +897,7 @@
              * @todo Does this function do what the drawing says? Seems to affect
              *       ticks and not the labels directly?
              */
-            GridAxis.onTrimTicks = function () {
+            function onTrimTicks() {
                 var axis = this;
                 var options = axis.options;
                 var gridOptions = options.grid || {};
@@ -1015,12 +924,12 @@
                         tickPositions[tickPositions.length - 1] = max;
                     }
                 }
-            };
+            }
             /**
              * Avoid altering tickInterval when reserving space.
              * @private
              */
-            GridAxis.wrapUnsquish = function (proceed) {
+            function wrapUnsquish(proceed) {
                 var axis = this;
                 var _a = axis.options.grid,
                     gridOptions = _a === void 0 ? {} : _a;
@@ -1028,28 +937,211 @@
                     return axis.tickInterval;
                 }
                 return proceed.apply(axis, argsToArray(arguments));
-            };
-            return GridAxis;
-        }());
-        (function (GridAxis) {
+            }
+            /* *
+             *
+             *  Class
+             *
+             * */
             /**
-             * Enum for which side the axis is on. Maps to axis.side.
+             * Additions for grid axes.
              * @private
+             * @class
              */
-            var Side;
-            (function (Side) {
-                Side[Side["top"] = 0] = "top";
-                Side[Side["right"] = 1] = "right";
-                Side[Side["bottom"] = 2] = "bottom";
-                Side[Side["left"] = 3] = "left";
-            })(Side = GridAxis.Side || (GridAxis.Side = {}));
+            var Additions = /** @class */ (function () {
+                    /* *
+                    *
+                    *  Constructors
+                    *
+                    * */
+                    function Additions(axis) {
+                        this.axis = axis;
+                }
+                /* *
+                *
+                *  Functions
+                *
+                * */
+                /**
+                 * Checks if an axis is the outer axis in its dimension. Since
+                 * axes are placed outwards in order, the axis with the highest
+                 * index is the outermost axis.
+                 *
+                 * Example: If there are multiple x-axes at the top of the chart,
+                 * this function returns true if the axis supplied is the last
+                 * of the x-axes.
+                 *
+                 * @private
+                 *
+                 * @return {boolean}
+                 * True if the axis is the outermost axis in its dimension; false if
+                 * not.
+                 */
+                Additions.prototype.isOuterAxis = function () {
+                    var axis = this.axis;
+                    var chart = axis.chart;
+                    var columnIndex = axis.grid.columnIndex;
+                    var columns = (axis.linkedParent && axis.linkedParent.grid.columns ||
+                            axis.grid.columns);
+                    var parentAxis = columnIndex ? axis.linkedParent : axis;
+                    var thisIndex = -1,
+                        lastIndex = 0;
+                    chart[axis.coll].forEach(function (otherAxis, index) {
+                        if (otherAxis.side === axis.side && !otherAxis.options.isInternal) {
+                            lastIndex = index;
+                            if (otherAxis === parentAxis) {
+                                // Get the index of the axis in question
+                                thisIndex = index;
+                            }
+                        }
+                    });
+                    return (lastIndex === thisIndex &&
+                        (isNumber(columnIndex) ? columns.length === columnIndex : true));
+                };
+                /**
+                 * Add extra border based on the provided path.
+                 *  *
+                 * @private
+                 *
+                 * @param {SVGPath} path
+                 * The path of the border.
+                 *
+                 * @return {Highcharts.SVGElement}
+                 */
+                Additions.prototype.renderBorder = function (path) {
+                    var axis = this.axis,
+                        renderer = axis.chart.renderer,
+                        options = axis.options,
+                        extraBorderLine = renderer.path(path)
+                            .addClass('highcharts-axis-line')
+                            .add(axis.axisBorder);
+                    if (!renderer.styledMode) {
+                        extraBorderLine.attr({
+                            stroke: options.lineColor,
+                            'stroke-width': options.lineWidth,
+                            zIndex: 7
+                        });
+                    }
+                    return extraBorderLine;
+                };
+                return Additions;
+            }());
+            GridAxis.Additions = Additions;
         })(GridAxis || (GridAxis = {}));
-        GridAxis.compose(Axis);
+        /* *
+         *
+         *  Registry
+         *
+         * */
+        // First letter of the day of the week, e.g. 'M' for 'Monday'.
+        dateFormats.E = function (timestamp) {
+            return this.dateFormat('%a', timestamp, true).charAt(0);
+        };
+        // Adds week date format
+        dateFormats.W = function (timestamp) {
+            var d = new this.Date(timestamp);
+            var firstDay = (this.get('Day',
+                d) + 6) % 7;
+            var thursday = new this.Date(d.valueOf());
+            this.set('Date', thursday, this.get('Date', d) - firstDay + 3);
+            var firstThursday = new this.Date(this.get('FullYear',
+                thursday), 0, 1);
+            if (this.get('Day', firstThursday) !== 4) {
+                this.set('Month', d, 0);
+                this.set('Date', d, 1 + (11 - this.get('Day', firstThursday)) % 7);
+            }
+            return (1 +
+                Math.floor((thursday.valueOf() - firstThursday.valueOf()) / 604800000)).toString();
+        };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * @productdesc {gantt}
+         * For grid axes (like in Gantt charts),
+         * it is possible to declare as a list to provide different
+         * formats depending on available space.
+         *
+         * Defaults to:
+         * ```js
+         * {
+         *     hour: { list: ['%H:%M', '%H'] },
+         *     day: { list: ['%A, %e. %B', '%a, %e. %b', '%E'] },
+         *     week: { list: ['Week %W', 'W%W'] },
+         *     month: { list: ['%B', '%b', '%o'] }
+         * }
+         * ```
+         *
+         * @sample {gantt} gantt/grid-axis/date-time-label-formats
+         *         Gantt chart with custom axis date format.
+         *
+         * @apioption xAxis.dateTimeLabelFormats
+         */
+        /**
+         * Set grid options for the axis labels. Requires Highcharts Gantt.
+         *
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption xAxis.grid
+         */
+        /**
+         * Enable grid on the axis labels. Defaults to true for Gantt charts.
+         *
+         * @type      {boolean}
+         * @default   true
+         * @since     6.2.0
+         * @product   gantt
+         * @apioption xAxis.grid.enabled
+         */
+        /**
+         * Set specific options for each column (or row for horizontal axes) in the
+         * grid. Each extra column/row is its own axis, and the axis options can be set
+         * here.
+         *
+         * @sample gantt/demo/left-axis-table
+         *         Left axis as a table
+         *
+         * @type      {Array<Highcharts.XAxisOptions>}
+         * @apioption xAxis.grid.columns
+         */
+        /**
+         * Set border color for the label grid lines.
+         *
+         * @type      {Highcharts.ColorString}
+         * @apioption xAxis.grid.borderColor
+         */
+        /**
+         * Set border width of the label grid lines.
+         *
+         * @type      {number}
+         * @default   1
+         * @apioption xAxis.grid.borderWidth
+         */
+        /**
+         * Set cell height for grid axis labels. By default this is calculated from font
+         * size. This option only applies to horizontal axes.
+         *
+         * @sample gantt/grid-axis/cellheight
+         *         Gant chart with custom cell height
+         * @type      {number}
+         * @apioption xAxis.grid.cellHeight
+         */
+        ''; // keeps doclets above in JS file
 
         return GridAxis;
     });
-    _registerModule(_modules, 'masters/modules/grid-axis.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/grid-axis.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/GridAxis.js']], function (Highcharts, GridAxis) {
 
+        var G = Highcharts;
+        // Compositions
+        GridAxis.compose(G.Axis, G.Chart, G.Tick);
 
     });
 }));

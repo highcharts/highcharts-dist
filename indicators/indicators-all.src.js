@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.1.0 (2021-05-04)
+ * @license Highstock JS v9.1.1 (2021-06-04)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -421,7 +421,7 @@
              * Data in OHLC format is required.
              *
              * @sample {highstock} stock/indicators/use-ohlc-data
-             *         Plot line on Y axis
+             *         Use OHLC data format to plot line chart
              *
              * @type      {boolean}
              * @product   highstock

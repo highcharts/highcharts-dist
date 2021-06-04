@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.1.0 (2021-05-04)
+ * @license Highcharts Gantt JS v9.1.1 (2021-06-04)
  * @module highcharts/modules/grid-axis
  * @requires highcharts
  *
@@ -10,4 +10,8 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Core/Axis/GridAxis.js';
+import Highcharts from '../../Core/Globals.js';
+import GridAxis from '../../Core/Axis/GridAxis.js';
+var G = Highcharts;
+// Compositions
+GridAxis.compose(G.Axis, G.Chart, G.Tick);

@@ -13,6 +13,7 @@ var format = F.format;
 import H from './Globals.js';
 var doc = H.doc;
 import palette from './Color/Palette.js';
+import RendererRegistry from './Renderer/RendererRegistry.js';
 import U from './Utilities.js';
 var clamp = U.clamp, css = U.css, defined = U.defined, discardElement = U.discardElement, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, isString = U.isString, merge = U.merge, pick = U.pick, splat = U.splat, syncTimeout = U.syncTimeout, timeUnits = U.timeUnits;
 /**
@@ -441,7 +442,7 @@ var Tooltip = /** @class */ (function () {
         };
         if (!this.label) {
             if (this.outside) {
-                var chartStyle = this.chart.options.chart.style;
+                var chartStyle = this.chart.options.chart.style, Renderer = RendererRegistry.getRendererType();
                 /**
                  * Reference to the tooltip's container, when
                  * [Highcharts.Tooltip#outside] is set to true, otherwise
@@ -467,7 +468,7 @@ var Tooltip = /** @class */ (function () {
                  * @name Highcharts.Tooltip#renderer
                  * @type {Highcharts.SVGRenderer|undefined}
                  */
-                this.renderer = renderer = new H.Renderer(container, 0, 0, chartStyle, void 0, void 0, renderer.styledMode);
+                this.renderer = renderer = new Renderer(container, 0, 0, chartStyle, void 0, void 0, renderer.styledMode);
             }
             // Create the label
             if (this.split) {

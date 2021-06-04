@@ -15,10 +15,6 @@ export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
     interface Chart {
         /**
-         * Dismiss popup content in chart, including export menu and tooltip.
-         */
-        dismissPopupContent(): void;
-        /**
          * Apply context to a format string from lang options of the chart.
          *
          * @param langKey

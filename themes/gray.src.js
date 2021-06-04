@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/Gray.js', [_modules['Core/Globals.js'], _modules['Core/Options.js']], function (H, O) {
+    _registerModule(_modules, 'Extensions/Themes/Gray.js', [_modules['Core/Globals.js'], _modules['Core/DefaultOptions.js']], function (H, D) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -38,7 +38,12 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
+        /* *
+         *
+         *  Theme
+         *
+         * */
         H.theme = {
             colors: ['#DDDF0D', '#7798BF', '#55BF3B', '#DF5353', '#aaeeee',
                 '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],

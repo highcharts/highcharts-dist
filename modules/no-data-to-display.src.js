@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/NoDataToDisplay.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Utilities.js']], function (AST, Chart, O, palette, U) {
+    _registerModule(_modules, 'Extensions/NoDataToDisplay.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Utilities.js']], function (AST, Chart, D, palette, U) {
         /* *
          *
          *  Plugin for displaying a message when there is no data visible in chart.
@@ -43,7 +43,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getOptions = O.getOptions;
+        var getOptions = D.getOptions;
         var addEvent = U.addEvent,
             extend = U.extend;
         var chartPrototype = Chart.prototype,

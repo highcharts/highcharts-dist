@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/ParallelCoordinates.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Chart, F, H, O, Series, U) {
+    _registerModule(_modules, 'Extensions/ParallelCoordinates.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Chart, F, H, D, Series, U) {
         /* *
          *
          *  Parallel coordinates module
@@ -41,7 +41,7 @@
          *
          * */
         var format = F.format;
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
         var addEvent = U.addEvent,
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
@@ -52,6 +52,11 @@
             pick = U.pick,
             splat = U.splat,
             wrap = U.wrap;
+        /* *
+         *
+         *  Constants
+         *
+         * */
         // Extensions for parallel coordinates plot.
         var ChartProto = Chart.prototype;
         var defaultXAxisOptions = {

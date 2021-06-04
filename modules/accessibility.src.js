@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Accessibility module
  *
@@ -623,9 +623,9 @@
              *      a success/fail/unhandled, or if we should move to next/prev module.
              */
             run: function (e) {
-                var keyCode = e.which || e.keyCode,
-                    response = this.response.noHandler,
-                    handlerCodeSet = find(this.keyCodeMap,
+                var keyCode = e.which || e.keyCode;
+                var response = this.response.noHandler;
+                var handlerCodeSet = find(this.keyCodeMap,
                     function (codeSet) {
                         return codeSet[0].indexOf(keyCode) > -1;
                 });
@@ -954,6 +954,9 @@
                     }
                 });
                 proxy.className = 'highcharts-a11y-proxy-button';
+                if (svgElement.hasClass('highcharts-no-tooltip')) {
+                    proxy.className += ' highcharts-no-tooltip';
+                }
                 if (preClickEvent) {
                     this.addEvent(proxy, 'click', preClickEvent);
                 }
@@ -1022,8 +1025,8 @@
                 merge(true, proxy.style, {
                     width: (bBox.width || 1) + 'px',
                     height: (bBox.height || 1) + 'px',
-                    left: (bBox.x || 0) + 'px',
-                    top: (bBox.y || 0) + 'px'
+                    left: (Math.round(bBox.x) || 0) + 'px',
+                    top: (Math.round(bBox.y) || 0) + 'px'
                 });
             },
             /**
@@ -1134,7 +1137,7 @@
 
         return AccessibilityComponent;
     });
-    _registerModule(_modules, 'Accessibility/KeyboardNavigation.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/Utils/EventProvider.js']], function (H, U, HTMLUtilities, EventProvider) {
+    _registerModule(_modules, 'Accessibility/KeyboardNavigation.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/Utils/EventProvider.js']], function (Chart, H, U, HTMLUtilities, EventProvider) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -1168,7 +1171,7 @@
         /**
          * Dismiss popup content in chart, including export menu and tooltip.
          */
-        H.Chart.prototype.dismissPopupContent = function () {
+        Chart.prototype.dismissPopupContent = function () {
             var chart = this;
             fireEvent(this, 'dismissPopupContent', {}, function () {
                 if (chart.tooltip) {
@@ -1270,7 +1273,11 @@
                 var focusComesFromChart = (e.relatedTarget &&
                         chart.container.contains(e.relatedTarget));
                 // Init keyboard nav if tabbing into chart
-                if (!this.exiting && !this.isClickingChart && !focusComesFromChart && this.modules[0]) {
+                if (!this.exiting &&
+                    !this.tabbingInBackwards &&
+                    !this.isClickingChart &&
+                    !focusComesFromChart &&
+                    this.modules[0]) {
                     this.modules[0].init(1);
                 }
                 this.exiting = false;
@@ -1474,7 +1481,10 @@
                             chart.container.contains(e.relatedTarget)),
                         comingInBackwards = !(focusComesFromChart || keyboardNavigation.exiting);
                     if (comingInBackwards) {
+                        // Focus the container instead
+                        keyboardNavigation.tabbingInBackwards = true;
                         keyboardNavigation.tabindexContainer.focus();
+                        delete keyboardNavigation.tabbingInBackwards;
                         e.preventDefault();
                         // Move to last valid keyboard nav module
                         // Note the we don't run it, just set the index
@@ -1514,7 +1524,7 @@
 
         return KeyboardNavigation;
     });
-    _registerModule(_modules, 'Accessibility/Components/LegendComponent.js', [_modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, Legend, U, AccessibilityComponent, KeyboardNavigationHandler, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/LegendComponent.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Legend.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (Chart, H, Legend, U, AccessibilityComponent, KeyboardNavigationHandler, HTMLUtilities) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -1529,7 +1539,8 @@
         var addEvent = U.addEvent,
             extend = U.extend,
             find = U.find,
-            fireEvent = U.fireEvent;
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber;
         var removeElement = HTMLUtilities.removeElement,
             stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
         /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -1563,11 +1574,12 @@
          *
          * @return {boolean}
          */
-        H.Chart.prototype.highlightLegendItem = function (ix) {
+        Chart.prototype.highlightLegendItem = function (ix) {
             var items = this.legend.allItems,
-                oldIx = this.highlightedLegendItemIx;
+                oldIx = this.accessibility &&
+                    this.accessibility.components.legend.highlightedLegendItemIx;
             if (items[ix]) {
-                if (items[oldIx]) {
+                if (isNumber(oldIx) && items[oldIx]) {
                     fireEvent(items[oldIx].legendGroup.element, 'mouseout');
                 }
                 scrollLegendToItem(this.legend, ix);
@@ -1684,6 +1696,7 @@
                 this.removeProxies();
                 if (shouldDoLegendA11y(this.chart)) {
                     this.addLegendProxyGroup();
+                    this.addLegendListContainer();
                     this.proxyLegendItems();
                     this.updateLegendItemProxyVisibility();
                 }
@@ -1727,6 +1740,16 @@
             /**
              * @private
              */
+            addLegendListContainer: function () {
+                if (this.legendProxyGroup) {
+                    var container = this.legendListContainer = this.createElement('ul');
+                    container.style.listStyle = 'none';
+                    this.legendProxyGroup.appendChild(container);
+                }
+            },
+            /**
+             * @private
+             */
             proxyLegendItems: function () {
                 var component = this,
                     items = (this.chart.legend &&
@@ -1742,7 +1765,7 @@
              * @param {Highcharts.BubbleLegend|Point|Highcharts.Series} item
              */
             proxyLegendItem: function (item) {
-                if (!item.legendItem || !item.legendGroup) {
+                if (!item.legendItem || !item.legendGroup || !this.legendListContainer) {
                     return;
                 }
                 var itemLabel = this.chart.langFormat('accessibility.legend.legendItem', {
@@ -1758,7 +1781,9 @@
                     // Considers useHTML
                     proxyPositioningElement = item.legendGroup.div ?
                         item.legendItem : item.legendGroup;
-                item.a11yProxyElement = this.createProxyButton(item.legendItem, this.legendProxyGroup, attribs, proxyPositioningElement);
+                var listItem = this.createElement('li');
+                this.legendListContainer.appendChild(listItem);
+                item.a11yProxyElement = this.createProxyButton(item.legendItem, listItem, attribs, proxyPositioningElement);
                 this.proxyElementsList.push({
                     item: item,
                     element: item.a11yProxyElement,
@@ -1796,6 +1821,9 @@
                     },
                     init: function (direction) {
                         return component.onKbdNavigationInit(direction);
+                    },
+                    terminate: function () {
+                        chart.legend.allItems.forEach(function (item) { return item.setState('', true); });
                     }
                 });
             },
@@ -1871,7 +1899,7 @@
 
         return LegendComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/MenuComponent.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, U, AccessibilityComponent, KeyboardNavigationHandler, ChartUtilities, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/MenuComponent.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (Chart, U, AccessibilityComponent, KeyboardNavigationHandler, ChartUtilities, HTMLUtilities) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -1904,7 +1932,7 @@
          * @private
          * @function Highcharts.Chart#showExportMenu
          */
-        H.Chart.prototype.showExportMenu = function () {
+        Chart.prototype.showExportMenu = function () {
             var exportButton = getExportMenuButtonElement(this);
             if (exportButton) {
                 var el = exportButton.element;
@@ -1917,7 +1945,7 @@
          * @private
          * @function Highcharts.Chart#hideExportMenu
          */
-        H.Chart.prototype.hideExportMenu = function () {
+        Chart.prototype.hideExportMenu = function () {
             var chart = this,
                 exportList = chart.exportDivElements;
             if (exportList && chart.exportContextMenu) {
@@ -1944,7 +1972,7 @@
          *
          * @return {boolean}
          */
-        H.Chart.prototype.highlightExportItem = function (ix) {
+        Chart.prototype.highlightExportItem = function (ix) {
             var listItem = this.exportDivElements && this.exportDivElements[ix],
                 curHighlighted = this.exportDivElements &&
                     this.exportDivElements[this.highlightedExportItemIx],
@@ -1977,7 +2005,7 @@
          * @function Highcharts.Chart#highlightLastExportItem
          * @return {boolean}
          */
-        H.Chart.prototype.highlightLastExportItem = function () {
+        Chart.prototype.highlightLastExportItem = function () {
             var chart = this,
                 i;
             if (chart.exportDivElements) {
@@ -2283,8 +2311,8 @@
          */
         function getPointIndex(point) {
             var index = point.index,
-                points = point.series.points,
-                i = points.length;
+                points = point.series.points;
+            var i = points.length;
             if (points[index] !== point) {
                 while (i--) {
                     if (points[i] === point) {
@@ -2361,8 +2389,8 @@
                 dPoint,
                 minIx,
                 distance,
-                i = series.points.length,
-                hasUndefinedPosition = function (point) {
+                i = series.points.length;
+            var hasUndefinedPosition = function (point) {
                     return !(defined(point.plotX) && defined(point.plotY));
             };
             if (hasUndefinedPosition(point)) {
@@ -2436,8 +2464,8 @@
                 curPoints = (curPoint && curPoint.series.points),
                 lastSeries = chart.series && chart.series[chart.series.length - 1],
                 lastPoint = lastSeries && lastSeries.points &&
-                    lastSeries.points[lastSeries.points.length - 1],
-                newSeries,
+                    lastSeries.points[lastSeries.points.length - 1];
+            var newSeries,
                 newPoint;
             // If no points, return false
             if (!series[0] || !series[0].points) {
@@ -2526,13 +2554,13 @@
          */
         Chart.prototype.highlightAdjacentSeries = function (down) {
             var chart = this,
-                newSeries,
-                newPoint,
-                adjacentNewPoint,
                 curPoint = chart.highlightedPoint,
                 lastSeries = chart.series && chart.series[chart.series.length - 1],
                 lastPoint = lastSeries && lastSeries.points &&
                     lastSeries.points[lastSeries.points.length - 1];
+            var newSeries,
+                newPoint,
+                adjacentNewPoint;
             // If no point is highlighted, highlight the first/last point
             if (!chart.highlightedPoint) {
                 newSeries = down ? (chart.series && chart.series[0]) : lastSeries;
@@ -2578,8 +2606,8 @@
          * @return {Highcharts.Point|boolean}
          */
         Chart.prototype.highlightAdjacentPointVertical = function (down) {
-            var curPoint = this.highlightedPoint,
-                minDistance = Infinity,
+            var curPoint = this.highlightedPoint;
+            var minDistance = Infinity,
                 bestPoint;
             if (!defined(curPoint.plotX) || !defined(curPoint.plotY)) {
                 return false;
@@ -2593,8 +2621,8 @@
                         point === curPoint) {
                         return;
                     }
-                    var yDistance = point.plotY - curPoint.plotY,
-                        width = Math.abs(point.plotX - curPoint.plotX),
+                    var yDistance = point.plotY - curPoint.plotY;
+                    var width = Math.abs(point.plotX - curPoint.plotX),
                         distance = Math.abs(yDistance) * Math.abs(yDistance) +
                             width * width * 4; // Weigh horizontal distance highly
                         // Reverse distance number if axis is reversed
@@ -2633,8 +2661,8 @@
          * @return {Highcharts.Point|boolean}
          */
         function highlightLastValidPointInChart(chart) {
-            var numSeries = chart.series.length,
-                i = numSeries,
+            var numSeries = chart.series.length;
+            var i = numSeries,
                 res = false;
             while (i--) {
                 chart.highlightedPoint = chart.series[i].points[chart.series[i].points.length - 1];
@@ -2714,8 +2742,8 @@
                 var last = this.lastDrilledDownPoint,
                     chart = this.chart,
                     series = last && getSeriesFromName(chart,
-                    last.seriesName),
-                    point;
+                    last.seriesName);
+                var point;
                 if (last && series && defined(last.x) && defined(last.y)) {
                     point = getPointFromXY(series, last.x, last.y);
                 }
@@ -2823,9 +2851,12 @@
              */
             onHandlerTerminate: function () {
                 var chart = this.chart;
-                var curPoint = chart.highlightedPoint;
                 if (chart.tooltip) {
                     chart.tooltip.hide(0);
+                }
+                var hoverSeries = chart.highlightedPoint && chart.highlightedPoint.series;
+                if (hoverSeries && hoverSeries.onMouseOut) {
+                    hoverSeries.onMouseOut();
                 }
                 if (chart.highlightedPoint && chart.highlightedPoint.onMouseOut) {
                     chart.highlightedPoint.onMouseOut();
@@ -4396,7 +4427,7 @@
 
         return ZoomComponent;
     });
-    _registerModule(_modules, 'Extensions/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, O, palette, SVGElement, U) {
+    _registerModule(_modules, 'Extensions/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, D, palette, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4406,7 +4437,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             createElement = U.createElement,
             css = U.css,
@@ -5081,6 +5112,11 @@
                     }
                 }
                 else if (type === 'all' && baseAxis) {
+                    // If the navigator exist and the axis range is declared reset that
+                    // range and from now on only use the range set by a user, #14742.
+                    if (chart.navigator && chart.navigator.baseSeries[0]) {
+                        chart.navigator.baseSeries[0].xAxis.options.range = void 0;
+                    }
                     newMin = dataMin;
                     newMax = dataMax;
                 }
@@ -5436,7 +5472,7 @@
                             left: Math.min(Math.round(dateBox.x +
                                 translateX -
                                 (input.offsetWidth - dateBox.width) / 2), this.chart.chartWidth - input.offsetWidth) + 'px',
-                            top: (translateY - 1 - (input.offsetHeight - dateBox.height) / 2) + 'px'
+                            top: (translateY - (input.offsetHeight - dateBox.height) / 2) + 'px'
                         });
                     }
                 }
@@ -5557,7 +5593,8 @@
                         .label(text, 0)
                         .addClass('highcharts-range-label')
                         .attr({
-                        padding: text ? 2 : 0
+                        padding: text ? 2 : 0,
+                        height: text ? options.inputBoxHeight : 0
                     })
                         .add(inputGroup);
                 // Create an SVG label that shows updated date ranges and and records
@@ -5860,7 +5897,13 @@
                     });
                 });
                 this.zoomText = renderer
-                    .text(lang.rangeSelectorZoom, 0, 15)
+                    .label((lang && lang.rangeSelectorZoom) || '', 0)
+                    .attr({
+                    padding: options.buttonTheme.padding,
+                    height: options.buttonTheme.height,
+                    paddingLeft: 0,
+                    paddingRight: 0
+                })
                     .add(this.buttonGroup);
                 if (!this.chart.styledMode) {
                     this.zoomText.css(options.labelStyle);
@@ -6238,14 +6281,19 @@
                 var _a = this,
                     buttons = _a.buttons,
                     buttonOptions = _a.buttonOptions,
+                    chart = _a.chart,
                     dropdown = _a.dropdown,
                     options = _a.options,
                     zoomText = _a.zoomText;
+                var userButtonTheme = (chart.userOptions.rangeSelector &&
+                        chart.userOptions.rangeSelector.buttonTheme) || {};
                 var getAttribs = function (text) { return ({
                         text: text ? text + " \u25BE" : '▾',
                         width: 'auto',
-                        paddingLeft: 8,
-                        paddingRight: 8
+                        paddingLeft: pick(options.buttonTheme.paddingLeft,
+                    userButtonTheme.padding, 8),
+                        paddingRight: pick(options.buttonTheme.paddingRight,
+                    userButtonTheme.padding, 8)
                     }); };
                 if (zoomText) {
                     zoomText.hide();
@@ -6299,8 +6347,8 @@
                     button.attr({
                         text: rangeOptions.text,
                         width: options.buttonTheme.width || 28,
-                        paddingLeft: 'unset',
-                        paddingRight: 'unset'
+                        paddingLeft: pick(options.buttonTheme.paddingLeft, 'unset'),
+                        paddingRight: pick(options.buttonTheme.paddingRight, 'unset')
                     });
                     if (button.state < 2) {
                         button.setState(0);
@@ -6770,9 +6818,9 @@
             H.RangeSelector = RangeSelector;
         }
 
-        return H.RangeSelector;
+        return RangeSelector;
     });
-    _registerModule(_modules, 'Accessibility/Components/RangeSelectorComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js'], _modules['Extensions/RangeSelector.js']], function (AccessibilityComponent, ChartUtilities, Announcer, H, HTMLUtilities, KeyboardNavigationHandler, U, RangeSelector) {
+    _registerModule(_modules, 'Accessibility/Components/RangeSelectorComponent.js', [_modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Core/Chart/Chart.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js'], _modules['Extensions/RangeSelector.js']], function (AccessibilityComponent, ChartUtilities, Announcer, Chart, HTMLUtilities, KeyboardNavigationHandler, U, RangeSelector) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -6812,7 +6860,7 @@
          *
          * @return {boolean}
          */
-        H.Chart.prototype.highlightRangeSelectorButton = function (ix) {
+        Chart.prototype.highlightRangeSelectorButton = function (ix) {
             var buttons = (this.rangeSelector &&
                     this.rangeSelector.buttons ||
                     []);
@@ -7208,7 +7256,7 @@
 
         return RangeSelectorComponent;
     });
-    _registerModule(_modules, 'Accessibility/Components/InfoRegionsComponent.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (AST, F, H, U, AccessibilityComponent, Announcer, AnnotationsA11y, ChartUtilities, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/InfoRegionsComponent.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (AST, Chart, F, H, U, AccessibilityComponent, Announcer, AnnotationsA11y, ChartUtilities, HTMLUtilities) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -7286,7 +7334,7 @@
          * @param {Array<string>} types The series types in this chart.
          * @return {string} The text description of the chart type.
          */
-        H.Chart.prototype.getTypeDescription = function (types) {
+        Chart.prototype.getTypeDescription = function (types) {
             var firstType = types[0],
                 firstSeries = this.series && this.series[0] || {},
                 formatContext = {
@@ -8232,7 +8280,7 @@
          * @return {string}
          *         Formatted string for the screen reader module.
          */
-        var options = {
+        var Options = {
                 /**
                  * Options for configuring accessibility for the chart. Requires the
                  * [accessibility module](https://code.highcharts.com/modules/accessibility.js)
@@ -8969,7 +9017,7 @@
                 }
             };
 
-        return options;
+        return Options;
     });
     _registerModule(_modules, 'Accessibility/Options/LangOptions.js', [], function () {
         /* *
@@ -8992,10 +9040,10 @@
                  * [Highcharts Accessibility](https://www.highcharts.com/docs/chart-concepts/accessibility).
                  *
                  * For more dynamic control over the accessibility functionality, see
-                 * [accessibility.pointDescriptionFormatter](#accessibility.pointDescriptionFormatter),
-                 * [accessibility.seriesDescriptionFormatter](#accessibility.seriesDescriptionFormatter),
+                 * [accessibility.point.descriptionFormatter](#accessibility.point.descriptionFormatter),
+                 * [accessibility.series.descriptionFormatter](#accessibility.series.descriptionFormatter),
                  * and
-                 * [accessibility.screenReaderSectionFormatter](#accessibility.screenReaderSectionFormatter).
+                 * [accessibility.screenReaderSection.beforeChartFormatter](#accessibility.screenReaderSection.beforeChartFormatter).
                  *
                  * @since        6.0.6
                  * @optionparent lang.accessibility
@@ -9554,7 +9602,7 @@
 
         return copyDeprecatedOptions;
     });
-    _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/Globals.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (H, F, U) {
+    _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (Chart, H, F, U) {
         /* *
          *
          *  Accessibility module - internationalization support
@@ -9800,7 +9848,7 @@
          * @return {string}
          *         The formatted string.
          */
-        H.Chart.prototype.langFormat = function (langKey, context) {
+        Chart.prototype.langFormat = function (langKey, context) {
             var keys = langKey.split('.'),
                 formatString = this.options.lang,
                 i = 0;
@@ -9812,7 +9860,7 @@
         };
 
     });
-    _registerModule(_modules, 'Accessibility/FocusBorder.js', [_modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGLabel.js'], _modules['Core/Utilities.js']], function (H, SVGElement, SVGLabel, U) {
+    _registerModule(_modules, 'Accessibility/FocusBorder.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGLabel.js'], _modules['Core/Utilities.js']], function (Chart, H, SVGElement, SVGLabel, U) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -10029,7 +10077,7 @@
          * @private
          * @function Highcharts.Chart#renderFocusBorder
          */
-        H.Chart.prototype.renderFocusBorder = function () {
+        Chart.prototype.renderFocusBorder = function () {
             var focusElement = this.focusElement,
                 focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder;
             if (focusElement) {
@@ -10057,7 +10105,7 @@
          *        If supplied, it draws the border around svgElement and sets the focus
          *        to focusElement.
          */
-        H.Chart.prototype.setFocusToElement = function (svgElement, focusElement) {
+        Chart.prototype.setFocusToElement = function (svgElement, focusElement) {
             var focusBorderOptions = this.options.accessibility.keyboardNavigation.focusBorder,
                 browserFocusElement = focusElement || svgElement.element;
             // Set browser focus if possible
@@ -10083,7 +10131,7 @@
         };
 
     });
-    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Options.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/Options.js'], _modules['Accessibility/Options/LangOptions.js'], _modules['Accessibility/Options/DeprecatedOptions.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (ChartUtilities, H, KeyboardNavigationHandler, O, Point, Series, U, AccessibilityComponent, KeyboardNavigation, LegendComponent, MenuComponent, SeriesComponent, ZoomComponent, RangeSelectorComponent, InfoRegionsComponent, ContainerComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Accessibility.js', [_modules['Core/Chart/Chart.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigation.js'], _modules['Accessibility/Components/LegendComponent.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Accessibility/Components/SeriesComponent/SeriesComponent.js'], _modules['Accessibility/Components/ZoomComponent.js'], _modules['Accessibility/Components/RangeSelectorComponent.js'], _modules['Accessibility/Components/InfoRegionsComponent.js'], _modules['Accessibility/Components/ContainerComponent.js'], _modules['Accessibility/HighContrastMode.js'], _modules['Accessibility/HighContrastTheme.js'], _modules['Accessibility/Options/Options.js'], _modules['Accessibility/Options/LangOptions.js'], _modules['Accessibility/Options/DeprecatedOptions.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (Chart, ChartUtilities, H, KeyboardNavigationHandler, D, Point, Series, U, AccessibilityComponent, KeyboardNavigation, LegendComponent, MenuComponent, SeriesComponent, ZoomComponent, RangeSelectorComponent, InfoRegionsComponent, ContainerComponent, whcm, highContrastTheme, defaultOptionsA11Y, defaultLangOptions, copyDeprecatedOptions, HTMLUtilities) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -10096,7 +10144,7 @@
          *
          * */
         var doc = H.doc;
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var addEvent = U.addEvent,
             extend = U.extend,
             fireEvent = U.fireEvent,
@@ -10259,7 +10307,7 @@
         /**
          * @private
          */
-        H.Chart.prototype.updateA11yEnabled = function () {
+        Chart.prototype.updateA11yEnabled = function () {
             var a11y = this.accessibility,
                 accessibilityOptions = this.options.accessibility;
             if (accessibilityOptions && accessibilityOptions.enabled) {
@@ -10283,7 +10331,7 @@
             }
         };
         // Handle updates to the module and send render updates to components
-        addEvent(H.Chart, 'render', function (e) {
+        addEvent(Chart, 'render', function (e) {
             // Update/destroy
             if (this.a11yDirty && this.renderTo) {
                 delete this.a11yDirty;
@@ -10297,7 +10345,7 @@
             }
         });
         // Update with chart/series/point updates
-        addEvent(H.Chart, 'update', function (e) {
+        addEvent(Chart, 'update', function (e) {
             // Merge new options
             var newOptions = e.options.accessibility;
             if (newOptions) {
@@ -10324,7 +10372,7 @@
             }
         });
         ['addSeries', 'init'].forEach(function (event) {
-            addEvent(H.Chart, event, function () {
+            addEvent(Chart, event, function () {
                 this.a11yDirty = true;
             });
         });
@@ -10339,14 +10387,14 @@
         [
             'afterDrilldown', 'drillupall'
         ].forEach(function (event) {
-            addEvent(H.Chart, event, function () {
+            addEvent(Chart, event, function () {
                 if (this.accessibility) {
                     this.accessibility.update();
                 }
             });
         });
         // Destroy with chart
-        addEvent(H.Chart, 'destroy', function () {
+        addEvent(Chart, 'destroy', function () {
             if (this.accessibility) {
                 this.accessibility.destroy();
             }

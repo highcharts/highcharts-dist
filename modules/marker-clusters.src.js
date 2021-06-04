@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Marker clusters module for Highcharts
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/MarkerClusters.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/Axis.js']], function (A, Chart, O, palette, Point, Series, SeriesRegistry, SVGRenderer, U, Axis) {
+    _registerModule(_modules, 'Extensions/MarkerClusters.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/Axis.js']], function (A, Chart, D, palette, Point, Series, SeriesRegistry, SVGRenderer, U, Axis) {
         /* *
          *
          *  Marker clusters module.
@@ -43,8 +43,9 @@
          *
          * */
         var animObject = A.animObject;
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var seriesTypes = SeriesRegistry.seriesTypes;
+        var symbols = SVGRenderer.prototype.symbols;
         var addEvent = U.addEvent,
             defined = U.defined,
             error = U.error,
@@ -484,131 +485,38 @@
         function getStateId() {
             return Math.random().toString(36).substring(2, 7) + '-' + stateIdCounter++;
         }
-        // Useful for debugging.
-        // function drawGridLines(
-        //     series: Highcharts.Series,
-        //     options: Highcharts.MarkerClusterLayoutAlgorithmOptions
-        // ): void {
-        //     let chart = series.chart,
-        //         xAxis = series.xAxis,
-        //         yAxis = series.yAxis,
-        //         xAxisLen = series.xAxis.len,
-        //         yAxisLen = series.yAxis.len,
-        //         i, j, elem, text,
-        //         currentX = 0,
-        //         currentY = 0,
-        //         scaledGridSize = 50,
-        //         gridX = 0,
-        //         gridY = 0,
-        //         gridOffset = series.getGridOffset(),
-        //         mapXSize, mapYSize;
-        //     if (series.debugGridLines && series.debugGridLines.length) {
-        //         series.debugGridLines.forEach(function (gridItem): void {
-        //             if (gridItem && gridItem.destroy) {
-        //                 gridItem.destroy();
-        //             }
-        //         });
-        //     }
-        //     series.debugGridLines = [];
-        //     scaledGridSize = series.getScaledGridSize(options);
-        //     mapXSize = Math.abs(
-        //         xAxis.toPixels(xAxis.dataMax || 0) -
-        //         xAxis.toPixels(xAxis.dataMin || 0)
-        //     );
-        //     mapYSize = Math.abs(
-        //         yAxis.toPixels(yAxis.dataMax || 0) -
-        //         yAxis.toPixels(yAxis.dataMin || 0)
-        //     );
-        //     gridX = Math.ceil(mapXSize / scaledGridSize);
-        //     gridY = Math.ceil(mapYSize / scaledGridSize);
-        //     for (i = 0; i < gridX; i++) {
-        //         currentX = i * scaledGridSize;
-        //         if (
-        //             gridOffset.plotLeft + currentX >= 0 &&
-        //             gridOffset.plotLeft + currentX < xAxisLen
-        //         ) {
-        //             for (j = 0; j < gridY; j++) {
-        //                 currentY = j * scaledGridSize;
-        //                 if (
-        //                     gridOffset.plotTop + currentY >= 0 &&
-        //                     gridOffset.plotTop + currentY < yAxisLen
-        //                 ) {
-        //                     if (j % 2 === 0 && i % 2 === 0) {
-        //                         let rect = chart.renderer
-        //                             .rect(
-        //                                 gridOffset.plotLeft + currentX,
-        //                                 gridOffset.plotTop + currentY,
-        //                                 scaledGridSize * 2,
-        //                                 scaledGridSize * 2
-        //                             )
-        //                             .attr({
-        //                                 stroke: series.color,
-        //                                 'stroke-width': '2px'
-        //                             })
-        //                             .add()
-        //                             .toFront();
-        //                         series.debugGridLines.push(rect);
-        //                     }
-        //                     elem = chart.renderer
-        //                         .rect(
-        //                             gridOffset.plotLeft + currentX,
-        //                             gridOffset.plotTop + currentY,
-        //                             scaledGridSize,
-        //                             scaledGridSize
-        //                         )
-        //                         .attr({
-        //                             stroke: series.color,
-        //                             opacity: 0.3,
-        //                             'stroke-width': '1px'
-        //                         })
-        //                         .add()
-        //                         .toFront();
-        //                     text = chart.renderer
-        //                         .text(
-        //                             j + '-' + i,
-        //                             gridOffset.plotLeft + currentX + 2,
-        //                             gridOffset.plotTop + currentY + 7
-        //                         )
-        //                         .css({
-        //                             fill: 'rgba(0, 0, 0, 0.7)',
-        //                             fontSize: '7px'
-        //                         })
-        //                         .add()
-        //                         .toFront();
-        //                     series.debugGridLines.push(elem);
-        //                     series.debugGridLines.push(text);
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        /* eslint-enable require-jsdoc */
         // Cluster symbol.
-        SVGRenderer.prototype.symbols.cluster = function (x, y, width, height) {
+        symbols.cluster = function (x, y, width, height) {
             var w = width / 2,
                 h = height / 2,
                 outerWidth = 1,
                 space = 1,
-                inner,
-                outer1,
-                outer2;
-            inner = this.arc(x + w, y + h, w - space * 4, h - space * 4, {
-                start: Math.PI * 0.5,
-                end: Math.PI * 2.5,
-                open: false
-            });
-            outer1 = this.arc(x + w, y + h, w - space * 3, h - space * 3, {
-                start: Math.PI * 0.5,
-                end: Math.PI * 2.5,
-                innerR: w - outerWidth * 2,
-                open: false
-            });
-            outer2 = this.arc(x + w, y + h, w - space, h - space, {
-                start: Math.PI * 0.5,
-                end: Math.PI * 2.5,
-                innerR: w,
-                open: false
-            });
+                inner = symbols.arc(x + w,
+                y + h,
+                w - space * 4,
+                h - space * 4, {
+                    start: Math.PI * 0.5,
+                    end: Math.PI * 2.5,
+                    open: false
+                }),
+                outer1 = symbols.arc(x + w,
+                y + h,
+                w - space * 3,
+                h - space * 3, {
+                    start: Math.PI * 0.5,
+                    end: Math.PI * 2.5,
+                    innerR: w - outerWidth * 2,
+                    open: false
+                }),
+                outer2 = symbols.arc(x + w,
+                y + h,
+                w - space,
+                h - space, {
+                    start: Math.PI * 0.5,
+                    end: Math.PI * 2.5,
+                    innerR: w,
+                    open: false
+                });
             return outer2.concat(outer1, inner);
         };
         Scatter.prototype.animateClusterPoint = function (clusterObj) {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Annotations module
  *
@@ -494,8 +494,10 @@
         var MockPoint = /** @class */ (function () {
                 function MockPoint(chart, target, options) {
                     this.isInside = void 0;
+                this.negative = void 0;
                 this.plotX = void 0;
                 this.plotY = void 0;
+                this.ttBelow = void 0;
                 this.x = void 0;
                 this.y = void 0;
                 /* *
@@ -1273,7 +1275,6 @@
         var addEvent = U.addEvent,
             defined = U.defined,
             merge = U.merge,
-            objectEach = U.objectEach,
             uniqueKey = U.uniqueKey;
         /**
          * Options for configuring markers for annotations.
@@ -1886,7 +1887,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        /* *
+         *
+         *  Imports
+         *
+         * */
         var format = F.format;
+        var symbols = SVGRenderer.prototype.symbols;
         var extend = U.extend,
             isNumber = U.isNumber,
             pick = U.pick;
@@ -1957,8 +1964,8 @@
              */
             ControllableLabel.alignedPosition = function (alignOptions, box) {
                 var align = alignOptions.align,
-                    vAlign = alignOptions.verticalAlign,
-                    x = (box.x || 0) + (alignOptions.x || 0),
+                    vAlign = alignOptions.verticalAlign;
+                var x = (box.x || 0) + (alignOptions.x || 0),
                     y = (box.y || 0) + (alignOptions.y || 0),
                     alignFactor,
                     vAlignFactor;
@@ -1995,8 +2002,7 @@
                 var align = alignOptions.align,
                     verticalAlign = alignOptions.verticalAlign,
                     padding = label.box ? 0 : (label.padding || 0),
-                    bBox = label.getBBox(),
-                    off, 
+                    bBox = label.getBBox(), 
                     //
                     options = {
                         align: align,
@@ -2009,6 +2015,7 @@
                     //
                     x = (alignAttr.x || 0) - chart.plotLeft,
                     y = (alignAttr.y || 0) - chart.plotTop;
+                var off;
                 // Off left
                 off = x + padding;
                 if (off < 0) {
@@ -2079,10 +2086,9 @@
                     // Chart.options.annotations
                     annotationIndex = chart.annotations.indexOf(this.annotation),
                     chartAnnotations = chart.options.annotations,
-                    chartOptions = chartAnnotations[annotationIndex],
-                    temp;
+                    chartOptions = chartAnnotations[annotationIndex];
                 if (chart.inverted) {
-                    temp = dx;
+                    var temp = dx;
                     dx = dy;
                     dy = temp;
                 }
@@ -2122,16 +2128,14 @@
                 var options = this.options,
                     text = this.text || options.format || options.text,
                     label = this.graphic,
-                    point = this.points[0],
-                    anchor,
-                    attrs;
+                    point = this.points[0];
                 label.attr({
                     text: text ?
                         format(text, point.getLabelConfig(), this.annotation.chart) :
                         options.formatter.call(point, this)
                 });
-                anchor = this.anchor(point);
-                attrs = this.position(anchor);
+                var anchor = this.anchor(point);
+                var attrs = this.position(anchor);
                 if (attrs) {
                     label.alignAttr = attrs;
                     attrs.anchorX = anchor.absolutePosition.x;
@@ -2176,8 +2180,8 @@
                     point = this.points[0],
                     itemOptions = this.options,
                     anchorAbsolutePosition = anchor.absolutePosition,
-                    anchorRelativePosition = anchor.relativePosition,
-                    itemPosition,
+                    anchorRelativePosition = anchor.relativePosition;
+                var itemPosition,
                     alignTo,
                     itemPosRelativeX,
                     itemPosRelativeY,
@@ -2255,15 +2259,14 @@
             ControllableLabel.shapesWithoutBackground = ['connector'];
             return ControllableLabel;
         }());
-        /* ********************************************************************** */
         /**
          * General symbol definition for labels with connector
          * @private
          */
-        SVGRenderer.prototype.symbols.connector = function (x, y, w, h, options) {
+        symbols.connector = function (x, y, w, h, options) {
             var anchorX = options && options.anchorX,
-                anchorY = options && options.anchorY,
-                path,
+                anchorY = options && options.anchorY;
+            var path,
                 yOffset,
                 lateral = w / 2;
             if (isNumber(anchorX) && isNumber(anchorY)) {
@@ -3115,7 +3118,7 @@
                      *
                      * @since 6.0.5
                      */
-                    className: '',
+                    className: 'highcharts-no-tooltip',
                     /**
                      * Whether to hide the annotation's label
                      * that is outside the plot area.
@@ -3965,7 +3968,17 @@
             return BasicAnnotation;
         }(Annotation));
         BasicAnnotation.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions, {});
+        /* *
+         *
+         *  Registry
+         *
+         * */
         Annotation.types.basicAnnotation = BasicAnnotation;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return BasicAnnotation;
     });
@@ -4146,7 +4159,17 @@
                 }
             }
         });
+        /* *
+         *
+         *  Registry
+         *
+         * */
         Annotation.types.crookedLine = CrookedLine;
+        /* *
+         *
+         *  Export Default
+         *
+         * */
 
         return CrookedLine;
     });
@@ -4234,7 +4257,17 @@
                 y: -5
             }
         });
+        /* *
+         *
+         *  Registry
+         *
+         * */
         Annotation.types.elliottWave = ElliottWave;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return ElliottWave;
     });
@@ -4441,7 +4474,17 @@
                 }
             }
         });
+        /* *
+         *
+         *  Registry
+         *
+         * */
         Annotation.types.tunnel = Tunnel;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Tunnel;
     });
@@ -4468,6 +4511,11 @@
             };
         })();
         var merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var InfinityLine = /** @class */ (function (_super) {
                 __extends(InfinityLine, _super);
@@ -4592,6 +4640,22 @@
             return InfinityLine;
         }(CrookedLine));
         InfinityLine.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions, {});
+        /* *
+         *
+         *  Registry
+         *
+         * */
+        Annotation.types.infinityLine = InfinityLine;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
         /**
          * An infinity line annotation.
          *
@@ -4602,7 +4666,7 @@
          * @product   highstock
          * @apioption annotations.infinityLine
          */
-        Annotation.types.infinityLine = InfinityLine;
+        (''); // keeps doclets above in transpiled file
 
         return InfinityLine;
     });
@@ -4633,19 +4697,22 @@
         var createPathDGenerator = function (retracementIndex,
             isBackground) {
                 return function () {
-                    var annotation = this.annotation,
-            leftTop = this.anchor(annotation.startRetracements[retracementIndex]).absolutePosition,
-            rightTop = this.anchor(annotation.endRetracements[retracementIndex]).absolutePosition,
-            d = [
+                    var annotation = this.annotation;
+                if (!annotation.startRetracements || !annotation.endRetracements) {
+                    return [];
+                }
+                var leftTop = this.anchor(annotation.startRetracements[retracementIndex]).absolutePosition,
+                    rightTop = this.anchor(annotation.endRetracements[retracementIndex]).absolutePosition,
+                    d = [
                         ['M',
-            Math.round(leftTop.x),
-            Math.round(leftTop.y)],
+                    Math.round(leftTop.x),
+                    Math.round(leftTop.y)],
                         ['L',
-            Math.round(rightTop.x),
-            Math.round(rightTop.y)]
+                    Math.round(rightTop.x),
+                    Math.round(rightTop.y)]
                     ],
-            rightBottom,
-            leftBottom;
+                    rightBottom,
+                    leftBottom;
                 if (isBackground) {
                     rightBottom = this.anchor(annotation.endRetracements[retracementIndex - 1]).absolutePosition;
                     leftBottom = this.anchor(annotation.startRetracements[retracementIndex - 1]).absolutePosition;
@@ -4820,6 +4887,11 @@
             }
         });
         Annotation.types.fibonacci = Fibonacci;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Fibonacci;
     });
@@ -5012,7 +5084,17 @@
                 }
             }
         });
+        /* *
+         *
+         *  Registry
+         *
+         * */
         Annotation.types.pitchfork = Pitchfork;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Pitchfork;
     });
@@ -5180,7 +5262,17 @@
                 }
             }
         });
+        /* *
+         *
+         *  Registry
+         *
+         * */
         Annotation.types.verticalLine = VerticalLine;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return VerticalLine;
     });
@@ -5208,7 +5300,8 @@
         })();
         var extend = U.extend,
             isNumber = U.isNumber,
-            merge = U.merge;
+            merge = U.merge,
+            pick = U.pick;
         /* eslint-disable no-invalid-this, valid-jsdoc */
         var Measure = /** @class */ (function (_super) {
                 __extends(Measure, _super);
@@ -5329,21 +5422,20 @@
                         dashStyle: 'Dash',
                         overflow: 'allow',
                         align: 'left',
-                        vertical: 'top',
+                        y: 0,
+                        x: 0,
+                        verticalAlign: 'top',
                         crop: true,
+                        xAxis: 0,
+                        yAxis: 0,
                         point: function (target) {
                             var annotation = target.annotation,
-                                chart = annotation.chart,
-                                inverted = chart.inverted,
-                                xAxis = chart.xAxis[typeOptions.xAxis],
-                                yAxis = chart.yAxis[typeOptions.yAxis],
-                                top = chart.plotTop,
-                                left = chart.plotLeft;
+                                options = target.options;
                             return {
-                                x: (inverted ? top : 10) +
-                                    xAxis.toPixels(annotation.xAxisMin, !inverted),
-                                y: (inverted ? -left + 10 : top) +
-                                    yAxis.toPixels(annotation.yAxisMin)
+                                x: annotation.xAxisMin,
+                                y: annotation.yAxisMin,
+                                xAxis: pick(typeOptions.xAxis, options.xAxis),
+                                yAxis: pick(typeOptions.yAxis, options.yAxis)
                             };
                         },
                         text: (formatter && formatter.call(this)) ||
@@ -6036,7 +6128,17 @@
                 }
             }
         });
+        /* *
+         *
+         *  Registry
+         *
+         * */
         Annotation.types.measure = Measure;
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return Measure;
     });
@@ -6099,7 +6201,7 @@
 
         return chartNavigation;
     });
-    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, chartNavigationMixin, F, H, O, U) {
+    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, chartNavigationMixin, F, H, D, U) {
         /* *
          *
          *  (c) 2009-2021 Highsoft, Black Label
@@ -6110,7 +6212,7 @@
          *
          * */
         var format = F.format;
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
         var addEvent = U.addEvent,
             attr = U.attr,
             fireEvent = U.fireEvent,
@@ -7186,7 +7288,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.1.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.1.1/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -7251,7 +7353,7 @@
                 }
             }
         });
-        addEvent(H.Chart, 'render', function () {
+        addEvent(Chart, 'render', function () {
             var chart = this,
                 navigationBindings = chart.navigationBindings,
                 disabledClassName = 'highcharts-disabled-btn';
@@ -7308,7 +7410,7 @@
 
         return NavigationBindings;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Popup.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Core/Options.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, NavigationBindings, O, Pointer, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Popup.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, NavigationBindings, D, Pointer, U) {
         /* *
          *
          *  Popup generator for Stock tools
@@ -7322,7 +7424,7 @@
          * */
         var doc = H.doc,
             isFirefox = H.isFirefox;
-        var getOptions = O.getOptions;
+        var getOptions = D.getOptions;
         var addEvent = U.addEvent,
             createElement = U.createElement,
             defined = U.defined,
@@ -7362,7 +7464,7 @@
                 this.chart = chart;
                 // create popup div
                 this.container = createElement(DIV, {
-                    className: PREFIX + 'popup'
+                    className: PREFIX + 'popup highcharts-no-tooltip'
                 }, null, parentDiv);
                 this.lang = this.getLangpack();
                 this.iconsURL = iconsURL;
@@ -7376,15 +7478,22 @@
             addCloseBtn: function () {
                 var _self = this,
                     closeBtn;
+                var iconsURL = this.iconsURL;
                 // create close popup btn
                 closeBtn = createElement(DIV, {
                     className: PREFIX + 'popup-close'
                 }, null, this.container);
                 closeBtn.style['background-image'] = 'url(' +
-                    this.iconsURL + 'close.svg)';
+                    (iconsURL.match(/png|svg|jpeg|jpg|gif/ig) ?
+                        iconsURL : iconsURL + 'close.svg') + ')';
                 ['click', 'touchstart'].forEach(function (eventName) {
                     addEvent(closeBtn, eventName, function () {
-                        fireEvent(_self.chart.navigationBindings, 'closePopup');
+                        if (_self.chart) {
+                            fireEvent(_self.chart.navigationBindings, 'closePopup');
+                        }
+                        else {
+                            _self.closePopup();
+                        }
                     });
                 });
             },
@@ -7536,7 +7645,9 @@
              * @private
              */
             closePopup: function () {
-                this.popup.container.style.display = 'none';
+                var container = pick(this.popup && this.popup.container,
+                    this.container);
+                container.style.display = 'none';
             },
             /**
              * Create content and show popup.
@@ -7547,6 +7658,9 @@
              * @param {Function} - on click callback
              */
             showForm: function (type, chart, options, callback) {
+                if (!chart) {
+                    return;
+                }
                 this.popup = chart.navigationBindings.popup;
                 // show blank popup
                 this.showPopup();
@@ -7596,7 +7710,9 @@
                         popupDiv.className += ' ' + toolbarClass;
                     }
                     // set position
-                    popupDiv.style.top = chart.plotTop + 10 + 'px';
+                    if (chart) {
+                        popupDiv.style.top = chart.plotTop + 10 + 'px';
+                    }
                     // create label
                     createElement(SPAN, void 0, void 0, popupDiv).appendChild(doc.createTextNode(pick(
                     // Advanced annotations:
@@ -7633,6 +7749,9 @@
                         lang = this.lang,
                         bottomRow,
                         lhsCol;
+                    if (!chart) {
+                        return;
+                    }
                     // create title of annotations
                     lhsCol = createElement('h2', {
                         className: PREFIX + 'popup-main-title'
@@ -7673,6 +7792,9 @@
                         lang = this.lang,
                         parentFullName,
                         titleName;
+                    if (!chart) {
+                        return;
+                    }
                     objectEach(options, function (value, option) {
                         // create name like params.styles.fontSize
                         parentFullName = parentNode !== '' ?
@@ -7735,6 +7857,9 @@
                         indicators = this.indicators,
                         lang = this.lang,
                         buttonParentDiv;
+                    if (!chart) {
+                        return;
+                    }
                     // add tabs
                     this.tabs.init.call(this, chart);
                     // get all tabs content divs
@@ -7764,6 +7889,9 @@
                             chart.series : // EDIT mode
                             chart.options.plotOptions // ADD mode
                         ), addFormFields = this.indicators.addFormFields, rhsColWrapper, indicatorList, item;
+                    if (!chart) {
+                        return;
+                    }
                     // create wrapper for list
                     indicatorList = createElement(UL, {
                         className: PREFIX + 'indicator-list'
@@ -7848,6 +7976,9 @@
                         lang = this.lang,
                         selectBox,
                         seriesOptions;
+                    if (!chart) {
+                        return;
+                    }
                     createElement(LABEL, {
                         htmlFor: selectName
                     }, null, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
@@ -7932,6 +8063,9 @@
                         addParamInputs = this.indicators.addParamInputs,
                         addInput = this.addInput,
                         parentFullName;
+                    if (!chart) {
+                        return;
+                    }
                     objectEach(fields, function (value, fieldName) {
                         // create name like params.styles.fontSize
                         parentFullName = parentNode + '.' + fieldName;
@@ -7977,8 +8111,11 @@
                     var tabs = this.tabs,
                         indicatorsCount = this.indicators.getAmount.call(chart),
                         firstTab; // run by default
-                        // create menu items
-                        firstTab = tabs.addMenuItem.call(this, 'add');
+                        if (!chart) {
+                            return;
+                    }
+                    // create menu items
+                    firstTab = tabs.addMenuItem.call(this, 'add');
                     tabs.addMenuItem.call(this, 'edit', indicatorsCount);
                     // create tabs containers
                     tabs.addContentItem.call(this, 'add');
@@ -8085,7 +8222,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/9.1.0/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/9.1.1/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });
@@ -8095,6 +8232,7 @@
             }
         });
 
+        return H.Popup;
     });
     _registerModule(_modules, 'masters/modules/annotations-advanced.src.js', [], function () {
 

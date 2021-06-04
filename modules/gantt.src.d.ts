@@ -28,7 +28,7 @@ declare module "../highcharts.src" {
     /**
      * Gantt-optimized chart. Use Chart for common charts.
      */
-    class GanttChart {
+    class GanttChart extends Chart {
         /**
          * Initializes the chart. The constructor's arguments are passed on
          * directly.

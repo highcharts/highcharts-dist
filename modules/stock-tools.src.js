@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.1.0 (2021-05-04)
+ * @license Highstock JS v9.1.1 (2021-06-04)
  *
  * Advanced Highcharts Stock tools
  *
@@ -495,8 +495,10 @@
         var MockPoint = /** @class */ (function () {
                 function MockPoint(chart, target, options) {
                     this.isInside = void 0;
+                this.negative = void 0;
                 this.plotX = void 0;
                 this.plotY = void 0;
+                this.ttBelow = void 0;
                 this.x = void 0;
                 this.y = void 0;
                 /* *
@@ -1274,7 +1276,6 @@
         var addEvent = U.addEvent,
             defined = U.defined,
             merge = U.merge,
-            objectEach = U.objectEach,
             uniqueKey = U.uniqueKey;
         /**
          * Options for configuring markers for annotations.
@@ -1887,7 +1888,13 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        /* *
+         *
+         *  Imports
+         *
+         * */
         var format = F.format;
+        var symbols = SVGRenderer.prototype.symbols;
         var extend = U.extend,
             isNumber = U.isNumber,
             pick = U.pick;
@@ -1958,8 +1965,8 @@
              */
             ControllableLabel.alignedPosition = function (alignOptions, box) {
                 var align = alignOptions.align,
-                    vAlign = alignOptions.verticalAlign,
-                    x = (box.x || 0) + (alignOptions.x || 0),
+                    vAlign = alignOptions.verticalAlign;
+                var x = (box.x || 0) + (alignOptions.x || 0),
                     y = (box.y || 0) + (alignOptions.y || 0),
                     alignFactor,
                     vAlignFactor;
@@ -1996,8 +2003,7 @@
                 var align = alignOptions.align,
                     verticalAlign = alignOptions.verticalAlign,
                     padding = label.box ? 0 : (label.padding || 0),
-                    bBox = label.getBBox(),
-                    off, 
+                    bBox = label.getBBox(), 
                     //
                     options = {
                         align: align,
@@ -2010,6 +2016,7 @@
                     //
                     x = (alignAttr.x || 0) - chart.plotLeft,
                     y = (alignAttr.y || 0) - chart.plotTop;
+                var off;
                 // Off left
                 off = x + padding;
                 if (off < 0) {
@@ -2080,10 +2087,9 @@
                     // Chart.options.annotations
                     annotationIndex = chart.annotations.indexOf(this.annotation),
                     chartAnnotations = chart.options.annotations,
-                    chartOptions = chartAnnotations[annotationIndex],
-                    temp;
+                    chartOptions = chartAnnotations[annotationIndex];
                 if (chart.inverted) {
-                    temp = dx;
+                    var temp = dx;
                     dx = dy;
                     dy = temp;
                 }
@@ -2123,16 +2129,14 @@
                 var options = this.options,
                     text = this.text || options.format || options.text,
                     label = this.graphic,
-                    point = this.points[0],
-                    anchor,
-                    attrs;
+                    point = this.points[0];
                 label.attr({
                     text: text ?
                         format(text, point.getLabelConfig(), this.annotation.chart) :
                         options.formatter.call(point, this)
                 });
-                anchor = this.anchor(point);
-                attrs = this.position(anchor);
+                var anchor = this.anchor(point);
+                var attrs = this.position(anchor);
                 if (attrs) {
                     label.alignAttr = attrs;
                     attrs.anchorX = anchor.absolutePosition.x;
@@ -2177,8 +2181,8 @@
                     point = this.points[0],
                     itemOptions = this.options,
                     anchorAbsolutePosition = anchor.absolutePosition,
-                    anchorRelativePosition = anchor.relativePosition,
-                    itemPosition,
+                    anchorRelativePosition = anchor.relativePosition;
+                var itemPosition,
                     alignTo,
                     itemPosRelativeX,
                     itemPosRelativeY,
@@ -2256,15 +2260,14 @@
             ControllableLabel.shapesWithoutBackground = ['connector'];
             return ControllableLabel;
         }());
-        /* ********************************************************************** */
         /**
          * General symbol definition for labels with connector
          * @private
          */
-        SVGRenderer.prototype.symbols.connector = function (x, y, w, h, options) {
+        symbols.connector = function (x, y, w, h, options) {
             var anchorX = options && options.anchorX,
-                anchorY = options && options.anchorY,
-                path,
+                anchorY = options && options.anchorY;
+            var path,
                 yOffset,
                 lateral = w / 2;
             if (isNumber(anchorX) && isNumber(anchorY)) {
@@ -3116,7 +3119,7 @@
                      *
                      * @since 6.0.5
                      */
-                    className: '',
+                    className: 'highcharts-no-tooltip',
                     /**
                      * Whether to hide the annotation's label
                      * that is outside the plot area.
@@ -3840,7 +3843,7 @@
 
         return chartNavigation;
     });
-    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, chartNavigationMixin, F, H, O, U) {
+    _registerModule(_modules, 'Extensions/Annotations/NavigationBindings.js', [_modules['Extensions/Annotations/Annotations.js'], _modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Annotation, Chart, chartNavigationMixin, F, H, D, U) {
         /* *
          *
          *  (c) 2009-2021 Highsoft, Black Label
@@ -3851,7 +3854,7 @@
          *
          * */
         var format = F.format;
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
         var addEvent = U.addEvent,
             attr = U.attr,
             fireEvent = U.fireEvent,
@@ -4927,7 +4930,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.1.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.1.1/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -4992,7 +4995,7 @@
                 }
             }
         });
-        addEvent(H.Chart, 'render', function () {
+        addEvent(Chart, 'render', function () {
             var chart = this,
                 navigationBindings = chart.navigationBindings,
                 disabledClassName = 'highcharts-disabled-btn';
@@ -5049,7 +5052,7 @@
 
         return NavigationBindings;
     });
-    _registerModule(_modules, 'Stock/StockToolsBindings.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Core/Options.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Core/Color/Palette.js']], function (H, NavigationBindings, O, Series, U, palette) {
+    _registerModule(_modules, 'Stock/StockToolsBindings.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js'], _modules['Core/Color/Palette.js']], function (H, NavigationBindings, D, Series, U, palette) {
         /**
          *
          *  Events generator for Stock tools
@@ -5061,8 +5064,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var getOptions = O.getOptions,
-            setOptions = O.setOptions;
+        var getOptions = D.getOptions,
+            setOptions = D.setOptions;
         var correctFloat = U.correctFloat,
             defined = U.defined,
             extend = U.extend,
@@ -7091,7 +7094,7 @@
         NavigationBindings.prototype.utils = merge(bindingsUtils, NavigationBindings.prototype.utils);
 
     });
-    _registerModule(_modules, 'Stock/StockToolsGui.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (Chart, H, NavigationBindings, O, U) {
+    _registerModule(_modules, 'Stock/StockToolsGui.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Chart, H, NavigationBindings, D, U) {
         /* *
          *
          *  GUI generator for Stock tools
@@ -7103,7 +7106,7 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var setOptions = O.setOptions;
+        var setOptions = D.setOptions;
         var addEvent = U.addEvent,
             createElement = U.createElement,
             css = U.css,
@@ -8007,7 +8010,7 @@
                 // create submenu container
                 this.submenu = submenuWrapper = createElement(UL, {
                     className: PREFIX + 'submenu-wrapper'
-                }, null, buttonWrapper);
+                }, void 0, buttonWrapper);
                 // create submenu buttons and select the first one
                 this.addSubmenuItems(buttonWrapper, button);
                 // show / hide submenu
@@ -8134,23 +8137,23 @@
                 buttonWrapper = createElement(LI, {
                     className: pick(classMapping[btnName], '') + ' ' + userClassName,
                     title: lang[btnName] || btnName
-                }, null, target);
+                }, void 0, target);
                 // single button
                 mainButton = createElement(SPAN, {
                     className: PREFIX + 'menu-item-btn'
-                }, null, buttonWrapper);
+                }, void 0, buttonWrapper);
                 // submenu
                 if (items && items.length) {
                     // arrow is a hook to show / hide submenu
                     submenuArrow = createElement(SPAN, {
                         className: PREFIX + 'submenu-item-arrow ' +
                             PREFIX + 'arrow-right'
-                    }, null, buttonWrapper);
-                    submenuArrow.style['background-image'] = 'url(' +
+                    }, void 0, buttonWrapper);
+                    submenuArrow.style.backgroundImage = 'url(' +
                         this.iconsURL + 'arrow-bottom.svg)';
                 }
                 else {
-                    mainButton.style['background-image'] = 'url(' +
+                    mainButton.style.backgroundImage = 'url(' +
                         this.iconsURL + btnOptions.symbol + ')';
                 }
                 return {
@@ -8172,13 +8175,13 @@
                 });
                 stockToolbar.arrowUp = createElement(DIV, {
                     className: PREFIX + 'arrow-up'
-                }, null, stockToolbar.arrowWrapper);
-                stockToolbar.arrowUp.style['background-image'] =
+                }, void 0, stockToolbar.arrowWrapper);
+                stockToolbar.arrowUp.style.backgroundImage =
                     'url(' + this.iconsURL + 'arrow-right.svg)';
                 stockToolbar.arrowDown = createElement(DIV, {
                     className: PREFIX + 'arrow-down'
-                }, null, stockToolbar.arrowWrapper);
-                stockToolbar.arrowDown.style['background-image'] =
+                }, void 0, stockToolbar.arrowWrapper);
+                stockToolbar.arrowDown.style.backgroundImage =
                     'url(' + this.iconsURL + 'arrow-right.svg)';
                 wrapper.insertBefore(stockToolbar.arrowWrapper, wrapper.childNodes[0]);
                 // attach scroll events
@@ -8199,14 +8202,14 @@
                     function () {
                         if (targetY > 0) {
                             targetY -= step;
-                        toolbar.style['margin-top'] = -targetY + 'px';
+                        toolbar.style.marginTop = -targetY + 'px';
                     }
                 }));
                 _self.eventsToUnbind.push(addEvent(_self.arrowDown, 'click', function () {
                     if (wrapper.offsetHeight + targetY <=
                         toolbar.offsetHeight + step) {
                         targetY += step;
-                        toolbar.style['margin-top'] = -targetY + 'px';
+                        toolbar.style.marginTop = -targetY + 'px';
                     }
                 }));
             };
@@ -8222,14 +8225,26 @@
                     navigation = chart.options.navigation,
                     bindingsClassName = navigation && navigation.bindingsClassName,
                     listWrapper,
-                    toolbar,
-                    wrapper;
+                    toolbar;
                 // create main container
-                stockToolbar.wrapper = wrapper = createElement(DIV, {
-                    className: PREFIX + 'stocktools-wrapper ' +
-                        guiOptions.className + ' ' + bindingsClassName
+                var wrapper = stockToolbar.wrapper = createElement(DIV, {
+                        className: PREFIX + 'stocktools-wrapper ' +
+                            guiOptions.className + ' ' + bindingsClassName
+                    });
+                container.appendChild(wrapper);
+                // Mimic event behaviour of being outside chart.container
+                [
+                    'mousemove',
+                    'click',
+                    'touchstart'
+                ].forEach(function (eventType) {
+                    addEvent(wrapper, eventType, function (e) {
+                        return e.stopPropagation();
+                    });
                 });
-                container.parentNode.insertBefore(wrapper, container);
+                addEvent(wrapper, 'mouseover', function (e) {
+                    return chart.pointer.onContainerMouseLeave(e);
+                });
                 // toolbar
                 stockToolbar.toolbar = toolbar = createElement(UL, {
                     className: PREFIX + 'stocktools-toolbar ' +
@@ -8278,8 +8293,8 @@
                 // Show hide toolbar
                 this.showhideBtn = showhideBtn = createElement(DIV, {
                     className: PREFIX + 'toggle-toolbar ' + PREFIX + 'arrow-left'
-                }, null, wrapper);
-                showhideBtn.style['background-image'] =
+                }, void 0, wrapper);
+                showhideBtn.style.backgroundImage =
                     'url(' + this.iconsURL + 'arrow-right.svg)';
                 if (!visible) {
                     // hide
@@ -8335,8 +8350,8 @@
                 // set icon
                 mainNavButton
                     .querySelectorAll('.' + PREFIX + 'menu-item-btn')[0]
-                    .style['background-image'] =
-                    button.style['background-image'];
+                    .style.backgroundImage =
+                    button.style.backgroundImage;
                 // set active class
                 if (redraw) {
                     this.selectButton(mainNavButton);
@@ -8376,13 +8391,17 @@
              *
              * @param {Object} - general options for Stock Tools
              */
-            Toolbar.prototype.update = function (options) {
+            Toolbar.prototype.update = function (options, redraw) {
                 merge(true, this.chart.options.stockTools, options);
                 this.destroy();
                 this.chart.setStockTools(options);
                 // If Stock Tools are updated, then bindings should be updated too:
                 if (this.chart.navigationBindings) {
                     this.chart.navigationBindings.update();
+                }
+                this.chart.isDirtyBox = true;
+                if (pick(redraw, true)) {
+                    this.chart.redraw();
                 }
             };
             /**
@@ -8399,9 +8418,6 @@
                 if (parent) {
                     parent.removeChild(stockToolsDiv);
                 }
-                // redraw
-                this.chart.isDirtyBox = true;
-                this.chart.redraw();
             };
             /**
              * Redraw, GUI requires to verify if the navigation should be visible.
@@ -8413,7 +8429,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/9.1.0/gfx/stock-icons/';
+                    'https://code.highcharts.com/9.1.1/gfx/stock-icons/';
             };
             return Toolbar;
         }());
@@ -8474,7 +8490,7 @@
                     lang = chartOptions.lang,
                     guiOptions = merge(chartOptions.stockTools && chartOptions.stockTools.gui,
                     options && options.gui),
-                    langOptions = lang.stockTools && lang.stockTools.gui;
+                    langOptions = lang && lang.stockTools && lang.stockTools.gui;
                 this.stockTools = new Toolbar(guiOptions, langOptions, this);
                 if (this.stockTools.guiEnabled) {
                     this.isDirtyBox = true;
@@ -8510,7 +8526,7 @@
             }
         });
         // Check if the correct price indicator button is displayed, #15029.
-        addEvent(H.Chart, 'render', function () {
+        addEvent(Chart, 'render', function () {
             var chart = this,
                 stockTools = chart.stockTools,
                 button = stockTools &&

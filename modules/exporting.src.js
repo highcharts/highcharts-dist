@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Exporting module
  *
@@ -332,7 +332,7 @@
 
         return chartNavigation;
     });
-    _registerModule(_modules, 'Extensions/Exporting.js', [_modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, chartNavigationMixin, H, O, palette, SVGRenderer, U) {
+    _registerModule(_modules, 'Extensions/Exporting.js', [_modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, chartNavigationMixin, H, D, palette, SVGRenderer, U) {
         /* *
          *
          *  Exporting module
@@ -347,7 +347,8 @@
         var doc = H.doc,
             isTouchDevice = H.isTouchDevice,
             win = H.win;
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
+        var symbols = SVGRenderer.prototype.symbols;
         var addEvent = U.addEvent,
             css = U.css,
             createElement = U.createElement,
@@ -361,72 +362,6 @@
             pick = U.pick,
             removeEvent = U.removeEvent,
             uniqueKey = U.uniqueKey;
-        /**
-         * Gets fired after a chart is printed through the context menu item or the
-         * Chart.print method.
-         *
-         * @callback Highcharts.ExportingAfterPrintCallbackFunction
-         *
-         * @param {Highcharts.Chart} chart
-         *        The chart on which the event occured.
-         *
-         * @param {global.Event} event
-         *        The event that occured.
-         */
-        /**
-         * Gets fired before a chart is printed through the context menu item or the
-         * Chart.print method.
-         *
-         * @callback Highcharts.ExportingBeforePrintCallbackFunction
-         *
-         * @param {Highcharts.Chart} chart
-         *        The chart on which the event occured.
-         *
-         * @param {global.Event} event
-         *        The event that occured.
-         */
-        /**
-         * Function to call if the offline-exporting module fails to export a chart on
-         * the client side.
-         *
-         * @callback Highcharts.ExportingErrorCallbackFunction
-         *
-         * @param {Highcharts.ExportingOptions} options
-         *        The exporting options.
-         *
-         * @param {global.Error} err
-         *        The error from the module.
-         */
-        /**
-         * Definition for a menu item in the context menu.
-         *
-         * @interface Highcharts.ExportingMenuObject
-         */ /**
-        * The text for the menu item.
-        *
-        * @name Highcharts.ExportingMenuObject#text
-        * @type {string|undefined}
-        */ /**
-        * If internationalization is required, the key to a language string.
-        *
-        * @name Highcharts.ExportingMenuObject#textKey
-        * @type {string|undefined}
-        */ /**
-        * The click handler for the menu item.
-        *
-        * @name Highcharts.ExportingMenuObject#onclick
-        * @type {Highcharts.EventCallbackFunction<Highcharts.Chart>|undefined}
-        */ /**
-        * Indicates a separator line instead of an item.
-        *
-        * @name Highcharts.ExportingMenuObject#separator
-        * @type {boolean|undefined}
-        */
-        /**
-         * Possible MIME types for exporting.
-         *
-         * @typedef {"image/png"|"image/jpeg"|"application/pdf"|"image/svg+xml"} Highcharts.ExportingMimeTypeValue
-         */
         // Add language
         extend(defaultOptions.lang
         /**
@@ -916,7 +851,6 @@
              * Path where Highcharts will look for export module dependencies to
              * load on demand if they don't already exist on `window`. Should currently
              * point to location of [CanVG](https://github.com/canvg/canvg) library,
-             * [RGBColor.js](https://github.com/canvg/canvg),
              * [jsPDF](https://github.com/yWorks/jsPDF) and
              * [svg2pdf.js](https://github.com/yWorks/svg2pdf.js), required for client
              * side export in certain browsers.
@@ -1071,7 +1005,7 @@
                     /**
                      * The symbol for the button. Points to a definition function in
                      * the `Highcharts.Renderer.symbols` collection. The default
-                     * `exportIcon` function is part of the exporting module. Possible
+                     * `menu` function is part of the exporting module. Possible
                      * values are "circle", "square", "diamond", "triangle",
                      * "triangle-down", "menu", "menuball" or custom shape.
                      *
@@ -1080,7 +1014,7 @@
                      * @sample highcharts/exporting/buttons-contextbutton-symbol-custom/
                      *         Custom shape as symbol
                      *
-                     * @type  {Highcharts.SymbolKeyValue|"exportIcon"|"menu"|"menuball"|string}
+                     * @type  {Highcharts.SymbolKeyValue|"menu"|"menuball"|string}
                      * @since 2.0
                      */
                     symbol: 'menu',
@@ -2298,7 +2232,7 @@
             recurse(this.container.querySelector('svg'));
             tearDown();
         };
-        H.Renderer.prototype.symbols.menu = function (x, y, width, height) {
+        symbols.menu = function (x, y, width, height) {
             var arr = [
                     ['M',
                 x,
@@ -2321,10 +2255,10 @@
                 ];
             return arr;
         };
-        H.Renderer.prototype.symbols.menuball = function (x, y, width, height) {
+        symbols.menuball = function (x, y, width, height) {
             var path = [],
                 h = (height / 3) - 2;
-            path = path.concat(this.circle(width - h, y, h, h), this.circle(width - h, y + h + 4, h, h), this.circle(width - h, y + 2 * (h + 4), h, h));
+            path = path.concat(symbols.circle(width - h, y, h, h), symbols.circle(width - h, y + h + 4, h, h), symbols.circle(width - h, y + 2 * (h + 4), h, h));
             return path;
         };
         /**
@@ -2432,6 +2366,78 @@
             }
             //*/
         });
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * Gets fired after a chart is printed through the context menu item or the
+         * Chart.print method.
+         *
+         * @callback Highcharts.ExportingAfterPrintCallbackFunction
+         *
+         * @param {Highcharts.Chart} chart
+         *        The chart on which the event occured.
+         *
+         * @param {global.Event} event
+         *        The event that occured.
+         */
+        /**
+         * Gets fired before a chart is printed through the context menu item or the
+         * Chart.print method.
+         *
+         * @callback Highcharts.ExportingBeforePrintCallbackFunction
+         *
+         * @param {Highcharts.Chart} chart
+         *        The chart on which the event occured.
+         *
+         * @param {global.Event} event
+         *        The event that occured.
+         */
+        /**
+         * Function to call if the offline-exporting module fails to export a chart on
+         * the client side.
+         *
+         * @callback Highcharts.ExportingErrorCallbackFunction
+         *
+         * @param {Highcharts.ExportingOptions} options
+         *        The exporting options.
+         *
+         * @param {global.Error} err
+         *        The error from the module.
+         */
+        /**
+         * Definition for a menu item in the context menu.
+         *
+         * @interface Highcharts.ExportingMenuObject
+         */ /**
+        * The text for the menu item.
+        *
+        * @name Highcharts.ExportingMenuObject#text
+        * @type {string|undefined}
+        */ /**
+        * If internationalization is required, the key to a language string.
+        *
+        * @name Highcharts.ExportingMenuObject#textKey
+        * @type {string|undefined}
+        */ /**
+        * The click handler for the menu item.
+        *
+        * @name Highcharts.ExportingMenuObject#onclick
+        * @type {Highcharts.EventCallbackFunction<Highcharts.Chart>|undefined}
+        */ /**
+        * Indicates a separator line instead of an item.
+        *
+        * @name Highcharts.ExportingMenuObject#separator
+        * @type {boolean|undefined}
+        */
+        /**
+         * Possible MIME types for exporting.
+         *
+         * @typedef {"image/png"|"image/jpeg"|"application/pdf"|"image/svg+xml"} Highcharts.ExportingMimeTypeValue
+         */
+        (''); // keeps doclets above in transpiled file
 
     });
     _registerModule(_modules, 'masters/modules/exporting.src.js', [], function () {

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.1.0 (2021-05-04)
+ * @license Highstock JS v9.1.1 (2021-06-04)
  *
  * Data grouping module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/DataGrouping.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Tooltip.js'], _modules['Core/Options.js'], _modules['Core/Utilities.js']], function (Axis, DateTimeAxis, F, H, Point, Series, Tooltip, O, U) {
+    _registerModule(_modules, 'Extensions/DataGrouping.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Axis/DateTimeAxis.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Tooltip.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (Axis, DateTimeAxis, F, H, Point, Series, Tooltip, D, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -795,7 +795,7 @@
             var options = e.options,
                 type = this.type,
                 plotOptions = this.chart.options.plotOptions,
-                defaultOptions = O.defaultOptions.plotOptions[type].dataGrouping, 
+                defaultOptions = D.defaultOptions.plotOptions[type].dataGrouping, 
                 // External series, for example technical indicators should also
                 // inherit commonOptions which are not available outside this module
                 baseOptions = this.useCommonDataGrouping && commonOptions;
@@ -873,8 +873,6 @@
          * @param {boolean} [redraw=true]
          *        Whether to redraw the chart or wait for a later call to
          *        {@link Chart#redraw}.
-         *
-         * @return {void}
          */
         Axis.prototype.setDataGrouping = function (dataGrouping, redraw) {
             var axis = this;

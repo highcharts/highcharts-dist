@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.0 (2021-05-04)
+ * @license Highcharts JS v9.1.1 (2021-06-04)
  *
  * Highcharts Drilldown module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Drilldown.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Options.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, Color, ColumnSeries, F, H, O, palette, Point, Series, SeriesRegistry, SVGRenderer, Tick, U) {
+    _registerModule(_modules, 'Extensions/Drilldown.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, Color, ColumnSeries, F, H, D, palette, Point, Series, SeriesRegistry, SVGRenderer, Tick, U) {
         /* *
          *
          *  Highcharts Drilldown module
@@ -43,7 +43,7 @@
         var animObject = A.animObject;
         var format = F.format;
         var noop = H.noop;
-        var defaultOptions = O.defaultOptions;
+        var defaultOptions = D.defaultOptions;
         var seriesTypes = SeriesRegistry.seriesTypes;
         var addEvent = U.addEvent,
             removeEvent = U.removeEvent,
@@ -803,7 +803,10 @@
                                 if (!axis.ddPoints[xData[i]]) {
                                     axis.ddPoints[xData[i]] = [];
                                 }
-                                axis.ddPoints[xData[i]].push(points ? points[i] : true);
+                                var index = i - (series.cropStart || 0);
+                                axis.ddPoints[xData[i]].push((points && index >= 0 && index < points.length) ?
+                                    points[index] :
+                                    true);
                             }
                         }
                     }
@@ -1206,7 +1209,7 @@
             }
         });
         // After zooming out, shift the drillUpButton to the previous position, #8095.
-        addEvent(H.Chart, 'selection', function (event) {
+        addEvent(Chart, 'selection', function (event) {
             if (event.resetSelection === true && this.drillUpButton) {
                 var buttonOptions = this.options.drilldown && this.options.drilldown.drillUpButton;
                 if (buttonOptions && buttonOptions.position) {
@@ -1218,7 +1221,7 @@
                 }
             }
         });
-        addEvent(H.Chart, 'drillup', function () {
+        addEvent(Chart, 'drillup', function () {
             if (this.resetZoomButton) {
                 this.resetZoomButton = this.resetZoomButton.destroy();
             }
