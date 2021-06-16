@@ -909,6 +909,11 @@ function GLRenderer(postRenderCallback) {
                 cbuffer.build(s.colorData, 'aColor', 4);
                 cbuffer.bind();
             }
+            else {
+                // #15869, a buffer with fewer points might already be bound by
+                // a different series/chart causing out of range errors
+                gl.disableVertexAttribArray(gl.getAttribLocation(shader.program(), 'aColor'));
+            }
             // Set series specific uniforms
             shader.setColor(scolor);
             setXAxis(s.series.xAxis);

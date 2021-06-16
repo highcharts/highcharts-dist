@@ -200,12 +200,6 @@ var Tooltip = /** @class */ (function () {
                         }]
                 }]
         });
-        chart.renderer.definition({
-            tagName: 'style',
-            textContent: '.highcharts-tooltip-' + chart.index + '{' +
-                'filter:url(#drop-shadow-' + chart.index + ')' +
-                '}'
-        });
     };
     /**
      * Build the body (lines) of the tooltip by iterating over the items and
@@ -493,10 +487,12 @@ var Tooltip = /** @class */ (function () {
                         .shadow(options.shadow);
                 }
             }
-            if (styledMode) {
+            if (styledMode && options.shadow) {
                 // Apply the drop-shadow filter
                 this.applyFilter();
-                this.label.addClass('highcharts-tooltip-' + this.chart.index);
+                this.label.attr({
+                    filter: 'url(#drop-shadow-' + this.chart.index + ')'
+                });
             }
             // Split tooltip use updateTooltipContainer to position the tooltip
             // container.
@@ -1284,8 +1280,8 @@ var Tooltip = /** @class */ (function () {
         }
         var chart = tooltip.chart;
         var label = tooltip.label;
-        var point = chart.hoverPoint;
-        if (!label || !point) {
+        var points = tooltip.shared ? chart.hoverPoints : chart.hoverPoint;
+        if (!label || !points) {
             return;
         }
         var box = {
@@ -1295,7 +1291,7 @@ var Tooltip = /** @class */ (function () {
             height: 0
         };
         // Combine anchor and tooltip
-        var anchorPos = this.getAnchor(point);
+        var anchorPos = this.getAnchor(points);
         var labelBBox = label.getBBox();
         anchorPos[0] += chart.plotLeft - label.translateX;
         anchorPos[1] += chart.plotTop - label.translateY;

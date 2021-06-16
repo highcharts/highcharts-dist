@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.1 (2021-06-04)
+ * @license Highcharts JS v9.1.2 (2021-06-16)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *

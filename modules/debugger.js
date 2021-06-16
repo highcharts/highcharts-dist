@@ -1,5 +1,5 @@
 /*
- Highcharts JS v9.1.1 (2021-06-03)
+ Highcharts JS v9.1.2 (2021-06-16)
 
  Debugger module
 

@@ -1020,7 +1020,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/9.1.1/gfx/stock-icons/
+         * @default   https://code.highcharts.com/9.1.2/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */

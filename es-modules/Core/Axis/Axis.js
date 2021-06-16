@@ -9,18 +9,18 @@
  * */
 'use strict';
 import A from '../Animation/AnimationUtilities.js';
-var animObject = A.animObject;
-import AxisDefaults from './AxisDefaults.js';
 import Color from '../Color/Color.js';
-import F from '../Foundation.js';
-var registerEventOptions = F.registerEventOptions;
-import H from '../Globals.js';
-var deg2rad = H.deg2rad;
 import Palette from '../Color/Palette.js';
 import D from '../DefaultOptions.js';
-var defaultOptions = D.defaultOptions;
-import Tick from './Tick.js';
+import F from '../Foundation.js';
+import H from '../Globals.js';
 import U from '../Utilities.js';
+import AxisDefaults from './AxisDefaults.js';
+import Tick from './Tick.js';
+var animObject = A.animObject;
+var registerEventOptions = F.registerEventOptions;
+var deg2rad = H.deg2rad;
+var defaultOptions = D.defaultOptions;
 var arrayMax = U.arrayMax, arrayMin = U.arrayMin, clamp = U.clamp, correctFloat = U.correctFloat, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, error = U.error, extend = U.extend, fireEvent = U.fireEvent, getMagnitude = U.getMagnitude, isArray = U.isArray, isNumber = U.isNumber, isString = U.isString, merge = U.merge, normalizeTickInterval = U.normalizeTickInterval, objectEach = U.objectEach, pick = U.pick, relativeLength = U.relativeLength, removeEvent = U.removeEvent, splat = U.splat, syncTimeout = U.syncTimeout;
 /* *
  *
@@ -557,13 +557,13 @@ var Axis = /** @class */ (function () {
             val -= minPixelPadding;
             // from chart pixel to value:
             returnValue = val / localA + localMin;
-            if (doPostTranslate) { // log and ordinal axes
+            if (doPostTranslate) { // log, ordinal and broken axis
                 returnValue = axis.lin2val(returnValue);
             }
             // From value to pixels
         }
         else {
-            if (doPostTranslate) { // log and ordinal axes
+            if (doPostTranslate) { // log, ordinal and broken axis
                 val = axis.val2lin(val);
             }
             returnValue = isNumber(localMin) ?
@@ -2457,16 +2457,18 @@ var Axis = /** @class */ (function () {
      *
      * @param {number} pos
      * The position in axis values.
+     *
+     * @param {boolean} slideIn
+     * Whether the tick should animate in from last computed position
      */
-    Axis.prototype.renderMinorTick = function (pos) {
+    Axis.prototype.renderMinorTick = function (pos, slideIn) {
         var axis = this;
-        var slideInTicks = axis.chart.hasRendered && axis.old;
         var minorTicks = axis.minorTicks;
         if (!minorTicks[pos]) {
             minorTicks[pos] = new Tick(axis, pos, 'minor');
         }
         // Render new ticks in old position
-        if (slideInTicks && minorTicks[pos].isNew) {
+        if (slideIn && minorTicks[pos].isNew) {
             minorTicks[pos].render(null, true);
         }
         minorTicks[pos].render(null, false, 1);
@@ -2482,9 +2484,12 @@ var Axis = /** @class */ (function () {
      *
      * @param {number} i
      * The tick index.
+     *
+     * @param {boolean} slideIn
+     * Whether the tick should animate in from last computed position
      */
-    Axis.prototype.renderTick = function (pos, i) {
-        var axis = this, isLinked = axis.isLinked, ticks = axis.ticks, slideInTicks = axis.chart.hasRendered && axis.old;
+    Axis.prototype.renderTick = function (pos, i, slideIn) {
+        var axis = this, isLinked = axis.isLinked, ticks = axis.ticks;
         // Linked axes need an extra check to find out if
         if (!isLinked ||
             (pos >= axis.min && pos <= axis.max) ||
@@ -2495,7 +2500,7 @@ var Axis = /** @class */ (function () {
             // NOTE this seems like overkill. Could be handled in tick.render by
             // setting old position in attr, then set new position in animate.
             // render new ticks in old position
-            if (slideInTicks && ticks[pos].isNew) {
+            if (slideIn && ticks[pos].isNew) {
                 // Start with negative opacity so that it is visible from
                 // halfway into the animation
                 ticks[pos].render(i, true, -1);
@@ -2525,17 +2530,19 @@ var Axis = /** @class */ (function () {
         });
         // If the series has data draw the ticks. Else only the line and title
         if (axis.hasData() || isLinked) {
+            var slideInTicks_1 = axis.chart.hasRendered &&
+                axis.old && isNumber(axis.old.min);
             // minor ticks
             if (axis.minorTickInterval && !axis.categories) {
                 axis.getMinorTickPositions().forEach(function (pos) {
-                    axis.renderMinorTick(pos);
+                    axis.renderMinorTick(pos, slideInTicks_1);
                 });
             }
             // Major ticks. Pull out the first item and render it last so that
             // we can get the position of the neighbour label. #808.
             if (tickPositions.length) { // #1300
                 tickPositions.forEach(function (pos, i) {
-                    axis.renderTick(pos, i);
+                    axis.renderTick(pos, i, slideInTicks_1);
                 });
                 // In a categorized axis, the tick marks are displayed
                 // between labels. So we need to add a tick mark and

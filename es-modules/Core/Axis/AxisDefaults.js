@@ -900,7 +900,6 @@ var AxisDefaults;
              *         Show labels over two lines
              *
              * @since     2.1
-             * @apioption xAxis.labels.staggerLines
              */
             staggerLines: 0,
             /**

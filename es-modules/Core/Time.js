@@ -17,9 +17,9 @@ var defined = U.defined, error = U.error, extend = U.extend, isObject = U.isObje
  *  Constants
  *
  * */
-var hasNewSafariBug = (H.isSafari && Intl.DateTimeFormat.prototype.formatRange);
+var hasNewSafariBug = (H.isSafari && Intl && Intl.DateTimeFormat.prototype.formatRange);
 // To do: Remove this when we no longer need support for Safari < v14.1
-var hasOldSafariBug = (H.isSafari && !Intl.DateTimeFormat.prototype.formatRange);
+var hasOldSafariBug = (H.isSafari && Intl && !Intl.DateTimeFormat.prototype.formatRange);
 /* *
  *
  *  Class

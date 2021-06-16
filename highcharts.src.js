@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.1 (2021-06-04)
+ * @license Highcharts JS v9.1.2 (2021-06-16)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -71,7 +71,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '9.1.1', Globals.win = w, Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '9.1.2', Globals.win = w, Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
                 Globals.doc.createElementNS &&
                 !!Globals.doc.createElementNS(Globals.SVG_NS, 'svg').createSVGRect), Globals.userAgent = (Globals.win.navigator && Globals.win.navigator.userAgent) || '', Globals.isChrome = Globals.userAgent.indexOf('Chrome') !== -1, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.hasBidiBug = (Globals.isFirefox &&
                 parseInt(Globals.userAgent.split('Firefox/')[1], 10) < 4 // issue #38
@@ -131,6 +131,12 @@
              * @private
              */
             Globals.symbolSizes = {};
+            /* *
+             *
+             *  Properties
+             *
+             * */
+            Globals.chartCount = 0;
         })(Globals || (Globals = {}));
         /* *
          *
@@ -3774,9 +3780,9 @@
          *  Constants
          *
          * */
-        var hasNewSafariBug = (H.isSafari && Intl.DateTimeFormat.prototype.formatRange);
+        var hasNewSafariBug = (H.isSafari && Intl && Intl.DateTimeFormat.prototype.formatRange);
         // To do: Remove this when we no longer need support for Safari < v14.1
-        var hasOldSafariBug = (H.isSafari && !Intl.DateTimeFormat.prototype.formatRange);
+        var hasOldSafariBug = (H.isSafari && Intl && !Intl.DateTimeFormat.prototype.formatRange);
         /* *
          *
          *  Class
@@ -12156,7 +12162,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 var desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.1.1'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.1.2'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;
@@ -14428,6 +14434,63 @@
 
         return HTMLRenderer;
     });
+    _registerModule(_modules, 'Core/Foundation.js', [_modules['Core/Utilities.js']], function (U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var addEvent = U.addEvent,
+            isFunction = U.isFunction,
+            objectEach = U.objectEach,
+            removeEvent = U.removeEvent;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /*
+         * Register event options. If an event handler is set on the options, it should
+         * be subject to Chart.update, Axis.update and Series.update. This is contrary
+         * to general handlers that are set directly using addEvent either on the class
+         * or on the instance. #6538, #6943, #10861.
+         */
+        var registerEventOptions = function (component,
+            options) {
+                // A lookup over those events that are added by _options_ (not
+                // programmatically). These are updated through .update()
+                component.eventOptions = component.eventOptions || {};
+            // Register event listeners
+            objectEach(options.events, function (event, eventType) {
+                if (isFunction(event)) {
+                    // If event does not exist, or is changed by the .update()
+                    // function
+                    if (component.eventOptions[eventType] !== event) {
+                        // Remove existing if set by option
+                        if (isFunction(component.eventOptions[eventType])) {
+                            removeEvent(component, eventType, component.eventOptions[eventType]);
+                        }
+                        component.eventOptions[eventType] = event;
+                        addEvent(component, eventType, event);
+                    }
+                }
+            });
+        };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var exports = {
+                registerEventOptions: registerEventOptions
+            };
+
+        return exports;
+    });
     _registerModule(_modules, 'Core/Axis/AxisDefaults.js', [_modules['Core/Color/Palette.js']], function (Palette) {
         /* *
          *
@@ -15329,7 +15392,6 @@
                      *         Show labels over two lines
                      *
                      * @since     2.1
-                     * @apioption xAxis.labels.staggerLines
                      */
                     staggerLines: 0,
                     /**
@@ -17354,63 +17416,6 @@
 
         return AxisDefaults;
     });
-    _registerModule(_modules, 'Core/Foundation.js', [_modules['Core/Utilities.js']], function (U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var addEvent = U.addEvent,
-            isFunction = U.isFunction,
-            objectEach = U.objectEach,
-            removeEvent = U.removeEvent;
-        /* *
-         *
-         *  Functions
-         *
-         * */
-        /*
-         * Register event options. If an event handler is set on the options, it should
-         * be subject to Chart.update, Axis.update and Series.update. This is contrary
-         * to general handlers that are set directly using addEvent either on the class
-         * or on the instance. #6538, #6943, #10861.
-         */
-        var registerEventOptions = function (component,
-            options) {
-                // A lookup over those events that are added by _options_ (not
-                // programmatically). These are updated through .update()
-                component.eventOptions = component.eventOptions || {};
-            // Register event listeners
-            objectEach(options.events, function (event, eventType) {
-                if (isFunction(event)) {
-                    // If event does not exist, or is changed by the .update()
-                    // function
-                    if (component.eventOptions[eventType] !== event) {
-                        // Remove existing if set by option
-                        if (isFunction(component.eventOptions[eventType])) {
-                            removeEvent(component, eventType, component.eventOptions[eventType]);
-                        }
-                        component.eventOptions[eventType] = event;
-                        addEvent(component, eventType, event);
-                    }
-                }
-            });
-        };
-        /* *
-         *
-         *  Default Export
-         *
-         * */
-        var exports = {
-                registerEventOptions: registerEventOptions
-            };
-
-        return exports;
-    });
     _registerModule(_modules, 'Core/Axis/Tick.js', [_modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (F, H, U) {
         /* *
          *
@@ -18263,7 +18268,7 @@
 
         return Tick;
     });
-    _registerModule(_modules, 'Core/Axis/Axis.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Color/Color.js'], _modules['Core/Foundation.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (A, AxisDefaults, Color, F, H, Palette, D, Tick, U) {
+    _registerModule(_modules, 'Core/Axis/Axis.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Color/Color.js'], _modules['Core/Color/Palette.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Foundation.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Axis/Tick.js']], function (A, Color, Palette, D, F, H, U, AxisDefaults, Tick) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -18858,13 +18863,13 @@
                     val -= minPixelPadding;
                     // from chart pixel to value:
                     returnValue = val / localA + localMin;
-                    if (doPostTranslate) { // log and ordinal axes
+                    if (doPostTranslate) { // log, ordinal and broken axis
                         returnValue = axis.lin2val(returnValue);
                     }
                     // From value to pixels
                 }
                 else {
-                    if (doPostTranslate) { // log and ordinal axes
+                    if (doPostTranslate) { // log, ordinal and broken axis
                         val = axis.val2lin(val);
                     }
                     returnValue = isNumber(localMin) ?
@@ -20968,16 +20973,18 @@
              *
              * @param {number} pos
              * The position in axis values.
+             *
+             * @param {boolean} slideIn
+             * Whether the tick should animate in from last computed position
              */
-            Axis.prototype.renderMinorTick = function (pos) {
+            Axis.prototype.renderMinorTick = function (pos, slideIn) {
                 var axis = this;
-                var slideInTicks = axis.chart.hasRendered && axis.old;
                 var minorTicks = axis.minorTicks;
                 if (!minorTicks[pos]) {
                     minorTicks[pos] = new Tick(axis, pos, 'minor');
                 }
                 // Render new ticks in old position
-                if (slideInTicks && minorTicks[pos].isNew) {
+                if (slideIn && minorTicks[pos].isNew) {
                     minorTicks[pos].render(null, true);
                 }
                 minorTicks[pos].render(null, false, 1);
@@ -20993,12 +21000,14 @@
              *
              * @param {number} i
              * The tick index.
+             *
+             * @param {boolean} slideIn
+             * Whether the tick should animate in from last computed position
              */
-            Axis.prototype.renderTick = function (pos, i) {
+            Axis.prototype.renderTick = function (pos, i, slideIn) {
                 var axis = this,
                     isLinked = axis.isLinked,
-                    ticks = axis.ticks,
-                    slideInTicks = axis.chart.hasRendered && axis.old;
+                    ticks = axis.ticks;
                 // Linked axes need an extra check to find out if
                 if (!isLinked ||
                     (pos >= axis.min && pos <= axis.max) ||
@@ -21009,7 +21018,7 @@
                     // NOTE this seems like overkill. Could be handled in tick.render by
                     // setting old position in attr, then set new position in animate.
                     // render new ticks in old position
-                    if (slideInTicks && ticks[pos].isNew) {
+                    if (slideIn && ticks[pos].isNew) {
                         // Start with negative opacity so that it is visible from
                         // halfway into the animation
                         ticks[pos].render(i, true, -1);
@@ -21056,17 +21065,19 @@
                 });
                 // If the series has data draw the ticks. Else only the line and title
                 if (axis.hasData() || isLinked) {
+                    var slideInTicks_1 = axis.chart.hasRendered &&
+                            axis.old && isNumber(axis.old.min);
                     // minor ticks
                     if (axis.minorTickInterval && !axis.categories) {
                         axis.getMinorTickPositions().forEach(function (pos) {
-                            axis.renderMinorTick(pos);
+                            axis.renderMinorTick(pos, slideInTicks_1);
                         });
                     }
                     // Major ticks. Pull out the first item and render it last so that
                     // we can get the position of the neighbour label. #808.
                     if (tickPositions.length) { // #1300
                         tickPositions.forEach(function (pos, i) {
-                            axis.renderTick(pos, i);
+                            axis.renderTick(pos, i, slideInTicks_1);
                         });
                         // In a categorized axis, the tick marks are displayed
                         // between labels. So we need to add a tick mark and
@@ -23454,12 +23465,6 @@
                                 }]
                         }]
                 });
-                chart.renderer.definition({
-                    tagName: 'style',
-                    textContent: '.highcharts-tooltip-' + chart.index + '{' +
-                        'filter:url(#drop-shadow-' + chart.index + ')' +
-                        '}'
-                });
             };
             /**
              * Build the body (lines) of the tooltip by iterating over the items and
@@ -23765,10 +23770,12 @@
                                 .shadow(options.shadow);
                         }
                     }
-                    if (styledMode) {
+                    if (styledMode && options.shadow) {
                         // Apply the drop-shadow filter
                         this.applyFilter();
-                        this.label.addClass('highcharts-tooltip-' + this.chart.index);
+                        this.label.attr({
+                            filter: 'url(#drop-shadow-' + this.chart.index + ')'
+                        });
                     }
                     // Split tooltip use updateTooltipContainer to position the tooltip
                     // container.
@@ -24652,8 +24659,8 @@
                 }
                 var chart = tooltip.chart;
                 var label = tooltip.label;
-                var point = chart.hoverPoint;
-                if (!label || !point) {
+                var points = tooltip.shared ? chart.hoverPoints : chart.hoverPoint;
+                if (!label || !points) {
                     return;
                 }
                 var box = {
@@ -24663,7 +24670,7 @@
                         height: 0
                     };
                 // Combine anchor and tooltip
-                var anchorPos = this.getAnchor(point);
+                var anchorPos = this.getAnchor(points);
                 var labelBBox = label.getBBox();
                 anchorPos[0] += chart.plotLeft - label.translateX;
                 anchorPos[1] += chart.plotTop - label.translateY;
@@ -35284,8 +35291,23 @@
                 }
             };
             /**
-             * @private
+             * Find the nearest point from a pointer event. This applies to series that
+             * use k-d-trees to get the nearest point. Native pointer events must be
+             * normalized using `Pointer.normalize`, that adds `chartX` and `chartY`
+             * properties.
+             *
+             * @sample highcharts/demo/synchronized-charts
+             *         Synchronized charts with tooltips
+             *
              * @function Highcharts.Series#searchPoint
+             *
+             * @param {Highcharts.PointerEvent} e
+             *        The normalized pointer event
+             * @param {boolean} [compareX=false]
+             *        Search only by the X value, not Y
+             *
+             * @return {Point|undefined}
+             *        The closest point to the pointer event
              */
             Series.prototype.searchPoint = function (e, compareX) {
                 var series = this,

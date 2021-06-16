@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.1 (2021-06-04)
+ * @license Highcharts JS v9.1.2 (2021-06-16)
  *
  * Annotations module
  *
@@ -7288,7 +7288,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.1.1/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.1.2/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -7639,6 +7639,7 @@
                 // add close button
                 popupDiv.appendChild(popupCloseBtn);
                 popupDiv.style.display = 'block';
+                popupDiv.style.height = '';
             },
             /**
              * Hide popup.
@@ -7680,6 +7681,8 @@
                 if (type === 'flag') {
                     this.annotations.addForm.call(this, chart, options, callback, true);
                 }
+                // Explicit height is needed to make inner elements scrollable
+                this.container.style.height = this.container.offsetHeight + 'px';
             },
             /**
              * Return lang definitions for popup.
@@ -8222,7 +8225,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/9.1.1/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/9.1.2/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

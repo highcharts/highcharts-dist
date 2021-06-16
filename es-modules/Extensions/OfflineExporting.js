@@ -581,7 +581,7 @@ Chart.prototype.exportChartLocal = function (exportingOptions, chartOptions) {
 };
 // Extend the default options to use the local exporter logic
 merge(true, getOptions().exporting, {
-    libURL: 'https://code.highcharts.com/9.1.1/lib/',
+    libURL: 'https://code.highcharts.com/9.1.2/lib/',
     // When offline-exporting is loaded, redefine the menu item definitions
     // related to download.
     menuItemDefinitions: {

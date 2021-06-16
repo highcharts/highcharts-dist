@@ -1,5 +1,5 @@
 /*
- Highmaps JS v9.1.1 (2021-06-03)
+ Highmaps JS v9.1.2 (2021-06-16)
 
  Highmaps as a plugin for Highcharts or Highcharts Stock.
 

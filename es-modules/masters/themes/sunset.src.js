@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.1 (2021-06-04)
+ * @license Highcharts JS v9.1.2 (2021-06-16)
  * @module highcharts/themes/sunset
  * @requires highcharts
  *

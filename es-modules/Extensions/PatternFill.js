@@ -25,21 +25,33 @@ var addEvent = U.addEvent, erase = U.erase, merge = U.merge, pick = U.pick, remo
 // Add the predefined patterns
 var patterns = H.patterns = (function () {
     var patterns = [], colors = getOptions().colors;
+    // Start with subtle patterns
     [
-        'M 0 0 L 10 10 M 9 -1 L 11 1 M -1 9 L 1 11',
-        'M 0 10 L 10 0 M -1 1 L 1 -1 M 9 11 L 11 9',
-        'M 3 0 L 3 10 M 8 0 L 8 10',
-        'M 0 3 L 10 3 M 0 8 L 10 8',
-        'M 0 3 L 5 3 L 5 0 M 5 10 L 5 7 L 10 7',
-        'M 3 3 L 8 3 L 8 8 L 3 8 Z',
-        'M 5 5 m -4 0 a 4 4 0 1 1 8 0 a 4 4 0 1 1 -8 0',
-        'M 10 3 L 5 3 L 5 0 M 5 10 L 5 7 L 0 7',
-        'M 2 5 L 5 2 L 8 5 L 5 8 Z',
-        'M 0 0 L 5 10 L 10 0'
+        'M 0 0 L 5 5 M 4.5 -0.5 L 5.5 0.5 M -0.5 4.5 L 0.5 5.5',
+        'M 0 5 L 5 0 M -0.5 0.5 L 0.5 -0.5 M 4.5 5.5 L 5.5 4.5',
+        'M 2 0 L 2 5 M 4 0 L 4 5',
+        'M 0 2 L 5 2 M 0 4 L 5 4',
+        'M 0 1.5 L 2.5 1.5 L 2.5 0 M 2.5 5 L 2.5 3.5 L 5 3.5'
     ].forEach(function (pattern, i) {
         patterns.push({
             path: pattern,
             color: colors[i],
+            width: 5,
+            height: 5,
+            patternTransform: 'scale(1.4 1.4)'
+        });
+    });
+    // Then add the more drastic ones
+    [
+        'M 0 0 L 5 10 L 10 0',
+        'M 3 3 L 8 3 L 8 8 L 3 8 Z',
+        'M 5 5 m -4 0 a 4 4 0 1 1 8 0 a 4 4 0 1 1 -8 0',
+        'M 0 0 L 10 10 M 9 -1 L 11 1 M -1 9 L 1 11',
+        'M 0 10 L 10 0 M -1 1 L 1 -1 M 9 11 L 11 9'
+    ].forEach(function (pattern, i) {
+        patterns.push({
+            path: pattern,
+            color: colors[i + 5],
             width: 10,
             height: 10
         });
@@ -64,7 +76,8 @@ var patterns = H.patterns = (function () {
  *         The computed hash.
  */
 function hashFromObject(obj, preSeed) {
-    var str = JSON.stringify(obj), strLen = str.length || 0, hash = 0, i = 0, char, seedStep;
+    var str = JSON.stringify(obj), strLen = str.length || 0;
+    var hash = 0, i = 0, char, seedStep;
     if (preSeed) {
         seedStep = Math.max(Math.floor(strLen / 500), 1);
         for (var a = 0; a < strLen; a += seedStep) {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.1 (2021-06-04)
+ * @license Highcharts JS v9.1.2 (2021-06-16)
  *
  * Boost module
  *
@@ -1650,6 +1650,11 @@
                         cbuffer = GLVertexBuffer(gl, shader); // eslint-disable-line new-cap
                         cbuffer.build(s.colorData, 'aColor', 4);
                         cbuffer.bind();
+                    }
+                    else {
+                        // #15869, a buffer with fewer points might already be bound by
+                        // a different series/chart causing out of range errors
+                        gl.disableVertexAttribArray(gl.getAttribLocation(shader.program(), 'aColor'));
                     }
                     // Set series specific uniforms
                     shader.setColor(scolor);
