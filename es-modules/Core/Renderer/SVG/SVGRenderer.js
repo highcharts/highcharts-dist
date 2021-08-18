@@ -194,7 +194,7 @@ var SVGRenderer = /** @class */ (function () {
         this.url = this.getReferenceURL();
         // Add description
         var desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.1.2'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.2.0'));
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
         renderer.forExport = forExport;
@@ -1254,7 +1254,7 @@ var SVGRenderer = /** @class */ (function () {
             attribs.text = str;
         }
         var wrapper = renderer.createElement('text').attr(attribs);
-        if (!useHTML) {
+        if (!useHTML || (renderer.forExport && !renderer.allowHTML)) {
             wrapper.xSetter = function (value, key, element) {
                 var tspans = element.getElementsByTagName('tspan'), parentVal = element.getAttribute(key);
                 for (var i = 0, tspan = void 0; i < tspans.length; i++) {

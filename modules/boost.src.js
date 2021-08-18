@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * Boost module
  *
@@ -672,6 +672,9 @@
                 }
                 if (!to || to > length) {
                     to = length;
+                }
+                if (from >= to) {
+                    return false;
                 }
                 drawMode = drawMode || 'points';
                 gl.drawArrays(gl[drawMode.toUpperCase()], from / components, (to - from) / components);
@@ -1680,9 +1683,7 @@
                     // If the line width is < 0, skip rendering of the lines. See #7833.
                     if (lineWidth > 0 || s.drawMode !== 'line_strip') {
                         for (sindex = 0; sindex < s.segments.length; sindex++) {
-                            // if (s.segments[sindex].from < s.segments[sindex].to) {
                             vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, s.drawMode);
-                            // }
                         }
                     }
                     if (s.hasMarkers && showMarkers) {
@@ -1694,9 +1695,7 @@
                         }
                         shader.setDrawAsCircle(true);
                         for (sindex = 0; sindex < s.segments.length; sindex++) {
-                            // if (s.segments[sindex].from < s.segments[sindex].to) {
                             vbuffer.render(s.segments[sindex].from, s.segments[sindex].to, 'POINTS');
-                            // }
                         }
                     }
                 });
@@ -2875,7 +2874,7 @@
                             series.pointArrayMap.join(',') === 'low,high'), isStacked = !!options.stacking, cropStart = series.cropStart || 0, loadingOptions = chart.options.loading, requireSorting = series.requireSorting, wasNull, connectNulls = options.connectNulls, useRaw = !xData, minVal, maxVal, minI, maxI, index, sdata = (isStacked ?
                             series.data :
                             (xData || rawData)), fillColor = (series.fillOpacity ?
-                            new Color(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
+                            Color.parse(series.color).setOpacity(pick(options.fillOpacity, 0.75)).get() :
                             series.color), 
                         //
                         stroke = function () {
@@ -3471,10 +3470,14 @@
             /**
              * Used twice in this function, first on this.options.data, the second
              * time it runs the check again after processedXData is built.
+             * If the data is going to be grouped, the series shouldn't be boosted.
              * @private
-             * @todo Check what happens with data grouping
              */
             function getSeriesBoosting(data) {
+                // Check if will be grouped.
+                if (series.forceCrop) {
+                    return false;
+                }
                 return series.chart.isChartSeriesBoosting() || ((data ? data.length : 0) >=
                     (series.options.boostThreshold || Number.MAX_VALUE));
             }

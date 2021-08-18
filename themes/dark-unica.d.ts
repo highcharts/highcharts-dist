@@ -12,6 +12,11 @@ import * as _Highcharts from "../highcharts";
  *        The imported Highcharts namespace to extend.
  */
 export function factory(highcharts: typeof Highcharts): void;
-declare module "../highcharts" {}
+declare module "../highcharts" {
+    /**
+     * Apply the theme.
+     */
+    function apply(): void;
+}
 export default factory;
 export let Highcharts: typeof _Highcharts;

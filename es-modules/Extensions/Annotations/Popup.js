@@ -126,12 +126,14 @@ H.Popup.prototype = {
             }, void 0, parentDiv).appendChild(doc.createTextNode(lang[optionName] || optionName));
         }
         // add input
-        createElement(INPUT, {
-            name: inputName,
-            value: value[0],
-            type: value[1],
-            className: PREFIX + 'popup-field'
-        }, void 0, parentDiv).setAttribute(PREFIX + 'data-name', option);
+        if (value !== '') {
+            createElement(INPUT, {
+                name: inputName,
+                value: value[0],
+                type: value[1],
+                className: PREFIX + 'popup-field'
+            }, void 0, parentDiv).setAttribute(PREFIX + 'data-name', option);
+        }
     },
     /**
      * Create button.
@@ -202,6 +204,7 @@ H.Popup.prototype = {
     showPopup: function () {
         var popupDiv = this.container, toolbarClass = PREFIX + 'annotation-toolbar', popupCloseBtn = popupDiv
             .querySelectorAll('.' + PREFIX + 'popup-close')[0];
+        this.formType = void 0;
         // reset content
         popupDiv.innerHTML = '';
         // reset toolbar styles if exists
@@ -254,6 +257,7 @@ H.Popup.prototype = {
         if (type === 'flag') {
             this.annotations.addForm.call(this, chart, options, callback, true);
         }
+        this.formType = type;
         // Explicit height is needed to make inner elements scrollable
         this.container.style.height = this.container.offsetHeight + 'px';
     },
@@ -620,6 +624,8 @@ H.Popup.prototype = {
                 parentFullName = parentNode + '.' + fieldName;
                 if (value !== void 0) { // skip if field is unnecessary, #15362
                     if (isObject(value)) {
+                        addInput.call(// (15733) 'Periods' has an arrayed value. Label must be created here.
+                        _self, parentFullName, type, parentDiv, '');
                         addParamInputs.call(_self, chart, parentFullName, value, type, parentDiv);
                     }
                     else if (
@@ -759,7 +765,7 @@ addEvent(NavigationBindings, 'showPopup', function (config) {
         this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/9.1.2/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/9.2.0/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 });

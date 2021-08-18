@@ -19,6 +19,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+import Chart from '../../../Core/Chart/Chart.js';
 import RequiredIndicatorMixin from '../../../Mixins/IndicatorRequired.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var LineSeries = SeriesRegistry.seriesTypes.line;
@@ -132,90 +133,106 @@ var SMAIndicator = /** @class */ (function (_super) {
             return error(generateMessage(indicator.type, requiredIndicators.needed));
         }
         _super.prototype.init.call(indicator, chart, options);
+        // Only after series are linked indicator can be processed.
+        var linkedSeriesUnbiner = addEvent(Chart, 'afterLinkSeries', function () {
+            var hasEvents = !!indicator.dataEventsToUnbind.length;
+            if (indicator.linkedParent) {
+                if (!hasEvents) {
+                    indicator.dataEventsToUnbind.push(addEvent(indicator.bindTo.series ?
+                        indicator.linkedParent :
+                        indicator.linkedParent.xAxis, indicator.bindTo.eventName, function () {
+                        indicator.recalculateValues();
+                    }));
+                }
+                if (indicator.calculateOn === 'init') {
+                    if (!indicator.processedYData) {
+                        indicator.recalculateValues();
+                    }
+                }
+                else {
+                    if (!hasEvents) {
+                        var unbinder_1 = addEvent(indicator.chart, indicator.calculateOn, function () {
+                            indicator.recalculateValues();
+                            // Call this just once, on init
+                            unbinder_1();
+                        });
+                    }
+                }
+            }
+            else {
+                return error('Series ' +
+                    indicator.options.linkedTo +
+                    ' not found! Check `linkedTo`.', false, chart);
+            }
+        }, {
+            order: 0
+        });
         // Make sure we find series which is a base for an indicator
-        chart.linkSeries();
+        // chart.linkSeries();
         indicator.dataEventsToUnbind = [];
-        /**
-         * @private
-         * @return {void}
-         */
-        function recalculateValues() {
-            var oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, processedData = (indicator.getValues(indicator.linkedParent, indicator.options.params) || {
-                values: [],
-                xData: [],
-                yData: []
-            }), croppedDataValues = [], overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
-            // We need to update points to reflect changes in all,
-            // x and y's, values. However, do it only for non-grouped
-            // data - grouping does it for us (#8572)
-            if (oldDataLength &&
-                !indicator.hasGroupedData &&
-                indicator.visible &&
-                indicator.points) {
-                // When data is cropped update only avaliable points (#9493)
-                if (indicator.cropped) {
-                    if (indicator.xAxis) {
-                        min = indicator.xAxis.min;
-                        max = indicator.xAxis.max;
-                    }
-                    croppedData = indicator.cropData(processedData.xData, processedData.yData, min, max);
-                    for (i = 0; i < croppedData.xData.length; i++) {
-                        // (#10774)
-                        croppedDataValues.push([
-                            croppedData.xData[i]
-                        ].concat(splat(croppedData.yData[i])));
-                    }
-                    oldFirstPointIndex = processedData.xData.indexOf(indicator.xData[0]);
-                    oldLastPointIndex = processedData.xData.indexOf(indicator.xData[indicator.xData.length - 1]);
-                    // Check if indicator points should be shifted (#8572)
-                    if (oldFirstPointIndex === -1 &&
-                        oldLastPointIndex === processedData.xData.length - 2) {
-                        if (croppedDataValues[0][0] === oldData[0].x) {
-                            croppedDataValues.shift();
-                        }
-                    }
-                    indicator.updateData(croppedDataValues);
-                    // Omit addPoint() and removePoint() cases
+        indicator.eventsToUnbind.push(linkedSeriesUnbiner);
+    };
+    /**
+     * @private
+     * @return {void}
+     */
+    SMAIndicator.prototype.recalculateValues = function () {
+        var indicator = this, oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, processedData = (indicator.getValues(indicator.linkedParent, indicator.options.params) || {
+            values: [],
+            xData: [],
+            yData: []
+        }), croppedDataValues = [], overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
+        // We need to update points to reflect changes in all,
+        // x and y's, values. However, do it only for non-grouped
+        // data - grouping does it for us (#8572)
+        if (oldDataLength &&
+            !indicator.hasGroupedData &&
+            indicator.visible &&
+            indicator.points) {
+            // When data is cropped update only avaliable points (#9493)
+            if (indicator.cropped) {
+                if (indicator.xAxis) {
+                    min = indicator.xAxis.min;
+                    max = indicator.xAxis.max;
                 }
-                else if (processedData.xData.length !== oldDataLength - 1 &&
-                    processedData.xData.length !== oldDataLength + 1) {
-                    overwriteData = false;
-                    indicator.updateData(processedData.values);
+                croppedData = indicator.cropData(processedData.xData, processedData.yData, min, max);
+                for (i = 0; i < croppedData.xData.length; i++) {
+                    // (#10774)
+                    croppedDataValues.push([
+                        croppedData.xData[i]
+                    ].concat(splat(croppedData.yData[i])));
                 }
+                oldFirstPointIndex = processedData.xData.indexOf(indicator.xData[0]);
+                oldLastPointIndex = processedData.xData.indexOf(indicator.xData[indicator.xData.length - 1]);
+                // Check if indicator points should be shifted (#8572)
+                if (oldFirstPointIndex === -1 &&
+                    oldLastPointIndex === processedData.xData.length - 2) {
+                    if (croppedDataValues[0][0] === oldData[0].x) {
+                        croppedDataValues.shift();
+                    }
+                }
+                indicator.updateData(croppedDataValues);
+                // Omit addPoint() and removePoint() cases
             }
-            if (overwriteData) {
-                indicator.xData = processedData.xData;
-                indicator.yData = processedData.yData;
-                indicator.options.data = processedData.values;
+            else if (processedData.xData.length !== oldDataLength - 1 &&
+                processedData.xData.length !== oldDataLength + 1) {
+                overwriteData = false;
+                indicator.updateData(processedData.values);
             }
-            // Removal of processedXData property is required because on
-            // first translate processedXData array is empty
-            if (indicator.bindTo.series === false) {
-                delete indicator.processedXData;
-                indicator.isDirty = true;
-                indicator.redraw();
-            }
-            indicator.isDirtyData = false;
         }
-        if (!indicator.linkedParent) {
-            return error('Series ' +
-                indicator.options.linkedTo +
-                ' not found! Check `linkedTo`.', false, chart);
+        if (overwriteData) {
+            indicator.xData = processedData.xData;
+            indicator.yData = processedData.yData;
+            indicator.options.data = processedData.values;
         }
-        indicator.dataEventsToUnbind.push(addEvent(indicator.bindTo.series ?
-            indicator.linkedParent :
-            indicator.linkedParent.xAxis, indicator.bindTo.eventName, recalculateValues));
-        if (indicator.calculateOn === 'init') {
-            recalculateValues();
+        // Removal of processedXData property is required because on
+        // first translate processedXData array is empty
+        if (indicator.bindTo.series === false) {
+            delete indicator.processedXData;
+            indicator.isDirty = true;
+            indicator.redraw();
         }
-        else {
-            var unbinder_1 = addEvent(indicator.chart, indicator.calculateOn, function () {
-                recalculateValues();
-                // Call this just once, on init
-                unbinder_1();
-            });
-        }
-        // return indicator;
+        indicator.isDirtyData = false;
     };
     /**
      * @private

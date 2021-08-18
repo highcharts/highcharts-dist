@@ -39,7 +39,7 @@ var SVGLabel = /** @class */ (function (_super) {
     __extends(SVGLabel, _super);
     /* *
      *
-     *  Constructors
+     *  Constructor
      *
      * */
     function SVGLabel(renderer, str, x, y, shape, anchorX, anchorY, useHTML, baseline, className) {
@@ -60,7 +60,9 @@ var SVGLabel = /** @class */ (function (_super) {
         if (className) {
             _this.addClass('highcharts-' + className);
         }
-        _this.text = renderer.text('', 0, 0, useHTML).attr({ zIndex: 1 });
+        // Create the text element. An undefined text content prevents redundant
+        // box calculation (#16121)
+        _this.text = renderer.text(void 0, 0, 0, useHTML).attr({ zIndex: 1 });
         // Validate the shape argument
         var hasBGImage;
         if (typeof shape === 'string') {
@@ -194,33 +196,6 @@ var SVGLabel = /** @class */ (function (_super) {
     };
     SVGLabel.prototype.heightSetter = function (value) {
         this.heightSetting = value;
-    };
-    // Event handling. In case of useHTML, we need to make sure that events
-    // are captured on the span as well, and that mouseenter/mouseleave
-    // between the SVG group and the HTML span are not treated as real
-    // enter/leave events. #13310.
-    SVGLabel.prototype.on = function (eventType, handler) {
-        var label = this;
-        var text = label.text;
-        var span = text && text.element.tagName === 'SPAN' ? text : void 0;
-        var selectiveHandler;
-        if (span) {
-            selectiveHandler = function (e) {
-                if ((eventType === 'mouseenter' ||
-                    eventType === 'mouseleave') &&
-                    e.relatedTarget instanceof Element &&
-                    (
-                    // #14110
-                    label.element.compareDocumentPosition(e.relatedTarget) & Node.DOCUMENT_POSITION_CONTAINED_BY ||
-                        span.element.compareDocumentPosition(e.relatedTarget) & Node.DOCUMENT_POSITION_CONTAINED_BY)) {
-                    return;
-                }
-                handler.call(label.element, e);
-            };
-            span.on(eventType, selectiveHandler);
-        }
-        SVGElement.prototype.on.call(label, eventType, selectiveHandler || handler);
-        return label;
     };
     /*
      * After the text element is added, get the desired size of the border
@@ -416,4 +391,9 @@ var SVGLabel = /** @class */ (function (_super) {
     ];
     return SVGLabel;
 }(SVGElement));
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default SVGLabel;

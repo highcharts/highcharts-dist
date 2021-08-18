@@ -25,7 +25,7 @@ import Color from '../../Core/Color/Color.js';
 import ColorMapMixin from '../../Mixins/ColorMapSeries.js';
 var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
 import HeatmapPoint from './HeatmapPoint.js';
-import LegendSymbolMixin from '../../Mixins/LegendSymbol.js';
+import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import palette from '../../Core/Color/Palette.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, ScatterSeries = _a.scatter;
@@ -184,9 +184,11 @@ var HeatmapSeries = /** @class */ (function (_super) {
     HeatmapSeries.prototype.pointAttribs = function (point, state) {
         var series = this, attr = Series.prototype.pointAttribs.call(series, point, state), seriesOptions = series.options || {}, plotOptions = series.chart.options.plotOptions || {}, seriesPlotOptions = plotOptions.series || {}, heatmapPlotOptions = plotOptions.heatmap || {}, stateOptions, brightness, 
         // Get old properties in order to keep backward compatibility
-        borderColor = seriesOptions.borderColor ||
+        borderColor = (point && point.options.borderColor) ||
+            seriesOptions.borderColor ||
             heatmapPlotOptions.borderColor ||
-            seriesPlotOptions.borderColor, borderWidth = seriesOptions.borderWidth ||
+            seriesPlotOptions.borderColor, borderWidth = (point && point.options.borderWidth) ||
+            seriesOptions.borderWidth ||
             heatmapPlotOptions.borderWidth ||
             seriesPlotOptions.borderWidth ||
             attr['stroke-width'];
@@ -364,7 +366,9 @@ var HeatmapSeries = /** @class */ (function (_super) {
         nullColor: palette.neutralColor3,
         dataLabels: {
             formatter: function () {
-                return this.point.value;
+                var numberFormatter = this.series.chart.numberFormatter;
+                var value = this.point.value;
+                return isNumber(value) ? numberFormatter(value, -1) : '';
             },
             inside: true,
             verticalAlign: 'middle',
@@ -551,7 +555,7 @@ extend(HeatmapSeries.prototype, {
     /**
      * @private
      */
-    drawLegendSymbol: LegendSymbolMixin.drawRectangle,
+    drawLegendSymbol: LegendSymbol.drawRectangle,
     getExtremesFromAll: true,
     getSymbol: Series.prototype.getSymbol,
     parallelArrays: colorMapSeriesMixin.parallelArrays,

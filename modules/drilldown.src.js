@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * Highcharts Drilldown module
  *
@@ -553,7 +553,7 @@
                 // no graphic in line series with markers disabled
                 bBox: point.graphic ? point.graphic.getBBox() : {},
                 color: point.isNull ?
-                    new Color(colorProp.color).setOpacity(0).get() :
+                    Color.parse(colorProp.color).setOpacity(0).get() :
                     colorProp.color,
                 lowerSeriesOptions: ddOptions,
                 pointOptions: oldSeries.options.data[pointIndex],
@@ -620,7 +620,7 @@
             if (drilldownLevels && drilldownLevels.length > 0) { // #3352, async loading
                 lastLevel = drilldownLevels[drilldownLevels.length - 1];
                 lastLevel.series = lastLevel.seriesOptions;
-                return format(this.options.lang.drillUpText, lastLevel);
+                return format(this.options.lang.drillUpText || '', lastLevel);
             }
         };
         Chart.prototype.showDrillUpButton = function () {

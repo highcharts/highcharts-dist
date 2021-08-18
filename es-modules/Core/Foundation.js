@@ -27,14 +27,15 @@ var registerEventOptions = function (component, options) {
     component.eventOptions = component.eventOptions || {};
     // Register event listeners
     objectEach(options.events, function (event, eventType) {
-        if (isFunction(event)) {
-            // If event does not exist, or is changed by the .update()
-            // function
-            if (component.eventOptions[eventType] !== event) {
-                // Remove existing if set by option
-                if (isFunction(component.eventOptions[eventType])) {
-                    removeEvent(component, eventType, component.eventOptions[eventType]);
-                }
+        // If event does not exist, or is changed by the .update()
+        // function
+        if (component.eventOptions[eventType] !== event) {
+            // Remove existing if set by option
+            if (component.eventOptions[eventType]) {
+                removeEvent(component, eventType, component.eventOptions[eventType]);
+                delete component.eventOptions[eventType];
+            }
+            if (isFunction(event)) {
                 component.eventOptions[eventType] = event;
                 addEvent(component, eventType, event);
             }

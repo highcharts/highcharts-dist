@@ -18,7 +18,6 @@ import F from '../../../Core/FormatUtilities.js';
 var format = F.format, numberFormat = F.numberFormat;
 import HTMLUtilities from '../../Utils/HTMLUtilities.js';
 var reverseChildNodes = HTMLUtilities.reverseChildNodes, stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
-import Tooltip from '../../../Core/Tooltip.js';
 import U from '../../../Core/Utilities.js';
 var find = U.find, isNumber = U.isNumber, pick = U.pick, defined = U.defined;
 /* eslint-disable valid-jsdoc */
@@ -177,16 +176,13 @@ function getSeriesAxisDescriptionText(series, axisCollection) {
  * The description as string.
  */
 function getPointA11yTimeDescription(point) {
-    var series = point.series, chart = series.chart, a11yOptions = chart.options.accessibility.point || {}, hasDateXAxis = series.xAxis && series.xAxis.dateTime;
-    if (hasDateXAxis) {
-        var tooltipDateFormat = Tooltip.prototype.getXDateFormat.call({
-            getDateFormat: Tooltip.prototype.getDateFormat,
-            chart: chart
-        }, point, chart.options.tooltip, series.xAxis), dateFormat = a11yOptions.dateFormatter &&
+    var series = point.series, chart = series.chart, a11yOptions = chart.options.accessibility.point || {}, dateXAxis = series.xAxis && series.xAxis.dateTime;
+    if (dateXAxis) {
+        var tooltipDateFormat = dateXAxis.getXDateFormat(point.x || 0, chart.options.tooltip.dateTimeLabelFormats), dateFormat = a11yOptions.dateFormatter &&
             a11yOptions.dateFormatter(point) ||
             a11yOptions.dateFormat ||
             tooltipDateFormat;
-        return chart.time.dateFormat(dateFormat, point.x, void 0);
+        return chart.time.dateFormat(dateFormat, point.x || 0, void 0);
     }
 }
 /**

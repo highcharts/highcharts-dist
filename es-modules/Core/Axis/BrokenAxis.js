@@ -8,18 +8,31 @@
  *
  * */
 'use strict';
-import Axis from './Axis.js';
-import Series from '../Series/Series.js';
 import StackItem from '../../Extensions/Stacking.js';
 import U from '../Utilities.js';
 var addEvent = U.addEvent, find = U.find, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, pick = U.pick;
+/* *
+ *
+ *  Composition
+ *
+ * */
 /**
  * Axis with support of broken data rows.
  * @private
- * @class
  */
 var BrokenAxis;
 (function (BrokenAxis) {
+    /* *
+     *
+     *  Declarations
+     *
+     * */
+    /* *
+     *
+     *  Constants
+     *
+     * */
+    var composedClasses = [];
     /* *
      *
      *  Functions
@@ -31,15 +44,19 @@ var BrokenAxis;
      * @private
      */
     function compose(AxisClass, SeriesClass) {
-        if (AxisClass.keepProps.indexOf('brokenAxis') === -1) {
+        if (composedClasses.indexOf(AxisClass) === -1) {
+            composedClasses.push(AxisClass);
             AxisClass.keepProps.push('brokenAxis');
-            var seriesProto = Series.prototype;
+            addEvent(AxisClass, 'init', onAxisInit);
+            addEvent(AxisClass, 'afterInit', onAxisAfterInit);
+            addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
+            addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+        }
+        if (composedClasses.indexOf(SeriesClass) === -1) {
+            composedClasses.push(SeriesClass);
+            var seriesProto = SeriesClass.prototype;
             seriesProto.drawBreaks = seriesDrawBreaks;
             seriesProto.gappedPath = seriesGappedPath;
-            addEvent(AxisClass, 'init', onInit);
-            addEvent(AxisClass, 'afterInit', onAfterInit);
-            addEvent(AxisClass, 'afterSetTickPositions', onAfterSetTickPositions);
-            addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions);
             addEvent(SeriesClass, 'afterGeneratePoints', onSeriesAfterGeneratePoints);
             addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
         }
@@ -49,7 +66,7 @@ var BrokenAxis;
     /**
      * @private
      */
-    function onAfterInit() {
+    function onAxisAfterInit() {
         if (typeof this.brokenAxis !== 'undefined') {
             this.brokenAxis.setBreaks(this.options.breaks, false);
         }
@@ -58,7 +75,7 @@ var BrokenAxis;
      * Force Axis to be not-ordinal when breaks are defined.
      * @private
      */
-    function onAfterSetOptions() {
+    function onAxisAfterSetOptions() {
         var axis = this;
         if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
             axis.options.ordinal = false;
@@ -67,7 +84,7 @@ var BrokenAxis;
     /**
      * @private
      */
-    function onAfterSetTickPositions() {
+    function onAxisAfterSetTickPositions() {
         var axis = this, brokenAxis = axis.brokenAxis;
         if (brokenAxis &&
             brokenAxis.hasBreaks) {
@@ -84,7 +101,7 @@ var BrokenAxis;
     /**
      * @private
      */
-    function onInit() {
+    function onAxisInit() {
         var axis = this;
         if (!axis.brokenAxis) {
             axis.brokenAxis = new Additions(axis);
@@ -468,10 +485,10 @@ var BrokenAxis;
                             newMax = newMin;
                         }
                     }
-                    Axis.prototype.setExtremes.call(this, newMin, newMax, redraw, animation, eventArguments);
+                    axis.constructor.prototype.setExtremes.call(this, newMin, newMax, redraw, animation, eventArguments);
                 };
                 axis.setAxisTranslation = function () {
-                    Axis.prototype.setAxisTranslation.call(this);
+                    axis.constructor.prototype.setAxisTranslation.call(this);
                     brokenAxis.unitLength = void 0;
                     if (brokenAxis.hasBreaks) {
                         var breaks_2 = axis.options.breaks || [], 

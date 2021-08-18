@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  * @module highcharts/themes/dark-green
  * @requires highcharts
  *
@@ -8,4 +8,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/Themes/DarkGreen.js';
+import H from '../../Core/Globals.js';
+import DarkGreenTheme from '../../Extensions/Themes/DarkGreen.js';
+H.theme = DarkGreenTheme.options;
+DarkGreenTheme.apply();

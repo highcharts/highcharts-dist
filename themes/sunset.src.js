@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * (c) 2009-2021 Highsoft AS
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/Sunset.js', [_modules['Core/Globals.js'], _modules['Core/DefaultOptions.js']], function (H, D) {
+    _registerModule(_modules, 'Extensions/Themes/Sunset.js', [_modules['Core/DefaultOptions.js']], function (D) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -42,30 +42,61 @@
          *
          * */
         var setOptions = D.setOptions;
-        H.theme = {
-            colors: ['#FDD089', '#FF7F79', '#A0446E', '#251535'],
-            colorAxis: {
-                maxColor: '#60042E',
-                minColor: '#FDD089'
-            },
-            plotOptions: {
-                map: {
-                    nullColor: '#fefefc'
+        /* *
+         *
+         *  Theme
+         *
+         * */
+        var SunsetTheme;
+        (function (SunsetTheme) {
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            SunsetTheme.options = {
+                colors: ['#FDD089', '#FF7F79', '#A0446E', '#251535'],
+                colorAxis: {
+                    maxColor: '#60042E',
+                    minColor: '#FDD089'
+                },
+                plotOptions: {
+                    map: {
+                        nullColor: '#fefefc'
+                    }
+                },
+                navigator: {
+                    series: {
+                        color: '#FF7F79',
+                        lineColor: '#A0446E'
+                    }
                 }
-            },
-            navigator: {
-                series: {
-                    color: '#FF7F79',
-                    lineColor: '#A0446E'
-                }
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Apply the theme.
+             */
+            function apply() {
+                setOptions(SunsetTheme.options);
             }
-        };
-        // Apply the theme
-        setOptions(H.theme);
+            SunsetTheme.apply = apply;
+        })(SunsetTheme || (SunsetTheme = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
+        return SunsetTheme;
     });
-    _registerModule(_modules, 'masters/themes/sunset.src.js', [], function () {
+    _registerModule(_modules, 'masters/themes/sunset.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Themes/Sunset.js']], function (H, SunsetTheme) {
 
+        H.theme = SunsetTheme.options;
+        SunsetTheme.apply();
 
     });
 }));

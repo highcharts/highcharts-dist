@@ -16,8 +16,8 @@ var numberFormat = FormatUtilities.numberFormat;
 import Foundation from '../Foundation.js';
 var registerEventOptions = Foundation.registerEventOptions;
 import H from '../Globals.js';
-var charts = H.charts, doc = H.doc, marginNames = H.marginNames, win = H.win;
-import Legend from '../Legend.js';
+var charts = H.charts, doc = H.doc, marginNames = H.marginNames, svg = H.svg, win = H.win;
+import Legend from '../Legend/Legend.js';
 import MSPointer from '../MSPointer.js';
 import D from '../DefaultOptions.js';
 var defaultOptions = D.defaultOptions, defaultTime = D.defaultTime;
@@ -26,6 +26,7 @@ import Pointer from '../Pointer.js';
 import RendererRegistry from '../Renderer/RendererRegistry.js';
 import SeriesRegistry from '../Series/SeriesRegistry.js';
 var seriesTypes = SeriesRegistry.seriesTypes;
+import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import Time from '../Time.js';
 import U from '../Utilities.js';
 import AST from '../Renderer/HTML/AST.js';
@@ -673,16 +674,18 @@ var Chart = /** @class */ (function () {
      *         The currently selected points.
      */
     Chart.prototype.getSelectedPoints = function () {
-        var points = [];
-        this.series.forEach(function (serie) {
+        return this.series.reduce(function (acc, series) {
             // For one-to-one points inspect series.data in order to retrieve
             // points outside the visible range (#6445). For grouped data,
             // inspect the generated series.points.
-            points = points.concat(serie.getPointsCollection().filter(function (point) {
-                return pick(point.selectedStaging, point.selected);
-            }));
-        });
-        return points;
+            series.getPointsCollection()
+                .forEach(function (point) {
+                if (pick(point.selectedStaging, point.selected)) {
+                    acc.push(point);
+                }
+            });
+            return acc;
+        }, []);
     };
     /**
      * Returns an array of all currently selected series in the chart. Series
@@ -1076,7 +1079,9 @@ var Chart = /** @class */ (function () {
         // cache the cursor (#1650)
         chart._cursor = container.style.cursor;
         // Initialize the renderer
-        var Renderer = RendererRegistry.getRendererType(optionsChart.renderer);
+        var Renderer = optionsChart.renderer || !svg ?
+            RendererRegistry.getRendererType(optionsChart.renderer) :
+            SVGRenderer;
         /**
          * The renderer instance of the chart. Each chart instance has only one
          * associated renderer.
@@ -2069,30 +2074,12 @@ var Chart = /** @class */ (function () {
      *         The newly generated Axis object.
      */
     Chart.prototype.createAxis = function (type, options) {
-        var isColorAxis = type === 'colorAxis', axisOptions = options.axis, redraw = options.redraw, animation = options.animation, userOptions = merge(axisOptions, {
+        var axis = new Axis(this, merge(options.axis, {
             index: this[type].length,
             isX: type === 'xAxis'
-        });
-        var axis;
-        if (isColorAxis) {
-            axis = new H.ColorAxis(this, userOptions);
-        }
-        else {
-            axis = new Axis(this, userOptions);
-        }
-        if (isColorAxis) {
-            this.isDirtyLegend = true;
-            // Clear before 'bindAxes' (#11924)
-            this.axes.forEach(function (axis) {
-                axis.series = [];
-            });
-            this.series.forEach(function (series) {
-                series.bindAxes();
-                series.isDirtyData = true;
-            });
-        }
-        if (pick(redraw, true)) {
-            this.redraw(animation);
+        }));
+        if (pick(options.redraw, true)) {
+            this.redraw(options.animation);
         }
         return axis;
     };
@@ -2310,8 +2297,8 @@ var Chart = /** @class */ (function () {
                     }
                 }
             });
-            if (!chart.styledMode && 'style' in optionsChart) {
-                chart.renderer.setStyle(optionsChart.style);
+            if (!chart.styledMode && optionsChart.style) {
+                chart.renderer.setStyle(chart.options.chart.style || {});
             }
         }
         // Moved up, because tooltip needs updated plotOptions (#6218)
@@ -2430,7 +2417,7 @@ var Chart = /** @class */ (function () {
             }
         });
         itemsForRemoval.forEach(function (item) {
-            if (item.chart) { // #9097, avoid removing twice
+            if (item.chart && item.remove) { // #9097, avoid removing twice
                 item.remove(false);
             }
         });
@@ -2751,7 +2738,6 @@ extend(Chart.prototype, {
     collectionsWithUpdate: [
         'xAxis',
         'yAxis',
-        'zAxis',
         'series'
     ],
     /**
@@ -2804,7 +2790,7 @@ extend(Chart.prototype, {
 });
 /* *
  *
- *  Export
+ *  Default Export
  *
  * */
 export default Chart;
@@ -2923,4 +2909,4 @@ export default Chart;
 * @name Highcharts.ChartIsInsideOptionsObject#visiblePlotOnly
 * @type {boolean|undefined}
 */
-''; // include doclets above in transpilat
+''; // keeps doclets above in JS file

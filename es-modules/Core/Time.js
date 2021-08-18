@@ -17,9 +17,13 @@ var defined = U.defined, error = U.error, extend = U.extend, isObject = U.isObje
  *  Constants
  *
  * */
-var hasNewSafariBug = (H.isSafari && Intl && Intl.DateTimeFormat.prototype.formatRange);
+var hasNewSafariBug = H.isSafari &&
+    win.Intl &&
+    win.Intl.DateTimeFormat.prototype.formatRange;
 // To do: Remove this when we no longer need support for Safari < v14.1
-var hasOldSafariBug = (H.isSafari && Intl && !Intl.DateTimeFormat.prototype.formatRange);
+var hasOldSafariBug = H.isSafari &&
+    win.Intl &&
+    !win.Intl.DateTimeFormat.prototype.formatRange;
 /* *
  *
  *  Class
@@ -596,9 +600,81 @@ var Time = /** @class */ (function () {
         });
         return tickPositions;
     };
+    /**
+     * Get the optimal date format for a point, based on a range.
+     *
+     * @private
+     * @function Highcharts.Time#getDateFormat
+     *
+     * @param {number} range
+     *        The time range
+     *
+     * @param {number} timestamp
+     *        The timestamp of the date
+     *
+     * @param {number} startOfWeek
+     *        An integer representing the first day of the week, where 0 is
+     *        Sunday.
+     *
+     * @param {Highcharts.Dictionary<string>} dateTimeLabelFormats
+     *        A map of time units to formats.
+     *
+     * @return {string}
+     *         The optimal date format for a point.
+     */
+    Time.prototype.getDateFormat = function (range, timestamp, startOfWeek, dateTimeLabelFormats) {
+        var dateStr = this.dateFormat('%m-%d %H:%M:%S.%L', timestamp), blank = '01-01 00:00:00.000', strpos = {
+            millisecond: 15,
+            second: 12,
+            minute: 9,
+            hour: 6,
+            day: 3
+        };
+        var format, n, lastN = 'millisecond'; // for sub-millisecond data, #4223
+        for (n in timeUnits) { // eslint-disable-line guard-for-in
+            // If the range is exactly one week and we're looking at a
+            // Sunday/Monday, go for the week format
+            if (range === timeUnits.week &&
+                +this.dateFormat('%w', timestamp) === startOfWeek &&
+                dateStr.substr(6) === blank.substr(6)) {
+                n = 'week';
+                break;
+            }
+            // The first format that is too great for the range
+            if (timeUnits[n] > range) {
+                n = lastN;
+                break;
+            }
+            // If the point is placed every day at 23:59, we need to show
+            // the minutes as well. #2637.
+            if (strpos[n] &&
+                dateStr.substr(strpos[n]) !== blank.substr(strpos[n])) {
+                break;
+            }
+            // Weeks are outside the hierarchy, only apply them on
+            // Mondays/Sundays like in the first condition
+            if (n !== 'week') {
+                lastN = n;
+            }
+        }
+        if (n) {
+            format = this.resolveDTLFormat(dateTimeLabelFormats[n]).main;
+        }
+        return format;
+    };
     return Time;
 }());
+/* *
+ *
+ * Default export
+ *
+ * */
 export default Time;
+/* *
+ *
+ * API Declarations
+ *
+ * */
 /**
  * Normalized interval.
  *

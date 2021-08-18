@@ -22,6 +22,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import Axis from '../../Core/Axis/Axis.js';
+import BubbleLegendComposition from './BubbleLegendComposition.js';
 import BubblePoint from './BubblePoint.js';
 import Color from '../../Core/Color/Color.js';
 var color = Color.parse;
@@ -34,7 +35,7 @@ import U from '../../Core/Utilities.js';
 var arrayMax = U.arrayMax, arrayMin = U.arrayMin, clamp = U.clamp, extend = U.extend, isNumber = U.isNumber, merge = U.merge, pick = U.pick, pInt = U.pInt;
 import '../Column/ColumnSeries.js';
 import '../Scatter/ScatterSeries.js';
-import './BubbleLegend.js';
+import './BubbleLegendItem.js';
 /* *
  *
  *  Class
@@ -200,6 +201,7 @@ var BubbleSeries = /** @class */ (function (_super) {
             }
         }
     };
+    BubbleSeries.compose = BubbleLegendComposition.compose;
     /**
      * A bubble series is a three dimensional series type where each point
      * renders an X, Y and Z value. Each points is drawn as a bubble where the
@@ -218,7 +220,9 @@ var BubbleSeries = /** @class */ (function (_super) {
     BubbleSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
         dataLabels: {
             formatter: function () {
-                return this.point.z;
+                var numberFormatter = this.series.chart.numberFormatter;
+                var z = this.point.z;
+                return isNumber(z) ? numberFormatter(z, -1) : '';
             },
             inside: true,
             verticalAlign: 'middle'

@@ -7,13 +7,14 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
+'use strict';
 import A from '../../Animation/AnimationUtilities.js';
-import AST from '../HTML/AST.js';
 var animate = A.animate, animObject = A.animObject, stop = A.stop;
+import AST from '../HTML/AST.js';
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
-var deg2rad = H.deg2rad, doc = H.doc, hasTouch = H.hasTouch, noop = H.noop, svg = H.svg, SVG_NS = H.SVG_NS, win = H.win;
-import palette from '../../Color/Palette.js';
+var deg2rad = H.deg2rad, doc = H.doc, noop = H.noop, svg = H.svg, SVG_NS = H.SVG_NS, win = H.win;
+import Palette from '../../Color/Palette.js';
 import U from '../../Utilities.js';
 var addEvent = U.addEvent, attr = U.attr, createElement = U.createElement, css = U.css, defined = U.defined, erase = U.erase, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, syncTimeout = U.syncTimeout, uniqueKey = U.uniqueKey;
 /* *
@@ -1152,7 +1153,7 @@ var SVGElement = /** @class */ (function () {
             }
             // Cache it. When loading a chart in a hidden iframe in Firefox and
             // IE/Edge, the bounding box height is 0, so don't cache it (#5620).
-            if (cacheKey && bBox.height > 0) {
+            if (cacheKey && (textStr === '' || bBox.height > 0)) {
                 // Rotate (#4681)
                 while (cacheKeys.length > 250) {
                     delete cache[cacheKeys.shift()];
@@ -1550,7 +1551,7 @@ var SVGElement = /** @class */ (function () {
      */
     SVGElement.prototype.shadow = function (shadowOptions, group, cutOff) {
         var shadows = [], element = this.element, oldShadowOptions = this.oldShadowOptions, defaultShadowOptions = {
-            color: palette.neutralColor100,
+            color: Palette.neutralColor100,
             offsetX: this.parentInverted ? -1 : 1,
             offsetY: this.parentInverted ? -1 : 1,
             opacity: 0.15,
@@ -1593,7 +1594,7 @@ var SVGElement = /** @class */ (function () {
                 strokeWidth = (options.width * 2) + 1 - (2 * i);
                 attr(shadow, {
                     stroke: (shadowOptions.color ||
-                        palette.neutralColor100),
+                        Palette.neutralColor100),
                     'stroke-opacity': shadowElementOpacity * i,
                     'stroke-width': strokeWidth,
                     transform: transform,
@@ -2013,6 +2014,11 @@ SVGElement.prototype.matrixSetter =
                                     this[key] = value;
                                     this.doTransform = true;
                                 };
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default SVGElement;
 /* *
  *
@@ -2176,4 +2182,4 @@ export default SVGElement;
  *
  * @typedef {"bottom"|"middle"|"top"} Highcharts.VerticalAlignValue
  */
-''; // detach doclets above
+''; // keeps doclets above in JS file

@@ -8,84 +8,22 @@
  *
  * */
 'use strict';
-import A from './Animation/AnimationUtilities.js';
+import A from '../Animation/AnimationUtilities.js';
 var animObject = A.animObject, setAnimation = A.setAnimation;
-import F from './FormatUtilities.js';
+import F from '../FormatUtilities.js';
 var format = F.format;
-import H from './Globals.js';
+import H from '../Globals.js';
 var isFirefox = H.isFirefox, marginNames = H.marginNames, win = H.win;
-import Point from './Series/Point.js';
-import U from './Utilities.js';
+import Point from '../Series/Point.js';
+import R from '../Renderer/RendererUtilities.js';
+var distribute = R.distribute;
+import U from '../Utilities.js';
 var addEvent = U.addEvent, createElement = U.createElement, css = U.css, defined = U.defined, discardElement = U.discardElement, find = U.find, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength, stableSort = U.stableSort, syncTimeout = U.syncTimeout, wrap = U.wrap;
-/**
- * Gets fired when the legend item belonging to a point is clicked. The default
- * action is to toggle the visibility of the point. This can be prevented by
- * returning `false` or calling `event.preventDefault()`.
+/* *
  *
- * @callback Highcharts.PointLegendItemClickCallbackFunction
+ *  Class
  *
- * @param {Highcharts.Point} this
- *        The point on which the event occured.
- *
- * @param {Highcharts.PointLegendItemClickEventObject} event
- *        The event that occured.
- */
-/**
- * Information about the legend click event.
- *
- * @interface Highcharts.PointLegendItemClickEventObject
- */ /**
-* Related browser event.
-* @name Highcharts.PointLegendItemClickEventObject#browserEvent
-* @type {Highcharts.PointerEvent}
-*/ /**
-* Prevent the default action of toggle the visibility of the point.
-* @name Highcharts.PointLegendItemClickEventObject#preventDefault
-* @type {Function}
-*/ /**
-* Related point.
-* @name Highcharts.PointLegendItemClickEventObject#target
-* @type {Highcharts.Point}
-*/ /**
-* Event type.
-* @name Highcharts.PointLegendItemClickEventObject#type
-* @type {"legendItemClick"}
-*/
-/**
- * Gets fired when the legend item belonging to a series is clicked. The default
- * action is to toggle the visibility of the series. This can be prevented by
- * returning `false` or calling `event.preventDefault()`.
- *
- * @callback Highcharts.SeriesLegendItemClickCallbackFunction
- *
- * @param {Highcharts.Series} this
- *        The series where the event occured.
- *
- * @param {Highcharts.SeriesLegendItemClickEventObject} event
- *        The event that occured.
- */
-/**
- * Information about the legend click event.
- *
- * @interface Highcharts.SeriesLegendItemClickEventObject
- */ /**
-* Related browser event.
-* @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
-* @type {Highcharts.PointerEvent}
-*/ /**
-* Prevent the default action of toggle the visibility of the series.
-* @name Highcharts.SeriesLegendItemClickEventObject#preventDefault
-* @type {Function}
-*/ /**
-* Related series.
-* @name Highcharts.SeriesLegendItemClickEventObject#target
-* @type {Highcharts.Series}
-*/ /**
-* Event type.
-* @name Highcharts.SeriesLegendItemClickEventObject#type
-* @type {"legendItemClick"}
-*/
-/* eslint-disable no-invalid-this, valid-jsdoc */
+ * */
 /**
  * The overview of the chart's series. The legend object is instanciated
  * internally in the chart constructor, and is available from the `chart.legend`
@@ -148,6 +86,7 @@ var Legend = /** @class */ (function () {
      *  Functions
      *
      * */
+    /* eslint-disable valid-jsdoc */
     /**
      * Initialize the legend.
      *
@@ -250,7 +189,7 @@ var Legend = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Legend#colorizeItem
-     * @param {Highcharts.BubbleLegend|Highcharts.Point|Highcharts.Series} item
+     * @param {Highcharts.BubbleLegendItem|Highcharts.Point|Highcharts.Series} item
      *        A Series or Point instance
      * @param {boolean} [visible=false]
      *        Dimmed or colored
@@ -265,7 +204,8 @@ var Legend = /** @class */ (function () {
                 options.itemStyle.color :
                 hiddenColor, symbolColor = visible ?
                 (item.color || hiddenColor) :
-                hiddenColor, markerOptions = item.options && item.options.marker, symbolAttr = { fill: symbolColor };
+                hiddenColor, markerOptions = item.options && item.options.marker;
+            var symbolAttr = { fill: symbolColor };
             if (legendItem) {
                 legendItem.css({
                     fill: textColor,
@@ -306,7 +246,7 @@ var Legend = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Legend#positionItem
-     * @param {Highcharts.BubbleLegend|Highcharts.Point|Highcharts.Series} item
+     * @param {Highcharts.BubbleLegendItem|Highcharts.Point|Highcharts.Series} item
      * The item to position
      */
     Legend.prototype.positionItem = function (item) {
@@ -340,7 +280,7 @@ var Legend = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Legend#destroyItem
-     * @param {Highcharts.BubbleLegend|Highcharts.Point|Highcharts.Series} item
+     * @param {Highcharts.BubbleLegendItem|Highcharts.Point|Highcharts.Series} item
      * The item to remove
      */
     Legend.prototype.destroyItem = function (item) {
@@ -397,11 +337,13 @@ var Legend = /** @class */ (function () {
      * @function Highcharts.Legend#positionCheckboxes
      */
     Legend.prototype.positionCheckboxes = function () {
-        var alignAttr = this.group && this.group.alignAttr, translateY, clipHeight = this.clipHeight || this.legendHeight, titleHeight = this.titleHeight;
+        var alignAttr = this.group && this.group.alignAttr, clipHeight = this.clipHeight || this.legendHeight, titleHeight = this.titleHeight;
+        var translateY;
         if (alignAttr) {
             translateY = alignAttr.translateY;
             this.allItems.forEach(function (item) {
-                var checkbox = item.checkbox, top;
+                var checkbox = item.checkbox;
+                var top;
                 if (checkbox) {
                     top = translateY + titleHeight + checkbox.y +
                         (this.scrollOffset || 0) + 3;
@@ -425,7 +367,8 @@ var Legend = /** @class */ (function () {
      * @function Highcharts.Legend#renderTitle
      */
     Legend.prototype.renderTitle = function () {
-        var options = this.options, padding = this.padding, titleOptions = options.title, titleHeight = 0, bBox;
+        var options = this.options, padding = this.padding, titleOptions = options.title;
+        var bBox, titleHeight = 0;
         if (titleOptions.text) {
             if (!this.title) {
                 /**
@@ -476,18 +419,19 @@ var Legend = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Legend#renderItem
-     * @param {Highcharts.BubbleLegend|Highcharts.Point|Highcharts.Series} item
+     * @param {Highcharts.BubbleLegendItem|Highcharts.Point|Highcharts.Series} item
      * The item to render.
      */
     Legend.prototype.renderItem = function (item) {
-        var legend = this, chart = legend.chart, renderer = chart.renderer, options = legend.options, horizontal = options.layout === 'horizontal', symbolWidth = legend.symbolWidth, symbolPadding = options.symbolPadding || 0, itemStyle = legend.itemStyle, itemHiddenStyle = legend.itemHiddenStyle, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, ltr = !options.rtl, bBox, li = item.legendItem, isSeries = !item.series, series = !isSeries && item.series.drawLegendSymbol ?
+        var legend = this, chart = legend.chart, renderer = chart.renderer, options = legend.options, horizontal = options.layout === 'horizontal', symbolWidth = legend.symbolWidth, symbolPadding = options.symbolPadding || 0, itemStyle = legend.itemStyle, itemHiddenStyle = legend.itemHiddenStyle, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, ltr = !options.rtl, isSeries = !item.series, series = !isSeries && item.series.drawLegendSymbol ?
             item.series :
             item, seriesOptions = series.options, showCheckbox = legend.createCheckboxForItem &&
             seriesOptions &&
-            seriesOptions.showCheckbox, 
+            seriesOptions.showCheckbox, useHTML = options.useHTML, itemClassName = item.options.className;
+        var li = item.legendItem, 
         // full width minus text width
         itemExtraWidth = symbolWidth + symbolPadding +
-            itemDistance + (showCheckbox ? 20 : 0), useHTML = options.useHTML, itemClassName = item.options.className;
+            itemDistance + (showCheckbox ? 20 : 0);
         if (!li) { // generate it once, later move it
             // Generate the group box, a group to hold the symbol and text. Text
             // is to be appended in Legend class.
@@ -558,7 +502,7 @@ var Legend = /** @class */ (function () {
         // Always update the text
         legend.setText(item);
         // calculate the positions for the next line
-        bBox = li.getBBox();
+        var bBox = li.getBBox();
         item.itemWidth = item.checkboxOffset =
             options.itemWidth ||
                 item.legendItemWidth ||
@@ -573,7 +517,7 @@ var Legend = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Legend#layoutItem
-     * @param {Highcharts.BubbleLegend|Highcharts.Point|Highcharts.Series} item
+     * @param {Highcharts.BubbleLegendItem|Highcharts.Point|Highcharts.Series} item
      */
     Legend.prototype.layoutItem = function (item) {
         var options = this.options, padding = this.padding, horizontal = options.layout === 'horizontal', itemHeight = item.itemHeight, itemMarginBottom = this.itemMarginBottom, itemMarginTop = this.itemMarginTop, itemDistance = horizontal ? pick(options.itemDistance, 20) : 0, maxLegendWidth = this.maxLegendWidth, itemWidth = (options.alignColumns &&
@@ -619,7 +563,7 @@ var Legend = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Legend#getAllItems
-     * @return {Array<(Highcharts.BubbleLegend|Highcharts.Point|Highcharts.Series)>}
+     * @return {Array<(Highcharts.BubbleLegendItem|Highcharts.Point|Highcharts.Series)>}
      * The current items in the legend.
      * @fires Highcharts.Legend#event:afterGetAllItems
      */
@@ -730,10 +674,11 @@ var Legend = /** @class */ (function () {
                 });
             }
         }, this);
-        H.distribute(boxes, chart.plotHeight);
-        boxes.forEach(function (box) {
-            box.item._legendItemPos[1] =
-                chart.plotTop - chart.spacing[0] + box.pos;
+        distribute(boxes, chart.plotHeight).forEach(function (box) {
+            if (box.item._legendItemPos) {
+                box.item._legendItemPos[1] =
+                    chart.plotTop - chart.spacing[0] + box.pos;
+            }
         });
     };
     /**
@@ -746,7 +691,10 @@ var Legend = /** @class */ (function () {
      * @function Highcharts.Legend#render
      */
     Legend.prototype.render = function () {
-        var legend = this, chart = legend.chart, renderer = chart.renderer, legendGroup = legend.group, allItems, display, legendWidth, legendHeight, box = legend.box, options = legend.options, padding = legend.padding, allowedWidth;
+        var legend = this, chart = legend.chart, renderer = chart.renderer, options = legend.options, padding = legend.padding, 
+        // add each series or point
+        allItems = legend.getAllItems();
+        var display, legendWidth, legendHeight, legendGroup = legend.group, allowedWidth, box = legend.box;
         legend.itemX = padding;
         legend.itemY = legend.initialItemY;
         legend.offsetWidth = 0;
@@ -778,8 +726,6 @@ var Legend = /** @class */ (function () {
                 .add(legend.contentGroup);
         }
         legend.renderTitle();
-        // add each series or point
-        allItems = legend.getAllItems();
         // sort by legendIndex
         stableSort(allItems, function (a, b) {
             return ((a.options && a.options.legendIndex) || 0) -
@@ -907,8 +853,7 @@ var Legend = /** @class */ (function () {
      * @return {number}
      */
     Legend.prototype.handleOverflow = function (legendHeight) {
-        var legend = this, chart = this.chart, renderer = chart.renderer, options = this.options, optionsY = options.y, alignTop = options.verticalAlign === 'top', padding = this.padding, spaceHeight = (chart.spacingBox.height +
-            (alignTop ? -optionsY : optionsY) - padding), maxHeight = options.maxHeight, clipHeight, clipRect = this.clipRect, navOptions = options.navigation, animation = pick(navOptions.animation, true), arrowSize = navOptions.arrowSize || 12, nav = this.nav, pages = this.pages, lastY, allItems = this.allItems, clipToHeight = function (height) {
+        var legend = this, chart = this.chart, renderer = chart.renderer, options = this.options, optionsY = options.y, alignTop = options.verticalAlign === 'top', padding = this.padding, maxHeight = options.maxHeight, navOptions = options.navigation, animation = pick(navOptions.animation, true), arrowSize = navOptions.arrowSize || 12, pages = this.pages, allItems = this.allItems, clipToHeight = function (height) {
             if (typeof height === 'number') {
                 clipRect.attr({
                     height: height
@@ -935,6 +880,8 @@ var Legend = /** @class */ (function () {
             }
             return legend[key];
         };
+        var clipHeight, lastY, spaceHeight = (chart.spacingBox.height +
+            (alignTop ? -optionsY : optionsY) - padding), nav = this.nav, clipRect = this.clipRect;
         // Adjust the height
         if (options.layout === 'horizontal' &&
             options.verticalAlign !== 'middle' &&
@@ -957,7 +904,8 @@ var Legend = /** @class */ (function () {
             // Fill pages with Y positions so that the top of each a legend item
             // defines the scroll top for each page (#2098)
             allItems.forEach(function (item, i) {
-                var y = item._legendItemPos[1], h = Math.round(item.legendItem.getBBox().height), len = pages.length;
+                var y = item._legendItemPos[1], h = Math.round(item.legendItem.getBBox().height);
+                var len = pages.length;
                 if (!len || (y - pages[len - 1] > clipHeight &&
                     (lastY || y) !== pages[len - 1])) {
                     pages.push(lastY || y);
@@ -1044,7 +992,8 @@ var Legend = /** @class */ (function () {
      */
     Legend.prototype.scroll = function (scrollBy, animation) {
         var _this = this;
-        var chart = this.chart, pages = this.pages, pageCount = pages.length, currentPage = this.currentPage + scrollBy, clipHeight = this.clipHeight, navOptions = this.options.navigation, pager = this.pager, padding = this.padding;
+        var chart = this.chart, pages = this.pages, pageCount = pages.length, clipHeight = this.clipHeight, navOptions = this.options.navigation, pager = this.pager, padding = this.padding;
+        var currentPage = this.currentPage + scrollBy;
         // When resizing while looking at the last page
         if (currentPage > pageCount) {
             currentPage = pageCount;
@@ -1117,7 +1066,7 @@ var Legend = /** @class */ (function () {
     /**
      * @private
      * @function Highcharts.Legend#setItemEvents
-     * @param {Highcharts.BubbleLegend|Point|Highcharts.Series} item
+     * @param {Highcharts.BubbleLegendItem|Point|Highcharts.Series} item
      * @param {Highcharts.SVGElement} legendItem
      * @param {boolean} [useHTML=false]
      * @fires Highcharts.Point#event:legendItemClick
@@ -1131,6 +1080,17 @@ var Legend = /** @class */ (function () {
         legendItems = useHTML ?
             [legendItem, item.legendSymbol] :
             [item.legendGroup];
+        var setOtherItemsState = function (state) {
+            legend.allItems.forEach(function (otherItem) {
+                if (item !== otherItem) {
+                    [otherItem]
+                        .concat(otherItem.linkedSeries || [])
+                        .forEach(function (otherItem) {
+                        otherItem.setState(state, !isPoint);
+                    });
+                }
+            });
+        };
         // Set the events on the item group, or in case of useHTML, the item
         // itself (#1249)
         legendItems.forEach(function (element) {
@@ -1138,11 +1098,7 @@ var Legend = /** @class */ (function () {
                 element
                     .on('mouseover', function () {
                     if (item.visible) {
-                        legend.allItems.forEach(function (inactiveItem) {
-                            if (item !== inactiveItem) {
-                                inactiveItem.setState('inactive', !isPoint);
-                            }
-                        });
+                        setOtherItemsState('inactive');
                     }
                     item.setState('hover');
                     // A CSS class to dim or hide other than the hovered
@@ -1161,11 +1117,7 @@ var Legend = /** @class */ (function () {
                             legend.itemStyle :
                             legend.itemHiddenStyle));
                     }
-                    legend.allItems.forEach(function (inactiveItem) {
-                        if (item !== inactiveItem) {
-                            inactiveItem.setState('', !isPoint);
-                        }
-                    });
+                    setOtherItemsState('');
                     // A CSS class to dim or hide other than the hovered
                     // series.
                     boxWrapper.removeClass(activeClass);
@@ -1177,11 +1129,7 @@ var Legend = /** @class */ (function () {
                             item.setVisible();
                         }
                         // Reset inactive state
-                        legend.allItems.forEach(function (inactiveItem) {
-                            if (item !== inactiveItem) {
-                                inactiveItem.setState(item.visible ? 'inactive' : '', !isPoint);
-                            }
-                        });
+                        setOtherItemsState(item.visible ? 'inactive' : '');
                     };
                     // A CSS class to dim or hide other than the hovered
                     // series. Event handling in iOS causes the activeClass
@@ -1205,7 +1153,7 @@ var Legend = /** @class */ (function () {
     /**
      * @private
      * @function Highcharts.Legend#createCheckboxForItem
-     * @param {Highcharts.BubbleLegend|Point|Highcharts.Series} item
+     * @param {Highcharts.BubbleLegendItem|Point|Highcharts.Series} item
      * @fires Highcharts.Series#event:checkboxClick
      */
     Legend.prototype.createCheckboxForItem = function (item) {
@@ -1251,5 +1199,83 @@ if (/Trident\/7\.0/.test(win.navigator && win.navigator.userAgent) ||
         }
     });
 }
-H.Legend = Legend;
-export default H.Legend;
+/* *
+ *
+ *  Default Export
+ *
+ * */
+export default Legend;
+/* *
+ *
+ *  API Declarations
+ *
+ * */
+/**
+ * Gets fired when the legend item belonging to a point is clicked. The default
+ * action is to toggle the visibility of the point. This can be prevented by
+ * returning `false` or calling `event.preventDefault()`.
+ *
+ * @callback Highcharts.PointLegendItemClickCallbackFunction
+ *
+ * @param {Highcharts.Point} this
+ *        The point on which the event occured.
+ *
+ * @param {Highcharts.PointLegendItemClickEventObject} event
+ *        The event that occured.
+ */
+/**
+ * Information about the legend click event.
+ *
+ * @interface Highcharts.PointLegendItemClickEventObject
+ */ /**
+* Related browser event.
+* @name Highcharts.PointLegendItemClickEventObject#browserEvent
+* @type {Highcharts.PointerEvent}
+*/ /**
+* Prevent the default action of toggle the visibility of the point.
+* @name Highcharts.PointLegendItemClickEventObject#preventDefault
+* @type {Function}
+*/ /**
+* Related point.
+* @name Highcharts.PointLegendItemClickEventObject#target
+* @type {Highcharts.Point}
+*/ /**
+* Event type.
+* @name Highcharts.PointLegendItemClickEventObject#type
+* @type {"legendItemClick"}
+*/
+/**
+ * Gets fired when the legend item belonging to a series is clicked. The default
+ * action is to toggle the visibility of the series. This can be prevented by
+ * returning `false` or calling `event.preventDefault()`.
+ *
+ * @callback Highcharts.SeriesLegendItemClickCallbackFunction
+ *
+ * @param {Highcharts.Series} this
+ *        The series where the event occured.
+ *
+ * @param {Highcharts.SeriesLegendItemClickEventObject} event
+ *        The event that occured.
+ */
+/**
+ * Information about the legend click event.
+ *
+ * @interface Highcharts.SeriesLegendItemClickEventObject
+ */ /**
+* Related browser event.
+* @name Highcharts.SeriesLegendItemClickEventObject#browserEvent
+* @type {Highcharts.PointerEvent}
+*/ /**
+* Prevent the default action of toggle the visibility of the series.
+* @name Highcharts.SeriesLegendItemClickEventObject#preventDefault
+* @type {Function}
+*/ /**
+* Related series.
+* @name Highcharts.SeriesLegendItemClickEventObject#target
+* @type {Highcharts.Series}
+*/ /**
+* Event type.
+* @name Highcharts.SeriesLegendItemClickEventObject#type
+* @type {"legendItemClick"}
+*/
+(''); // keeps doclets above in JS file

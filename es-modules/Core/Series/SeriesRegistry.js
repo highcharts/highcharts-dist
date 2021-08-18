@@ -23,7 +23,7 @@ var SeriesRegistry;
 (function (SeriesRegistry) {
     /* *
      *
-     *  Static Properties
+     *  Properties
      *
      * */
     /**
@@ -33,7 +33,7 @@ var SeriesRegistry;
     SeriesRegistry.seriesTypes = H.seriesTypes;
     /* *
      *
-     *  Static Functions
+     *  Functions
      *
      * */
     /* eslint-disable valid-jsdoc */
@@ -122,13 +122,7 @@ var SeriesRegistry;
 })(SeriesRegistry || (SeriesRegistry = {}));
 /* *
  *
- *  Compatibility
- *
- * */
-H.seriesType = SeriesRegistry.seriesType;
-/* *
- *
- *  Export
+ *  Default Export
  *
  * */
 export default SeriesRegistry;

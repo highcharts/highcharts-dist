@@ -106,6 +106,36 @@ bindingsUtils.addFlagFromForm = function (type) {
         });
     };
 };
+bindingsUtils.indicatorsWithAxes = [
+    'ad',
+    'atr',
+    'cci',
+    'cmf',
+    'disparityindex',
+    'cmo',
+    'dmi',
+    'macd',
+    'mfi',
+    'roc',
+    'rsi',
+    'ao',
+    'aroon',
+    'aroonoscillator',
+    'trix',
+    'apo',
+    'dpo',
+    'ppo',
+    'natr',
+    'obv',
+    'williamsr',
+    'stochastic',
+    'slowstochastic',
+    'linearRegression',
+    'linearRegressionSlope',
+    'linearRegressionIntercept',
+    'linearRegressionAngle',
+    'klinger'
+];
 bindingsUtils.manageIndicators = function (data) {
     var navigation = this, chart = navigation.chart, seriesConfig = {
         linkedTo: data.linkedTo,
@@ -118,36 +148,7 @@ bindingsUtils.manageIndicators = function (data) {
         'obv',
         'vbp',
         'vwap'
-    ], indicatorsWithAxes = [
-        'ad',
-        'atr',
-        'cci',
-        'cmf',
-        'disparityindex',
-        'cmo',
-        'dmi',
-        'macd',
-        'mfi',
-        'roc',
-        'rsi',
-        'ao',
-        'aroon',
-        'aroonoscillator',
-        'trix',
-        'apo',
-        'dpo',
-        'ppo',
-        'natr',
-        'obv',
-        'williamsr',
-        'stochastic',
-        'slowstochastic',
-        'linearRegression',
-        'linearRegressionSlope',
-        'linearRegressionIntercept',
-        'linearRegressionAngle',
-        'klinger'
-    ], yAxis, parentSeries, defaultOptions, series;
+    ], indicatorsWithAxes = bindingsUtils.indicatorsWithAxes, yAxis, parentSeries, defaultOptions, series;
     if (data.actionType === 'edit') {
         navigation.fieldsToOptions(data.fields, seriesConfig);
         series = chart.get(data.seriesId);
@@ -240,12 +241,12 @@ bindingsUtils.manageIndicators = function (data) {
  * @return {void}
  */
 bindingsUtils.updateHeight = function (e, annotation) {
-    var coordsY = this.utils.getAssignedAxis(this.chart.pointer.getCoordinates(e).yAxis);
-    if (coordsY) {
+    var options = annotation.options.typeOptions, yAxis = isNumber(options.yAxis) && this.chart.yAxis[options.yAxis];
+    if (yAxis && options.points) {
         annotation.update({
             typeOptions: {
-                height: coordsY.value -
-                    annotation.options.typeOptions.points[1].y
+                height: yAxis.toValue(e[yAxis.horiz ? 'chartX' : 'chartY']) -
+                    (options.points[1].y || 0)
             }
         });
     }
@@ -334,12 +335,12 @@ bindingsUtils.isPriceIndicatorEnabled = function (series) {
  */
 bindingsUtils.updateNthPoint = function (startIndex) {
     return function (e, annotation) {
-        var options = annotation.options.typeOptions, coords = this.chart.pointer.getCoordinates(e), coordsX = this.utils.getAssignedAxis(coords.xAxis), coordsY = this.utils.getAssignedAxis(coords.yAxis);
-        if (coordsX && coordsY) {
+        var options = annotation.options.typeOptions, xAxis = isNumber(options.xAxis) && this.chart.xAxis[options.xAxis], yAxis = isNumber(options.yAxis) && this.chart.yAxis[options.yAxis];
+        if (xAxis && yAxis) {
             options.points.forEach(function (point, index) {
                 if (index >= startIndex) {
-                    point.x = coordsX.value;
-                    point.y = coordsY.value;
+                    point.x = xAxis.toValue(e[xAxis.horiz ? 'chartX' : 'chartY']);
+                    point.y = yAxis.toValue(e[yAxis.horiz ? 'chartX' : 'chartY']);
                 }
             });
             annotation.update({
@@ -1694,6 +1695,44 @@ var stockToolsBindings = {
         init: function (button) {
             this.chart.series[0].update({
                 type: 'candlestick'
+            });
+            fireEvent(this, 'deselectButton', { button: button });
+        }
+    },
+    /**
+     * Changes main series to `'heikinashi'` type.
+     *
+     * @type    {Highcharts.NavigationBindingsOptionsObject}
+     * @product highstock
+     * @default {"className": "highcharts-series-type-heikinashi", "init": function() {}}
+     */
+    seriesTypeHeikinAshi: {
+        /** @ignore-option */
+        className: 'highcharts-series-type-heikinashi',
+        // eslint-disable-next-line valid-jsdoc
+        /** @ignore-option */
+        init: function (button) {
+            this.chart.series[0].update({
+                type: 'heikinashi'
+            });
+            fireEvent(this, 'deselectButton', { button: button });
+        }
+    },
+    /**
+     * Changes main series to `'hollowcandlestick'` type.
+     *
+     * @type    {Highcharts.NavigationBindingsOptionsObject}
+     * @product highstock
+     * @default {"className": "highcharts-series-type-hollowcandlestick", "init": function() {}}
+     */
+    seriesTypeHollowCandlestick: {
+        /** @ignore-option */
+        className: 'highcharts-series-type-hollowcandlestick',
+        // eslint-disable-next-line valid-jsdoc
+        /** @ignore-option */
+        init: function (button) {
+            this.chart.series[0].update({
+                type: 'hollowcandlestick'
             });
             fireEvent(this, 'deselectButton', { button: button });
         }

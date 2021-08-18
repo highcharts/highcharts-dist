@@ -23,7 +23,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import Color from '../../Core/Color/Color.js';
 var color = Color.parse;
-import LegendSymbolMixin from '../../Mixins/LegendSymbol.js';
+import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var LineSeries = SeriesRegistry.seriesTypes.line;
 import U from '../../Core/Utilities.js';
@@ -458,7 +458,7 @@ var AreaSeries = /** @class */ (function (_super) {
 }(LineSeries));
 extend(AreaSeries.prototype, {
     singleStacks: false,
-    drawLegendSymbol: LegendSymbolMixin.drawRectangle
+    drawLegendSymbol: LegendSymbol.drawRectangle
 });
 SeriesRegistry.registerSeriesType('area', AreaSeries);
 /* *

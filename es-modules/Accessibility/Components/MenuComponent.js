@@ -16,7 +16,7 @@ var extend = U.extend;
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
-var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
+var getChartTitle = ChartUtilities.getChartTitle, unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
 import HTMLUtilities from '../Utils/HTMLUtilities.js';
 var removeElement = HTMLUtilities.removeElement, getFakeMouseEvent = HTMLUtilities.getFakeMouseEvent;
 /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -54,7 +54,9 @@ Chart.prototype.hideExportMenu = function () {
     if (exportList && chart.exportContextMenu) {
         // Reset hover states etc.
         exportList.forEach(function (el) {
-            if (el.className === 'highcharts-menu-item' && el.onmouseout) {
+            if (el &&
+                el.className === 'highcharts-menu-item' &&
+                el.onmouseout) {
                 el.onmouseout(getFakeMouseEvent('mouseout'));
             }
         });
@@ -200,7 +202,7 @@ extend(MenuComponent.prototype, /** @lends Highcharts.MenuComponent */ {
             this.exportProxyGroup = this.addProxyGroup(
             // Wrap in a region div if verbosity is high
             a11yOptions.landmarkVerbosity === 'all' ? {
-                'aria-label': chart.langFormat('accessibility.exporting.exportRegionLabel', { chart: chart }),
+                'aria-label': chart.langFormat('accessibility.exporting.exportRegionLabel', { chart: chart, chartTitle: getChartTitle(chart) }),
                 'role': 'region'
             } : {});
             var button = getExportMenuButtonElement(this.chart);
@@ -219,18 +221,22 @@ extend(MenuComponent.prototype, /** @lends Highcharts.MenuComponent */ {
             // Set tabindex on the menu items to allow focusing by script
             // Set role to give screen readers a chance to pick up the contents
             exportList.forEach(function (item) {
-                if (item.tagName === 'LI' &&
-                    !(item.children && item.children.length)) {
-                    item.setAttribute('tabindex', -1);
-                }
-                else {
-                    item.setAttribute('aria-hidden', 'true');
+                if (item) {
+                    if (item.tagName === 'LI' &&
+                        !(item.children && item.children.length)) {
+                        item.setAttribute('tabindex', -1);
+                    }
+                    else {
+                        item.setAttribute('aria-hidden', 'true');
+                    }
                 }
             });
             // Set accessibility properties on parent div
-            var parentDiv = exportList[0].parentNode;
-            parentDiv.removeAttribute('aria-hidden');
-            parentDiv.setAttribute('aria-label', chart.langFormat('accessibility.exporting.chartMenuLabel', { chart: chart }));
+            var parentDiv = (exportList[0] && exportList[0].parentNode);
+            if (parentDiv) {
+                parentDiv.removeAttribute('aria-hidden');
+                parentDiv.setAttribute('aria-label', chart.langFormat('accessibility.exporting.chartMenuLabel', { chart: chart }));
+            }
         }
     },
     /**
@@ -266,7 +272,7 @@ extend(MenuComponent.prototype, /** @lends Highcharts.MenuComponent */ {
             // Only run exporting navigation if exporting support exists and is
             // enabled on chart
             validate: function () {
-                return chart.exportChart &&
+                return !!chart.exporting &&
                     chart.options.exporting.enabled !== false &&
                     chart.options.exporting.accessibility.enabled !==
                         false;

@@ -192,11 +192,13 @@ var Fullscreen = /** @class */ (function () {
             lang.exitFullscreen &&
             lang.viewFullscreen &&
             menuItems &&
-            exportDivElements &&
-            exportDivElements.length) {
-            AST.setElementHTML(exportDivElements[menuItems.indexOf('viewFullscreen')], !this.isOpen ?
-                (exportingOptions.menuItemDefinitions.viewFullscreen.text ||
-                    lang.viewFullscreen) : lang.exitFullscreen);
+            exportDivElements) {
+            var exportDivElement = exportDivElements[menuItems.indexOf('viewFullscreen')];
+            if (exportDivElement) {
+                AST.setElementHTML(exportDivElement, !this.isOpen ?
+                    (exportingOptions.menuItemDefinitions.viewFullscreen.text ||
+                        lang.viewFullscreen) : lang.exitFullscreen);
+            }
         }
     };
     /**

@@ -8,41 +8,10 @@
  *
  * */
 'use strict';
-import H from '../Core/Globals.js';
+import G from '../Core/Globals.js';
+var doc = G.doc;
 import U from '../Core/Utilities.js';
-var merge = U.merge, objectEach = U.objectEach;
-/**
- * @interface Highcharts.AjaxSettingsObject
- */ /**
-* The payload to send.
-*
-* @name Highcharts.AjaxSettingsObject#data
-* @type {string|Highcharts.Dictionary<any>}
-*/ /**
-* The data type expected.
-* @name Highcharts.AjaxSettingsObject#dataType
-* @type {"json"|"xml"|"text"|"octet"}
-*/ /**
-* Function to call on error.
-* @name Highcharts.AjaxSettingsObject#error
-* @type {Function}
-*/ /**
-* The headers; keyed on header name.
-* @name Highcharts.AjaxSettingsObject#headers
-* @type {Highcharts.Dictionary<string>}
-*/ /**
-* Function to call on success.
-* @name Highcharts.AjaxSettingsObject#success
-* @type {Function}
-*/ /**
-* The HTTP method to use. For example GET or POST.
-* @name Highcharts.AjaxSettingsObject#type
-* @type {string}
-*/ /**
-* The URL to call.
-* @name Highcharts.AjaxSettingsObject#url
-* @type {string}
-*/
+var createElement = U.createElement, discardElement = U.discardElement, merge = U.merge, objectEach = U.objectEach;
 /**
  * Perform an Ajax call.
  *
@@ -54,7 +23,7 @@ var merge = U.merge, objectEach = U.objectEach;
  * @return {false|undefined}
  *         Returns false, if error occured.
  */
-H.ajax = function (attr) {
+function ajax(attr) {
     var options = merge(true, {
         url: false,
         type: 'get',
@@ -119,7 +88,7 @@ H.ajax = function (attr) {
         // empty
     }
     r.send(options.data || true);
-};
+}
 /**
  * Get a JSON resource over XHR, also supporting CORS without preflight.
  *
@@ -129,10 +98,9 @@ H.ajax = function (attr) {
  * @param {Function} success
  *        The success callback. For error handling, use the `Highcharts.ajax`
  *        function instead.
- * @return {void}
  */
-H.getJSON = function (url, success) {
-    H.ajax({
+function getJSON(url, success) {
+    exports.ajax({
         url: url,
         success: success,
         dataType: 'json',
@@ -142,9 +110,85 @@ H.getJSON = function (url, success) {
             'Content-Type': 'text/plain'
         }
     });
-};
+}
+/**
+ * The post utility
+ *
+ * @private
+ * @function Highcharts.post
+ *
+ * @param {string} url
+ * Post URL
+ *
+ * @param {object} data
+ * Post data
+ *
+ * @param {Highcharts.Dictionary<string>} [formAttributes]
+ * Additional attributes for the post request
+ */
+function post(url, data, formAttributes) {
+    // create the form
+    var form = createElement('form', merge({
+        method: 'post',
+        action: url,
+        enctype: 'multipart/form-data'
+    }, formAttributes), {
+        display: 'none'
+    }, doc.body);
+    // add the data
+    objectEach(data, function (val, name) {
+        createElement('input', {
+            type: 'hidden',
+            name: name,
+            value: val
+        }, null, form);
+    });
+    // submit
+    form.submit();
+    // clean up
+    discardElement(form);
+}
+/* *
+ *
+ *  Default Export
+ *
+ * */
 var exports = {
-    ajax: H.ajax,
-    getJSON: H.getJSON
+    ajax: ajax,
+    getJSON: getJSON,
+    post: post
 };
 export default exports;
+/**
+ * @interface Highcharts.AjaxSettingsObject
+ */ /**
+* The payload to send.
+*
+* @name Highcharts.AjaxSettingsObject#data
+* @type {string|Highcharts.Dictionary<any>}
+*/ /**
+* The data type expected.
+* @name Highcharts.AjaxSettingsObject#dataType
+* @type {"json"|"xml"|"text"|"octet"}
+*/ /**
+* Function to call on error.
+* @name Highcharts.AjaxSettingsObject#error
+* @type {Function}
+*/ /**
+* The headers; keyed on header name.
+* @name Highcharts.AjaxSettingsObject#headers
+* @type {Highcharts.Dictionary<string>}
+*/ /**
+* Function to call on success.
+* @name Highcharts.AjaxSettingsObject#success
+* @type {Function}
+*/ /**
+* The HTTP method to use. For example GET or POST.
+* @name Highcharts.AjaxSettingsObject#type
+* @type {string}
+*/ /**
+* The URL to call.
+* @name Highcharts.AjaxSettingsObject#url
+* @type {string}
+*/
+(''); // keeps doclets above in JS file

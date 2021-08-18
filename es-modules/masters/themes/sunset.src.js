@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  * @module highcharts/themes/sunset
  * @requires highcharts
  *
@@ -8,4 +8,7 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Extensions/Themes/Sunset.js';
+import H from '../../Core/Globals.js';
+import SunsetTheme from '../../Extensions/Themes/Sunset.js';
+H.theme = SunsetTheme.options;
+SunsetTheme.apply();

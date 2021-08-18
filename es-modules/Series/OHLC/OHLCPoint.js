@@ -100,6 +100,17 @@ var OHLCPoint = /** @class */ (function (_super) {
         this.resolveUpColor();
         return zone;
     };
+    /**
+     * Extend the parent method by resolving up/down colors (#15849)
+     * @private
+     **/
+    OHLCPoint.prototype.applyOptions = function () {
+        _super.prototype.applyOptions.apply(this, arguments);
+        if (this.resolveColor) {
+            this.resolveColor();
+        }
+        return this;
+    };
     return OHLCPoint;
 }(ColumnSeries.prototype.pointClass));
 /* *

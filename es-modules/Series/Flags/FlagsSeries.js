@@ -26,12 +26,19 @@ import H from '../../Core/Globals.js';
 var noop = H.noop;
 import OnSeriesMixin from '../../Mixins/OnSeries.js';
 import palette from '../../Core/Color/Palette.js';
+import R from '../../Core/Renderer/RendererUtilities.js';
+var distribute = R.distribute;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var Series = SeriesRegistry.series, ColumnSeries = SeriesRegistry.seriesTypes.column;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, defined = U.defined, extend = U.extend, merge = U.merge, objectEach = U.objectEach, wrap = U.wrap;
 import './FlagsSymbols.js';
+/* *
+ *
+ *  Classes
+ *
+ * */
 /**
  * The Flags series.
  *
@@ -179,7 +186,7 @@ var FlagsSeries = /** @class */ (function (_super) {
                 box.plotX = box.anchorX;
                 boxes.push(box);
             });
-            H.distribute(boxes, inverted ? yAxis.len : this.xAxis.len, 100);
+            distribute(boxes, inverted ? yAxis.len : this.xAxis.len, 100);
             points.forEach(function (point) {
                 var box = point.graphic && boxesMap[point.plotX];
                 if (box) {

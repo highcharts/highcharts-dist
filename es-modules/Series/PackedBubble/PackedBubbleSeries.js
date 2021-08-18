@@ -901,7 +901,9 @@ var PackedBubbleSeries = /** @class */ (function (_super) {
              * @since 7.0.0
              */
             formatter: function () {
-                return this.point.value;
+                var numberFormatter = this.series.chart.numberFormatter;
+                var value = this.point.value;
+                return isNumber(value) ? numberFormatter(value, -1) : '';
             },
             /**
              * @type      {string}

@@ -12,7 +12,7 @@
 'use strict';
 import Axis from '../Core/Axis/Axis.js';
 import Palette from '../Core/Color/Palette.js';
-import PlotLineOrBand from '../Core/Axis/PlotLineOrBand.js';
+import PlotLineOrBand from '../Core/Axis/PlotLineOrBand/PlotLineOrBand.js';
 import U from '../Core/Utilities.js';
 var addEvent = U.addEvent, merge = U.merge, wrap = U.wrap;
 /**

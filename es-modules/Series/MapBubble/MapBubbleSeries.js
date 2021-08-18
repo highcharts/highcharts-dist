@@ -45,11 +45,6 @@ import '../Map/MapSeries.js';
 var MapBubbleSeries = /** @class */ (function (_super) {
     __extends(MapBubbleSeries, _super);
     function MapBubbleSeries() {
-        /* *
-         *
-         *  Static Properties
-         *
-         * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         /* *
          *
@@ -61,6 +56,12 @@ var MapBubbleSeries = /** @class */ (function (_super) {
         _this.points = void 0;
         return _this;
     }
+    /* *
+     *
+     *  Static Properties
+     *
+     * */
+    MapBubbleSeries.compose = BubbleSeries.compose;
     /**
      * A map bubble series is a bubble series laid out on top of a map
      * series, where each bubble is tied to a specific map area.

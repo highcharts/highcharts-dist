@@ -28,7 +28,7 @@ import U from '../../Utilities.js';
 var attr = U.attr, createElement = U.createElement, extend = U.extend, pick = U.pick;
 /* *
  *
- *  Composition
+ *  Class
  *
  * */
 /* eslint-disable valid-jsdoc */
@@ -40,14 +40,23 @@ var HTMLRenderer = /** @class */ (function (_super) {
     }
     /* *
      *
-     *  Functions
+     *  Static Functions
      *
      * */
     /** @private */
     HTMLRenderer.compose = function (SVGRendererClass) {
-        var svgRendererProto = SVGRendererClass.prototype, htmlRendererProto = HTMLRenderer.prototype;
-        svgRendererProto.html = htmlRendererProto.html;
+        if (HTMLRenderer.composedClasses.indexOf(SVGRendererClass) === -1) {
+            HTMLRenderer.composedClasses.push(SVGRendererClass);
+            var htmlRendererProto = HTMLRenderer.prototype, svgRendererProto = SVGRendererClass.prototype;
+            svgRendererProto.html = htmlRendererProto.html;
+        }
+        return SVGRendererClass;
     };
+    /* *
+     *
+     *  Functions
+     *
+     * */
     /**
      * Create HTML text node. This is used by the VML renderer as well as the
      * SVG renderer through the useHTML option.
@@ -145,7 +154,8 @@ var HTMLRenderer = /** @class */ (function (_super) {
         // This is specific for HTML within SVG
         if (isSVG) {
             wrapper.add = function (svgGroupWrapper) {
-                var htmlGroup, container = renderer.box.parentNode, parentGroup, parents = [];
+                var container = renderer.box.parentNode, parents = [];
+                var htmlGroup, parentGroup;
                 this.parentGroup = svgGroupWrapper;
                 // Create a mock group to hold the HTML elements
                 if (svgGroupWrapper) {
@@ -162,7 +172,7 @@ var HTMLRenderer = /** @class */ (function (_super) {
                         // Ensure dynamically updating position when any parent
                         // is translated
                         parents.reverse().forEach(function (parentGroup) {
-                            var htmlGroupStyle, cls = attr(parentGroup.element, 'class');
+                            var cls = attr(parentGroup.element, 'class');
                             /**
                              * Common translate setter for X and Y on the HTML
                              * group. Reverted the fix for #6957 du to
@@ -195,11 +205,12 @@ var HTMLRenderer = /** @class */ (function (_super) {
                                         display: parentGroup.display,
                                         opacity: parentGroup.opacity,
                                         cursor: parentGroupStyles.cursor,
-                                        pointerEvents: parentGroupStyles.pointerEvents // #5595
+                                        pointerEvents: parentGroupStyles.pointerEvents,
+                                        visibility: parentGroup.visibility
                                         // the top group is appended to container
                                     }, htmlGroup || container);
                             // Shortcut
-                            htmlGroupStyle = htmlGroup.style;
+                            var htmlGroupStyle = htmlGroup.style;
                             // Set listeners to update the HTML div's position
                             // whenever the SVG group position is changed.
                             extend(parentGroup, {
@@ -215,7 +226,7 @@ var HTMLRenderer = /** @class */ (function (_super) {
                                     if (parents[0].div) { // #6418
                                         wrapper.on.apply({
                                             element: parents[0].div,
-                                            onEvents: wrapper.onEvents
+                                            onEvents: parentGroup.onEvents
                                         }, arguments);
                                     }
                                     return parentGroup;
@@ -243,6 +254,12 @@ var HTMLRenderer = /** @class */ (function (_super) {
         }
         return wrapper;
     };
+    /* *
+     *
+     *  Static Properties
+     *
+     * */
+    HTMLRenderer.composedClasses = [];
     return HTMLRenderer;
 }(SVGRenderer));
 /* *

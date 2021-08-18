@@ -10,11 +10,11 @@
  *
  * */
 'use strict';
-import Ajax from '../Extensions/Ajax.js';
-var ajax = Ajax.ajax;
 import Chart from '../Core/Chart/Chart.js';
-import H from '../Core/Globals.js';
-var doc = H.doc;
+import G from '../Core/Globals.js';
+var doc = G.doc;
+import HU from '../Core/HttpUtilities.js';
+var ajax = HU.ajax;
 import Point from '../Core/Series/Point.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 var seriesTypes = SeriesRegistry.seriesTypes;
@@ -1865,8 +1865,8 @@ var Data = /** @class */ (function () {
  *
  * @return {Highcharts.Data}
  */
-H.data = function (dataOptions, chartOptions, chart) {
-    return new H.Data(dataOptions, chartOptions, chart);
+G.data = function (dataOptions, chartOptions, chart) {
+    return new G.Data(dataOptions, chartOptions, chart);
 };
 // Extend Chart.init so that the Chart constructor accepts a new configuration
 // option group, data.
@@ -1881,7 +1881,7 @@ addEvent(Chart, 'init', function (e) {
          * @name Highcharts.Chart#data
          * @type {Highcharts.Data|undefined}
          */
-        chart.data = new H.Data(extend(userOptions.data, {
+        chart.data = new G.Data(extend(userOptions.data, {
             afterComplete: function (dataOptions) {
                 var i, series;
                 // Merge series configs
@@ -2071,5 +2071,5 @@ var SeriesBuilder = /** @class */ (function () {
     };
     return SeriesBuilder;
 }());
-H.Data = Data;
-export default H.Data;
+G.Data = Data;
+export default G.Data;

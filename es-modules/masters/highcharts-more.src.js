@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  * @module highcharts/highcharts-more
  * @requires highcharts
  *
@@ -8,17 +8,21 @@
  * License: www.highcharts.com/license
  */
 'use strict';
+import Highcharts from '../Core/Globals.js';
+var G = Highcharts;
 import '../Extensions/Pane.js';
-import '../Core/Axis/RadialAxis.js';
+import RadialAxis from '../Core/Axis/RadialAxis.js';
+RadialAxis.compose(G.Axis, G.Tick);
 import '../Series/AreaRange/AreaRangeSeries.js';
 import '../Series/AreaSplineRange/AreaSplineRangeSeries.js';
+import '../Series/BoxPlot/BoxPlotSeries.js';
+import BubbleSeries from '../Series/Bubble/BubbleSeries.js';
+BubbleSeries.compose(G.Chart, G.Legend, G.Series);
 import '../Series/ColumnRange/ColumnRangeSeries.js';
 import '../Series/ColumnPyramid/ColumnPyramidSeries.js';
-import '../Series/Gauge/GaugeSeries.js';
-import '../Series/BoxPlot/BoxPlotSeries.js';
 import '../Series/ErrorBar/ErrorBarSeries.js';
-import '../Series/Waterfall/WaterfallSeries.js';
-import '../Series/Polygon/PolygonSeries.js';
-import '../Series/Bubble/BubbleSeries.js';
+import '../Series/Gauge/GaugeSeries.js';
 import '../Series/PackedBubble/PackedBubbleSeries.js';
+import '../Series/Polygon/PolygonSeries.js';
+import '../Series/Waterfall/WaterfallSeries.js';
 import '../Extensions/Polar.js';

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -1285,6 +1285,7 @@
                         attr = extend(series.pointAttribs(point, (point.selected && 'select')), {
                             align: 'center',
                             'alignment-baseline': 'middle',
+                            'dominant-baseline': 'middle',
                             x: placement.x,
                             y: placement.y,
                             text: point.name,

@@ -207,10 +207,12 @@ var XRangeSeries = /** @class */ (function (_super) {
             yAxis.categories) {
             point.plotY = yAxis.translate(point.y, 0, 1, 0, 1, options.pointPlacement);
         }
+        var x = Math.floor(Math.min(plotX, plotX2)) + crisper;
+        var x2 = Math.floor(Math.max(plotX, plotX2)) + crisper;
         var shapeArgs = {
-            x: Math.floor(Math.min(plotX, plotX2)) + crisper,
+            x: x,
             y: Math.floor(point.plotY + yOffset) + crisper,
-            width: Math.round(Math.abs(plotX2 - plotX)),
+            width: x2 - x,
             height: pointHeight,
             r: series.options.borderRadius
         };

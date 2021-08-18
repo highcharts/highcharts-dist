@@ -9,18 +9,18 @@
  * */
 'use strict';
 import A from '../Animation/AnimationUtilities.js';
+var animObject = A.animObject;
+import AxisDefaults from './AxisDefaults.js';
 import Color from '../Color/Color.js';
 import Palette from '../Color/Palette.js';
 import D from '../DefaultOptions.js';
-import F from '../Foundation.js';
-import H from '../Globals.js';
-import U from '../Utilities.js';
-import AxisDefaults from './AxisDefaults.js';
-import Tick from './Tick.js';
-var animObject = A.animObject;
-var registerEventOptions = F.registerEventOptions;
-var deg2rad = H.deg2rad;
 var defaultOptions = D.defaultOptions;
+import F from '../Foundation.js';
+var registerEventOptions = F.registerEventOptions;
+import H from '../Globals.js';
+var deg2rad = H.deg2rad;
+import Tick from './Tick.js';
+import U from '../Utilities.js';
 var arrayMax = U.arrayMax, arrayMin = U.arrayMin, clamp = U.clamp, correctFloat = U.correctFloat, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, error = U.error, extend = U.extend, fireEvent = U.fireEvent, getMagnitude = U.getMagnitude, isArray = U.isArray, isNumber = U.isNumber, isString = U.isString, merge = U.merge, normalizeTickInterval = U.normalizeTickInterval, objectEach = U.objectEach, pick = U.pick, relativeLength = U.relativeLength, removeEvent = U.removeEvent, splat = U.splat, syncTimeout = U.syncTimeout;
 /* *
  *
@@ -1260,10 +1260,15 @@ var Axis = /** @class */ (function () {
         // This is in turn needed in order to find tick positions in ordinal
         // axes.
         if (isXAxis && !secondPass) {
+            // First process all series assigned to that axis.
             axis.series.forEach(function (series) {
+                // Allows filtering out points outside the plot area.
+                series.forceCrop = series.forceCropping && series.forceCropping();
                 series.processData(axis.min !== (axis.old && axis.old.min) ||
                     axis.max !== (axis.old && axis.old.max));
             });
+            // Then apply grouping if needed.
+            fireEvent(this, 'postProcessData');
         }
         // set the translation factor used in translate function
         axis.setAxisTranslation();

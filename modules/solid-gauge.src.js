@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * Solid angular gauge module
  *
@@ -236,7 +236,7 @@
         };
 
     });
-    _registerModule(_modules, 'Series/SolidGauge/SolidGaugeSeries.js', [_modules['Mixins/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/SolidGaugeAxis.js'], _modules['Core/Utilities.js']], function (LegendSymbolMixin, SeriesRegistry, SolidGaugeAxis, U) {
+    _registerModule(_modules, 'Series/SolidGauge/SolidGaugeSeries.js', [_modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Axis/SolidGaugeAxis.js'], _modules['Core/Utilities.js']], function (LegendSymbol, SeriesRegistry, SolidGaugeAxis, U) {
         /* *
          *
          *  Solid angular gauge module
@@ -537,7 +537,7 @@
             return SolidGaugeSeries;
         }(GaugeSeries));
         extend(SolidGaugeSeries.prototype, {
-            drawLegendSymbol: LegendSymbolMixin.drawRectangle
+            drawLegendSymbol: LegendSymbol.drawRectangle
         });
         SeriesRegistry.registerSeriesType('solidgauge', SolidGaugeSeries);
         /* *

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.1.2 (2021-06-16)
+ * @license Highcharts Gantt JS v9.2.0 (2021-08-18)
  *
  * Tree Grid
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Series.js'], _modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (Axis, Series, StackItem, U) {
+    _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
         /* *
          *
          *  (c) 2009-2021 Torstein Honsi
@@ -44,13 +44,28 @@
             isArray = U.isArray,
             isNumber = U.isNumber,
             pick = U.pick;
+        /* *
+         *
+         *  Composition
+         *
+         * */
         /**
          * Axis with support of broken data rows.
          * @private
-         * @class
          */
         var BrokenAxis;
         (function (BrokenAxis) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
             /* *
              *
              *  Functions
@@ -62,15 +77,19 @@
              * @private
              */
             function compose(AxisClass, SeriesClass) {
-                if (AxisClass.keepProps.indexOf('brokenAxis') === -1) {
+                if (composedClasses.indexOf(AxisClass) === -1) {
+                    composedClasses.push(AxisClass);
                     AxisClass.keepProps.push('brokenAxis');
-                    var seriesProto = Series.prototype;
+                    addEvent(AxisClass, 'init', onAxisInit);
+                    addEvent(AxisClass, 'afterInit', onAxisAfterInit);
+                    addEvent(AxisClass, 'afterSetTickPositions', onAxisAfterSetTickPositions);
+                    addEvent(AxisClass, 'afterSetOptions', onAxisAfterSetOptions);
+                }
+                if (composedClasses.indexOf(SeriesClass) === -1) {
+                    composedClasses.push(SeriesClass);
+                    var seriesProto = SeriesClass.prototype;
                     seriesProto.drawBreaks = seriesDrawBreaks;
                     seriesProto.gappedPath = seriesGappedPath;
-                    addEvent(AxisClass, 'init', onInit);
-                    addEvent(AxisClass, 'afterInit', onAfterInit);
-                    addEvent(AxisClass, 'afterSetTickPositions', onAfterSetTickPositions);
-                    addEvent(AxisClass, 'afterSetOptions', onAfterSetOptions);
                     addEvent(SeriesClass, 'afterGeneratePoints', onSeriesAfterGeneratePoints);
                     addEvent(SeriesClass, 'afterRender', onSeriesAfterRender);
                 }
@@ -80,7 +99,7 @@
             /**
              * @private
              */
-            function onAfterInit() {
+            function onAxisAfterInit() {
                 if (typeof this.brokenAxis !== 'undefined') {
                     this.brokenAxis.setBreaks(this.options.breaks, false);
                 }
@@ -89,7 +108,7 @@
              * Force Axis to be not-ordinal when breaks are defined.
              * @private
              */
-            function onAfterSetOptions() {
+            function onAxisAfterSetOptions() {
                 var axis = this;
                 if (axis.brokenAxis && axis.brokenAxis.hasBreaks) {
                     axis.options.ordinal = false;
@@ -98,7 +117,7 @@
             /**
              * @private
              */
-            function onAfterSetTickPositions() {
+            function onAxisAfterSetTickPositions() {
                 var axis = this,
                     brokenAxis = axis.brokenAxis;
                 if (brokenAxis &&
@@ -118,7 +137,7 @@
             /**
              * @private
              */
-            function onInit() {
+            function onAxisInit() {
                 var axis = this;
                 if (!axis.brokenAxis) {
                     axis.brokenAxis = new Additions(axis);
@@ -531,10 +550,10 @@
                                     newMax = newMin;
                                 }
                             }
-                            Axis.prototype.setExtremes.call(this, newMin, newMax, redraw, animation, eventArguments);
+                            axis.constructor.prototype.setExtremes.call(this, newMin, newMax, redraw, animation, eventArguments);
                         };
                         axis.setAxisTranslation = function () {
-                            Axis.prototype.setAxisTranslation.call(this);
+                            axis.constructor.prototype.setAxisTranslation.call(this);
                             brokenAxis.unitLength = void 0;
                             if (brokenAxis.hasBreaks) {
                                 var breaks_2 = axis.options.breaks || [], 
@@ -1053,11 +1072,15 @@
                         var tickmarkOffset = axis.tickmarkOffset,
                             lastTick = axis.tickPositions[axis.tickPositions.length - 1],
                             firstTick = axis.tickPositions[0];
+                        var label = void 0;
+                        while ((label = axis.hiddenLabels.pop()) && label.element) {
+                            label.show(); // #15453
+                        }
                         // Hide/show firts tick label.
-                        var label = axis.ticks[firstTick].label;
+                        label = axis.ticks[firstTick].label;
                         if (label) {
                             if (min - firstTick > tickmarkOffset) {
-                                label.hide();
+                                axis.hiddenLabels.push(label.hide());
                             }
                             else {
                                 label.show();
@@ -1067,7 +1090,7 @@
                         label = axis.ticks[lastTick].label;
                         if (label) {
                             if (lastTick - max > tickmarkOffset) {
-                                label.hide();
+                                axis.hiddenLabels.push(label.hide());
                             }
                             else {
                                 label.show();
@@ -1367,6 +1390,7 @@
                 if (!axis.grid) {
                     axis.grid = new Additions(axis);
                 }
+                axis.hiddenLabels = [];
             }
             /**
              * Center tick labels in cells.
@@ -2302,9 +2326,9 @@
                     childrenTotal += child.val;
                 }
             });
-            tree.visible = childrenTotal > 0 || tree.visible;
             // Set the values
             value = pick(optionsPoint.value, childrenTotal);
+            tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
             tree.children = children;
             tree.childrenTotal = childrenTotal;
             tree.isLeaf = tree.visible && !childrenTotal;

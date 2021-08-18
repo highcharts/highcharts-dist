@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.1.2 (2021-06-16)
+ * @license Highcharts Gantt JS v9.2.0 (2021-08-18)
  *
  * GridAxis
  *
@@ -432,11 +432,15 @@
                         var tickmarkOffset = axis.tickmarkOffset,
                             lastTick = axis.tickPositions[axis.tickPositions.length - 1],
                             firstTick = axis.tickPositions[0];
+                        var label = void 0;
+                        while ((label = axis.hiddenLabels.pop()) && label.element) {
+                            label.show(); // #15453
+                        }
                         // Hide/show firts tick label.
-                        var label = axis.ticks[firstTick].label;
+                        label = axis.ticks[firstTick].label;
                         if (label) {
                             if (min - firstTick > tickmarkOffset) {
-                                label.hide();
+                                axis.hiddenLabels.push(label.hide());
                             }
                             else {
                                 label.show();
@@ -446,7 +450,7 @@
                         label = axis.ticks[lastTick].label;
                         if (label) {
                             if (lastTick - max > tickmarkOffset) {
-                                label.hide();
+                                axis.hiddenLabels.push(label.hide());
                             }
                             else {
                                 label.show();
@@ -746,6 +750,7 @@
                 if (!axis.grid) {
                     axis.grid = new Additions(axis);
                 }
+                axis.hiddenLabels = [];
             }
             /**
              * Center tick labels in cells.

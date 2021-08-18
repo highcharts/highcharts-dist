@@ -28,7 +28,7 @@ import U from '../../Utilities.js';
 var css = U.css, defined = U.defined, extend = U.extend, pick = U.pick, pInt = U.pInt;
 /* *
  *
- *  Composition
+ *  Class
  *
  * */
 /* eslint-disable valid-jsdoc */
@@ -47,12 +47,16 @@ var HTMLElement = /** @class */ (function (_super) {
      * @private
      */
     HTMLElement.compose = function (SVGElementClass) {
-        var svgElementProto = SVGElementClass.prototype, htmlElementProto = HTMLElement.prototype;
-        svgElementProto.getSpanCorrection = htmlElementProto.getSpanCorrection;
-        svgElementProto.htmlCss = htmlElementProto.htmlCss;
-        svgElementProto.htmlGetBBox = htmlElementProto.htmlGetBBox;
-        svgElementProto.htmlUpdateTransform = htmlElementProto.htmlUpdateTransform;
-        svgElementProto.setSpanRotation = htmlElementProto.setSpanRotation;
+        if (HTMLElement.composedClasses.indexOf(SVGElementClass) === -1) {
+            HTMLElement.composedClasses.push(SVGElementClass);
+            var htmlElementProto = HTMLElement.prototype, svgElementProto = SVGElementClass.prototype;
+            svgElementProto.getSpanCorrection = htmlElementProto.getSpanCorrection;
+            svgElementProto.htmlCss = htmlElementProto.htmlCss;
+            svgElementProto.htmlGetBBox = htmlElementProto.htmlGetBBox;
+            svgElementProto.htmlUpdateTransform = htmlElementProto.htmlUpdateTransform;
+            svgElementProto.setSpanRotation = htmlElementProto.setSpanRotation;
+        }
+        return SVGElementClass;
     };
     /* *
      *
@@ -234,6 +238,12 @@ var HTMLElement = /** @class */ (function (_super) {
             css(this.element, rotationStyle);
         }
     };
+    /* *
+     *
+     *  Static Properties
+     *
+     * */
+    HTMLElement.composedClasses = [];
     return HTMLElement;
 }(SVGElement));
 /* *

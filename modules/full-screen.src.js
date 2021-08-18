@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.1.2 (2021-06-16)
+ * @license Highstock JS v9.2.0 (2021-08-18)
  *
  * Advanced Highcharts Stock tools
  *
@@ -229,11 +229,13 @@
                     lang.exitFullscreen &&
                     lang.viewFullscreen &&
                     menuItems &&
-                    exportDivElements &&
-                    exportDivElements.length) {
-                    AST.setElementHTML(exportDivElements[menuItems.indexOf('viewFullscreen')], !this.isOpen ?
-                        (exportingOptions.menuItemDefinitions.viewFullscreen.text ||
-                            lang.viewFullscreen) : lang.exitFullscreen);
+                    exportDivElements) {
+                    var exportDivElement = exportDivElements[menuItems.indexOf('viewFullscreen')];
+                    if (exportDivElement) {
+                        AST.setElementHTML(exportDivElement, !this.isOpen ?
+                            (exportingOptions.menuItemDefinitions.viewFullscreen.text ||
+                                lang.viewFullscreen) : lang.exitFullscreen);
+                    }
                 }
             };
             /**

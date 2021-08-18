@@ -333,7 +333,6 @@ var Pane = /** @class */ (function () {
      */
     Pane.prototype.update = function (options, redraw) {
         merge(true, this.options, options);
-        merge(true, this.chart.options.pane, options); // #9917
         this.setOptions(this.options);
         this.render();
         this.chart.axes.forEach(function (axis) {

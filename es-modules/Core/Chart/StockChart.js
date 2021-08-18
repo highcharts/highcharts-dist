@@ -701,6 +701,18 @@ Series.prototype.initCompare = function (compare) {
     }
 };
 /**
+ * Based on the data grouping options decides whether
+ * the data should be cropped while processing.
+ *
+ * @ignore
+ * @function Highcharts.Series#forceCropping
+ */
+Series.prototype.forceCropping = function () {
+    var chart = this.chart, options = this.options, dataGroupingOptions = options.dataGrouping, groupingEnabled = this.allowDG !== false && dataGroupingOptions &&
+        pick(dataGroupingOptions.enabled, chart.options.isStock);
+    return groupingEnabled;
+};
+/**
  * Extend series.processData by finding the first y value in the plot area,
  * used for comparing the following values
  *

@@ -23,6 +23,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+import VBPPoint from './VBPPoint.js';
 import A from '../../../Core/Animation/AnimationUtilities.js';
 var animObject = A.animObject;
 import H from '../../../Core/Globals.js';
@@ -30,6 +31,7 @@ var noop = H.noop;
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
+import StockChart from '../../../Core/Chart/StockChart.js';
 var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
 /* eslint-disable require-jsdoc */
 // Utils
@@ -79,10 +81,20 @@ var VBPIndicator = /** @class */ (function (_super) {
     VBPIndicator.prototype.init = function (chart) {
         var indicator = this, params, baseSeries, volumeSeries;
         H.seriesTypes.sma.prototype.init.apply(indicator, arguments);
-        params = indicator.options.params;
-        baseSeries = indicator.linkedParent;
-        volumeSeries = chart.get(params.volumeSeriesID);
-        indicator.addCustomEvents(baseSeries, volumeSeries);
+        // Only after series are linked add some additional logic/properties.
+        var unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
+            // Protection for a case where the indicator is being updated,
+            // for a brief moment the indicator is deleted.
+            if (indicator.options) {
+                params = indicator.options.params;
+                baseSeries = indicator.linkedParent;
+                volumeSeries = chart.get(params.volumeSeriesID);
+                indicator.addCustomEvents(baseSeries, volumeSeries);
+            }
+            unbinder();
+        }, {
+            order: 1
+        });
         return indicator;
     };
     // Adds events related with removing series
@@ -500,6 +512,7 @@ extend(VBPIndicator.prototype, {
         eventName: 'afterSetExtremes'
     },
     calculateOn: 'render',
+    pointClass: VBPPoint,
     markerAttribs: noop,
     drawGraph: noop,
     getColumnMetrics: columnPrototype.getColumnMetrics,

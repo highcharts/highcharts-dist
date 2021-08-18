@@ -521,7 +521,7 @@ Chart.prototype.addSingleSeriesAsDrilldown = function (point, ddOptions) {
         // no graphic in line series with markers disabled
         bBox: point.graphic ? point.graphic.getBBox() : {},
         color: point.isNull ?
-            new Color(colorProp.color).setOpacity(0).get() :
+            Color.parse(colorProp.color).setOpacity(0).get() :
             colorProp.color,
         lowerSeriesOptions: ddOptions,
         pointOptions: oldSeries.options.data[pointIndex],
@@ -586,7 +586,7 @@ Chart.prototype.getDrilldownBackText = function () {
     if (drilldownLevels && drilldownLevels.length > 0) { // #3352, async loading
         lastLevel = drilldownLevels[drilldownLevels.length - 1];
         lastLevel.series = lastLevel.seriesOptions;
-        return format(this.options.lang.drillUpText, lastLevel);
+        return format(this.options.lang.drillUpText || '', lastLevel);
     }
 };
 Chart.prototype.showDrillUpButton = function () {

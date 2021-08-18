@@ -42,7 +42,6 @@ var colorPointMixin = {
  */
 var colorSeriesMixin = {
     optionalAxis: 'colorAxis',
-    colorAxis: 0,
     /* eslint-disable valid-jsdoc */
     /**
      * In choropleth maps, the color is a result of the value, so this needs

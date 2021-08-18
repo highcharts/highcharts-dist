@@ -704,7 +704,8 @@ addEvent(Chart, 'getAxes', function () {
     if (!this.pane) {
         this.pane = [];
     }
-    splat(this.options.pane).forEach(function (paneOptions) {
+    this.options.pane = splat(this.options.pane);
+    this.options.pane.forEach(function (paneOptions) {
         new Pane(// eslint-disable-line no-new
         paneOptions, this);
     }, this);

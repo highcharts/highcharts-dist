@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -536,9 +536,9 @@
                     childrenTotal += child.val;
                 }
             });
-            tree.visible = childrenTotal > 0 || tree.visible;
             // Set the values
             value = pick(optionsPoint.value, childrenTotal);
+            tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
             tree.children = children;
             tree.childrenTotal = childrenTotal;
             tree.isLeaf = tree.visible && !childrenTotal;
@@ -761,7 +761,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Mixins/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, H, LegendSymbolMixin, palette, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TreeSeriesMixin, U) {
+    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, H, LegendSymbol, palette, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TreeSeriesMixin, U) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -2266,7 +2266,7 @@
             buildKDTree: noop,
             colorKey: 'colorValue',
             directTouch: true,
-            drawLegendSymbol: LegendSymbolMixin.drawRectangle,
+            drawLegendSymbol: LegendSymbol.drawRectangle,
             getExtremesFromAll: true,
             getSymbol: noop,
             optionalAxis: 'colorAxis',
@@ -2333,7 +2333,7 @@
          *
          * @type      {Array<number|null|*>}
          * @extends   series.heatmap.data
-         * @excluding x, y
+         * @excluding x, y, pointPadding
          * @product   highcharts
          * @apioption series.treemap.data
          */
@@ -3467,18 +3467,6 @@
                  * @apioption plotOptions.sunburst.levels.levelSize
                  */
                 /**
-                 * Can set a `rotation` on all points which lies on the same level.
-                 *
-                 * @type      {number}
-                 * @apioption plotOptions.sunburst.levels.rotation
-                 */
-                /**
-                 * Can set a `rotationMode` on all points which lies on the same level.
-                 *
-                 * @type      {string}
-                 * @apioption plotOptions.sunburst.levels.rotationMode
-                 */
-                /**
                  * When enabled the user can click on a point which is a parent and
                  * zoom in on its children. Deprecated and replaced by
                  * [allowTraversingTree](#plotOptions.sunburst.allowTraversingTree).
@@ -3534,8 +3522,7 @@
                      * resulting in a better layout, however multiple lines and
                      * `textOutline` are not supported.
                      *
-                     * The `series.rotation` option takes precedence over
-                     * `rotationMode`.
+                     * The `rotation` option takes precedence over `rotationMode`.
                      *
                      * @type       {string}
                      * @sample {highcharts} highcharts/plotoptions/sunburst-datalabels-rotationmode-circular/

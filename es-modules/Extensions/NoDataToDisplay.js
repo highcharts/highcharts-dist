@@ -131,7 +131,7 @@ defaultOptions.noData = {
  * @requires modules/no-data-to-display
  */
 chartPrototype.showNoData = function (str) {
-    var chart = this, options = chart.options, text = str || (options && options.lang.noData), noDataOptions = options && (options.noData || {});
+    var chart = this, options = chart.options, text = str || (options && options.lang.noData) || '', noDataOptions = options && (options.noData || {});
     if (chart.renderer) { // Meaning chart is not destroyed
         if (!chart.noDataLabel) {
             chart.noDataLabel = chart.renderer

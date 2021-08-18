@@ -14,11 +14,11 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
-import GeometryCirclesModule from '../../Mixins/GeometryCircles.js';
-var getAreaOfCircle = GeometryCirclesModule.getAreaOfCircle, getCircleCircleIntersection = GeometryCirclesModule.getCircleCircleIntersection, getOverlapBetweenCirclesByDistance = GeometryCirclesModule.getOverlapBetweenCircles, isPointInsideAllCircles = GeometryCirclesModule.isPointInsideAllCircles, isPointInsideCircle = GeometryCirclesModule.isPointInsideCircle, isPointOutsideAllCircles = GeometryCirclesModule.isPointOutsideAllCircles;
-import GeometryMixin from '../../Mixins/Geometry.js';
+import CU from '../../Core/Geometry/CircleUtilities.js';
+var getAreaOfCircle = CU.getAreaOfCircle, getCircleCircleIntersection = CU.getCircleCircleIntersection, getOverlapBetweenCirclesByDistance = CU.getOverlapBetweenCircles, isPointInsideAllCircles = CU.isPointInsideAllCircles, isPointInsideCircle = CU.isPointInsideCircle, isPointOutsideAllCircles = CU.isPointOutsideAllCircles;
+import GU from '../../Core/Geometry/GeometryUtilities.js';
+var getDistanceBetweenPoints = GU.getDistanceBetweenPoints;
 import NelderMeadMixin from '../../Mixins/NelderMead.js';
-var getDistanceBetweenPoints = GeometryMixin.getDistanceBetweenPoints;
 import U from '../../Core/Utilities.js';
 var extend = U.extend, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString;
 /* *
@@ -33,8 +33,8 @@ var VennUtils;
      *  Properties
      *
      * */
-    VennUtils.geometry = GeometryMixin;
-    VennUtils.geometryCircles = GeometryCirclesModule;
+    VennUtils.geometry = GU;
+    VennUtils.geometryCircles = CU;
     VennUtils.nelderMead = NelderMeadMixin;
     /* *
      *
@@ -58,13 +58,10 @@ var VennUtils;
         // Calculate the amount of overlap per set.
         var mapOfIdToProps = relations
             // Filter out relations consisting of 2 sets.
-            .filter(function (relation) {
-            return relation.sets.length === 2;
-        })
+            .filter(function (relation) { return (relation.sets.length === 2); })
             // Sum up the amount of overlap for each set.
             .reduce(function (map, relation) {
-            var sets = relation.sets;
-            sets.forEach(function (set, i, arr) {
+            relation.sets.forEach(function (set, i, arr) {
                 if (!isObject(map[set])) {
                     map[set] = {
                         overlapping: {},
@@ -192,9 +189,7 @@ var VennUtils;
      * Returns available width for the label.
      */
     function getLabelWidth(pos, internal, external) {
-        var radius = internal.reduce(function (min, circle) {
-            return Math.min(circle.r, min);
-        }, Infinity), 
+        var radius = internal.reduce(function (min, circle) { return Math.min(circle.r, min); }, Infinity), 
         // Filter out external circles that are completely overlapping.
         filteredExternals = external.filter(function (circle) {
             return !isPointInsideCircle(pos, circle);
@@ -340,8 +335,7 @@ var VennUtils;
         // Iterate and position the remaining sets.
         sortedByOverlap.forEach(function (set) {
             var circle = set.circle, radius = circle.r, overlapping = set.overlapping;
-            var bestPosition = positionedSets
-                .reduce(function (best, positionedSet, i) {
+            var bestPosition = positionedSets.reduce(function (best, positionedSet, i) {
                 var positionedCircle = positionedSet.circle, overlap = overlapping[positionedSet.sets[0]];
                 // Calculate the distance between the sets to get the
                 // correct overlap

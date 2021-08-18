@@ -45,11 +45,9 @@ var TextBuilder = /** @class */ (function () {
      * @return {void}.
      */
     TextBuilder.prototype.buildSVG = function () {
-        var wrapper = this.svgElement;
-        var textNode = wrapper.element, renderer = wrapper.renderer, textStr = pick(wrapper.textStr, '').toString(), hasMarkup = textStr.indexOf('<') !== -1, childNodes = textNode.childNodes, textCache, i = childNodes.length, tempParent = this.width && !wrapper.added && renderer.box;
-        var regexMatchBreaks = /<br.*?>/g;
-        // The buildText code is quite heavy, so if we're not changing something
-        // that affects the text, skip it (#6113).
+        var wrapper = this.svgElement, textNode = wrapper.element, renderer = wrapper.renderer, textStr = pick(wrapper.textStr, '').toString(), hasMarkup = textStr.indexOf('<') !== -1, childNodes = textNode.childNodes, tempParent = this.width && !wrapper.added && renderer.box, regexMatchBreaks = /<br.*?>/g, 
+        // The buildText code is quite heavy, so if we're not changing
+        // something that affects the text, skip it (#6113).
         textCache = [
             textStr,
             this.ellipsis,
@@ -65,7 +63,7 @@ var TextBuilder = /** @class */ (function () {
         wrapper.textCache = textCache;
         delete wrapper.actualWidth;
         // Remove old text
-        while (i--) {
+        for (var i = childNodes.length; i--;) {
             textNode.removeChild(childNodes[i]);
         }
         // Simple strings, add text directly and return

@@ -1084,7 +1084,7 @@ var RangeSelector = /** @class */ (function () {
             }
         }
         // Create the text label
-        var text = lang[isMin ? 'rangeSelectorFrom' : 'rangeSelectorTo'];
+        var text = lang[isMin ? 'rangeSelectorFrom' : 'rangeSelectorTo'] || '';
         var label = renderer
             .label(text, 0)
             .addClass('highcharts-range-label')

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -42,6 +42,7 @@
         var seriesTypes = SeriesRegistry.seriesTypes;
         var addEvent = U.addEvent,
             clamp = U.clamp,
+            isNumber = U.isNumber,
             merge = U.merge,
             objectEach = U.objectEach,
             pick = U.pick;
@@ -1738,11 +1739,19 @@
             // Find bounding box of all points
             points.forEach(function (point) {
                 var bBox = point.graphic && point.graphic.getBBox() || point.shapeArgs;
-                if (bBox && (bBox.width || bBox.height || bBox.x || bBox.y)) {
+                if (bBox) {
+                    var plotX2 = void 0;
+                    var x2 = point.x2;
+                    if (isNumber(x2)) {
+                        plotX2 = point.series.xAxis.translate(x2, false, false, false, true);
+                    }
+                    // Avoid a 0 min when some of the points being dragged are
+                    // completely outside the plot
+                    var skipBBox = !(bBox.width || bBox.height || bBox.x || bBox.y);
                     changed = true;
-                    minX = Math.min(point.plotX || 0, bBox.x || 0, minX);
-                    maxX = Math.max((bBox.x || 0) + (bBox.width || 0), maxX);
-                    minY = Math.min(point.plotY || 0, bBox.y || 0, minY);
+                    minX = Math.min(point.plotX || 0, plotX2 || 0, skipBBox ? Infinity : bBox.x || 0, minX);
+                    maxX = Math.max(point.plotX || 0, plotX2 || 0, (bBox.x || 0) + (bBox.width || 0), maxX);
+                    minY = Math.min(point.plotY || 0, skipBBox ? Infinity : bBox.y || 0, minY);
                     maxY = Math.max((bBox.y || 0) + (bBox.height || 0), maxY);
                 }
             });

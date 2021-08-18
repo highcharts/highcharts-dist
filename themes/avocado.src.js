@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * (c) 2009-2021 Highsoft AS
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Themes/Avocado.js', [_modules['Core/Globals.js'], _modules['Core/DefaultOptions.js']], function (H, D) {
+    _registerModule(_modules, 'Extensions/Themes/Avocado.js', [_modules['Core/DefaultOptions.js']], function (D) {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -42,31 +42,62 @@
          *
          * */
         var setOptions = D.setOptions;
-        H.theme = {
-            colors: ['#F3E796', '#95C471', '#35729E', '#251735'],
-            colorAxis: {
-                maxColor: '#05426E',
-                minColor: '#F3E796'
-            },
-            plotOptions: {
-                map: {
-                    nullColor: '#FCFEFE'
+        /* *
+         *
+         *  Theme
+         *
+         * */
+        var AvocadoTheme;
+        (function (AvocadoTheme) {
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            AvocadoTheme.options = {
+                colors: ['#F3E796', '#95C471', '#35729E', '#251735'],
+                colorAxis: {
+                    maxColor: '#05426E',
+                    minColor: '#F3E796'
+                },
+                plotOptions: {
+                    map: {
+                        nullColor: '#FCFEFE'
+                    }
+                },
+                navigator: {
+                    maskFill: 'rgba(170, 205, 170, 0.5)',
+                    series: {
+                        color: '#95C471',
+                        lineColor: '#35729E'
+                    }
                 }
-            },
-            navigator: {
-                maskFill: 'rgba(170, 205, 170, 0.5)',
-                series: {
-                    color: '#95C471',
-                    lineColor: '#35729E'
-                }
+            };
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * Apply the theme.
+             */
+            function apply() {
+                setOptions(AvocadoTheme.options);
             }
-        };
-        // Apply the theme
-        setOptions(H.theme);
+            AvocadoTheme.apply = apply;
+        })(AvocadoTheme || (AvocadoTheme = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
+        return AvocadoTheme;
     });
-    _registerModule(_modules, 'masters/themes/avocado.src.js', [], function () {
+    _registerModule(_modules, 'masters/themes/avocado.src.js', [_modules['Core/Globals.js'], _modules['Extensions/Themes/Avocado.js']], function (H, AvocadoTheme) {
 
+        H.theme = AvocadoTheme.options;
+        AvocadoTheme.apply();
 
     });
 }));

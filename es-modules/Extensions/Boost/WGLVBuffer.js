@@ -114,6 +114,9 @@ function GLVertexBuffer(gl, shader, dataComponents
         if (!to || to > length) {
             to = length;
         }
+        if (from >= to) {
+            return false;
+        }
         drawMode = drawMode || 'points';
         gl.drawArrays(gl[drawMode.toUpperCase()], from / components, (to - from) / components);
         return true;

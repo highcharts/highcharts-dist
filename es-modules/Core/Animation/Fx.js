@@ -15,6 +15,11 @@ var win = H.win;
 import U from '../Utilities.js';
 var isNumber = U.isNumber, objectEach = U.objectEach;
 /* eslint-disable no-invalid-this, valid-jsdoc */
+/* *
+ *
+ *  Class
+ *
+ * */
 /**
  * An animator object used internally. One instance applies to one property
  * (attribute or style prop) on one element. Animation is always initiated
@@ -27,6 +32,15 @@ var isNumber = U.isNumber, objectEach = U.objectEach;
  * @private
  * @class
  * @name Highcharts.Fx
+ *
+ * @param {Highcharts.HTMLDOMElement|Highcharts.SVGElement} elem
+ * The element to animate.
+ *
+ * @param {Partial<Highcharts.AnimationOptionsObject>} options
+ * Animation options.
+ *
+ * @param {string} prop
+ * The single attribute or CSS property to animate.
  */
 var Fx = /** @class */ (function () {
     /* *
@@ -34,17 +48,6 @@ var Fx = /** @class */ (function () {
      *  Constructors
      *
      * */
-    /**
-     *
-     * @param {Highcharts.HTMLDOMElement|Highcharts.SVGElement} elem
-     *        The element to animate.
-     *
-     * @param {Partial<Highcharts.AnimationOptionsObject>} options
-     *        Animation options.
-     *
-     * @param {string} prop
-     *        The single attribute or CSS property to animate.
-     */
     function Fx(elem, options, prop) {
         this.pos = NaN;
         this.options = options;
@@ -379,7 +382,7 @@ var Fx = /** @class */ (function () {
     };
     /* *
      *
-     * Static properties
+     *  Static Properties
      *
      * */
     Fx.timers = [];

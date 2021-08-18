@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.1.2 (2021-06-16)
+ * @license Highstock JS v9.2.0 (2021-08-18)
  *
  * Advanced Highcharts Stock tools
  *
@@ -150,11 +150,20 @@
                     prevChartY = e.chartY;
                 }, H.isTouchDevice ? { passive: false } : void 0);
                 emitter.removeMouseUp = addEvent(H.doc, H.isTouchDevice ? 'touchend' : 'mouseup', function (e) {
+                    // Sometimes the target is the annotation and sometimes its the
+                    // controllable
+                    var annotation = pick(emitter.target && emitter.target.annotation,
+                        emitter.target);
+                    if (annotation) {
+                        // Keep annotation selected after dragging control point
+                        annotation.cancelClick = emitter.hasDragged;
+                    }
                     emitter.cancelClick = emitter.hasDragged;
                     emitter.hasDragged = false;
                     emitter.chart.hasDraggedAnnotation = false;
                     // ControlPoints vs Annotation:
-                    fireEvent(pick(emitter.target, emitter), 'afterUpdate');
+                    fireEvent(pick(annotation, // #15952
+                    emitter), 'afterUpdate');
                     emitter.onMouseUp(e);
                 }, H.isTouchDevice ? { passive: false } : void 0);
             },
@@ -2610,9 +2619,14 @@
                 var mergedOptions = {};
                 ['labels', 'shapes'].forEach(function (name) {
                     if (baseOptions[name]) {
-                        mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
-                            return merge(baseOptions[name][i], basicOptions);
-                        });
+                        if (newOptions[name]) {
+                            mergedOptions[name] = splat(newOptions[name]).map(function (basicOptions, i) {
+                                return merge(baseOptions[name][i], basicOptions);
+                            });
+                        }
+                        else {
+                            mergedOptions[name] = baseOptions[name];
+                        }
                     }
                 });
                 return mergedOptions;
@@ -2644,14 +2658,13 @@
                         .concat(this.options.shapes || [])
                         .reduce(function (axes,
                     labelOrShape) {
-                        return [
-                            xAxes[labelOrShape &&
-                                labelOrShape.point &&
-                                labelOrShape.point.xAxis] || axes[0],
-                            yAxes[labelOrShape &&
-                                labelOrShape.point &&
-                                labelOrShape.point.yAxis] || axes[1]
-                        ];
+                        var point = labelOrShape &&
+                            (labelOrShape.point ||
+                                (labelOrShape.points && labelOrShape.points[0]));
+                    return [
+                        xAxes[point && point.xAxis] || axes[0],
+                        yAxes[point && point.yAxis] || axes[1]
+                    ];
                 }, []);
                 this.clipXAxis = linkedAxes[0];
                 this.clipYAxis = linkedAxes[1];
@@ -2765,10 +2778,16 @@
              */
             Annotation.prototype.setVisibility = function (visible) {
                 var options = this.options,
+                    navigation = this.chart.navigationBindings,
                     visibility = pick(visible, !options.visible);
                 this.graphic.attr('visibility', visibility ? 'visible' : 'hidden');
                 if (!visibility) {
                     this.setControlPointsVisibility(false);
+                    if (navigation.activeAnnotation === this &&
+                        navigation.popup &&
+                        navigation.popup.formType === 'annotation-toolbar') {
+                        fireEvent(navigation, 'closePopup');
+                    }
                 }
                 options.visible = visibility;
             };
@@ -3294,45 +3313,17 @@
                  *
                  * @sample highcharts/annotations/mock-point/
                  *         Attach annotation to a mock point
+                 * @sample highcharts/annotations/mock-points/
+                 *         Attach annotation to a mock point with different ways
                  *
                  * @declare   Highcharts.AnnotationMockPointOptionsObject
-                 * @type      {string|*}
+                 * @type      {
+                 *               string|
+                 *               Highcharts.AnnotationMockPointOptionsObject|
+                 *               Highcharts.AnnotationMockPointFunction
+                 *            }
                  * @requires  modules/annotations
                  * @apioption annotations.labels.point
-                 */
-                /**
-                 * The x position of the point. Units can be either in axis
-                 * or chart pixel coordinates.
-                 *
-                 * @type      {number}
-                 * @apioption annotations.labels.point.x
-                 */
-                /**
-                 * The y position of the point. Units can be either in axis
-                 * or chart pixel coordinates.
-                 *
-                 * @type      {number}
-                 * @apioption annotations.labels.point.y
-                 */
-                /**
-                 * This number defines which xAxis the point is connected to.
-                 * It refers to either the axis id or the index of the axis in
-                 * the xAxis array. If the option is not configured or the axis
-                 * is not found the point's x coordinate refers to the chart
-                 * pixels.
-                 *
-                 * @type      {number|string|null}
-                 * @apioption annotations.labels.point.xAxis
-                 */
-                /**
-                 * This number defines which yAxis the point is connected to.
-                 * It refers to either the axis id or the index of the axis in
-                 * the yAxis array. If the option is not configured or the axis
-                 * is not found the point's y coordinate refers to the chart
-                 * pixels.
-                 *
-                 * @type      {number|string|null}
-                 * @apioption annotations.labels.point.yAxis
                  */
                 /**
                  * An array of shapes for the annotation. For options that apply
@@ -3349,20 +3340,30 @@
                  * series - it is referenced by the point's id - or a new point
                  * with defined x, y properties and optionally axes.
                  *
+                 * @sample highcharts/annotations/mock-points/
+                 *         Attach annotation to a mock point with different ways
+                 *
                  * @declare   Highcharts.AnnotationMockPointOptionsObject
-                 * @type      {string|Highcharts.AnnotationMockPointOptionsObject}
+                 * @type      {
+                 *               string|
+                 *               Highcharts.AnnotationMockPointOptionsObject|
+                 *               Highcharts.AnnotationMockPointFunction
+                 *            }
                  * @extends   annotations.labels.point
+                 * @requires  modules/annotations
                  * @apioption annotations.shapes.point
                  */
                 /**
-                 * An array of points for the shape. This option is available
+                 * An array of points for the shape
+                 * or a callback function that returns that shape point.
+                 *
+                 * This option is available
                  * for shapes which can use multiple points such as path. A
                  * point can be either a point object or a point's id.
                  *
                  * @see [annotations.shapes.point](annotations.shapes.point.html)
                  *
-                 * @declare   Highcharts.AnnotationMockPointOptionsObject
-                 * @type      {Array<string|*>}
+                 * @type      {Array<Highcharts.AnnotationShapePointOptions>}
                  * @extends   annotations.labels.point
                  * @apioption annotations.shapes.points
                  */
@@ -3781,6 +3782,68 @@
             }
         });
         H.Annotation = Annotation;
+        /* eslint-enable no-invalid-this, valid-jsdoc */
+        /**
+         * Object of shape point.
+         *
+         * @interface Highcharts.AnnotationMockPointOptionsObject
+         *
+         */
+        /**
+         * The x position of the point. Units can be either in axis
+         * or chart pixel coordinates.
+         *
+         * @type      {number}
+         * @name      Highcharts.AnnotationMockPointOptionsObject.x
+         */
+        /**
+         * The y position of the point. Units can be either in axis
+         * or chart pixel coordinates.
+         *
+         * @type      {number}
+         * @name      Highcharts.AnnotationMockPointOptionsObject.y
+         */
+        /**
+         * This number defines which xAxis the point is connected to.
+         * It refers to either the axis id or the index of the axis in
+         * the xAxis array. If the option is not configured or the axis
+         * is not found the point's x coordinate refers to the chart
+         * pixels.
+         *
+         * @type      {number|string|null}
+         * @name      Highcharts.AnnotationMockPointOptionsObject.xAxis
+         */
+        /**
+         * This number defines which yAxis the point is connected to.
+         * It refers to either the axis id or the index of the axis in
+         * the yAxis array. If the option is not configured or the axis
+         * is not found the point's y coordinate refers to the chart
+         * pixels.
+         *
+         * @type      {number|string|null}
+         * @name      Highcharts.AnnotationMockPointOptionsObject.yAxis
+         */
+        /**
+         * Callback function that returns the annotation shape point.
+         *
+         * @callback Highcharts.AnnotationMockPointFunction
+         *
+         * @param  {Highcharts.Annotation} annotation
+         *         An annotation instance.
+         *
+         * @return {Highcharts.AnnotationMockPointOptionsObject}
+         *         Annotations shape point.
+         */
+        /**
+         * Shape point as string, object or function.
+         *
+         * @typedef {
+         *          string|
+         *          Highcharts.AnnotationMockPointOptionsObject|
+         *          Highcharts.AnnotationMockPointFunction
+         *     }Highcharts.AnnotationShapePointOptions
+         */
+        ''; // required by JSDoc parsing
 
         return Annotation;
     });
@@ -3962,14 +4025,10 @@
             updateRectSize: function (event, annotation) {
                 var chart = annotation.chart,
                     options = annotation.options.typeOptions,
-                    coords = chart.pointer.getCoordinates(event),
-                    coordsX = chart.navigationBindings.utils.getAssignedAxis(coords.xAxis),
-                    coordsY = chart.navigationBindings.utils.getAssignedAxis(coords.yAxis),
-                    width,
-                    height;
-                if (coordsX && coordsY) {
-                    width = coordsX.value - options.point.x;
-                    height = options.point.y - coordsY.value;
+                    xAxis = isNumber(options.xAxis) && chart.xAxis[options.xAxis],
+                    yAxis = isNumber(options.yAxis) && chart.yAxis[options.yAxis];
+                if (xAxis && yAxis) {
+                    var x = xAxis.toValue(event[xAxis.horiz ? 'chartX' : 'chartY']), y = yAxis.toValue(event[yAxis.horiz ? 'chartX' : 'chartY']), width = x - options.point.x, height = options.point.y - y;
                     annotation.update({
                         typeOptions: {
                             background: {
@@ -4159,16 +4218,26 @@
             NavigationBindings.prototype.bindingsChartClick = function (chart, clickEvent) {
                 chart = this.chart;
                 var navigation = this,
+                    activeAnnotation = navigation.activeAnnotation,
                     selectedButton = navigation.selectedButton,
                     svgContainer = chart.renderer.boxWrapper;
-                // Click outside popups, should close them and deselect the annotation
-                if (navigation.activeAnnotation &&
-                    !clickEvent.activeAnnotation &&
-                    // Element could be removed in the child action, e.g. button
-                    clickEvent.target.parentNode &&
-                    // TO DO: Polyfill for IE11?
-                    !closestPolyfill(clickEvent.target, '.' + PREFIX + 'popup')) {
-                    fireEvent(navigation, 'closePopup');
+                if (activeAnnotation) {
+                    // Click outside popups, should close them and deselect the
+                    // annotation
+                    if (!activeAnnotation.cancelClick && // #15729
+                        !clickEvent.activeAnnotation &&
+                        // Element could be removed in the child action, e.g. button
+                        clickEvent.target.parentNode &&
+                        // TO DO: Polyfill for IE11?
+                        !closestPolyfill(clickEvent.target, '.' + PREFIX + 'popup')) {
+                        fireEvent(navigation, 'closePopup');
+                    }
+                    else if (activeAnnotation.cancelClick) {
+                        // Reset cancelClick after the other event handlers have run
+                        setTimeout(function () {
+                            activeAnnotation.cancelClick = false;
+                        }, 0);
+                    }
                 }
                 if (!selectedButton || !selectedButton.start) {
                     return;
@@ -4930,7 +4999,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.1.2/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.2.0/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -5016,30 +5085,27 @@
                         // className taken from StockToolsBindings.
                         var buttonNode = chart.navigationBindings.container[0].querySelectorAll('.' + key);
                         if (buttonNode) {
-                            if (value.noDataState === 'normal') {
-                                buttonNode.forEach(function (button) {
+                            for (var i = 0; i < buttonNode.length; i++) {
+                                var button = buttonNode[i];
+                                if (value.noDataState === 'normal') {
                                     // If button has noDataState: 'normal',
                                     // and has disabledClassName,
                                     // remove this className.
                                     if (button.className.indexOf(disabledClassName) !== -1) {
                                         button.classList.remove(disabledClassName);
                                     }
-                                });
-                            }
-                            else if (!buttonsEnabled_1) {
-                                buttonNode.forEach(function (button) {
+                                }
+                                else if (!buttonsEnabled_1) {
                                     if (button.className.indexOf(disabledClassName) === -1) {
                                         button.className += ' ' + disabledClassName;
                                     }
-                                });
-                            }
-                            else {
-                                buttonNode.forEach(function (button) {
+                                }
+                                else {
                                     // Enable all buttons by deleting the className.
                                     if (button.className.indexOf(disabledClassName) !== -1) {
                                         button.classList.remove(disabledClassName);
                                     }
-                                });
+                                }
                             }
                         }
                     }
@@ -5171,6 +5237,36 @@
                 });
             };
         };
+        bindingsUtils.indicatorsWithAxes = [
+            'ad',
+            'atr',
+            'cci',
+            'cmf',
+            'disparityindex',
+            'cmo',
+            'dmi',
+            'macd',
+            'mfi',
+            'roc',
+            'rsi',
+            'ao',
+            'aroon',
+            'aroonoscillator',
+            'trix',
+            'apo',
+            'dpo',
+            'ppo',
+            'natr',
+            'obv',
+            'williamsr',
+            'stochastic',
+            'slowstochastic',
+            'linearRegression',
+            'linearRegressionSlope',
+            'linearRegressionIntercept',
+            'linearRegressionAngle',
+            'klinger'
+        ];
         bindingsUtils.manageIndicators = function (data) {
             var navigation = this,
                 chart = navigation.chart,
@@ -5187,36 +5283,7 @@
                     'vbp',
                     'vwap'
                 ],
-                indicatorsWithAxes = [
-                    'ad',
-                    'atr',
-                    'cci',
-                    'cmf',
-                    'disparityindex',
-                    'cmo',
-                    'dmi',
-                    'macd',
-                    'mfi',
-                    'roc',
-                    'rsi',
-                    'ao',
-                    'aroon',
-                    'aroonoscillator',
-                    'trix',
-                    'apo',
-                    'dpo',
-                    'ppo',
-                    'natr',
-                    'obv',
-                    'williamsr',
-                    'stochastic',
-                    'slowstochastic',
-                    'linearRegression',
-                    'linearRegressionSlope',
-                    'linearRegressionIntercept',
-                    'linearRegressionAngle',
-                    'klinger'
-                ],
+                indicatorsWithAxes = bindingsUtils.indicatorsWithAxes,
                 yAxis,
                 parentSeries,
                 defaultOptions,
@@ -5313,12 +5380,13 @@
          * @return {void}
          */
         bindingsUtils.updateHeight = function (e, annotation) {
-            var coordsY = this.utils.getAssignedAxis(this.chart.pointer.getCoordinates(e).yAxis);
-            if (coordsY) {
+            var options = annotation.options.typeOptions,
+                yAxis = isNumber(options.yAxis) && this.chart.yAxis[options.yAxis];
+            if (yAxis && options.points) {
                 annotation.update({
                     typeOptions: {
-                        height: coordsY.value -
-                            annotation.options.typeOptions.points[1].y
+                        height: yAxis.toValue(e[yAxis.horiz ? 'chartX' : 'chartY']) -
+                            (options.points[1].y || 0)
                     }
                 });
             }
@@ -5414,14 +5482,13 @@
         bindingsUtils.updateNthPoint = function (startIndex) {
             return function (e, annotation) {
                 var options = annotation.options.typeOptions,
-                    coords = this.chart.pointer.getCoordinates(e),
-                    coordsX = this.utils.getAssignedAxis(coords.xAxis),
-                    coordsY = this.utils.getAssignedAxis(coords.yAxis);
-                if (coordsX && coordsY) {
+                    xAxis = isNumber(options.xAxis) && this.chart.xAxis[options.xAxis],
+                    yAxis = isNumber(options.yAxis) && this.chart.yAxis[options.yAxis];
+                if (xAxis && yAxis) {
                     options.points.forEach(function (point, index) {
                         if (index >= startIndex) {
-                            point.x = coordsX.value;
-                            point.y = coordsY.value;
+                            point.x = xAxis.toValue(e[xAxis.horiz ? 'chartX' : 'chartY']);
+                            point.y = yAxis.toValue(e[yAxis.horiz ? 'chartX' : 'chartY']);
                         }
                     });
                     annotation.update({
@@ -6922,6 +6989,44 @@
                 }
             },
             /**
+             * Changes main series to `'heikinashi'` type.
+             *
+             * @type    {Highcharts.NavigationBindingsOptionsObject}
+             * @product highstock
+             * @default {"className": "highcharts-series-type-heikinashi", "init": function() {}}
+             */
+            seriesTypeHeikinAshi: {
+                /** @ignore-option */
+                className: 'highcharts-series-type-heikinashi',
+                // eslint-disable-next-line valid-jsdoc
+                /** @ignore-option */
+                init: function (button) {
+                    this.chart.series[0].update({
+                        type: 'heikinashi'
+                    });
+                    fireEvent(this, 'deselectButton', { button: button });
+                }
+            },
+            /**
+             * Changes main series to `'hollowcandlestick'` type.
+             *
+             * @type    {Highcharts.NavigationBindingsOptionsObject}
+             * @product highstock
+             * @default {"className": "highcharts-series-type-hollowcandlestick", "init": function() {}}
+             */
+            seriesTypeHollowCandlestick: {
+                /** @ignore-option */
+                className: 'highcharts-series-type-hollowcandlestick',
+                // eslint-disable-next-line valid-jsdoc
+                /** @ignore-option */
+                init: function (button) {
+                    this.chart.series[0].update({
+                        type: 'hollowcandlestick'
+                    });
+                    fireEvent(this, 'deselectButton', { button: button });
+                }
+            },
+            /**
              * Displays chart in fullscreen.
              *
              * **Note**: Fullscreen is not supported on iPhone due to iOS limitations.
@@ -7153,6 +7258,8 @@
                         typeOHLC: 'OHLC',
                         typeLine: 'Line',
                         typeCandlestick: 'Candlestick',
+                        typeHollowCandlestick: 'Hollow Candlestick',
+                        typeHeikinAshi: 'Heikin Ashi',
                         // Basic shapes:
                         circle: 'Circle',
                         label: 'Label',
@@ -7240,6 +7347,7 @@
                         // Indicators' params (#15170):
                         index: 'Index',
                         period: 'Period',
+                        periods: 'Periods',
                         standardDeviation: 'Standard deviation',
                         periodTenkan: 'Tenkan period',
                         periodSenkouSpanB: 'Senkou Span B period',
@@ -7818,12 +7926,15 @@
                              *   'typeOHLC',
                              *   'typeLine',
                              *   'typeCandlestick'
+                             *   'typeHollowCandlestick'
                              * ]
                              */
                             items: [
                                 'typeOHLC',
                                 'typeLine',
-                                'typeCandlestick'
+                                'typeCandlestick',
+                                'typeHollowCandlestick',
+                                'typeHeikinAshi'
                             ],
                             typeOHLC: {
                                 /**
@@ -7848,6 +7959,22 @@
                                  * @type   {string}
                                  */
                                 symbol: 'series-candlestick.svg'
+                            },
+                            typeHeikinAshi: {
+                                /**
+                                 * A predefined background symbol for the button.
+                                 *
+                                 * @type   {string}
+                                 */
+                                symbol: 'series-heikin-ashi.svg'
+                            },
+                            typeHollowCandlestick: {
+                                /**
+                                 * A predefined background symbol for the button.
+                                 *
+                                 * @type   {string}
+                                 */
+                                symbol: 'series-hollow-candlestick.svg'
                             }
                         },
                         fullScreen: {
@@ -8234,6 +8361,7 @@
                 container.appendChild(wrapper);
                 // Mimic event behaviour of being outside chart.container
                 [
+                    'mousedown',
                     'mousemove',
                     'click',
                     'touchstart'
@@ -8335,7 +8463,7 @@
              */
             Toolbar.prototype.switchSymbol = function (button, redraw) {
                 var buttonWrapper = button.parentNode,
-                    buttonWrapperClass = buttonWrapper.classList.value, 
+                    buttonWrapperClass = buttonWrapper.className, 
                     // main button in first level og GUI
                     mainNavButton = buttonWrapper.parentNode.parentNode;
                 // if the button is disabled, don't do anything
@@ -8429,7 +8557,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/9.1.2/gfx/stock-icons/';
+                    'https://code.highcharts.com/9.2.0/gfx/stock-icons/';
             };
             return Toolbar;
         }());
@@ -8474,6 +8602,8 @@
             typeLine: PREFIX + 'series-type-line',
             typeOHLC: PREFIX + 'series-type-ohlc',
             typeCandlestick: PREFIX + 'series-type-candlestick',
+            typeHollowCandlestick: PREFIX + 'series-type-hollowcandlestick',
+            typeHeikinAshi: PREFIX + 'series-type-heikinashi',
             fullScreen: PREFIX + 'full-screen',
             toggleAnnotations: PREFIX + 'toggle-annotations',
             saveChart: PREFIX + 'save-chart',

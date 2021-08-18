@@ -15,6 +15,11 @@ export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts" {
     interface Axis {
         /**
+         * (Highstock) Check the groupPixelWidth and apply the grouping if
+         * needed. Fired only after processing the data.
+         */
+        applyGrouping(): void;
+        /**
          * Highcharts Stock only. Set the compare mode on all series belonging
          * to an Y axis after render time.
          *

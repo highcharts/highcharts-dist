@@ -835,7 +835,7 @@ function getBlobFromContent(content, type) {
         nav.userAgent.indexOf('Chrome') < 0), domurl = win.URL || win.webkitURL || win;
     try {
         // MS specific
-        if (nav.msSaveOrOpenBlob && win.MSBlobBuilder) {
+        if ((nav.msSaveOrOpenBlob) && win.MSBlobBuilder) {
             var blob = new win.MSBlobBuilder();
             blob.append(content);
             return blob.getBlob('image/svg+xml');
@@ -851,6 +851,7 @@ function getBlobFromContent(content, type) {
         // Ignore
     }
 }
+/* eslint-disable valid-jsdoc */
 /**
  * Generates a data URL of CSV for local download in the browser. This is the
  * default action for a click on the 'Download CSV' button.
@@ -949,9 +950,11 @@ Chart.prototype.toggleDataTable = function (show) {
         lang.viewData &&
         lang.hideData &&
         menuItems &&
-        exportDivElements &&
-        exportDivElements.length) {
-        AST.setElementHTML(exportDivElements[menuItems.indexOf('viewData')], this.isDataTableVisible ? lang.hideData : lang.viewData);
+        exportDivElements) {
+        var exportDivElement = exportDivElements[menuItems.indexOf('viewData')];
+        if (exportDivElement) {
+            AST.setElementHTML(exportDivElement, this.isDataTableVisible ? lang.hideData : lang.viewData);
+        }
     }
 };
 // Add "Download CSV" to the exporting menu.

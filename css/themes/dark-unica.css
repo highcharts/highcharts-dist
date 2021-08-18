@@ -838,6 +838,21 @@ input.highcharts-range-selector {
   fill: #2a2a2b;
 }
 
+.highcharts-hollowcandlestick-series .highcharts-point-down {
+  fill: #f21313;
+  stroke: #f21313;
+}
+
+.highcharts-hollowcandlestick-series .highcharts-point-down-bearish-up {
+  fill: #06b535;
+  stroke: #06b535;
+}
+
+.highcharts-hollowcandlestick-series .highcharts-point-up {
+  fill: transparent;
+  stroke: #06b535;
+}
+
 .highcharts-ohlc-series .highcharts-point-hover {
   stroke-width: 3px;
 }

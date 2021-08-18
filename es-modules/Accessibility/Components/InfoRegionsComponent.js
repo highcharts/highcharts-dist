@@ -25,7 +25,7 @@ var getAnnotationsInfoHTML = AnnotationsA11y.getAnnotationsInfoHTML;
 import ChartUtilities from '../Utils/ChartUtilities.js';
 var getAxisDescription = ChartUtilities.getAxisDescription, getAxisRangeDescription = ChartUtilities.getAxisRangeDescription, getChartTitle = ChartUtilities.getChartTitle, unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
 import HTMLUtilities from '../Utils/HTMLUtilities.js';
-var addClass = HTMLUtilities.addClass, escapeStringForHTML = HTMLUtilities.escapeStringForHTML, getElement = HTMLUtilities.getElement, getHeadingTagNameForElement = HTMLUtilities.getHeadingTagNameForElement, setElAttrs = HTMLUtilities.setElAttrs, stripHTMLTagsFromString = HTMLUtilities.stripHTMLTagsFromString, visuallyHideElement = HTMLUtilities.visuallyHideElement;
+var addClass = HTMLUtilities.addClass, getElement = HTMLUtilities.getElement, getHeadingTagNameForElement = HTMLUtilities.getHeadingTagNameForElement, setElAttrs = HTMLUtilities.setElAttrs, stripHTMLTagsFromString = HTMLUtilities.stripHTMLTagsFromString, visuallyHideElement = HTMLUtilities.visuallyHideElement;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * @private
@@ -160,6 +160,12 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
                 },
                 insertIntoDOM: function (el, chart) {
                     chart.renderTo.insertBefore(el, chart.container.nextSibling);
+                },
+                afterInserted: function () {
+                    if (component.chart.accessibility) {
+                        component.chart.accessibility
+                            .keyboardNavigation.updateExitAnchor(); // #15986
+                    }
                 }
             }
         };
@@ -224,7 +230,7 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
      * @param {string} regionKey Name/key of the region we are setting attrs for
      */
     setScreenReaderSectionAttribs: function (sectionDiv, regionKey) {
-        var labelLangKey = ('accessibility.screenReaderSection.' + regionKey + 'RegionLabel'), chart = this.chart, labelText = chart.langFormat(labelLangKey, { chart: chart }), sectionId = 'highcharts-screen-reader-region-' + regionKey + '-' +
+        var labelLangKey = ('accessibility.screenReaderSection.' + regionKey + 'RegionLabel'), chart = this.chart, labelText = chart.langFormat(labelLangKey, { chart: chart, chartTitle: getChartTitle(chart) }), sectionId = 'highcharts-screen-reader-region-' + regionKey + '-' +
             chart.index;
         setElAttrs(sectionDiv, {
             id: sectionId,

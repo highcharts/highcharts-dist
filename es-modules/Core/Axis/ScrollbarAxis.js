@@ -35,6 +35,12 @@ var ScrollbarAxis = /** @class */ (function () {
      * Scrollbar class to use.
      */
     ScrollbarAxis.compose = function (AxisClass, ScrollbarClass) {
+        if (ScrollbarAxis.composed.indexOf(AxisClass) === -1) {
+            ScrollbarAxis.composed.push(AxisClass);
+        }
+        else {
+            return AxisClass;
+        }
         var getExtremes = function (axis) {
             var axisMin = pick(axis.options && axis.options.min, axis.min);
             var axisMax = pick(axis.options && axis.options.max, axis.max);
@@ -155,6 +161,7 @@ var ScrollbarAxis = /** @class */ (function () {
         });
         return AxisClass;
     };
+    ScrollbarAxis.composed = [];
     return ScrollbarAxis;
 }());
 export default ScrollbarAxis;

@@ -160,6 +160,7 @@ var WordcloudSeries = /** @class */ (function (_super) {
             }), attr = extend(series.pointAttribs(point, (point.selected && 'select')), {
                 align: 'center',
                 'alignment-baseline': 'middle',
+                'dominant-baseline': 'middle',
                 x: placement.x,
                 y: placement.y,
                 text: point.name,

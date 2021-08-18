@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.1.2 (2021-06-16)
+ * @license Highstock JS v9.2.0 (2021-08-18)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,7 +28,60 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/VBP/VBPIndicator.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/VBP/VBPPoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js']], function (Point, SeriesRegistry) {
+        /* *
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        /* *
+         *
+         *  Imports
+         *
+         * */
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
+        var VBPPoint = /** @class */ (function (_super) {
+                __extends(VBPPoint, _super);
+            function VBPPoint() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            // Required for destroying negative part of volume
+            VBPPoint.prototype.destroy = function () {
+                // @todo: this.negativeGraphic doesn't seem to be used anywhere
+                if (this.negativeGraphic) {
+                    this.negativeGraphic = this.negativeGraphic.destroy();
+                }
+                return Point.prototype.destroy.apply(this, arguments);
+            };
+            return VBPPoint;
+        }(SMAIndicator.prototype.pointClass));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return VBPPoint;
+    });
+    _registerModule(_modules, 'Stock/Indicators/VBP/VBPIndicator.js', [_modules['Stock/Indicators/VBP/VBPPoint.js'], _modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Chart/StockChart.js']], function (VBPPoint, A, H, SeriesRegistry, U, StockChart) {
         /* *
          *
          *  (c) 2010-2021 Paweł Dalek
@@ -124,10 +177,21 @@
                     baseSeries,
                     volumeSeries;
                 H.seriesTypes.sma.prototype.init.apply(indicator, arguments);
-                params = indicator.options.params;
-                baseSeries = indicator.linkedParent;
-                volumeSeries = chart.get(params.volumeSeriesID);
-                indicator.addCustomEvents(baseSeries, volumeSeries);
+                // Only after series are linked add some additional logic/properties.
+                var unbinder = addEvent(StockChart, 'afterLinkSeries',
+                    function () {
+                        // Protection for a case where the indicator is being updated,
+                        // for a brief moment the indicator is deleted.
+                        if (indicator.options) {
+                            params = indicator.options.params;
+                        baseSeries = indicator.linkedParent;
+                        volumeSeries = chart.get(params.volumeSeriesID);
+                        indicator.addCustomEvents(baseSeries, volumeSeries);
+                    }
+                    unbinder();
+                }, {
+                    order: 1
+                });
                 return indicator;
             };
             // Adds events related with removing series
@@ -604,6 +668,7 @@
                 eventName: 'afterSetExtremes'
             },
             calculateOn: 'render',
+            pointClass: VBPPoint,
             markerAttribs: noop,
             drawGraph: noop,
             getColumnMetrics: columnPrototype.getColumnMetrics,

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  * @module highcharts/modules/color-axis
  * @requires highcharts
  *
@@ -10,4 +10,8 @@
  * License: www.highcharts.com/license
  */
 'use strict';
-import '../../Core/Axis/ColorAxis.js';
+import Highcharts from '../../Core/Globals.js';
+import ColorAxis from '../../Core/Axis/Color/ColorAxis.js';
+var G = Highcharts;
+G.ColorAxis = ColorAxis;
+ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);

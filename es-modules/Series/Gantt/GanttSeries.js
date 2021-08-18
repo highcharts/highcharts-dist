@@ -153,12 +153,12 @@ var GanttSeries = /** @class */ (function (_super) {
             headerFormat: '<span style="font-size: 10px">{series.name}</span><br/>',
             pointFormat: null,
             pointFormatter: function () {
-                var point = this, series = point.series, tooltip = series.chart.tooltip, xAxis = series.xAxis, formats = series.tooltipOptions.dateTimeLabelFormats, startOfWeek = xAxis.options.startOfWeek, ttOptions = series.tooltipOptions, format = ttOptions.xDateFormat, start, end, milestone = point.options.milestone, retVal = '<b>' + (point.name || point.yCategory) + '</b>';
+                var point = this, series = point.series, xAxis = series.xAxis, formats = series.tooltipOptions.dateTimeLabelFormats, startOfWeek = xAxis.options.startOfWeek, ttOptions = series.tooltipOptions, format = ttOptions.xDateFormat, start, end, milestone = point.options.milestone, retVal = '<b>' + (point.name || point.yCategory) + '</b>';
                 if (ttOptions.pointFormat) {
                     return point.tooltipFormatter(ttOptions.pointFormat);
                 }
-                if (!format) {
-                    format = splat(tooltip.getDateFormat(xAxis.closestPointRange, point.start, startOfWeek, formats))[0];
+                if (!format && isNumber(point.start)) {
+                    format = series.chart.time.getDateFormat(xAxis.closestPointRange, point.start, startOfWeek, formats || {});
                 }
                 start = series.chart.time.dateFormat(format, point.start);
                 end = series.chart.time.dateFormat(format, point.end);

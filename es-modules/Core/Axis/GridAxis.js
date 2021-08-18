@@ -364,11 +364,15 @@ var GridAxis;
                 (axis.scrollbar ||
                     (axis.linkedParent && axis.linkedParent.scrollbar))) {
                 var tickmarkOffset = axis.tickmarkOffset, lastTick = axis.tickPositions[axis.tickPositions.length - 1], firstTick = axis.tickPositions[0];
+                var label = void 0;
+                while ((label = axis.hiddenLabels.pop()) && label.element) {
+                    label.show(); // #15453
+                }
                 // Hide/show firts tick label.
-                var label = axis.ticks[firstTick].label;
+                label = axis.ticks[firstTick].label;
                 if (label) {
                     if (min - firstTick > tickmarkOffset) {
-                        label.hide();
+                        axis.hiddenLabels.push(label.hide());
                     }
                     else {
                         label.show();
@@ -378,7 +382,7 @@ var GridAxis;
                 label = axis.ticks[lastTick].label;
                 if (label) {
                     if (lastTick - max > tickmarkOffset) {
-                        label.hide();
+                        axis.hiddenLabels.push(label.hide());
                     }
                     else {
                         label.show();
@@ -670,6 +674,7 @@ var GridAxis;
         if (!axis.grid) {
             axis.grid = new Additions(axis);
         }
+        axis.hiddenLabels = [];
     }
     /**
      * Center tick labels in cells.

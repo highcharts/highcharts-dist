@@ -12,6 +12,8 @@
 'use strict';
 import HTMLUtilities from './HTMLUtilities.js';
 var stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
+import H from '../../Core/Globals.js';
+var doc = H.doc;
 import U from '../../Core/Utilities.js';
 var defined = U.defined, find = U.find, fireEvent = U.fireEvent;
 /* eslint-disable valid-jsdoc */
@@ -165,7 +167,10 @@ function getSeriesA11yElement(series) {
  */
 function unhideChartElementFromAT(chart, element) {
     element.setAttribute('aria-hidden', false);
-    if (element === chart.renderTo || !element.parentNode) {
+    if (element === chart.renderTo ||
+        !element.parentNode ||
+        element.parentNode === doc.body // #16126: Full screen printing
+    ) {
         return;
     }
     // Hide siblings unless their hidden state is already explicitly set

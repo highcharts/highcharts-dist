@@ -754,6 +754,10 @@ var Pointer = /** @class */ (function () {
     Pointer.prototype.onContainerMouseLeave = function (e) {
         var chart = charts[pick(Pointer.hoverChartIndex, -1)];
         var tooltip = this.chart.tooltip;
+        // #14434: tooltip.options.outside
+        if (tooltip && tooltip.shouldStickOnContact() && this.inClass(e.relatedTarget, 'highcharts-tooltip-container')) {
+            return;
+        }
         e = this.normalize(e);
         // #4886, MS Touch end fires mouseleave but with no related target
         if (chart &&
@@ -893,6 +897,11 @@ var Pointer = /** @class */ (function () {
         // (#4210).
         if (touchesLength > 1) {
             self.initiated = true;
+        }
+        else if (touchesLength === 1 && this.followTouchMove) {
+            // #16119: Prevent blocking scroll when single-finger panning is
+            // not enabled
+            self.initiated = false;
         }
         // On touch devices, only proceed to trigger click if a handler is
         // defined

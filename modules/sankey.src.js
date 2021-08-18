@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * Sankey diagram module
  *
@@ -383,9 +383,9 @@
                     childrenTotal += child.val;
                 }
             });
-            tree.visible = childrenTotal > 0 || tree.visible;
             // Set the values
             value = pick(optionsPoint.value, childrenTotal);
+            tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
             tree.children = children;
             tree.childrenTotal = childrenTotal;
             tree.isLeaf = tree.visible && !childrenTotal;
@@ -718,9 +718,7 @@
                 var columns = [];
                 this.nodes.forEach(function (node) {
                     var fromColumn = -1,
-                        fromNode,
-                        i,
-                        point;
+                        fromNode;
                     if (!defined(node.options.column)) {
                         // No links to this node, place it left
                         if (node.linksTo.length === 0) {
@@ -729,9 +727,11 @@
                             // highest order column that links to this one.
                         }
                         else {
-                            for (i = 0; i < node.linksTo.length; i++) {
-                                point = node.linksTo[0];
-                                if (point.fromNode.column > fromColumn) {
+                            for (var i = 0; i < node.linksTo.length; i++) {
+                                var point = node.linksTo[i];
+                                if (point.fromNode.column > fromColumn &&
+                                    point.fromNode !== node // #16080
+                                ) {
                                     fromNode = point.fromNode;
                                     fromColumn = fromNode.column;
                                 }
@@ -741,15 +741,15 @@
                             if (fromNode &&
                                 fromNode.options.layout === 'hanging') {
                                 node.hangsFrom = fromNode;
-                                i = -1; // Reuse existing variable i
+                                var i_1 = -1;
                                 find(fromNode.linksFrom, function (link, index) {
                                     var found = link.toNode === node;
                                     if (found) {
-                                        i = index;
+                                        i_1 = index;
                                     }
                                     return found;
                                 });
-                                node.column += i;
+                                node.column += i_1;
                             }
                         }
                     }

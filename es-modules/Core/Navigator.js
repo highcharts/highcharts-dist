@@ -1741,6 +1741,9 @@ var Navigator = /** @class */ (function () {
                 stickToMin = min <= xDataMin;
             }
         }
+        else {
+            stickToMin = false; // #15864
+        }
         return stickToMin;
     };
     /**

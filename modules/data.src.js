@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * Data module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Ajax.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Core/HttpUtilities.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (G, U) {
         /* *
          *
          *  (c) 2010-2021 Christer Vasseng, Torstein Honsi
@@ -38,40 +38,11 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var merge = U.merge,
+        var doc = G.doc;
+        var createElement = U.createElement,
+            discardElement = U.discardElement,
+            merge = U.merge,
             objectEach = U.objectEach;
-        /**
-         * @interface Highcharts.AjaxSettingsObject
-         */ /**
-        * The payload to send.
-        *
-        * @name Highcharts.AjaxSettingsObject#data
-        * @type {string|Highcharts.Dictionary<any>}
-        */ /**
-        * The data type expected.
-        * @name Highcharts.AjaxSettingsObject#dataType
-        * @type {"json"|"xml"|"text"|"octet"}
-        */ /**
-        * Function to call on error.
-        * @name Highcharts.AjaxSettingsObject#error
-        * @type {Function}
-        */ /**
-        * The headers; keyed on header name.
-        * @name Highcharts.AjaxSettingsObject#headers
-        * @type {Highcharts.Dictionary<string>}
-        */ /**
-        * Function to call on success.
-        * @name Highcharts.AjaxSettingsObject#success
-        * @type {Function}
-        */ /**
-        * The HTTP method to use. For example GET or POST.
-        * @name Highcharts.AjaxSettingsObject#type
-        * @type {string}
-        */ /**
-        * The URL to call.
-        * @name Highcharts.AjaxSettingsObject#url
-        * @type {string}
-        */
         /**
          * Perform an Ajax call.
          *
@@ -83,7 +54,7 @@
          * @return {false|undefined}
          *         Returns false, if error occured.
          */
-        H.ajax = function (attr) {
+        function ajax(attr) {
             var options = merge(true, {
                     url: false,
                     type: 'get',
@@ -151,7 +122,7 @@
                 // empty
             }
             r.send(options.data || true);
-        };
+        }
         /**
          * Get a JSON resource over XHR, also supporting CORS without preflight.
          *
@@ -161,10 +132,9 @@
          * @param {Function} success
          *        The success callback. For error handling, use the `Highcharts.ajax`
          *        function instead.
-         * @return {void}
          */
-        H.getJSON = function (url, success) {
-            H.ajax({
+        function getJSON(url, success) {
+            exports.ajax({
                 url: url,
                 success: success,
                 dataType: 'json',
@@ -174,15 +144,94 @@
                     'Content-Type': 'text/plain'
                 }
             });
-        };
+        }
+        /**
+         * The post utility
+         *
+         * @private
+         * @function Highcharts.post
+         *
+         * @param {string} url
+         * Post URL
+         *
+         * @param {object} data
+         * Post data
+         *
+         * @param {Highcharts.Dictionary<string>} [formAttributes]
+         * Additional attributes for the post request
+         */
+        function post(url, data, formAttributes) {
+            // create the form
+            var form = createElement('form',
+                merge({
+                    method: 'post',
+                    action: url,
+                    enctype: 'multipart/form-data'
+                },
+                formAttributes), {
+                    display: 'none'
+                },
+                doc.body);
+            // add the data
+            objectEach(data, function (val, name) {
+                createElement('input', {
+                    type: 'hidden',
+                    name: name,
+                    value: val
+                }, null, form);
+            });
+            // submit
+            form.submit();
+            // clean up
+            discardElement(form);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
         var exports = {
-                ajax: H.ajax,
-                getJSON: H.getJSON
+                ajax: ajax,
+                getJSON: getJSON,
+                post: post
             };
+        /**
+         * @interface Highcharts.AjaxSettingsObject
+         */ /**
+        * The payload to send.
+        *
+        * @name Highcharts.AjaxSettingsObject#data
+        * @type {string|Highcharts.Dictionary<any>}
+        */ /**
+        * The data type expected.
+        * @name Highcharts.AjaxSettingsObject#dataType
+        * @type {"json"|"xml"|"text"|"octet"}
+        */ /**
+        * Function to call on error.
+        * @name Highcharts.AjaxSettingsObject#error
+        * @type {Function}
+        */ /**
+        * The headers; keyed on header name.
+        * @name Highcharts.AjaxSettingsObject#headers
+        * @type {Highcharts.Dictionary<string>}
+        */ /**
+        * Function to call on success.
+        * @name Highcharts.AjaxSettingsObject#success
+        * @type {Function}
+        */ /**
+        * The HTTP method to use. For example GET or POST.
+        * @name Highcharts.AjaxSettingsObject#type
+        * @type {string}
+        */ /**
+        * The URL to call.
+        * @name Highcharts.AjaxSettingsObject#url
+        * @type {string}
+        */
+        (''); // keeps doclets above in JS file
 
         return exports;
     });
-    _registerModule(_modules, 'Extensions/Data.js', [_modules['Extensions/Ajax.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Ajax, Chart, H, Point, SeriesRegistry, U) {
+    _registerModule(_modules, 'Extensions/Data.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/HttpUtilities.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, G, HU, Point, SeriesRegistry, U) {
         /* *
          *
          *  Data module
@@ -194,8 +243,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var ajax = Ajax.ajax;
-        var doc = H.doc;
+        var doc = G.doc;
+        var ajax = HU.ajax;
         var seriesTypes = SeriesRegistry.seriesTypes;
         var addEvent = U.addEvent,
             defined = U.defined,
@@ -2149,8 +2198,8 @@
          *
          * @return {Highcharts.Data}
          */
-        H.data = function (dataOptions, chartOptions, chart) {
-            return new H.Data(dataOptions, chartOptions, chart);
+        G.data = function (dataOptions, chartOptions, chart) {
+            return new G.Data(dataOptions, chartOptions, chart);
         };
         // Extend Chart.init so that the Chart constructor accepts a new configuration
         // option group, data.
@@ -2166,7 +2215,7 @@
                  * @name Highcharts.Chart#data
                  * @type {Highcharts.Data|undefined}
                  */
-                chart.data = new H.Data(extend(userOptions.data, {
+                chart.data = new G.Data(extend(userOptions.data, {
                     afterComplete: function (dataOptions) {
                         var i,
                             series;
@@ -2364,12 +2413,17 @@
             };
             return SeriesBuilder;
         }());
-        H.Data = Data;
+        G.Data = Data;
 
-        return H.Data;
+        return G.Data;
     });
-    _registerModule(_modules, 'masters/modules/data.src.js', [], function () {
+    _registerModule(_modules, 'masters/modules/data.src.js', [_modules['Core/Globals.js'], _modules['Core/HttpUtilities.js']], function (Highcharts, HttpUtilities) {
 
+        var G = Highcharts;
+        G.HttpUtilities = HttpUtilities;
+        G.ajax = HttpUtilities.ajax;
+        G.getJSON = HttpUtilities.getJSON;
+        G.post = HttpUtilities.post;
 
     });
 }));

@@ -100,11 +100,17 @@ var multipleLinesMixin = {
      */
     translate: function () {
         var indicator = this, pointArrayMap = indicator.pointArrayMap, LinesNames = [], value;
+        var modfidyValue = indicator.modifyValue;
         LinesNames = indicator.getTranslatedLinesNames();
         SMA.prototype.translate.apply(indicator, arguments);
         indicator.points.forEach(function (point) {
             pointArrayMap.forEach(function (propertyName, i) {
                 value = point[propertyName];
+                // If the modifier, like for example compare exists,
+                // modified the original value by that method, #15867.
+                if (modfidyValue) {
+                    value = modfidyValue.call(indicator, value);
+                }
                 if (value !== null) {
                     point[LinesNames[i]] = indicator.yAxis.toPixels(value, true);
                 }

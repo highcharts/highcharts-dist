@@ -25,7 +25,7 @@ import ColorMapMixin from '../../Mixins/ColorMapSeries.js';
 var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
 import H from '../../Core/Globals.js';
 var noop = H.noop;
-import LegendSymbolMixin from '../../Mixins/LegendSymbol.js';
+import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import MapChart from '../../Core/Chart/MapChart.js';
 var maps = MapChart.maps, splitPath = MapChart.splitPath;
 import MapPoint from './MapPoint.js';
@@ -696,7 +696,9 @@ var MapSeries = /** @class */ (function (_super) {
         dataLabels: {
             crop: false,
             formatter: function () {
-                return this.point.value;
+                var numberFormatter = this.series.chart.numberFormatter;
+                var value = this.point.value;
+                return isNumber(value) ? numberFormatter(value, -1) : '';
             },
             inside: true,
             overflow: false,
@@ -933,7 +935,7 @@ extend(MapSeries.prototype, {
     drawDataLabels: noop,
     // No graph for the map series
     drawGraph: noop,
-    drawLegendSymbol: LegendSymbolMixin.drawRectangle,
+    drawLegendSymbol: LegendSymbol.drawRectangle,
     forceDL: true,
     getExtremesFromAll: true,
     getSymbol: colorMapSeriesMixin.getSymbol,

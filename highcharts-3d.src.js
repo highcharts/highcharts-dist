@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * 3D features for Highcharts JS
  *
@@ -4303,7 +4303,8 @@
                                     borderCrisp)) {
                             // Set args to 0 if column is outside the chart.
                             for (var key in shapeArgs_1) { // eslint-disable-line guard-for-in
-                                shapeArgs_1[key] = 0;
+                                // #13840
+                                shapeArgs_1[key] = key === 'y' ? -9999 : 0;
                             }
                             // #7103 outside3dPlot flag is set on Points which are
                             // currently outside of plot.
@@ -4384,7 +4385,9 @@
                                 point.shapeArgs.y = point.shapey; // #2968
                                 // null value do not have a graphic
                                 if (point.graphic) {
-                                    point.graphic.animate(point.shapeArgs, series_1.options.animation);
+                                    point.graphic[point.outside3dPlot ?
+                                        'attr' :
+                                        'animate'](point.shapeArgs, series_1.options.animation);
                                 }
                             }
                         });

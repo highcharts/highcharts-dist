@@ -23,7 +23,8 @@ import palette from '../../../Core/Color/Palette.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var _a = SeriesRegistry.seriesTypes, ATRIndicator = _a.atr, SMAIndicator = _a.sma;
 import U from '../../../Core/Utilities.js';
-var correctFloat = U.correctFloat, isArray = U.isArray, extend = U.extend, merge = U.merge, objectEach = U.objectEach;
+import StockChart from '../../../Core/Chart/StockChart.js';
+var addEvent = U.addEvent, correctFloat = U.correctFloat, isArray = U.isArray, extend = U.extend, merge = U.merge, objectEach = U.objectEach;
 /* eslint-disable require-jsdoc */
 // Utils:
 function createPointObj(mainSeries, index, close) {
@@ -71,13 +72,24 @@ var SupertrendIndicator = /** @class */ (function (_super) {
     SupertrendIndicator.prototype.init = function () {
         var options, parentOptions;
         SMAIndicator.prototype.init.apply(this, arguments);
-        options = this.options;
-        parentOptions = this.linkedParent.options;
-        // Indicator cropThreshold has to be equal linked series one
-        // reduced by period due to points comparison in drawGraph method
-        // (#9787)
-        options.cropThreshold = (parentOptions.cropThreshold -
-            (options.params.period - 1));
+        var indicator = this;
+        // Only after series are linked add some additional logic/properties.
+        var unbinder = addEvent(StockChart, 'afterLinkSeries', function () {
+            // Protection for a case where the indicator is being updated,
+            // for a brief moment the indicator is deleted.
+            if (indicator.options) {
+                var options_1 = indicator.options;
+                parentOptions = indicator.linkedParent.options;
+                // Indicator cropThreshold has to be equal linked series one
+                // reduced by period due to points comparison in drawGraph
+                // (#9787)
+                options_1.cropThreshold = (parentOptions.cropThreshold -
+                    (options_1.params.period - 1));
+            }
+            unbinder();
+        }, {
+            order: 1
+        });
     };
     SupertrendIndicator.prototype.drawGraph = function () {
         var indicator = this, indicOptions = indicator.options, 

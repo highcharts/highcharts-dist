@@ -16,12 +16,27 @@ var doc = H.doc;
 import DOMElementProvider from './DOMElementProvider.js';
 import HTMLUtilities from './HTMLUtilities.js';
 var setElAttrs = HTMLUtilities.setElAttrs, visuallyHideElement = HTMLUtilities.visuallyHideElement;
+/* *
+ *
+ *  Class
+ *
+ * */
 var Announcer = /** @class */ (function () {
+    /* *
+     *
+     *  Constructor
+     *
+     * */
     function Announcer(chart, type) {
         this.chart = chart;
         this.domElementProvider = new DOMElementProvider();
         this.announceRegion = this.addAnnounceRegion(type);
     }
+    /* *
+     *
+     *  Functions
+     *
+     * */
     Announcer.prototype.destroy = function () {
         this.domElementProvider.destroyCreatedElements();
     };
@@ -39,8 +54,7 @@ var Announcer = /** @class */ (function () {
         }, 1000);
     };
     Announcer.prototype.addAnnounceRegion = function (type) {
-        var chartContainer = this.chart.announcerContainer || this.createAnnouncerContainer();
-        var div = this.domElementProvider.createElement('div');
+        var chartContainer = this.chart.announcerContainer || this.createAnnouncerContainer(), div = this.domElementProvider.createElement('div');
         setElAttrs(div, {
             'aria-hidden': false,
             'aria-live': type
@@ -50,8 +64,7 @@ var Announcer = /** @class */ (function () {
         return div;
     };
     Announcer.prototype.createAnnouncerContainer = function () {
-        var chart = this.chart;
-        var container = doc.createElement('div');
+        var chart = this.chart, container = doc.createElement('div');
         setElAttrs(container, {
             'aria-hidden': false,
             style: 'position:relative',
@@ -63,5 +76,9 @@ var Announcer = /** @class */ (function () {
     };
     return Announcer;
 }());
-H.Announcer = Announcer;
+/* *
+ *
+ *  Default Export
+ *
+ * */
 export default Announcer;

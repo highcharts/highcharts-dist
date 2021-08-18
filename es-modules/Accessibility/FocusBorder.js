@@ -11,7 +11,6 @@
  * */
 'use strict';
 import Chart from '../Core/Chart/Chart.js';
-import H from '../Core/Globals.js';
 import SVGElement from '../Core/Renderer/SVG/SVGElement.js';
 import SVGLabel from '../Core/Renderer/SVG/SVGLabel.js';
 import U from '../Core/Utilities.js';
@@ -136,8 +135,7 @@ extend(SVGElement.prototype, {
         function getTextAnchorCorrection(text) {
             var posXCorrection = 0, posYCorrection = 0;
             if (text.attr('text-anchor') === 'middle') {
-                posXCorrection = H.isFirefox && text.rotation ? 0.25 : 0.5;
-                posYCorrection = H.isFirefox && !text.rotation ? 0.75 : 0.5;
+                posXCorrection = posYCorrection = 0.5;
             }
             else if (!text.rotation) {
                 posYCorrection = 0.75;

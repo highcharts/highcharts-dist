@@ -105,10 +105,9 @@ var bindingsUtils = {
      * Annotation to be updated
      */
     updateRectSize: function (event, annotation) {
-        var chart = annotation.chart, options = annotation.options.typeOptions, coords = chart.pointer.getCoordinates(event), coordsX = chart.navigationBindings.utils.getAssignedAxis(coords.xAxis), coordsY = chart.navigationBindings.utils.getAssignedAxis(coords.yAxis), width, height;
-        if (coordsX && coordsY) {
-            width = coordsX.value - options.point.x;
-            height = options.point.y - coordsY.value;
+        var chart = annotation.chart, options = annotation.options.typeOptions, xAxis = isNumber(options.xAxis) && chart.xAxis[options.xAxis], yAxis = isNumber(options.yAxis) && chart.yAxis[options.yAxis];
+        if (xAxis && yAxis) {
+            var x = xAxis.toValue(event[xAxis.horiz ? 'chartX' : 'chartY']), y = yAxis.toValue(event[yAxis.horiz ? 'chartX' : 'chartY']), width = x - options.point.x, height = options.point.y - y;
             annotation.update({
                 typeOptions: {
                     background: {
@@ -291,15 +290,24 @@ var NavigationBindings = /** @class */ (function () {
      */
     NavigationBindings.prototype.bindingsChartClick = function (chart, clickEvent) {
         chart = this.chart;
-        var navigation = this, selectedButton = navigation.selectedButton, svgContainer = chart.renderer.boxWrapper;
-        // Click outside popups, should close them and deselect the annotation
-        if (navigation.activeAnnotation &&
-            !clickEvent.activeAnnotation &&
-            // Element could be removed in the child action, e.g. button
-            clickEvent.target.parentNode &&
-            // TO DO: Polyfill for IE11?
-            !closestPolyfill(clickEvent.target, '.' + PREFIX + 'popup')) {
-            fireEvent(navigation, 'closePopup');
+        var navigation = this, activeAnnotation = navigation.activeAnnotation, selectedButton = navigation.selectedButton, svgContainer = chart.renderer.boxWrapper;
+        if (activeAnnotation) {
+            // Click outside popups, should close them and deselect the
+            // annotation
+            if (!activeAnnotation.cancelClick && // #15729
+                !clickEvent.activeAnnotation &&
+                // Element could be removed in the child action, e.g. button
+                clickEvent.target.parentNode &&
+                // TO DO: Polyfill for IE11?
+                !closestPolyfill(clickEvent.target, '.' + PREFIX + 'popup')) {
+                fireEvent(navigation, 'closePopup');
+            }
+            else if (activeAnnotation.cancelClick) {
+                // Reset cancelClick after the other event handlers have run
+                setTimeout(function () {
+                    activeAnnotation.cancelClick = false;
+                }, 0);
+            }
         }
         if (!selectedButton || !selectedButton.start) {
             return;
@@ -1020,7 +1028,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/9.1.2/gfx/stock-icons/
+         * @default   https://code.highcharts.com/9.2.0/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */
@@ -1104,30 +1112,27 @@ addEvent(Chart, 'render', function () {
                 // className taken from StockToolsBindings.
                 var buttonNode = chart.navigationBindings.container[0].querySelectorAll('.' + key);
                 if (buttonNode) {
-                    if (value.noDataState === 'normal') {
-                        buttonNode.forEach(function (button) {
+                    for (var i = 0; i < buttonNode.length; i++) {
+                        var button = buttonNode[i];
+                        if (value.noDataState === 'normal') {
                             // If button has noDataState: 'normal',
                             // and has disabledClassName,
                             // remove this className.
                             if (button.className.indexOf(disabledClassName) !== -1) {
                                 button.classList.remove(disabledClassName);
                             }
-                        });
-                    }
-                    else if (!buttonsEnabled_1) {
-                        buttonNode.forEach(function (button) {
+                        }
+                        else if (!buttonsEnabled_1) {
                             if (button.className.indexOf(disabledClassName) === -1) {
                                 button.className += ' ' + disabledClassName;
                             }
-                        });
-                    }
-                    else {
-                        buttonNode.forEach(function (button) {
+                        }
+                        else {
                             // Enable all buttons by deleting the className.
                             if (button.className.indexOf(disabledClassName) !== -1) {
                                 button.classList.remove(disabledClassName);
                             }
-                        });
+                        }
                     }
                 }
             }

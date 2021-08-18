@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.1.2 (2021-06-16)
+ * @license Highcharts JS v9.2.0 (2021-08-18)
  *
  * Plugin for displaying a message when there is no data visible in chart.
  *
@@ -162,7 +162,7 @@
         chartPrototype.showNoData = function (str) {
             var chart = this,
                 options = chart.options,
-                text = str || (options && options.lang.noData),
+                text = str || (options && options.lang.noData) || '',
                 noDataOptions = options && (options.noData || {});
             if (chart.renderer) { // Meaning chart is not destroyed
                 if (!chart.noDataLabel) {
