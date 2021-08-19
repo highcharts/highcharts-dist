@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.0 (2021-08-18)
+ * @license Highcharts JS v9.2.1 (2021-08-19)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas

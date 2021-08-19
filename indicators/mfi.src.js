@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.0 (2021-08-18)
+ * @license Highstock JS v9.2.1 (2021-08-19)
  *
  * Money Flow Index indicator for Highcharts Stock
  *

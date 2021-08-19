@@ -1,5 +1,5 @@
 /*
- Highcharts Stock JS v9.2.0 (2021-08-18)
+ Highcharts Stock JS v9.2.1 (2021-08-19)
 
  Indicator series type for Highcharts Stock
 

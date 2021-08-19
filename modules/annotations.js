@@ -1,5 +1,5 @@
 /*
- Highcharts JS v9.2.0 (2021-08-18)
+ Highcharts JS v9.2.1 (2021-08-19)
 
  Annotations module
 
@@ -116,5 +116,5 @@ d,"volume",a,f,b.linkedParent&&b.linkedParent.options.id);this.indicators.addPar
 this.tabs,c=this.indicators.getAmount.call(a);a&&(a=b.addMenuItem.call(this,"add"),b.addMenuItem.call(this,"edit",c),b.addContentItem.call(this,"add"),b.addContentItem.call(this,"edit"),b.switchTabs.call(this,c),b.selectTab.call(this,a,0))},addMenuItem:function(a,b){var d=this.popup.container,f="highcharts-tab-item",g=this.lang;0===b&&(f+=" highcharts-tab-disabled");b=e("span",{className:f},void 0,d);b.appendChild(c.createTextNode(g[a+"Button"]||a));b.setAttribute("highcharts-data-tab-type",a);return b},
 addContentItem:function(){return e("div",{className:"highcharts-tab-item-content highcharts-no-mousewheel"},null,this.popup.container)},switchTabs:function(a){var b=this,c;this.popup.container.querySelectorAll(".highcharts-tab-item").forEach(function(e,f){c=e.getAttribute("highcharts-data-tab-type");"edit"===c&&0===a||["click","touchstart"].forEach(function(a){d(e,a,function(){b.tabs.deselectAll.call(b);b.tabs.selectTab.call(b,this,f)})})})},selectTab:function(a,b){var c=this.popup.container.querySelectorAll(".highcharts-tab-item-content");
 a.className+=" highcharts-tab-item-active";c[b].className+=" highcharts-tab-item-show"},deselectAll:function(){var a=this.popup.container,b=a.querySelectorAll(".highcharts-tab-item");a=a.querySelectorAll(".highcharts-tab-item-content");var c;for(c=0;c<b.length;c++)b[c].classList.remove("highcharts-tab-item-active"),a[c].classList.remove("highcharts-tab-item-show")}}};d(f,"showPopup",function(b){this.popup||(this.popup=new a.Popup(this.chart.container,this.chart.options.navigation.iconsURL||this.chart.options.stockTools&&
-this.chart.options.stockTools.gui.iconsURL||"https://code.highcharts.com/9.2.0/gfx/stock-icons/",this.chart));this.popup.showForm(b.formType,this.chart,b.options,b.onSubmit)});d(f,"closePopup",function(){this.popup&&this.popup.closePopup()});return a.Popup});x(a,"masters/modules/annotations.src.js",[],function(){})});
+this.chart.options.stockTools.gui.iconsURL||"https://code.highcharts.com/9.2.1/gfx/stock-icons/",this.chart));this.popup.showForm(b.formType,this.chart,b.options,b.onSubmit)});d(f,"closePopup",function(){this.popup&&this.popup.closePopup()});return a.Popup});x(a,"masters/modules/annotations.src.js",[],function(){})});
 //# sourceMappingURL=annotations.js.map

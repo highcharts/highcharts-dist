@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.2.0 (2021-08-18)
+ * @license Highcharts Gantt JS v9.2.1 (2021-08-19)
  *
  * (c) 2017-2021 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng
  *
@@ -71,7 +71,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '9.2.0', Globals.win = w, Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '9.2.1', Globals.win = w, Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
                 Globals.doc.createElementNS &&
                 !!Globals.doc.createElementNS(Globals.SVG_NS, 'svg').createSVGRect), Globals.userAgent = (Globals.win.navigator && Globals.win.navigator.userAgent) || '', Globals.isChrome = Globals.userAgent.indexOf('Chrome') !== -1, Globals.isFirefox = Globals.userAgent.indexOf('Firefox') !== -1, Globals.isMS = /(edge|msie|trident)/i.test(Globals.userAgent) && !Globals.win.opera, Globals.isSafari = !Globals.isChrome && Globals.userAgent.indexOf('Safari') !== -1, Globals.isTouchDevice = /(Mobile|Android|Windows Phone)/.test(Globals.userAgent), Globals.isWebKit = Globals.userAgent.indexOf('AppleWebKit') !== -1, Globals.deg2rad = Math.PI * 2 / 360, Globals.hasBidiBug = (Globals.isFirefox &&
                 parseInt(Globals.userAgent.split('Firefox/')[1], 10) < 4 // issue #38
@@ -8131,12 +8131,7 @@
                             tagName: tagName
                         };
                     if (tagName === '#text') {
-                        var textContent = node.textContent || '';
-                        // Leading whitespace text node, don't append it to the AST
-                        if (nodes.length === 0 && /^[\s]*$/.test(textContent)) {
-                            return;
-                        }
-                        astNode.textContent = textContent;
+                        astNode.textContent = node.textContent || '';
                     }
                     var parsedAttributes = node.attributes;
                     // Add attributes
@@ -11934,6 +11929,20 @@
                 var wrapper = this.svgElement;
                 var x = attr(wrapper.element, 'x');
                 wrapper.firstLineMetrics = void 0;
+                // Remove empty tspans (including breaks) from the beginning because
+                // SVG's getBBox doesn't count empty lines. The use case is tooltip
+                // where the header is empty. By doing this in the DOM rather than in
+                // the AST, we can inspect the textContent directly and don't have to
+                // recurse down to look for valid content.
+                var firstChild;
+                while ((firstChild = wrapper.element.firstChild)) {
+                    if (/^[\s\u200B]*$/.test(firstChild.textContent || ' ')) {
+                        wrapper.element.removeChild(firstChild);
+                    }
+                    else {
+                        break;
+                    }
+                }
                 // Modify hard line breaks by applying the rendered line height
                 [].forEach.call(wrapper.element.querySelectorAll('tspan.highcharts-br'), function (br, i) {
                     if (br.nextSibling && br.previousSibling) { // #5261
@@ -12131,16 +12140,6 @@
                     }
                 };
                 nodes.forEach(modifyChild);
-                // Remove empty spans from the beginning because SVG's getBBox doesn't
-                // count empty lines. The use case is tooltip where the header is empty.
-                while (nodes[0]) {
-                    if (nodes[0].tagName === 'tspan' && !nodes[0].children) {
-                        nodes.splice(0, 1);
-                    }
-                    else {
-                        break;
-                    }
-                }
             };
             /*
              * Truncate the text node contents to a given length. Used when the css
@@ -12472,7 +12471,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 var desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.2.0'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.2.1'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;

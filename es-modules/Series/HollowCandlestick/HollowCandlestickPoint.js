@@ -62,8 +62,8 @@ var HollowCandlestickPoint = /** @class */ (function (_super) {
      */
     HollowCandlestickPoint.prototype.getClassName = function () {
         var className = _super.prototype.getClassName.apply(this);
-        var point = this, index = point.index, isBullish = point.series.hollowCandlestickData[index];
-        if (isBullish === 'up') {
+        var point = this, index = point.index, currentPoint = point.series.hollowCandlestickData[index];
+        if (!currentPoint.isBullish && currentPoint.trendDirection === 'up') {
             className += '-bearish-up';
         }
         return className;

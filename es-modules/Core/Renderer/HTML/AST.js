@@ -216,12 +216,7 @@ var AST = /** @class */ (function () {
                 tagName: tagName
             };
             if (tagName === '#text') {
-                var textContent = node.textContent || '';
-                // Leading whitespace text node, don't append it to the AST
-                if (nodes.length === 0 && /^[\s]*$/.test(textContent)) {
-                    return;
-                }
-                astNode.textContent = textContent;
+                astNode.textContent = node.textContent || '';
             }
             var parsedAttributes = node.attributes;
             // Add attributes

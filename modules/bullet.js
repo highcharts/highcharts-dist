@@ -1,5 +1,5 @@
 /*
- Highcharts JS v9.2.0 (2021-08-18)
+ Highcharts JS v9.2.1 (2021-08-19)
 
  Bullet graph series type for Highcharts
 
