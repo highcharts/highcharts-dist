@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.1 (2021-08-19)
+ * @license Highstock JS v9.2.2 (2021-08-24)
  * @module highcharts/indicators/ppo
  * @requires highcharts
  * @requires highcharts/modules/stock

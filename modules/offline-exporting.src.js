@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.1 (2021-08-19)
+ * @license Highcharts JS v9.2.2 (2021-08-24)
  *
  * Client side exporting module
  *
@@ -157,7 +157,7 @@
          *
          * */
         var OfflineExportingDefaults = {
-                libURL: 'https://code.highcharts.com/9.2.1/lib/',
+                libURL: 'https://code.highcharts.com/9.2.2/lib/',
                 // When offline-exporting is loaded, redefine the menu item definitions
                 // related to download.
                 menuItemDefinitions: {
@@ -543,7 +543,7 @@
                 // renderer for inline styles that we want to pass through. There
                 // are so many styles by default in IE that we don't want to
                 // blacklist them all.
-                if (H.isMS && chart.styledMode) {
+                if (H.isMS && chart.styledMode && !Exporting.inlineWhitelist.length) {
                     Exporting.inlineWhitelist.push(/^blockSize/, /^border/, /^caretColor/, /^color/, /^columnRule/, /^columnRuleColor/, /^cssFloat/, /^cursor/, /^fill$/, /^fillOpacity/, /^font/, /^inlineSize/, /^length/, /^lineHeight/, /^opacity/, /^outline/, /^parentRule/, /^rx$/, /^ry$/, /^stroke/, /^textAlign/, /^textAnchor/, /^textDecoration/, /^transform/, /^vectorEffect/, /^visibility/, /^x$/, /^y$/);
                 }
                 // Always fall back on:

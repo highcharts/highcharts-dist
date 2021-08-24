@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.1 (2021-08-19)
+ * @license Highstock JS v9.2.2 (2021-08-24)
  *
  * Data grouping module
  *
@@ -747,8 +747,10 @@
                 series.groupPixelWidth = axis.getGroupPixelWidth && axis.getGroupPixelWidth();
                 if (series.groupPixelWidth) {
                     series.hasProcessed = true; // #2692
-                    series.applyGrouping();
                 }
+                // Fire independing on series.groupPixelWidth to always set a proper
+                // dataGrouping state, (#16238)
+                series.applyGrouping();
             });
         };
         // Get the data grouping pixel width based on the greatest defined individual

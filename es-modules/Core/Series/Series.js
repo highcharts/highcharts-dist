@@ -1206,6 +1206,9 @@ var Series = /** @class */ (function () {
                  *
                  * @name Highcharts.Point#dataGroup
                  * @type {Highcharts.DataGroupingInfoObject|undefined}
+                 *
+                 * @sample stock/members/point-datagroup
+                 *         Click to inspect raw data points
                  */
                 point.dataGroup = series.groupMap[groupCropStartIndex + i];
                 if (point.dataGroup.options) {

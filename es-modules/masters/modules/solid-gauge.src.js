@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.1 (2021-08-19)
+ * @license Highcharts JS v9.2.2 (2021-08-24)
  * @module highcharts/modules/solid-gauge
  * @requires highcharts
  * @requires highcharts/highcharts-more

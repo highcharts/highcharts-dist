@@ -821,7 +821,7 @@ var Exporting;
      * @requires modules/exporting
      */
     function inlineStyles() {
-        var renderer = this.renderer, blacklist = inlineBlacklist, whitelist = Exporting.inlineWhitelist, // For IE
+        var blacklist = inlineBlacklist, whitelist = Exporting.inlineWhitelist, // For IE
         defaultStyles = {};
         var dummySVG;
         // Create an iframe where we read default styles without pollution from
@@ -859,7 +859,7 @@ var Exporting;
             function filterStyles(val, prop) {
                 // Check against whitelist & blacklist
                 blacklisted = whitelisted = false;
-                if (whitelist) {
+                if (whitelist.length) {
                     // Styled mode in IE has a whitelist instead.
                     // Exclude all props not in this list.
                     i = whitelist.length;
