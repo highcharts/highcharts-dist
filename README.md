@@ -1,10 +1,14 @@
-Highcharts is a JavaScript charting library based on SVG, with fallbacks to VML and canvas for old browsers. This package also contains Highstock, the financial charting package, and Highmaps for geo maps.
+Highcharts is a JavaScript charting library based on SVG rendering. This project includes Stock, the financial charting package, the Maps package for geo maps and the Gantt package.
 
 This package is intended for supporting client-side JavaScript charting through bundlers like Parcel or Webpack and environments like Babel or TypeScript. If you indend to generate static charts on the server side, use the [Highcharts node.js Export Server](https://www.npmjs.com/package/highcharts-export-server) instead.
 
+### License
+Please note that commercial use of Highcharts requires a commercial license. Non-profit organisations, schools and personal websites are qualified for the free license. Read more about licenses [in the Highcharts shop](https://shop.highsoft.com/).
+
+### Links
 * Official website: [www.highcharts.com](http://www.highcharts.com)
 * Download page: [www.highcharts.com/download](http://www.highcharts.com/download)
-* Licensing: [www.highcharts.com/license](http://www.highcharts.com/license)
+* License: [www.highcharts.com/license](http://www.highcharts.com/license)
 * Support: [www.highcharts.com/support](http://www.highcharts.com/support)
 * Issues: [Working repo](https://github.com/highcharts/highcharts/issues)
 
@@ -43,7 +47,8 @@ Highcharts is using an UMD module pattern, as a result it has support for Common
 ```js
 // Load Highcharts
 var Highcharts = require('highcharts');
-// Alternatively, this is how to load Highstock. Highmaps is similar.
+// Alternatively, this is how to load Highcharts Stock. The Maps and Gantt
+// packages are similar.
 // var Highcharts = require('highcharts/highstock');
 
 // Load the exporting module, and initialize it.
@@ -61,7 +66,8 @@ Since Highcharts supports CommonJS, it can be loaded as an ES6 module with the u
 ### Babel
 ```js
 import Highcharts from 'highcharts';
-// Alternatively, this is how to load Highstock. Highmaps is similar.
+// Alternatively, this is how to load Highcharts Stock. The Maps and Gantt
+// packages are similar.
 // import Highcharts from 'highcharts/highstock';
 
 // Load the exporting module.
@@ -77,7 +83,8 @@ Highcharts.chart('container', {
 ### TypeScript
 ```js
 import * as Highcharts from 'highcharts';
-// Alternatively, this is how to load Highstock. Highmaps is similar.
+// Alternatively, this is how to load Highcharts Stock. The Maps and Gantt
+// packages are similar.
 // import Highcharts from 'highcharts/highstock';
 
 // Load the exporting module.
