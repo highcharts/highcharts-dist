@@ -28,7 +28,6 @@ var color = Color.parse;
 import H from '../../Core/Globals.js';
 var hasTouch = H.hasTouch, noop = H.noop;
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
-import Palette from '../../Core/Color/Palette.js';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
@@ -904,7 +903,7 @@ var ColumnSeries = /** @class */ (function (_super) {
                  * @default #cccccc
                  * @product highcharts highstock gantt
                  */
-                color: Palette.neutralColor20,
+                color: "#cccccc" /* neutralColor20 */,
                 /**
                  * A specific border color for the selected point.
                  *
@@ -912,7 +911,7 @@ var ColumnSeries = /** @class */ (function (_super) {
                  * @default #000000
                  * @product highcharts highstock gantt
                  */
-                borderColor: Palette.neutralColor100
+                borderColor: "#000000" /* neutralColor100 */
             }
         },
         dataLabels: {
@@ -979,7 +978,7 @@ var ColumnSeries = /** @class */ (function (_super) {
          *
          * @private
          */
-        borderColor: Palette.backgroundColor
+        borderColor: "#ffffff" /* backgroundColor */
     });
     return ColumnSeries;
 }(Series));

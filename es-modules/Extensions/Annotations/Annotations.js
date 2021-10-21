@@ -15,6 +15,7 @@ var chartProto = Chart.prototype;
 import ControllableMixin from './Mixins/ControllableMixin.js';
 import ControllableRect from './Controllables/ControllableRect.js';
 import ControllableCircle from './Controllables/ControllableCircle.js';
+import ControllableEllipse from './Controllables/ControllableEllipse.js';
 import ControllablePath from './Controllables/ControllablePath.js';
 import ControllableImage from './Controllables/ControllableImage.js';
 import ControllableLabel from './Controllables/ControllableLabel.js';
@@ -24,7 +25,6 @@ import H from '../../Core/Globals.js';
 import MockPoint from './MockPoint.js';
 import Pointer from '../../Core/Pointer.js';
 import U from '../../Core/Utilities.js';
-import palette from '../../Core/Color/Palette.js';
 var addEvent = U.addEvent, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, erase = U.erase, extend = U.extend, find = U.find, fireEvent = U.fireEvent, merge = U.merge, pick = U.pick, splat = U.splat, wrap = U.wrap;
 /* *********************************************************************
  *
@@ -222,7 +222,10 @@ var Annotation = /** @class */ (function () {
     };
     Annotation.prototype.addClipPaths = function () {
         this.setClipAxes();
-        if (this.clipXAxis && this.clipYAxis) {
+        if (this.clipXAxis &&
+            this.clipYAxis &&
+            this.options.crop // #15399
+        ) {
             this.clipRect = this.chart.renderer.clipRect(this.getClipBox());
         }
     };
@@ -321,8 +324,10 @@ var Annotation = /** @class */ (function () {
             .add();
         this.shapesGroup = renderer
             .g('annotation-shapes')
-            .add(this.graphic)
-            .clip(this.chart.plotBoxClip);
+            .add(this.graphic);
+        if (this.options.crop) { // #15399
+            this.shapesGroup.clip(this.chart.plotBoxClip);
+        }
         this.labelsGroup = renderer
             .g('annotation-labels')
             .attr({
@@ -430,6 +435,9 @@ var Annotation = /** @class */ (function () {
      * Initialisation of a single shape
      * @private
      * @param {Object} shapeOptions - a confg object for a single shape
+     * @param {number} index - annotation may have many shapes,
+     * this is the shape's index saved in shapes.index.
+
      */
     Annotation.prototype.initShape = function (shapeOptions, index) {
         var options = merge(this.options.shapeOptions, {
@@ -526,6 +534,7 @@ var Annotation = /** @class */ (function () {
     Annotation.shapesMap = {
         'rect': ControllableRect,
         'circle': ControllableCircle,
+        'ellipse': ControllableEllipse,
         'path': ControllablePath,
         'image': ControllableImage
     };
@@ -602,9 +611,18 @@ merge(Annotation.prototype,
          *          Animation defer settings
          * @type {boolean|Partial<Highcharts.AnimationOptionsObject>}
          * @since 8.2.0
-         * @apioption annotations.animation
          */
         animation: {},
+        /**
+         * Whether to hide the part of the annotation
+         * that is outside the plot area.
+         *
+         * @sample highcharts/annotations/label-crop-overflow/
+         *         Crop line annotation
+         * @type  {boolean}
+         * @since 9.3.0
+         */
+        crop: true,
         /**
          * The animation delay time in milliseconds.
          * Set to `0` renders annotation immediately.
@@ -669,7 +687,7 @@ merge(Annotation.prototype,
              *
              * @type {Highcharts.ColorString}
              */
-            borderColor: palette.neutralColor100,
+            borderColor: "#000000" /* neutralColor100 */,
             /**
              * The border radius in pixels for the annotaiton's label.
              *
@@ -965,6 +983,32 @@ merge(Annotation.prototype,
          */
         shapeOptions: {
             /**
+             *
+             * The radius of the shape in y direction.
+             * Used for the ellipse.
+             *
+             * @sample highcharts/annotations/ellipse/
+             *         Ellipse annotation
+             *
+             * @type      {number}
+             * @apioption annotations.shapeOptions.ry
+             **/
+            /**
+             *
+             * The xAxis index to which the points should be attached.
+             * Used for the ellipse.
+             *
+             * @type      {number}
+             * @apioption annotations.shapeOptions.xAxis
+             **/
+            /**
+             * The yAxis index to which the points should be attached.
+             * Used for the ellipse.
+             *
+             * @type      {number}
+             * @apioption annotations.shapeOptions.yAxis
+             **/
+            /**
              * The width of the shape.
              *
              * @sample highcharts/annotations/shape/
@@ -983,10 +1027,14 @@ merge(Annotation.prototype,
              * @apioption annotations.shapeOptions.height
              */
             /**
-             * The type of the shape, e.g. circle or rectangle.
+             * The type of the shape.
+             * Avaliable options are circle, rect and ellipse.
              *
              * @sample highcharts/annotations/shape/
              *         Basic shape annotation
+             *
+             * @sample highcharts/annotations/ellipse/
+             *         Ellipse annotation
              *
              * @type      {string}
              * @default   rect
@@ -1069,9 +1117,10 @@ merge(Annotation.prototype,
             width: 10,
             height: 10,
             style: {
-                stroke: palette.neutralColor100,
-                'stroke-width': 2,
-                fill: palette.backgroundColor
+                cursor: 'pointer',
+                fill: "#ffffff" /* backgroundColor */,
+                stroke: "#000000" /* neutralColor100 */,
+                'stroke-width': 2
             },
             visible: false,
             events: {}
@@ -1132,7 +1181,8 @@ extend(chartProto, /** @lends Highcharts.Chart# */ {
      * @param  {Highcharts.AnnotationsOptions} options
      *         The annotation options for the new, detailed annotation.
      * @param {boolean} [redraw]
-     *
+     * @sample highcharts/annotations/add-annotation/
+     *         Add annotation
      * @return {Highcharts.Annotation} - The newly generated annotation.
      */
     addAnnotation: function (userOptions, redraw) {

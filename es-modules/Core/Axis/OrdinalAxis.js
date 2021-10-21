@@ -310,7 +310,7 @@ var OrdinalAxis;
             var index = ordinal.getIndexOfPoint(pixelVal, positions), mantissa = correctFloat(index % 1);
             // Check if the index is inside position array.
             // If true, read/approximate value for that exact index.
-            if (index >= 0 && index < positions.length) {
+            if (index >= 0 && index < positions.length - 1) {
                 var leftNeighbour = positions[Math.floor(index)], rightNeighbour = positions[Math.ceil(index)], distance = rightNeighbour - leftNeighbour;
                 return positions[Math.floor(index)] + mantissa * distance;
             }
@@ -397,9 +397,8 @@ var OrdinalAxis;
         }
     }
     /**
-     * @private
-     *
      * Extending the Chart.pan method for ordinal axes
+     * @private
      */
     function onChartPan(e) {
         var chart = this, xAxis = chart.xAxis[0], overscroll = xAxis.options.overscroll, chartX = e.originalEvent.chartX, panning = chart.options.chart.panning;
@@ -607,7 +606,7 @@ var OrdinalAxis;
          */
         Additions.prototype.beforeSetTickPositions = function () {
             var axis = this.axis, ordinal = axis.ordinal, extremes = axis.getExtremes(), min = extremes.min, max = extremes.max, hasBreaks = axis.isXAxis && !!axis.options.breaks, isOrdinal = axis.options.ordinal, ignoreHiddenSeries = axis.chart.options.chart.ignoreHiddenSeries;
-            var len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, hasBoostedSeries, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false;
+            var len, uniqueOrdinalPositions, dist, minIndex, maxIndex, slope, i, ordinalPositions = [], overscrollPointsRange = Number.MAX_VALUE, useOrdinal = false;
             // Apply the ordinal logic
             if (isOrdinal || hasBreaks) { // #4167 YAxis is never ordinal ?
                 axis.series.forEach(function (series, i) {
@@ -641,13 +640,7 @@ var OrdinalAxis;
                             ordinalPositions = uniqueOrdinalPositions;
                         }
                     }
-                    if (series.isSeriesBoosting) {
-                        hasBoostedSeries = true;
-                    }
                 });
-                if (hasBoostedSeries) {
-                    ordinalPositions.length = 0;
-                }
                 // cache the length
                 len = ordinalPositions.length;
                 // Check if we really need the overhead of mapping axis data
@@ -835,7 +828,9 @@ var OrdinalAxis;
                     series.processData.apply(fakeSeries);
                 });
                 // Apply grouping if needed.
-                axis.applyGrouping.call(fakeAxis);
+                axis.applyGrouping.call(fakeAxis, {
+                    hasExtemesChanged: false
+                });
                 // Force to use the ordinal when points are evenly spaced
                 // (e.g. weeks), #3825.
                 if (fakeSeries.closestPointRange !== fakeSeries.basePointRange &&
@@ -922,7 +917,8 @@ var OrdinalAxis;
             // When more series assign to axis, find the smallest one, #15987.
             if (axis.series.length > 1) {
                 axis.series.forEach(function (series) {
-                    if (defined(series.points[0]) &&
+                    if (series.points &&
+                        defined(series.points[0]) &&
                         defined(series.points[0].plotX) &&
                         series.points[0].plotX < firstPointX) {
                         firstPointX = series.points[0].plotX;

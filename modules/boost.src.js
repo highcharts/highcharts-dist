@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Boost module
  *
@@ -456,7 +456,8 @@
                 var seriesOptions = series.options,
                     zMin = Number.MAX_VALUE,
                     zMax = -Number.MAX_VALUE;
-                if (gl && shaderProgram && series.type === 'bubble') {
+                if (gl && shaderProgram && series.is('bubble')) {
+                    var pxSizes = series.getPxExtremes();
                     zMin = pick(seriesOptions.zMin, clamp(zCalcMin, seriesOptions.displayNegative === false ?
                         seriesOptions.zThreshold : -Number.MAX_VALUE, zMin));
                     zMax = pick(seriesOptions.zMax, Math.max(zMax, zCalcMax));
@@ -468,8 +469,8 @@
                     setUniform('bubbleZMin', zMin);
                     setUniform('bubbleZMax', zMax);
                     setUniform('bubbleZThreshold', series.options.zThreshold);
-                    setUniform('bubbleMinSize', series.minPxSize);
-                    setUniform('bubbleMaxSize', series.maxPxSize);
+                    setUniform('bubbleMinSize', pxSizes.minPxSize);
+                    setUniform('bubbleMaxSize', pxSizes.maxPxSize);
                 }
             }
             /**
@@ -2673,7 +2674,7 @@
 
         return init;
     });
-    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, palette, Series, SeriesRegistry, U) {
+    _registerModule(_modules, 'Extensions/BoostCanvas.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, Color, H, Series, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -3003,7 +3004,7 @@
                     if (rawData.length > 99999) {
                         chart.options.loading = merge(loadingOptions, {
                             labelStyle: {
-                                backgroundColor: color(palette.backgroundColor).setOpacity(0.75).get(),
+                                backgroundColor: color("#ffffff" /* backgroundColor */).setOpacity(0.75).get(),
                                 padding: '1em',
                                 borderRadius: '0.5em'
                             },
@@ -3464,9 +3465,8 @@
         // If the series is a heatmap or treemap, or if the series is not boosting
         // do the default behaviour. Otherwise, process if the series has no extremes.
         wrap(Series.prototype, 'processData', function (proceed) {
-            var series = this,
-                dataToMeasure = this.options.data,
-                firstPoint;
+            var series = this;
+            var dataToMeasure = this.options.data;
             /**
              * Used twice in this function, first on this.options.data, the second
              * time it runs the check again after processedXData is built.
@@ -3500,6 +3500,7 @@
                 // Enter or exit boost mode
                 if (this.isSeriesBoosting) {
                     // Force turbo-mode:
+                    var firstPoint = void 0;
                     if (this.options.data && this.options.data.length) {
                         firstPoint = this.getFirstValidPoint(this.options.data);
                         if (!isNumber(firstPoint) && !isArray(firstPoint)) {

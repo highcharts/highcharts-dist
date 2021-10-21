@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -366,7 +366,7 @@
                         mantissa = correctFloat(index % 1);
                     // Check if the index is inside position array.
                     // If true, read/approximate value for that exact index.
-                    if (index >= 0 && index < positions.length) {
+                    if (index >= 0 && index < positions.length - 1) {
                         var leftNeighbour = positions[Math.floor(index)],
                             rightNeighbour = positions[Math.ceil(index)],
                             distance = rightNeighbour - leftNeighbour;
@@ -460,9 +460,8 @@
                 }
             }
             /**
-             * @private
-             *
              * Extending the Chart.pan method for ordinal axes
+             * @private
              */
             function onChartPan(e) {
                 var chart = this,
@@ -706,7 +705,6 @@
                         maxIndex,
                         slope,
                         i,
-                        hasBoostedSeries,
                         ordinalPositions = [],
                         overscrollPointsRange = Number.MAX_VALUE,
                         useOrdinal = false;
@@ -743,13 +741,7 @@
                                     ordinalPositions = uniqueOrdinalPositions;
                                 }
                             }
-                            if (series.isSeriesBoosting) {
-                                hasBoostedSeries = true;
-                            }
                         });
-                        if (hasBoostedSeries) {
-                            ordinalPositions.length = 0;
-                        }
                         // cache the length
                         len = ordinalPositions.length;
                         // Check if we really need the overhead of mapping axis data
@@ -948,7 +940,9 @@
                             series.processData.apply(fakeSeries);
                         });
                         // Apply grouping if needed.
-                        axis.applyGrouping.call(fakeAxis);
+                        axis.applyGrouping.call(fakeAxis, {
+                            hasExtemesChanged: false
+                        });
                         // Force to use the ordinal when points are evenly spaced
                         // (e.g. weeks), #3825.
                         if (fakeSeries.closestPointRange !== fakeSeries.basePointRange &&
@@ -1043,7 +1037,8 @@
                         // When more series assign to axis, find the smallest one, #15987.
                         if (axis.series.length > 1) {
                             axis.series.forEach(function (series) {
-                                if (defined(series.points[0]) &&
+                                if (series.points &&
+                                    defined(series.points[0]) &&
                                     defined(series.points[0].plotX) &&
                                     series.points[0].plotX < firstPointX) {
                                     firstPointX = series.points[0].plotX;
@@ -1123,6 +1118,557 @@
          * */
 
         return OrdinalAxis;
+    });
+    _registerModule(_modules, 'Series/DataModifyComposition.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, Point, Series, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var pointTooltipFormatter = Point.prototype.tooltipFormatter;
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
+            arrayMin = U.arrayMin,
+            correctFloat = U.correctFloat,
+            defined = U.defined,
+            isArray = U.isArray,
+            isNumber = U.isNumber,
+            isString = U.isString,
+            pick = U.pick;
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var DataModifyComposition;
+        (function (DataModifyComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Extends the series, axis and point classes with
+             * compare and cumulative support.
+             *
+             * @private
+             *
+             * @param SeriesClass
+             * Series class to use.
+             *
+             * @param AxisClass
+             * Axis class to extend.
+             *
+             * @param PointClass
+             * Point class to use.
+             */
+            function compose(SeriesClass, AxisClass, PointClass) {
+                if (composedClasses.indexOf(SeriesClass) === -1) {
+                    composedClasses.push(SeriesClass);
+                    var seriesProto = SeriesClass.prototype;
+                    seriesProto.setCompare = seriesSetCompare;
+                    seriesProto.setCumulative = seriesSetCumulative;
+                    addEvent(SeriesClass, 'afterInit', afterInit);
+                    addEvent(SeriesClass, 'afterGetExtremes', afterGetExtremes);
+                    addEvent(SeriesClass, 'afterProcessData', afterProcessData);
+                }
+                if (composedClasses.indexOf(AxisClass) === -1) {
+                    composedClasses.push(AxisClass);
+                    var axisProto = AxisClass.prototype;
+                    axisProto.setCompare = axisSetCompare;
+                    axisProto.setModifier = setModifier;
+                    axisProto.setCumulative = axisSetCumulative;
+                }
+                if (composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    var pointProto = PointClass.prototype;
+                    pointProto.tooltipFormatter = tooltipFormatter;
+                }
+                return SeriesClass;
+            }
+            DataModifyComposition.compose = compose;
+            /* ********************************************************************** *
+             *  Start shared compare and cumulative logic                             *
+             * ********************************************************************** */
+            /**
+             * Shared code for the axis.setCompare() and the axis.setCumulative()
+             * methods. Inits the 'compare' or the 'cumulative' mode.
+             * @private
+             */
+            function setModifier(mode, modeState, redraw) {
+                if (!this.isXAxis) {
+                    this.series.forEach(function (series) {
+                        if (mode === 'compare' &&
+                            typeof modeState !== 'boolean') {
+                            series.setCompare(modeState, false);
+                        }
+                        else if (mode === 'cumulative' &&
+                            !isString(modeState)) {
+                            series.setCumulative(modeState, false);
+                        }
+                    });
+                    if (pick(redraw, true)) {
+                        this.chart.redraw();
+                    }
+                }
+            }
+            /**
+             * Extend the tooltip formatter by adding support for the point.change
+             * variable as well as the changeDecimals option.
+             *
+             * @ignore
+             * @function Highcharts.Point#tooltipFormatter
+             *
+             * @param {string} pointFormat
+             */
+            function tooltipFormatter(pointFormat) {
+                var point = this, numberFormatter = point.series.chart.numberFormatter, replace = function (value) {
+                        pointFormat = pointFormat.replace('{point.' + value + '}', (point[value] > 0 && value === 'change' ? '+' : '') +
+                            numberFormatter(point[value], pick(point.series.tooltipOptions.changeDecimals, 2)));
+                };
+                if (defined(point.change)) {
+                    replace('change');
+                }
+                if (defined(point.cumulativeSum)) {
+                    replace('cumulativeSum');
+                }
+                return pointTooltipFormatter.apply(this, [pointFormat]);
+            }
+            /**
+             * Extend series.init by adding a methods to modify the y values used
+             * for plotting on the y axis. For compare mode, this method is called both
+             * from the axis when finding dataMin and dataMax,
+             * and from the series.translate method.
+             *
+             * @ignore
+             * @function Highcharts.Series#init
+             */
+            function afterInit() {
+                var compare = this.options.compare;
+                var dataModify;
+                if (compare === 'percent' ||
+                    compare === 'value' ||
+                    this.options.cumulative) {
+                    dataModify = new Additions(this);
+                    if (compare === 'percent' || compare === 'value') {
+                        // Set comparison mode
+                        dataModify.initCompare(compare);
+                    }
+                    else {
+                        // Set Cumulative Sum mode
+                        dataModify.initCumulative();
+                    }
+                }
+                this.dataModify = dataModify;
+            }
+            /**
+             * Adjust the extremes (compare and cumulative modify the data).
+             * @private
+             */
+            function afterGetExtremes(e) {
+                var dataExtremes = e.dataExtremes,
+                    activeYData = dataExtremes.activeYData;
+                if (this.dataModify && dataExtremes) {
+                    var extremes = void 0;
+                    if (this.options.compare) {
+                        extremes = [
+                            this.dataModify.modifyValue(dataExtremes.dataMin),
+                            this.dataModify.modifyValue(dataExtremes.dataMax)
+                        ];
+                    }
+                    else if (this.options.cumulative &&
+                        isArray(activeYData) &&
+                        // If only one y visible, sum doesn't change
+                        // so no need to change extremes
+                        activeYData.length >= 2) {
+                        extremes = Additions.getCumulativeExtremes(activeYData);
+                    }
+                    if (extremes) {
+                        dataExtremes.dataMin = arrayMin(extremes);
+                        dataExtremes.dataMax = arrayMax(extremes);
+                    }
+                }
+            }
+            /* ********************************************************************** *
+             *  End shared compare and cumulative logic                               *
+             * ********************************************************************** */
+            /* ********************************************************************** *
+             *  Start value compare logic                                             *
+             * ********************************************************************** */
+            /**
+             * Highcharts Stock only. Set the
+             * [compare](https://api.highcharts.com/highstock/plotOptions.series.compare)
+             * mode of the series after render time.
+             * In most cases it is more useful running
+             * {@link Axis#setCompare} on the X axis to update all its series.
+             *
+             * @function Highcharts.Series#setCompare
+             *
+             * @param {string|null} [compare]
+             *        Can be one of `undefined` (default), `null`, `"percent"`
+             *        or `"value"`.
+             *
+             * @param {boolean} [redraw=true]
+             *        Whether to redraw the chart or to wait for a later call to
+             *        {@link Chart#redraw}.
+             */
+            function seriesSetCompare(compare, redraw) {
+                // Survive to export, #5485 (and for options generally)
+                this.options.compare = this.userOptions.compare = compare;
+                // Fire series.init() that will set or delete series.dataModify
+                this.update({}, pick(redraw, true));
+                if (this.dataModify && (compare === 'value' || compare === 'percent')) {
+                    this.dataModify.initCompare(compare);
+                }
+                else {
+                    // When disabling, clear the points
+                    this.points.forEach(function (point) {
+                        delete point.change;
+                    });
+                }
+            }
+            /**
+             * Extend series.processData by finding the first y value in the plot area,
+             * used for comparing the following values
+             *
+             * @ignore
+             * @function Highcharts.Series#processData
+             */
+            function afterProcessData() {
+                var series = this;
+                if (series.xAxis && // not pies
+                    series.processedYData &&
+                    series.dataModify) {
+                    var processedXData = series.processedXData,
+                        processedYData = series.processedYData,
+                        length_1 = processedYData.length,
+                        compareStart = series.options.compareStart === true ? 0 : 1;
+                    var keyIndex = -1,
+                        i = void 0;
+                    // For series with more than one value (range, OHLC etc), compare
+                    // against close or the pointValKey (#4922, #3112, #9854)
+                    if (series.pointArrayMap) {
+                        keyIndex = series.pointArrayMap.indexOf(series.options.pointValKey || series.pointValKey || 'y');
+                    }
+                    // find the first value for comparison
+                    for (i = 0; i < length_1 - compareStart; i++) {
+                        var compareValue = processedYData[i] && keyIndex > -1 ?
+                                processedYData[i][keyIndex] : processedYData[i];
+                        if (isNumber(compareValue) &&
+                            compareValue !== 0 &&
+                            processedXData[i + compareStart] >= (series.xAxis.min || 0)) {
+                            series.dataModify.compareValue = compareValue;
+                            break;
+                        }
+                    }
+                }
+            }
+            /**
+             * Highcharts Stock only. Set the compare mode on all series
+             * belonging to a Y axis.
+             *
+             * @see [plotOptions.series.compare](https://api.highcharts.com/highstock/plotOptions.series.compare)
+             *
+             * @sample stock/members/axis-setcompare/
+             *         Set compare
+             *
+             * @function Highcharts.Axis#setCompare
+             *
+             * @param {string|null} [compare]
+             *        The compare mode. Can be one of `undefined` (default), `null`,
+             *        `"value"` or `"percent"`.
+             *
+             * @param {boolean} [redraw=true]
+             *        Whether to redraw the chart or to wait for a later call to
+             *        {@link Chart#redraw}.
+             */
+            function axisSetCompare(compare, redraw) {
+                this.setModifier('compare', compare, redraw);
+            }
+            /* ********************************************************************** *
+             *  End value compare logic                                               *
+             * ********************************************************************** */
+            /* ********************************************************************** *
+             *  Start Cumulative Sum logic, author: Rafal Sebestjanski                *
+             * ********************************************************************** */
+            /**
+             * Highcharts Stock only. Set the
+             * [cumulative](https://api.highcharts.com/highstock/plotOptions.series.cumulative)
+             * mode of the series after render time.
+             * In most cases it is more useful running
+             * {@link Axis#setCumulative} on the Y axis to update all its series.
+             *
+             * @function Highcharts.Series#setCumulative
+             *
+             * @param {boolean} [cumulative=false]
+             *        Either enable or disable Cumulative Sum mode.
+             *        Can be one of `false` (default) or `true`.
+             *
+             * @param {boolean} [redraw=true]
+             *        Whether to redraw the chart or to wait for a later call to
+             *        {@link Chart#redraw}.
+             */
+            function seriesSetCumulative(cumulative, redraw) {
+                // Set default value to false
+                cumulative = pick(cumulative, false);
+                // Survive to export, #5485 (and for options generally)
+                this.options.cumulative = this.userOptions.cumulative = cumulative;
+                // Fire series.init() that will set or delete series.dataModify
+                this.update({}, pick(redraw, true));
+                // If should, turn on the Cumulative Sum mode
+                if (this.dataModify) {
+                    this.dataModify.initCumulative();
+                }
+                else {
+                    // When disabling, clear the points
+                    this.points.forEach(function (point) {
+                        delete point.cumulativeSum;
+                    });
+                }
+            }
+            /**
+             * Highcharts Stock only. Set the cumulative mode on all series
+             * belonging to a Y axis.
+             *
+             * @see [plotOptions.series.cumulative](https://api.highcharts.com/highstock/plotOptions.series.cumulative)
+             *
+             * @sample stock/members/axis-setcumulative/
+             *         Set cumulative
+             *
+             * @function Highcharts.Axis#setCumulative
+             *
+             * @param {boolean} [cumulative]
+             *        Whether to disable or enable the cumulative mode.
+             *        Can be one of `undefined` (default, treated as `false`),
+             *        `false` or `true`.
+             *
+             * @param {boolean} [redraw=true]
+             *        Whether to redraw the chart or to wait for a later call to
+             *        {@link Chart#redraw}.
+             */
+            function axisSetCumulative(cumulative, redraw) {
+                this.setModifier('cumulative', cumulative, redraw);
+            }
+            /* *
+             *
+             *  Classes
+             *
+             * */
+            /**
+             * @private
+             */
+            var Additions = /** @class */ (function () {
+                    /* *
+                     *
+                     *  Constructors
+                     *
+                     * */
+                    /**
+                     * @private
+                     */
+                    function Additions(series) {
+                        this.series = series;
+                }
+                /* *
+                *
+                *  Functions
+                *
+                * */
+                /**
+                 * @private
+                 */
+                Additions.prototype.modifyValue = function () {
+                    return 0;
+                };
+                /**
+                 * @ignore
+                 * @function Highcharts.Series#getCumulativeExtremes
+                 *
+                 * @param {Array} [activeYData]
+                 *        An array cointaining all the points' y values
+                 *        in a visible range.
+                 */
+                Additions.getCumulativeExtremes = function (activeYData) {
+                    var cumulativeDataMin = Infinity,
+                        cumulativeDataMax = -Infinity;
+                    activeYData.reduce(function (prev, cur) {
+                        var sum = prev + cur;
+                        cumulativeDataMin = Math.min(cumulativeDataMin, sum, prev);
+                        cumulativeDataMax = Math.max(cumulativeDataMax, sum, prev);
+                        return sum;
+                    });
+                    return [cumulativeDataMin, cumulativeDataMax];
+                };
+                /**
+                 * @ignore
+                 * @function Highcharts.Series#initCompare
+                 *
+                 * @param {string} [compare]
+                 *        Can be one of `"percent"` or `"value"`.
+                 */
+                Additions.prototype.initCompare = function (compare) {
+                    // Set the modifyValue method
+                    this.modifyValue = function (value, index) {
+                        if (value === null) {
+                            value = 0;
+                        }
+                        var compareValue = this.compareValue;
+                        if (typeof value !== 'undefined' &&
+                            typeof compareValue !== 'undefined') { // #2601, #5814
+                            // Get the modified value
+                            if (compare === 'value') {
+                                value -= compareValue;
+                                // Compare percent
+                            }
+                            else {
+                                var compareBase = this.series.options.compareBase;
+                                value = 100 * (value / compareValue) -
+                                    (compareBase === 100 ? 0 : 100);
+                            }
+                            // record for tooltip etc.
+                            if (typeof index !== 'undefined') {
+                                var point = this.series.points[index];
+                                if (point) {
+                                    point.change = value;
+                                }
+                            }
+                            return value;
+                        }
+                        return 0;
+                    };
+                };
+                /**
+                 * @ignore
+                 * @function Highcharts.Series#initCumulative
+                 */
+                Additions.prototype.initCumulative = function () {
+                    // Set the modifyValue method
+                    this.modifyValue = function (value, index) {
+                        if (value === null) {
+                            value = 0;
+                        }
+                        if (value !== void 0 && index !== void 0) {
+                            var prevPoint = index > 0 ?
+                                    this.series.points[index - 1] : null;
+                            // Get the modified value
+                            if (prevPoint && prevPoint.cumulativeSum) {
+                                value = correctFloat(prevPoint.cumulativeSum + value);
+                            }
+                            // Record for tooltip etc.
+                            var point = this.series.points[index];
+                            if (point) {
+                                point.cumulativeSum = value;
+                            }
+                            return value;
+                        }
+                        return 0;
+                    };
+                };
+                return Additions;
+            }());
+            DataModifyComposition.Additions = Additions;
+        })(DataModifyComposition || (DataModifyComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * Compare the values of the series against the first non-null, non-
+         * zero value in the visible range. The y axis will show percentage
+         * or absolute change depending on whether `compare` is set to `"percent"`
+         * or `"value"`. When this is applied to multiple series, it allows
+         * comparing the development of the series against each other. Adds
+         * a `change` field to every point object.
+         *
+         * @see [compareBase](#plotOptions.series.compareBase)
+         * @see [Axis.setCompare()](/class-reference/Highcharts.Axis#setCompare)
+         * @see [Series.setCompare()](/class-reference/Highcharts.Series#setCompare)
+         *
+         * @sample {highstock} stock/plotoptions/series-compare-percent/
+         *         Percent
+         * @sample {highstock} stock/plotoptions/series-compare-value/
+         *         Value
+         *
+         * @type      {string}
+         * @since     1.0.1
+         * @product   highstock
+         * @apioption plotOptions.series.compare
+         */
+        /**
+         * Defines if comparison should start from the first point within the visible
+         * range or should start from the first point **before** the range.
+         *
+         * In other words, this flag determines if first point within the visible range
+         * will have 0% (`compareStart=true`) or should have been already calculated
+         * according to the previous point (`compareStart=false`).
+         *
+         * @sample {highstock} stock/plotoptions/series-comparestart/
+         *         Calculate compare within visible range
+         *
+         * @type      {boolean}
+         * @default   false
+         * @since     6.0.0
+         * @product   highstock
+         * @apioption plotOptions.series.compareStart
+         */
+        /**
+         * When [compare](#plotOptions.series.compare) is `percent`, this option
+         * dictates whether to use 0 or 100 as the base of comparison.
+         *
+         * @sample {highstock} stock/plotoptions/series-comparebase/
+         *         Compare base is 100
+         *
+         * @type       {number}
+         * @default    0
+         * @since      5.0.6
+         * @product    highstock
+         * @validvalue [0, 100]
+         * @apioption  plotOptions.series.compareBase
+         */
+        /**
+         * Cumulative Sum feature replaces points' values with the following formula:
+         * `sum of all previous points' values + current point's value`.
+         * Works only for points in a visible range.
+         * Adds the `cumulativeSum` field to each point object that can be accessed
+         * e.g. in the [tooltip.pointFormat](https://api.highcharts.com/highstock/tooltip.pointFormat).
+         *
+         * @see [Axis.setCumulative()](/class-reference/Highcharts.Axis#setCumulative)
+         * @see [Series.setCumulative()](/class-reference/Highcharts.Series#setCumulative)
+         *
+         * @sample {highstock} stock/plotoptions/series-cumulative-sum/
+         *         Cumulative Sum
+         *
+         * @type      {boolean}
+         * @default   false
+         * @since 9.3.0
+         * @product   highstock
+         * @apioption plotOptions.series.cumulative
+         */
+        ''; // keeps doclets above in transpiled file
+
+        return DataModifyComposition;
     });
     _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
         /* *
@@ -1894,8 +2440,18 @@
                     arr[arr.length - 1] :
                     (arr.hasNulls ? null : void 0);
             },
-            // ohlc and range are special cases where a multidimensional array is
-            // input and an array is output
+            // HLC, OHLC and range are special cases where a multidimensional array is
+            // input and an array is output.
+            hlc: function (high, low, close) {
+                high = approximations.high(high);
+                low = approximations.low(low);
+                close = approximations.close(close);
+                if (isNumber(high) ||
+                    isNumber(low) ||
+                    isNumber(close)) {
+                    return [high, low, close];
+                }
+            },
             ohlc: function (open, high, low, close) {
                 open = approximations.open(open);
                 high = approximations.high(high);
@@ -1907,7 +2463,6 @@
                     isNumber(close)) {
                     return [open, high, low, close];
                 }
-                // else, return is undefined
             },
             range: function (low, high) {
                 low = approximations.low(low);
@@ -1921,7 +2476,7 @@
                 // else, return is undefined
             }
         };
-        var applyGrouping = function () {
+        var applyGrouping = function (hasExtemesChanged) {
                 var series = this,
             chart = series.chart,
             options = series.options,
@@ -1940,9 +2495,9 @@
             if (groupingEnabled && !series.requireSorting) {
                 series.requireSorting = revertRequireSorting = true;
             }
-            // Skip if processData returns false or if grouping is disabled (in that
-            // order)
-            skip = skipDataGrouping(series) || !groupingEnabled;
+            // Skip if skipDataGrouping method returns false or if grouping is disabled
+            // (in that order).
+            skip = skipDataGrouping(series, hasExtemesChanged) === false || !groupingEnabled;
             // Revert original requireSorting value if changed
             if (revertRequireSorting) {
                 series.requireSorting = false;
@@ -2053,13 +2608,13 @@
                         (currentDataGrouping && currentDataGrouping.totalRange);
             }
         };
-        var skipDataGrouping = function (series) {
-                if (series.isCartesian &&
+        var skipDataGrouping = function (series,
+            force) {
+                return !(series.isCartesian &&
                     !series.isDirty &&
                     !series.xAxis.isDirty &&
-                    !series.yAxis.isDirty) {
-                    return false;
-            }
+                    !series.yAxis.isDirty &&
+                    !force);
         };
         var groupData = function (xData,
             yData,
@@ -2373,7 +2928,10 @@
                 ohlc: {
                     groupPixelWidth: 5
                 },
-                // Move to HeikinAshiSeries.ts aftre refactoring data grouping.
+                hlc: {
+                    groupPixelWidth: 5
+                    // Move to HeikinAshiSeries.ts aftre refactoring data grouping.
+                },
                 heikinashi: {
                     groupPixelWidth: 10
                 }
@@ -2415,6 +2973,9 @@
             }
             if (this.is('ohlc')) {
                 return 'ohlc';
+            }
+            if (this.is('hlc')) {
+                return 'hlc';
             }
             if (this.is('column')) {
                 return 'sum';
@@ -2481,7 +3042,7 @@
          *
          * @function Highcharts.Axis#applyGrouping
          */
-        Axis.prototype.applyGrouping = function () {
+        Axis.prototype.applyGrouping = function (e) {
             var axis = this,
                 series = axis.series;
             series.forEach(function (series) {
@@ -2493,7 +3054,7 @@
                 }
                 // Fire independing on series.groupPixelWidth to always set a proper
                 // dataGrouping state, (#16238)
-                series.applyGrouping();
+                series.applyGrouping(!!e.hasExtemesChanged);
             });
         };
         // Get the data grouping pixel width based on the greatest defined individual
@@ -2526,8 +3087,7 @@
                     // Execute grouping if the amount of points is greater than the
                     // limit defined in groupPixelWidth
                     if (series[i].groupPixelWidth ||
-                        dataLength >
-                            (this.chart.plotSizeX / groupPixelWidth) ||
+                        dataLength > (this.chart.plotSizeX / groupPixelWidth) ||
                         (dataLength && dgOptions.forced)) {
                         doGrouping = true;
                     }
@@ -2765,7 +3325,7 @@
          * from the raw data.
          *
          * Defaults to `average` for line-type series, `sum` for columns, `range`
-         * for range series and `ohlc` for OHLC and candlestick.
+         * for range series, `hlc` for HLC, and `ohlc` for OHLC and candlestick.
          *
          * @sample {highstock} stock/plotoptions/series-datagrouping-approximation
          *         Approximation callback with custom data
@@ -2989,10 +3549,10 @@
 
         return dataGrouping;
     });
-    _registerModule(_modules, 'Series/OHLC/OHLCPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
+    _registerModule(_modules, 'Series/HLC/HLCPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
         /* *
          *
-         *  (c) 2010-2021 Torstein Honsi
+         *  (c) 2010-2021 Pawel Lysy
          *
          *  License: www.highcharts.com/license
          *
@@ -3021,9 +3581,9 @@
          *  Class
          *
          * */
-        var OHLCPoint = /** @class */ (function (_super) {
-                __extends(OHLCPoint, _super);
-            function OHLCPoint() {
+        var HLCPoint = /** @class */ (function (_super) {
+                __extends(HLCPoint, _super);
+            function HLCPoint() {
                 /* *
                  *
                  *  Properties
@@ -3034,9 +3594,464 @@
                 _this.close = void 0;
                 _this.high = void 0;
                 _this.low = void 0;
-                _this.open = void 0;
                 _this.options = void 0;
                 _this.plotClose = void 0;
+                _this.series = void 0;
+                return _this;
+            }
+            return HLCPoint;
+        }(ColumnSeries.prototype.pointClass));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return HLCPoint;
+    });
+    _registerModule(_modules, 'Series/HLC/HLCSeries.js', [_modules['Series/HLC/HLCPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (HLCPoint, SeriesRegistry, U) {
+        /* *
+         *
+         *  (c) 2010-2021 Pawel Lysy
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var ColumnSeries = SeriesRegistry.seriesTypes.column;
+        var extend = U.extend,
+            merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The hlc series type.
+         *
+         * @private
+         * @class
+         * @name Highcharts.seriesTypes.hlc
+         *
+         * @augments Highcharts.Series
+         */
+        var HLCSeries = /** @class */ (function (_super) {
+                __extends(HLCSeries, _super);
+            function HLCSeries() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                _this.data = void 0;
+                _this.options = void 0;
+                _this.points = void 0;
+                _this.yData = void 0;
+                return _this;
+                /* eslint-enable valid-jsdoc */
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Extend the path if close is not between high and low.
+             *
+             * @param {SVGPath} path the path array of the point
+             * @param {number} halfStrokeWidth
+             * @param {number} value value of the point to which the stem should be extended
+             */
+            HLCSeries.prototype.extendStem = function (path, halfStrokeWidth, value) {
+                var start = path[0];
+                var end = path[1];
+                // We don't need to worry about crisp - close value
+                // is already crisped and halfStrokeWidth should remove it.
+                if (typeof start[2] === 'number') {
+                    start[2] = Math.max(value + halfStrokeWidth, start[2]);
+                }
+                if (typeof end[2] === 'number') {
+                    end[2] = Math.min(value - halfStrokeWidth, end[2]);
+                }
+            };
+            /**
+             * Function to create SVGPath of the point based on the
+             * plot positions of this point.
+             *
+             * @param {SVGPath} point
+             * @param {SVGElement} graphic
+             * @returns {SVGPath}
+             */
+            HLCSeries.prototype.getPointPath = function (point, graphic) {
+                // crisp vector coordinates
+                var strokeWidth = graphic.strokeWidth(),
+                    series = point.series,
+                    crispCorr = (strokeWidth % 2) / 2, 
+                    // #2596:
+                    crispX = Math.round(point.plotX) - crispCorr,
+                    halfWidth = Math.round(point.shapeArgs.width / 2);
+                var path,
+                    plotClose = point.plotClose;
+                // the vertical stem
+                path = [
+                    ['M', crispX, Math.round(point.yBottom)],
+                    ['L', crispX, Math.round(point.plotHigh)]
+                ];
+                // close
+                if (point.close !== null) {
+                    plotClose = Math.round(point.plotClose) + crispCorr;
+                    path.push(['M', crispX, plotClose], ['L', crispX + halfWidth, plotClose]);
+                    series.extendStem(path, strokeWidth / 2, plotClose);
+                }
+                return path;
+            };
+            /**
+             * Draw single point
+             * @private
+             */
+            HLCSeries.prototype.drawSinglePoint = function (point) {
+                var series = point.series,
+                    chart = series.chart;
+                var path,
+                    graphic = point.graphic,
+                    isNew = !graphic;
+                if (typeof point.plotY !== 'undefined') {
+                    // Create and/or update the graphic
+                    if (!graphic) {
+                        point.graphic = graphic = chart.renderer.path()
+                            .add(series.group);
+                    }
+                    if (!chart.styledMode) {
+                        graphic.attr(series.pointAttribs(point, (point.selected && 'select'))); // #3897
+                    }
+                    // crisp vector coordinates
+                    path = series.getPointPath(point, graphic);
+                    graphic[isNew ? 'attr' : 'animate']({ d: path })
+                        .addClass(point.getClassName(), true);
+                }
+            };
+            /**
+             * Draw the data points
+             * @private
+             */
+            HLCSeries.prototype.drawPoints = function () {
+                this.points.forEach(this.drawSinglePoint);
+            };
+            /**
+             * @private
+             * @function Highcharts.seriesTypes.hlc#init
+             * @return {void}
+             */
+            HLCSeries.prototype.init = function () {
+                _super.prototype.init.apply(this, arguments);
+                this.options.stacking = void 0; // #8817
+            };
+            /**
+             * Postprocess mapping between options and SVG attributes
+             * @private
+             */
+            HLCSeries.prototype.pointAttribs = function (point, state) {
+                var attribs = _super.prototype.pointAttribs.call(this,
+                    point,
+                    state);
+                delete attribs.fill;
+                return attribs;
+            };
+            HLCSeries.prototype.toYData = function (point) {
+                // return a plain array for speedy calculation
+                return [point.high, point.low, point.close];
+            };
+            /**
+             * Translate data points from raw values x and y to plotX and plotY
+             *
+             * @private
+             * @function Highcharts.seriesTypes.hlc#translate
+             * @return {void}
+             */
+            HLCSeries.prototype.translate = function () {
+                var series = this,
+                    yAxis = series.yAxis,
+                    names = (this.pointArrayMap && this.pointArrayMap.slice()) || [],
+                    translated = names.map(function (name) {
+                        return "plot" + (name.charAt(0).toUpperCase() + name.slice(1));
+                });
+                translated.push('yBottom');
+                names.push('low');
+                _super.prototype.translate.apply(series);
+                // Do the translation
+                series.points.forEach(function (point) {
+                    names.forEach(function (name, i) {
+                        var value = point[name];
+                        if (value !== null) {
+                            if (series.dataModify) {
+                                value = series.dataModify.modifyValue(value);
+                            }
+                            point[translated[i]] =
+                                yAxis.toPixels(value, true);
+                        }
+                    });
+                    // Align the tooltip to the high value to avoid covering the
+                    // point
+                    point.tooltipPos[1] =
+                        point.plotHigh + yAxis.pos - series.chart.plotTop;
+                });
+            };
+            /**
+             * An HLC chart is a style of financial chart used to describe price
+             * movements over time. It displays high, low and close values per
+             * data point.
+             *
+             * @sample stock/demo/hlc/
+             *         HLC chart
+             *
+             * @extends      plotOptions.column
+             * @excluding    borderColor, borderRadius, borderWidth, crisp, stacking,
+             *               stack
+             * @product      highstock
+             * @optionparent plotOptions.hlc
+             */
+            HLCSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+                /**
+                 * The approximate pixel width of each group. If for example a series
+                 * with 30 points is displayed over a 600 pixel wide plot area, no
+                 * grouping is performed. If however the series contains so many points
+                 * that the spacing is less than the groupPixelWidth, Highcharts will
+                 * try to group it into appropriate groups so that each is more or less
+                 * two pixels wide. Defaults to `5`.
+                 *
+                 * @type      {number}
+                 * @default   5
+                 * @product   highstock
+                 * @apioption plotOptions.hlc.dataGrouping.groupPixelWidth
+                 */
+                /**
+                 * @type      {Highcharts.DataGroupingApproximationValue|Function}
+                 * @default   hlc
+                 * @product   highstock
+                 * @apioption plotOptions.hlc.dataGrouping.approximation
+                 */
+                /**
+                 * @default   close
+                 * @apioption plotOptions.hlc.colorKey
+                 */
+                /**
+                 * The pixel width of the line/border. Defaults to `1`.
+                 *
+                 * @sample {highstock} stock/plotoptions/hlc-linewidth/
+                 *         A greater line width
+                 *
+                 * @type    {number}
+                 * @default 1
+                 * @product highstock
+                 *
+                 * @public
+                 */
+                lineWidth: 1,
+                tooltip: {
+                    pointFormat: '<span style="color:{point.color}">\u25CF</span> ' +
+                        '<b> {series.name}</b><br/>' +
+                        'High: {point.high}<br/>' +
+                        'Low: {point.low}<br/>' +
+                        'Close: {point.close}<br/>'
+                },
+                threshold: null,
+                states: {
+                    /**
+                     * @extends plotOptions.column.states.hover
+                     * @product highstock
+                     */
+                    hover: {
+                        /**
+                         * The pixel width of the line representing the HLC point.
+                         *
+                         * @type    {number}
+                         * @default 3
+                         * @product highstock
+                         */
+                        lineWidth: 3
+                    }
+                },
+                /**
+                 * Determines which one of  `high`, `low`, `close` values should
+                 * be represented as `point.y`, which is later used to set dataLabel
+                 * position and [compare](#plotOptions.series.compare).
+                 *
+                 * @sample {highstock} stock/plotoptions/hlc-pointvalkey/
+                 *         Possible values
+                 *
+                 * @type       {string}
+                 * @default    close
+                 * @validvalue ["high", "low", "close"]
+                 * @product    highstock
+                 * @apioption  plotOptions.hlc.pointValKey
+                 */
+                /**
+                 * @default   close
+                 * @apioption plotOptions.hlc.colorKey
+                 */
+                stickyTracking: true
+            });
+            return HLCSeries;
+        }(ColumnSeries));
+        extend(HLCSeries.prototype, {
+            animate: null,
+            directTouch: false,
+            pointArrayMap: ['high', 'low', 'close'],
+            pointAttrToOptions: {
+                stroke: 'color',
+                'stroke-width': 'lineWidth'
+            },
+            pointValKey: 'close'
+        });
+        HLCSeries.prototype.pointClass = HLCPoint;
+        SeriesRegistry.registerSeriesType('hlc', HLCSeries);
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * A `hlc` series. If the [type](#series.hlc.type) option is not
+         * specified, it is inherited from [chart.type](#chart.type).
+         *
+         * @extends   series,plotOptions.hlc
+         * @excluding dataParser, dataURL
+         * @product   highstock
+         * @apioption series.hlc
+         */
+        /**
+         * An array of data points for the series. For the `hlc` series type,
+         * points can be given in the following ways:
+         *
+         * 1. An array of arrays with 4 or 3 values. In this case, the values correspond
+         *    to `x,high,low,close`. If the first value is a string, it is applied
+         *    as the name of the point, and the `x` value is inferred. The `x` value can
+         *    also be omitted, in which case the inner arrays should be of length of 3\.
+         *    Then the `x` value is automatically calculated, either starting at 0 and
+         *    incremented by 1, or from `pointStart` and `pointInterval` given in the
+         *    series options.
+         *    ```js
+         *    data: [
+         *        [0, 5, 6, 7],
+         *        [1, 4, 8, 2],
+         *        [2, 3, 4, 10]
+         *    ]
+         *    ```
+         *
+         * 2. An array of objects with named values. The following snippet shows only a
+         *    few settings, see the complete options set below. If the total number of
+         *    data points exceeds the series'
+         *    [turboThreshold](#series.hlc.turboThreshold), this option is not
+         *    available.
+         *    ```js
+         *    data: [{
+         *        x: 1,
+         *        high: 4,
+         *        low: 5,
+         *        close: 2,
+         *        name: "Point2",
+         *        color: "#00FF00"
+         *    }, {
+         *        x: 1,
+         *        high: 3,
+         *        low: 6,
+         *        close: 7,
+         *        name: "Point1",
+         *        color: "#FF00FF"
+         *    }]
+         *    ```
+         *
+         * @type      {Array<Array<(number|string),number,number>|Array<(number|string),number,number,number>|*>}
+         * @extends   series.arearange.data
+         * @excluding y, marker
+         * @product   highstock
+         * @apioption series.hlc.data
+         */
+        /**
+         * The closing value of each data point.
+         *
+         * @type      {number}
+         * @product   highstock
+         * @apioption series.hlc.data.close
+         */
+        ''; // adds doclets above to transpilat
+
+        return HLCSeries;
+    });
+    _registerModule(_modules, 'Series/OHLC/OHLCPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var HLCSeries = SeriesRegistry.seriesTypes.hlc;
+        /* *
+         *
+         *  Class
+         *
+         * */
+        var OHLCPoint = /** @class */ (function (_super) {
+                __extends(OHLCPoint, _super);
+            function OHLCPoint() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.open = void 0;
+                _this.options = void 0;
                 _this.plotOpen = void 0;
                 _this.series = void 0;
                 return _this;
@@ -3106,7 +4121,7 @@
                 return this;
             };
             return OHLCPoint;
-        }(ColumnSeries.prototype.pointClass));
+        }(HLCSeries.prototype.pointClass));
         /* *
          *
          *  Default Export
@@ -3141,14 +4156,11 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var ColumnSeries = SeriesRegistry.seriesTypes.column;
-        var extend = U.extend,
+        var Series = SeriesRegistry.series,
+            HLCSeries = SeriesRegistry.seriesTypes.hlc;
+        var addEvent = U.addEvent,
+            extend = U.extend,
             merge = U.merge;
-        /* *
-         *
-         *  Class
-         *
-         * */
         /**
          * The ohlc series type.
          *
@@ -3176,97 +4188,31 @@
                 _this.data = void 0;
                 _this.options = void 0;
                 _this.points = void 0;
-                _this.yData = void 0;
                 return _this;
-                /* eslint-enable valid-jsdoc */
             }
             /* *
              *
              *  Functions
              *
              * */
+            OHLCSeries.prototype.getPointPath = function (point, graphic) {
+                var path = _super.prototype.getPointPath.call(this,
+                    point,
+                    graphic),
+                    strokeWidth = graphic.strokeWidth(),
+                    crispCorr = (strokeWidth % 2) / 2,
+                    crispX = Math.round(point.plotX) - crispCorr,
+                    halfWidth = Math.round(point.shapeArgs.width / 2);
+                var plotOpen = point.plotOpen;
+                // crisp vector coordinates
+                if (point.open !== null) {
+                    plotOpen = Math.round(point.plotOpen) + crispCorr;
+                    path.push(['M', crispX, plotOpen], ['L', crispX - halfWidth, plotOpen]);
+                    _super.prototype.extendStem.call(this, path, strokeWidth / 2, plotOpen);
+                }
+                return path;
+            };
             /* eslint-disable valid-jsdoc */
-            /**
-             * Draw the data points
-             * @private
-             */
-            OHLCSeries.prototype.drawPoints = function () {
-                var series = this,
-                    points = series.points,
-                    chart = series.chart, 
-                    /**
-                     * Extend vertical stem to open and close values.
-                     */
-                    extendStem = function (path,
-                    halfStrokeWidth,
-                    openOrClose) {
-                        var start = path[0];
-                    var end = path[1];
-                    // We don't need to worry about crisp - openOrClose value
-                    // is already crisped and halfStrokeWidth should remove it.
-                    if (typeof start[2] === 'number') {
-                        start[2] = Math.max(openOrClose + halfStrokeWidth, start[2]);
-                    }
-                    if (typeof end[2] === 'number') {
-                        end[2] = Math.min(openOrClose - halfStrokeWidth, end[2]);
-                    }
-                };
-                points.forEach(function (point) {
-                    var plotOpen,
-                        plotClose,
-                        crispCorr,
-                        halfWidth,
-                        path,
-                        graphic = point.graphic,
-                        crispX,
-                        isNew = !graphic,
-                        strokeWidth;
-                    if (typeof point.plotY !== 'undefined') {
-                        // Create and/or update the graphic
-                        if (!graphic) {
-                            point.graphic = graphic = chart.renderer.path()
-                                .add(series.group);
-                        }
-                        if (!chart.styledMode) {
-                            graphic.attr(series.pointAttribs(point, (point.selected && 'select'))); // #3897
-                        }
-                        // crisp vector coordinates
-                        strokeWidth = graphic.strokeWidth();
-                        crispCorr = (strokeWidth % 2) / 2;
-                        // #2596:
-                        crispX = Math.round(point.plotX) - crispCorr;
-                        halfWidth = Math.round(point.shapeArgs.width / 2);
-                        // the vertical stem
-                        path = [
-                            ['M', crispX, Math.round(point.yBottom)],
-                            ['L', crispX, Math.round(point.plotHigh)]
-                        ];
-                        // open
-                        if (point.open !== null) {
-                            plotOpen = Math.round(point.plotOpen) + crispCorr;
-                            path.push(['M', crispX, plotOpen], ['L', crispX - halfWidth, plotOpen]);
-                            extendStem(path, strokeWidth / 2, plotOpen);
-                        }
-                        // close
-                        if (point.close !== null) {
-                            plotClose = Math.round(point.plotClose) + crispCorr;
-                            path.push(['M', crispX, plotClose], ['L', crispX + halfWidth, plotClose]);
-                            extendStem(path, strokeWidth / 2, plotClose);
-                        }
-                        graphic[isNew ? 'attr' : 'animate']({ d: path })
-                            .addClass(point.getClassName(), true);
-                    }
-                });
-            };
-            /**
-             * @private
-             * @function Highcarts.seriesTypes.ohlc#init
-             * @return {void}
-             */
-            OHLCSeries.prototype.init = function () {
-                _super.prototype.init.apply(this, arguments);
-                this.options.stacking = void 0; // #8817
-            };
             /**
              * Postprocess mapping between options and SVG attributes
              * @private
@@ -3289,43 +4235,6 @@
                 return [point.open, point.high, point.low, point.close];
             };
             /**
-             * Translate data points from raw values x and y to plotX and plotY
-             *
-             * @private
-             * @function Highcharts.seriesTypes.ohlc#translate
-             * @return {void}
-             */
-            OHLCSeries.prototype.translate = function () {
-                var series = this,
-                    yAxis = series.yAxis,
-                    hasModifyValue = !!series.modifyValue,
-                    translated = [
-                        'plotOpen',
-                        'plotHigh',
-                        'plotLow',
-                        'plotClose',
-                        'yBottom'
-                    ]; // translate OHLC for
-                    _super.prototype.translate.apply(series);
-                // Do the translation
-                series.points.forEach(function (point) {
-                    [point.open, point.high, point.low, point.close, point.low]
-                        .forEach(function (value, i) {
-                        if (value !== null) {
-                            if (hasModifyValue) {
-                                value = series.modifyValue(value);
-                            }
-                            point[translated[i]] =
-                                yAxis.toPixels(value, true);
-                        }
-                    });
-                    // Align the tooltip to the high value to avoid covering the
-                    // point
-                    point.tooltipPos[1] =
-                        point.plotHigh + yAxis.pos - series.chart.plotTop;
-                });
-            };
-            /**
              * An OHLC chart is a style of financial chart used to describe price
              * movements over time. It displays open, high, low and close values per
              * data point.
@@ -3333,39 +4242,28 @@
              * @sample stock/demo/ohlc/
              *         OHLC chart
              *
-             * @extends      plotOptions.column
-             * @excluding    borderColor, borderRadius, borderWidth, crisp, stacking,
-             *               stack
+             * @extends      plotOptions.ohlc
              * @product      highstock
              * @optionparent plotOptions.ohlc
              */
-            OHLCSeries.defaultOptions = merge(ColumnSeries.defaultOptions, {
+            /**
+             * The parameter allows setting line series type and use OHLC indicators.
+             * Data in OHLC format is required.
+             *
+             * @sample {highstock} stock/indicators/use-ohlc-data
+             *         Use OHLC data format to plot line chart
+             *
+             * @type      {boolean}
+             * @product   highstock
+             * @apioption plotOptions.line.useOhlcData
+             */
+            OHLCSeries.defaultOptions = merge(HLCSeries.defaultOptions, {
                 /**
-                 * The approximate pixel width of each group. If for example a series
-                 * with 30 points is displayed over a 600 pixel wide plot area, no
-                 * grouping is performed. If however the series contains so many points
-                 * that the spacing is less than the groupPixelWidth, Highcharts will
-                 * try to group it into appropriate groups so that each is more or less
-                 * two pixels wide. Defaults to `5`.
-                 *
-                 * @type      {number}
-                 * @default   5
+                 * @type      {Highcharts.DataGroupingApproximationValue|Function}
+                 * @default   ohlc
                  * @product   highstock
-                 * @apioption plotOptions.ohlc.dataGrouping.groupPixelWidth
+                 * @apioption plotOptions.ohlc.dataGrouping.approximation
                  */
-                /**
-                 * The pixel width of the line/border. Defaults to `1`.
-                 *
-                 * @sample {highstock} stock/plotoptions/ohlc-linewidth/
-                 *         A greater line width
-                 *
-                 * @type    {number}
-                 * @default 1
-                 * @product highstock
-                 *
-                 * @private
-                 */
-                lineWidth: 1,
                 tooltip: {
                     pointFormat: '<span style="color:{point.color}">\u25CF</span> ' +
                         '<b> {series.name}</b><br/>' +
@@ -3373,41 +4271,16 @@
                         'High: {point.high}<br/>' +
                         'Low: {point.low}<br/>' +
                         'Close: {point.close}<br/>'
-                },
-                threshold: null,
-                states: {
-                    /**
-                     * @extends plotOptions.column.states.hover
-                     * @product highstock
-                     */
-                    hover: {
-                        /**
-                         * The pixel width of the line representing the OHLC point.
-                         *
-                         * @type    {number}
-                         * @default 3
-                         * @product highstock
-                         */
-                        lineWidth: 3
-                    }
-                },
+                }
                 /**
-                 * Determines which one of `open`, `high`, `low`, `close` values should
+                 * Determines which one of  `open`, `high`, `low`, `close` values should
                  * be represented as `point.y`, which is later used to set dataLabel
                  * position and [compare](#plotOptions.series.compare).
                  *
-                 * @sample {highstock} stock/plotoptions/ohlc-pointvalkey/
-                 *         Possible values
-                 *
-                 * @type       {string}
                  * @default    close
                  * @validvalue ["open", "high", "low", "close"]
                  * @product    highstock
                  * @apioption  plotOptions.ohlc.pointValKey
-                 */
-                /**
-                 * @default   close
-                 * @apioption plotOptions.ohlc.colorKey
                  */
                 /**
                  * Line color for up points.
@@ -3416,19 +4289,11 @@
                  * @product   highstock
                  * @apioption plotOptions.ohlc.upColor
                  */
-                stickyTracking: true
             });
             return OHLCSeries;
-        }(ColumnSeries));
+        }(HLCSeries));
         extend(OHLCSeries.prototype, {
-            animate: null,
-            directTouch: false,
-            pointArrayMap: ['open', 'high', 'low', 'close'],
-            pointAttrToOptions: {
-                stroke: 'color',
-                'stroke-width': 'lineWidth'
-            },
-            pointValKey: 'close'
+            pointArrayMap: ['open', 'high', 'low', 'close']
         });
         OHLCSeries.prototype.pointClass = OHLCPoint;
         SeriesRegistry.registerSeriesType('ohlc', OHLCSeries);
@@ -3437,6 +4302,30 @@
          *  Default Export
          *
          * */
+        // Add useOhlcData option
+        addEvent(Series, 'init', function (eventOptions) {
+            // eslint-disable-next-line no-invalid-this
+            var series = this,
+                options = eventOptions.options;
+            if (options.useOhlcData &&
+                options.id !== 'highcharts-navigator-series') {
+                extend(series, {
+                    pointValKey: OHLCSeries.prototype.pointValKey,
+                    // keys: ohlcProto.keys, // @todo potentially nonsense
+                    pointArrayMap: OHLCSeries.prototype.pointArrayMap,
+                    toYData: OHLCSeries.prototype.toYData
+                });
+            }
+        });
+        addEvent(Series, 'afterSetOptions', function (e) {
+            var options = e.options,
+                dataGrouping = options.dataGrouping;
+            if (dataGrouping &&
+                options.useOhlcData &&
+                options.id !== 'highcharts-navigator-series') {
+                dataGrouping.approximation = 'ohlc';
+            }
+        });
         /* *
          *
          *  API Options
@@ -3502,13 +4391,6 @@
          * @apioption series.ohlc.data
          */
         /**
-         * The closing value of each data point.
-         *
-         * @type      {number}
-         * @product   highstock
-         * @apioption series.ohlc.data.close
-         */
-        /**
          * The opening value of each data point.
          *
          * @type      {number}
@@ -3519,7 +4401,7 @@
 
         return OHLCSeries;
     });
-    _registerModule(_modules, 'Series/Candlestick/CandlestickSeries.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (D, palette, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Candlestick/CandlestickSeries.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (D, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -3569,7 +4451,7 @@
             function CandlestickSeries() {
                 /* *
                  *
-                 * Static properties
+                 * Static Properties
                  *
                  * */
                 var _this = _super !== null && _super.apply(this,
@@ -3706,9 +4588,10 @@
                 });
                 /* eslint-enable valid-jsdoc */
             };
+            CandlestickSeries.defaultOptions = merge(OHLCSeries.defaultOptions, defaultOptions.plotOptions, 
             /**
-             * A candlestick chart is a style of financial chart used to describe price
-             * movements over time.
+             * A candlestick chart is a style of financial chart used to describe
+             * price movements over time.
              *
              * @sample stock/demo/candlestick/
              *         Candlestick chart
@@ -3718,7 +4601,7 @@
              * @product      highstock
              * @optionparent plotOptions.candlestick
              */
-            CandlestickSeries.defaultOptions = merge(OHLCSeries.defaultOptions, defaultOptions.plotOptions, {
+            {
                 /**
                  * The specific line color for up candle sticks. The default is to
                  * inherit the general `lineColor` setting.
@@ -3731,12 +4614,6 @@
                  * @product   highstock
                  * @apioption plotOptions.candlestick.upLineColor
                  */
-                /**
-                 * @type      {Highcharts.DataGroupingApproximationValue|Function}
-                 * @default   ohlc
-                 * @product   highstock
-                 * @apioption plotOptions.candlestick.dataGrouping.approximation
-                 */
                 states: {
                     /**
                      * @extends plotOptions.column.states.hover
@@ -3744,16 +4621,14 @@
                      */
                     hover: {
                         /**
-                         * The pixel width of the line/border around the candlestick.
+                         * The pixel width of the line/border around the
+                         * candlestick.
                          *
                          * @product highstock
                          */
                         lineWidth: 2
                     }
                 },
-                /**
-                 * @extends plotOptions.ohlc.tooltip
-                 */
                 tooltip: defaultOptions.plotOptions.ohlc.tooltip,
                 /**
                  * @type    {number|null}
@@ -3775,7 +4650,7 @@
                  * @default #000000
                  * @product highstock
                  */
-                lineColor: palette.neutralColor100,
+                lineColor: "#000000" /* neutralColor100 */,
                 /**
                  * The pixel width of the candlestick line/border. Defaults to `1`.
                  *
@@ -3800,8 +4675,8 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @default #ffffff
                  * @product highstock
-                 */
-                upColor: palette.backgroundColor,
+                */
+                upColor: "#ffffff" /* backgroundColor */,
                 /**
                  * @product highstock
                  */
@@ -3963,7 +4838,7 @@
 
         return FlagsPoint;
     });
-    _registerModule(_modules, 'Mixins/OnSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (ColumnSeries, Series, U) {
+    _registerModule(_modules, 'Series/OnSeriesComposition.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (ColumnSeries, Series, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -3977,52 +4852,78 @@
         var seriesProto = Series.prototype;
         var defined = U.defined,
             stableSort = U.stableSort;
-        /**
-         * @private
-         * @mixin onSeriesMixin
-         */
-        var onSeriesMixin = {
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Override getPlotBox. If the onSeries option is valid,
-            return the plot box
-                 * of the onSeries,
-            otherwise proceed as usual.
-                 *
-                 * @private
-                 * @function onSeriesMixin.getPlotBox
-                 * @return {Highcharts.SeriesPlotBoxObject}
-                 */
-                getPlotBox: function () {
-                    return seriesProto.getPlotBox.call((this.options.onSeries &&
-                        this.chart.get(this.options.onSeries)) || this);
-            },
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var OnSeriesComposition;
+        (function (OnSeriesComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Properties
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(SeriesClass) {
+                if (composedClasses.indexOf(SeriesClass) === -1) {
+                    composedClasses.push(SeriesClass);
+                    var seriesProto_1 = SeriesClass.prototype;
+                    seriesProto_1.getPlotBox = getPlotBox;
+                    seriesProto_1.translate = translate;
+                }
+                return SeriesClass;
+            }
+            OnSeriesComposition.compose = compose;
+            /**
+             * Override getPlotBox. If the onSeries option is valid, return the plot box
+             * of the onSeries, otherwise proceed as usual.
+             *
+             * @private
+             */
+            function getPlotBox() {
+                return seriesProto.getPlotBox.call((this.options.onSeries &&
+                    this.chart.get(this.options.onSeries)) || this);
+            }
+            OnSeriesComposition.getPlotBox = getPlotBox;
             /**
              * Extend the translate method by placing the point on the related series
              *
              * @private
-             * @function onSeriesMixin.translate
-             * @return {void}
              */
-            translate: function () {
+            function translate() {
                 columnProto.translate.apply(this);
                 var series = this,
                     options = series.options,
                     chart = series.chart,
                     points = series.points,
-                    cursor = points.length - 1,
-                    point,
-                    lastPoint,
                     optionsOnSeries = options.onSeries,
                     onSeries = (optionsOnSeries &&
                         chart.get(optionsOnSeries)),
-                    onKey = options.onKey || 'y',
                     step = onSeries && onSeries.options.step,
                     onData = (onSeries && onSeries.points),
-                    i = onData && onData.length,
                     inverted = chart.inverted,
                     xAxis = series.xAxis,
-                    yAxis = series.yAxis,
+                    yAxis = series.yAxis;
+                var cursor = points.length - 1,
+                    point,
+                    lastPoint,
+                    onKey = options.onKey || 'y',
+                    i = onData && onData.length,
                     xOffset = 0,
                     leftPoint,
                     lastX,
@@ -4036,9 +4937,7 @@
                     lastX = (onData[i - 1].x +
                         (currentDataGrouping ? currentDataGrouping.totalRange : 0)); // #2374
                     // sort the data points
-                    stableSort(points, function (a, b) {
-                        return (a.x - b.x);
-                    });
+                    stableSort(points, function (a, b) { return (a.x - b.x); });
                     onKey = 'plot' + onKey[0].toUpperCase() + onKey.substr(1);
                     while (i-- && points[cursor]) {
                         leftPoint = onData[i];
@@ -4117,10 +5016,15 @@
                 });
                 this.onSeries = onSeries;
             }
-            /* eslint-enable valid-jsdoc */
-        };
+            OnSeriesComposition.translate = translate;
+        })(OnSeriesComposition || (OnSeriesComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return onSeriesMixin;
+        return OnSeriesComposition;
     });
     _registerModule(_modules, 'Series/Flags/FlagsSymbols.js', [_modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js']], function (RendererRegistry, SVGRenderer) {
         /* *
@@ -4216,7 +5120,7 @@
 
         return symbols;
     });
-    _registerModule(_modules, 'Series/Flags/FlagsSeries.js', [_modules['Series/Flags/FlagsPoint.js'], _modules['Core/Globals.js'], _modules['Mixins/OnSeries.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (FlagsPoint, H, OnSeriesMixin, palette, R, SeriesRegistry, SVGElement, U) {
+    _registerModule(_modules, 'Series/Flags/FlagsSeries.js', [_modules['Series/Flags/FlagsPoint.js'], _modules['Core/Globals.js'], _modules['Series/OnSeriesComposition.js'], _modules['Core/Renderer/RendererUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (FlagsPoint, H, OnSeriesComposition, R, SeriesRegistry, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4421,11 +5325,15 @@
                 }
                 // Handle X-dimension overlapping
                 if (!options.allowOverlapX) {
+                    var maxDistance_1 = 100;
                     objectEach(boxesMap, function (box) {
                         box.plotX = box.anchorX;
                         boxes.push(box);
+                        maxDistance_1 = Math.max(box.size, maxDistance_1);
                     });
-                    distribute(boxes, inverted ? yAxis.len : this.xAxis.len, 100);
+                    // If necessary (for overlapping or long labels)  distribute it
+                    // depending on the label width or a hardcoded value, #16041.
+                    distribute(boxes, inverted ? yAxis.len : this.xAxis.len, maxDistance_1);
                     points.forEach(function (point) {
                         var box = point.graphic && boxesMap[point.plotX];
                         if (box) {
@@ -4689,7 +5597,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highstock
                  */
-                fillColor: palette.backgroundColor,
+                fillColor: "#ffffff" /* backgroundColor */,
                 /**
                  * The color of the line/border of the flag.
                  *
@@ -4719,14 +5627,14 @@
                          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                          * @product highstock
                          */
-                        lineColor: palette.neutralColor100,
+                        lineColor: "#000000" /* neutralColor100 */,
                         /**
                          * The fill or background color of the flag.
                          *
                          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                          * @product highstock
                          */
-                        fillColor: palette.highlightColor20
+                        fillColor: "#ccd6eb" /* highlightColor20 */
                     }
                 },
                 /**
@@ -4748,37 +5656,27 @@
             });
             return FlagsSeries;
         }(ColumnSeries));
+        OnSeriesComposition.compose(FlagsSeries);
         extend(FlagsSeries.prototype, {
             allowDG: false,
-            /**
-             * @private
-             * @function Highcharts.seriesTypes.flags#buildKDTree
-             */
-            buildKDTree: noop,
             forceCrop: true,
-            getPlotBox: OnSeriesMixin.getPlotBox,
-            /**
-             * Inherit the initialization from base Series.
-             *
-             * @private
-             * @borrows Highcharts.Series#init as Highcharts.seriesTypes.flags#init
-             */
-            init: Series.prototype.init,
-            /**
-             * Don't invert the flag marker group (#4960).
-             *
-             * @private
-             * @function Highcharts.seriesTypes.flags#invertGroups
-             */
-            invertGroups: noop,
-            // Flags series group should not be invertible (#14063).
             invertible: false,
             noSharedTooltip: true,
             pointClass: FlagsPoint,
             sorted: false,
             takeOrdinalPosition: false,
             trackerGroups: ['markerGroup'],
-            translate: OnSeriesMixin.translate
+            buildKDTree: noop,
+            /**
+             * Inherit the initialization from base Series.
+             * @private
+             */
+            init: Series.prototype.init,
+            /**
+             * Don't invert the flag marker group (#4960).
+             * @private
+             */
+            invertGroups: noop
         });
         SeriesRegistry.registerSeriesType('flags', FlagsSeries);
         /* *
@@ -5000,8 +5898,15 @@
                             if (axis.opposite) {
                                 scrollbarsOffsets[0] += offset;
                             }
-                            scrollbar.position(axis.left + axis.width + 2 + scrollbarsOffsets[0] -
-                                (axis.opposite ? 0 : axisMargin), axis.top, axis.width, axis.height);
+                            var xPosition = void 0;
+                            if (!scrollbar.options.opposite) {
+                                xPosition = axis.opposite ? 0 : axisMargin;
+                            }
+                            else {
+                                xPosition = axis.left + axis.width + 2 + scrollbarsOffsets[0] -
+                                    (axis.opposite ? 0 : axisMargin);
+                            }
+                            scrollbar.position(xPosition, axis.top, axis.width, axis.height);
                             // Next scrollbar should reserve space for margin (if set)
                             if (axis.opposite) {
                                 scrollbarsOffsets[0] += axisMargin;
@@ -5040,7 +5945,8 @@
                 // Make space for a scrollbar:
                 addEvent(AxisClass, 'afterGetOffset', function () {
                     var axis = this,
-                        index = axis.horiz ? 2 : 1,
+                        opposite = axis.scrollbar && !axis.scrollbar.options.opposite,
+                        index = axis.horiz ? 2 : opposite ? 3 : 1,
                         scrollbar = axis.scrollbar;
                     if (scrollbar) {
                         axis.chart.scrollbarsOffsets = [0, 0]; // reset scrollbars offsets
@@ -5056,7 +5962,7 @@
 
         return ScrollbarAxis;
     });
-    _registerModule(_modules, 'Core/ScrollbarDefaults.js', [_modules['Core/Globals.js'], _modules['Core/Color/Palette.js']], function (H, Palette) {
+    _registerModule(_modules, 'Core/ScrollbarDefaults.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -5155,6 +6061,8 @@
                  * @since 1.2.5
                  */
                 minWidth: 6,
+                /** @ignore-option */
+                opposite: true,
                 /**
                  * Whether to show or hide the scrollbar when the scrolled content is
                  * zoomed out to it full extent.
@@ -5176,7 +6084,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                barBackgroundColor: Palette.neutralColor20,
+                barBackgroundColor: "#cccccc" /* neutralColor20 */,
                 /**
                  * The width of the bar's border.
                  *
@@ -5189,7 +6097,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                barBorderColor: Palette.neutralColor20,
+                barBorderColor: "#cccccc" /* neutralColor20 */,
                 /**
                  * The color of the small arrow inside the scrollbar buttons.
                  *
@@ -5198,7 +6106,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                buttonArrowColor: Palette.neutralColor80,
+                buttonArrowColor: "#333333" /* neutralColor80 */,
                 /**
                  * The color of scrollbar buttons.
                  *
@@ -5207,7 +6115,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                buttonBackgroundColor: Palette.neutralColor10,
+                buttonBackgroundColor: "#e6e6e6" /* neutralColor10 */,
                 /**
                  * The color of the border of the scrollbar buttons.
                  *
@@ -5216,7 +6124,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                buttonBorderColor: Palette.neutralColor20,
+                buttonBorderColor: "#cccccc" /* neutralColor20 */,
                 /**
                  * The border width of the scrollbar buttons.
                  *
@@ -5229,7 +6137,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                rifleColor: Palette.neutralColor80,
+                rifleColor: "#333333" /* neutralColor80 */,
                 /**
                  * The color of the track background.
                  *
@@ -5238,7 +6146,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                trackBackgroundColor: Palette.neutralColor5,
+                trackBackgroundColor: "#f2f2f2" /* neutralColor5 */,
                 /**
                  * The color of the border of the scrollbar track.
                  *
@@ -5247,7 +6155,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                trackBorderColor: Palette.neutralColor5,
+                trackBorderColor: "#f2f2f2" /* neutralColor5 */,
                 /**
                  * The corner radius of the border of the scrollbar track.
                  *
@@ -6156,7 +7064,7 @@
 
         return NavigatorAxis;
     });
-    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Scrollbar.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, D, Palette, RendererRegistry, Scrollbar, Series, SeriesRegistry, U) {
+    _registerModule(_modules, 'Core/Navigator.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/Axis/NavigatorAxis.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Scrollbar.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Axis, Chart, Color, H, NavigatorAxis, D, RendererRegistry, Scrollbar, Series, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -6364,13 +7272,13 @@
                      *
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      */
-                    backgroundColor: Palette.neutralColor5,
+                    backgroundColor: "#f2f2f2" /* neutralColor5 */,
                     /**
                      * The stroke for the handle border and the stripes inside.
                      *
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      */
-                    borderColor: Palette.neutralColor40
+                    borderColor: "#999999" /* neutralColor40 */
                 },
                 /**
                  * The color of the mask covering the areas of the navigator series
@@ -6387,7 +7295,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @default rgba(102,133,194,0.3)
                  */
-                maskFill: color(Palette.highlightColor60).setOpacity(0.3).get(),
+                maskFill: color("#6685c2" /* highlightColor60 */).setOpacity(0.3).get(),
                 /**
                  * The color of the line marking the currently zoomed area in the
                  * navigator.
@@ -6398,7 +7306,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @default #cccccc
                  */
-                outlineColor: Palette.neutralColor20,
+                outlineColor: "#cccccc" /* neutralColor20 */,
                 /**
                  * The width of the line marking the currently zoomed area in the
                  * navigator.
@@ -6589,7 +7497,7 @@
                     className: 'highcharts-navigator-xaxis',
                     tickLength: 0,
                     lineWidth: 0,
-                    gridLineColor: Palette.neutralColor10,
+                    gridLineColor: "#e6e6e6" /* neutralColor10 */,
                     gridLineWidth: 1,
                     tickPixelInterval: 200,
                     labels: {
@@ -6599,7 +7507,7 @@
                          */
                         style: {
                             /** @ignore */
-                            color: Palette.neutralColor40
+                            color: "#999999" /* neutralColor40 */
                         },
                         x: 3,
                         y: -4
@@ -8026,7 +8934,7 @@
                     // If range declared, stick to the minimum only if the range
                     // is smaller than the data set range.
                     if (range && max - xDataMin > 0) {
-                        stickToMin = max - xDataMin < range && (!this.chart.fixedRange);
+                        stickToMin = max - xDataMin < range;
                     }
                     else {
                         // If the current axis minimum falls outside the new
@@ -8253,7 +9161,7 @@
 
         return H.Navigator;
     });
-    _registerModule(_modules, 'Extensions/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, D, palette, SVGElement, U) {
+    _registerModule(_modules, 'Extensions/RangeSelector.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Utilities.js']], function (Axis, Chart, H, D, SVGElement, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -8743,7 +9651,7 @@
                  */
                 inputStyle: {
                     /** @ignore */
-                    color: palette.highlightColor80,
+                    color: "#335cad" /* highlightColor80 */,
                     /** @ignore */
                     cursor: 'pointer'
                 },
@@ -8760,7 +9668,7 @@
                  */
                 labelStyle: {
                     /** @ignore */
-                    color: palette.neutralColor60
+                    color: "#666666" /* neutralColor60 */
                 }
             }
         });
@@ -9463,7 +10371,7 @@
                     // Styles
                     label.css(merge(chartStyle, options.labelStyle));
                     dateBox.css(merge({
-                        color: palette.neutralColor80
+                        color: "#333333" /* neutralColor80 */
                     }, chartStyle, options.inputStyle));
                     css(input, extend({
                         position: 'absolute',
@@ -10646,7 +11554,7 @@
 
         return RangeSelector;
     });
-    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, F, D, Palette, Point, Series, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Chart/StockChart.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Series.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, F, D, Series, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -10675,13 +11583,7 @@
         var animObject = A.animObject;
         var format = F.format;
         var getOptions = D.getOptions;
-        var pointTooltipFormatter = Point.prototype.tooltipFormatter;
-        var _a = Series.prototype,
-            seriesInit = _a.init,
-            seriesProcessData = _a.processData;
         var addEvent = U.addEvent,
-            arrayMax = U.arrayMax,
-            arrayMin = U.arrayMin,
             clamp = U.clamp,
             defined = U.defined,
             extend = U.extend,
@@ -11215,12 +12117,12 @@
                         .attr({
                         fill: options.backgroundColor ||
                             point && point.series && point.series.color || // #14888
-                            Palette.neutralColor60,
+                            "#666666" /* neutralColor60 */,
                         stroke: options.borderColor || '',
                         'stroke-width': options.borderWidth || 0
                     })
                         .css(extend({
-                        color: Palette.backgroundColor,
+                        color: "#ffffff" /* backgroundColor */,
                         fontWeight: 'normal',
                         fontSize: '11px',
                         textAlign: 'center'
@@ -11313,76 +12215,6 @@
                     posy + crossBox.height / 2
             });
         });
-        /* ************************************************************************** *
-         *  Start value compare logic                                                 *
-         * ************************************************************************** */
-        /**
-         * Extend series.init by adding a method to modify the y value used for plotting
-         * on the y axis. This method is called both from the axis when finding dataMin
-         * and dataMax, and from the series.translate method.
-         *
-         * @ignore
-         * @function Highcharts.Series#init
-         */
-        Series.prototype.init = function () {
-            // Call base method
-            seriesInit.apply(this, arguments);
-            // Set comparison mode
-            this.initCompare(this.options.compare);
-        };
-        /**
-         * Highcharts Stock only. Set the
-         * [compare](https://api.highcharts.com/highstock/plotOptions.series.compare)
-         * mode of the series after render time. In most cases it is more useful running
-         * {@link Axis#setCompare} on the X axis to update all its series.
-         *
-         * @function Highcharts.Series#setCompare
-         *
-         * @param {string} [compare]
-         *        Can be one of `null` (default), `"percent"` or `"value"`.
-         */
-        Series.prototype.setCompare = function (compare) {
-            this.initCompare(compare);
-            // Survive to export, #5485
-            this.userOptions.compare = compare;
-        };
-        /**
-         * @ignore
-         * @function Highcharts.Series#initCompare
-         *
-         * @param {string} [compare]
-         *        Can be one of `null` (default), `"percent"` or `"value"`.
-         */
-        Series.prototype.initCompare = function (compare) {
-            // Set or unset the modifyValue method
-            this.modifyValue = (compare === 'value' || compare === 'percent') ?
-                function (value, point) {
-                    var compareValue = this.compareValue;
-                    if (typeof value !== 'undefined' &&
-                        typeof compareValue !== 'undefined') { // #2601, #5814
-                        // Get the modified value
-                        if (compare === 'value') {
-                            value -= compareValue;
-                            // Compare percent
-                        }
-                        else {
-                            value = 100 * (value / compareValue) -
-                                (this.options.compareBase === 100 ? 0 : 100);
-                        }
-                        // record for tooltip etc.
-                        if (point) {
-                            point.change = value;
-                        }
-                        return value;
-                    }
-                    return 0;
-                } :
-                null;
-            // Mark dirty
-            if (this.chart.hasRendered) {
-                this.isDirty = true;
-            }
-        };
         /**
          * Based on the data grouping options decides whether
          * the data should be cropped while processing.
@@ -11399,173 +12231,6 @@
                 chart.options.isStock);
             return groupingEnabled;
         };
-        /**
-         * Extend series.processData by finding the first y value in the plot area,
-         * used for comparing the following values
-         *
-         * @ignore
-         * @function Highcharts.Series#processData
-         */
-        Series.prototype.processData = function (force) {
-            var series = this,
-                i,
-                keyIndex = -1,
-                processedXData,
-                processedYData,
-                compareStart = series.options.compareStart === true ? 0 : 1,
-                length,
-                compareValue;
-            // call base method
-            seriesProcessData.apply(this, arguments);
-            if (series.xAxis && series.processedYData) { // not pies
-                // local variables
-                processedXData = series.processedXData;
-                processedYData = series.processedYData;
-                length = processedYData.length;
-                // For series with more than one value (range, OHLC etc), compare
-                // against close or the pointValKey (#4922, #3112, #9854)
-                if (series.pointArrayMap) {
-                    keyIndex = series.pointArrayMap.indexOf(series.options.pointValKey || series.pointValKey || 'y');
-                }
-                // find the first value for comparison
-                for (i = 0; i < length - compareStart; i++) {
-                    compareValue = processedYData[i] && keyIndex > -1 ?
-                        processedYData[i][keyIndex] :
-                        processedYData[i];
-                    if (isNumber(compareValue) &&
-                        processedXData[i + compareStart] >=
-                            series.xAxis.min &&
-                        compareValue !== 0) {
-                        series.compareValue = compareValue;
-                        break;
-                    }
-                }
-            }
-            return;
-        };
-        // Modify series extremes
-        addEvent(Series, 'afterGetExtremes', function (e) {
-            var dataExtremes = e.dataExtremes;
-            if (this.modifyValue && dataExtremes) {
-                var extremes = [
-                        this.modifyValue(dataExtremes.dataMin),
-                        this.modifyValue(dataExtremes.dataMax)
-                    ];
-                dataExtremes.dataMin = arrayMin(extremes);
-                dataExtremes.dataMax = arrayMax(extremes);
-            }
-        });
-        /**
-         * Highcharts Stock only. Set the compare mode on all series
-         * belonging to an Y axis after render time.
-         *
-         * @see [series.plotOptions.compare](https://api.highcharts.com/highstock/series.plotOptions.compare)
-         *
-         * @sample stock/members/axis-setcompare/
-         *         Set compoare
-         *
-         * @function Highcharts.Axis#setCompare
-         *
-         * @param {string} [compare]
-         *        The compare mode. Can be one of `null` (default), `"value"` or
-         *        `"percent"`.
-         *
-         * @param {boolean} [redraw=true]
-         *        Whether to redraw the chart or to wait for a later call to
-         *        {@link Chart#redraw}.
-         */
-        Axis.prototype.setCompare = function (compare, redraw) {
-            if (!this.isXAxis) {
-                this.series.forEach(function (series) {
-                    series.setCompare(compare);
-                });
-                if (pick(redraw, true)) {
-                    this.chart.redraw();
-                }
-            }
-        };
-        /**
-         * Extend the tooltip formatter by adding support for the point.change variable
-         * as well as the changeDecimals option.
-         *
-         * @ignore
-         * @function Highcharts.Point#tooltipFormatter
-         *
-         * @param {string} pointFormat
-         */
-        Point.prototype.tooltipFormatter = function (pointFormat) {
-            var point = this;
-            var numberFormatter = point.series.chart.numberFormatter;
-            pointFormat = pointFormat.replace('{point.change}', (point.change > 0 ? '+' : '') + numberFormatter(point.change, pick(point.series.tooltipOptions.changeDecimals, 2)));
-            return pointTooltipFormatter.apply(this, [pointFormat]);
-        };
-        /* ************************************************************************** *
-         *  End value compare logic                                                   *
-         * ************************************************************************** */
-        // Extend the Series prototype to create a separate series clip box. This is
-        // related to using multiple panes, and a future pane logic should incorporate
-        // this feature (#2754).
-        addEvent(Series, 'render', function () {
-            var chart = this.chart,
-                clipHeight;
-            // Only do this on not 3d (#2939, #5904) nor polar (#6057) charts, and only
-            // if the series type handles clipping in the animate method (#2975).
-            if (!(chart.is3d && chart.is3d()) &&
-                !chart.polar &&
-                this.xAxis &&
-                !this.xAxis.isRadial && // Gauge, #6192
-                this.options.clip !== false // #15128
-            ) {
-                clipHeight = this.yAxis.len;
-                // Include xAxis line width (#8031) but only if the Y axis ends on the
-                // edge of the X axis (#11005).
-                if (this.xAxis.axisLine) {
-                    var dist = chart.plotTop + chart.plotHeight -
-                            this.yAxis.pos - this.yAxis.len,
-                        lineHeightCorrection = Math.floor(this.xAxis.axisLine.strokeWidth() / 2);
-                    if (dist >= 0) {
-                        clipHeight -= Math.max(lineHeightCorrection - dist, 0);
-                    }
-                }
-                // First render, initial clip box. clipBox also needs to be updated if
-                // the series is rendered again before starting animating, in
-                // compliance with a responsive rule (#13858).
-                if (!chart.hasLoaded || (!this.clipBox && this.isDirty && !this.isDirtyData)) {
-                    this.clipBox = this.clipBox || merge(chart.clipBox);
-                    this.clipBox.width = this.xAxis.len;
-                    this.clipBox.height = clipHeight;
-                }
-                if (chart.hasRendered) {
-                    var animation = animObject(this.options.animation);
-                    // #15435: this.sharedClipKey might not have been set yet, for
-                    // example when updating the series, so we need to use this
-                    // function instead
-                    var sharedClipKey = this.getSharedClipKey(animation);
-                    var clipRect = chart.sharedClips[sharedClipKey];
-                    // On redrawing, resizing etc, update the clip rectangle.
-                    //
-                    // #15435: Update it even when we are creating/updating clipBox,
-                    // since there could be series updating and pane size changes
-                    // happening at the same time and we dont destroy shared clips in
-                    // stock.
-                    if (clipRect) {
-                        // animate in case resize is done during initial animation
-                        clipRect.animate({
-                            width: this.xAxis.len,
-                            height: clipHeight
-                        });
-                        var markerClipRect = chart.sharedClips[sharedClipKey + 'm'];
-                        // also change markers clip animation for consistency
-                        // (marker clip rects should exist only on chart init)
-                        if (markerClipRect) {
-                            markerClipRect.animate({
-                                width: this.xAxis.len
-                            });
-                        }
-                    }
-                }
-            }
-        });
         addEvent(Chart, 'update', function (e) {
             var options = e.options;
             // Use case: enabling scrollbar from a disabled state.
@@ -11582,68 +12247,10 @@
          *  Default Export
          *
          * */
-        /* *
-         *
-         *  API Options
-         *
-         * */
-        /**
-         * Compare the values of the series against the first non-null, non-
-         * zero value in the visible range. The y axis will show percentage
-         * or absolute change depending on whether `compare` is set to `"percent"`
-         * or `"value"`. When this is applied to multiple series, it allows
-         * comparing the development of the series against each other. Adds
-         * a `change` field to every point object.
-         *
-         * @see [compareBase](#plotOptions.series.compareBase)
-         * @see [Axis.setCompare()](/class-reference/Highcharts.Axis#setCompare)
-         *
-         * @sample {highstock} stock/plotoptions/series-compare-percent/
-         *         Percent
-         * @sample {highstock} stock/plotoptions/series-compare-value/
-         *         Value
-         *
-         * @type      {string}
-         * @since     1.0.1
-         * @product   highstock
-         * @apioption plotOptions.series.compare
-         */
-        /**
-         * Defines if comparison should start from the first point within the visible
-         * range or should start from the first point **before** the range.
-         *
-         * In other words, this flag determines if first point within the visible range
-         * will have 0% (`compareStart=true`) or should have been already calculated
-         * according to the previous point (`compareStart=false`).
-         *
-         * @sample {highstock} stock/plotoptions/series-comparestart/
-         *         Calculate compare within visible range
-         *
-         * @type      {boolean}
-         * @default   false
-         * @since     6.0.0
-         * @product   highstock
-         * @apioption plotOptions.series.compareStart
-         */
-        /**
-         * When [compare](#plotOptions.series.compare) is `percent`, this option
-         * dictates whether to use 0 or 100 as the base of comparison.
-         *
-         * @sample {highstock} stock/plotoptions/series-comparebase/
-         *         Compare base is 100
-         *
-         * @type       {number}
-         * @default    0
-         * @since      5.0.6
-         * @product    highstock
-         * @validvalue [0, 100]
-         * @apioption  plotOptions.series.compareBase
-         */
-        ''; // keeps doclets above in transpiled file
 
         return StockChart;
     });
-    _registerModule(_modules, 'masters/modules/stock.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/OrdinalAxis.js'], _modules['Core/Scrollbar.js'], _modules['Core/Chart/StockChart.js']], function (Highcharts, OrdinalAxis, Scrollbar, StockChart) {
+    _registerModule(_modules, 'masters/modules/stock.src.js', [_modules['Core/Globals.js'], _modules['Core/Axis/OrdinalAxis.js'], _modules['Series/DataModifyComposition.js'], _modules['Core/Scrollbar.js'], _modules['Core/Chart/StockChart.js']], function (Highcharts, OrdinalAxis, DataModifyComposition, Scrollbar, StockChart) {
 
         var G = Highcharts;
         // Classes
@@ -11652,6 +12259,7 @@
         // Compositions
         Scrollbar.compose(G.Axis);
         OrdinalAxis.compose(G.Axis, G.Series, G.Chart);
+        DataModifyComposition.compose(G.Series, G.Axis, G.Point);
 
     });
 }));

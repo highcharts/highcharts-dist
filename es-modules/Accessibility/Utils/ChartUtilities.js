@@ -10,13 +10,40 @@
  *
  * */
 'use strict';
-import HTMLUtilities from './HTMLUtilities.js';
-var stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
 import H from '../../Core/Globals.js';
 var doc = H.doc;
+import HU from './HTMLUtilities.js';
+var stripHTMLTags = HU.stripHTMLTagsFromString;
 import U from '../../Core/Utilities.js';
 var defined = U.defined, find = U.find, fireEvent = U.fireEvent;
+/* *
+ *
+ *  Functions
+ *
+ * */
 /* eslint-disable valid-jsdoc */
+/**
+ * Fire an event on an element that is either wrapped by Highcharts,
+ * or a DOM element
+ */
+function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
+    var type = eventObject.type;
+    var hcEvents = el.hcEvents;
+    if (doc.createEvent && (el.dispatchEvent || el.fireEvent)) {
+        if (el.dispatchEvent) {
+            el.dispatchEvent(eventObject);
+        }
+        else {
+            el.fireEvent(type, eventObject);
+        }
+    }
+    else if (hcEvents && hcEvents[type]) {
+        fireEvent(el, type, eventObject);
+    }
+    else if (el.element) {
+        fireEventOnWrappedOrUnwrappedElement(el.element, eventObject);
+    }
+}
 /**
  * @return {string}
  */
@@ -84,8 +111,7 @@ function getCategoryAxisRangeDesc(axis) {
  * @return {string}
  */
 function getAxisTimeLengthDesc(axis) {
-    var chart = axis.chart;
-    var range = {};
+    var chart = axis.chart, range = {};
     var rangeUnit = 'Seconds';
     range.Seconds = ((axis.max || 0) - (axis.min || 0)) / 1000;
     range.Minutes = range.Seconds / 60;
@@ -112,12 +138,10 @@ function getAxisTimeLengthDesc(axis) {
  * @return {string}
  */
 function getAxisFromToDescription(axis) {
-    var chart = axis.chart;
-    var dateRangeFormat = (chart.options &&
+    var chart = axis.chart, dateRangeFormat = (chart.options &&
         chart.options.accessibility &&
         chart.options.accessibility.screenReaderSection.axisRangeDateFormat ||
-        '');
-    var format = function (axisKey) {
+        ''), format = function (axisKey) {
         return axis.dateTime ? chart.time.dateFormat(dateRangeFormat, axis[axisKey]) : axis[axisKey];
     };
     return chart.langFormat('accessibility.axis.rangeFromTo', {
@@ -240,11 +264,9 @@ function getRelativePointAxisPosition(axis, point) {
     if (!defined(axis.dataMin) || !defined(axis.dataMax)) {
         return 0;
     }
-    var axisStart = axis.toPixels(axis.dataMin);
-    var axisEnd = axis.toPixels(axis.dataMax);
+    var axisStart = axis.toPixels(axis.dataMin), axisEnd = axis.toPixels(axis.dataMax), 
     // We have to use pixel position because of axis breaks, log axis etc.
-    var positionProp = axis.coll === 'xAxis' ? 'x' : 'y';
-    var pointPos = axis.toPixels(point[positionProp] || 0);
+    positionProp = axis.coll === 'xAxis' ? 'x' : 'y', pointPos = axis.toPixels(point[positionProp] || 0);
     return (pointPos - axisStart) / (axisEnd - axisStart);
 }
 /**
@@ -253,10 +275,7 @@ function getRelativePointAxisPosition(axis, point) {
  * @param {Highcharts.Point} point
  */
 function scrollToPoint(point) {
-    var xAxis = point.series.xAxis;
-    var yAxis = point.series.yAxis;
-    var axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis);
-    var scrollbar = (axis && axis.scrollbar);
+    var xAxis = point.series.xAxis, yAxis = point.series.yAxis, axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis), scrollbar = (axis && axis.scrollbar);
     if (scrollbar && defined(scrollbar.to) && defined(scrollbar.from)) {
         var range = scrollbar.to - scrollbar.from;
         var pos = getRelativePointAxisPosition(axis, point);
@@ -269,7 +288,13 @@ function scrollToPoint(point) {
         });
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 var ChartUtilities = {
+    fireEventOnWrappedOrUnwrappedElement: fireEventOnWrappedOrUnwrappedElement,
     getChartTitle: getChartTitle,
     getAxisDescription: getAxisDescription,
     getAxisRangeDescription: getAxisRangeDescription,

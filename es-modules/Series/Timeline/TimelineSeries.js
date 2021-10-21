@@ -26,7 +26,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
-import palette from '../../Core/Color/Palette.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, LineSeries = _a.line;
 import SVGElement from '../../Core/Renderer/SVG/SVGElement.js';
@@ -334,11 +333,11 @@ var TimelineSeries = /** @class */ (function (_super) {
              *         Alternate disabled
              */
             alternate: true,
-            backgroundColor: palette.backgroundColor,
+            backgroundColor: "#ffffff" /* backgroundColor */,
             borderWidth: 1,
-            borderColor: palette.neutralColor40,
+            borderColor: "#999999" /* neutralColor40 */,
             borderRadius: 3,
-            color: palette.neutralColor80,
+            color: "#333333" /* neutralColor80 */,
             /**
              * The color of the line connecting the data label to the point.
              * The default color is the same as the point's color.

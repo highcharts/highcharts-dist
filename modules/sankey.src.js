@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Sankey diagram module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/Nodes.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (H, Point, Series, U) {
+    _registerModule(_modules, 'Series/NodesComposition.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Point, Series, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -38,27 +38,61 @@
             extend = U.extend,
             find = U.find,
             pick = U.pick;
-        var NodesMixin = H.NodesMixin = {
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Create a single node that holds information on incoming and outgoing
-                 * links.
-                 * @private
-                 */
-                createNode: function (id) {
-                    /**
-                     * @private
-                     */
-                    function findById(nodes,
-            id) {
-                        return find(nodes,
-            function (node) {
-                            return node.id === id;
-                    });
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var NodesComposition;
+        (function (NodesComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(PointClass, SeriesClass) {
+                if (composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    var pointProto = PointClass.prototype;
+                    pointProto.setNodeState = setNodeState;
+                    pointProto.setState = setNodeState;
                 }
+                if (composedClasses.indexOf(SeriesClass) === -1) {
+                    composedClasses.push(SeriesClass);
+                    var seriesProto = SeriesClass.prototype;
+                    seriesProto.destroy = destroy;
+                    seriesProto.setData = setData;
+                }
+                return SeriesClass;
+            }
+            NodesComposition.compose = compose;
+            /**
+             * Create a single node that holds information on incoming and outgoing
+             * links.
+             * @private
+             */
+            function createNode(id) {
+                var PointClass = this.pointClass,
+                    findById = function (nodes,
+                    id) { return find(nodes,
+                    function (node) { return node.id === id; }); };
                 var node = findById(this.nodes,
                     id),
-                    PointClass = this.pointClass,
                     options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
@@ -123,12 +157,24 @@
                     this.nodes.push(node);
                 }
                 return node;
-            },
+            }
+            NodesComposition.createNode = createNode;
+            /**
+             * Destroy alll nodes and links.
+             * @private
+             */
+            function destroy() {
+                // Nodes must also be destroyed (#8682, #9300)
+                this.data = []
+                    .concat(this.points || [], this.nodes);
+                return Series.prototype.destroy.apply(this, arguments);
+            }
+            NodesComposition.destroy = destroy;
             /**
              * Extend generatePoints by adding the nodes, which are Point objects
              * but pushed to the this.nodes array.
              */
-            generatePoints: function () {
+            function generatePoints() {
                 var chart = this.chart,
                     nodeLookup = {};
                 Series.prototype.generatePoints.call(this);
@@ -170,9 +216,13 @@
                 }, this);
                 // Store lookup table for later use
                 this.nodeLookup = nodeLookup;
-            },
-            // Destroy all nodes on setting new data
-            setData: function () {
+            }
+            NodesComposition.generatePoints = generatePoints;
+            /**
+             * Destroy all nodes on setting new data
+             * @private
+             */
+            function setData() {
                 if (this.nodes) {
                     this.nodes.forEach(function (node) {
                         node.destroy();
@@ -180,19 +230,12 @@
                     this.nodes.length = 0;
                 }
                 Series.prototype.setData.apply(this, arguments);
-            },
-            // Destroy alll nodes and links
-            destroy: function () {
-                // Nodes must also be destroyed (#8682, #9300)
-                this.data = []
-                    .concat(this.points || [], this.nodes);
-                return Series.prototype.destroy.apply(this, arguments);
-            },
+            }
             /**
              * When hovering node, highlight all connected links. When hovering a link,
              * highlight all connected nodes.
              */
-            setNodeState: function (state) {
+            function setNodeState(state) {
                 var args = arguments,
                     others = this.isNode ? this.linksTo.concat(this.linksFrom) :
                         [this.fromNode,
@@ -214,12 +257,17 @@
                 }
                 Point.prototype.setState.apply(this, args);
             }
-            /* eslint-enable valid-jsdoc */
-        };
+            NodesComposition.setNodeState = setNodeState;
+        })(NodesComposition || (NodesComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return NodesMixin;
+        return NodesComposition;
     });
-    _registerModule(_modules, 'Series/Sankey/SankeyPoint.js', [_modules['Mixins/Nodes.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (NodesMixin, Point, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Sankey/SankeyPoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Point, SeriesRegistry, U) {
         /* *
          *
          *  Sankey diagram module
@@ -312,9 +360,6 @@
             };
             return SankeyPoint;
         }(ColumnSeries.prototype.pointClass));
-        extend(SankeyPoint.prototype, {
-            setState: NodesMixin.setNodeState
-        });
         /* *
          *
          *  Default Export
@@ -323,8 +368,14 @@
 
         return SankeyPoint;
     });
-    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Series/TreeUtilities.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
+         *
+         *  (c) 2014-2021 Highsoft AS
+         *
+         *  Authors: Jon Arild Nygard / Oystein Moseng
+         *
+         *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
@@ -335,37 +386,148 @@
             isObject = U.isObject,
             merge = U.merge,
             pick = U.pick;
-        var isBoolean = function (x) {
-                return typeof x === 'boolean';
-        }, isFn = function (x) {
-            return typeof x === 'function';
-        };
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /* eslint-disable valid-jsdoc */
         /**
-         * @todo Combine buildTree and buildNode with setTreeValues
-         * @todo Remove logic from Treemap and make it utilize this mixin.
          * @private
          */
-        var setTreeValues = function setTreeValues(tree,
-            options) {
-                var before = options.before,
-            idRoot = options.idRoot,
-            mapIdToNode = options.mapIdToNode,
-            nodeRoot = mapIdToNode[idRoot],
-            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                    options.levelIsConstant :
-                    true),
-            points = options.points,
-            point = points[tree.i],
-            optionsPoint = point && point.options || {},
-            childrenTotal = 0,
-            children = [],
-            value;
+        function getColor(node, options) {
+            var index = options.index,
+                mapOptionsToLevel = options.mapOptionsToLevel,
+                parentColor = options.parentColor,
+                parentColorIndex = options.parentColorIndex,
+                series = options.series,
+                colors = options.colors,
+                siblings = options.siblings,
+                points = series.points,
+                chartOptionsChart = series.chart.options.chart;
+            var getColorByPoint,
+                point,
+                level,
+                colorByPoint,
+                colorIndexByPoint,
+                color,
+                colorIndex;
+            /**
+             * @private
+             */
+            var variateColor = function (color) {
+                    var colorVariation = level && level.colorVariation;
+                if (colorVariation &&
+                    colorVariation.key === 'brightness' &&
+                    index &&
+                    siblings) {
+                    return Color.parse(color).brighten(colorVariation.to * (index / siblings)).get();
+                }
+                return color;
+            };
+            if (node) {
+                point = points[node.i];
+                level = mapOptionsToLevel[node.level] || {};
+                getColorByPoint = point && level.colorByPoint;
+                if (getColorByPoint) {
+                    colorIndexByPoint = point.index % (colors ?
+                        colors.length :
+                        chartOptionsChart.colorCount);
+                    colorByPoint = colors && colors[colorIndexByPoint];
+                }
+                // Select either point color, level color or inherited color.
+                if (!series.chart.styledMode) {
+                    color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
+                }
+                colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+            }
+            return {
+                color: color,
+                colorIndex: colorIndex
+            };
+        }
+        /**
+         * Creates a map from level number to its given options.
+         *
+         * @private
+         *
+         * @param {object} params
+         * Object containing parameters.
+         * - `defaults` Object containing default options. The default options are
+         *   merged with the userOptions to get the final options for a specific
+         *   level.
+         * - `from` The lowest level number.
+         * - `levels` User options from series.levels.
+         * - `to` The highest level number.
+         *
+         * @return {Highcharts.Dictionary<object>|null}
+         * Returns a map from level number to its given options.
+         */
+        function getLevelOptions(params) {
+            var result = null,
+                defaults,
+                converted,
+                i,
+                from,
+                to,
+                levels;
+            if (isObject(params)) {
+                result = {};
+                from = isNumber(params.from) ? params.from : 1;
+                levels = params.levels;
+                converted = {};
+                defaults = isObject(params.defaults) ? params.defaults : {};
+                if (isArray(levels)) {
+                    converted = levels.reduce(function (obj, item) {
+                        var level,
+                            levelIsConstant,
+                            options;
+                        if (isObject(item) && isNumber(item.level)) {
+                            options = merge({}, item);
+                            levelIsConstant = pick(options.levelIsConstant, defaults.levelIsConstant);
+                            // Delete redundant properties.
+                            delete options.levelIsConstant;
+                            delete options.level;
+                            // Calculate which level these options apply to.
+                            level = item.level + (levelIsConstant ? 0 : from - 1);
+                            if (isObject(obj[level])) {
+                                merge(true, obj[level], options); // #16329
+                            }
+                            else {
+                                obj[level] = options;
+                            }
+                        }
+                        return obj;
+                    }, {});
+                }
+                to = isNumber(params.to) ? params.to : 1;
+                for (i = 0; i <= to; i++) {
+                    result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
+                }
+            }
+            return result;
+        }
+        /**
+         * @private
+         * @todo Combine buildTree and buildNode with setTreeValues
+         * @todo Remove logic from Treemap and make it utilize this mixin.
+         */
+        function setTreeValues(tree, options) {
+            var before = options.before,
+                idRoot = options.idRoot,
+                mapIdToNode = options.mapIdToNode,
+                nodeRoot = mapIdToNode[idRoot],
+                levelIsConstant = (options.levelIsConstant !== false),
+                points = options.points,
+                point = points[tree.i],
+                optionsPoint = point && point.options || {},
+                children = [];
+            var childrenTotal = 0;
             tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
             tree.name = pick(point && point.name, '');
             tree.visible = (idRoot === tree.id ||
-                (isBoolean(options.visible) ? options.visible : false));
-            if (isFn(before)) {
+                options.visible === true);
+            if (typeof before === 'function') {
                 tree = before(tree, options);
             }
             // First give the children some values
@@ -384,146 +546,30 @@
                 }
             });
             // Set the values
-            value = pick(optionsPoint.value, childrenTotal);
+            var value = pick(optionsPoint.value,
+                childrenTotal);
             tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
             tree.children = children;
             tree.childrenTotal = childrenTotal;
             tree.isLeaf = tree.visible && !childrenTotal;
             tree.val = value;
             return tree;
-        };
-        /**
-         * @private
-         */
-        var getColor = function getColor(node,
-            options) {
-                var index = options.index,
-            mapOptionsToLevel = options.mapOptionsToLevel,
-            parentColor = options.parentColor,
-            parentColorIndex = options.parentColorIndex,
-            series = options.series,
-            colors = options.colors,
-            siblings = options.siblings,
-            points = series.points,
-            getColorByPoint,
-            chartOptionsChart = series.chart.options.chart,
-            point,
-            level,
-            colorByPoint,
-            colorIndexByPoint,
-            color,
-            colorIndex;
-            /**
-             * @private
-             */
-            function variation(color) {
-                var colorVariation = level && level.colorVariation;
-                if (colorVariation) {
-                    if (colorVariation.key === 'brightness') {
-                        return Color.parse(color).brighten(colorVariation.to * (index / siblings)).get();
-                    }
-                }
-                return color;
-            }
-            if (node) {
-                point = points[node.i];
-                level = mapOptionsToLevel[node.level] || {};
-                getColorByPoint = point && level.colorByPoint;
-                if (getColorByPoint) {
-                    colorIndexByPoint = point.index % (colors ?
-                        colors.length :
-                        chartOptionsChart.colorCount);
-                    colorByPoint = colors && colors[colorIndexByPoint];
-                }
-                // Select either point color, level color or inherited color.
-                if (!series.chart.styledMode) {
-                    color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variation(parentColor), series.color);
-                }
-                colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
-            }
-            return {
-                color: color,
-                colorIndex: colorIndex
-            };
-        };
-        /**
-         * Creates a map from level number to its given options.
-         *
-         * @private
-         * @function getLevelOptions
-         * @param {object} params
-         *        Object containing parameters.
-         *        - `defaults` Object containing default options. The default options
-         *           are merged with the userOptions to get the final options for a
-         *           specific level.
-         *        - `from` The lowest level number.
-         *        - `levels` User options from series.levels.
-         *        - `to` The highest level number.
-         * @return {Highcharts.Dictionary<object>|null}
-         *         Returns a map from level number to its given options.
-         */
-        var getLevelOptions = function getLevelOptions(params) {
-                var result = null,
-            defaults,
-            converted,
-            i,
-            from,
-            to,
-            levels;
-            if (isObject(params)) {
-                result = {};
-                from = isNumber(params.from) ? params.from : 1;
-                levels = params.levels;
-                converted = {};
-                defaults = isObject(params.defaults) ? params.defaults : {};
-                if (isArray(levels)) {
-                    converted = levels.reduce(function (obj, item) {
-                        var level,
-                            levelIsConstant,
-                            options;
-                        if (isObject(item) && isNumber(item.level)) {
-                            options = merge({}, item);
-                            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                                options.levelIsConstant :
-                                defaults.levelIsConstant);
-                            // Delete redundant properties.
-                            delete options.levelIsConstant;
-                            delete options.level;
-                            // Calculate which level these options apply to.
-                            level = item.level + (levelIsConstant ? 0 : from - 1);
-                            if (isObject(obj[level])) {
-                                extend(obj[level], options);
-                            }
-                            else {
-                                obj[level] = options;
-                            }
-                        }
-                        return obj;
-                    }, {});
-                }
-                to = isNumber(params.to) ? params.to : 1;
-                for (i = 0; i <= to; i++) {
-                    result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
-                }
-            }
-            return result;
-        };
+        }
         /**
          * Update the rootId property on the series. Also makes sure that it is
          * accessible to exporting.
          *
          * @private
-         * @function updateRootId
          *
          * @param {object} series
-         *        The series to operate on.
+         * The series to operate on.
          *
          * @return {string}
-         *         Returns the resulting rootId after update.
+         * Returns the resulting rootId after update.
          */
-        var updateRootId = function (series) {
-                var rootId,
-            options;
+        function updateRootId(series) {
+            var rootId,
+                options;
             if (isObject(series)) {
                 // Get the series options.
                 options = isObject(series.options) ? series.options : {};
@@ -537,17 +583,22 @@
                 series.rootNode = rootId;
             }
             return rootId;
-        };
-        var result = {
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var TreeUtilities = {
                 getColor: getColor,
                 getLevelOptions: getLevelOptions,
                 setTreeValues: setTreeValues,
                 updateRootId: updateRootId
             };
 
-        return result;
+        return TreeUtilities;
     });
-    _registerModule(_modules, 'Series/Sankey/SankeySeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Series/Sankey/SankeyPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Color, H, NodesMixin, SankeyPoint, SeriesRegistry, TreeSeriesMixin, U) {
+    _registerModule(_modules, 'Series/Sankey/SankeySeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Series/NodesComposition.js'], _modules['Series/Sankey/SankeyPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (Color, H, NodesComposition, SankeyPoint, SeriesRegistry, TU, U) {
         /* *
          *
          *  Sankey diagram module
@@ -577,7 +628,7 @@
         })();
         var Series = SeriesRegistry.series,
             ColumnSeries = SeriesRegistry.seriesTypes.column;
-        var getLevelOptions = TreeSeriesMixin.getLevelOptions;
+        var getLevelOptions = TU.getLevelOptions;
         var defined = U.defined,
             extend = U.extend,
             find = U.find,
@@ -674,9 +725,13 @@
                         totalNodeOffset,
                         nodePadding = series.nodePadding;
                     for (var i = 0; i < column.length; i++) {
-                        var sum = column[i].getSum();
-                        var height = Math.max(sum * factor,
-                            series.options.minLinkWidth);
+                        var sum = column[i].getSum(),
+                            height = Math.max(sum * factor,
+                            series.options.minLinkWidth),
+                            directionOffset = node.options[chart.inverted ?
+                                'offsetHorizontal' :
+                                'offsetVertical'],
+                            optionOffset = node.options.offset || 0;
                         if (sum) {
                             totalNodeOffset = height + nodePadding;
                         }
@@ -686,7 +741,9 @@
                         }
                         if (column[i] === node) {
                             return {
-                                relativeTop: offset + relativeLength(node.options.offset || 0, totalNodeOffset)
+                                relativeTop: offset + (defined(directionOffset) ?
+                                    // directionOffset is a percent of the node height
+                                    relativeLength(directionOffset, height) : relativeLength(optionOffset, totalNodeOffset))
                             };
                         }
                         offset += totalNodeOffset;
@@ -772,7 +829,7 @@
              * @private
              */
             SankeySeries.prototype.generatePoints = function () {
-                NodesMixin.generatePoints.apply(this, arguments);
+                NodesComposition.generatePoints.apply(this, arguments);
                 /**
                  * Order the nodes, starting with the root node(s). (#9818)
                  * @private
@@ -986,11 +1043,10 @@
                     return y;
                 };
                 var fromNode = point.fromNode, toNode = point.toNode, chart = this.chart, translationFactor = this.translationFactor, linkHeight = Math.max(point.weight * translationFactor, this.options.minLinkWidth), options = this.options, curvy = ((chart.inverted ? -this.colDistance : this.colDistance) *
-                        options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.column * this.colDistance, outgoing = point.outgoing, straight = right > nodeLeft + nodeW;
+                        options.curveFactor), fromY = getY(fromNode, 'linksFrom'), toY = getY(toNode, 'linksTo'), nodeLeft = fromNode.nodeX, nodeW = this.nodeWidth, right = toNode.nodeX, outgoing = point.outgoing, straight = right > nodeLeft + nodeW;
                 if (chart.inverted) {
                     fromY = chart.plotSizeY - fromY;
                     toY = (chart.plotSizeY || 0) - toY;
-                    right = chart.plotSizeX - right;
                     nodeW = -nodeW;
                     linkHeight = -linkHeight;
                     straight = nodeLeft > right;
@@ -1114,17 +1170,19 @@
                     sum = node.getSum(),
                     nodeHeight = Math.max(Math.round(sum * translationFactor),
                     this.options.minLinkWidth),
+                    nodeWidth = Math.round(this.nodeWidth),
                     crisp = Math.round(options.borderWidth) % 2 / 2,
                     nodeOffset = column.offset(node,
                     translationFactor),
                     fromNodeTop = Math.floor(pick(nodeOffset.absoluteTop, (column.top(translationFactor) +
                         nodeOffset.relativeTop))) + crisp,
                     left = Math.floor(this.colDistance * node.column +
-                        options.borderWidth / 2) + crisp,
+                        options.borderWidth / 2) + relativeLength(node.options.offsetHorizontal || 0,
+                    nodeWidth) +
+                        crisp,
                     nodeLeft = chart.inverted ?
                         chart.plotSizeX - left :
-                        left,
-                    nodeWidth = Math.round(this.nodeWidth);
+                        left;
                 node.sum = sum;
                 // If node sum is 0, don't render the rect #12453
                 if (sum) {
@@ -1430,20 +1488,20 @@
             });
             return SankeySeries;
         }(ColumnSeries));
+        NodesComposition.compose(SankeyPoint, SankeySeries);
         extend(SankeySeries.prototype, {
             animate: Series.prototype.animate,
             // Create a single node that holds information on incoming and outgoing
             // links.
-            createNode: NodesMixin.createNode,
-            destroy: NodesMixin.destroy,
+            createNode: NodesComposition.createNode,
             forceDL: true,
             invertible: true,
             isCartesian: false,
             orderNodes: true,
+            noSharedTooltip: true,
             pointArrayMap: ['from', 'to'],
             pointClass: SankeyPoint,
-            searchPoint: H.noop,
-            setData: NodesMixin.setData
+            searchPoint: H.noop
         });
         SeriesRegistry.registerSeriesType('sankey', SankeySeries);
         /* *
@@ -1501,16 +1559,50 @@
         * @type {string}
         * @product highcharts
         */ /**
+        * This option is deprecated, use
+        * {@link Highcharts.SankeyNodeObject#offsetHorizontal} and
+        * {@link Highcharts.SankeyNodeObject#offsetVertical} instead.
+        *
         * The vertical offset of a node in terms of weight. Positive values shift the
         * node downwards, negative shift it upwards.
+        *
+        * If a percantage string is given, the node is offset by the percentage of the
+        * node size plus `nodePadding`.
         *
         * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
         *         Specified node offset
         *
+        * @deprecated
         * @name Highcharts.SankeyNodeObject#offset
-        * @type {number}
+        * @type {number|string}
         * @default 0
         * @since 6.0.5
+        */ /**
+        * The horizontal offset of a node. Positive values shift the node right,
+        * negative shift it left.
+        *
+        * If a percantage string is given, the node is offset by the percentage of the
+        * node size.
+        *
+        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
+        *         Specified node offset
+        *
+        * @name Highcharts.SankeyNodeObject#offsetHorizontal
+        * @type {number|string}
+        * @since 9.3.0
+        */ /**
+        * The vertical offset of a node. Positive values shift the node down,
+        * negative shift it up.
+        *
+        * If a percantage string is given, the node is offset by the percentage of the
+        * node size.
+        *
+        * @see {@link https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/plotoptions/sankey-node-column/|Highcharts-Demo:}
+        *         Specified node offset
+        *
+        * @name Highcharts.SankeyNodeObject#offsetVertical
+        * @type {number|string}
+        * @since 9.3.0
         */
         /**
          * Formatter callback function.
@@ -1637,6 +1729,10 @@
          * @apioption series.sankey.nodes.name
          */
         /**
+         * This option is deprecated, use
+         * [offsetHorizontal](#series.sankey.nodes.offsetHorizontal) and
+         * [offsetVertical](#series.sankey.nodes.offsetVertical) instead.
+         *
          * In a horizontal layout, the vertical offset of a node in terms of weight.
          * Positive values shift the node downwards, negative shift it upwards. In a
          * vertical layout, like organization chart, the offset is horizontal.
@@ -1644,14 +1740,42 @@
          * If a percantage string is given, the node is offset by the percentage of the
          * node size plus `nodePadding`.
          *
-         * @sample highcharts/plotoptions/sankey-node-column/
-         *         Specified node offset
-         *
+         * @deprecated
          * @type      {number|string}
          * @default   0
          * @since     6.0.5
          * @product   highcharts
          * @apioption series.sankey.nodes.offset
+         */
+        /**
+         * The horizontal offset of a node. Positive values shift the node right,
+         * negative shift it left.
+         *
+         * If a percantage string is given, the node is offset by the percentage of the
+         * node size.
+         *
+         * @sample highcharts/plotoptions/sankey-node-column/
+         *         Specified node offset
+         *
+         * @type      {number|string}
+         * @since 9.3.0
+         * @product   highcharts
+         * @apioption series.sankey.nodes.offsetHorizontal
+         */
+        /**
+         * The vertical offset of a node. Positive values shift the node down,
+         * negative shift it up.
+         *
+         * If a percantage string is given, the node is offset by the percentage of the
+         * node size.
+         *
+         * @sample highcharts/plotoptions/sankey-node-column/
+         *         Specified node offset
+         *
+         * @type      {number|string}
+         * @since 9.3.0
+         * @product   highcharts
+         * @apioption series.sankey.nodes.offsetVertical
          */
         /**
          * An array of data points for the series. For the `sankey` series type,

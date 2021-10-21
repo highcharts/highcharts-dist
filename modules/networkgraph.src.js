@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Force directed graph module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/Nodes.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (H, Point, Series, U) {
+    _registerModule(_modules, 'Series/NodesComposition.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Point, Series, U) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -38,27 +38,61 @@
             extend = U.extend,
             find = U.find,
             pick = U.pick;
-        var NodesMixin = H.NodesMixin = {
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Create a single node that holds information on incoming and outgoing
-                 * links.
-                 * @private
-                 */
-                createNode: function (id) {
-                    /**
-                     * @private
-                     */
-                    function findById(nodes,
-            id) {
-                        return find(nodes,
-            function (node) {
-                            return node.id === id;
-                    });
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var NodesComposition;
+        (function (NodesComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(PointClass, SeriesClass) {
+                if (composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    var pointProto = PointClass.prototype;
+                    pointProto.setNodeState = setNodeState;
+                    pointProto.setState = setNodeState;
                 }
+                if (composedClasses.indexOf(SeriesClass) === -1) {
+                    composedClasses.push(SeriesClass);
+                    var seriesProto = SeriesClass.prototype;
+                    seriesProto.destroy = destroy;
+                    seriesProto.setData = setData;
+                }
+                return SeriesClass;
+            }
+            NodesComposition.compose = compose;
+            /**
+             * Create a single node that holds information on incoming and outgoing
+             * links.
+             * @private
+             */
+            function createNode(id) {
+                var PointClass = this.pointClass,
+                    findById = function (nodes,
+                    id) { return find(nodes,
+                    function (node) { return node.id === id; }); };
                 var node = findById(this.nodes,
                     id),
-                    PointClass = this.pointClass,
                     options;
                 if (!node) {
                     options = this.options.nodes && findById(this.options.nodes, id);
@@ -123,12 +157,24 @@
                     this.nodes.push(node);
                 }
                 return node;
-            },
+            }
+            NodesComposition.createNode = createNode;
+            /**
+             * Destroy alll nodes and links.
+             * @private
+             */
+            function destroy() {
+                // Nodes must also be destroyed (#8682, #9300)
+                this.data = []
+                    .concat(this.points || [], this.nodes);
+                return Series.prototype.destroy.apply(this, arguments);
+            }
+            NodesComposition.destroy = destroy;
             /**
              * Extend generatePoints by adding the nodes, which are Point objects
              * but pushed to the this.nodes array.
              */
-            generatePoints: function () {
+            function generatePoints() {
                 var chart = this.chart,
                     nodeLookup = {};
                 Series.prototype.generatePoints.call(this);
@@ -170,9 +216,13 @@
                 }, this);
                 // Store lookup table for later use
                 this.nodeLookup = nodeLookup;
-            },
-            // Destroy all nodes on setting new data
-            setData: function () {
+            }
+            NodesComposition.generatePoints = generatePoints;
+            /**
+             * Destroy all nodes on setting new data
+             * @private
+             */
+            function setData() {
                 if (this.nodes) {
                     this.nodes.forEach(function (node) {
                         node.destroy();
@@ -180,19 +230,12 @@
                     this.nodes.length = 0;
                 }
                 Series.prototype.setData.apply(this, arguments);
-            },
-            // Destroy alll nodes and links
-            destroy: function () {
-                // Nodes must also be destroyed (#8682, #9300)
-                this.data = []
-                    .concat(this.points || [], this.nodes);
-                return Series.prototype.destroy.apply(this, arguments);
-            },
+            }
             /**
              * When hovering node, highlight all connected links. When hovering a link,
              * highlight all connected nodes.
              */
-            setNodeState: function (state) {
+            function setNodeState(state) {
                 var args = arguments,
                     others = this.isNode ? this.linksTo.concat(this.linksFrom) :
                         [this.fromNode,
@@ -214,10 +257,15 @@
                 }
                 Point.prototype.setState.apply(this, args);
             }
-            /* eslint-enable valid-jsdoc */
-        };
+            NodesComposition.setNodeState = setNodeState;
+        })(NodesComposition || (NodesComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return NodesMixin;
+        return NodesComposition;
     });
     _registerModule(_modules, 'Series/Networkgraph/Integrations.js', [_modules['Core/Globals.js']], function (H) {
         /* *
@@ -1686,7 +1734,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/Networkgraph/Networkgraph.js', [_modules['Core/Globals.js'], _modules['Mixins/Nodes.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, NodesMixin, Point, Series, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Networkgraph/Networkgraph.js', [_modules['Core/Globals.js'], _modules['Series/NodesComposition.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, NodesComposition, Point, Series, SeriesRegistry, U) {
         /* *
          *
          *  Networkgraph series
@@ -2185,12 +2233,12 @@
              * links.
              * @private
              */
-            createNode: NodesMixin.createNode,
+            createNode: NodesComposition.createNode,
             destroy: function () {
                 if (this.layout) {
                     this.layout.removeElementFromCollection(this, this.layout.series);
                 }
-                NodesMixin.destroy.call(this);
+                NodesComposition.destroy.call(this);
             },
             /* eslint-disable no-invalid-this, valid-jsdoc */
             /**
@@ -2223,7 +2271,7 @@
             generatePoints: function () {
                 var node,
                     i;
-                NodesMixin.generatePoints.apply(this, arguments);
+                NodesComposition.generatePoints.apply(this, arguments);
                 // In networkgraph, it's fine to define stanalone nodes, create
                 // them:
                 if (this.options.nodes) {
@@ -2492,7 +2540,7 @@
             return NetworkgraphPoint;
         }(Series.prototype.pointClass));
         extend(NetworkgraphPoint.prototype, {
-            setState: NodesMixin.setNodeState,
+            setState: NodesComposition.setNodeState,
             /**
              * Basic `point.init()` and additional styles applied when
              * `series.draggable` is enabled.

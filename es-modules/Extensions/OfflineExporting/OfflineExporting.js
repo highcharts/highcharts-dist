@@ -389,7 +389,7 @@ var OfflineExporting;
         sanitize = function (svg) { return chart.sanitizeSVG(svg, chartCopyOptions); }, 
         // When done with last image we have our SVG
         checkDone = function () {
-            if (images && imagesEmbedded === images.length) {
+            if (images && imagesEmbedded === imagesLength) {
                 successCallback(sanitize(chartCopyContainer.innerHTML));
             }
         }, 
@@ -400,13 +400,14 @@ var OfflineExporting;
             callbackArgs.imageElement.setAttributeNS('http://www.w3.org/1999/xlink', 'href', imageURL);
             checkDone();
         };
-        var el, i, l, chartCopyContainer, chartCopyOptions, href = null, images, imagesEmbedded = 0;
+        var el, chartCopyContainer, chartCopyOptions, href = null, images, imagesLength = 0, imagesEmbedded = 0;
         // Hook into getSVG to get a copy of the chart copy's
         // container (#8273)
         chart.unbindGetSVG = addEvent(chart, 'getSVG', function (e) {
             chartCopyOptions = e.chartCopy.options;
             chartCopyContainer = e.chartCopy.container.cloneNode(true);
             images = chartCopyContainer && chartCopyContainer.getElementsByTagName('image') || [];
+            imagesLength = images.length;
         });
         // Trigger hook to get chart copy
         chart.getSVGForExport(options, chartOptions);
@@ -418,7 +419,7 @@ var OfflineExporting;
                 return;
             }
             // Go through the images we want to embed
-            for (i = 0, l = images.length; i < l; ++i) {
+            for (var i = 0; i < images.length; i++) {
                 el = images[i];
                 href = el.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
                 if (href) {
@@ -432,8 +433,9 @@ var OfflineExporting;
                     // Hidden, boosted series have blank href (#10243)
                 }
                 else {
-                    ++imagesEmbedded;
+                    imagesEmbedded++;
                     el.parentNode.removeChild(el);
+                    i--;
                     checkDone();
                 }
             }
@@ -552,10 +554,9 @@ var OfflineExporting;
             userAgent.indexOf('Chrome') < 0);
         try {
             // Safari requires data URI since it doesn't allow navigation to
-            // blob URLs. Firefox has an issue with Blobs and internal
-            // references, leading to gradients not working using Blobs (#4550).
-            // foreignObjects also dont work well in Blobs in Chrome (#14780).
-            if (!webKit && !H.isFirefox && svg.indexOf('<foreignObject') === -1) {
+            // blob URLs. ForeignObjects also dont work well in Blobs in Chrome
+            // (#14780).
+            if (!webKit && svg.indexOf('<foreignObject') === -1) {
                 return OfflineExporting.domurl.createObjectURL(new win.Blob([svg], {
                     type: 'image/svg+xml;charset-utf-16'
                 }));

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Drag-panes module
  *
@@ -29,7 +29,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/DragPanes.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Color/Palette.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, Axis, AxisDefaults, palette, Pointer, U) {
+    _registerModule(_modules, 'Extensions/DragPanes.js', [_modules['Core/Globals.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Axis/AxisDefaults.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, Axis, AxisDefaults, Pointer, U) {
         /* *
          *
          *  Plugin for resizing axes / panes in a chart.
@@ -475,7 +475,7 @@
                      * @type     {Highcharts.ColorString}
                      * @requires modules/drag-panes
                      */
-                    lineColor: palette.neutralColor20,
+                    lineColor: "#cccccc" /* neutralColor20 */,
                     /**
                      * Dash style of the control line.
                      *

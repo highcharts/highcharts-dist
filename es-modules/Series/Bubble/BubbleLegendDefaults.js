@@ -10,7 +10,6 @@
  *
  * */
 'use strict';
-import Palette from '../../Core/Color/Palette.js';
 /* *
  *
  *  Constants
@@ -166,7 +165,7 @@ var BubbleLegendDefaults = {
             /** @ignore-option */
             fontSize: '10px',
             /** @ignore-option */
-            color: Palette.neutralColor100
+            color: "#000000" /* neutralColor100 */
         },
         /**
          * The x position offset of the label relative to the

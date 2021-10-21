@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * (c) 2010-2021 Highsoft AS
  * Author: Sebastian Domas

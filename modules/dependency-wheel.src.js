@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Dependency wheel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelPoint.js', [_modules['Mixins/Nodes.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (NodesMixin, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  Dependency wheel module
@@ -56,7 +56,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var SankeySeries = SeriesRegistry.seriesTypes.sankey;
+        var SankeyPoint = SeriesRegistry.seriesTypes.sankey.prototype.pointClass;
         var extend = U.extend;
         /* *
          *
@@ -127,10 +127,7 @@
                 return true;
             };
             return DependencyWheelPoint;
-        }(SankeySeries.prototype.pointClass));
-        extend(DependencyWheelPoint.prototype, {
-            setState: NodesMixin.setNodeState
-        });
+        }(SankeyPoint));
         /* *
          *
          *  Default Export

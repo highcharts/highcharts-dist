@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * (c) 2014-2021 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/ColorMapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
+    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Utilities.js']], function (U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -38,63 +38,78 @@
          *
          * */
         var defined = U.defined,
-            addEvent = U.addEvent;
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes;
-        // Move points to the top of the z-index order when hovered
-        addEvent(Point, 'afterSetState', function (e) {
-            var point = this; // eslint-disable-line no-invalid-this
-                if (point.moveToTopOnHover && point.graphic) {
-                    point.graphic.attr({
-                        zIndex: e && e.state === 'hover' ? 1 : 0
-                    });
-            }
-        });
-        /**
-         * Mixin for maps and heatmaps
-         *
-         * @private
-         * @mixin Highcharts.colorMapPointMixin
-         */
-        var colorMapPointMixin = {
-                dataLabelOnNull: true,
-                moveToTopOnHover: true,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Color points have a value option that determines whether or not it is
-                 * a null point
-                 * @private
-                 */
-                isValid: function () {
-                    // undefined is allowed
-                    return (this.value !== null &&
-                        this.value !== Infinity &&
-                        this.value !== -Infinity);
-            }
-            /* eslint-enable valid-jsdoc */
-        };
+            wrap = U.wrap;
         /**
          * @private
          * @mixin Highcharts.colorMapSeriesMixin
          */
-        var colorMapSeriesMixin = {
+        var colorMapSeriesMixinOld = {
                 pointArrayMap: ['value'],
                 axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
                 trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-                getSymbol: noop,
+                // getSymbol: noop,
                 parallelArrays: ['x', 'y', 'value'],
-                colorKey: 'value',
-                pointAttribs: seriesTypes.column.prototype.pointAttribs,
+                colorKey: 'value'
+                // pointAttribs: seriesTypes.column.prototype.pointAttribs,
                 /* eslint-disable valid-jsdoc */
-                /**
-                 * Get the color attibutes to apply on the graphic
-                 * @private
-                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
-                 * @param {Highcharts.Point} point
-                 * @return {Highcharts.SVGAttributes}
-                 */
-                colorAttribs: function (point) {
-                    var ret = {};
+            };
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var ColorMapComposition;
+        (function (ColorMapComposition) {
+            ColorMapComposition.colorMapSeriesMixin = colorMapSeriesMixinOld;
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(SeriesClass, PointClass) {
+                if (PointClass && composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    var pointProto = PointClass.prototype;
+                    pointProto.dataLabelOnNull = true;
+                    pointProto.moveToTopOnHover = true;
+                    pointProto.isValid = pointIsValid;
+                }
+                if (composedClasses.indexOf(SeriesClass) === -1) {
+                    composedClasses.push(SeriesClass);
+                    var seriesProto = SeriesClass.prototype;
+                    seriesProto.colorAttribs = seriesColorAttribs;
+                    wrap(seriesProto, 'pointAttribs', seriesWrapPointAttribs);
+                }
+                return SeriesClass;
+            }
+            ColorMapComposition.compose = compose;
+            /**
+             * Color points have a value option that determines whether or not it is
+             * a null point
+             * @private
+             */
+            function pointIsValid() {
+                // undefined is allowed
+                return (this.value !== null &&
+                    this.value !== Infinity &&
+                    this.value !== -Infinity);
+            }
+            /**
+             * Get the color attibutes to apply on the graphic
+             * @private
+             */
+            function seriesColorAttribs(point) {
+                var ret = {};
                 if (defined(point.color) &&
                     (!point.state || point.state === 'normal') // #15746
                 ) {
@@ -102,13 +117,28 @@
                 }
                 return ret;
             }
-        };
-        var exports = {
-                colorMapPointMixin: colorMapPointMixin,
-                colorMapSeriesMixin: colorMapSeriesMixin
-            };
+            ColorMapComposition.seriesColorAttribs = seriesColorAttribs;
+            /**
+             * Move points to the top of the z-index order when hovered
+             * @private
+             */
+            function seriesWrapPointAttribs(original, point, state) {
+                var attribs = original.call(this,
+                    point,
+                    state);
+                if (point.moveToTopOnHover) {
+                    attribs.zIndex = state === 'hover' ? 1 : 0;
+                }
+                return attribs;
+            }
+        })(ColorMapComposition || (ColorMapComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return exports;
+        return ColorMapComposition;
     });
     _registerModule(_modules, 'Series/Treemap/TreemapAlgorithmGroup.js', [], function () {
         /* *
@@ -205,95 +235,123 @@
 
         return TreemapAlgorithmGroup;
     });
-    _registerModule(_modules, 'Mixins/DrawPoint.js', [], function () {
+    _registerModule(_modules, 'Series/DrawPointComposition.js', [], function () {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var isFn = function (x) {
-                return typeof x === 'function';
-        };
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * Handles the drawing of a component.
-         * Can be used for any type of component that reserves the graphic property, and
-         * provides a shouldDraw on its context.
+        /* *
          *
-         * @private
-         * @function draw
-         * @param {DrawPointParams} params
-         *        Parameters.
+         *  Composition
          *
-         * @todo add type checking.
-         * @todo export this function to enable usage
-         */
-        var draw = function draw(params) {
-                var _this = this;
-            var animatableAttribs = params.animatableAttribs,
-                onComplete = params.onComplete,
-                css = params.css,
-                renderer = params.renderer;
-            var animation = (this.series && this.series.chart.hasRendered) ?
-                    // Chart-level animation on updates
-                    void 0 :
-                    // Series-level animation on new points
-                    (this.series &&
-                        this.series.options.animation);
-            var graphic = this.graphic;
-            if (this.shouldDraw()) {
-                if (!graphic) {
-                    this.graphic = graphic =
-                        renderer[params.shapeType](params.shapeArgs)
-                            .add(params.group);
-                }
-                graphic
-                    .css(css)
-                    .attr(params.attribs)
-                    .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
-            }
-            else if (graphic) {
-                var destroy_1 = function () {
-                        _this.graphic = graphic = (graphic && graphic.destroy());
-                    if (isFn(onComplete)) {
-                        onComplete();
+         * */
+        var DrawPointComposition;
+        (function (DrawPointComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(PointClass) {
+                if (composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    var pointProto = PointClass.prototype;
+                    pointProto.draw = draw;
+                    if (!pointProto.shouldDraw) {
+                        pointProto.shouldDraw = shouldDraw;
                     }
-                };
-                // animate only runs complete callback if something was animated.
-                if (Object.keys(animatableAttribs).length) {
-                    graphic.animate(animatableAttribs, void 0, function () {
-                        destroy_1();
-                    });
                 }
-                else {
-                    destroy_1();
+                return PointClass;
+            }
+            DrawPointComposition.compose = compose;
+            /**
+             * Handles the drawing of a component.
+             * Can be used for any type of component that reserves the graphic property,
+             * and provides a shouldDraw on its context.
+             *
+             * @private
+             *
+             * @todo add type checking.
+             * @todo export this function to enable usage
+             */
+            function draw(params) {
+                var _this = this;
+                var animatableAttribs = params.animatableAttribs,
+                    onComplete = params.onComplete,
+                    css = params.css,
+                    renderer = params.renderer;
+                var animation = (this.series && this.series.chart.hasRendered) ?
+                        // Chart-level animation on updates
+                        void 0 :
+                        // Series-level animation on new points
+                        (this.series &&
+                            this.series.options.animation);
+                var graphic = this.graphic;
+                params.attribs = params.attribs || {};
+                // Assigning class in dot notation does go well in IE8
+                // eslint-disable-next-line dot-notation
+                params.attribs['class'] = this.getClassName();
+                if (this.shouldDraw()) {
+                    if (!graphic) {
+                        this.graphic = graphic =
+                            renderer[params.shapeType](params.shapeArgs)
+                                .add(params.group);
+                    }
+                    graphic
+                        .css(css)
+                        .attr(params.attribs)
+                        .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
+                }
+                else if (graphic) {
+                    var destroy_1 = function () {
+                            _this.graphic = graphic = (graphic && graphic.destroy());
+                        if (typeof onComplete === 'function') {
+                            onComplete();
+                        }
+                    };
+                    // animate only runs complete callback if something was animated.
+                    if (Object.keys(animatableAttribs).length) {
+                        graphic.animate(animatableAttribs, void 0, function () {
+                            destroy_1();
+                        });
+                    }
+                    else {
+                        destroy_1();
+                    }
                 }
             }
-        };
-        /**
-         * An extended version of draw customized for points.
-         * It calls additional methods that is expected when rendering a point.
-         * @private
-         * @param {Highcharts.Dictionary<any>} params Parameters
-         */
-        var drawPoint = function drawPoint(params) {
-                var point = this,
-            attribs = params.attribs = params.attribs || {};
-            // Assigning class in dot notation does go well in IE8
-            // eslint-disable-next-line dot-notation
-            attribs['class'] = point.getClassName();
-            // Call draw to render component
-            draw.call(point, params);
-        };
-        var drawPointModule = {
-                draw: draw,
-                drawPoint: drawPoint,
-                isFn: isFn
-            };
+            /**
+             * @private
+             */
+            function shouldDraw() {
+                return !this.isNull;
+            }
+        })(DrawPointComposition || (DrawPointComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return drawPointModule;
+        return DrawPointComposition;
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapPoint.js', [_modules['Mixins/DrawPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DrawPointMixin, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Treemap/TreemapPoint.js', [_modules['Series/DrawPointComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (DrawPointComposition, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -399,9 +457,9 @@
             return TreemapPoint;
         }(ScatterPoint));
         extend(TreemapPoint.prototype, {
-            draw: DrawPointMixin.drawPoint,
             setVisible: PiePoint.prototype.setVisible
         });
+        DrawPointComposition.compose(TreemapPoint);
         /* *
          *
          *  Default Export
@@ -476,8 +534,14 @@
 
         return TreemapUtilities;
     });
-    _registerModule(_modules, 'Mixins/TreeSeries.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
+    _registerModule(_modules, 'Series/TreeUtilities.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
+         *
+         *  (c) 2014-2021 Highsoft AS
+         *
+         *  Authors: Jon Arild Nygard / Oystein Moseng
+         *
+         *  License: www.highcharts.com/license
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
@@ -488,37 +552,148 @@
             isObject = U.isObject,
             merge = U.merge,
             pick = U.pick;
-        var isBoolean = function (x) {
-                return typeof x === 'boolean';
-        }, isFn = function (x) {
-            return typeof x === 'function';
-        };
+        /* *
+         *
+         *  Functions
+         *
+         * */
         /* eslint-disable valid-jsdoc */
         /**
-         * @todo Combine buildTree and buildNode with setTreeValues
-         * @todo Remove logic from Treemap and make it utilize this mixin.
          * @private
          */
-        var setTreeValues = function setTreeValues(tree,
-            options) {
-                var before = options.before,
-            idRoot = options.idRoot,
-            mapIdToNode = options.mapIdToNode,
-            nodeRoot = mapIdToNode[idRoot],
-            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                    options.levelIsConstant :
-                    true),
-            points = options.points,
-            point = points[tree.i],
-            optionsPoint = point && point.options || {},
-            childrenTotal = 0,
-            children = [],
-            value;
+        function getColor(node, options) {
+            var index = options.index,
+                mapOptionsToLevel = options.mapOptionsToLevel,
+                parentColor = options.parentColor,
+                parentColorIndex = options.parentColorIndex,
+                series = options.series,
+                colors = options.colors,
+                siblings = options.siblings,
+                points = series.points,
+                chartOptionsChart = series.chart.options.chart;
+            var getColorByPoint,
+                point,
+                level,
+                colorByPoint,
+                colorIndexByPoint,
+                color,
+                colorIndex;
+            /**
+             * @private
+             */
+            var variateColor = function (color) {
+                    var colorVariation = level && level.colorVariation;
+                if (colorVariation &&
+                    colorVariation.key === 'brightness' &&
+                    index &&
+                    siblings) {
+                    return Color.parse(color).brighten(colorVariation.to * (index / siblings)).get();
+                }
+                return color;
+            };
+            if (node) {
+                point = points[node.i];
+                level = mapOptionsToLevel[node.level] || {};
+                getColorByPoint = point && level.colorByPoint;
+                if (getColorByPoint) {
+                    colorIndexByPoint = point.index % (colors ?
+                        colors.length :
+                        chartOptionsChart.colorCount);
+                    colorByPoint = colors && colors[colorIndexByPoint];
+                }
+                // Select either point color, level color or inherited color.
+                if (!series.chart.styledMode) {
+                    color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variateColor(parentColor), series.color);
+                }
+                colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
+            }
+            return {
+                color: color,
+                colorIndex: colorIndex
+            };
+        }
+        /**
+         * Creates a map from level number to its given options.
+         *
+         * @private
+         *
+         * @param {object} params
+         * Object containing parameters.
+         * - `defaults` Object containing default options. The default options are
+         *   merged with the userOptions to get the final options for a specific
+         *   level.
+         * - `from` The lowest level number.
+         * - `levels` User options from series.levels.
+         * - `to` The highest level number.
+         *
+         * @return {Highcharts.Dictionary<object>|null}
+         * Returns a map from level number to its given options.
+         */
+        function getLevelOptions(params) {
+            var result = null,
+                defaults,
+                converted,
+                i,
+                from,
+                to,
+                levels;
+            if (isObject(params)) {
+                result = {};
+                from = isNumber(params.from) ? params.from : 1;
+                levels = params.levels;
+                converted = {};
+                defaults = isObject(params.defaults) ? params.defaults : {};
+                if (isArray(levels)) {
+                    converted = levels.reduce(function (obj, item) {
+                        var level,
+                            levelIsConstant,
+                            options;
+                        if (isObject(item) && isNumber(item.level)) {
+                            options = merge({}, item);
+                            levelIsConstant = pick(options.levelIsConstant, defaults.levelIsConstant);
+                            // Delete redundant properties.
+                            delete options.levelIsConstant;
+                            delete options.level;
+                            // Calculate which level these options apply to.
+                            level = item.level + (levelIsConstant ? 0 : from - 1);
+                            if (isObject(obj[level])) {
+                                merge(true, obj[level], options); // #16329
+                            }
+                            else {
+                                obj[level] = options;
+                            }
+                        }
+                        return obj;
+                    }, {});
+                }
+                to = isNumber(params.to) ? params.to : 1;
+                for (i = 0; i <= to; i++) {
+                    result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
+                }
+            }
+            return result;
+        }
+        /**
+         * @private
+         * @todo Combine buildTree and buildNode with setTreeValues
+         * @todo Remove logic from Treemap and make it utilize this mixin.
+         */
+        function setTreeValues(tree, options) {
+            var before = options.before,
+                idRoot = options.idRoot,
+                mapIdToNode = options.mapIdToNode,
+                nodeRoot = mapIdToNode[idRoot],
+                levelIsConstant = (options.levelIsConstant !== false),
+                points = options.points,
+                point = points[tree.i],
+                optionsPoint = point && point.options || {},
+                children = [];
+            var childrenTotal = 0;
             tree.levelDynamic = tree.level - (levelIsConstant ? 0 : nodeRoot.level);
             tree.name = pick(point && point.name, '');
             tree.visible = (idRoot === tree.id ||
-                (isBoolean(options.visible) ? options.visible : false));
-            if (isFn(before)) {
+                options.visible === true);
+            if (typeof before === 'function') {
                 tree = before(tree, options);
             }
             // First give the children some values
@@ -537,146 +712,30 @@
                 }
             });
             // Set the values
-            value = pick(optionsPoint.value, childrenTotal);
+            var value = pick(optionsPoint.value,
+                childrenTotal);
             tree.visible = value >= 0 && (childrenTotal > 0 || tree.visible);
             tree.children = children;
             tree.childrenTotal = childrenTotal;
             tree.isLeaf = tree.visible && !childrenTotal;
             tree.val = value;
             return tree;
-        };
-        /**
-         * @private
-         */
-        var getColor = function getColor(node,
-            options) {
-                var index = options.index,
-            mapOptionsToLevel = options.mapOptionsToLevel,
-            parentColor = options.parentColor,
-            parentColorIndex = options.parentColorIndex,
-            series = options.series,
-            colors = options.colors,
-            siblings = options.siblings,
-            points = series.points,
-            getColorByPoint,
-            chartOptionsChart = series.chart.options.chart,
-            point,
-            level,
-            colorByPoint,
-            colorIndexByPoint,
-            color,
-            colorIndex;
-            /**
-             * @private
-             */
-            function variation(color) {
-                var colorVariation = level && level.colorVariation;
-                if (colorVariation) {
-                    if (colorVariation.key === 'brightness') {
-                        return Color.parse(color).brighten(colorVariation.to * (index / siblings)).get();
-                    }
-                }
-                return color;
-            }
-            if (node) {
-                point = points[node.i];
-                level = mapOptionsToLevel[node.level] || {};
-                getColorByPoint = point && level.colorByPoint;
-                if (getColorByPoint) {
-                    colorIndexByPoint = point.index % (colors ?
-                        colors.length :
-                        chartOptionsChart.colorCount);
-                    colorByPoint = colors && colors[colorIndexByPoint];
-                }
-                // Select either point color, level color or inherited color.
-                if (!series.chart.styledMode) {
-                    color = pick(point && point.options.color, level && level.color, colorByPoint, parentColor && variation(parentColor), series.color);
-                }
-                colorIndex = pick(point && point.options.colorIndex, level && level.colorIndex, colorIndexByPoint, parentColorIndex, options.colorIndex);
-            }
-            return {
-                color: color,
-                colorIndex: colorIndex
-            };
-        };
-        /**
-         * Creates a map from level number to its given options.
-         *
-         * @private
-         * @function getLevelOptions
-         * @param {object} params
-         *        Object containing parameters.
-         *        - `defaults` Object containing default options. The default options
-         *           are merged with the userOptions to get the final options for a
-         *           specific level.
-         *        - `from` The lowest level number.
-         *        - `levels` User options from series.levels.
-         *        - `to` The highest level number.
-         * @return {Highcharts.Dictionary<object>|null}
-         *         Returns a map from level number to its given options.
-         */
-        var getLevelOptions = function getLevelOptions(params) {
-                var result = null,
-            defaults,
-            converted,
-            i,
-            from,
-            to,
-            levels;
-            if (isObject(params)) {
-                result = {};
-                from = isNumber(params.from) ? params.from : 1;
-                levels = params.levels;
-                converted = {};
-                defaults = isObject(params.defaults) ? params.defaults : {};
-                if (isArray(levels)) {
-                    converted = levels.reduce(function (obj, item) {
-                        var level,
-                            levelIsConstant,
-                            options;
-                        if (isObject(item) && isNumber(item.level)) {
-                            options = merge({}, item);
-                            levelIsConstant = (isBoolean(options.levelIsConstant) ?
-                                options.levelIsConstant :
-                                defaults.levelIsConstant);
-                            // Delete redundant properties.
-                            delete options.levelIsConstant;
-                            delete options.level;
-                            // Calculate which level these options apply to.
-                            level = item.level + (levelIsConstant ? 0 : from - 1);
-                            if (isObject(obj[level])) {
-                                extend(obj[level], options);
-                            }
-                            else {
-                                obj[level] = options;
-                            }
-                        }
-                        return obj;
-                    }, {});
-                }
-                to = isNumber(params.to) ? params.to : 1;
-                for (i = 0; i <= to; i++) {
-                    result[i] = merge({}, defaults, isObject(converted[i]) ? converted[i] : {});
-                }
-            }
-            return result;
-        };
+        }
         /**
          * Update the rootId property on the series. Also makes sure that it is
          * accessible to exporting.
          *
          * @private
-         * @function updateRootId
          *
          * @param {object} series
-         *        The series to operate on.
+         * The series to operate on.
          *
          * @return {string}
-         *         Returns the resulting rootId after update.
+         * Returns the resulting rootId after update.
          */
-        var updateRootId = function (series) {
-                var rootId,
-            options;
+        function updateRootId(series) {
+            var rootId,
+                options;
             if (isObject(series)) {
                 // Get the series options.
                 options = isObject(series.options) ? series.options : {};
@@ -690,15 +749,20 @@
                 series.rootNode = rootId;
             }
             return rootId;
-        };
-        var result = {
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var TreeUtilities = {
                 getColor: getColor,
                 getLevelOptions: getLevelOptions,
                 setTreeValues: setTreeValues,
                 updateRootId: updateRootId
             };
 
-        return result;
+        return TreeUtilities;
     });
     _registerModule(_modules, 'Series/Treemap/TreemapComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, TreemapUtilities, U) {
         /* *
@@ -761,7 +825,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Mixins/TreeSeries.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, H, LegendSymbol, palette, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TreeSeriesMixin, U) {
+    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, U) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -790,16 +854,16 @@
             };
         })();
         var color = Color.parse;
-        var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
+        var colorMapSeriesMixin = ColorMapComposition.colorMapSeriesMixin;
         var noop = H.noop;
         var Series = SeriesRegistry.series,
             _a = SeriesRegistry.seriesTypes,
             ColumnSeries = _a.column,
             HeatmapSeries = _a.heatmap,
             ScatterSeries = _a.scatter;
-        var getColor = TreeSeriesMixin.getColor,
-            getLevelOptions = TreeSeriesMixin.getLevelOptions,
-            updateRootId = TreeSeriesMixin.updateRootId;
+        var getColor = TU.getColor,
+            getLevelOptions = TU.getLevelOptions,
+            updateRootId = TU.updateRootId;
         var addEvent = U.addEvent,
             correctFloat = U.correctFloat,
             defined = U.defined,
@@ -1356,7 +1420,7 @@
                     setOptionsEvent;
                 // If color series logic is loaded, add some properties
                 if (colorMapSeriesMixin) {
-                    this.colorAttribs = colorMapSeriesMixin.colorAttribs;
+                    this.colorAttribs = ColorMapComposition.seriesColorAttribs;
                 }
                 setOptionsEvent = addEvent(series, 'setOptions', function (event) {
                     var options = event.userOptions;
@@ -2204,7 +2268,7 @@
                  *
                  * @type {Highcharts.ColorString}
                  */
-                borderColor: palette.neutralColor10,
+                borderColor: "#e6e6e6" /* neutralColor10 */,
                 /**
                  * The width of the border surrounding each tree map item.
                  */
@@ -2233,7 +2297,7 @@
                         /**
                          * The border color for the hovered state.
                          */
-                        borderColor: palette.neutralColor40,
+                        borderColor: "#999999" /* neutralColor40 */,
                         /**
                          * Brightness for the hovered point. Defaults to 0 if the
                          * heatmap series is loaded first, otherwise 0.1.
@@ -2278,6 +2342,7 @@
                 recursive: TreemapUtilities.recursive
             }
         });
+        ColorMapComposition.compose(TreemapSeries);
         SeriesRegistry.registerSeriesType('treemap', TreemapSeries);
         /* *
          *

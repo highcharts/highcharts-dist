@@ -25,16 +25,16 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import CenteredSeriesMixin from '../../Mixins/CenteredSeries.js';
-var getCenter = CenteredSeriesMixin.getCenter, getStartAndEndRadians = CenteredSeriesMixin.getStartAndEndRadians;
+import CU from '../CenteredUtilities.js';
+var getCenter = CU.getCenter, getStartAndEndRadians = CU.getStartAndEndRadians;
 import H from '../../Core/Globals.js';
 var noop = H.noop;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, TreemapSeries = _a.treemap;
 import SunburstPoint from './SunburstPoint.js';
 import SunburstUtilities from './SunburstUtilities.js';
-import TreeSeriesMixin from '../../Mixins/TreeSeries.js';
-var getColor = TreeSeriesMixin.getColor, getLevelOptions = TreeSeriesMixin.getLevelOptions, setTreeValues = TreeSeriesMixin.setTreeValues, updateRootId = TreeSeriesMixin.updateRootId;
+import TU from '../TreeUtilities.js';
+var getColor = TU.getColor, getLevelOptions = TU.getLevelOptions, setTreeValues = TU.setTreeValues, updateRootId = TU.updateRootId;
 import U from '../../Core/Utilities.js';
 var error = U.error, extend = U.extend, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, splat = U.splat;
 /* *

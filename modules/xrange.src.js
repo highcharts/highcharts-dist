@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * X-range series
  *
@@ -201,6 +201,7 @@
             return XRangePoint;
         }(ColumnSeries.prototype.pointClass));
         extend(XRangePoint.prototype, {
+            ttBelow: false,
             tooltipDateKeys: ['x', 'x2']
         });
         /* *

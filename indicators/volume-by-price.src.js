@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -116,6 +116,7 @@
             arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             correctFloat = U.correctFloat,
+            defined = U.defined,
             error = U.error,
             extend = U.extend,
             isArray = U.isArray,
@@ -423,7 +424,15 @@
                     j = 1,
                     rangeStep,
                     zoneStartsLength;
-                if (!lowRange || !highRange) {
+                // If the compare mode is set on the main series, change the VBP
+                // zones to fit new extremes, #16277.
+                var mainSeries = indicator.linkedParent;
+                if (!indicator.options.compareToMain &&
+                    mainSeries.dataModify) {
+                    lowRange = mainSeries.dataModify.modifyValue(lowRange);
+                    highRange = mainSeries.dataModify.modifyValue(highRange);
+                }
+                if (!defined(lowRange) || !defined(highRange)) {
                     if (this.points.length) {
                         this.setData([]);
                         this.zoneStarts = [];
@@ -493,6 +502,15 @@
                                 yValues[i - 1][3] :
                                 yValues[i - 1]) :
                             value;
+                        // If the compare mode is set on the main series,
+                        // change the VBP zones to fit new extremes, #16277.
+                        var mainSeries = indicator.linkedParent;
+                        if (!indicator.options.compareToMain &&
+                            mainSeries.dataModify) {
+                            value = mainSeries.dataModify.modifyValue(value);
+                            previousValue = mainSeries.dataModify
+                                .modifyValue(previousValue);
+                        }
                         // Checks if this is the point with the
                         // lowest close value and if so, adds it calculations
                         if (value <= zone.start && zone.index === 0) {
@@ -687,7 +705,7 @@
          * @extends   series,plotOptions.vbp
          * @since     6.0.0
          * @product   highstock
-         * @excluding dataParser, dataURL
+         * @excluding dataParser, dataURL, compare, compareBase, compareStart
          * @requires  stock/indicators/indicators
          * @requires  stock/indicators/volume-by-price
          * @apioption series.vbp

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
@@ -103,7 +103,7 @@
 
         return OrganizationPoint;
     });
-    _registerModule(_modules, 'Series/Organization/OrganizationSeries.js', [_modules['Series/Organization/OrganizationPoint.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (OrganizationPoint, palette, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Organization/OrganizationSeries.js', [_modules['Series/Organization/OrganizationPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (OrganizationPoint, SeriesRegistry, U) {
         /* *
          *
          *  Organization chart module
@@ -432,7 +432,7 @@
                  * @type {Highcharts.ColorString}
                  * @private
                  */
-                borderColor: palette.neutralColor60,
+                borderColor: "#666666" /* neutralColor60 */,
                 /**
                  * The border radius of the node cards.
                  *
@@ -567,7 +567,7 @@
                  * @type {Highcharts.ColorString}
                  * @private
                  */
-                linkColor: palette.neutralColor60,
+                linkColor: "#666666" /* neutralColor60 */,
                 /**
                  * The line width of the links connecting nodes, in pixels.
                  *

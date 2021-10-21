@@ -24,7 +24,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import H from '../../Core/Globals.js';
-import NodesMixin from '../../Mixins/Nodes.js';
+import NodesComposition from '../NodesComposition.js';
 import Point from '../../Core/Series/Point.js';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -497,12 +497,12 @@ extend(NetworkgraphSeries.prototype, {
      * links.
      * @private
      */
-    createNode: NodesMixin.createNode,
+    createNode: NodesComposition.createNode,
     destroy: function () {
         if (this.layout) {
             this.layout.removeElementFromCollection(this, this.layout.series);
         }
-        NodesMixin.destroy.call(this);
+        NodesComposition.destroy.call(this);
     },
     /* eslint-disable no-invalid-this, valid-jsdoc */
     /**
@@ -534,7 +534,7 @@ extend(NetworkgraphSeries.prototype, {
      */
     generatePoints: function () {
         var node, i;
-        NodesMixin.generatePoints.apply(this, arguments);
+        NodesComposition.generatePoints.apply(this, arguments);
         // In networkgraph, it's fine to define stanalone nodes, create
         // them:
         if (this.options.nodes) {
@@ -789,7 +789,7 @@ var NetworkgraphPoint = /** @class */ (function (_super) {
     return NetworkgraphPoint;
 }(Series.prototype.pointClass));
 extend(NetworkgraphPoint.prototype, {
-    setState: NodesMixin.setNodeState,
+    setState: NodesComposition.setNodeState,
     /**
      * Basic `point.init()` and additional styles applied when
      * `series.draggable` is enabled.

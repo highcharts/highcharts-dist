@@ -36,9 +36,6 @@ import CU from '../../Core/Geometry/CircleUtilities.js';
 var getAreaOfIntersectionBetweenCircles = CU.getAreaOfIntersectionBetweenCircles, getCirclesIntersectionPolygon = CU.getCirclesIntersectionPolygon, isCircle1CompletelyOverlappingCircle2 = CU.isCircle1CompletelyOverlappingCircle2, isPointInsideAllCircles = CU.isPointInsideAllCircles, isPointOutsideAllCircles = CU.isPointOutsideAllCircles;
 import GU from '../../Core/Geometry/GeometryUtilities.js';
 var getCenterOfPoints = GU.getCenterOfPoints;
-import NelderMeadMixin from '../../Mixins/NelderMead.js';
-var nelderMead = NelderMeadMixin.nelderMead;
-import palette from '../../Core/Color/Palette.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
 import VennPoint from './VennPoint.js';
@@ -127,7 +124,7 @@ var VennSeries = /** @class */ (function (_super) {
             margin: -Number.MAX_VALUE
         }).point;
         // Use nelder mead to optimize the initial label position.
-        var optimal = nelderMead(function (p) {
+        var optimal = VennUtils.nelderMead(function (p) {
             return -(VennUtils.getMarginFromCircles({ x: p[0], y: p[1] }, internal, external));
         }, [best.x, best.y]);
         // Update best to be the point which was found to have the best margin.
@@ -484,7 +481,7 @@ var VennSeries = /** @class */ (function (_super) {
      * @optionparent plotOptions.venn
      */
     VennSeries.defaultOptions = merge(ScatterSeries.defaultOptions, {
-        borderColor: palette.neutralColor20,
+        borderColor: "#cccccc" /* neutralColor20 */,
         borderDashStyle: 'solid',
         borderWidth: 1,
         brighten: 0,
@@ -511,14 +508,14 @@ var VennSeries = /** @class */ (function (_super) {
              */
             hover: {
                 opacity: 1,
-                borderColor: palette.neutralColor80
+                borderColor: "#333333" /* neutralColor80 */
             },
             /**
              * @excluding halo
              */
             select: {
-                color: palette.neutralColor20,
-                borderColor: palette.neutralColor100,
+                color: "#cccccc" /* neutralColor20 */,
+                borderColor: "#000000" /* neutralColor100 */,
                 animation: false
             },
             inactive: {

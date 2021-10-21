@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Old IE (v6, v7, v8) module for Highcharts v6+.
  *
@@ -176,7 +176,7 @@
 
         return VMLRenderer3D;
     });
-    _registerModule(_modules, 'Extensions/Oldie/Oldie.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Pointer.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Extensions/Oldie/VMLRenderer3D.js']], function (Chart, Color, H, D, palette, Pointer, RendererRegistry, SVGElement, SVGRenderer, U, VMLRenderer3D) {
+    _registerModule(_modules, 'Extensions/Oldie/Oldie.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Pointer.js'], _modules['Core/Renderer/RendererRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Extensions/Oldie/VMLRenderer3D.js']], function (Chart, Color, H, D, Pointer, RendererRegistry, SVGElement, SVGRenderer, U, VMLRenderer3D) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -222,7 +222,7 @@
          * @apioption global.VMLRadialGradientURL
          */
         getOptions().global.VMLRadialGradientURL =
-            'http://code.highcharts.com/9.2.2/gfx/vml-radial-gradient.png';
+            'http://code.highcharts.com/9.3.0/gfx/vml-radial-gradient.png';
         // Utilites
         if (doc && !doc.defaultView) {
             H.getStyle = U.getStyle = function getStyle(el, prop) {
@@ -739,7 +739,7 @@
                             // apply the opacity
                             markup = [
                                 '<stroke color="',
-                                shadowOptions.color || palette.neutralColor100,
+                                shadowOptions.color || "#000000" /* neutralColor100 */,
                                 '" opacity="', shadowElementOpacity * i, '"/>'
                             ];
                             createElement(renderer.prepVML(markup), null, null, shadow);

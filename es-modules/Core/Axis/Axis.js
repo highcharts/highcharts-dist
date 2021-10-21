@@ -12,7 +12,6 @@ import A from '../Animation/AnimationUtilities.js';
 var animObject = A.animObject;
 import AxisDefaults from './AxisDefaults.js';
 import Color from '../Color/Color.js';
-import Palette from '../Color/Palette.js';
 import D from '../DefaultOptions.js';
 var defaultOptions = D.defaultOptions;
 import F from '../Foundation.js';
@@ -813,7 +812,10 @@ var Axis = /** @class */ (function () {
         if (axis.isXAxis &&
             typeof axis.minRange === 'undefined' &&
             !log) {
-            if (defined(options.min) || defined(options.max)) {
+            if (defined(options.min) ||
+                defined(options.max) ||
+                defined(options.floor) ||
+                defined(options.ceiling)) {
                 axis.minRange = null; // don't do this again
             }
             else {
@@ -1091,7 +1093,10 @@ var Axis = /** @class */ (function () {
      */
     Axis.prototype.setTickInterval = function (secondPass) {
         var axis = this, chart = axis.chart, log = axis.logarithmic, options = axis.options, isXAxis = axis.isXAxis, isLinked = axis.isLinked, tickPixelIntervalOption = options.tickPixelInterval, categories = axis.categories, softThreshold = axis.softThreshold;
-        var maxPadding = options.maxPadding, minPadding = options.minPadding, length, linkedParentExtremes, tickIntervalOption = options.tickInterval, threshold = isNumber(axis.threshold) ? axis.threshold : null, thresholdMin, thresholdMax, hardMin, hardMax;
+        var maxPadding = options.maxPadding, minPadding = options.minPadding, length, linkedParentExtremes, 
+        // Only non-negative tickInterval is valid, #12961
+        tickIntervalOption = isNumber(options.tickInterval) && options.tickInterval >= 0 ?
+            options.tickInterval : void 0, threshold = isNumber(axis.threshold) ? axis.threshold : null, thresholdMin, thresholdMax, hardMin, hardMax;
         if (!axis.dateTime && !categories && !isLinked) {
             this.getTickAmount();
         }
@@ -1260,15 +1265,18 @@ var Axis = /** @class */ (function () {
         // This is in turn needed in order to find tick positions in ordinal
         // axes.
         if (isXAxis && !secondPass) {
+            var hasExtemesChanged_1 = axis.min !== (axis.old && axis.old.min) ||
+                axis.max !== (axis.old && axis.old.max);
             // First process all series assigned to that axis.
             axis.series.forEach(function (series) {
                 // Allows filtering out points outside the plot area.
                 series.forceCrop = series.forceCropping && series.forceCropping();
-                series.processData(axis.min !== (axis.old && axis.old.min) ||
-                    axis.max !== (axis.old && axis.old.max));
+                series.processData(hasExtemesChanged_1);
             });
             // Then apply grouping if needed.
-            fireEvent(this, 'postProcessData');
+            // The hasExtemesChanged helps to decide if the data grouping should
+            // be skipped in the further calculations #16319.
+            fireEvent(this, 'postProcessData', { hasExtemesChanged: hasExtemesChanged_1 });
         }
         // set the translation factor used in translate function
         axis.setAxisTranslation();
@@ -1666,8 +1674,6 @@ var Axis = /** @class */ (function () {
      *         Set extremes off ticks
      * @sample stock/members/axis-setextremes/
      *         Set extremes in Highcharts Stock
-     * @sample maps/members/axis-setextremes/
-     *         Set extremes in Highmaps
      *
      * @function Highcharts.Axis#setExtremes
      *
@@ -1792,8 +1798,6 @@ var Axis = /** @class */ (function () {
      *
      * @sample highcharts/members/axis-getextremes/
      *         Report extremes by click on a button
-     * @sample maps/members/axis-getextremes/
-     *         Get extremes in Highmaps
      *
      * @function Highcharts.Axis#getExtremes
      *
@@ -2243,9 +2247,10 @@ var Axis = /** @class */ (function () {
      */
     Axis.prototype.getOffset = function () {
         var _this = this;
-        var axis = this, chart = axis.chart, renderer = chart.renderer, options = axis.options, tickPositions = axis.tickPositions, ticks = axis.ticks, horiz = axis.horiz, side = axis.side, invertedSide = (chart.inverted && !axis.isZAxis ?
+        var axis = this, chart = axis.chart, horiz = axis.horiz, options = axis.options, side = axis.side, ticks = axis.ticks, tickPositions = axis.tickPositions, coll = axis.coll, axisParent = axis.axisParent // Used in color axis
+        , renderer = chart.renderer, invertedSide = (chart.inverted && !axis.isZAxis ?
             [1, 0, 3, 2][side] :
-            side), hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side], className = options.className, axisParent = axis.axisParent; // Used in color axis
+            side), hasData = axis.hasData(), axisTitleOptions = options.title, labelOptions = options.labels, axisOffset = chart.axisOffset, clipOffset = chart.clipOffset, directionFactor = [-1, 1, 1, -1][side], className = options.className;
         var showAxis, titleOffset = 0, titleOffsetOption, titleMargin = 0, labelOffset = 0, // reset
         labelOffsetPadded, lineHeightCorrection;
         // For reuse in Axis.render
@@ -2256,7 +2261,7 @@ var Axis = /** @class */ (function () {
         if (!axis.axisGroup) {
             var createGroup = function (name, suffix, zIndex) { return renderer.g(name)
                 .attr({ zIndex: zIndex })
-                .addClass("highcharts-" + _this.coll.toLowerCase() + suffix + " " +
+                .addClass("highcharts-" + coll.toLowerCase() + suffix + " " +
                 (_this.isRadial ? "highcharts-radial-axis" + suffix + " " : '') +
                 (className || ''))
                 .add(axisParent); };
@@ -2334,21 +2339,23 @@ var Axis = /** @class */ (function () {
         }
         // Due to GridAxis.tickSize, tickSize should be calculated after ticks
         // has rendered.
-        var tickSize = this.tickSize('tick');
-        axisOffset[side] = Math.max(axisOffset[side], (axis.axisTitleMargin || 0) + titleOffset +
-            directionFactor * axis.offset, labelOffsetPadded, // #3027
-        tickPositions && tickPositions.length && tickSize ?
-            tickSize[0] + directionFactor * axis.offset :
-            0 // #4866
-        );
-        // Decide the clipping needed to keep the graph inside
-        // the plot area and axis lines
-        var clip = options.offset ?
-            0 :
-            // #4308, #4371:
-            Math.floor(axis.axisLine.strokeWidth() / 2) * 2;
-        clipOffset[invertedSide] =
-            Math.max(clipOffset[invertedSide], clip);
+        if (coll !== 'colorAxis') {
+            var tickSize = this.tickSize('tick');
+            axisOffset[side] = Math.max(axisOffset[side], (axis.axisTitleMargin || 0) + titleOffset +
+                directionFactor * axis.offset, labelOffsetPadded, // #3027
+            tickPositions && tickPositions.length && tickSize ?
+                tickSize[0] + directionFactor * axis.offset :
+                0 // #4866
+            );
+            // Decide the clipping needed to keep the graph inside
+            // the plot area and axis lines
+            var clip = !axis.axisLine || options.offset ?
+                0 :
+                // #4308, #4371:
+                Math.floor(axis.axisLine.strokeWidth() / 2) * 2;
+            clipOffset[invertedSide] =
+                Math.max(clipOffset[invertedSide], clip);
+        }
         fireEvent(this, 'afterGetOffset');
     };
     /**
@@ -2834,10 +2841,10 @@ var Axis = /** @class */ (function () {
                         stroke: options.color ||
                             (categorized ?
                                 Color
-                                    .parse(Palette.highlightColor20)
+                                    .parse("#ccd6eb" /* highlightColor20 */)
                                     .setOpacity(0.25)
                                     .get() :
-                                Palette.neutralColor20),
+                                "#cccccc" /* neutralColor20 */),
                         'stroke-width': pick(options.width, 1)
                     }).css({
                         'pointer-events': 'none'

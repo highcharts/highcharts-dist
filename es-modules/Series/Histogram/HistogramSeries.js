@@ -22,7 +22,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import DerivedSeriesMixin from '../../Mixins/DerivedSeries.js';
+import DerivedComposition from '../DerivedComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var ColumnSeries = SeriesRegistry.seriesTypes.column;
 import U from '../../Core/Utilities.js';
@@ -217,13 +217,9 @@ var HistogramSeries = /** @class */ (function (_super) {
     return HistogramSeries;
 }(ColumnSeries));
 extend(HistogramSeries.prototype, {
-    addBaseSeriesEvents: DerivedSeriesMixin.addBaseSeriesEvents,
-    addEvents: DerivedSeriesMixin.addEvents,
-    destroy: DerivedSeriesMixin.destroy,
-    hasDerivedData: DerivedSeriesMixin.hasDerivedData,
-    init: DerivedSeriesMixin.init,
-    setBaseSeries: DerivedSeriesMixin.setBaseSeries
+    hasDerivedData: DerivedComposition.hasDerivedData
 });
+DerivedComposition.compose(HistogramSeries);
 SeriesRegistry.registerSeriesType('histogram', HistogramSeries);
 /* *
  *

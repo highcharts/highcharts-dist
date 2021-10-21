@@ -20,7 +20,7 @@ var __extends = (this && this.__extends) || (function () {
 import Annotation from '../Annotations.js';
 import ControlPoint from '../ControlPoint.js';
 import U from '../../../Core/Utilities.js';
-var extend = U.extend, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
+var defined = U.defined, extend = U.extend, isNumber = U.isNumber, merge = U.merge, pick = U.pick;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 var Measure = /** @class */ (function (_super) {
     __extends(Measure, _super);
@@ -102,7 +102,17 @@ var Measure = /** @class */ (function (_super) {
         ];
     };
     Measure.prototype.addControlPoints = function () {
+        var inverted = this.chart.inverted, options = this.options.controlPointOptions;
         var selectType = this.options.typeOptions.selectType, controlPoint;
+        if (!defined(this.userOptions.controlPointOptions &&
+            this.userOptions.controlPointOptions.style.cursor)) {
+            if (selectType === 'x') {
+                options.style.cursor = inverted ? 'ns-resize' : 'ew-resize';
+            }
+            else if (selectType === 'y') {
+                options.style.cursor = inverted ? 'ew-resize' : 'ns-resize';
+            }
+        }
         controlPoint = new ControlPoint(this.chart, this, this.options.controlPointOptions, 0);
         this.controlPoints.push(controlPoint);
         // add extra controlPoint for horizontal and vertical range
@@ -177,7 +187,7 @@ var Measure = /** @class */ (function (_super) {
         this.initShape(extend({
             type: 'path',
             points: this.shapePointsOptions()
-        }, this.options.typeOptions.background), false);
+        }, this.options.typeOptions.background), 2);
     };
     /**
      * Add internal crosshair shapes (on top and bottom).
@@ -229,12 +239,8 @@ var Measure = /** @class */ (function (_super) {
             // Add new crosshairs
             crosshairOptionsX = merge(defaultOptions, options.crosshairX);
             crosshairOptionsY = merge(defaultOptions, options.crosshairY);
-            this.initShape(extend({
-                d: pathH
-            }, crosshairOptionsX), false);
-            this.initShape(extend({
-                d: pathV
-            }, crosshairOptionsY), false);
+            this.initShape(extend({ d: pathH }, crosshairOptionsX), 0);
+            this.initShape(extend({ d: pathV }, crosshairOptionsY), 1);
         }
     };
     Measure.prototype.onDrag = function (e) {

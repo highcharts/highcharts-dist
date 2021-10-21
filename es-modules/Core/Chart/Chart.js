@@ -21,7 +21,6 @@ import Legend from '../Legend/Legend.js';
 import MSPointer from '../MSPointer.js';
 import D from '../DefaultOptions.js';
 var defaultOptions = D.defaultOptions, defaultTime = D.defaultTime;
-import palette from '../../Core/Color/Palette.js';
 import Pointer from '../Pointer.js';
 import RendererRegistry from '../Renderer/RendererRegistry.js';
 import SeriesRegistry from '../Series/SeriesRegistry.js';
@@ -750,10 +749,10 @@ var Chart = /** @class */ (function () {
         var chart = this;
         // Default style
         var style = name === 'title' ? {
-            color: palette.neutralColor80,
+            color: "#333333" /* neutralColor80 */,
             fontSize: this.options.isStock ? '16px' : '18px' // #2944
         } : {
-            color: palette.neutralColor60
+            color: "#666666" /* neutralColor60 */
         };
         // Merge default options with explicit options
         var options = this.options[name] = merge(

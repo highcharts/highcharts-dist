@@ -15,11 +15,9 @@ import ChartUtilities from '../Utils/ChartUtilities.js';
 var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
 import H from '../../Core/Globals.js';
 var noop = H.noop;
-import HTMLUtilities from '../Utils/HTMLUtilities.js';
-var removeElement = HTMLUtilities.removeElement, setElAttrs = HTMLUtilities.setElAttrs;
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import U from '../../Core/Utilities.js';
-var extend = U.extend, pick = U.pick;
+var attr = U.attr, extend = U.extend, pick = U.pick;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * @private
@@ -40,7 +38,12 @@ function chartHasMapZoom(chart) {
  * @param {number} [granularity]
  */
 H.Axis.prototype.panStep = function (direction, granularity) {
-    var gran = granularity || 3, extremes = this.getExtremes(), step = (extremes.max - extremes.min) / gran * direction, newMax = extremes.max + step, newMin = extremes.min + step, size = newMax - newMin;
+    var gran = granularity || 3;
+    var extremes = this.getExtremes();
+    var step = (extremes.max - extremes.min) / gran * direction;
+    var newMax = extremes.max + step;
+    var newMin = extremes.min + step;
+    var size = newMax - newMin;
     if (direction < 0 && newMin < extremes.dataMin) {
         newMin = extremes.dataMin;
         newMax = newMin + size;
@@ -66,6 +69,7 @@ extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
      */
     init: function () {
         var component = this, chart = this.chart;
+        this.proxyProvider.addGroup('zoom', 'div');
         [
             'afterShowResetZoom', 'afterDrilldown', 'drillupall'
         ].forEach(function (eventType) {
@@ -94,7 +98,7 @@ extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
      */
     setMapNavButtonAttrs: function (button, labelFormatKey) {
         var chart = this.chart, label = chart.langFormat(labelFormatKey, { chart: chart });
-        setElAttrs(button, {
+        attr(button, {
             tabindex: -1,
             role: 'button',
             'aria-label': label
@@ -113,13 +117,12 @@ extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
     updateProxyOverlays: function () {
         var chart = this.chart;
         // Always start with a clean slate
-        removeElement(this.drillUpProxyGroup);
-        removeElement(this.resetZoomProxyGroup);
+        this.proxyProvider.clearGroup('zoom');
         if (chart.resetZoomButton) {
-            this.recreateProxyButtonAndGroup(chart.resetZoomButton, 'resetZoomProxyButton', 'resetZoomProxyGroup', chart.langFormat('accessibility.zoom.resetZoomButton', { chart: chart }));
+            this.createZoomProxyButton(chart.resetZoomButton, 'resetZoomProxyButton', chart.langFormat('accessibility.zoom.resetZoomButton', { chart: chart }));
         }
         if (chart.drillUpButton) {
-            this.recreateProxyButtonAndGroup(chart.drillUpButton, 'drillUpProxyButton', 'drillUpProxyGroup', chart.langFormat('accessibility.drillUpButton', {
+            this.createZoomProxyButton(chart.drillUpButton, 'drillUpProxyButton', chart.langFormat('accessibility.drillUpButton', {
                 chart: chart,
                 buttonText: chart.getDrilldownBackText()
             }));
@@ -129,13 +132,15 @@ extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
      * @private
      * @param {Highcharts.SVGElement} buttonEl
      * @param {string} buttonProp
-     * @param {string} groupProp
      * @param {string} label
      */
-    recreateProxyButtonAndGroup: function (buttonEl, buttonProp, groupProp, label) {
-        removeElement(this[groupProp]);
-        this[groupProp] = this.addProxyGroup();
-        this[buttonProp] = this.createProxyButton(buttonEl, this[groupProp], { 'aria-label': label, tabindex: -1 });
+    createZoomProxyButton: function (buttonEl, buttonProp, label) {
+        this[buttonProp] = this.proxyProvider.addProxyElement('zoom', {
+            click: buttonEl
+        }, {
+            'aria-label': label,
+            tabindex: -1
+        });
     },
     /**
      * Get keyboard navigation handler for map zoom.
@@ -193,7 +198,10 @@ extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
      * @return {number} Response code
      */
     onMapKbdTab: function (keyboardNavigationHandler, event) {
-        var button, chart = this.chart, response = keyboardNavigationHandler.response, isBackwards = event.shiftKey, isMoveOutOfRange = isBackwards && !this.focusedMapNavButtonIx ||
+        var chart = this.chart;
+        var response = keyboardNavigationHandler.response;
+        var isBackwards = event.shiftKey;
+        var isMoveOutOfRange = isBackwards && !this.focusedMapNavButtonIx ||
             !isBackwards && this.focusedMapNavButtonIx;
         // Deselect old
         chart.mapNavButtons[this.focusedMapNavButtonIx].setState(0);
@@ -203,7 +211,7 @@ extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
         }
         // Select other button
         this.focusedMapNavButtonIx += isBackwards ? -1 : 1;
-        button = chart.mapNavButtons[this.focusedMapNavButtonIx];
+        var button = chart.mapNavButtons[this.focusedMapNavButtonIx];
         chart.setFocusToElement(button.box, button.element);
         button.setState(2);
         return response.success;
@@ -214,8 +222,8 @@ extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
      * @return {number} Response code
      */
     onMapKbdClick: function (keyboardNavigationHandler) {
-        this.fakeClickEvent(this.chart.mapNavButtons[this.focusedMapNavButtonIx]
-            .element);
+        var el = this.chart.mapNavButtons[this.focusedMapNavButtonIx].element;
+        this.fakeClickEvent(el);
         return keyboardNavigationHandler.response.success;
     },
     /**
@@ -260,11 +268,11 @@ extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
             validate: function () {
                 var hasButton = (chart[buttonProp] &&
                     chart[buttonProp].box &&
-                    component[proxyProp]);
+                    component[proxyProp].buttonElement);
                 return hasButton;
             },
             init: function () {
-                chart.setFocusToElement(chart[buttonProp].box, component[proxyProp]);
+                chart.setFocusToElement(chart[buttonProp].box, component[proxyProp].buttonElement);
             }
         });
     },

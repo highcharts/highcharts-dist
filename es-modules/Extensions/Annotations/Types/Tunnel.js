@@ -82,14 +82,14 @@ var Tunnel = /** @class */ (function (_super) {
                 },
                 this.points[3]
             ]
-        }), false);
+        }), 0);
         this.options.typeOptions.line = line.options;
     };
     Tunnel.prototype.addBackground = function () {
         var background = this.initShape(merge(this.options.typeOptions.background, {
             type: 'path',
             points: this.points.slice()
-        }));
+        }), 1);
         this.options.typeOptions.background = background.options;
     };
     /**
@@ -128,8 +128,6 @@ Tunnel.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions,
  */
 {
     typeOptions: {
-        xAxis: 0,
-        yAxis: 0,
         /**
          * Background options.
          *
@@ -187,7 +185,7 @@ Tunnel.prototype.defaultOptions = merge(CrookedLine.prototype.defaultOptions,
                     visiblePlotOnly: true
                 })) {
                     var translation = this.mouseMoveToTranslation(e);
-                    target.translateSide(translation.x, translation.y, this.index);
+                    target.translateSide(translation.x, translation.y, !!this.index);
                     target.redraw(false);
                 }
             }

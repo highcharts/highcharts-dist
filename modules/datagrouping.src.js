@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Data grouping module
  *
@@ -151,8 +151,18 @@
                     arr[arr.length - 1] :
                     (arr.hasNulls ? null : void 0);
             },
-            // ohlc and range are special cases where a multidimensional array is
-            // input and an array is output
+            // HLC, OHLC and range are special cases where a multidimensional array is
+            // input and an array is output.
+            hlc: function (high, low, close) {
+                high = approximations.high(high);
+                low = approximations.low(low);
+                close = approximations.close(close);
+                if (isNumber(high) ||
+                    isNumber(low) ||
+                    isNumber(close)) {
+                    return [high, low, close];
+                }
+            },
             ohlc: function (open, high, low, close) {
                 open = approximations.open(open);
                 high = approximations.high(high);
@@ -164,7 +174,6 @@
                     isNumber(close)) {
                     return [open, high, low, close];
                 }
-                // else, return is undefined
             },
             range: function (low, high) {
                 low = approximations.low(low);
@@ -178,7 +187,7 @@
                 // else, return is undefined
             }
         };
-        var applyGrouping = function () {
+        var applyGrouping = function (hasExtemesChanged) {
                 var series = this,
             chart = series.chart,
             options = series.options,
@@ -197,9 +206,9 @@
             if (groupingEnabled && !series.requireSorting) {
                 series.requireSorting = revertRequireSorting = true;
             }
-            // Skip if processData returns false or if grouping is disabled (in that
-            // order)
-            skip = skipDataGrouping(series) || !groupingEnabled;
+            // Skip if skipDataGrouping method returns false or if grouping is disabled
+            // (in that order).
+            skip = skipDataGrouping(series, hasExtemesChanged) === false || !groupingEnabled;
             // Revert original requireSorting value if changed
             if (revertRequireSorting) {
                 series.requireSorting = false;
@@ -310,13 +319,13 @@
                         (currentDataGrouping && currentDataGrouping.totalRange);
             }
         };
-        var skipDataGrouping = function (series) {
-                if (series.isCartesian &&
+        var skipDataGrouping = function (series,
+            force) {
+                return !(series.isCartesian &&
                     !series.isDirty &&
                     !series.xAxis.isDirty &&
-                    !series.yAxis.isDirty) {
-                    return false;
-            }
+                    !series.yAxis.isDirty &&
+                    !force);
         };
         var groupData = function (xData,
             yData,
@@ -630,7 +639,10 @@
                 ohlc: {
                     groupPixelWidth: 5
                 },
-                // Move to HeikinAshiSeries.ts aftre refactoring data grouping.
+                hlc: {
+                    groupPixelWidth: 5
+                    // Move to HeikinAshiSeries.ts aftre refactoring data grouping.
+                },
                 heikinashi: {
                     groupPixelWidth: 10
                 }
@@ -672,6 +684,9 @@
             }
             if (this.is('ohlc')) {
                 return 'ohlc';
+            }
+            if (this.is('hlc')) {
+                return 'hlc';
             }
             if (this.is('column')) {
                 return 'sum';
@@ -738,7 +753,7 @@
          *
          * @function Highcharts.Axis#applyGrouping
          */
-        Axis.prototype.applyGrouping = function () {
+        Axis.prototype.applyGrouping = function (e) {
             var axis = this,
                 series = axis.series;
             series.forEach(function (series) {
@@ -750,7 +765,7 @@
                 }
                 // Fire independing on series.groupPixelWidth to always set a proper
                 // dataGrouping state, (#16238)
-                series.applyGrouping();
+                series.applyGrouping(!!e.hasExtemesChanged);
             });
         };
         // Get the data grouping pixel width based on the greatest defined individual
@@ -783,8 +798,7 @@
                     // Execute grouping if the amount of points is greater than the
                     // limit defined in groupPixelWidth
                     if (series[i].groupPixelWidth ||
-                        dataLength >
-                            (this.chart.plotSizeX / groupPixelWidth) ||
+                        dataLength > (this.chart.plotSizeX / groupPixelWidth) ||
                         (dataLength && dgOptions.forced)) {
                         doGrouping = true;
                     }
@@ -1022,7 +1036,7 @@
          * from the raw data.
          *
          * Defaults to `average` for line-type series, `sum` for columns, `range`
-         * for range series and `ohlc` for OHLC and candlestick.
+         * for range series, `hlc` for HLC, and `ohlc` for OHLC and candlestick.
          *
          * @sample {highstock} stock/plotoptions/series-datagrouping-approximation
          *         Approximation callback with custom data

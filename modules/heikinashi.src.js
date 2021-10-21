@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * HeikinAshi series type for Highcharts Stock
  *
@@ -271,8 +271,8 @@
         addEvent(HeikinAshiSeries, 'afterTranslate', function () {
             var series = this,
                 points = series.points,
-                heikiashiData = series.heikiashiData;
-            var cropStart = series.cropStart || 0;
+                heikiashiData = series.heikiashiData,
+                cropStart = series.cropStart || 0;
             // Reset the proccesed data.
             series.processedYData.length = 0;
             // Modify points.
@@ -306,7 +306,7 @@
         });
         /* *
          *
-         *  Prototype Properties
+         *  Class Prototype
          *
          * */
         HeikinAshiSeries.prototype.pointClass = HeikinAshiPoint;

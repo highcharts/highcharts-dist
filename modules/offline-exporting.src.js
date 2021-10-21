@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Client side exporting module
  *
@@ -134,12 +134,12 @@
                 }
             }
         };
-        var exports = {
+        var DownloadURL = {
                 dataURLtoBlob: dataURLtoBlob,
                 downloadURL: downloadURL
             };
 
-        return exports;
+        return DownloadURL;
     });
     _registerModule(_modules, 'Extensions/OfflineExporting/OfflineExportingDefaults.js', [], function () {
         /* *
@@ -157,7 +157,7 @@
          *
          * */
         var OfflineExportingDefaults = {
-                libURL: 'https://code.highcharts.com/9.2.2/lib/',
+                libURL: 'https://code.highcharts.com/9.3.0/lib/',
                 // When offline-exporting is loaded, redefine the menu item definitions
                 // related to download.
                 menuItemDefinitions: {
@@ -600,7 +600,7 @@
                     chartCopyOptions); }, 
                     // When done with last image we have our SVG
                     checkDone = function () {
-                        if (images && imagesEmbedded === images.length) {
+                        if (images && imagesEmbedded === imagesLength) {
                             successCallback(sanitize(chartCopyContainer.innerHTML));
                     }
                 }, 
@@ -612,12 +612,11 @@
                     checkDone();
                 };
                 var el,
-                    i,
-                    l,
                     chartCopyContainer,
                     chartCopyOptions,
                     href = null,
                     images,
+                    imagesLength = 0,
                     imagesEmbedded = 0;
                 // Hook into getSVG to get a copy of the chart copy's
                 // container (#8273)
@@ -625,6 +624,7 @@
                     chartCopyOptions = e.chartCopy.options;
                     chartCopyContainer = e.chartCopy.container.cloneNode(true);
                     images = chartCopyContainer && chartCopyContainer.getElementsByTagName('image') || [];
+                    imagesLength = images.length;
                 });
                 // Trigger hook to get chart copy
                 chart.getSVGForExport(options, chartOptions);
@@ -636,7 +636,7 @@
                         return;
                     }
                     // Go through the images we want to embed
-                    for (i = 0, l = images.length; i < l; ++i) {
+                    for (var i = 0; i < images.length; i++) {
                         el = images[i];
                         href = el.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
                         if (href) {
@@ -650,8 +650,9 @@
                             // Hidden, boosted series have blank href (#10243)
                         }
                         else {
-                            ++imagesEmbedded;
+                            imagesEmbedded++;
                             el.parentNode.removeChild(el);
+                            i--;
                             checkDone();
                         }
                     }
@@ -771,10 +772,9 @@
                         userAgent.indexOf('Chrome') < 0);
                 try {
                     // Safari requires data URI since it doesn't allow navigation to
-                    // blob URLs. Firefox has an issue with Blobs and internal
-                    // references, leading to gradients not working using Blobs (#4550).
-                    // foreignObjects also dont work well in Blobs in Chrome (#14780).
-                    if (!webKit && !H.isFirefox && svg.indexOf('<foreignObject') === -1) {
+                    // blob URLs. ForeignObjects also dont work well in Blobs in Chrome
+                    // (#14780).
+                    if (!webKit && svg.indexOf('<foreignObject') === -1) {
                         return OfflineExporting.domurl.createObjectURL(new win.Blob([svg], {
                             type: 'image/svg+xml;charset-utf-16'
                         }));

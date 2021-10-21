@@ -197,8 +197,6 @@ var GanttSeries = /** @class */ (function (_super) {
     return GanttSeries;
 }(XRangeSeries));
 extend(GanttSeries.prototype, {
-    // Keyboard navigation, don't use nearest vertical mode
-    keyboardMoveVertical: false,
     pointArrayMap: ['start', 'end', 'y'],
     pointClass: GanttPoint,
     setData: Series.prototype.setData

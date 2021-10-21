@@ -113,8 +113,15 @@ var ScrollbarAxis = /** @class */ (function () {
                     if (axis.opposite) {
                         scrollbarsOffsets[0] += offset;
                     }
-                    scrollbar.position(axis.left + axis.width + 2 + scrollbarsOffsets[0] -
-                        (axis.opposite ? 0 : axisMargin), axis.top, axis.width, axis.height);
+                    var xPosition = void 0;
+                    if (!scrollbar.options.opposite) {
+                        xPosition = axis.opposite ? 0 : axisMargin;
+                    }
+                    else {
+                        xPosition = axis.left + axis.width + 2 + scrollbarsOffsets[0] -
+                            (axis.opposite ? 0 : axisMargin);
+                    }
+                    scrollbar.position(xPosition, axis.top, axis.width, axis.height);
                     // Next scrollbar should reserve space for margin (if set)
                     if (axis.opposite) {
                         scrollbarsOffsets[0] += axisMargin;
@@ -152,7 +159,7 @@ var ScrollbarAxis = /** @class */ (function () {
         });
         // Make space for a scrollbar:
         addEvent(AxisClass, 'afterGetOffset', function () {
-            var axis = this, index = axis.horiz ? 2 : 1, scrollbar = axis.scrollbar;
+            var axis = this, opposite = axis.scrollbar && !axis.scrollbar.options.opposite, index = axis.horiz ? 2 : opposite ? 3 : 1, scrollbar = axis.scrollbar;
             if (scrollbar) {
                 axis.chart.scrollbarsOffsets = [0, 0]; // reset scrollbars offsets
                 axis.chart.axisOffset[index] +=

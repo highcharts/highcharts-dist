@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  * @module highcharts/modules/data
  * @requires highcharts
  *
@@ -12,9 +12,12 @@
 'use strict';
 import Highcharts from '../../Core/Globals.js';
 import HttpUtilities from '../../Core/HttpUtilities.js';
+import Data from '../../Extensions/Data.js';
 var G = Highcharts;
-G.HttpUtilities = HttpUtilities;
+// Functions
 G.ajax = HttpUtilities.ajax;
 G.getJSON = HttpUtilities.getJSON;
 G.post = HttpUtilities.post;
-import '../../Extensions/Data.js';
+// Classes
+G.Data = Data;
+G.HttpUtilities = HttpUtilities;

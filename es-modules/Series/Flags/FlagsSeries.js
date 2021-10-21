@@ -24,8 +24,7 @@ var __extends = (this && this.__extends) || (function () {
 import FlagsPoint from './FlagsPoint.js';
 import H from '../../Core/Globals.js';
 var noop = H.noop;
-import OnSeriesMixin from '../../Mixins/OnSeries.js';
-import palette from '../../Core/Color/Palette.js';
+import OnSeriesComposition from '../OnSeriesComposition.js';
 import R from '../../Core/Renderer/RendererUtilities.js';
 var distribute = R.distribute;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -182,11 +181,15 @@ var FlagsSeries = /** @class */ (function (_super) {
         }
         // Handle X-dimension overlapping
         if (!options.allowOverlapX) {
+            var maxDistance_1 = 100;
             objectEach(boxesMap, function (box) {
                 box.plotX = box.anchorX;
                 boxes.push(box);
+                maxDistance_1 = Math.max(box.size, maxDistance_1);
             });
-            distribute(boxes, inverted ? yAxis.len : this.xAxis.len, 100);
+            // If necessary (for overlapping or long labels)  distribute it
+            // depending on the label width or a hardcoded value, #16041.
+            distribute(boxes, inverted ? yAxis.len : this.xAxis.len, maxDistance_1);
             points.forEach(function (point) {
                 var box = point.graphic && boxesMap[point.plotX];
                 if (box) {
@@ -445,7 +448,7 @@ var FlagsSeries = /** @class */ (function (_super) {
          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @product highstock
          */
-        fillColor: palette.backgroundColor,
+        fillColor: "#ffffff" /* backgroundColor */,
         /**
          * The color of the line/border of the flag.
          *
@@ -475,14 +478,14 @@ var FlagsSeries = /** @class */ (function (_super) {
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highstock
                  */
-                lineColor: palette.neutralColor100,
+                lineColor: "#000000" /* neutralColor100 */,
                 /**
                  * The fill or background color of the flag.
                  *
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highstock
                  */
-                fillColor: palette.highlightColor20
+                fillColor: "#ccd6eb" /* highlightColor20 */
             }
         },
         /**
@@ -504,37 +507,27 @@ var FlagsSeries = /** @class */ (function (_super) {
     });
     return FlagsSeries;
 }(ColumnSeries));
+OnSeriesComposition.compose(FlagsSeries);
 extend(FlagsSeries.prototype, {
     allowDG: false,
-    /**
-     * @private
-     * @function Highcharts.seriesTypes.flags#buildKDTree
-     */
-    buildKDTree: noop,
     forceCrop: true,
-    getPlotBox: OnSeriesMixin.getPlotBox,
-    /**
-     * Inherit the initialization from base Series.
-     *
-     * @private
-     * @borrows Highcharts.Series#init as Highcharts.seriesTypes.flags#init
-     */
-    init: Series.prototype.init,
-    /**
-     * Don't invert the flag marker group (#4960).
-     *
-     * @private
-     * @function Highcharts.seriesTypes.flags#invertGroups
-     */
-    invertGroups: noop,
-    // Flags series group should not be invertible (#14063).
     invertible: false,
     noSharedTooltip: true,
     pointClass: FlagsPoint,
     sorted: false,
     takeOrdinalPosition: false,
     trackerGroups: ['markerGroup'],
-    translate: OnSeriesMixin.translate
+    buildKDTree: noop,
+    /**
+     * Inherit the initialization from base Series.
+     * @private
+     */
+    init: Series.prototype.init,
+    /**
+     * Don't invert the flag marker group (#4960).
+     * @private
+     */
+    invertGroups: noop
 });
 SeriesRegistry.registerSeriesType('flags', FlagsSeries);
 /* *

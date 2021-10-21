@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * ColorAxis module
  *
@@ -28,94 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/ColorSeries.js', [], function () {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        /**
-         * Mixin for maps and heatmaps
-         *
-         * @private
-         * @mixin Highcharts.colorPointMixin
-         */
-        var colorPointMixin = {
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Set the visibility of a single point
-                 * @private
-                 * @function Highcharts.colorPointMixin.setVisible
-                 * @param {boolean} visible
-                 * @return {void}
-                 */
-                setVisible: function (vis) {
-                    var point = this,
-            method = vis ? 'show' : 'hide';
-                point.visible = point.options.visible = Boolean(vis);
-                // Show and hide associated elements
-                ['graphic', 'dataLabel'].forEach(function (key) {
-                    if (point[key]) {
-                        point[key][method]();
-                    }
-                });
-                this.series.buildKDTree(); // rebuild kdtree #13195
-            }
-            /* eslint-enable valid-jsdoc */
-        };
-        /**
-         * @private
-         * @mixin Highcharts.colorSeriesMixin
-         */
-        var colorSeriesMixin = {
-                optionalAxis: 'colorAxis',
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * In choropleth maps,
-            the color is a result of the value,
-            so this needs
-                 * translation too
-                 * @private
-                 * @function Highcharts.colorSeriesMixin.translateColors
-                 * @return {void}
-                 */
-                translateColors: function () {
-                    var series = this,
-            points = this.data.length ? this.data : this.points,
-            nullColor = this.options.nullColor,
-            colorAxis = this.colorAxis,
-            colorKey = this.colorKey;
-                points.forEach(function (point) {
-                    var value = point.getNestedProperty(colorKey),
-                        color;
-                    color = point.options.color ||
-                        (point.isNull || point.value === null ?
-                            nullColor :
-                            (colorAxis && typeof value !== 'undefined') ?
-                                colorAxis.toColor(value, point) :
-                                point.color || series.color);
-                    if (color && point.color !== color) {
-                        point.color = color;
-                        if (series.options.legendType === 'point' && point.legendItem) {
-                            series.chart.legend.colorizeItem(point, point.visible);
-                        }
-                    }
-                });
-            }
-            /* eslint-enable valid-jsdoc */
-        };
-        var exports = {
-                colorPointMixin: colorPointMixin,
-                colorSeriesMixin: colorSeriesMixin
-            };
-
-        return exports;
-    });
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Mixins/ColorSeries.js'], _modules['Core/Utilities.js']], function (Color, ColorSeriesMixins, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -126,8 +39,6 @@
          *
          * */
         var color = Color.parse;
-        var colorPointMixin = ColorSeriesMixins.colorPointMixin,
-            colorSeriesMixin = ColorSeriesMixins.colorSeriesMixin;
         var addEvent = U.addEvent,
             extend = U.extend,
             merge = U.merge,
@@ -140,6 +51,11 @@
          * */
         var ColorAxisComposition;
         (function (ColorAxisComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
             /* *
              *
              *  Constants
@@ -187,8 +103,13 @@
                 }
                 if (composedClasses.indexOf(SeriesClass) === -1) {
                     composedClasses.push(SeriesClass);
-                    extend(SeriesClass.prototype, colorSeriesMixin);
-                    extend(SeriesClass.prototype.pointClass.prototype, colorPointMixin);
+                    extend(SeriesClass.prototype, {
+                        optionalAxis: 'colorAxis',
+                        translateColors: seriesTranslateColors
+                    });
+                    extend(SeriesClass.prototype.pointClass.prototype, {
+                        setVisible: pointSetVisible
+                    });
                     addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate);
                     addEvent(SeriesClass, 'bindAxes', onSeriesBindAxes);
                 }
@@ -309,6 +230,55 @@
                 }
             }
             /**
+             * Set the visibility of a single point
+             * @private
+             * @function Highcharts.colorPointMixin.setVisible
+             * @param {boolean} visible
+             * @return {void}
+             */
+            function pointSetVisible(vis) {
+                var point = this,
+                    method = vis ? 'show' : 'hide';
+                point.visible = point.options.visible = Boolean(vis);
+                // Show and hide associated elements
+                ['graphic', 'dataLabel'].forEach(function (key) {
+                    if (point[key]) {
+                        point[key][method]();
+                    }
+                });
+                this.series.buildKDTree(); // rebuild kdtree #13195
+            }
+            ColorAxisComposition.pointSetVisible = pointSetVisible;
+            /**
+             * In choropleth maps, the color is a result of the value, so this needs
+             * translation too
+             * @private
+             * @function Highcharts.colorSeriesMixin.translateColors
+             * @return {void}
+             */
+            function seriesTranslateColors() {
+                var series = this,
+                    points = this.data.length ? this.data : this.points,
+                    nullColor = this.options.nullColor,
+                    colorAxis = this.colorAxis,
+                    colorKey = this.colorKey;
+                points.forEach(function (point) {
+                    var value = point.getNestedProperty(colorKey),
+                        color = point.options.color || (point.isNull || point.value === null ?
+                            nullColor :
+                            (colorAxis && typeof value !== 'undefined') ?
+                                colorAxis.toColor(value,
+                        point) :
+                                point.color || series.color);
+                    if (color && point.color !== color) {
+                        point.color = color;
+                        if (series.options.legendType === 'point' && point.legendItem) {
+                            series.chart.legend.colorizeItem(point, point.visible);
+                        }
+                    }
+                });
+            }
+            /**
              * @private
              */
             function wrapChartCreateAxis(ChartClass) {
@@ -360,7 +330,7 @@
 
         return ColorAxisComposition;
     });
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxisDefaults.js', [_modules['Core/Color/Palette.js']], function (Palette) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -423,7 +393,8 @@
          *               categories, crosshair, dateTimeLabelFormats, height, left,
          *               lineWidth, linkedTo, maxZoom, minRange, minTickInterval,
          *               offset, opposite, pane, plotBands, plotLines,
-         *               reversedStacks, showEmpty, title, top, width, zoomEnabled
+         *               reversedStacks, scrollbar, showEmpty, title, top, width,
+         *               zoomEnabled
          * @product      highcharts highstock highmaps
          * @type         {*|Array<*>}
          * @optionparent colorAxis
@@ -658,7 +629,7 @@
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      * @product highcharts highstock highmaps
                      */
-                    color: Palette.neutralColor40
+                    color: "#999999" /* neutralColor40 */
                 },
                 /**
                  * The axis labels show the number for each tick.
@@ -700,7 +671,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                minColor: Palette.highlightColor10,
+                minColor: "#e6ebf5" /* highlightColor10 */,
                 /**
                  * The color to represent the maximum of the color axis. Unless
                  * [dataClasses](#colorAxis.dataClasses) or
@@ -719,7 +690,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                maxColor: Palette.highlightColor100,
+                maxColor: "#003399" /* highlightColor100 */,
                 /**
                  * Color stops for the gradient of a scalar color axis. Use this in
                  * cases where a linear gradient between a `minColor` and `maxColor`

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -228,7 +228,7 @@
              * @since        7.0.0
              * @product      highstock
              * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/linearregression
+             * @requires     stock/indicators/regressions
              * @optionparent plotOptions.linearregression
              */
             LinearRegressionIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
@@ -307,7 +307,7 @@
          * @product   highstock
          * @excluding dataParser,dataURL
          * @requires  stock/indicators/indicators
-         * @requires  stock/indicators/linearregression
+         * @requires  stock/indicators/regressions
          * @apioption series.linearregression
          */
         ''; // to include the above in the js output
@@ -391,7 +391,7 @@
              * @since        7.0.0
              * @product      highstock
              * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/linearregression
+             * @requires  stock/indicators/regressions
              * @optionparent plotOptions.linearregressionslope
              */
             LinearRegressionSlopesIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions);
@@ -416,7 +416,7 @@
          * @product   highstock
          * @excluding dataParser,dataURL
          * @requires  stock/indicators/indicators
-         * @requires  stock/indicators/linearregressionslope
+         * @requires  stock/indicators/regressions
          * @apioption series.linearregressionslope
          */
         ''; // to include the above in the js output
@@ -500,7 +500,7 @@
              * @since        7.0.0
              * @product      highstock
              * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/linearregressionintercept
+             * @requires  stock/indicators/regressions
              * @optionparent plotOptions.linearregressionintercept
              */
             LinearRegressionInterceptIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions);
@@ -525,7 +525,7 @@
          * @product   highstock
          * @excluding dataParser,dataURL
          * @requires  stock/indicators/indicators
-         * @requires  stock/indicators/linearregressionintercept
+         * @requires  stock/indicators/regressions
          * @apioption series.linearregressionintercept
          */
         ''; // to include the above in the js output
@@ -619,7 +619,7 @@
              * @since        7.0.0
              * @product      highstock
              * @requires     stock/indicators/indicators
-             * @requires     stock/indicators/linearregressionangle
+             * @requires  stock/indicators/regressions
              * @optionparent plotOptions.linearregressionangle
              */
             LinearRegressionAngleIndicator.defaultOptions = merge(LinearRegressionIndicator.defaultOptions, {
@@ -649,7 +649,7 @@
          * @product   highstock
          * @excluding dataParser,dataURL
          * @requires  stock/indicators/indicators
-         * @requires  stock/indicators/linearregressionangle
+         * @requires  stock/indicators/regressions
          * @apioption series.linearregressionangle
          */
         ''; // to include the above in the js output

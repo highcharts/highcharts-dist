@@ -21,13 +21,12 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import CenteredSeriesMixin from '../../Mixins/CenteredSeries.js';
-var getStartAndEndRadians = CenteredSeriesMixin.getStartAndEndRadians;
+import CU from '../CenteredUtilities.js';
+var getStartAndEndRadians = CU.getStartAndEndRadians;
 import ColumnSeries from '../Column/ColumnSeries.js';
 import H from '../../Core/Globals.js';
 var noop = H.noop;
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
-import Palette from '../../Core/Color/Palette.js';
 import PiePoint from './PiePoint.js';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -134,7 +133,7 @@ var PieSeries = /** @class */ (function (_super) {
                 this.graph.attr({
                     'stroke-width': options.borderWidth,
                     fill: options.fillColor || 'none',
-                    stroke: options.color || Palette.neutralColor20
+                    stroke: options.color || "#cccccc" /* neutralColor20 */
                 });
             }
         }
@@ -505,7 +504,7 @@ var PieSeries = /** @class */ (function (_super) {
          *         Empty pie series
          *
          * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-         * @default   ${palette.neutralColor20}
+         * @default   #cccccc
          * @apioption plotOptions.pie.color
          */
         /**
@@ -906,7 +905,7 @@ var PieSeries = /** @class */ (function (_super) {
          *
          * @private
          */
-        borderColor: Palette.backgroundColor,
+        borderColor: "#ffffff" /* backgroundColor */,
         /**
          * The width of the border surrounding each slice.
          *
@@ -963,7 +962,7 @@ extend(PieSeries.prototype, {
     drawGraph: void 0,
     drawLegendSymbol: LegendSymbol.drawRectangle,
     drawTracker: ColumnSeries.prototype.drawTracker,
-    getCenter: CenteredSeriesMixin.getCenter,
+    getCenter: CU.getCenter,
     getSymbol: noop,
     isCartesian: false,
     noSharedTooltip: true,

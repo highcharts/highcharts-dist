@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Data module
  *
@@ -134,7 +134,7 @@
          *        function instead.
          */
         function getJSON(url, success) {
-            exports.ajax({
+            HttpUtilities.ajax({
                 url: url,
                 success: success,
                 dataType: 'json',
@@ -190,7 +190,7 @@
          *  Default Export
          *
          * */
-        var exports = {
+        var HttpUtilities = {
                 ajax: ajax,
                 getJSON: getJSON,
                 post: post
@@ -229,7 +229,7 @@
         */
         (''); // keeps doclets above in JS file
 
-        return exports;
+        return HttpUtilities;
     });
     _registerModule(_modules, 'Extensions/Data.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/HttpUtilities.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, G, HU, Point, SeriesRegistry, U) {
         /* *
@@ -2411,13 +2411,16 @@
 
         return G.Data;
     });
-    _registerModule(_modules, 'masters/modules/data.src.js', [_modules['Core/Globals.js'], _modules['Core/HttpUtilities.js']], function (Highcharts, HttpUtilities) {
+    _registerModule(_modules, 'masters/modules/data.src.js', [_modules['Core/Globals.js'], _modules['Core/HttpUtilities.js'], _modules['Extensions/Data.js']], function (Highcharts, HttpUtilities, Data) {
 
         var G = Highcharts;
-        G.HttpUtilities = HttpUtilities;
+        // Functions
         G.ajax = HttpUtilities.ajax;
         G.getJSON = HttpUtilities.getJSON;
         G.post = HttpUtilities.post;
+        // Classes
+        G.Data = Data;
+        G.HttpUtilities = HttpUtilities;
 
     });
 }));

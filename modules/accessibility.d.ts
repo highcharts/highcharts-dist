@@ -198,6 +198,11 @@ declare module "../highcharts" {
      */
     function describeSeries(series: Series): void;
     /**
+     * Fire an event on an element that is either wrapped by Highcharts, or a
+     * DOM element
+     */
+    function fireEventOnWrappedOrUnwrappedElement(): void;
+    /**
      * Return string with the axis name/title.
      */
     function getAxisDescription(axis: Axis): string;

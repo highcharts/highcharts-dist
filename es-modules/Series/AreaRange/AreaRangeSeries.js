@@ -97,7 +97,7 @@ var AreaRangeSeries = /** @class */ (function (_super) {
      * @private
      */
     AreaRangeSeries.prototype.translate = function () {
-        var series = this, yAxis = series.yAxis, hasModifyValue = !!series.modifyValue;
+        var series = this, yAxis = series.yAxis;
         areaProto.translate.apply(series);
         // Set plotLow and plotHigh
         series.points.forEach(function (point) {
@@ -107,10 +107,9 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             }
             else {
                 point.plotLow = plotY;
-                point.plotHigh = yAxis.translate(hasModifyValue ?
-                    series.modifyValue(high, point) :
-                    high, 0, 1, 0, 1);
-                if (hasModifyValue) {
+                point.plotHigh = yAxis.translate(series.dataModify ?
+                    series.dataModify.modifyValue(high) : high, 0, 1, 0, 1);
+                if (series.dataModify) {
                     point.yBottom = point.plotHigh;
                 }
             }

@@ -26,7 +26,6 @@ var colProto = ColumnSeries.prototype;
 import DumbbellPoint from './DumbbellPoint.js';
 import H from '../../Core/Globals.js';
 var noop = H.noop;
-import palette from '../../Core/Color/Palette.js';
 import Series from '../../Core/Series/Series.js';
 var seriesProto = Series.prototype;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -320,7 +319,7 @@ var DumbbellSeries = /** @class */ (function (_super) {
          * @since 8.0.0
          * @product   highcharts highstock
          */
-        lowColor: palette.neutralColor80,
+        lowColor: "#333333" /* neutralColor80 */,
         /**
          * Color of the line that connects the dumbbell point's values.
          * By default it is the series' color.
@@ -461,7 +460,7 @@ export default DumbbellSeries;
  *
  * @type        {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
  * @since       8.0.0
- * @default     ${palette.neutralColor80}
+ * @default     #333333
  * @product     highcharts highstock
  * @apioption   series.dumbbell.data.lowColor
  */

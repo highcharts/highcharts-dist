@@ -13,7 +13,7 @@ import Color from './Color/Color.js';
 var color = Color.parse;
 import H from './Globals.js';
 var isTouchDevice = H.isTouchDevice, svg = H.svg;
-import palette from './Color/Palette.js';
+import Palettes from './Color/Palettes.js';
 import Time from './Time.js';
 import U from './Utilities.js';
 var merge = U.merge;
@@ -65,7 +65,7 @@ var defaultOptions = {
      * @default ["#7cb5ec", "#434348", "#90ed7d", "#f7a35c", "#8085e9",
      *          "#f15c80", "#e4d354", "#2b908f", "#f45b5b", "#91e8e1"]
      */
-    colors: palette.colors,
+    colors: Palettes.colors,
     /**
      * Styled mode only. Configuration object for adding SVG definitions for
      * reusable elements. See [gradients, shadows and
@@ -882,7 +882,7 @@ var defaultOptions = {
             /**
              * @ignore-option
              */
-            color: palette.neutralColor80
+            color: "#333333" /* neutralColor80 */
         }
     },
     /**
@@ -1162,7 +1162,7 @@ var defaultOptions = {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        borderColor: palette.neutralColor40,
+        borderColor: "#999999" /* neutralColor40 */,
         /**
          * The border corner radius of the legend.
          *
@@ -1256,7 +1256,7 @@ var defaultOptions = {
              * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @since 2.2.4
              */
-            activeColor: palette.highlightColor100,
+            activeColor: "#003399" /* highlightColor100 */,
             /**
              * The color of the inactive up or down arrow in the legend page
              * navigation. .
@@ -1272,7 +1272,7 @@ var defaultOptions = {
              * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              * @since 2.2.4
              */
-            inactiveColor: palette.neutralColor20
+            inactiveColor: "#cccccc" /* neutralColor20 */
         },
         /**
          * The inner padding of the legend box.
@@ -1348,7 +1348,7 @@ var defaultOptions = {
             /**
              * @ignore
              */
-            color: palette.neutralColor80,
+            color: "#333333" /* neutralColor80 */,
             /**
              * @ignore
              */
@@ -1386,7 +1386,7 @@ var defaultOptions = {
             /**
              * @ignore
              */
-            color: palette.neutralColor100
+            color: "#000000" /* neutralColor100 */
         },
         /**
          * CSS styles for each legend item when the corresponding series or
@@ -1407,7 +1407,7 @@ var defaultOptions = {
             /**
              * @ignore
              */
-            color: palette.neutralColor20
+            color: "#cccccc" /* neutralColor20 */
         },
         /**
          * Whether to apply a drop shadow to the legend. A `backgroundColor`
@@ -1711,7 +1711,7 @@ var defaultOptions = {
             /**
              * @ignore
              */
-            backgroundColor: palette.backgroundColor,
+            backgroundColor: "#ffffff" /* backgroundColor */,
             /**
              * @ignore
              */
@@ -2054,11 +2054,13 @@ var defaultOptions = {
          * @apioption tooltip.xDateFormat
          */
         /**
-         * How many decimals to show for the `point.change` value when the
-         * `series.compare` option is set. This is overridable in each series'
-         * tooltip options object. The default is to preserve all decimals.
+         * How many decimals to show for the `point.change`
+         * or the `point.cumulativeSum` value when the `series.compare`
+         * or the `series.cumulative` option is set.
+         * This is overridable in each series' tooltip options object.
          *
          * @type      {number}
+         * @default   2
          * @since     1.0.1
          * @product   highstock
          * @apioption tooltip.changeDecimals
@@ -2096,7 +2098,7 @@ var defaultOptions = {
          * header will by default be guessed based on the closest data points.
          * This member gives the default string representations used for
          * each unit. For an overview of the replacement codes, see
-         * [dateFormat](/class-reference/Highcharts#.dateFormat).
+         * [dateFormat](/class-reference/Highcharts.Time#dateFormat).
          *
          * @see [xAxis.dateTimeLabelFormats](#xAxis.dateTimeLabelFormats)
          *
@@ -2300,7 +2302,7 @@ var defaultOptions = {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        backgroundColor: color(palette.neutralColor3)
+        backgroundColor: color("#f7f7f7" /* neutralColor3 */)
             // @todo: Disallow undefined as input for colors
             .setOpacity(0.85).get(),
         /**
@@ -2363,7 +2365,7 @@ var defaultOptions = {
          */
         style: {
             /** @internal */
-            color: palette.neutralColor80,
+            color: "#333333" /* neutralColor80 */,
             /** @internal */
             cursor: 'default',
             /** @internal */
@@ -2478,7 +2480,7 @@ var defaultOptions = {
             /** @internal */
             cursor: 'pointer',
             /** @internal */
-            color: palette.neutralColor40,
+            color: "#999999" /* neutralColor40 */,
             /** @internal */
             fontSize: '9px'
         },

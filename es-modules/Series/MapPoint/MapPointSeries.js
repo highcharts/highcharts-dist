@@ -21,12 +21,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+import H from '../../Core/Globals.js';
+var noop = H.noop;
 import MapPointPoint from './MapPointPoint.js';
-import palette from '../../Core/Color/Palette.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge;
+var extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge;
 import '../../Core/DefaultOptions.js';
 import '../Scatter/ScatterSeries.js';
 /* *
@@ -73,6 +74,49 @@ var MapPointSeries = /** @class */ (function (_super) {
             this.dataLabelsGroup.clip(this.chart.clipRect);
         }
     };
+    MapPointSeries.prototype.translate = function () {
+        var _this = this;
+        var mapView = this.chart.mapView;
+        if (!this.processedXData) {
+            this.processData();
+        }
+        this.generatePoints();
+        // Create map based translation
+        if (mapView) {
+            var _a = mapView.projection, forward_1 = _a.forward, hasCoordinates_1 = _a.hasCoordinates;
+            this.points.forEach(function (p) {
+                var _a = p.x, x = _a === void 0 ? void 0 : _a, _b = p.y, y = _b === void 0 ? void 0 : _b;
+                var geometry = p.options.geometry, coordinates = (geometry &&
+                    geometry.type === 'Point' &&
+                    geometry.coordinates);
+                if (coordinates) {
+                    var xy = forward_1(coordinates);
+                    x = xy[0];
+                    y = xy[1];
+                    // Map bubbles getting geometry from shape
+                }
+                else if (p.bounds) {
+                    x = p.bounds.midX;
+                    y = p.bounds.midY;
+                }
+                if (isNumber(x) && isNumber(y)) {
+                    var plotCoords = mapView.projectedUnitsToPixels({ x: x, y: y });
+                    p.plotX = plotCoords.x;
+                    p.plotY = hasCoordinates_1 ?
+                        plotCoords.y :
+                        _this.chart.plotHeight - plotCoords.y;
+                }
+                else {
+                    p.plotX = void 0;
+                    p.plotY = void 0;
+                }
+                p.isInside = _this.isPointInside(p);
+                // Find point zone
+                p.zone = _this.zones.length ? p.getZone() : void 0;
+            });
+        }
+        fireEvent(this, 'afterTranslate');
+    };
     /**
      * A mappoint series is a special form of scatter series where the points
      * can be laid out in map coordinates on top of a map.
@@ -95,7 +139,7 @@ var MapPointSeries = /** @class */ (function (_super) {
             overflow: false,
             style: {
                 /** @internal */
-                color: palette.neutralColor100
+                color: "#000000" /* neutralColor100 */
             }
         }
     });
@@ -103,8 +147,11 @@ var MapPointSeries = /** @class */ (function (_super) {
 }(ScatterSeries));
 extend(MapPointSeries.prototype, {
     type: 'mappoint',
+    axisTypes: ['colorAxis'],
     forceDL: true,
-    pointClass: MapPointPoint
+    isCartesian: false,
+    pointClass: MapPointPoint,
+    searchPoint: noop
 });
 SeriesRegistry.registerSeriesType('mappoint', MapPointSeries);
 /* *
@@ -176,6 +223,42 @@ export default MapPointSeries;
  * @excluding labelrank, middleX, middleY, path, value
  * @product   highmaps
  * @apioption series.mappoint.data
+ */
+/**
+ * The geometry of a point.
+ *
+ * To achieve a better separation between the structure and the data,
+ * it is recommended to use `mapData` to define the geometry instead
+ * of defining it on the data points themselves.
+ *
+ * The geometry object is compatible to that of a `feature` in geoJSON, so
+ * features of geoJSON can be passed directly into the `data`, optionally
+ * after first filtering and processing it.
+ *
+ * @sample maps/series/data-geometry/
+ *         geometry defined in data
+ *
+ * @type      {Object}
+ * @since 9.3.0
+ * @product   highmaps
+ * @apioption series.mappoint.data.geometry
+ */
+/**
+ * The geometry type, which in case of the `mappoint` series is always `Point`.
+ *
+ * @type      {string}
+ * @since 9.3.0
+ * @product   highmaps
+ * @validvalue ["Point"]
+ * @apioption series.mappoint.data.geometry.type
+ */
+/**
+ * The geometry coordinates in terms of `[longitude, latitude]`.
+ *
+ * @type      {Highcharts.LonLatArray}
+ * @since 9.3.0
+ * @product   highmaps
+ * @apioption series.mappoint.data.geometry.coordinates
  */
 /**
  * The latitude of the point. Must be combined with the `lon` option

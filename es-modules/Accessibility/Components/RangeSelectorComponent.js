@@ -10,17 +10,15 @@
  *
  * */
 'use strict';
+import RangeSelector from '../../Extensions/RangeSelector.js';
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import ChartUtilities from '../Utils/ChartUtilities.js';
 var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT, getAxisRangeDescription = ChartUtilities.getAxisRangeDescription;
 import Announcer from '../Utils/Announcer.js';
 import Chart from '../../Core/Chart/Chart.js';
-import HTMLUtilities from '../Utils/HTMLUtilities.js';
-var setElAttrs = HTMLUtilities.setElAttrs;
 import KeyboardNavigationHandler from '../KeyboardNavigationHandler.js';
 import U from '../../Core/Utilities.js';
-import RangeSelector from '../../Extensions/RangeSelector.js';
-var addEvent = U.addEvent, extend = U.extend;
+var addEvent = U.addEvent, attr = U.attr, extend = U.extend;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * @private
@@ -28,8 +26,7 @@ var addEvent = U.addEvent, extend = U.extend;
 function shouldRunInputNavigation(chart) {
     return Boolean(chart.rangeSelector &&
         chart.rangeSelector.inputGroup &&
-        chart.rangeSelector.inputGroup.element
-            .getAttribute('visibility') !== 'hidden' &&
+        chart.rangeSelector.inputGroup.element.style.visibility !== 'hidden' &&
         chart.options.rangeSelector.inputEnabled !== false &&
         chart.rangeSelector.minInput &&
         chart.rangeSelector.maxInput);
@@ -168,7 +165,7 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
      * @param {Highcharts.SVGElement} button
      */
     setRangeButtonAttrs: function (button) {
-        setElAttrs(button.element, {
+        attr(button.element, {
             tabindex: -1,
             role: 'button'
         });
@@ -178,7 +175,7 @@ extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComp
      */
     setRangeInputAttrs: function (input, langKey) {
         var chart = this.chart;
-        setElAttrs(input, {
+        attr(input, {
             tabindex: -1,
             'aria-label': chart.langFormat(langKey, { chart: chart })
         });

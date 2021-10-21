@@ -17,7 +17,6 @@ var hasTouch = H.hasTouch, isTouchDevice = H.isTouchDevice;
 import NavigatorAxis from './Axis/NavigatorAxis.js';
 import D from './DefaultOptions.js';
 var defaultOptions = D.defaultOptions;
-import Palette from './Color/Palette.js';
 import RendererRegistry from './Renderer/RendererRegistry.js';
 import Scrollbar from './Scrollbar.js';
 import Series from './Series/Series.js';
@@ -203,13 +202,13 @@ extend(defaultOptions, {
              *
              * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
-            backgroundColor: Palette.neutralColor5,
+            backgroundColor: "#f2f2f2" /* neutralColor5 */,
             /**
              * The stroke for the handle border and the stripes inside.
              *
              * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
              */
-            borderColor: Palette.neutralColor40
+            borderColor: "#999999" /* neutralColor40 */
         },
         /**
          * The color of the mask covering the areas of the navigator series
@@ -226,7 +225,7 @@ extend(defaultOptions, {
          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @default rgba(102,133,194,0.3)
          */
-        maskFill: color(Palette.highlightColor60).setOpacity(0.3).get(),
+        maskFill: color("#6685c2" /* highlightColor60 */).setOpacity(0.3).get(),
         /**
          * The color of the line marking the currently zoomed area in the
          * navigator.
@@ -237,7 +236,7 @@ extend(defaultOptions, {
          * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @default #cccccc
          */
-        outlineColor: Palette.neutralColor20,
+        outlineColor: "#cccccc" /* neutralColor20 */,
         /**
          * The width of the line marking the currently zoomed area in the
          * navigator.
@@ -428,7 +427,7 @@ extend(defaultOptions, {
             className: 'highcharts-navigator-xaxis',
             tickLength: 0,
             lineWidth: 0,
-            gridLineColor: Palette.neutralColor10,
+            gridLineColor: "#e6e6e6" /* neutralColor10 */,
             gridLineWidth: 1,
             tickPixelInterval: 200,
             labels: {
@@ -438,7 +437,7 @@ extend(defaultOptions, {
                  */
                 style: {
                     /** @ignore */
-                    color: Palette.neutralColor40
+                    color: "#999999" /* neutralColor40 */
                 },
                 x: 3,
                 y: -4
@@ -1733,7 +1732,7 @@ var Navigator = /** @class */ (function () {
             // If range declared, stick to the minimum only if the range
             // is smaller than the data set range.
             if (range && max - xDataMin > 0) {
-                stickToMin = max - xDataMin < range && (!this.chart.fixedRange);
+                stickToMin = max - xDataMin < range;
             }
             else {
                 // If the current axis minimum falls outside the new

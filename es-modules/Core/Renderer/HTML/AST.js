@@ -321,6 +321,7 @@ var AST = /** @class */ (function () {
         'text-align',
         'textAnchor',
         'textLength',
+        'title',
         'type',
         'valign',
         'width',
@@ -366,6 +367,7 @@ var AST = /** @class */ (function () {
      */
     AST.allowedTags = [
         'a',
+        'abbr',
         'b',
         'br',
         'button',

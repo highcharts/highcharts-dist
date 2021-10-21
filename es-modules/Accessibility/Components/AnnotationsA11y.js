@@ -12,6 +12,11 @@
 'use strict';
 import HTMLUtilities from '../Utils/HTMLUtilities.js';
 var escapeStringForHTML = HTMLUtilities.escapeStringForHTML, stripHTMLTagsFromString = HTMLUtilities.stripHTMLTagsFromString;
+/* *
+ *
+ *  Functions
+ *
+ * */
 /**
  * Get list of all annotation labels in the chart.
  *
@@ -137,6 +142,11 @@ function getPointAnnotationTexts(point) {
     }
     return pointLabels.map(function (label) { return "" + getLabelText(label); });
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 var AnnotationsA11y = {
     getAnnotationsInfoHTML: getAnnotationsInfoHTML,
     getAnnotationLabelDescription: getAnnotationLabelDescription,

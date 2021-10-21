@@ -19,7 +19,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import MultipleLinesMixin from '../../../Mixins/MultipleLines.js';
+import MultipleLinesComposition from '../MultipleLinesComposition.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
@@ -194,16 +194,13 @@ var ABandsIndicator = /** @class */ (function (_super) {
     return ABandsIndicator;
 }(SMAIndicator));
 extend(ABandsIndicator.prototype, {
-    drawGraph: MultipleLinesMixin.drawGraph,
-    getTranslatedLinesNames: MultipleLinesMixin.getTranslatedLinesNames,
     linesApiNames: ['topLine', 'bottomLine'],
     nameBase: 'Acceleration Bands',
     nameComponents: ['period', 'factor'],
     pointArrayMap: ['top', 'middle', 'bottom'],
-    pointValKey: 'middle',
-    toYData: MultipleLinesMixin.toYData,
-    translate: MultipleLinesMixin.translate
+    pointValKey: 'middle'
 });
+MultipleLinesComposition.compose(ABandsIndicator);
 SeriesRegistry.registerSeriesType('abands', ABandsIndicator);
 /* *
  *

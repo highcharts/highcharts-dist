@@ -352,9 +352,13 @@ function defined(obj) {
     return typeof obj !== 'undefined' && obj !== null;
 }
 /**
- * Set or get an attribute or an object of attributes. To use as a setter, pass
- * a key and a value, or let the second argument be a collection of keys and
- * values. To use as a getter, pass only a string as the second argument.
+ * Set or get an attribute or an object of attributes.
+ *
+ * To use as a setter, pass a key and a value, or let the second argument be a
+ * collection of keys and values. When using a collection, passing a value of
+ * `null` or `undefined` will remove the attribute.
+ *
+ * To use as a getter, pass only a string as the second argument.
  *
  * @function Highcharts.attr
  *
@@ -390,7 +394,12 @@ function attr(elem, prop, value) {
     }
     else {
         objectEach(prop, function (val, key) {
-            elem.setAttribute(key, val);
+            if (defined(val)) {
+                elem.setAttribute(key, val);
+            }
+            else {
+                elem.removeAttribute(key);
+            }
         });
     }
     return ret;
@@ -757,8 +766,6 @@ function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, ha
  *
  * @param {Function} sortFunction
  *        The function to sort it with, like with regular Array.prototype.sort.
- *
- * @return {void}
  */
 function stableSort(arr, sortFunction) {
     // @todo It seems like Chrome since v70 sorts in a stable way internally,
@@ -882,7 +889,8 @@ var garbageBin;
  *         The corrected float number.
  */
 function correctFloat(num, prec) {
-    return parseFloat(num.toPrecision(prec || 14));
+    // When the number is higher than 1e14 use the number (#16275)
+    return num > 1e14 ? num : parseFloat(num.toPrecision(prec || 14));
 }
 /**
  * The time unit lookup

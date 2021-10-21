@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  * @module highcharts/indicators/indicators-all
  * @requires highcharts
  * @requires highcharts/modules/stock
@@ -12,6 +12,7 @@
  */
 'use strict';
 import '../../Stock/Indicators/SMA/SMAIndicator.js';
+import '../../Stock/Indicators/EMA/EMAIndicator.js';
 import '../../Stock/Indicators/AD/ADIndicator.js';
 import '../../Stock/Indicators/AO/AOIndicator.js';
 import '../../Stock/Indicators/Aroon/AroonIndicator.js';
@@ -22,7 +23,6 @@ import '../../Stock/Indicators/CCI/CCIIndicator.js';
 import '../../Stock/Indicators/CMF/CMFIndicator.js';
 import '../../Stock/Indicators/DMI/DMIIndicator.js';
 import '../../Stock/Indicators/DPO/DPOIndicator.js';
-import '../../Stock/Indicators/EMA/EMAIndicator.js';
 import '../../Stock/Indicators/Chaikin/ChaikinIndicator.js';
 import '../../Stock/Indicators/CMO/CMOIndicator.js';
 import '../../Stock/Indicators/DEMA/DEMAIndicator.js';

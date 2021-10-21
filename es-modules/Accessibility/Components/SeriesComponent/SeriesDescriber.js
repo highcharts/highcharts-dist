@@ -20,6 +20,11 @@ import HTMLUtilities from '../../Utils/HTMLUtilities.js';
 var reverseChildNodes = HTMLUtilities.reverseChildNodes, stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString;
 import U from '../../../Core/Utilities.js';
 var find = U.find, isNumber = U.isNumber, pick = U.pick, defined = U.defined;
+/* *
+ *
+ *  Functions
+ *
+ * */
 /* eslint-disable valid-jsdoc */
 /**
  * @private
@@ -133,9 +138,10 @@ function shouldDescribeSeriesElement(series) {
  * @return {string}
  */
 function pointNumberToString(point, value) {
-    var chart = point.series.chart, a11yPointOptions = chart.options.accessibility.point || {}, tooltipOptions = point.series.tooltipOptions || {}, lang = chart.options.lang;
+    var series = point.series, chart = series.chart, a11yPointOptions = chart.options.accessibility.point || {}, seriesA11yPointOptions = series.options.accessibility && series.options.accessibility.point || {}, tooltipOptions = series.tooltipOptions || {}, lang = chart.options.lang;
     if (isNumber(value)) {
-        return numberFormat(value, a11yPointOptions.valueDecimals ||
+        return numberFormat(value, seriesA11yPointOptions.valueDecimals ||
+            a11yPointOptions.valueDecimals ||
             tooltipOptions.valueDecimals ||
             -1, lang.decimalPoint, lang.accessibility.thousandsSep || lang.thousandsSep);
     }
@@ -176,10 +182,11 @@ function getSeriesAxisDescriptionText(series, axisCollection) {
  * The description as string.
  */
 function getPointA11yTimeDescription(point) {
-    var series = point.series, chart = series.chart, a11yOptions = chart.options.accessibility.point || {}, dateXAxis = series.xAxis && series.xAxis.dateTime;
+    var series = point.series, chart = series.chart, seriesA11yOptions = series.options.accessibility && series.options.accessibility.point || {}, a11yOptions = chart.options.accessibility.point || {}, dateXAxis = series.xAxis && series.xAxis.dateTime;
     if (dateXAxis) {
-        var tooltipDateFormat = dateXAxis.getXDateFormat(point.x || 0, chart.options.tooltip.dateTimeLabelFormats), dateFormat = a11yOptions.dateFormatter &&
-            a11yOptions.dateFormatter(point) ||
+        var tooltipDateFormat = dateXAxis.getXDateFormat(point.x || 0, chart.options.tooltip.dateTimeLabelFormats), dateFormat = seriesA11yOptions.dateFormatter && seriesA11yOptions.dateFormatter(point) ||
+            a11yOptions.dateFormatter && a11yOptions.dateFormatter(point) ||
+            seriesA11yOptions.dateFormat ||
             a11yOptions.dateFormat ||
             tooltipDateFormat;
         return chart.time.dateFormat(dateFormat, point.x || 0, void 0);
@@ -218,9 +225,13 @@ function getPointArrayMapValueDescription(point, prefix, suffix) {
  * @return {string}
  */
 function getPointValue(point) {
-    var series = point.series, a11yPointOpts = series.chart.options.accessibility.point || {}, tooltipOptions = series.tooltipOptions || {}, valuePrefix = a11yPointOpts.valuePrefix ||
-        tooltipOptions.valuePrefix || '', valueSuffix = a11yPointOpts.valueSuffix ||
-        tooltipOptions.valueSuffix || '', fallbackKey = (typeof point.value !==
+    var series = point.series, a11yPointOpts = series.chart.options.accessibility.point || {}, seriesA11yPointOpts = series.chart.options.accessibility && series.chart.options.accessibility.point || {}, tooltipOptions = series.tooltipOptions || {}, valuePrefix = seriesA11yPointOpts.valuePrefix ||
+        a11yPointOpts.valuePrefix ||
+        tooltipOptions.valuePrefix ||
+        '', valueSuffix = seriesA11yPointOpts.valueSuffix ||
+        a11yPointOpts.valueSuffix ||
+        tooltipOptions.valueSuffix ||
+        '', fallbackKey = (typeof point.value !==
         'undefined' ?
         'value' : 'y'), fallbackDesc = pointNumberToString(point, point[fallbackKey]);
     if (point.isNull) {
@@ -234,8 +245,8 @@ function getPointValue(point) {
     return valuePrefix + fallbackDesc + valueSuffix;
 }
 /**
- * Return the description for the annotation(s) connected to a point, or empty
- * string if none.
+ * Return the description for the annotation(s) connected to a point, or
+ * empty string if none.
  *
  * @private
  * @param {Highcharts.Point} point The data point to get the annotation info from.
@@ -254,8 +265,9 @@ function getPointAnnotationDescription(point) {
  * @return {string}
  */
 function getPointValueDescription(point) {
-    var series = point.series, chart = series.chart, pointValueDescriptionFormat = chart.options.accessibility
-        .point.valueDescriptionFormat, showXDescription = pick(series.xAxis &&
+    var series = point.series, chart = series.chart, seriesA11yOptions = series.options.accessibility, seriesValueDescFormat = seriesA11yOptions && seriesA11yOptions.point &&
+        seriesA11yOptions.point.valueDescriptionFormat, pointValueDescriptionFormat = seriesValueDescFormat ||
+        chart.options.accessibility.point.valueDescriptionFormat, showXDescription = pick(series.xAxis &&
         series.xAxis.options.accessibility &&
         series.xAxis.options.accessibility.enabled, !chart.angular), xDesc = showXDescription ? getPointXDescription(point) : '', context = {
         point: point,
@@ -286,8 +298,8 @@ function defaultPointDescriptionFormatter(point) {
  * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} pointElement
  */
 function setPointScreenReaderAttribs(point, pointElement) {
-    var series = point.series, a11yPointOptions = series.chart.options.accessibility.point || {}, seriesA11yOptions = series.options.accessibility || {}, label = stripHTMLTags(seriesA11yOptions.pointDescriptionFormatter &&
-        seriesA11yOptions.pointDescriptionFormatter(point) ||
+    var series = point.series, a11yPointOptions = series.chart.options.accessibility.point || {}, seriesPointA11yOptions = series.options.accessibility && series.options.accessibility.point || {}, label = stripHTMLTags(seriesPointA11yOptions.descriptionFormatter &&
+        seriesPointA11yOptions.descriptionFormatter(point) ||
         a11yPointOptions.descriptionFormatter &&
             a11yPointOptions.descriptionFormatter(point) ||
         defaultPointDescriptionFormatter(point));
@@ -313,7 +325,9 @@ function describePointsInSeries(series) {
                 // When setting tabindex, also remove default outline to
                 // avoid ugly border on click.
                 pointEl.setAttribute('tabindex', '-1');
-                pointEl.style.outline = '0';
+                if (!series.chart.styledMode) {
+                    pointEl.style.outline = 'none';
+                }
                 if (setScreenReaderProps && !pointA11yDisabled) {
                     setPointScreenReaderAttribs(point, pointEl);
                 }
@@ -357,7 +371,9 @@ function describeSeriesElement(series, seriesElement) {
         seriesElement.setAttribute('role', 'region');
     } /* else do not add role */
     seriesElement.setAttribute('tabindex', '-1');
-    seriesElement.style.outline = '0'; // Don't show browser outline on click, despite tabindex
+    if (!series.chart.styledMode) {
+        seriesElement.style.outline = 'none'; // Don't show browser outline on click, despite tabindex
+    }
     seriesElement.setAttribute('aria-label', stripHTMLTags(a11yOptions.series.descriptionFormatter &&
         a11yOptions.series.descriptionFormatter(series) ||
         defaultSeriesDescriptionFormatter(series)));
@@ -386,13 +402,14 @@ function describeSeries(series) {
         }
     }
 }
+/* *
+ *
+ *  Default Export
+ *
+ * */
 var SeriesDescriber = {
-    describeSeries: describeSeries,
     defaultPointDescriptionFormatter: defaultPointDescriptionFormatter,
     defaultSeriesDescriptionFormatter: defaultSeriesDescriptionFormatter,
-    getPointA11yTimeDescription: getPointA11yTimeDescription,
-    getPointXDescription: getPointXDescription,
-    getPointValue: getPointValue,
-    getPointValueDescription: getPointValueDescription
+    describeSeries: describeSeries
 };
 export default SeriesDescriber;

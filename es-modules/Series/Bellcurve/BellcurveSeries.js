@@ -23,7 +23,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import DerivedSeriesMixin from '../../Mixins/DerivedSeries.js';
+import DerivedComposition from '../DerivedComposition.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var AreaSplineSeries = SeriesRegistry.seriesTypes.areaspline;
 import U from '../../Core/Utilities.js';
@@ -181,13 +181,7 @@ var BellcurveSeries = /** @class */ (function (_super) {
     });
     return BellcurveSeries;
 }(AreaSplineSeries));
-extend(BellcurveSeries.prototype, {
-    addBaseSeriesEvents: DerivedSeriesMixin.addBaseSeriesEvents,
-    addEvents: DerivedSeriesMixin.addEvents,
-    destroy: DerivedSeriesMixin.destroy,
-    init: DerivedSeriesMixin.init,
-    setBaseSeries: DerivedSeriesMixin.setBaseSeries
-});
+DerivedComposition.compose(BellcurveSeries);
 SeriesRegistry.registerSeriesType('bellcurve', BellcurveSeries);
 /* *
  *

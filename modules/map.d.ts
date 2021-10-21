@@ -37,30 +37,34 @@ declare module "../highcharts" {
          */
         fromPointToLatLon(point: (MapCoordinateObject|Point)): (MapLatLonObject|undefined);
         /**
-         * Highmaps only. Zoom in or out of the map. See also Point#zoomTo. See
-         * Chart#fromLatLonToPoint for how to get the `centerX` and `centerY`
-         * parameters for a geographic location.
+         * Highcharts Maps only. Zoom in or out of the map. See also
+         * Point#zoomTo. See Chart#fromLatLonToPoint for how to get the
+         * `centerX` and `centerY` parameters for a geographic location.
+         *
+         * Deprecated as of v9.3 in favor of MapView.zoomBy.
          *
          * @param howMuch
          *        How much to zoom the map. Values less than 1 zooms in. 0.5
          *        zooms in to half the current view. 2 zooms to twice the
          *        current view. If omitted, the zoom is reset.
          *
-         * @param centerX
-         *        The X axis position to center around if available space.
+         * @param xProjected
+         *        The projected x position to keep stationary when zooming, if
+         *        available space.
          *
-         * @param centerY
-         *        The Y axis position to center around if available space.
+         * @param yProjected
+         *        The projected y position to keep stationary when zooming, if
+         *        available space.
          *
-         * @param mouseX
-         *        Fix the zoom to this position if possible. This is used for
-         *        example in mousewheel events, where the area under the mouse
-         *        should be fixed as we zoom in.
+         * @param chartX
+         *        Keep this chart position stationary if possible. This is used
+         *        for example in mousewheel events, where the area under the
+         *        mouse should be fixed as we zoom in.
          *
-         * @param mouseY
-         *        Fix the zoom to this position if possible.
+         * @param chartY
+         *        Keep this chart position stationary if possible.
          */
-        mapZoom(howMuch?: number, centerX?: number, centerY?: number, mouseX?: number, mouseY?: number): void;
+        mapZoom(howMuch?: number, xProjected?: number, yProjected?: number, chartX?: number, chartY?: number): void;
         /**
          * Highmaps only. Get point from latitude and longitude using specified
          * transform definition.
@@ -156,6 +160,119 @@ declare module "../highcharts" {
         init(userOptions: Options, callback?: Function): void;
     }
     /**
+     * The map view handles zooming and centering on the map, and various
+     * client-side projection capabilities.
+     *
+     * On a chart instance, the map view is available as `chart.mapView`.
+     */
+    class MapView {
+        /**
+         * The map view handles zooming and centering on the map, and various
+         * client-side projection capabilities.
+         *
+         * On a chart instance, the map view is available as `chart.mapView`.
+         *
+         * @param chart
+         *        The Chart instance
+         *
+         * @param options
+         *        MapView options
+         */
+        constructor(chart: Chart, options: MapViewOptions);
+        /**
+         * The current center of the view in terms of `[longitude, latitude]`.
+         */
+        readonly center: LonLatArray;
+        /**
+         * The current zoom level of the view.
+         */
+        readonly zoom: number;
+        /**
+         * Fit the view to given bounds
+         *
+         * @param bounds
+         *        Bounds in terms of projected units given as `{ x1, y1, x2, y2
+         *        }`. If not set, fit to the bounds of the current data set
+         *
+         * @param padding
+         *        Padding inside the bounds. A number signifies pixels, while a
+         *        percentage string (like `5%`) can be used as a fraction of the
+         *        plot area size.
+         *
+         * @param redraw
+         *        Whether to redraw the chart immediately
+         *
+         * @param animation
+         *        What animation to use for redraw
+         */
+        fitToBounds(bounds: object, padding?: (number|string), redraw?: boolean, animation?: (boolean|Partial<AnimationOptionsObject>)): void;
+        /**
+         * Convert pixel position to projected units
+         *
+         * @param pos
+         *        The position in pixels
+         *
+         * @return The position in projected units
+         */
+        pixelsToProjectedUnits(pos: PositionObject): PositionObject;
+        /**
+         * Convert projected units to pixel position
+         *
+         * @param pos
+         *        The position in projected units
+         *
+         * @return The position in pixels
+         */
+        projectedUnitsToPixels(pos: PositionObject): PositionObject;
+        /**
+         * Set the view to given center and zoom values.
+         *
+         * @param center
+         *        The center point
+         *
+         * @param zoom
+         *        The zoom level
+         *
+         * @param redraw
+         *        Whether to redraw immediately
+         *
+         * @param animation
+         *        Animation options for the redraw
+         */
+        setView(center: (LonLatArray|undefined), zoom: number, redraw?: boolean, animation?: (boolean|Partial<AnimationOptionsObject>)): void;
+        /**
+         * Update the view with given options
+         *
+         * @param options
+         *        The new map view options to apply
+         *
+         * @param redraw
+         *        Whether to redraw immediately
+         *
+         * @param animation
+         *        The animation to apply to a the redraw
+         */
+        update(options: Partial<MapViewOptions>, redraw?: boolean, animation?: (boolean|Partial<AnimationOptionsObject>)): void;
+        /**
+         * Zoom the map view by a given number
+         *
+         * @param howMuch
+         *        The amount of zoom to apply. 1 zooms in on half the current
+         *        view, -1 zooms out. Pass `undefined` to zoom to the full
+         *        bounds of the map.
+         *
+         * @param coords
+         *        Optional map coordinates to keep fixed
+         *
+         * @param chartCoords
+         *        Optional chart coordinates to keep fixed, in pixels
+         *
+         * @param animation
+         *        The animation to apply to a the redraw
+         */
+        zoomBy(howMuch?: number, coords?: LonLatArray, chartCoords?: Array<number>, animation?: (boolean|Partial<AnimationOptionsObject>)): void;
+    }
+    /**
      * Contains all loaded map data for Highmaps.
      */
     let maps: Record<string, any>;
@@ -226,6 +343,11 @@ declare module "../highcharts" {
      * Utility for reading SVG paths directly.
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
+    /**
+     * The world size equals meters in the Web Mercator projection, to match a
+     * 256 square tile to zoom level 0
+     */
+    let worldSize: any;
     /**
      * If ranges are not specified, determine ranges from rendered bubble series
      * and render legend again.

@@ -10,13 +10,12 @@
  *
  * */
 'use strict';
-import H from '../Core/Globals.js';
-import NavigationBindings from '../Extensions/Annotations/NavigationBindings.js';
 import D from '../Core/DefaultOptions.js';
 var getOptions = D.getOptions, setOptions = D.setOptions;
+import H from '../Core/Globals.js';
+import NavigationBindings from '../Extensions/Annotations/NavigationBindings.js';
 import Series from '../Core/Series/Series.js';
 import U from '../Core/Utilities.js';
-import palette from '../Core/Color/Palette.js';
 var correctFloat = U.correctFloat, defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick, uniqueKey = U.uniqueKey;
 var bindingsUtils = NavigationBindings.prototype.utils, PREFIX = 'highcharts-';
 /* eslint-disable no-invalid-this, valid-jsdoc */
@@ -107,34 +106,35 @@ bindingsUtils.addFlagFromForm = function (type) {
     };
 };
 bindingsUtils.indicatorsWithAxes = [
+    'apo',
     'ad',
-    'atr',
-    'cci',
-    'cmf',
-    'disparityindex',
-    'cmo',
-    'dmi',
-    'macd',
-    'mfi',
-    'roc',
-    'rsi',
-    'ao',
     'aroon',
     'aroonoscillator',
-    'trix',
-    'apo',
+    'atr',
+    'ao',
+    'cci',
+    'chaikin',
+    'cmf',
+    'cmo',
+    'disparityindex',
+    'dmi',
     'dpo',
-    'ppo',
+    'linearRegressionAngle',
+    'linearRegressionIntercept',
+    'linearRegressionSlope',
+    'klinger',
+    'macd',
+    'mfi',
+    'momentum',
     'natr',
     'obv',
-    'williamsr',
-    'stochastic',
+    'ppo',
+    'roc',
+    'rsi',
     'slowstochastic',
-    'linearRegression',
-    'linearRegressionSlope',
-    'linearRegressionIntercept',
-    'linearRegressionAngle',
-    'klinger'
+    'stochastic',
+    'trix',
+    'williamsr'
 ];
 bindingsUtils.manageIndicators = function (data) {
     var navigation = this, chart = navigation.chart, seriesConfig = {
@@ -925,7 +925,7 @@ var stockToolsBindings = {
      *
      * @type    {Highcharts.NavigationBindingsOptionsObject}
      * @product highstock
-     * @default {"className": "highcharts-crooked3", "start": function() {}, "steps": [function() {}, function() {}, function() {}, function() {}], "annotationsOptions": {}}
+     * @default {"className": "highcharts-crooked5", "start": function() {}, "steps": [function() {}, function() {}, function() {}, function() {}], "annotationsOptions": {}}
      */
     crooked5: {
         /** @ignore-option */
@@ -939,7 +939,7 @@ var stockToolsBindings = {
                 return;
             }
             var x = coordsX.value, y = coordsY.value, navigation = this.chart.options.navigation, options = merge({
-                langKey: 'crookedLine',
+                langKey: 'crooked5',
                 type: 'crookedLine',
                 typeOptions: {
                     xAxis: coordsX.axis.options.index,
@@ -997,7 +997,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: palette.neutralColor60
+                        color: "#666666" /* neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.elliott3.annotationsOptions);
@@ -1046,7 +1046,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: palette.neutralColor60
+                        color: "#666666" /* neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.elliott5.annotationsOptions);
@@ -1090,23 +1090,23 @@ var stockToolsBindings = {
                     point: { x: x, y: y },
                     crosshairX: {
                         strokeWidth: 1,
-                        stroke: palette.neutralColor100
+                        stroke: "#000000" /* neutralColor100 */
                     },
                     crosshairY: {
                         enabled: false,
                         strokeWidth: 0,
-                        stroke: palette.neutralColor100
+                        stroke: "#000000" /* neutralColor100 */
                     },
                     background: {
                         width: 0,
                         height: 0,
                         strokeWidth: 0,
-                        stroke: palette.backgroundColor
+                        stroke: "#ffffff" /* backgroundColor */
                     }
                 },
                 labelOptions: {
                     style: {
-                        color: palette.neutralColor60
+                        color: "#666666" /* neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.measureX.annotationsOptions);
@@ -1147,22 +1147,22 @@ var stockToolsBindings = {
                     crosshairX: {
                         enabled: false,
                         strokeWidth: 0,
-                        stroke: palette.neutralColor100
+                        stroke: "#000000" /* neutralColor100 */
                     },
                     crosshairY: {
                         strokeWidth: 1,
-                        stroke: palette.neutralColor100
+                        stroke: "#000000" /* neutralColor100 */
                     },
                     background: {
                         width: 0,
                         height: 0,
                         strokeWidth: 0,
-                        stroke: palette.backgroundColor
+                        stroke: "#ffffff" /* backgroundColor */
                     }
                 },
                 labelOptions: {
                     style: {
-                        color: palette.neutralColor60
+                        color: "#666666" /* neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.measureY.annotationsOptions);
@@ -1207,16 +1207,16 @@ var stockToolsBindings = {
                     },
                     crosshairX: {
                         strokeWidth: 1,
-                        stroke: palette.neutralColor100
+                        stroke: "#000000" /* neutralColor100 */
                     },
                     crosshairY: {
                         strokeWidth: 1,
-                        stroke: palette.neutralColor100
+                        stroke: "#000000" /* neutralColor100 */
                     }
                 },
                 labelOptions: {
                     style: {
-                        color: palette.neutralColor60
+                        color: "#666666" /* neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.measureXY.annotationsOptions);
@@ -1260,7 +1260,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: palette.neutralColor60
+                        color: "#666666" /* neutralColor60 */
                     }
                 }
             }, navigation.annotationsOptions, navigation.bindings.fibonacci.annotationsOptions);
@@ -1341,7 +1341,7 @@ var stockToolsBindings = {
                             y: coordsY.value,
                             controlPoint: {
                                 style: {
-                                    fill: palette.negativeColor
+                                    fill: "#f21313" /* negativeColor */
                                 }
                             }
                         }, { x: x, y: y },
@@ -1401,7 +1401,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: palette.neutralColor60,
+                        color: "#666666" /* neutralColor60 */,
                         fontSize: '11px'
                     }
                 },
@@ -1424,6 +1424,40 @@ var stockToolsBindings = {
      * @product highstock
      * @default {"className": "highcharts-vertical-label", "start": function() {}, "annotationsOptions": {}}
      */
+    timeCycles: {
+        className: 'highcharts-time-cycles',
+        start: function (e) {
+            var closestPoint = bindingsUtils.attractToPoint(e, this.chart), navigation = this.chart.options.navigation, options, annotation;
+            // Exit if clicked out of axes area
+            if (!closestPoint) {
+                return;
+            }
+            options = merge({
+                langKey: 'timeCycles',
+                type: 'timeCycles',
+                typeOptions: {
+                    xAxis: closestPoint.xAxis,
+                    yAxis: closestPoint.yAxis,
+                    points: [{
+                            x: closestPoint.x
+                        }, {
+                            x: closestPoint.x
+                        }],
+                    line: {
+                        stroke: 'rgba(0, 0, 0, 0.75)',
+                        fill: 'transparent',
+                        strokeWidth: 2
+                    }
+                }
+            }, navigation.annotationsOptions, navigation.bindings.timeCycles.annotationsOptions);
+            annotation = this.chart.addAnnotation(options);
+            annotation.options.events.click.call(annotation, {});
+            return annotation;
+        },
+        steps: [
+            bindingsUtils.updateNthPoint(1)
+        ]
+    },
     verticalLabel: {
         /** @ignore-option */
         className: 'highcharts-vertical-label',
@@ -1451,7 +1485,7 @@ var stockToolsBindings = {
                 },
                 labelOptions: {
                     style: {
-                        color: palette.neutralColor60,
+                        color: "#666666" /* neutralColor60 */,
                         fontSize: '11px'
                     }
                 },
@@ -1467,8 +1501,8 @@ var stockToolsBindings = {
     /**
      * A vertical arrow annotation bindings. Includes `start` event. On click,
      * finds the closest point and marks it with an arrow.
-     * `${palette.positiveColor}` is the color of the arrow when
-     * pointing from above and `${palette.negativeColor}`
+     * `#06b535` is the color of the arrow when
+     * pointing from above and `#f21313`
      * when pointing from below the point.
      *
      * @type    {Highcharts.NavigationBindingsOptionsObject}
@@ -1503,7 +1537,7 @@ var stockToolsBindings = {
                     connector: {
                         fill: 'none',
                         stroke: closestPoint.below ?
-                            palette.negativeColor : palette.positiveColor
+                            "#f21313" /* negativeColor */ : "#06b535" /* positiveColor */
                     }
                 },
                 shapeOptions: {
@@ -1514,6 +1548,57 @@ var stockToolsBindings = {
             annotation = this.chart.addAnnotation(options);
             annotation.options.events.click.call(annotation, {});
         }
+    },
+    /**
+     * The Fibonacci Time Zones annotation bindings. Includes `start` and one
+     * event in `steps` array.
+     *
+     * @type    {Highcharts.NavigationBindingsOptionsObject}
+     * @product highstock
+     * @default {"className": "highcharts-fibonacci-time-zones", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
+     */
+    fibonacciTimeZones: {
+        /** @ignore-option */
+        className: 'highcharts-fibonacci-time-zones',
+        // eslint-disable-next-line valid-jsdoc
+        /** @ignore-option */
+        start: function (e) {
+            var coords = this.chart.pointer.getCoordinates(e), coordsX = this.utils.getAssignedAxis(coords.xAxis), coordsY = this.utils.getAssignedAxis(coords.yAxis);
+            // Exit if clicked out of axes area
+            if (!coordsX || !coordsY) {
+                return;
+            }
+            var navigation = this.chart.options.navigation, options = merge({
+                type: 'fibonacciTimeZones',
+                langKey: 'fibonacciTimeZones',
+                typeOptions: {
+                    xAxis: coordsX.axis.options.index,
+                    yAxis: coordsY.axis.options.index,
+                    points: [{
+                            x: coordsX.value
+                        }]
+                }
+            }, navigation.annotationsOptions, navigation.bindings.fibonacciTimeZones.annotationsOptions);
+            return this.chart.addAnnotation(options);
+        },
+        /** @ignore-option */
+        // eslint-disable-next-line valid-jsdoc
+        steps: [
+            function (e, annotation) {
+                var mockPointOpts = annotation.options.typeOptions.points, x = mockPointOpts && mockPointOpts[0].x, coords = this.chart.pointer.getCoordinates(e), coordsX = this.utils.getAssignedAxis(coords.xAxis), coordsY = this.utils.getAssignedAxis(coords.yAxis);
+                annotation.update({
+                    typeOptions: {
+                        xAxis: coordsX.axis.options.index,
+                        yAxis: coordsY.axis.options.index,
+                        points: [{
+                                x: x
+                            }, {
+                                x: coordsX.value
+                            }]
+                    }
+                });
+            }
+        ]
     },
     // Flag types:
     /**
@@ -1714,6 +1799,23 @@ var stockToolsBindings = {
         init: function (button) {
             this.chart.series[0].update({
                 type: 'heikinashi'
+            });
+            fireEvent(this, 'deselectButton', { button: button });
+        }
+    },
+    /**
+     * Change main series to `'hlc'` type.
+     *
+     * @type    {Highcharts.NavigationBindingsOptionsObject}
+     * @product highstock
+     * @default {"className": "highcharts-series-type-hlc", "init": function () {}}
+     */
+    seriesTypeHLC: {
+        className: 'highcharts-series-type-hlc',
+        init: function (button) {
+            this.chart.series[0].update({
+                type: 'hlc',
+                useOhlcData: true
             });
             fireEvent(this, 'deselectButton', { button: button });
         }

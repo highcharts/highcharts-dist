@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Highcharts funnel module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/Funnel/FunnelSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, H, palette, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Funnel/FunnelSeries.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Chart, H, SeriesRegistry, U) {
         /* *
          *
          *  Highcharts funnel module
@@ -115,11 +115,14 @@
                         (widthAtLabel - dlBox.bottomWidth) / 2,
                     y = dlBox.y,
                     x = dlBox.x;
+                // #16176: Only SVGLabel has height set
+                var dataLabelHeight = pick(dataLabel.height,
+                    dataLabel.getBBox().height);
                 if (verticalAlign === 'middle') {
-                    y = dlBox.y - dlBox.height / 2 + dataLabel.height / 2;
+                    y = dlBox.y - dlBox.height / 2 + dataLabelHeight / 2;
                 }
                 else if (verticalAlign === 'top') {
-                    y = dlBox.y - dlBox.height + dataLabel.height +
+                    y = dlBox.y - dlBox.height + dataLabelHeight +
                         options.padding;
                 }
                 if (verticalAlign === 'top' && !reversed ||
@@ -497,13 +500,13 @@
                          *
                          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                          */
-                        color: palette.neutralColor20,
+                        color: "#cccccc" /* neutralColor20 */,
                         /**
                          * A specific border color for the selected point.
                          *
                          * @type {Highcharts.ColorString}
                          */
-                        borderColor: palette.neutralColor100
+                        borderColor: "#000000" /* neutralColor100 */
                     }
                 }
             });

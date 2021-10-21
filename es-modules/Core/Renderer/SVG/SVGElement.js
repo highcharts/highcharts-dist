@@ -14,7 +14,6 @@ import AST from '../HTML/AST.js';
 import Color from '../../Color/Color.js';
 import H from '../../Globals.js';
 var deg2rad = H.deg2rad, doc = H.doc, noop = H.noop, svg = H.svg, SVG_NS = H.SVG_NS, win = H.win;
-import Palette from '../../Color/Palette.js';
 import U from '../../Utilities.js';
 var addEvent = U.addEvent, attr = U.attr, createElement = U.createElement, css = U.css, defined = U.defined, erase = U.erase, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, syncTimeout = U.syncTimeout, uniqueKey = U.uniqueKey;
 /* *
@@ -1459,7 +1458,7 @@ var SVGElement = /** @class */ (function () {
                 var childNodes = [].slice.call(textNode.childNodes);
                 for (var i = 0; i < childNodes.length; i++) {
                     var childNode = childNodes[i];
-                    if (childNode.nodeType === Node.TEXT_NODE ||
+                    if (childNode.nodeType === win.Node.TEXT_NODE ||
                         childNode.nodeName === 'tspan') {
                         textPathElement.appendChild(childNode);
                     }
@@ -1551,7 +1550,7 @@ var SVGElement = /** @class */ (function () {
      */
     SVGElement.prototype.shadow = function (shadowOptions, group, cutOff) {
         var shadows = [], element = this.element, oldShadowOptions = this.oldShadowOptions, defaultShadowOptions = {
-            color: Palette.neutralColor100,
+            color: "#000000" /* neutralColor100 */,
             offsetX: this.parentInverted ? -1 : 1,
             offsetY: this.parentInverted ? -1 : 1,
             opacity: 0.15,
@@ -1594,7 +1593,7 @@ var SVGElement = /** @class */ (function () {
                 strokeWidth = (options.width * 2) + 1 - (2 * i);
                 attr(shadow, {
                     stroke: (shadowOptions.color ||
-                        Palette.neutralColor100),
+                        "#000000" /* neutralColor100 */),
                     'stroke-opacity': shadowElementOpacity * i,
                     'stroke-width': strokeWidth,
                     transform: transform,

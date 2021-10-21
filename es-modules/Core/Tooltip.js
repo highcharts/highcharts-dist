@@ -12,7 +12,6 @@ import F from './FormatUtilities.js';
 var format = F.format;
 import H from './Globals.js';
 var doc = H.doc;
-import palette from './Color/Palette.js';
 import R from './Renderer/RendererUtilities.js';
 var distribute = R.distribute;
 import RendererRegistry from './Renderer/RendererRegistry.js';
@@ -43,6 +42,12 @@ var Tooltip = /** @class */ (function () {
      *
      * */
     function Tooltip(chart, options) {
+        /* *
+         *
+         *  Properties
+         *
+         * */
+        this.allowShared = true;
         this.container = void 0;
         this.crosshairs = [];
         this.distance = 0;
@@ -182,7 +187,7 @@ var Tooltip = /** @class */ (function () {
             this.label = this.label.destroy();
         }
         if (this.split && this.tt) {
-            this.cleanSplit(this.chart, true);
+            this.cleanSplit(true);
             this.tt = this.tt.destroy();
         }
         if (this.renderer) {
@@ -268,10 +273,11 @@ var Tooltip = /** @class */ (function () {
      * Creates the Tooltip label element if it does not exist, then returns it.
      *
      * @function Highcharts.Tooltip#getLabel
+     *
      * @return {Highcharts.SVGElement}
      */
     Tooltip.prototype.getLabel = function () {
-        var tooltip = this, styledMode = this.chart.styledMode, options = this.options, className = ('tooltip' + (defined(options.className) ?
+        var tooltip = this, styledMode = this.chart.styledMode, options = this.options, doSplit = this.split && this.allowShared, className = ('tooltip' + (defined(options.className) ?
             ' ' + options.className :
             '')), pointerEvents = (options.style.pointerEvents ||
             (!this.followPointer && options.stickOnContact ? 'auto' : 'none')), onMouseEnter = function () {
@@ -288,6 +294,14 @@ var Tooltip = /** @class */ (function () {
             }
         };
         var container, renderer = this.chart.renderer;
+        // If changing from a split tooltip to a non-split tooltip, we must
+        // destroy it in order to get the SVG right. #13868.
+        if (tooltip.label) {
+            var wasSplit = !tooltip.label.hasClass('highcharts-label');
+            if ((doSplit && !wasSplit) || (!doSplit && wasSplit)) {
+                tooltip.destroy();
+            }
+        }
         if (!this.label) {
             if (this.outside) {
                 var chartStyle = this.chart.options.chart.style, Renderer = RendererRegistry.getRendererType();
@@ -321,7 +335,7 @@ var Tooltip = /** @class */ (function () {
                 this.renderer = renderer = new Renderer(container, 0, 0, chartStyle, void 0, void 0, renderer.styledMode);
             }
             // Create the label
-            if (this.split) {
+            if (doSplit) {
                 this.label = renderer.g(className);
             }
             else {
@@ -428,8 +442,17 @@ var Tooltip = /** @class */ (function () {
             ]);
         };
         var first = buildDimensionArray('y'), second = buildDimensionArray('x'), swapped;
+        // Handle negative points or reversed axis (#13780)
+        var flipped = !!point.negative;
+        if (!chart.polar &&
+            chart.hoverSeries &&
+            chart.hoverSeries.yAxis &&
+            chart.hoverSeries.yAxis.reversed) {
+            flipped = !flipped;
+        }
         // The far side is right or bottom
-        var preferFarSide = !this.followPointer && pick(point.ttBelow, !chart.inverted === !!point.negative), // #4984
+        var preferFarSide = !this.followPointer &&
+            pick(point.ttBelow, !chart.inverted === flipped), // #4984
         /*
          * Handle the preferred dimension. When the preferred dimension is
          * tooltip on top or bottom of the point, it will look for space
@@ -709,14 +732,16 @@ var Tooltip = /** @class */ (function () {
             return;
         }
         U.clearTimeout(this.hideTimer);
+        // A switch saying if this specific tooltip configuration allows shared
+        // or split modes
+        tooltip.allowShared = !(!isArray(pointOrPoints) &&
+            pointOrPoints.series &&
+            pointOrPoints.series.noSharedTooltip);
         // get the reference point coordinates (pie charts use tooltipPos)
         tooltip.followPointer = !tooltip.split && point.series.tooltipOptions.followPointer;
         var anchor = tooltip.getAnchor(pointOrPoints, mouseEvent), x = anchor[0], y = anchor[1];
         // shared tooltip, array is sent over
-        if (shared &&
-            !(!isArray(pointOrPoints) &&
-                pointOrPoints.series &&
-                pointOrPoints.series.noSharedTooltip)) {
+        if (shared && tooltip.allowShared) {
             chart.pointer.applyInactiveState(points);
             // Now set hover state for the choosen ones:
             points.forEach(function (item) {
@@ -744,20 +769,22 @@ var Tooltip = /** @class */ (function () {
         }
         else {
             // update text
-            if (tooltip.split) {
+            if (tooltip.split && tooltip.allowShared) { // #13868
                 this.renderSplit(text, points);
             }
             else {
-                var checkX = x;
-                var checkY = y;
+                var checkX_1 = x;
+                var checkY_1 = y;
                 if (mouseEvent && chart.pointer.isDirectTouch) {
-                    checkX = mouseEvent.chartX - chart.plotLeft;
-                    checkY = mouseEvent.chartY - chart.plotTop;
+                    checkX_1 = mouseEvent.chartX - chart.plotLeft;
+                    checkY_1 = mouseEvent.chartY - chart.plotTop;
                 }
                 // #11493, #13095
                 if (chart.polar ||
                     currentSeries.options.clip === false ||
-                    currentSeries.shouldShowTooltip(checkX, checkY)) {
+                    points.some(function (p) {
+                        return p.series.shouldShowTooltip(checkX_1, checkY_1);
+                    })) {
                     var label = tooltip.getLabel();
                     // Prevent the tooltip from flowing over the chart box
                     // (#6659)
@@ -780,7 +807,7 @@ var Tooltip = /** @class */ (function () {
                             stroke: (options.borderColor ||
                                 point.color ||
                                 currentSeries.color ||
-                                palette.neutralColor60)
+                                "#666666" /* neutralColor60 */)
                         });
                     }
                     tooltip.updatePosition({
@@ -951,7 +978,7 @@ var Tooltip = /** @class */ (function () {
                     stroke: (options.borderColor ||
                         point.color ||
                         series.color ||
-                        palette.neutralColor80)
+                        "#333333" /* neutralColor80 */)
                 });
             }
             return tt;

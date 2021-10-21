@@ -17,7 +17,8 @@ var format = F.format;
 import H from '../../Core/Globals.js';
 var doc = H.doc;
 import U from '../../Core/Utilities.js';
-var extend = U.extend, pick = U.pick;
+var attr = U.attr, extend = U.extend, pick = U.pick;
+import A11yI18n from '../A11yI18n.js';
 import AccessibilityComponent from '../AccessibilityComponent.js';
 import Announcer from '../Utils/Announcer.js';
 import AnnotationsA11y from './AnnotationsA11y.js';
@@ -25,7 +26,7 @@ var getAnnotationsInfoHTML = AnnotationsA11y.getAnnotationsInfoHTML;
 import ChartUtilities from '../Utils/ChartUtilities.js';
 var getAxisDescription = ChartUtilities.getAxisDescription, getAxisRangeDescription = ChartUtilities.getAxisRangeDescription, getChartTitle = ChartUtilities.getChartTitle, unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
 import HTMLUtilities from '../Utils/HTMLUtilities.js';
-var addClass = HTMLUtilities.addClass, getElement = HTMLUtilities.getElement, getHeadingTagNameForElement = HTMLUtilities.getHeadingTagNameForElement, setElAttrs = HTMLUtilities.setElAttrs, stripHTMLTagsFromString = HTMLUtilities.stripHTMLTagsFromString, visuallyHideElement = HTMLUtilities.visuallyHideElement;
+var addClass = HTMLUtilities.addClass, getElement = HTMLUtilities.getElement, getHeadingTagNameForElement = HTMLUtilities.getHeadingTagNameForElement, stripHTMLTagsFromString = HTMLUtilities.stripHTMLTagsFromString, visuallyHideElement = HTMLUtilities.visuallyHideElement;
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
  * @private
@@ -213,15 +214,32 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
      * @param {string} regionKey The name/key of the region to update
      */
     updateScreenReaderSection: function (regionKey) {
-        var chart = this.chart, region = this.screenReaderSections[regionKey], content = region.buildContent(chart), sectionDiv = region.element = (region.element || this.createElement('div')), hiddenDiv = (sectionDiv.firstChild || this.createElement('div'));
-        this.setScreenReaderSectionAttribs(sectionDiv, regionKey);
-        AST.setElementHTML(hiddenDiv, content);
-        sectionDiv.appendChild(hiddenDiv);
-        region.insertIntoDOM(sectionDiv, chart);
-        visuallyHideElement(hiddenDiv);
-        unhideChartElementFromAT(chart, hiddenDiv);
-        if (region.afterInserted) {
-            region.afterInserted();
+        var chart = this.chart;
+        var region = this.screenReaderSections[regionKey];
+        var content = region.buildContent(chart);
+        var sectionDiv = region.element = (region.element || this.createElement('div'));
+        var hiddenDiv = (sectionDiv.firstChild || this.createElement('div'));
+        if (content) {
+            this.setScreenReaderSectionAttribs(sectionDiv, regionKey);
+            AST.setElementHTML(hiddenDiv, content);
+            sectionDiv.appendChild(hiddenDiv);
+            region.insertIntoDOM(sectionDiv, chart);
+            if (chart.styledMode) {
+                addClass(hiddenDiv, 'highcharts-visually-hidden');
+            }
+            else {
+                visuallyHideElement(hiddenDiv);
+            }
+            unhideChartElementFromAT(chart, hiddenDiv);
+            if (region.afterInserted) {
+                region.afterInserted();
+            }
+        }
+        else {
+            if (sectionDiv.parentNode) {
+                sectionDiv.parentNode.removeChild(sectionDiv);
+            }
+            delete region.element;
         }
     },
     /**
@@ -232,7 +250,7 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
     setScreenReaderSectionAttribs: function (sectionDiv, regionKey) {
         var labelLangKey = ('accessibility.screenReaderSection.' + regionKey + 'RegionLabel'), chart = this.chart, labelText = chart.langFormat(labelLangKey, { chart: chart, chartTitle: getChartTitle(chart) }), sectionId = 'highcharts-screen-reader-region-' + regionKey + '-' +
             chart.index;
-        setElAttrs(sectionDiv, {
+        attr(sectionDiv, {
             id: sectionId,
             'aria-label': labelText
         });
@@ -249,8 +267,12 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
      * @return {string}
      */
     defaultBeforeChartFormatter: function () {
-        var chart = this.chart, format = chart.options.accessibility
-            .screenReaderSection.beforeChartFormat, axesDesc = this.getAxesDescription(), shouldHaveSonifyBtn = (chart.sonify &&
+        var chart = this.chart;
+        var format = chart.options.accessibility.screenReaderSection.beforeChartFormat;
+        if (!format) {
+            return '';
+        }
+        var axesDesc = this.getAxesDescription(), shouldHaveSonifyBtn = (chart.sonify &&
             chart.options.sonification &&
             chart.options.sonification.enabled), sonifyButtonId = 'highcharts-a11y-sonify-data-btn-' +
             chart.index, dataTableButtonId = 'hc-linkto-highcharts-data-table-' +
@@ -268,7 +290,7 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
                 this.getDataTableButtonText(dataTableButtonId) : '',
             annotationsTitle: annotationsList ? annotationsTitleStr : '',
             annotationsList: annotationsList
-        }, formattedString = H.i18nFormat(format, context, chart);
+        }, formattedString = A11yI18n.i18nFormat(format, context, chart);
         this.dataTableButtonId = dataTableButtonId;
         this.sonifyButtonId = sonifyButtonId;
         return stripEmptyHTMLTags(formattedString);
@@ -278,10 +300,13 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
      * @return {string}
      */
     defaultAfterChartFormatter: function () {
-        var chart = this.chart, format = chart.options.accessibility
-            .screenReaderSection.afterChartFormat, context = {
-            endOfChartMarker: this.getEndOfChartMarkerText()
-        }, formattedString = H.i18nFormat(format, context, chart);
+        var chart = this.chart;
+        var format = chart.options.accessibility.screenReaderSection.afterChartFormat;
+        if (!format) {
+            return '';
+        }
+        var context = { endOfChartMarker: this.getEndOfChartMarkerText() };
+        var formattedString = A11yI18n.i18nFormat(format, context, chart);
         return stripEmptyHTMLTags(formattedString);
     },
     /**
@@ -405,9 +430,7 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
             }, 1000); // Delay to let screen reader speak the button press
         };
         if (el && chart) {
-            setElAttrs(el, {
-                tabindex: -1
-            });
+            el.setAttribute('tabindex', -1);
             el.onclick = function (e) {
                 var onPlayAsSoundClick = (chart.options.accessibility &&
                     chart.options.accessibility.screenReaderSection.onPlayAsSoundClick);
@@ -423,7 +446,7 @@ extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponen
     initDataTableButton: function (tableButtonId) {
         var el = this.viewDataTableButton = getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
         if (el) {
-            setElAttrs(el, {
+            attr(el, {
                 tabindex: -1,
                 'aria-expanded': !!getElement(tableId)
             });

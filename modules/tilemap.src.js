@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.2.2 (2021-08-24)
+ * @license Highmaps JS v9.3.0 (2021-10-21)
  *
  * Tilemap module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/Tilemap/TilemapPoint.js', [_modules['Mixins/ColorSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorSeriesModule, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Tilemap/TilemapPoint.js', [_modules['Core/Axis/Color/ColorAxisComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorAxisComposition, SeriesRegistry, U) {
         /* *
          *
          *  Tilemaps module
@@ -57,7 +57,6 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var colorPointMixin = ColorSeriesModule.colorPointMixin;
         var Point = SeriesRegistry.series.prototype.pointClass,
             HeatmapPoint = SeriesRegistry.seriesTypes.heatmap.prototype.pointClass;
         var extend = U.extend;
@@ -102,7 +101,7 @@
         }(HeatmapPoint));
         extend(TilemapPoint.prototype, {
             setState: Point.prototype.setState,
-            setVisible: colorPointMixin.setVisible
+            setVisible: ColorAxisComposition.pointSetVisible
         });
         /* *
          *

@@ -13,7 +13,6 @@ import Chart from '../Core/Chart/Chart.js';
 import H from '../Core/Globals.js';
 import D from '../Core/DefaultOptions.js';
 var defaultOptions = D.defaultOptions;
-import palette from '../Core/Color/Palette.js';
 import SVGElement from '../Core/Renderer/SVG/SVGElement.js';
 import U from '../Core/Utilities.js';
 var addEvent = U.addEvent, createElement = U.createElement, css = U.css, defined = U.defined, destroyObjectProperties = U.destroyObjectProperties, discardElement = U.discardElement, extend = U.extend, find = U.find, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pad = U.pad, pick = U.pick, pInt = U.pInt, splat = U.splat;
@@ -480,7 +479,7 @@ extend(defaultOptions, {
          */
         inputStyle: {
             /** @ignore */
-            color: palette.highlightColor80,
+            color: "#335cad" /* highlightColor80 */,
             /** @ignore */
             cursor: 'pointer'
         },
@@ -497,7 +496,7 @@ extend(defaultOptions, {
          */
         labelStyle: {
             /** @ignore */
-            color: palette.neutralColor60
+            color: "#666666" /* neutralColor60 */
         }
     }
 });
@@ -1130,7 +1129,7 @@ var RangeSelector = /** @class */ (function () {
             // Styles
             label.css(merge(chartStyle, options.labelStyle));
             dateBox.css(merge({
-                color: palette.neutralColor80
+                color: "#333333" /* neutralColor80 */
             }, chartStyle, options.inputStyle));
             css(input, extend({
                 position: 'absolute',

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Stock/Indicators/Supertrend/SupertrendIndicator.js', [_modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Chart/StockChart.js']], function (palette, SeriesRegistry, U, StockChart) {
+    _registerModule(_modules, 'Stock/Indicators/Supertrend/SupertrendIndicator.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Chart/StockChart.js']], function (SeriesRegistry, U, StockChart) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -479,7 +479,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                risingTrendColor: palette.positiveColor,
+                risingTrendColor: "#06b535" /* positiveColor */,
                 /**
                  * Color of the Supertrend series line that is above the main series.
                  *
@@ -488,7 +488,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                fallingTrendColor: palette.negativeColor,
+                fallingTrendColor: "#f21313" /* negativeColor */,
                 /**
                  * The styles for the Supertrend line that intersect main series.
                  *
@@ -506,7 +506,7 @@
                          *
                          * @type {Highcharts.ColorString}
                          */
-                        lineColor: palette.neutralColor80,
+                        lineColor: "#333333" /* neutralColor80 */,
                         /**
                          * The dash or dot style of the grid lines. For possible
                          * values, see
@@ -528,8 +528,7 @@
         }(SMAIndicator));
         extend(SupertrendIndicator.prototype, {
             nameBase: 'Supertrend',
-            nameComponents: ['multiplier', 'period'],
-            requiredIndicators: ['atr']
+            nameComponents: ['multiplier', 'period']
         });
         SeriesRegistry.registerSeriesType('supertrend', SupertrendIndicator);
         /* *

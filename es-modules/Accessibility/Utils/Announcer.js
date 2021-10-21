@@ -10,12 +10,14 @@
  *
  * */
 'use strict';
-import H from '../../Core/Globals.js';
 import AST from '../../Core/Renderer/HTML/AST.js';
-var doc = H.doc;
 import DOMElementProvider from './DOMElementProvider.js';
-import HTMLUtilities from './HTMLUtilities.js';
-var setElAttrs = HTMLUtilities.setElAttrs, visuallyHideElement = HTMLUtilities.visuallyHideElement;
+import H from '../../Core/Globals.js';
+var doc = H.doc;
+import HU from './HTMLUtilities.js';
+var addClass = HU.addClass, visuallyHideElement = HU.visuallyHideElement;
+import U from '../../Core/Utilities.js';
+var attr = U.attr;
 /* *
  *
  *  Class
@@ -55,21 +57,26 @@ var Announcer = /** @class */ (function () {
     };
     Announcer.prototype.addAnnounceRegion = function (type) {
         var chartContainer = this.chart.announcerContainer || this.createAnnouncerContainer(), div = this.domElementProvider.createElement('div');
-        setElAttrs(div, {
+        attr(div, {
             'aria-hidden': false,
             'aria-live': type
         });
-        visuallyHideElement(div);
+        if (this.chart.styledMode) {
+            addClass(div, 'highcharts-visually-hidden');
+        }
+        else {
+            visuallyHideElement(div);
+        }
         chartContainer.appendChild(div);
         return div;
     };
     Announcer.prototype.createAnnouncerContainer = function () {
         var chart = this.chart, container = doc.createElement('div');
-        setElAttrs(container, {
+        attr(container, {
             'aria-hidden': false,
-            style: 'position:relative',
             'class': 'highcharts-announcer-container'
         });
+        container.style.position = 'relative';
         chart.renderTo.insertBefore(container, chart.renderTo.firstChild);
         chart.announcerContainer = container;
         return container;

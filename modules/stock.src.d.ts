@@ -21,17 +21,31 @@ declare module "../highcharts.src" {
         applyGrouping(): void;
         /**
          * Highcharts Stock only. Set the compare mode on all series belonging
-         * to an Y axis after render time.
+         * to a Y axis.
          *
          * @param compare
-         *        The compare mode. Can be one of `null` (default), `"value"` or
-         *        `"percent"`.
+         *        The compare mode. Can be one of `undefined` (default), `null`,
+         *        `"value"` or `"percent"`.
          *
          * @param redraw
          *        Whether to redraw the chart or to wait for a later call to
          *        Chart#redraw.
          */
-        setCompare(compare?: string, redraw?: boolean): void;
+        setCompare(compare?: (string|null), redraw?: boolean): void;
+        /**
+         * Highcharts Stock only. Set the cumulative mode on all series
+         * belonging to a Y axis.
+         *
+         * @param cumulative
+         *        Whether to disable or enable the cumulative mode. Can be one
+         *        of `undefined` (default, treated as `false`), `false` or
+         *        `true`.
+         *
+         * @param redraw
+         *        Whether to redraw the chart or to wait for a later call to
+         *        Chart#redraw.
+         */
+        setCumulative(cumulative?: boolean, redraw?: boolean): void;
         /**
          * (Highstock) Highcharts Stock only. Force data grouping on all the
          * axis' series.
@@ -53,9 +67,28 @@ declare module "../highcharts.src" {
          * on the X axis to update all its series.
          *
          * @param compare
-         *        Can be one of `null` (default), `"percent"` or `"value"`.
+         *        Can be one of `undefined` (default), `null`, `"percent"` or
+         *        `"value"`.
+         *
+         * @param redraw
+         *        Whether to redraw the chart or to wait for a later call to
+         *        Chart#redraw.
          */
-        setCompare(compare?: string): void;
+        setCompare(compare?: (string|null), redraw?: boolean): void;
+        /**
+         * Highcharts Stock only. Set the cumulative mode of the series after
+         * render time. In most cases it is more useful running
+         * Axis#setCumulative on the Y axis to update all its series.
+         *
+         * @param cumulative
+         *        Either enable or disable Cumulative Sum mode. Can be one of
+         *        `false` (default) or `true`.
+         *
+         * @param redraw
+         *        Whether to redraw the chart or to wait for a later call to
+         *        Chart#redraw.
+         */
+        setCumulative(cumulative?: boolean, redraw?: boolean): void;
     }
     /**
      * Stock-optimized chart. Use Chart for common charts.

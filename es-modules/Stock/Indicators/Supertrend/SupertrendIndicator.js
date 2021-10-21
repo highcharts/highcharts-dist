@@ -19,7 +19,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import palette from '../../../Core/Color/Palette.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var _a = SeriesRegistry.seriesTypes, ATRIndicator = _a.atr, SMAIndicator = _a.sma;
 import U from '../../../Core/Utilities.js';
@@ -410,7 +409,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        risingTrendColor: palette.positiveColor,
+        risingTrendColor: "#06b535" /* positiveColor */,
         /**
          * Color of the Supertrend series line that is above the main series.
          *
@@ -419,7 +418,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        fallingTrendColor: palette.negativeColor,
+        fallingTrendColor: "#f21313" /* negativeColor */,
         /**
          * The styles for the Supertrend line that intersect main series.
          *
@@ -437,7 +436,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
                  *
                  * @type {Highcharts.ColorString}
                  */
-                lineColor: palette.neutralColor80,
+                lineColor: "#333333" /* neutralColor80 */,
                 /**
                  * The dash or dot style of the grid lines. For possible
                  * values, see
@@ -459,8 +458,7 @@ var SupertrendIndicator = /** @class */ (function (_super) {
 }(SMAIndicator));
 extend(SupertrendIndicator.prototype, {
     nameBase: 'Supertrend',
-    nameComponents: ['multiplier', 'period'],
-    requiredIndicators: ['atr']
+    nameComponents: ['multiplier', 'period']
 });
 SeriesRegistry.registerSeriesType('supertrend', SupertrendIndicator);
 /* *

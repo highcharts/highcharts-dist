@@ -12,7 +12,7 @@
 'use strict';
 import AST from '../../Core/Renderer/HTML/AST.js';
 import Chart from '../../Core/Chart/Chart.js';
-import chartNavigationMixin from '../../Mixins/Navigation.js';
+import ChartNavigationComposition from '../../Core/Chart/ChartNavigationComposition.js';
 import D from '../../Core/DefaultOptions.js';
 var defaultOptions = D.defaultOptions;
 import ExportingDefaults from './ExportingDefaults.js';
@@ -20,7 +20,6 @@ import ExportingSymbols from './ExportingSymbols.js';
 import G from '../../Core/Globals.js';
 var doc = G.doc, win = G.win;
 import HU from '../../Core/HttpUtilities.js';
-import Palette from '../../Core/Color/Palette.js';
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, css = U.css, createElement = U.createElement, discardElement = U.discardElement, extend = U.extend, find = U.find, fireEvent = U.fireEvent, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, removeEvent = U.removeEvent, uniqueKey = U.uniqueKey;
 /* *
@@ -108,7 +107,7 @@ var Exporting;
         var attr = btnOptions.theme, states = attr.states, hover = states && states.hover, select = states && states.select;
         var callback;
         if (!chart.styledMode) {
-            attr.fill = pick(attr.fill, Palette.backgroundColor);
+            attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
             attr.stroke = pick(attr.stroke, 'none');
         }
         delete attr.states;
@@ -142,7 +141,7 @@ var Exporting;
         }
         if (!chart.styledMode) {
             attr['stroke-linecap'] = 'round';
-            attr.fill = pick(attr.fill, Palette.backgroundColor);
+            attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
             attr.stroke = pick(attr.stroke, 'none');
         }
         var button = renderer
@@ -1018,9 +1017,11 @@ var Exporting;
         // Register update() method for navigation. Can not be set the same way
         // as for exporting, because navigation options are shared with bindings
         // which has separate update() logic.
-        chartNavigationMixin.addUpdate(function (options, redraw) {
+        ChartNavigationComposition
+            .compose(chart).navigation
+            .addUpdate(function (options, redraw) {
             update('navigation', options, redraw);
-        }, chart);
+        });
     }
     /**
      * Exporting module required. Clears away other elements in the page and
@@ -1155,7 +1156,7 @@ defaultOptions.lang = merge(ExportingDefaults.lang, defaultOptions.lang);
 // zoom and pan right click menus.
 /**
  * A collection of options for buttons and menus appearing in the exporting
- * module.
+ * module or in Stock Tools.
  *
  * @requires     modules/exporting
  * @optionparent navigation

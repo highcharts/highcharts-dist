@@ -100,7 +100,7 @@ function ajax(attr) {
  *        function instead.
  */
 function getJSON(url, success) {
-    exports.ajax({
+    HttpUtilities.ajax({
         url: url,
         success: success,
         dataType: 'json',
@@ -153,12 +153,12 @@ function post(url, data, formAttributes) {
  *  Default Export
  *
  * */
-var exports = {
+var HttpUtilities = {
     ajax: ajax,
     getJSON: getJSON,
     post: post
 };
-export default exports;
+export default HttpUtilities;
 /**
  * @interface Highcharts.AjaxSettingsObject
  */ /**

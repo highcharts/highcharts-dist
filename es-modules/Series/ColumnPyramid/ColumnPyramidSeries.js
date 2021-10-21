@@ -128,10 +128,10 @@ var ColumnPyramidSeries = /** @class */ (function (_super) {
             bottomXwidth = stackHeight ? (barW * (barY + barH - topPointY)) / stackHeight : 0;
             /*
                     /\
-                    /  \
+                   /  \
             x1,y1,------ x2,y1
-                    /      \
-                ----------
+                /      \
+               ----------
             x4,y2        x3,y2
             */
             x1 = barX - topXwidth + barW;
@@ -146,9 +146,9 @@ var ColumnPyramidSeries = /** @class */ (function (_super) {
             }
             // inverted chart
             if (chart.inverted) {
-                invBarPos = chart.plotWidth - barY;
-                stackHeight = (topPointY -
-                    (chart.plotWidth - translatedThreshold));
+                invBarPos = yAxis.width - barY;
+                stackHeight =
+                    topPointY - (yAxis.width - translatedThreshold);
                 // proportion tanges
                 topXwidth = (barW *
                     (topPointY - invBarPos)) / stackHeight;

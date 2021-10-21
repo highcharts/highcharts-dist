@@ -10,7 +10,6 @@
 'use strict';
 import H from '../../Core/Globals.js';
 var isTouchDevice = H.isTouchDevice;
-import Palette from '../../Core/Color/Palette.js';
 /* *
  *
  *  API Options
@@ -523,12 +522,6 @@ var lang = {
      */
     contextButtonTitle: 'Chart context menu'
 };
-/**
- * A collection of options for buttons and menus appearing in the exporting
- * module.
- *
- * @optionparent navigation
- */
 var navigation = {
     /**
      * A collection of options for buttons appearing in the exporting
@@ -659,7 +652,7 @@ var navigation = {
          * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @since 2.0
          */
-        symbolFill: Palette.neutralColor60,
+        symbolFill: "#666666" /* neutralColor60 */,
         /**
          * The color of the symbol's stroke or line.
          *
@@ -669,7 +662,7 @@ var navigation = {
          * @type  {Highcharts.ColorString}
          * @since 2.0
          */
-        symbolStroke: Palette.neutralColor60,
+        symbolStroke: "#666666" /* neutralColor60 */,
         /**
          * The pixel stroke width of the symbol on the button.
          *
@@ -697,7 +690,7 @@ var navigation = {
              * The default fill exists only to capture hover events.
              *
              * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-             * @default   ${palette.backgroundColor}
+             * @default   #ffffff
              * @apioption navigation.buttonOptions.theme.fill
              */
             /**
@@ -730,9 +723,9 @@ var navigation = {
      */
     menuStyle: {
         /** @ignore-option */
-        border: "1px solid " + Palette.neutralColor40,
+        border: "1px solid " + "#999999" /* neutralColor40 */,
         /** @ignore-option */
-        background: Palette.backgroundColor,
+        background: "#ffffff" /* backgroundColor */,
         /** @ignore-option */
         padding: '5px 0'
     },
@@ -758,7 +751,7 @@ var navigation = {
         /** @ignore-option */
         padding: '0.5em 1em',
         /** @ignore-option */
-        color: Palette.neutralColor80,
+        color: "#333333" /* neutralColor80 */,
         /** @ignore-option */
         background: 'none',
         /** @ignore-option */
@@ -785,9 +778,9 @@ var navigation = {
      */
     menuItemHoverStyle: {
         /** @ignore-option */
-        background: Palette.highlightColor80,
+        background: "#335cad" /* highlightColor80 */,
         /** @ignore-option */
-        color: Palette.backgroundColor
+        color: "#ffffff" /* backgroundColor */
     }
 };
 /* *

@@ -12,7 +12,6 @@ import A from '../Animation/AnimationUtilities.js';
 var getDeferredAnimation = A.getDeferredAnimation;
 import F from '../FormatUtilities.js';
 var format = F.format;
-import Palette from '../Color/Palette.js';
 import U from '../Utilities.js';
 var defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, merge = U.merge, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
 /* *
@@ -273,7 +272,7 @@ var DataLabel;
                         rotation = labelOptions.rotation;
                         if (!chart.styledMode) {
                             // Determine the color
-                            style.color = pick(labelOptions.color, style.color, series.color, Palette.neutralColor100);
+                            style.color = pick(labelOptions.color, style.color, series.color, "#000000" /* neutralColor100 */);
                             // Get automated contrast color
                             if (style.color === 'contrast') {
                                 point.contrastColor = renderer.getContrast((point.color || series.color));
@@ -282,7 +281,7 @@ var DataLabel;
                                     labelDistance < 0 ||
                                     !!seriesOptions.stacking ?
                                     point.contrastColor :
-                                    Palette.neutralColor100;
+                                    "#000000" /* neutralColor100 */;
                             }
                             else {
                                 delete point.contrastColor;

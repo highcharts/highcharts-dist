@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.2.2 (2021-08-24)
+ * @license Highcharts Gantt JS v9.3.0 (2021-10-21)
  * @module highcharts/highcharts-gantt
  *
  * (c) 2017-2021 Lars Cabrera, Torstein Honsi, Jon Arild Nygard & Oystein Moseng

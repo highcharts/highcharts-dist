@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -126,9 +126,6 @@
             });
             return NATRIndicator;
         }(ATRIndicator));
-        extend(NATRIndicator.prototype, {
-            requiredIndicators: ['atr']
-        });
         SeriesRegistry.registerSeriesType('natr', NATRIndicator);
         /* *
          *
@@ -144,6 +141,7 @@
          * @product   highstock
          * @excluding dataParser, dataURL
          * @requires  stock/indicators/indicators
+         * @requires  stock/indicators/atr
          * @requires  stock/indicators/natr
          * @apioption series.natr
          */

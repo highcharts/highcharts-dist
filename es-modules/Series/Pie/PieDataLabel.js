@@ -11,7 +11,6 @@
 import DataLabel from '../../Core/Series/DataLabel.js';
 import H from '../../Core/Globals.js';
 var noop = H.noop;
-import Palette from '../../Core/Color/Palette.js';
 import R from '../../Core/Renderer/RendererUtilities.js';
 var distribute = R.distribute;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -332,7 +331,7 @@ var ColumnDataLabel;
                                     'stroke-width': connectorWidth,
                                     'stroke': (pointDataLabelsOptions.connectorColor ||
                                         point.color ||
-                                        Palette.neutralColor60)
+                                        "#666666" /* neutralColor60 */)
                                 });
                             }
                         }

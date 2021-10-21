@@ -23,7 +23,6 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import Axis from '../../Core/Axis/Axis.js';
 import Chart from '../../Core/Chart/Chart.js';
-import palette from '../../Core/Color/Palette.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, LineSeries = _a.line;
 import U from '../../Core/Utilities.js';
@@ -588,7 +587,7 @@ var WaterfallSeries = /** @class */ (function (_super) {
          * @since   3.0
          * @product highcharts
          */
-        lineColor: palette.neutralColor80,
+        lineColor: "#333333" /* neutralColor80 */,
         /**
          * A name for the dash style to use for the line connecting the columns
          * of the waterfall series. Possible values: Dash, DashDot, Dot,
@@ -613,7 +612,7 @@ var WaterfallSeries = /** @class */ (function (_super) {
          * @since   3.0
          * @product highcharts
          */
-        borderColor: palette.neutralColor80,
+        borderColor: "#333333" /* neutralColor80 */,
         states: {
             hover: {
                 lineWidthPlus: 0 // #3126

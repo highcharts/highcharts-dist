@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.2.2 (2021-08-24)
+ * @license Highmaps JS v9.3.0 (2021-10-21)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -28,259 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Core/Axis/MapAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Utilities.js']], function (Axis, U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var addEvent = U.addEvent,
-            pick = U.pick;
-        /**
-         * Map support for axes.
-         * @private
-         * @class
-         */
-        var MapAxisAdditions = /** @class */ (function () {
-                /* *
-                 *
-                 *  Constructors
-                 *
-                 * */
-                function MapAxisAdditions(axis) {
-                    this.axis = axis;
-            }
-            return MapAxisAdditions;
-        }());
-        /**
-         * Axis with map support.
-         * @private
-         * @class
-         */
-        var MapAxis = /** @class */ (function () {
-                function MapAxis() {
-                }
-                /**
-                 * Extends axes with map support.
-                 * @private
-                 *
-                 * @param {Highcharts.Axis} AxisClass
-                 * Axis class to extend.
-                 */
-                MapAxis.compose = function (AxisClass) {
-                    AxisClass.keepProps.push('mapAxis');
-                /* eslint-disable no-invalid-this */
-                addEvent(AxisClass, 'init', function () {
-                    var axis = this;
-                    if (!axis.mapAxis) {
-                        axis.mapAxis = new MapAxisAdditions(axis);
-                    }
-                });
-                // Override to use the extreme coordinates from the SVG shape, not the
-                // data values
-                addEvent(AxisClass, 'getSeriesExtremes', function () {
-                    if (!this.mapAxis) {
-                        return;
-                    }
-                    var axis = this;
-                    var xData = [];
-                    // Remove the xData array and cache it locally so that the proceed
-                    // method doesn't use it
-                    if (axis.isXAxis) {
-                        axis.series.forEach(function (series, i) {
-                            if (series.useMapGeometry) {
-                                xData[i] = series.xData;
-                                series.xData = [];
-                            }
-                        });
-                        axis.mapAxis.seriesXData = xData;
-                    }
-                });
-                addEvent(AxisClass, 'afterGetSeriesExtremes', function () {
-                    if (!this.mapAxis) {
-                        return;
-                    }
-                    var axis = this;
-                    var xData = axis.mapAxis.seriesXData || [];
-                    var dataMin,
-                        dataMax,
-                        useMapGeometry;
-                    // Run extremes logic for map and mapline
-                    if (axis.isXAxis) {
-                        dataMin = pick(axis.dataMin, Number.MAX_VALUE);
-                        dataMax = pick(axis.dataMax, -Number.MAX_VALUE);
-                        axis.series.forEach(function (series, i) {
-                            if (series.useMapGeometry) {
-                                dataMin = Math.min(dataMin, pick(series.minX, dataMin));
-                                dataMax = Math.max(dataMax, pick(series.maxX, dataMax));
-                                series.xData = xData[i]; // Reset xData array
-                                useMapGeometry = true;
-                            }
-                        });
-                        if (useMapGeometry) {
-                            axis.dataMin = dataMin;
-                            axis.dataMax = dataMax;
-                        }
-                        axis.mapAxis.seriesXData = void 0;
-                    }
-                });
-                // Override axis translation to make sure the aspect ratio is always
-                // kept
-                addEvent(AxisClass, 'afterSetAxisTranslation', function () {
-                    if (!this.mapAxis) {
-                        return;
-                    }
-                    var axis = this;
-                    var chart = axis.chart;
-                    var plotRatio = chart.plotWidth / chart.plotHeight;
-                    var xAxis = chart.xAxis[0];
-                    var mapRatio,
-                        adjustedAxisLength,
-                        padAxis,
-                        fixTo,
-                        fixDiff,
-                        preserveAspectRatio;
-                    // Check for map-like series
-                    if (axis.coll === 'yAxis' && typeof xAxis.transA !== 'undefined') {
-                        axis.series.forEach(function (series) {
-                            if (series.preserveAspectRatio) {
-                                preserveAspectRatio = true;
-                            }
-                        });
-                    }
-                    // On Y axis, handle both
-                    if (preserveAspectRatio) {
-                        // Use the same translation for both axes
-                        axis.transA = xAxis.transA = Math.min(axis.transA, xAxis.transA);
-                        mapRatio = plotRatio / ((xAxis.max - xAxis.min) /
-                            (axis.max - axis.min));
-                        // What axis to pad to put the map in the middle
-                        padAxis = mapRatio < 1 ? axis : xAxis;
-                        // Pad it
-                        adjustedAxisLength =
-                            (padAxis.max - padAxis.min) * padAxis.transA;
-                        padAxis.mapAxis.pixelPadding = padAxis.len - adjustedAxisLength;
-                        padAxis.minPixelPadding = padAxis.mapAxis.pixelPadding / 2;
-                        fixTo = padAxis.mapAxis.fixTo;
-                        if (fixTo) {
-                            fixDiff = fixTo[1] - padAxis.toValue(fixTo[0], true);
-                            fixDiff *= padAxis.transA;
-                            if (Math.abs(fixDiff) > padAxis.minPixelPadding ||
-                                (padAxis.min === padAxis.dataMin &&
-                                    padAxis.max === padAxis.dataMax)) { // zooming out again, keep within restricted area
-                                fixDiff = 0;
-                            }
-                            padAxis.minPixelPadding -= fixDiff;
-                        }
-                    }
-                });
-                // Override Axis.render in order to delete the fixTo prop
-                addEvent(AxisClass, 'render', function () {
-                    var axis = this;
-                    if (axis.mapAxis) {
-                        axis.mapAxis.fixTo = void 0;
-                    }
-                });
-                /* eslint-enable no-invalid-this */
-            };
-            return MapAxis;
-        }());
-        MapAxis.compose(Axis); // @todo move to factory functions
-
-        return MapAxis;
-    });
-    _registerModule(_modules, 'Mixins/ColorSeries.js', [], function () {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        /**
-         * Mixin for maps and heatmaps
-         *
-         * @private
-         * @mixin Highcharts.colorPointMixin
-         */
-        var colorPointMixin = {
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Set the visibility of a single point
-                 * @private
-                 * @function Highcharts.colorPointMixin.setVisible
-                 * @param {boolean} visible
-                 * @return {void}
-                 */
-                setVisible: function (vis) {
-                    var point = this,
-            method = vis ? 'show' : 'hide';
-                point.visible = point.options.visible = Boolean(vis);
-                // Show and hide associated elements
-                ['graphic', 'dataLabel'].forEach(function (key) {
-                    if (point[key]) {
-                        point[key][method]();
-                    }
-                });
-                this.series.buildKDTree(); // rebuild kdtree #13195
-            }
-            /* eslint-enable valid-jsdoc */
-        };
-        /**
-         * @private
-         * @mixin Highcharts.colorSeriesMixin
-         */
-        var colorSeriesMixin = {
-                optionalAxis: 'colorAxis',
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * In choropleth maps,
-            the color is a result of the value,
-            so this needs
-                 * translation too
-                 * @private
-                 * @function Highcharts.colorSeriesMixin.translateColors
-                 * @return {void}
-                 */
-                translateColors: function () {
-                    var series = this,
-            points = this.data.length ? this.data : this.points,
-            nullColor = this.options.nullColor,
-            colorAxis = this.colorAxis,
-            colorKey = this.colorKey;
-                points.forEach(function (point) {
-                    var value = point.getNestedProperty(colorKey),
-                        color;
-                    color = point.options.color ||
-                        (point.isNull || point.value === null ?
-                            nullColor :
-                            (colorAxis && typeof value !== 'undefined') ?
-                                colorAxis.toColor(value, point) :
-                                point.color || series.color);
-                    if (color && point.color !== color) {
-                        point.color = color;
-                        if (series.options.legendType === 'point' && point.legendItem) {
-                            series.chart.legend.colorizeItem(point, point.visible);
-                        }
-                    }
-                });
-            }
-            /* eslint-enable valid-jsdoc */
-        };
-        var exports = {
-                colorPointMixin: colorPointMixin,
-                colorSeriesMixin: colorSeriesMixin
-            };
-
-        return exports;
-    });
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Mixins/ColorSeries.js'], _modules['Core/Utilities.js']], function (Color, ColorSeriesMixins, U) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -291,8 +39,6 @@
          *
          * */
         var color = Color.parse;
-        var colorPointMixin = ColorSeriesMixins.colorPointMixin,
-            colorSeriesMixin = ColorSeriesMixins.colorSeriesMixin;
         var addEvent = U.addEvent,
             extend = U.extend,
             merge = U.merge,
@@ -305,6 +51,11 @@
          * */
         var ColorAxisComposition;
         (function (ColorAxisComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
             /* *
              *
              *  Constants
@@ -352,8 +103,13 @@
                 }
                 if (composedClasses.indexOf(SeriesClass) === -1) {
                     composedClasses.push(SeriesClass);
-                    extend(SeriesClass.prototype, colorSeriesMixin);
-                    extend(SeriesClass.prototype.pointClass.prototype, colorPointMixin);
+                    extend(SeriesClass.prototype, {
+                        optionalAxis: 'colorAxis',
+                        translateColors: seriesTranslateColors
+                    });
+                    extend(SeriesClass.prototype.pointClass.prototype, {
+                        setVisible: pointSetVisible
+                    });
                     addEvent(SeriesClass, 'afterTranslate', onSeriesAfterTranslate);
                     addEvent(SeriesClass, 'bindAxes', onSeriesBindAxes);
                 }
@@ -474,6 +230,55 @@
                 }
             }
             /**
+             * Set the visibility of a single point
+             * @private
+             * @function Highcharts.colorPointMixin.setVisible
+             * @param {boolean} visible
+             * @return {void}
+             */
+            function pointSetVisible(vis) {
+                var point = this,
+                    method = vis ? 'show' : 'hide';
+                point.visible = point.options.visible = Boolean(vis);
+                // Show and hide associated elements
+                ['graphic', 'dataLabel'].forEach(function (key) {
+                    if (point[key]) {
+                        point[key][method]();
+                    }
+                });
+                this.series.buildKDTree(); // rebuild kdtree #13195
+            }
+            ColorAxisComposition.pointSetVisible = pointSetVisible;
+            /**
+             * In choropleth maps, the color is a result of the value, so this needs
+             * translation too
+             * @private
+             * @function Highcharts.colorSeriesMixin.translateColors
+             * @return {void}
+             */
+            function seriesTranslateColors() {
+                var series = this,
+                    points = this.data.length ? this.data : this.points,
+                    nullColor = this.options.nullColor,
+                    colorAxis = this.colorAxis,
+                    colorKey = this.colorKey;
+                points.forEach(function (point) {
+                    var value = point.getNestedProperty(colorKey),
+                        color = point.options.color || (point.isNull || point.value === null ?
+                            nullColor :
+                            (colorAxis && typeof value !== 'undefined') ?
+                                colorAxis.toColor(value,
+                        point) :
+                                point.color || series.color);
+                    if (color && point.color !== color) {
+                        point.color = color;
+                        if (series.options.legendType === 'point' && point.legendItem) {
+                            series.chart.legend.colorizeItem(point, point.visible);
+                        }
+                    }
+                });
+            }
+            /**
              * @private
              */
             function wrapChartCreateAxis(ChartClass) {
@@ -525,7 +330,7 @@
 
         return ColorAxisComposition;
     });
-    _registerModule(_modules, 'Core/Axis/Color/ColorAxisDefaults.js', [_modules['Core/Color/Palette.js']], function (Palette) {
+    _registerModule(_modules, 'Core/Axis/Color/ColorAxisDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -588,7 +393,8 @@
          *               categories, crosshair, dateTimeLabelFormats, height, left,
          *               lineWidth, linkedTo, maxZoom, minRange, minTickInterval,
          *               offset, opposite, pane, plotBands, plotLines,
-         *               reversedStacks, showEmpty, title, top, width, zoomEnabled
+         *               reversedStacks, scrollbar, showEmpty, title, top, width,
+         *               zoomEnabled
          * @product      highcharts highstock highmaps
          * @type         {*|Array<*>}
          * @optionparent colorAxis
@@ -823,7 +629,7 @@
                      * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      * @product highcharts highstock highmaps
                      */
-                    color: Palette.neutralColor40
+                    color: "#999999" /* neutralColor40 */
                 },
                 /**
                  * The axis labels show the number for each tick.
@@ -865,7 +671,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                minColor: Palette.highlightColor10,
+                minColor: "#e6ebf5" /* highlightColor10 */,
                 /**
                  * The color to represent the maximum of the color axis. Unless
                  * [dataClasses](#colorAxis.dataClasses) or
@@ -884,7 +690,7 @@
                  * @type    {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  * @product highcharts highstock highmaps
                  */
-                maxColor: Palette.highlightColor100,
+                maxColor: "#003399" /* highlightColor100 */,
                 /**
                  * Color stops for the gradient of a scalar color axis. Use this in
                  * cases where a linear gradient between a `minColor` and `maxColor`
@@ -1665,89 +1471,6 @@
 
         return ColorAxis;
     });
-    _registerModule(_modules, 'Mixins/ColorMapSeries.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
-        /* *
-         *
-         *  (c) 2010-2021 Torstein Honsi
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var defined = U.defined,
-            addEvent = U.addEvent;
-        var noop = H.noop,
-            seriesTypes = H.seriesTypes;
-        // Move points to the top of the z-index order when hovered
-        addEvent(Point, 'afterSetState', function (e) {
-            var point = this; // eslint-disable-line no-invalid-this
-                if (point.moveToTopOnHover && point.graphic) {
-                    point.graphic.attr({
-                        zIndex: e && e.state === 'hover' ? 1 : 0
-                    });
-            }
-        });
-        /**
-         * Mixin for maps and heatmaps
-         *
-         * @private
-         * @mixin Highcharts.colorMapPointMixin
-         */
-        var colorMapPointMixin = {
-                dataLabelOnNull: true,
-                moveToTopOnHover: true,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Color points have a value option that determines whether or not it is
-                 * a null point
-                 * @private
-                 */
-                isValid: function () {
-                    // undefined is allowed
-                    return (this.value !== null &&
-                        this.value !== Infinity &&
-                        this.value !== -Infinity);
-            }
-            /* eslint-enable valid-jsdoc */
-        };
-        /**
-         * @private
-         * @mixin Highcharts.colorMapSeriesMixin
-         */
-        var colorMapSeriesMixin = {
-                pointArrayMap: ['value'],
-                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
-                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-                getSymbol: noop,
-                parallelArrays: ['x', 'y', 'value'],
-                colorKey: 'value',
-                pointAttribs: seriesTypes.column.prototype.pointAttribs,
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Get the color attibutes to apply on the graphic
-                 * @private
-                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
-                 * @param {Highcharts.Point} point
-                 * @return {Highcharts.SVGAttributes}
-                 */
-                colorAttribs: function (point) {
-                    var ret = {};
-                if (defined(point.color) &&
-                    (!point.state || point.state === 'normal') // #15746
-                ) {
-                    ret[this.colorProp || 'fill'] = point.color;
-                }
-                return ret;
-            }
-        };
-        var exports = {
-                colorMapPointMixin: colorMapPointMixin,
-                colorMapSeriesMixin: colorMapSeriesMixin
-            };
-
-        return exports;
-    });
     _registerModule(_modules, 'Maps/MapNavigationOptionsDefault.js', [_modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js']], function (D, U) {
         /* *
          *
@@ -1765,6 +1488,9 @@
          *
          * */
         /**
+         * The `mapNavigation` option handles buttons for navigation in addition to
+         * mousewheel and doubleclick handlers for map zooming.
+         *
          * @product      highmaps
          * @optionparent mapNavigation
          */
@@ -2245,9 +1971,11 @@
                 return inner;
             },
             /**
-             * Highmaps only. Zoom in or out of the map. See also {@link Point#zoomTo}.
-             * See {@link Chart#fromLatLonToPoint} for how to get the `centerX` and
-             * `centerY` parameters for a geographic location.
+             * Highcharts Maps only. Zoom in or out of the map. See also
+             * {@link Point#zoomTo}. See {@link Chart#fromLatLonToPoint} for how to get
+             * the `centerX` and `centerY` parameters for a geographic location.
+             *
+             * Deprecated as of v9.3 in favor of [MapView.zoomBy](https://api.highcharts.com/class-reference/Highcharts.MapView#zoomBy).
              *
              * @function Highcharts.Chart#mapZoom
              *
@@ -2256,92 +1984,37 @@
              *        in to half the current view. 2 zooms to twice the current view. If
              *        omitted, the zoom is reset.
              *
-             * @param {number} [centerX]
-             *        The X axis position to center around if available space.
+             * @param {number} [xProjected]
+             *        The projected x position to keep stationary when zooming, if
+             *        available space.
              *
-             * @param {number} [centerY]
-             *        The Y axis position to center around if available space.
+             * @param {number} [yProjected]
+             *        The projected y position to keep stationary when zooming, if
+             *        available space.
              *
-             * @param {number} [mouseX]
-             *        Fix the zoom to this position if possible. This is used for
+             * @param {number} [chartX]
+             *        Keep this chart position stationary if possible. This is used for
              *        example in mousewheel events, where the area under the mouse
              *        should be fixed as we zoom in.
              *
-             * @param {number} [mouseY]
-             *        Fix the zoom to this position if possible.
+             * @param {number} [chartY]
+             *        Keep this chart position stationary if possible.
              *
+             * @deprecated
              * @return {void}
              */
-            mapZoom: function (howMuch, centerXArg, centerYArg, mouseX, mouseY, animation) {
-                var chart = this,
-                    xAxis = chart.xAxis[0],
-                    xRange = xAxis.max - xAxis.min,
-                    centerX = pick(centerXArg,
-                    xAxis.min + xRange / 2),
-                    newXRange = xRange * howMuch,
-                    yAxis = chart.yAxis[0],
-                    yRange = yAxis.max - yAxis.min,
-                    centerY = pick(centerYArg,
-                    yAxis.min + yRange / 2),
-                    newYRange = yRange * howMuch,
-                    fixToX = mouseX ? ((mouseX - xAxis.pos) / xAxis.len) : 0.5,
-                    fixToY = mouseY ? ((mouseY - yAxis.pos) / yAxis.len) : 0.5,
-                    newXMin = centerX - newXRange * fixToX,
-                    newYMin = centerY - newYRange * fixToY,
-                    newExt = chart.fitToBox({
-                        x: newXMin,
-                        y: newYMin,
-                        width: newXRange,
-                        height: newYRange
-                    }, {
-                        x: xAxis.dataMin,
-                        y: yAxis.dataMin,
-                        width: xAxis.dataMax - xAxis.dataMin,
-                        height: yAxis.dataMax - yAxis.dataMin
-                    }),
-                    zoomOut = (newExt.x <= xAxis.dataMin &&
-                        newExt.width >=
-                            xAxis.dataMax - xAxis.dataMin &&
-                        newExt.y <= yAxis.dataMin &&
-                        newExt.height >= yAxis.dataMax - yAxis.dataMin);
-                // When mousewheel zooming, fix the point under the mouse
-                if (mouseX && xAxis.mapAxis) {
-                    xAxis.mapAxis.fixTo = [mouseX - xAxis.pos, centerXArg];
+            mapZoom: function (howMuch, xProjected, yProjected, chartX, chartY) {
+                if (this.mapView) {
+                    if (typeof howMuch === 'number') {
+                        // Compliance, mapView.zoomBy uses different values
+                        howMuch = Math.log(howMuch) / Math.log(0.5);
+                    }
+                    this.mapView.zoomBy(howMuch, typeof xProjected === 'number' && typeof yProjected === 'number' ?
+                        this.mapView.projection.inverse([xProjected, yProjected]) :
+                        void 0, typeof chartX === 'number' && typeof chartY === 'number' ?
+                        [chartX, chartY] :
+                        void 0);
                 }
-                if (mouseY && yAxis.mapAxis) {
-                    yAxis.mapAxis.fixTo = [mouseY - yAxis.pos, centerYArg];
-                }
-                // Zoom
-                if (typeof howMuch !== 'undefined' && !zoomOut) {
-                    xAxis.setExtremes(newExt.x, newExt.x + newExt.width, false);
-                    yAxis.setExtremes(newExt.y, newExt.y + newExt.height, false);
-                    // Reset zoom
-                }
-                else {
-                    xAxis.setExtremes(void 0, void 0, false);
-                    yAxis.setExtremes(void 0, void 0, false);
-                }
-                // Prevent zooming until this one is finished animating
-                /*
-                chart.holdMapZoom = true;
-                setTimeout(function () {
-                    chart.holdMapZoom = false;
-                }, 200);
-                */
-                /*
-                delay = animation ? animation.duration || 500 : 0;
-                if (delay) {
-                    chart.isMapZooming = true;
-                    setTimeout(function () {
-                        chart.isMapZooming = false;
-                        if (chart.mapZoomQueue) {
-                            chart.mapZoom.apply(chart, chart.mapZoomQueue);
-                        }
-                        chart.mapZoomQueue = null;
-                    }, delay);
-                }
-                */
-                chart.redraw(animation);
             }
         });
         // Extend the Chart.render method to add zooming and panning
@@ -2364,7 +2037,8 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var extend = U.extend,
+        var defined = U.defined,
+            extend = U.extend,
             pick = U.pick,
             wrap = U.wrap;
         /* eslint-disable no-invalid-this */
@@ -2383,7 +2057,7 @@
                     }
                 }
                 else if (chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
-                    chart.mapZoom(0.5, chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY);
+                    chart.mapZoom(0.5, void 0, void 0, e.chartX, e.chartY);
                 }
             },
             // The event handler for the mouse scroll event
@@ -2391,7 +2065,9 @@
                 var chart = this.chart;
                 e = this.normalize(e);
                 // Firefox uses e.deltaY or e.detail, WebKit and IE uses wheelDelta
-                var delta = e.deltaY || e.detail || -(e.wheelDelta / 120);
+                // try wheelDelta first #15656
+                var delta = (defined(e.wheelDelta) && -e.wheelDelta / 120) ||
+                        e.deltaY || e.detail;
                 // Wheel zooming on trackpads have different behaviours in Firefox vs
                 // WebKit. In Firefox the delta increments in steps by 1, so it is not
                 // distinguishable from true mouse wheel. Therefore we use this timer
@@ -2407,8 +2083,8 @@
                         totalWheelDelta = 0;
                     }, 50);
                 }
-                if (totalWheelDelta < 10 && chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop)) {
-                    chart.mapZoom(Math.pow(chart.options.mapNavigation.mouseWheelSensitivity, delta), chart.xAxis[0].toValue(e.chartX), chart.yAxis[0].toValue(e.chartY), e.chartX, e.chartY, 
+                if (totalWheelDelta < 10 && chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop) && chart.mapView) {
+                    chart.mapView.zoomBy((chart.options.mapNavigation.mouseWheelSensitivity - 1) * -delta, void 0, [e.chartX, e.chartY], 
                     // Delta less than 1 indicates stepless/trackpad zooming, avoid
                     // animation delaying the zoom
                     Math.abs(delta) < 1 ? false : void 0);
@@ -2435,6 +2111,1344 @@
             }
         });
 
+    });
+    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Utilities.js']], function (U) {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var defined = U.defined,
+            wrap = U.wrap;
+        /**
+         * @private
+         * @mixin Highcharts.colorMapSeriesMixin
+         */
+        var colorMapSeriesMixinOld = {
+                pointArrayMap: ['value'],
+                axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
+                trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
+                // getSymbol: noop,
+                parallelArrays: ['x', 'y', 'value'],
+                colorKey: 'value'
+                // pointAttribs: seriesTypes.column.prototype.pointAttribs,
+                /* eslint-disable valid-jsdoc */
+            };
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var ColorMapComposition;
+        (function (ColorMapComposition) {
+            ColorMapComposition.colorMapSeriesMixin = colorMapSeriesMixinOld;
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(SeriesClass, PointClass) {
+                if (PointClass && composedClasses.indexOf(PointClass) === -1) {
+                    composedClasses.push(PointClass);
+                    var pointProto = PointClass.prototype;
+                    pointProto.dataLabelOnNull = true;
+                    pointProto.moveToTopOnHover = true;
+                    pointProto.isValid = pointIsValid;
+                }
+                if (composedClasses.indexOf(SeriesClass) === -1) {
+                    composedClasses.push(SeriesClass);
+                    var seriesProto = SeriesClass.prototype;
+                    seriesProto.colorAttribs = seriesColorAttribs;
+                    wrap(seriesProto, 'pointAttribs', seriesWrapPointAttribs);
+                }
+                return SeriesClass;
+            }
+            ColorMapComposition.compose = compose;
+            /**
+             * Color points have a value option that determines whether or not it is
+             * a null point
+             * @private
+             */
+            function pointIsValid() {
+                // undefined is allowed
+                return (this.value !== null &&
+                    this.value !== Infinity &&
+                    this.value !== -Infinity);
+            }
+            /**
+             * Get the color attibutes to apply on the graphic
+             * @private
+             */
+            function seriesColorAttribs(point) {
+                var ret = {};
+                if (defined(point.color) &&
+                    (!point.state || point.state === 'normal') // #15746
+                ) {
+                    ret[this.colorProp || 'fill'] = point.color;
+                }
+                return ret;
+            }
+            ColorMapComposition.seriesColorAttribs = seriesColorAttribs;
+            /**
+             * Move points to the top of the z-index order when hovered
+             * @private
+             */
+            function seriesWrapPointAttribs(original, point, state) {
+                var attribs = original.call(this,
+                    point,
+                    state);
+                if (point.moveToTopOnHover) {
+                    attribs.zIndex = state === 'hover' ? 1 : 0;
+                }
+                return attribs;
+            }
+        })(ColorMapComposition || (ColorMapComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return ColorMapComposition;
+    });
+    _registerModule(_modules, 'Maps/MapViewOptionsDefault.js', [], function () {
+        /* *
+         *
+         *  (c) 2010-2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /**
+         * The `mapView` options control the initial view of the chart, and how
+         * projection is set up for raw geoJSON maps (beta as of v9.3).
+         *
+         * To set the view dynamically after chart generation, see
+         * [mapView.setView](/class-reference/Highcharts.MapView#setView).
+         *
+         * @since 9.3.0
+         * @product      highmaps
+         * @optionparent mapView
+         */
+        var defaultOptions = {
+                /**
+                 * The center of the map in terms of longitude and latitude. For
+                 * preprojected maps (like in Map Collection v1.x),
+            the units are projected
+                 * x and y units.
+                 *
+                 * @default [0, 0]
+                 * @type   {Highcharts.LonLatArray}
+                 *
+                 * @sample {highmaps} maps/mapview/center-zoom
+                 *         Custom view of a world map
+                 * @sample {highmaps} maps/mapview/get-view
+                 *         Report the current view of a preprojected map
+                 */
+                center: [0, 0],
+                /**
+                 * Prevents the end user from zooming too far in on the map. See
+                 * [zoom](#mapView.zoom).
+                 *
+                 * @type   {number|undefined}
+                 *
+                 * @sample {highmaps} maps/mapview/maxzoom
+                 *         Prevent zooming in too far
+                 */
+                maxZoom: void 0,
+                /**
+                 * The padding inside the plot area when auto fitting to the map bounds. A
+                 * number signifies pixels,
+            and a percentage is relative to the plot area
+                 * size.
+                 *
+                 * @sample {highmaps} maps/chart/plotbackgroundcolor-color
+                 *         Visible plot area and percentage padding
+                 */
+                padding: 0,
+                /**
+                 * Beta feature in v9.3. The projection options allow applying client side
+                 * projection to a map given in coordinates,
+            typically from TopoJSON or
+                 * GeoJSON.
+                 *
+                 * Sub-options are:
+                 * * `projection.name`,
+            which as of v9.3 can be `EqualEarth`,
+            `Miller`,
+                 * `Orthographic` or `WebMercator`.
+                 * * `rotation`,
+            a three-axis rotation of the globe prior to projection,
+                 * which in practice can be used for example to render a world map with the
+                 * Americas centered (`[90, 0]`),
+            or to rotate an orthographic projection.
+                 *
+                 * @type   {object}
+                 * @sample {highmaps} maps/demo/topojson-projection
+                 *         Orthographic projection
+                 */
+                projection: void 0,
+                /**
+                 * The zoom level of a map. Higher zoom levels means more zoomed in. An
+                 * increase of 1 zooms in to a quarter of the viewed area (half the width
+                 * and height). Defaults to fitting to the map bounds.
+                 *
+                 * In a `WebMercator` projection,
+            a zoom level of 0 represents
+                 * the world in a 256x256 pixel square. This is a common concept for WMS
+                 * tiling software.
+                 *
+                 * @type   {number|undefined}
+                 * @sample {highmaps} maps/mapview/center-zoom
+                 *         Custom view of a world map
+                 * @sample {highmaps} maps/mapview/get-view
+                 *         Report the current view of a preprojected map
+                 */
+                zoom: void 0
+            };
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return defaultOptions;
+    });
+    _registerModule(_modules, 'Maps/Projections/EqualEarth.js', [], function () {
+        /* *
+         *
+         * Equal Earth projection, an equal-area projection designed to minimize
+         * distortion and remain pleasing to the eye.
+         *
+         * Invented by Bojan Šavrič, Bernhard Jenny, and Tom Patterson in 2018. It is
+         * inspired by the widely used Robinson projection.
+         *
+         * */
+        var A1 = 1.340264,
+            A2 = -0.081106,
+            A3 = 0.000893,
+            A4 = 0.003796,
+            M = Math.sqrt(3) / 2.0;
+        var EqualEarth = {
+                forward: function (lonLat) {
+                    var d = Math.PI / 180,
+            paramLat = Math.asin(M * Math.sin(lonLat[1] * d)),
+            paramLatSq = paramLat * paramLat,
+            paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
+                var x = lonLat[0] * d * Math.cos(paramLat) / (M *
+                        (A1 +
+                            3 * A2 * paramLatSq +
+                            paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)));
+                var y = paramLat * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq));
+                return [x, y];
+            },
+            inverse: function (xy) {
+                var d = 180 / Math.PI,
+                    epsilon = 1e-9,
+                    iterations = 12;
+                var paramLat = xy[1],
+                    paramLatSq,
+                    paramLatPow6,
+                    fy,
+                    fpy,
+                    dlat,
+                    i;
+                for (i = 0; i < iterations; ++i) {
+                    paramLatSq = paramLat * paramLat;
+                    paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
+                    fy = paramLat * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq)) - xy[1];
+                    fpy = A1 + 3 * A2 * paramLatSq + paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq);
+                    paramLat -= dlat = fy / fpy;
+                    if (Math.abs(dlat) < epsilon) {
+                        break;
+                    }
+                }
+                paramLatSq = paramLat * paramLat;
+                paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
+                var lon = d * M * xy[0] * (A1 + 3 * A2 * paramLatSq + paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)) / Math.cos(paramLat);
+                var lat = d * Math.asin(Math.sin(paramLat) / M);
+                return [lon, lat];
+            }
+        };
+
+        return EqualEarth;
+    });
+    _registerModule(_modules, 'Maps/Projections/Miller.js', [], function () {
+        /* *
+         * Miller projection
+         * */
+        var quarterPI = Math.PI / 4;
+        var deg2rad = Math.PI / 180;
+        var Miller = {
+                forward: function (lonLat) { return [
+                    lonLat[0] * deg2rad,
+                    1.25 * Math.log(Math.tan(quarterPI + 0.4 * lonLat[1] * deg2rad))
+                ]; },
+                inverse: function (xy) { return [
+                    xy[0] / deg2rad,
+                    2.5 * (Math.atan(Math.exp(0.8 * xy[1])) - quarterPI) / deg2rad
+                ]; }
+            };
+
+        return Miller;
+    });
+    _registerModule(_modules, 'Maps/Projections/Orthographic.js', [], function () {
+        /* *
+         * Orthographic projection
+         * */
+        var deg2rad = Math.PI / 180;
+        var Orthographic = {
+                forward: function (lonLat) {
+                    var lonDeg = lonLat[0],
+            latDeg = lonLat[1];
+                if (lonDeg < -90 || lonDeg > 90) {
+                    return [NaN, NaN];
+                }
+                var lat = latDeg * deg2rad;
+                return [
+                    Math.cos(lat) * Math.sin(lonDeg * deg2rad),
+                    Math.sin(lat)
+                ];
+            },
+            inverse: function (xy) {
+                var x = xy[0],
+                    y = xy[1],
+                    z = Math.sqrt(x * x + y * y),
+                    c = Math.asin(z),
+                    cSin = Math.sin(c),
+                    cCos = Math.cos(c);
+                return [
+                    Math.atan2(x * cSin, z * cCos) / deg2rad,
+                    Math.asin(z && y * cSin / z) / deg2rad
+                ];
+            }
+        };
+
+        return Orthographic;
+    });
+    _registerModule(_modules, 'Maps/Projections/WebMercator.js', [], function () {
+        /* *
+         * Web Mercator projection, used for most online map tile services
+         * */
+        var maxLatitude = 85.0511287798; // The latitude that defines a square
+            var r = 6378137;
+        var deg2rad = Math.PI / 180;
+        var WebMercator = {
+                forward: function (lonLat) {
+                    if (Math.abs(lonLat[1]) > maxLatitude) {
+                        return [NaN,
+            NaN];
+                }
+                var sinLat = Math.sin(lonLat[1] * deg2rad);
+                return [
+                    r * lonLat[0] * deg2rad,
+                    r * Math.log((1 + sinLat) / (1 - sinLat)) / 2
+                ];
+            },
+            inverse: function (xy) { return [
+                xy[0] / (r * deg2rad),
+                (2 * Math.atan(Math.exp(xy[1] / r)) - (Math.PI / 2)) / deg2rad
+            ]; },
+            maxLatitude: maxLatitude
+        };
+
+        return WebMercator;
+    });
+    _registerModule(_modules, 'Maps/Projections/ProjectionRegistry.js', [_modules['Maps/Projections/EqualEarth.js'], _modules['Maps/Projections/Miller.js'], _modules['Maps/Projections/Orthographic.js'], _modules['Maps/Projections/WebMercator.js']], function (EqualEarth, Miller, Orthographic, WebMercator) {
+        /* *
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var registry = {
+                EqualEarth: EqualEarth,
+                Miller: Miller,
+                Orthographic: Orthographic,
+                WebMercator: WebMercator
+            };
+
+        return registry;
+    });
+    _registerModule(_modules, 'Maps/Projection.js', [_modules['Maps/Projections/ProjectionRegistry.js'], _modules['Core/Utilities.js']], function (registry, U) {
+        /* *
+         *
+         *  (c) 2021 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __spreadArrays = (this && this.__spreadArrays) || function () {
+                for (var s = 0,
+            i = 0,
+            il = arguments.length; i < il; i++) s += arguments[i].length;
+            for (var r = Array(s), k = 0, i = 0; i < il; i++)
+                for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                    r[k] = a[j];
+            return r;
+        };
+        var erase = U.erase;
+        var deg2rad = Math.PI * 2 / 360;
+        // Safe padding on either side of the antimeridian to avoid points being
+        // projected to the wrong side of the plane
+        var floatCorrection = 0.000001;
+        // Keep longitude within -180 and 180. This is faster than using the modulo
+        // operator, and preserves the distinction between -180 and 180.
+        var wrapLon = function (lon) {
+                // Replacing the if's with while would increase the range, but make it prone
+                // to crashes on bad data
+                if (lon < -180) {
+                    lon += 360;
+            }
+            if (lon > 180) {
+                lon -= 360;
+            }
+            return lon;
+        };
+        var Projection = /** @class */ (function () {
+                function Projection(options) {
+                    if (options === void 0) { options = {}; }
+                    // Whether the chart has points, lines or polygons given as coordinates
+                    // with positive up, as opposed to paths in the SVG plane with positive
+                    // down.
+                    this.hasCoordinates = false;
+                // Whether the chart has true projection as opposed to pre-projected geojson
+                // as in the legacy map collection.
+                this.hasGeoProjection = false;
+                this.maxLatitude = 90;
+                this.options = options;
+                var name = options.name,
+                    rotation = options.rotation;
+                this.rotator = rotation ? this.getRotator(rotation) : void 0;
+                this.def = name ? Projection.registry[name] : void 0;
+                var _a = this,
+                    def = _a.def,
+                    rotator = _a.rotator;
+                if (def) {
+                    this.maxLatitude = def.maxLatitude || 90;
+                    this.hasGeoProjection = true;
+                }
+                if (rotator && def) {
+                    this.forward = function (lonLat) {
+                        lonLat = rotator.forward(lonLat);
+                        return def.forward(lonLat);
+                    };
+                    this.inverse = function (xy) {
+                        var lonLat = def.inverse(xy);
+                        return rotator.inverse(lonLat);
+                    };
+                }
+                else if (def) {
+                    this.forward = def.forward;
+                    this.inverse = def.inverse;
+                }
+                else if (rotator) {
+                    this.forward = rotator.forward;
+                    this.inverse = rotator.inverse;
+                }
+            }
+            // Add a projection definition to the registry, accessible by its `name`.
+            Projection.add = function (name, definition) {
+                Projection.registry[name] = definition;
+            };
+            // Calculate the great circle between two given coordinates
+            Projection.greatCircle = function (point1, point2, inclusive) {
+                var atan2 = Math.atan2,
+                    cos = Math.cos,
+                    sin = Math.sin,
+                    sqrt = Math.sqrt;
+                var lat1 = point1[1] * deg2rad;
+                var lon1 = point1[0] * deg2rad;
+                var lat2 = point2[1] * deg2rad;
+                var lon2 = point2[0] * deg2rad;
+                var deltaLat = lat2 - lat1;
+                var deltaLng = lon2 - lon1;
+                var calcA = sin(deltaLat / 2) * sin(deltaLat / 2) +
+                        cos(lat1) * cos(lat2) * sin(deltaLng / 2) * sin(deltaLng / 2);
+                var calcB = 2 * atan2(sqrt(calcA),
+                    sqrt(1 - calcA));
+                var distance = calcB * 6371e3; // in meters
+                    var jumps = Math.round(distance / 500000); // 500 km each jump
+                    var lineString = [];
+                if (inclusive) {
+                    lineString.push(point1);
+                }
+                if (jumps > 1) {
+                    var step = 1 / jumps;
+                    for (var fraction = step; fraction < 0.999; // Account for float errors
+                     fraction += step) {
+                        var A = sin((1 - fraction) * calcB) / sin(calcB);
+                        var B = sin(fraction * calcB) / sin(calcB);
+                        var x = A * cos(lat1) * cos(lon1) + B * cos(lat2) * cos(lon2);
+                        var y = A * cos(lat1) * sin(lon1) + B * cos(lat2) * sin(lon2);
+                        var z = A * sin(lat1) + B * sin(lat2);
+                        var lat3 = atan2(z,
+                            sqrt(x * x + y * y));
+                        var lon3 = atan2(y,
+                            x);
+                        lineString.push([lon3 / deg2rad, lat3 / deg2rad]);
+                    }
+                }
+                if (inclusive) {
+                    lineString.push(point2);
+                }
+                return lineString;
+            };
+            Projection.insertGreatCircles = function (poly) {
+                var i = poly.length - 1;
+                while (i--) {
+                    // Distance in degrees, either in lon or lat. Avoid heavy
+                    // calculation of true distance.
+                    var roughDistance = Math.max(Math.abs(poly[i][0] - poly[i + 1][0]),
+                        Math.abs(poly[i][1] - poly[i + 1][1]));
+                    if (roughDistance > 10) {
+                        var greatCircle = Projection.greatCircle(poly[i],
+                            poly[i + 1]);
+                        if (greatCircle.length) {
+                            poly.splice.apply(poly, __spreadArrays([i + 1, 0], greatCircle));
+                        }
+                    }
+                }
+            };
+            Projection.toString = function (options) {
+                var _a = options || {},
+                    name = _a.name,
+                    rotation = _a.rotation;
+                return [name, rotation && rotation.join(',')].join(';');
+            };
+            /*
+             * Take the rotation options and return the appropriate projection functions
+             */
+            Projection.prototype.getRotator = function (rotation) {
+                var deltaLambda = rotation[0] * deg2rad,
+                    deltaPhi = (rotation[1] || 0) * deg2rad,
+                    deltaGamma = (rotation[2] || 0) * deg2rad;
+                var cosDeltaPhi = Math.cos(deltaPhi),
+                    sinDeltaPhi = Math.sin(deltaPhi),
+                    cosDeltaGamma = Math.cos(deltaGamma),
+                    sinDeltaGamma = Math.sin(deltaGamma);
+                if (deltaLambda === 0 && deltaPhi === 0 && deltaGamma === 0) {
+                    // Don't waste processing time
+                    return;
+                }
+                return {
+                    forward: function (lonLat) {
+                        // Lambda (lon) rotation
+                        var lon = lonLat[0] * deg2rad + deltaLambda;
+                        // Phi (lat) and gamma rotation
+                        var lat = lonLat[1] * deg2rad,
+                            cosLat = Math.cos(lat),
+                            x = Math.cos(lon) * cosLat,
+                            y = Math.sin(lon) * cosLat,
+                            sinLat = Math.sin(lat),
+                            k = sinLat * cosDeltaPhi + x * sinDeltaPhi;
+                        return [
+                            Math.atan2(y * cosDeltaGamma - k * sinDeltaGamma, x * cosDeltaPhi - sinLat * sinDeltaPhi) / deg2rad,
+                            Math.asin(k * cosDeltaGamma + y * sinDeltaGamma) / deg2rad
+                        ];
+                    },
+                    inverse: function (rLonLat) {
+                        // Lambda (lon) unrotation
+                        var lon = rLonLat[0] * deg2rad;
+                        // Phi (lat) and gamma unrotation
+                        var lat = rLonLat[1] * deg2rad,
+                            cosLat = Math.cos(lat),
+                            x = Math.cos(lon) * cosLat,
+                            y = Math.sin(lon) * cosLat,
+                            sinLat = Math.sin(lat),
+                            k = sinLat * cosDeltaGamma - y * sinDeltaGamma;
+                        return [
+                            (Math.atan2(y * cosDeltaGamma + sinLat * sinDeltaGamma, x * cosDeltaPhi + k * sinDeltaPhi) - deltaLambda) / deg2rad,
+                            Math.asin(k * cosDeltaPhi - x * sinDeltaPhi) / deg2rad
+                        ];
+                    }
+                };
+            };
+            // Project a lonlat coordinate position to xy. Dynamically overridden when
+            // projection is set.
+            Projection.prototype.forward = function (lonLat) {
+                return lonLat;
+            };
+            // Project an xy chart coordinate position to lonlat. Dynamically overridden
+            // when projection is set.
+            Projection.prototype.inverse = function (xy) {
+                return xy;
+            };
+            Projection.prototype.clipOnAntimeridian = function (poly, isPolygon) {
+                var antimeridian = 180;
+                var intersections = [];
+                var polygons = [poly];
+                poly.forEach(function (lonLat, i) {
+                    var previousLonLat = poly[i - 1];
+                    if (!i) {
+                        if (!isPolygon) {
+                            return;
+                        }
+                        // Else, wrap to beginning
+                        previousLonLat = poly[poly.length - 1];
+                    }
+                    var lon1 = previousLonLat[0],
+                        lon2 = lonLat[0];
+                    if (
+                    // Both points, after rotating for antimeridian, are on the far
+                    // side of the Earth
+                    (lon1 < -90 || lon1 > 90) &&
+                        (lon2 < -90 || lon2 > 90) &&
+                        // ... and on either side of the plane
+                        (lon1 > 0) !== (lon2 > 0)) {
+                        // Interpolate to the intersection latitude
+                        var fraction = (antimeridian - previousLonLat[0]) /
+                                (lonLat[0] - previousLonLat[0]);
+                        var lat = previousLonLat[1] +
+                                fraction * (lonLat[1] - previousLonLat[1]);
+                        intersections.push({
+                            i: i,
+                            lat: lat,
+                            direction: lon1 < 0 ? 1 : -1,
+                            previousLonLat: previousLonLat,
+                            lonLat: lonLat
+                        });
+                    }
+                });
+                var polarIntersection;
+                if (intersections.length) {
+                    if (isPolygon) {
+                        // Simplified use of the even-odd rule, if there is an odd
+                        // amount of intersections between the polygon and the
+                        // antimeridian, the pole is inside the polygon. Applies
+                        // primarily to Antarctica.
+                        if (intersections.length % 2 === 1) {
+                            polarIntersection = intersections.slice().sort(function (a, b) { return Math.abs(b.lat) - Math.abs(a.lat); })[0];
+                            erase(intersections, polarIntersection);
+                        }
+                        // Pull out slices of the polygon that is on the opposite side
+                        // of the antimeridian compared to the starting point
+                        var i = intersections.length - 2;
+                        while (i >= 0) {
+                            var index = intersections[i].i;
+                            var lonPlus = wrapLon(antimeridian +
+                                    intersections[i].direction * floatCorrection);
+                            var lonMinus = wrapLon(antimeridian -
+                                    intersections[i].direction * floatCorrection);
+                            var slice = poly.splice.apply(poly,
+                                __spreadArrays([index,
+                                    intersections[i + 1].i - index],
+                                Projection.greatCircle([lonPlus,
+                                intersections[i].lat],
+                                [lonPlus,
+                                intersections[i + 1].lat],
+                                true)));
+                            // Add interpolated points close to the cut
+                            slice.push.apply(slice, Projection.greatCircle([lonMinus, intersections[i + 1].lat], [lonMinus, intersections[i].lat], true));
+                            polygons.push(slice);
+                            i -= 2;
+                        }
+                        // Insert dummy points close to the pole
+                        if (polarIntersection) {
+                            for (var i_1 = 0; i_1 < polygons.length; i_1++) {
+                                var poly_1 = polygons[i_1];
+                                var indexOf = poly_1.indexOf(polarIntersection.lonLat);
+                                if (indexOf > -1) {
+                                    var polarLatitude = (polarIntersection.lat < 0 ? -1 : 1) *
+                                            this.maxLatitude;
+                                    var lon1 = wrapLon(antimeridian +
+                                            polarIntersection.direction * floatCorrection);
+                                    var lon2 = wrapLon(antimeridian -
+                                            polarIntersection.direction * floatCorrection);
+                                    var polarSegment = Projection.greatCircle([lon1,
+                                        polarIntersection.lat],
+                                        [lon1,
+                                        polarLatitude],
+                                        true).concat(Projection.greatCircle([lon2,
+                                        polarLatitude],
+                                        [lon2,
+                                        polarIntersection.lat],
+                                        true));
+                                    poly_1.splice.apply(poly_1, __spreadArrays([indexOf,
+                                        0], polarSegment));
+                                    break;
+                                }
+                            }
+                        }
+                        // Map lines, not closed
+                    }
+                    else {
+                        var i = intersections.length;
+                        while (i--) {
+                            var index = intersections[i].i;
+                            var slice = poly.splice(index,
+                                poly.length, 
+                                // Add interpolated point close to the cut
+                                [
+                                    wrapLon(antimeridian +
+                                        intersections[i].direction * floatCorrection),
+                                    intersections[i].lat
+                                ]);
+                            // Add interpolated point close to the cut
+                            slice.unshift([
+                                wrapLon(antimeridian -
+                                    intersections[i].direction * floatCorrection),
+                                intersections[i].lat
+                            ]);
+                            polygons.push(slice);
+                        }
+                    }
+                }
+                // Insert great circles along the cuts
+                /*
+                if (isPolygon && polygons.length > 1 || polarIntersection) {
+                    polygons.forEach(Projection.insertGreatCircles);
+                }
+                */
+                return polygons;
+            };
+            // Take a GeoJSON geometry and return a translated SVGPath
+            Projection.prototype.path = function (geometry) {
+                var _this = this;
+                var _a = this,
+                    def = _a.def,
+                    rotator = _a.rotator;
+                var antimeridian = 180;
+                var path = [];
+                var isPolygon = geometry.type === 'Polygon' ||
+                        geometry.type === 'MultiPolygon';
+                // @todo: It doesn't really have to do with whether north is
+                // positive. It depends on whether the coordinates are
+                // pre-projected.
+                var hasGeoProjection = this.hasGeoProjection;
+                // @todo better test for when to do this
+                var projectingToPlane = this.options.name !== 'Orthographic';
+                // We need to rotate in a separate step before applying antimeridian
+                // clipping
+                var preclip = projectingToPlane ? rotator : void 0;
+                var postclip = projectingToPlane ? (def || this) : this;
+                var addToPath = function (polygon) {
+                        // Create a copy of the original coordinates. The copy applies a
+                        // correction of points close to the antimeridian in order to
+                        // prevent the points to be projected to the wrong side of the
+                        // plane. Float errors in topojson or in the projection may cause
+                        // that.
+                        var poly = polygon.map(function (lonLat) {
+                            if (projectingToPlane) {
+                                if (preclip) {
+                                    lonLat = preclip.forward(lonLat);
+                            }
+                            var lon = lonLat[0];
+                            if (Math.abs(lon - antimeridian) < floatCorrection) {
+                                if (lon < antimeridian) {
+                                    lon = antimeridian - floatCorrection;
+                                }
+                                else {
+                                    lon = antimeridian + floatCorrection;
+                                }
+                            }
+                            lonLat = [lon, lonLat[1]];
+                        }
+                        return lonLat;
+                    });
+                    var polygons = [poly];
+                    if (hasGeoProjection) {
+                        // Insert great circles into long straight lines
+                        Projection.insertGreatCircles(poly);
+                        if (projectingToPlane) {
+                            polygons = _this.clipOnAntimeridian(poly, isPolygon);
+                        }
+                    }
+                    polygons.forEach(function (poly) {
+                        if (poly.length < 2) {
+                            return;
+                        }
+                        var movedTo = false;
+                        var firstValidLonLat;
+                        var lastValidLonLat;
+                        var gap = false;
+                        var pushToPath = function (point) {
+                                if (!movedTo) {
+                                    path.push(['M',
+                            point[0],
+                            point[1]]);
+                                movedTo = true;
+                            }
+                            else {
+                                path.push(['L', point[0], point[1]]);
+                            }
+                        };
+                        for (var i = 0; i < poly.length; i++) {
+                            var lonLat = poly[i];
+                            var point = postclip.forward(lonLat);
+                            var valid = (!isNaN(point[0]) &&
+                                    !isNaN(point[1]) &&
+                                    (!hasGeoProjection ||
+                                        // Limited projections like Web Mercator
+                                        (lonLat[1] <= _this.maxLatitude &&
+                                            lonLat[1] >= -_this.maxLatitude)));
+                            if (valid) {
+                                // In order to be able to interpolate if the first or
+                                // last point is invalid (on the far side of the globe
+                                // in an orthographic projection), we need to push the
+                                // first valid point to the end of the polygon.
+                                if (isPolygon && !firstValidLonLat) {
+                                    firstValidLonLat = lonLat;
+                                    poly.push(lonLat);
+                                }
+                                // When entering the first valid point after a gap of
+                                // invalid points, typically on the far side of the
+                                // globe in an orthographic projection.
+                                if (gap && lastValidLonLat) {
+                                    // For areas, in an orthographic projection, the
+                                    // great circle between two visible points will be
+                                    // close to the horizon. A possible exception may be
+                                    // when the two points are on opposite sides of the
+                                    // globe. It that poses a problem, we may have to
+                                    // rewrite this to use the small circle related to
+                                    // the current lon0 and lat0.
+                                    if (isPolygon && hasGeoProjection) {
+                                        var greatCircle = Projection.greatCircle(lastValidLonLat,
+                                            lonLat);
+                                        greatCircle.forEach(function (lonLat) {
+                                            return pushToPath(postclip.forward(lonLat));
+                                        });
+                                        // For lines, just jump over the gap
+                                    }
+                                    else {
+                                        movedTo = false;
+                                    }
+                                }
+                                pushToPath(point);
+                                lastValidLonLat = lonLat;
+                                gap = false;
+                            }
+                            else {
+                                gap = true;
+                            }
+                        }
+                    });
+                };
+                if (geometry.type === 'LineString') {
+                    addToPath(geometry.coordinates);
+                }
+                else if (geometry.type === 'MultiLineString') {
+                    geometry.coordinates.forEach(function (c) { return addToPath(c); });
+                }
+                else if (geometry.type === 'Polygon') {
+                    geometry.coordinates.forEach(function (c) { return addToPath(c); });
+                    if (path.length) {
+                        path.push(['Z']);
+                    }
+                }
+                else if (geometry.type === 'MultiPolygon') {
+                    geometry.coordinates.forEach(function (polygons) {
+                        polygons.forEach(function (c) { return addToPath(c); });
+                    });
+                    if (path.length) {
+                        path.push(['Z']);
+                    }
+                }
+                return path;
+            };
+            Projection.registry = registry;
+            return Projection;
+        }());
+
+        return Projection;
+    });
+    _registerModule(_modules, 'Maps/MapView.js', [_modules['Maps/MapViewOptionsDefault.js'], _modules['Maps/Projection.js'], _modules['Core/Utilities.js']], function (defaultOptions, Projection, U) {
+        /* *
+         *
+         *  (c) 2010-2020 Torstein Honsi
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
+            merge = U.merge,
+            pick = U.pick,
+            relativeLength = U.relativeLength;
+        /**
+         * The world size equals meters in the Web Mercator projection, to match a
+         * 256 square tile to zoom level 0
+         */
+        var worldSize = 40097932.2;
+        var tileSize = 256;
+        /**
+         * The map view handles zooming and centering on the map, and various
+         * client-side projection capabilities.
+         *
+         * On a chart instance, the map view is available as `chart.mapView`.
+         *
+         * @class
+         * @name Highcharts.MapView
+         *
+         * @param {Highcharts.Chart} chart
+         *        The Chart instance
+         * @param {Highcharts.MapViewOptions} options
+         *        MapView options
+         */
+        var MapView = /** @class */ (function () {
+                function MapView(chart, options) {
+                    var _this = this;
+                this.userOptions = options || {};
+                var o = merge(defaultOptions,
+                    options);
+                this.chart = chart;
+                /**
+                 * The current center of the view in terms of `[longitude, latitude]`.
+                 * @name Highcharts.MapView#center
+                 * @readonly
+                 * @type {LonLatArray}
+                 */
+                this.center = o.center;
+                this.options = o;
+                this.projection = new Projection(o.projection);
+                /**
+                 * The current zoom level of the view.
+                 * @name Highcharts.MapView#zoom
+                 * @readonly
+                 * @type {number}
+                 */
+                this.zoom = o.zoom || 0;
+                // Initialize and respond to chart size changes
+                addEvent(chart, 'afterSetChartSize', function () {
+                    if (_this.minZoom === void 0 || // When initializing the chart
+                        _this.minZoom === _this.zoom // When resizing the chart
+                    ) {
+                        _this.fitToBounds(void 0, void 0, false);
+                        if (isNumber(_this.userOptions.zoom)) {
+                            _this.zoom = _this.userOptions.zoom;
+                        }
+                        if (_this.userOptions.center) {
+                            merge(true, _this.center, _this.userOptions.center);
+                        }
+                    }
+                });
+                // Set up panning for maps. In orthographic projections the globe will
+                // rotate, otherwise adjust the map center.
+                var mouseDownCenterProjected;
+                var mouseDownKey;
+                var mouseDownRotation;
+                var onPan = function (e) {
+                        var pinchDown = chart.pointer.pinchDown;
+                    var mouseDownX = chart.mouseDownX,
+                        mouseDownY = chart.mouseDownY;
+                    if (pinchDown.length === 1) {
+                        mouseDownX = pinchDown[0].chartX;
+                        mouseDownY = pinchDown[0].chartY;
+                    }
+                    if (typeof mouseDownX === 'number' &&
+                        typeof mouseDownY === 'number') {
+                        var key = mouseDownX + "," + mouseDownY, _a = e.originalEvent, chartX = _a.chartX, chartY = _a.chartY;
+                        // Reset starting position
+                        if (key !== mouseDownKey) {
+                            mouseDownKey = key;
+                            mouseDownCenterProjected = _this.projection
+                                .forward(_this.center);
+                            mouseDownRotation = (_this.projection.options.rotation || [0, 0]).slice();
+                        }
+                        // Panning rotates the globe
+                        if (_this.projection.options.name === 'Orthographic' &&
+                            // ... but don't rotate if we're loading only a part of the
+                            // world
+                            (_this.minZoom || Infinity) < 25.2) {
+                            // Empirical ratio where the globe rotates roughly the same
+                            // speed as moving the pointer across the center of the
+                            // projection
+                            var ratio = 28000 / (_this.getScale() * Math.min(chart.plotWidth,
+                                chart.plotHeight));
+                            if (mouseDownRotation) {
+                                var lon = (mouseDownX - chartX) * ratio -
+                                        mouseDownRotation[0];
+                                var lat = clamp(-mouseDownRotation[1] -
+                                        (mouseDownY - chartY) * ratio, -80, 80);
+                                _this.update({
+                                    projection: {
+                                        rotation: [-lon, -lat]
+                                    },
+                                    center: [lon, lat],
+                                    zoom: _this.zoom
+                                }, true, false);
+                            }
+                        }
+                        else {
+                            var scale = _this.getScale();
+                            var newCenter = _this.projection.inverse([
+                                    mouseDownCenterProjected[0] +
+                                        (mouseDownX - chartX) / scale,
+                                    mouseDownCenterProjected[1] -
+                                        (mouseDownY - chartY) / scale
+                                ]);
+                            _this.setView(newCenter, void 0, true, false);
+                        }
+                        e.preventDefault();
+                    }
+                };
+                addEvent(chart, 'pan', onPan);
+                addEvent(chart, 'touchpan', onPan);
+                // Perform the map zoom by selection
+                addEvent(chart, 'selection', function (evt) {
+                    // Zoom in
+                    if (!evt.resetSelection) {
+                        var x = evt.x - chart.plotLeft;
+                        var y = evt.y - chart.plotTop;
+                        var _a = _this.pixelsToProjectedUnits({ x: x,
+                            y: y }),
+                            y1 = _a.y,
+                            x1 = _a.x;
+                        var _b = _this.pixelsToProjectedUnits({ x: x + evt.width,
+                            y: y + evt.height }),
+                            y2 = _b.y,
+                            x2 = _b.x;
+                        _this.fitToBounds({ x1: x1, y1: y1, x2: x2, y2: y2 }, void 0, true, evt.originalEvent.touches ?
+                            // On touch zoom, don't animate, since we're already in
+                            // transformed zoom preview
+                            false :
+                            // On mouse zoom, obey the chart-level animation
+                            void 0);
+                        // Only for mouse. Touch users can pinch out.
+                        if (!/^touch/.test((evt.originalEvent.type))) {
+                            chart.showResetZoom();
+                        }
+                        evt.preventDefault();
+                        // Reset zoom
+                    }
+                    else {
+                        _this.zoomBy();
+                    }
+                });
+            }
+            /**
+             * Fit the view to given bounds
+             *
+             * @function Highcharts.MapView#fitToBounds
+             * @param {Object} bounds
+             *        Bounds in terms of projected units given as  `{ x1, y1, x2, y2 }`.
+             *        If not set, fit to the bounds of the current data set
+             * @param {number|string} [padding=0]
+             *        Padding inside the bounds. A number signifies pixels, while a
+             *        percentage string (like `5%`) can be used as a fraction of the
+             *        plot area size.
+             * @param {boolean} [redraw=true]
+             *        Whether to redraw the chart immediately
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
+             *        What animation to use for redraw
+             */
+            MapView.prototype.fitToBounds = function (bounds, padding, redraw, animation) {
+                if (redraw === void 0) { redraw = true; }
+                var b = bounds || this.getProjectedBounds();
+                if (b) {
+                    var _a = this.chart,
+                        plotWidth = _a.plotWidth,
+                        plotHeight = _a.plotHeight,
+                        pad = pick(padding,
+                        bounds ? 0 : this.options.padding),
+                        paddingX = relativeLength(pad,
+                        plotWidth),
+                        paddingY = relativeLength(pad,
+                        plotHeight);
+                    var scaleToPlotArea = Math.max((b.x2 - b.x1) / ((plotWidth - paddingX) / tileSize), (b.y2 - b.y1) / ((plotHeight - paddingY) / tileSize));
+                    var zoom = Math.log(worldSize / scaleToPlotArea) / Math.log(2);
+                    // Reset minZoom when fitting to natural bounds
+                    if (!bounds) {
+                        this.minZoom = zoom;
+                    }
+                    var center = this.projection.inverse([
+                            (b.x2 + b.x1) / 2,
+                            (b.y2 + b.y1) / 2
+                        ]);
+                    this.setView(center, zoom, redraw, animation);
+                }
+            };
+            MapView.prototype.getProjectedBounds = function () {
+                var allBounds = this.chart.series.reduce(function (acc,
+                    s) {
+                        var bounds = s.getProjectedBounds && s.getProjectedBounds();
+                    if (bounds) {
+                        acc.push(bounds);
+                    }
+                    return acc;
+                }, []);
+                return MapView.compositeBounds(allBounds);
+            };
+            MapView.prototype.getScale = function () {
+                // A zoom of 0 means the world (360x360 degrees) fits in a 256x256 px
+                // tile
+                return (tileSize / worldSize) * Math.pow(2, this.zoom);
+            };
+            MapView.prototype.redraw = function (animation) {
+                this.chart.series.forEach(function (s) {
+                    if (s.useMapGeometry) {
+                        s.isDirty = true;
+                    }
+                });
+                this.chart.redraw(animation);
+            };
+            /**
+             * Set the view to given center and zoom values.
+             * @function Highcharts.MapView#setView
+             * @param {Highcharts.LonLatArray|undefined} center
+             *        The center point
+             * @param {number} zoom
+             *        The zoom level
+             * @param {boolean} [redraw=true]
+             *        Whether to redraw immediately
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
+             *        Animation options for the redraw
+             *
+             * @sample maps/mapview/setview
+             *        Set the view programmatically
+             */
+            MapView.prototype.setView = function (center, zoom, redraw, animation) {
+                if (redraw === void 0) { redraw = true; }
+                var zoomingIn = false;
+                if (center) {
+                    this.center = center;
+                }
+                if (typeof zoom === 'number') {
+                    if (typeof this.minZoom === 'number') {
+                        zoom = Math.max(zoom, this.minZoom);
+                    }
+                    if (typeof this.options.maxZoom === 'number') {
+                        zoom = Math.min(zoom, this.options.maxZoom);
+                    }
+                    zoomingIn = zoom > this.zoom;
+                    this.zoom = zoom;
+                }
+                // Stay within the data bounds
+                var bounds = this.getProjectedBounds();
+                if (bounds &&
+                    // When zooming in, we don't need to adjust to the bounds, as that
+                    // could shift the location under the mouse
+                    !zoomingIn) {
+                    var projectedCenter = this.projection.forward(this.center);
+                    var _a = this.chart,
+                        plotWidth = _a.plotWidth,
+                        plotHeight = _a.plotHeight;
+                    var scale = this.getScale();
+                    var bottomLeft = this.projectedUnitsToPixels({
+                            x: bounds.x1,
+                            y: bounds.y1
+                        });
+                    var topRight = this.projectedUnitsToPixels({
+                            x: bounds.x2,
+                            y: bounds.y2
+                        });
+                    var boundsCenterProjected = [
+                            (bounds.x1 + bounds.x2) / 2,
+                            (bounds.y1 + bounds.y2) / 2
+                        ];
+                    // Pixel coordinate system is reversed vs projected
+                    var x1 = bottomLeft.x;
+                    var y1 = topRight.y;
+                    var x2 = topRight.x;
+                    var y2 = bottomLeft.y;
+                    // Map smaller than plot area, center it
+                    if (x2 - x1 < plotWidth) {
+                        projectedCenter[0] = boundsCenterProjected[0];
+                        // Off west
+                    }
+                    else if (x1 < 0 && x2 < plotWidth) {
+                        // Adjust eastwards
+                        projectedCenter[0] += Math.max(x1, x2 - plotWidth) / scale;
+                        // Off east
+                    }
+                    else if (x2 > plotWidth && x1 > 0) {
+                        // Adjust westwards
+                        projectedCenter[0] += Math.min(x2 - plotWidth, x1) / scale;
+                    }
+                    // Map smaller than plot area, center it
+                    if (y2 - y1 < plotHeight) {
+                        projectedCenter[1] = boundsCenterProjected[1];
+                        // Off north
+                    }
+                    else if (y1 < 0 && y2 < plotHeight) {
+                        // Adjust southwards
+                        projectedCenter[1] -= Math.max(y1, y2 - plotHeight) / scale;
+                        // Off south
+                    }
+                    else if (y2 > plotHeight && y1 > 0) {
+                        // Adjust northwards
+                        projectedCenter[1] -= Math.min(y2 - plotHeight, y1) / scale;
+                    }
+                    this.center = this.projection.inverse(projectedCenter);
+                }
+                fireEvent(this, 'afterSetView');
+                if (redraw) {
+                    this.redraw(animation);
+                }
+            };
+            /**
+             * Convert projected units to pixel position
+             *
+             * @function Highcharts.MapView#projectedUnitsToPixels
+             * @param {Highcharts.PositionObject} pos
+             *        The position in projected units
+             * @return {Highcharts.PositionObject} The position in pixels
+             */
+            MapView.prototype.projectedUnitsToPixels = function (pos) {
+                var scale = this.getScale();
+                var projectedCenter = this.projection.forward(this.center);
+                var centerPxX = this.chart.plotWidth / 2;
+                var centerPxY = this.chart.plotHeight / 2;
+                var x = centerPxX - scale * (projectedCenter[0] - pos.x);
+                var y = centerPxY + scale * (projectedCenter[1] - pos.y);
+                return { x: x, y: y };
+            };
+            /**
+             * Convert pixel position to projected units
+             *
+             * @function Highcharts.MapView#pixelsToProjectedUnits
+             * @param {Highcharts.PositionObject} pos
+             *        The position in pixels
+             * @return {Highcharts.PositionObject} The position in projected units
+             */
+            MapView.prototype.pixelsToProjectedUnits = function (pos) {
+                var x = pos.x,
+                    y = pos.y;
+                var scale = this.getScale();
+                var projectedCenter = this.projection.forward(this.center);
+                var centerPxX = this.chart.plotWidth / 2;
+                var centerPxY = this.chart.plotHeight / 2;
+                var projectedX = projectedCenter[0] + (x - centerPxX) / scale;
+                var projectedY = projectedCenter[1] - (y - centerPxY) / scale;
+                return { x: projectedX, y: projectedY };
+            };
+            /**
+             * Update the view with given options
+             *
+             * @function Highcharts.MapView#update
+             *
+             * @param {Partial<Highcharts.MapViewOptions>} options
+             *        The new map view options to apply
+             * @param {boolean} [redraw=true]
+             *        Whether to redraw immediately
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
+             *        The animation to apply to a the redraw
+             */
+            MapView.prototype.update = function (options, redraw, animation) {
+                if (redraw === void 0) { redraw = true; }
+                var newProjection = options.projection;
+                var isDirtyProjection = newProjection && ((Projection.toString(newProjection) !==
+                        Projection.toString(this.options.projection)));
+                merge(true, this.userOptions, options);
+                merge(true, this.options, options);
+                if (isDirtyProjection) {
+                    this.chart.series.forEach(function (series) {
+                        if (series.clearBounds) {
+                            series.clearBounds();
+                        }
+                        series.isDirty = true;
+                        series.isDirtyData = true;
+                    });
+                    this.projection = new Projection(this.options.projection);
+                    // Fit to natural bounds if center/zoom are not explicitly given
+                    if (!options.center && !isNumber(options.zoom)) {
+                        this.fitToBounds(void 0, void 0, false);
+                    }
+                }
+                if (options.center || isNumber(options.zoom)) {
+                    this.setView(this.options.center, options.zoom, false);
+                }
+                if (redraw) {
+                    this.chart.redraw(animation);
+                }
+            };
+            /**
+             * Zoom the map view by a given number
+             *
+             * @function Highcharts.MapView#zoomBy
+             *
+             * @param {number|undefined} [howMuch]
+             *        The amount of zoom to apply. 1 zooms in on half the current view,
+             *        -1 zooms out. Pass `undefined` to zoom to the full bounds of the
+             *        map.
+             * @param {Highcharts.LonLatArray} [coords]
+             *        Optional map coordinates to keep fixed
+             * @param {Array<number>} [chartCoords]
+             *        Optional chart coordinates to keep fixed, in pixels
+             * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
+             *        The animation to apply to a the redraw
+             */
+            MapView.prototype.zoomBy = function (howMuch, coords, chartCoords, animation) {
+                var chart = this.chart;
+                var projectedCenter = this.projection.forward(this.center);
+                // let { x, y } = coords || {};
+                var _a = coords ? this.projection.forward(coords) : [],
+                    x = _a[0],
+                    y = _a[1];
+                if (typeof howMuch === 'number') {
+                    var zoom = this.zoom + howMuch;
+                    var center = void 0;
+                    // Keep chartX and chartY stationary - convert to lat and lng
+                    if (chartCoords) {
+                        var chartX = chartCoords[0],
+                            chartY = chartCoords[1];
+                        var scale = this.getScale();
+                        var offsetX = chartX - chart.plotLeft - chart.plotWidth / 2;
+                        var offsetY = chartY - chart.plotTop - chart.plotHeight / 2;
+                        x = projectedCenter[0] + offsetX / scale;
+                        y = projectedCenter[1] + offsetY / scale;
+                    }
+                    // Keep lon and lat stationary by adjusting the center
+                    if (typeof x === 'number' && typeof y === 'number') {
+                        var scale = 1 - Math.pow(2,
+                            this.zoom) / Math.pow(2,
+                            zoom);
+                        // const projectedCenter = this.projection.forward(this.center);
+                        var offsetX = projectedCenter[0] - x;
+                        var offsetY = projectedCenter[1] - y;
+                        projectedCenter[0] -= offsetX * scale;
+                        projectedCenter[1] += offsetY * scale;
+                        center = this.projection.inverse(projectedCenter);
+                    }
+                    this.setView(center, zoom, void 0, animation);
+                    // Undefined howMuch => reset zoom
+                }
+                else {
+                    this.fitToBounds(void 0, void 0, void 0, animation);
+                }
+            };
+            /* *
+             * Return the composite bounding box of a collection of bounding boxes
+             */
+            MapView.compositeBounds = function (arrayOfBounds) {
+                if (arrayOfBounds.length) {
+                    return arrayOfBounds
+                        .slice(1)
+                        .reduce(function (acc, cur) {
+                        acc.x1 = Math.min(acc.x1, cur.x1);
+                        acc.y1 = Math.min(acc.y1, cur.y1);
+                        acc.x2 = Math.max(acc.x2, cur.x2);
+                        acc.y2 = Math.max(acc.y2, cur.y2);
+                        return acc;
+                    }, merge(arrayOfBounds[0]));
+                }
+                return;
+            };
+            return MapView;
+        }());
+
+        return MapView;
     });
     _registerModule(_modules, 'Maps/MapSymbols.js', [_modules['Core/Renderer/SVG/SVGRenderer.js']], function (SVGRenderer) {
         /* *
@@ -2497,7 +3511,7 @@
 
         return symbols;
     });
-    _registerModule(_modules, 'Core/Chart/MapChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, D, SVGRenderer, U) {
+    _registerModule(_modules, 'Core/Chart/MapChart.js', [_modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Maps/MapView.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Chart, D, MapView, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2524,7 +3538,10 @@
             };
         })();
         var getOptions = D.getOptions;
-        var merge = U.merge,
+        var addEvent = U.addEvent,
+            clamp = U.clamp,
+            isNumber = U.isNumber,
+            merge = U.merge,
             pick = U.pick;
         /**
          * Map-optimized chart. Use {@link Highcharts.Chart|Chart} for common charts.
@@ -2559,19 +3576,11 @@
              * @fires Highcharts.MapChart#event:afterInit
              */
             MapChart.prototype.init = function (userOptions, callback) {
-                var hiddenAxis = {
-                        endOnTick: false,
-                        visible: false,
-                        minPadding: 0,
-                        maxPadding: 0,
-                        startOnTick: false
-                    },
-                    defaultCreditsOptions = getOptions().credits;
-                /* For visual testing
-                hiddenAxis.gridLineWidth = 1;
-                hiddenAxis.gridZIndex = 10;
-                hiddenAxis.tickPositions = undefined;
-                // */
+                // Initialize the MapView after initialization, but before firstRender
+                addEvent(this, 'afterInit', function () {
+                    this.mapView = new MapView(this, this.options.mapView);
+                });
+                var defaultCreditsOptions = getOptions().credits;
                 var options = merge({
                         chart: {
                             panning: {
@@ -2585,19 +3594,13 @@
                                 '{geojson.copyrightShort}</a>'),
                             mapTextFull: pick(defaultCreditsOptions.mapTextFull, '{geojson.copyright}')
                         },
+                        mapView: {},
                         tooltip: {
                             followTouchMove: false
-                        },
-                        xAxis: hiddenAxis,
-                        yAxis: merge(hiddenAxis, { reversed: true })
-                    },
-                    userOptions, // user's options
-                    {
-                        chart: {
-                            inverted: false,
-                            alignTicks: false
                         }
-                    });
+                    },
+                    userOptions // user's options
+                    );
                 _super.prototype.init.call(this, options, callback);
             };
             return MapChart;
@@ -2691,7 +3694,7 @@
 
         return MapChart;
     });
-    _registerModule(_modules, 'Series/Map/MapPoint.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Map/MapPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2717,7 +3720,6 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var colorMapPointMixin = ColorMapMixin.colorMapPointMixin;
         var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
         var extend = U.extend;
         /* *
@@ -2747,6 +3749,22 @@
              *
              * */
             /* eslint-disable valid-jsdoc */
+            // Get the projected path based on the geometry. May also be called on
+            // mapData options (not point instances), hence static.
+            MapPoint.getProjectedPath = function (point, projection) {
+                if (!point.projectedPath) {
+                    if (projection && point.geometry) {
+                        // Always true when given GeoJSON coordinates
+                        projection.hasCoordinates = true;
+                        point.projectedPath = projection.path(point.geometry);
+                        // SVG path given directly in point options
+                    }
+                    else {
+                        point.projectedPath = point.path;
+                    }
+                }
+                return point.projectedPath || [];
+            };
             /**
              * Extend the Point object to split paths.
              * @private
@@ -2765,11 +3783,6 @@
                     mapPoint = typeof mapKey !== 'undefined' &&
                         series.mapMap[mapKey];
                     if (mapPoint) {
-                        // This applies only to bubbles
-                        if (series.xyFromShape) {
-                            point.x = mapPoint._midX;
-                            point.y = mapPoint._midY;
-                        }
                         extend(point, mapPoint); // copy over properties
                     }
                     else {
@@ -2803,19 +3816,16 @@
              * @function Highcharts.Point#zoomTo
              */
             MapPoint.prototype.zoomTo = function () {
-                var point = this,
-                    series = point.series;
-                series.xAxis.setExtremes(point._minX, point._maxX, false);
-                series.yAxis.setExtremes(point._minY, point._maxY, false);
-                series.chart.redraw();
+                var point = this;
+                var chart = point.series.chart;
+                if (chart.mapView && point.bounds) {
+                    chart.mapView.fitToBounds(point.bounds, void 0, false);
+                    point.series.isDirty = true;
+                    chart.redraw();
+                }
             };
             return MapPoint;
         }(ScatterSeries.prototype.pointClass));
-        extend(MapPoint.prototype, {
-            dataLabelOnNull: colorMapPointMixin.dataLabelOnNull,
-            isValid: colorMapPointMixin.isValid,
-            moveToTopOnHover: colorMapPointMixin.moveToTopOnHover
-        });
         /* *
          *
          *  Default Export
@@ -2824,7 +3834,7 @@
 
         return MapPoint;
     });
-    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, H, LegendSymbol, MapChart, MapPoint, palette, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Map/MapSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Chart/MapChart.js'], _modules['Series/Map/MapPoint.js'], _modules['Maps/MapView.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (A, ColorMapComposition, CU, H, LegendSymbol, MapChart, MapPoint, MapView, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2850,7 +3860,8 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
+        var animObject = A.animObject;
+        var colorMapSeriesMixin = ColorMapComposition.colorMapSeriesMixin;
         var noop = H.noop;
         var maps = MapChart.maps,
             splitPath = MapChart.splitPath;
@@ -2890,12 +3901,6 @@
                  * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
-                /* *
-                 *
-                 *  Properties
-                 *
-                 * */
-                _this.baseTrans = void 0;
                 _this.chart = void 0;
                 _this.data = void 0;
                 _this.group = void 0;
@@ -2919,25 +3924,17 @@
              * @private
              */
             MapSeries.prototype.animate = function (init) {
-                var chart = this.chart,
-                    animation = this.options.animation,
-                    group = this.group,
-                    xAxis = this.xAxis,
-                    yAxis = this.yAxis,
-                    left = xAxis.pos,
-                    top = yAxis.pos;
+                var _a = this,
+                    chart = _a.chart,
+                    group = _a.group,
+                    animation = animObject(this.options.animation);
                 if (chart.renderer.isSVG) {
-                    if (animation === true) {
-                        animation = {
-                            duration: 1000
-                        };
-                    }
                     // Initialize the animation
                     if (init) {
                         // Scale down the group and place it in the center
                         group.attr({
-                            translateX: left + xAxis.len / 2,
-                            translateY: top + yAxis.len / 2,
+                            translateX: chart.plotLeft + chart.plotWidth / 2,
+                            translateY: chart.plotTop + chart.plotHeight / 2,
                             scaleX: 0.001,
                             scaleY: 0.001
                         });
@@ -2945,8 +3942,8 @@
                     }
                     else {
                         group.animate({
-                            translateX: left,
-                            translateY: top,
+                            translateX: chart.plotLeft,
+                            translateY: chart.plotTop,
                             scaleX: 1,
                             scaleY: 1
                         }, animation);
@@ -2954,36 +3951,35 @@
                 }
             };
             /**
-             * Animate in the new series from the clicked point in the old series.
-             * Depends on the drilldown.js module
+             * Animate in the new series. Depends on the drilldown.js module.
              * @private
              */
             MapSeries.prototype.animateDrilldown = function (init) {
-                var toBox = this.chart.plotBox,
-                    level = this.chart.drilldownLevels[this.chart.drilldownLevels.length - 1],
-                    fromBox = level.bBox,
-                    animationOptions = this.chart.options.drilldown.animation,
-                    scale;
-                if (!init) {
-                    scale = Math.min(fromBox.width / toBox.width, fromBox.height / toBox.height);
-                    level.shapeArgs = {
-                        scaleX: scale,
-                        scaleY: scale,
-                        translateX: fromBox.x,
-                        translateY: fromBox.y
-                    };
-                    this.points.forEach(function (point) {
-                        if (point.graphic) {
-                            point.graphic
-                                .attr(level.shapeArgs)
-                                .animate({
-                                scaleX: 1,
-                                scaleY: 1,
-                                translateX: 0,
-                                translateY: 0
-                            }, animationOptions);
-                        }
-                    });
+                var chart = this.chart,
+                    group = this.group;
+                if (chart.renderer.isSVG) {
+                    // Initialize the animation
+                    if (init) {
+                        // Scale down the group and place it in the center. This is a
+                        // regression from <= v9.2, when it animated from the old point.
+                        group.attr({
+                            translateX: chart.plotLeft + chart.plotWidth / 2,
+                            translateY: chart.plotTop + chart.plotHeight / 2,
+                            scaleX: 0.1,
+                            scaleY: 0.1,
+                            opacity: 0.01
+                        });
+                        // Run the animation
+                    }
+                    else {
+                        group.animate({
+                            translateX: chart.plotLeft,
+                            translateY: chart.plotTop,
+                            scaleX: 1,
+                            scaleY: 1,
+                            opacity: 1
+                        });
+                    }
                 }
             };
             /**
@@ -2991,8 +3987,17 @@
              * series and animate them into the origin point in the upper series.
              * @private
              */
-            MapSeries.prototype.animateDrillupFrom = function (level) {
-                ColumnSeries.prototype.animateDrillupFrom.call(this, level);
+            MapSeries.prototype.animateDrillupFrom = function () {
+                var chart = this.chart;
+                if (chart.renderer.isSVG) {
+                    this.group.animate({
+                        translateX: chart.plotLeft + chart.plotWidth / 2,
+                        translateY: chart.plotTop + chart.plotHeight / 2,
+                        scaleX: 0.1,
+                        scaleY: 0.1,
+                        opacity: 0.01
+                    });
+                }
             };
             /**
              * When drilling up, keep the upper series invisible until the lower series
@@ -3002,16 +4007,23 @@
             MapSeries.prototype.animateDrillupTo = function (init) {
                 ColumnSeries.prototype.animateDrillupTo.call(this, init);
             };
+            MapSeries.prototype.clearBounds = function () {
+                this.points.forEach(function (point) {
+                    delete point.bounds;
+                    delete point.projectedPath;
+                });
+                delete this.bounds;
+            };
             /**
              * Allow a quick redraw by just translating the area group. Used for zooming
              * and panning in capable browsers.
              * @private
              */
             MapSeries.prototype.doFullTranslate = function () {
-                return (this.isDirtyData ||
+                return Boolean(this.isDirtyData ||
                     this.chart.isResizing ||
                     this.chart.renderer.isVML ||
-                    !this.baseTrans);
+                    !this.hasRendered);
             };
             /**
              * Draw the data labels. Special for maps is the time that the data labels
@@ -3030,50 +4042,36 @@
              * @private
              */
             MapSeries.prototype.drawPoints = function () {
-                var series = this,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    group = series.group,
-                    chart = series.chart,
-                    renderer = chart.renderer,
-                    scaleX,
-                    scaleY,
-                    translateX,
-                    translateY,
-                    baseTrans = this.baseTrans,
-                    transformGroup,
-                    startTranslateX,
-                    startTranslateY,
-                    startScaleX,
-                    startScaleY;
+                var _this = this;
+                var _a = this,
+                    chart = _a.chart,
+                    group = _a.group,
+                    svgTransform = _a.svgTransform;
+                var mapView = chart.mapView,
+                    renderer = chart.renderer;
                 // Set a group that handles transform during zooming and panning in
                 // order to preserve clipping on series.group
-                if (!series.transformGroup) {
-                    series.transformGroup = renderer.g()
-                        .attr({
-                        scaleX: 1,
-                        scaleY: 1
-                    })
-                        .add(group);
-                    series.transformGroup.survive = true;
+                if (!this.transformGroup) {
+                    this.transformGroup = renderer.g().add(group);
+                    this.transformGroup.survive = true;
                 }
                 // Draw the shapes again
-                if (series.doFullTranslate()) {
+                if (this.doFullTranslate()) {
                     // Individual point actions.
                     if (chart.hasRendered && !chart.styledMode) {
-                        series.points.forEach(function (point) {
+                        this.points.forEach(function (point) {
                             // Restore state color on update/redraw (#3529)
                             if (point.shapeArgs) {
-                                point.shapeArgs.fill = series.pointAttribs(point, point.state).fill;
+                                point.shapeArgs.fill = _this.pointAttribs(point, point.state).fill;
                             }
                         });
                     }
                     // Draw them in transformGroup
-                    series.group = series.transformGroup;
-                    ColumnSeries.prototype.drawPoints.apply(series);
-                    series.group = group; // Reset
+                    this.group = this.transformGroup;
+                    ColumnSeries.prototype.drawPoints.apply(this);
+                    this.group = group; // Reset
                     // Add class names
-                    series.points.forEach(function (point) {
+                    this.points.forEach(function (point) {
                         if (point.graphic) {
                             var className = '';
                             if (point.name) {
@@ -3092,47 +4090,16 @@
                             }
                             // In styled mode, apply point colors by CSS
                             if (chart.styledMode) {
-                                point.graphic.css(series.pointAttribs(point, point.selected && 'select' || void 0));
+                                point.graphic.css(_this.pointAttribs(point, point.selected && 'select' || void 0));
                             }
                         }
                     });
-                    // Set the base for later scale-zooming. The originX and originY
-                    // properties are the axis values in the plot area's upper left
-                    // corner.
-                    this.baseTrans = {
-                        originX: (xAxis.min -
-                            xAxis.minPixelPadding / xAxis.transA),
-                        originY: (yAxis.min -
-                            yAxis.minPixelPadding / yAxis.transA +
-                            (yAxis.reversed ? 0 : yAxis.len / yAxis.transA)),
-                        transAX: xAxis.transA,
-                        transAY: yAxis.transA
-                    };
-                    // Reset transformation in case we're doing a full translate
-                    // (#3789)
-                    this.transformGroup.animate({
-                        translateX: 0,
-                        translateY: 0,
-                        scaleX: 1,
-                        scaleY: 1
-                    });
-                    // Just update the scale and transform for better performance
                 }
-                else {
-                    scaleX = xAxis.transA / baseTrans.transAX;
-                    scaleY = yAxis.transA / baseTrans.transAY;
-                    translateX = xAxis.toPixels(baseTrans.originX, true);
-                    translateY = yAxis.toPixels(baseTrans.originY, true);
-                    // Handle rounding errors in normal view (#3789)
-                    if (scaleX > 0.99 &&
-                        scaleX < 1.01 &&
-                        scaleY > 0.99 &&
-                        scaleY < 1.01) {
-                        scaleX = 1;
-                        scaleY = 1;
-                        translateX = Math.round(translateX);
-                        translateY = Math.round(translateY);
-                    }
+                // Apply the SVG transform
+                if (mapView && svgTransform) {
+                    var strokeWidth_1 = pick(this.options[(this.pointAttrToOptions &&
+                            this.pointAttrToOptions['stroke-width']) || 'borderWidth'], 1 // Styled mode
+                        );
                     /* Animate or move to the new zoom level. In order to prevent
                         flickering as the different transform components are set out
                         of sync (#5991), we run a fake animator attribute and set
@@ -3144,151 +4111,113 @@
                         step for each property is performed in the same step. Also,
                         for symbols and for transform properties, it should induce a
                         single updateTransform and symbolAttr call. */
-                    transformGroup = this.transformGroup;
-                    if (chart.renderer.globalAnimation) {
-                        startTranslateX = transformGroup.attr('translateX');
-                        startTranslateY = transformGroup.attr('translateY');
-                        startScaleX = transformGroup.attr('scaleX');
-                        startScaleY = transformGroup.attr('scaleY');
-                        transformGroup
+                    var scale_1 = svgTransform.scaleX;
+                    var flipFactor_1 = svgTransform.scaleY > 0 ? 1 : -1;
+                    var transformGroup_1 = this.transformGroup;
+                    if (renderer.globalAnimation && chart.hasRendered) {
+                        var startTranslateX_1 = Number(transformGroup_1.attr('translateX'));
+                        var startTranslateY_1 = Number(transformGroup_1.attr('translateY'));
+                        var startScale_1 = Number(transformGroup_1.attr('scaleX'));
+                        var step = function (now,
+                            fx) {
+                                var scaleStep = startScale_1 +
+                                    (scale_1 - startScale_1) * fx.pos;
+                            transformGroup_1.attr({
+                                translateX: (startTranslateX_1 +
+                                    (svgTransform.translateX - startTranslateX_1) * fx.pos),
+                                translateY: (startTranslateY_1 +
+                                    (svgTransform.translateY - startTranslateY_1) * fx.pos),
+                                scaleX: scaleStep,
+                                scaleY: scaleStep * flipFactor_1
+                            });
+                            group.element.setAttribute('stroke-width', strokeWidth_1 / scaleStep);
+                        };
+                        transformGroup_1
                             .attr({ animator: 0 })
-                            .animate({
-                            animator: 1
-                        }, {
-                            step: function (now, fx) {
-                                transformGroup.attr({
-                                    translateX: (startTranslateX +
-                                        (translateX - startTranslateX) * fx.pos),
-                                    translateY: (startTranslateY +
-                                        (translateY - startTranslateY) * fx.pos),
-                                    scaleX: (startScaleX +
-                                        (scaleX - startScaleX) *
-                                            fx.pos),
-                                    scaleY: (startScaleY +
-                                        (scaleY - startScaleY) * fx.pos)
-                                });
-                            }
-                        });
-                        // When dragging, animation is off.
+                            .animate({ animator: 1 }, { step: step });
+                        // When dragging or first rendering, animation is off
                     }
                     else {
-                        transformGroup.attr({
-                            translateX: translateX,
-                            translateY: translateY,
-                            scaleX: scaleX,
-                            scaleY: scaleY
-                        });
+                        transformGroup_1.attr(svgTransform);
+                        // Set the stroke-width directly on the group element so the
+                        // children inherit it. We need to use setAttribute directly,
+                        // because the stroke-widthSetter method expects a stroke color
+                        // also to be set.
+                        group.element.setAttribute('stroke-width', strokeWidth_1 / scale_1);
                     }
-                }
-                /* Set the stroke-width directly on the group element so the
-                    children inherit it. We need to use setAttribute directly,
-                    because the stroke-widthSetter method expects a stroke color also
-                    to be set. */
-                if (!chart.styledMode) {
-                    group.element.setAttribute('stroke-width', (pick(series.options[(series.pointAttrToOptions &&
-                        series.pointAttrToOptions['stroke-width']) || 'borderWidth'], 1 // Styled mode
-                    ) / (scaleX || 1)));
                 }
                 this.drawMapDataLabels();
             };
             /**
              * Get the bounding box of all paths in the map combined.
-             * @private
+             *
              */
-            MapSeries.prototype.getBox = function (paths) {
-                var MAX_VALUE = Number.MAX_VALUE,
-                    maxX = -MAX_VALUE,
-                    minX = MAX_VALUE,
-                    maxY = -MAX_VALUE,
-                    minY = MAX_VALUE,
-                    minRange = MAX_VALUE,
-                    xAxis = this.xAxis,
-                    yAxis = this.yAxis,
-                    hasBox;
-                // Find the bounding box
-                (paths || []).forEach(function (point) {
-                    if (point.path) {
-                        if (typeof point.path === 'string') {
-                            point.path = splitPath(point.path);
-                            // Legacy one-dimensional array
-                        }
-                        else if (point.path[0] === 'M') {
-                            point.path = SVGRenderer.prototype.pathToSegments(point.path);
-                        }
-                        var path = point.path || [],
-                            pointMaxX_1 = -MAX_VALUE,
-                            pointMinX_1 = MAX_VALUE,
-                            pointMaxY_1 = -MAX_VALUE,
-                            pointMinY_1 = MAX_VALUE,
-                            properties = point.properties;
-                        // The first time a map point is used, analyze its box
-                        if (!point._foundBox) {
-                            path.forEach(function (seg) {
-                                var x = seg[seg.length - 2];
-                                var y = seg[seg.length - 1];
-                                if (typeof x === 'number' && typeof y === 'number') {
-                                    pointMinX_1 = Math.min(pointMinX_1, x);
-                                    pointMaxX_1 = Math.max(pointMaxX_1, x);
-                                    pointMinY_1 = Math.min(pointMinY_1, y);
-                                    pointMaxY_1 = Math.max(pointMaxY_1, y);
+            MapSeries.prototype.getProjectedBounds = function () {
+                if (!this.bounds) {
+                    var MAX_VALUE_1 = Number.MAX_VALUE,
+                        projection_1 = this.chart.mapView &&
+                            this.chart.mapView.projection,
+                        allBounds_1 = [];
+                    // Find the bounding box of each point
+                    (this.points || []).forEach(function (point) {
+                        if (point.path || point.geometry) {
+                            // @todo Try to puth these two conversions in
+                            // MapPoint.applyOptions
+                            if (typeof point.path === 'string') {
+                                point.path = splitPath(point.path);
+                                // Legacy one-dimensional array
+                            }
+                            else if (isArray(point.path) &&
+                                point.path[0] === 'M') {
+                                point.path = SVGRenderer.prototype.pathToSegments(point.path);
+                            }
+                            // The first time a map point is used, analyze its box
+                            if (!point.bounds) {
+                                var path = MapPoint.getProjectedPath(point,
+                                    projection_1),
+                                    properties = point.properties;
+                                var x2_1 = -MAX_VALUE_1,
+                                    x1_1 = MAX_VALUE_1,
+                                    y2_1 = -MAX_VALUE_1,
+                                    y1_1 = MAX_VALUE_1,
+                                    validBounds_1;
+                                path.forEach(function (seg) {
+                                    var x = seg[seg.length - 2];
+                                    var y = seg[seg.length - 1];
+                                    if (typeof x === 'number' &&
+                                        typeof y === 'number') {
+                                        x1_1 = Math.min(x1_1, x);
+                                        x2_1 = Math.max(x2_1, x);
+                                        y1_1 = Math.min(y1_1, y);
+                                        y2_1 = Math.max(y2_1, y);
+                                        validBounds_1 = true;
+                                    }
+                                });
+                                if (validBounds_1) {
+                                    // Cache point bounding box for use to position data
+                                    // labels, bubbles etc
+                                    var propMiddleX = properties && properties['hc-middle-x'], midX = (x1_1 + (x2_1 - x1_1) * pick(point.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5)), propMiddleY = properties && properties['hc-middle-y'];
+                                    var middleYFraction = pick(point.middleY,
+                                        isNumber(propMiddleY) ? propMiddleY : 0.5);
+                                    // No geographic geometry, only path given => flip
+                                    if (!point.geometry) {
+                                        middleYFraction = 1 - middleYFraction;
+                                    }
+                                    var midY = y2_1 - (y2_1 - y1_1) * middleYFraction;
+                                    point.bounds = { midX: midX, midY: midY, x1: x1_1, y1: y1_1, x2: x2_1, y2: y2_1 };
+                                    point.labelrank = pick(point.labelrank, 
+                                    // Bigger shape, higher rank
+                                    (x2_1 - x1_1) * (y2_1 - y1_1));
                                 }
-                            });
-                            // Cache point bounding box for use to position data
-                            // labels, bubbles etc
-                            point._midX = (pointMinX_1 + (pointMaxX_1 - pointMinX_1) * pick(point.middleX, properties &&
-                                properties['hc-middle-x'], 0.5));
-                            point._midY = (pointMinY_1 + (pointMaxY_1 - pointMinY_1) * pick(point.middleY, properties &&
-                                properties['hc-middle-y'], 0.5));
-                            point._maxX = pointMaxX_1;
-                            point._minX = pointMinX_1;
-                            point._maxY = pointMaxY_1;
-                            point._minY = pointMinY_1;
-                            point.labelrank = pick(point.labelrank, (pointMaxX_1 - pointMinX_1) * (pointMaxY_1 - pointMinY_1));
-                            point._foundBox = true;
+                            }
+                            if (point.bounds) {
+                                allBounds_1.push(point.bounds);
+                            }
                         }
-                        maxX = Math.max(maxX, point._maxX);
-                        minX = Math.min(minX, point._minX);
-                        maxY = Math.max(maxY, point._maxY);
-                        minY = Math.min(minY, point._minY);
-                        minRange = Math.min(point._maxX - point._minX, point._maxY - point._minY, minRange);
-                        hasBox = true;
-                    }
-                });
-                // Set the box for the whole series
-                if (hasBox) {
-                    this.minY = Math.min(minY, pick(this.minY, MAX_VALUE));
-                    this.maxY = Math.max(maxY, pick(this.maxY, -MAX_VALUE));
-                    this.minX = Math.min(minX, pick(this.minX, MAX_VALUE));
-                    this.maxX = Math.max(maxX, pick(this.maxX, -MAX_VALUE));
-                    // If no minRange option is set, set the default minimum zooming
-                    // range to 5 times the size of the smallest element
-                    if (xAxis && typeof xAxis.options.minRange === 'undefined') {
-                        xAxis.minRange = Math.min(5 * minRange, (this.maxX - this.minX) / 5, xAxis.minRange || MAX_VALUE);
-                    }
-                    if (yAxis && typeof yAxis.options.minRange === 'undefined') {
-                        yAxis.minRange = Math.min(5 * minRange, (this.maxY - this.minY) / 5, yAxis.minRange || MAX_VALUE);
-                    }
+                    });
+                    this.bounds = MapView.compositeBounds(allBounds_1);
                 }
-            };
-            MapSeries.prototype.getExtremes = function () {
-                // Get the actual value extremes for colors
-                var _a = Series.prototype.getExtremes
-                        .call(this,
-                    this.valueData),
-                    dataMin = _a.dataMin,
-                    dataMax = _a.dataMax;
-                // Recalculate box on updated data
-                if (this.chart.hasRendered && this.isDirtyData) {
-                    this.getBox(this.options.data);
-                }
-                if (isNumber(dataMin)) {
-                    this.valueMin = dataMin;
-                }
-                if (isNumber(dataMax)) {
-                    this.valueMax = dataMax;
-                }
-                // Extremes for the mock Y axis
-                return { dataMin: this.minY, dataMax: this.maxY };
+                return this.bounds;
             };
             /**
              * Define hasData function for non-cartesian series. Returns true if the
@@ -3305,35 +4234,31 @@
              * @private
              */
             MapSeries.prototype.pointAttribs = function (point, state) {
-                var attr = point.series.chart.styledMode ?
+                var _a = point.series.chart,
+                    mapView = _a.mapView,
+                    styledMode = _a.styledMode;
+                var attr = styledMode ?
                         this.colorAttribs(point) :
                         ColumnSeries.prototype.pointAttribs.call(this,
                     point,
                     state);
-                // Set the stroke-width on the group element and let all point
-                // graphics inherit. That way we don't have to iterate over all
-                // points to update the stroke-width on zooming.
-                attr['stroke-width'] = pick(point.options[(this.pointAttrToOptions &&
-                    this.pointAttrToOptions['stroke-width']) || 'borderWidth'], 'inherit');
+                // Individual stroke width
+                var pointStrokeWidth = point.options[(this.pointAttrToOptions &&
+                        this.pointAttrToOptions['stroke-width']) || 'borderWidth'];
+                if (pointStrokeWidth && mapView) {
+                    pointStrokeWidth /= mapView.getScale();
+                }
+                // In order for dash style to avoid being scaled, set the transformed
+                // stroke width on the item
+                if (attr.dashstyle && mapView && this.options.borderWidth) {
+                    pointStrokeWidth = this.options.borderWidth / mapView.getScale();
+                }
+                attr['stroke-width'] = pick(pointStrokeWidth, 
+                // By default set the stroke-width on the group element and let all
+                // point graphics inherit. That way we don't have to iterate over
+                // all points to update the stroke-width on zooming.
+                'inherit');
                 return attr;
-            };
-            /**
-             * Override render to throw in an async call in IE8. Otherwise it chokes on
-             * the US counties demo.
-             * @private
-             */
-            MapSeries.prototype.render = function () {
-                var series = this,
-                    render = Series.prototype.render;
-                // Give IE8 some time to breathe.
-                if (series.chart.renderer.isVML && series.data.length > 3000) {
-                    setTimeout(function () {
-                        render.call(series);
-                    });
-                }
-                else {
-                    render.call(series);
-                }
             };
             /**
              * Extend setData to join in mapData. If the allAreas option is true, all
@@ -3400,7 +4325,7 @@
                         }
                     });
                 }
-                this.getBox(data);
+                // this.getBox(data as any);
                 // Pick up transform definitions for chart
                 this.chart.mapTransforms = mapTransforms =
                     chartOptions.mapTransforms ||
@@ -3445,7 +4370,7 @@
                         });
                     }
                     if (options.allAreas) {
-                        this.getBox(mapData);
+                        // this.getBox(mapData);
                         data = data || [];
                         // Registered the point codes that actually hold data
                         if (joinBy[1]) {
@@ -3469,12 +4394,13 @@
                                 updatePoints = false;
                             }
                         });
-                    }
-                    else {
+                    } /* else {
                         this.getBox(dataUsed); // Issue #4784
-                    }
+                    } */
                 }
                 Series.prototype.setData.call(this, data, redraw, animation, updatePoints);
+                this.processData();
+                this.generatePoints();
             };
             /**
              * Extend setOptions by picking up the joinBy option and applying it to a
@@ -3502,84 +4428,55 @@
              */
             MapSeries.prototype.translate = function () {
                 var series = this,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    doFullTranslate = series.doFullTranslate();
-                series.generatePoints();
-                series.data.forEach(function (point) {
+                    doFullTranslate = series.doFullTranslate(),
+                    mapView = this.chart.mapView,
+                    projection = mapView && mapView.projection;
+                // Recalculate box on updated data
+                if (this.chart.hasRendered && (this.isDirtyData || !this.hasRendered)) {
+                    this.processData();
+                    this.generatePoints();
+                    delete this.bounds;
+                    this.getProjectedBounds();
+                }
+                // Calculate the SVG transform
+                var svgTransform;
+                if (mapView) {
+                    var scale = mapView.getScale();
+                    var _a = mapView.projection.forward(mapView.center),
+                        x = _a[0],
+                        y = _a[1];
+                    // When dealing with unprojected coordinates, y axis is flipped.
+                    var flipFactor = mapView.projection.hasCoordinates ? -1 : 1;
+                    var translateX = this.chart.plotWidth / 2 - x * scale;
+                    var translateY = this.chart.plotHeight / 2 - y * scale * flipFactor;
+                    svgTransform = {
+                        scaleX: scale,
+                        scaleY: scale * flipFactor,
+                        translateX: translateX,
+                        translateY: translateY
+                    };
+                    this.svgTransform = svgTransform;
+                }
+                series.points.forEach(function (point) {
                     // Record the middle point (loosely based on centroid),
                     // determined by the middleX and middleY options.
-                    if (isNumber(point._midX) && isNumber(point._midY)) {
-                        point.plotX = xAxis.toPixels(point._midX, true);
-                        point.plotY = yAxis.toPixels(point._midY, true);
+                    if (svgTransform &&
+                        point.bounds &&
+                        isNumber(point.bounds.midX) &&
+                        isNumber(point.bounds.midY)) {
+                        point.plotX = point.bounds.midX * svgTransform.scaleX +
+                            svgTransform.translateX;
+                        point.plotY = point.bounds.midY * svgTransform.scaleY +
+                            svgTransform.translateY;
                     }
                     if (doFullTranslate) {
                         point.shapeType = 'path';
                         point.shapeArgs = {
-                            d: series.translatePath(point.path)
+                            d: MapPoint.getProjectedPath(point, projection)
                         };
                     }
                 });
                 fireEvent(series, 'afterTranslate');
-            };
-            /**
-             * Translate the path, so it automatically fits into the plot area box.
-             * @private
-             */
-            MapSeries.prototype.translatePath = function (path) {
-                var series = this,
-                    xAxis = series.xAxis,
-                    yAxis = series.yAxis,
-                    xMin = xAxis.min,
-                    xTransA = xAxis.transA,
-                    xMinPixelPadding = xAxis.minPixelPadding,
-                    yMin = yAxis.min,
-                    yTransA = yAxis.transA,
-                    yMinPixelPadding = yAxis.minPixelPadding,
-                    ret = []; // Preserve the original
-                    // Do the translation
-                    if (path) {
-                        path.forEach(function (seg) {
-                            if (seg[0] === 'M') {
-                                ret.push([
-                                    'M',
-                                    (seg[1] - (xMin || 0)) * xTransA + xMinPixelPadding,
-                                    (seg[2] - (yMin || 0)) * yTransA + yMinPixelPadding
-                                ]);
-                        }
-                        else if (seg[0] === 'L') {
-                            ret.push([
-                                'L',
-                                (seg[1] - (xMin || 0)) * xTransA + xMinPixelPadding,
-                                (seg[2] - (yMin || 0)) * yTransA + yMinPixelPadding
-                            ]);
-                        }
-                        else if (seg[0] === 'C') {
-                            ret.push([
-                                'C',
-                                (seg[1] - (xMin || 0)) * xTransA + xMinPixelPadding,
-                                (seg[2] - (yMin || 0)) * yTransA + yMinPixelPadding,
-                                (seg[3] - (xMin || 0)) * xTransA + xMinPixelPadding,
-                                (seg[4] - (yMin || 0)) * yTransA + yMinPixelPadding,
-                                (seg[5] - (xMin || 0)) * xTransA + xMinPixelPadding,
-                                (seg[6] - (yMin || 0)) * yTransA + yMinPixelPadding
-                            ]);
-                        }
-                        else if (seg[0] === 'Q') {
-                            ret.push([
-                                'Q',
-                                (seg[1] - (xMin || 0)) * xTransA + xMinPixelPadding,
-                                (seg[2] - (yMin || 0)) * yTransA + yMinPixelPadding,
-                                (seg[3] - (xMin || 0)) * xTransA + xMinPixelPadding,
-                                (seg[4] - (yMin || 0)) * yTransA + yMinPixelPadding
-                            ]);
-                        }
-                        else if (seg[0] === 'Z') {
-                            ret.push(['Z']);
-                        }
-                    });
-                }
-                return ret;
             };
             /**
              * The map series is used for basic choropleth maps, where each map area has
@@ -3626,7 +4523,7 @@
                  *
                  * @private
                  */
-                nullColor: palette.neutralColor3,
+                nullColor: "#f7f7f7" /* neutralColor3 */,
                 /**
                  * Whether to allow pointer interaction like tooltips and mouse events
                  * on null points.
@@ -3680,7 +4577,7 @@
                  *
                  * @private
                  */
-                borderColor: palette.neutralColor20,
+                borderColor: "#cccccc" /* neutralColor20 */,
                 /**
                  * The border width of each map area.
                  *
@@ -3811,11 +4708,11 @@
                     select: {
                         /**
                          * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                         * @default   ${palette.neutralColor20}
+                         * @default   #cccccc
                          * @product   highmaps
                          * @apioption plotOptions.series.states.select.color
                          */
-                        color: palette.neutralColor20
+                        color: "#cccccc" /* neutralColor20 */
                     },
                     inactive: {
                         opacity: 1
@@ -3826,9 +4723,8 @@
         }(ScatterSeries));
         extend(MapSeries.prototype, {
             type: 'map',
-            axisTypes: colorMapSeriesMixin.axisTypes,
-            colorAttribs: colorMapSeriesMixin.colorAttribs,
-            colorKey: colorMapSeriesMixin.colorKey,
+            axisTypes: ['colorAxis'],
+            colorKey: 'value',
             // When tooltip is not shared, this series (and derivatives) requires
             // direct touch/hover. KD-tree does not apply.
             directTouch: true,
@@ -3839,8 +4735,10 @@
             drawGraph: noop,
             drawLegendSymbol: LegendSymbol.drawRectangle,
             forceDL: true,
+            getCenter: CU.getCenter,
             getExtremesFromAll: true,
-            getSymbol: colorMapSeriesMixin.getSymbol,
+            getSymbol: noop,
+            isCartesian: false,
             parallelArrays: colorMapSeriesMixin.parallelArrays,
             pointArrayMap: colorMapSeriesMixin.pointArrayMap,
             pointClass: MapPoint,
@@ -3851,6 +4749,7 @@
             // Get axis extremes from paths, not values
             useMapGeometry: true
         });
+        ColorMapComposition.compose(MapSeries, MapPoint);
         SeriesRegistry.registerSeriesType('map', MapSeries);
         /* *
          *
@@ -3863,8 +4762,8 @@
          *
          * */
         /**
-         * A map data object containing a `path` definition and optionally additional
-         * properties to join in the data as per the `joinBy` option.
+         * A map data object containing a `geometry` or `path` definition and optionally
+         * additional properties to join in the `data` as per the `joinBy` option.
          *
          * @sample maps/demo/category-map/
          *         Map data and joinBy
@@ -3954,6 +4853,45 @@
          * @type      {string}
          * @product   highmaps
          * @apioption series.map.data.drilldown
+         */
+        /**
+         * For map and mapline series types, the geometry of a point.
+         *
+         * To achieve a better separation between the structure and the data,
+         * it is recommended to use `mapData` to define the geometry instead
+         * of defining it on the data points themselves.
+         *
+         * The geometry object is compatible to that of a `feature` in geoJSON, so
+         * features of geoJSON can be passed directly into the `data`, optionally
+         * after first filtering and processing it.
+         *
+         * @sample maps/series/data-geometry/
+         *         Geometry defined in data
+         *
+         * @type      {Object}
+         * @since 9.3.0
+         * @product   highmaps
+         * @apioption series.map.data.geometry
+         */
+        /**
+         * The geometry type. Can be one of `LineString`, `Polygon`, `MultiLineString`
+         * or `MultiPolygon`.
+         *
+         * @type      {string}
+         * @since 9.3.0
+         * @product   highmaps
+         * @validvalue ["LineString", "Polygon", "MultiLineString", "MultiPolygon"]
+         * @apioption series.map.data.geometry.type
+         */
+        /**
+         * The geometry coordinates in terms of arrays of `[longitude, latitude]`, or
+         * a two dimensional array of the same. The dimensionality must comply with the
+         * `type`.
+         *
+         * @type      {Array<LonLatArray>|Array<Array<LonLatArray>>}
+         * @since 9.3.0
+         * @product   highmaps
+         * @apioption series.map.data.geometry.coordinates
          */
         /**
          * An id for the point. This can be used after render time to get a
@@ -4257,7 +5195,8 @@
             };
         })();
         var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
-        var merge = U.merge;
+        var isNumber = U.isNumber,
+            merge = U.merge;
         /* *
          *
          *  Class
@@ -4292,6 +5231,10 @@
                         options);
                 return _super.prototype.applyOptions.call(this, mergedOptions, x);
             };
+            MapPointPoint.prototype.isValid = function () {
+                return Boolean(this.options.geometry ||
+                    (isNumber(this.x) && isNumber(this.y)));
+            };
             return MapPointPoint;
         }(ScatterSeries.prototype.pointClass));
         /* *
@@ -4302,7 +5245,7 @@
 
         return MapPointPoint;
     });
-    _registerModule(_modules, 'Series/MapPoint/MapPointSeries.js', [_modules['Series/MapPoint/MapPointPoint.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (MapPointPoint, palette, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/MapPoint/MapPointSeries.js', [_modules['Core/Globals.js'], _modules['Series/MapPoint/MapPointPoint.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (H, MapPointPoint, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -4328,8 +5271,11 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
+        var noop = H.noop;
         var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
         var extend = U.extend,
+            fireEvent = U.fireEvent,
+            isNumber = U.isNumber,
             merge = U.merge;
         /* *
          *
@@ -4376,6 +5322,56 @@
                     this.dataLabelsGroup.clip(this.chart.clipRect);
                 }
             };
+            MapPointSeries.prototype.translate = function () {
+                var _this = this;
+                var mapView = this.chart.mapView;
+                if (!this.processedXData) {
+                    this.processData();
+                }
+                this.generatePoints();
+                // Create map based translation
+                if (mapView) {
+                    var _a = mapView.projection,
+                        forward_1 = _a.forward,
+                        hasCoordinates_1 = _a.hasCoordinates;
+                    this.points.forEach(function (p) {
+                        var _a = p.x,
+                            x = _a === void 0 ? void 0 : _a,
+                            _b = p.y,
+                            y = _b === void 0 ? void 0 : _b;
+                        var geometry = p.options.geometry,
+                            coordinates = (geometry &&
+                                geometry.type === 'Point' &&
+                                geometry.coordinates);
+                        if (coordinates) {
+                            var xy = forward_1(coordinates);
+                            x = xy[0];
+                            y = xy[1];
+                            // Map bubbles getting geometry from shape
+                        }
+                        else if (p.bounds) {
+                            x = p.bounds.midX;
+                            y = p.bounds.midY;
+                        }
+                        if (isNumber(x) && isNumber(y)) {
+                            var plotCoords = mapView.projectedUnitsToPixels({ x: x,
+                                y: y });
+                            p.plotX = plotCoords.x;
+                            p.plotY = hasCoordinates_1 ?
+                                plotCoords.y :
+                                _this.chart.plotHeight - plotCoords.y;
+                        }
+                        else {
+                            p.plotX = void 0;
+                            p.plotY = void 0;
+                        }
+                        p.isInside = _this.isPointInside(p);
+                        // Find point zone
+                        p.zone = _this.zones.length ? p.getZone() : void 0;
+                    });
+                }
+                fireEvent(this, 'afterTranslate');
+            };
             /**
              * A mappoint series is a special form of scatter series where the points
              * can be laid out in map coordinates on top of a map.
@@ -4398,7 +5394,7 @@
                     overflow: false,
                     style: {
                         /** @internal */
-                        color: palette.neutralColor100
+                        color: "#000000" /* neutralColor100 */
                     }
                 }
             });
@@ -4406,8 +5402,11 @@
         }(ScatterSeries));
         extend(MapPointSeries.prototype, {
             type: 'mappoint',
+            axisTypes: ['colorAxis'],
             forceDL: true,
-            pointClass: MapPointPoint
+            isCartesian: false,
+            pointClass: MapPointPoint,
+            searchPoint: noop
         });
         SeriesRegistry.registerSeriesType('mappoint', MapPointSeries);
         /* *
@@ -4480,6 +5479,42 @@
          * @apioption series.mappoint.data
          */
         /**
+         * The geometry of a point.
+         *
+         * To achieve a better separation between the structure and the data,
+         * it is recommended to use `mapData` to define the geometry instead
+         * of defining it on the data points themselves.
+         *
+         * The geometry object is compatible to that of a `feature` in geoJSON, so
+         * features of geoJSON can be passed directly into the `data`, optionally
+         * after first filtering and processing it.
+         *
+         * @sample maps/series/data-geometry/
+         *         geometry defined in data
+         *
+         * @type      {Object}
+         * @since 9.3.0
+         * @product   highmaps
+         * @apioption series.mappoint.data.geometry
+         */
+        /**
+         * The geometry type, which in case of the `mappoint` series is always `Point`.
+         *
+         * @type      {string}
+         * @since 9.3.0
+         * @product   highmaps
+         * @validvalue ["Point"]
+         * @apioption series.mappoint.data.geometry.type
+         */
+        /**
+         * The geometry coordinates in terms of `[longitude, latitude]`.
+         *
+         * @type      {Highcharts.LonLatArray}
+         * @since 9.3.0
+         * @product   highmaps
+         * @apioption series.mappoint.data.geometry.coordinates
+         */
+        /**
          * The latitude of the point. Must be combined with the `lon` option
          * to work. Overrides `x` and `y` values.
          *
@@ -4527,7 +5562,7 @@
 
         return MapPointSeries;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegendDefaults.js', [_modules['Core/Color/Palette.js']], function (Palette) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegendDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -4700,7 +5735,7 @@
                         /** @ignore-option */
                         fontSize: '10px',
                         /** @ignore-option */
-                        color: Palette.neutralColor100
+                        color: "#000000" /* neutralColor100 */
                     },
                     /**
                      * The x position offset of the label relative to the
@@ -5286,8 +6321,9 @@
                     plotSizeX = chart.plotSizeX,
                     plotSizeY = chart.plotSizeY,
                     bubbleSeries = chart.series[this.options.seriesIndex],
-                    minSize = Math.ceil(bubbleSeries.minPxSize),
-                    maxPxSize = Math.ceil(bubbleSeries.maxPxSize),
+                    pxSizes = bubbleSeries.getPxExtremes(),
+                    minSize = Math.ceil(pxSizes.minPxSize),
+                    maxPxSize = Math.ceil(pxSizes.maxPxSize),
                     plotSize = Math.min(plotSizeY,
                     plotSizeX);
                 var calculatedSize,
@@ -5338,11 +6374,12 @@
                 var legend = this.legend,
                     chart = this.chart,
                     bubbleSeries = chart.series[this.options.seriesIndex],
-                    bubbleSeriesSize = bubbleSeries.maxPxSize,
+                    pxSizes = bubbleSeries.getPxExtremes(),
+                    bubbleSeriesSize = pxSizes.maxPxSize,
                     bubbleLegendSize = this.options.maxSize;
                 if (Math.abs(Math.ceil(bubbleSeriesSize) - bubbleLegendSize) >
                     1) {
-                    this.updateRanges(this.options.minSize, bubbleSeries.maxPxSize);
+                    this.updateRanges(this.options.minSize, pxSizes.maxPxSize);
                     legend.render();
                 }
             };
@@ -5717,6 +6754,11 @@
             };
             return BubblePoint;
         }(ScatterPoint));
+        /* *
+         *
+         *  Class Prototype
+         *
+         * */
         extend(BubblePoint.prototype, {
             ttBelow: false
         });
@@ -5759,14 +6801,14 @@
         var _a = SeriesRegistry.seriesTypes,
             ColumnSeries = _a.column,
             ScatterSeries = _a.scatter;
-        var arrayMax = U.arrayMax,
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             clamp = U.clamp,
             extend = U.extend,
             isNumber = U.isNumber,
             merge = U.merge,
-            pick = U.pick,
-            pInt = U.pInt;
+            pick = U.pick;
         /* *
          *
          *  Class
@@ -5836,20 +6878,49 @@
              * the axis needs to add padding in accordance with the point sizes.
              * @private
              */
-            BubbleSeries.prototype.getRadii = function (zMin, zMax, series) {
+            BubbleSeries.prototype.getRadii = function () {
+                var _this = this;
                 var len,
                     i,
                     zData = this.zData,
                     yData = this.yData,
-                    minSize = series.minPxSize,
-                    maxSize = series.maxPxSize,
                     radii = [],
-                    value;
+                    value,
+                    zExtremes = this.chart.bubbleZExtremes;
+                var _a = this.getPxExtremes(),
+                    minPxSize = _a.minPxSize,
+                    maxPxSize = _a.maxPxSize;
+                // Get the collective Z extremes of all bubblish series. The chart-level
+                // `bubbleZExtremes` are only computed once, and reset on `updatedData`
+                // in any member series.
+                if (!zExtremes) {
+                    var zMin_1 = Number.MAX_VALUE;
+                    var zMax_1 = -Number.MAX_VALUE;
+                    var valid_1;
+                    this.chart.series.forEach(function (otherSeries) {
+                        if (otherSeries.bubblePadding && (otherSeries.visible ||
+                            !_this.chart.options.chart.ignoreHiddenSeries)) {
+                            var zExtremes_1 = otherSeries.getZExtremes();
+                            if (zExtremes_1) {
+                                zMin_1 = Math.min(zMin_1 || zExtremes_1.zMin, zExtremes_1.zMin);
+                                zMax_1 = Math.max(zMax_1 || zExtremes_1.zMax, zExtremes_1.zMax);
+                                valid_1 = true;
+                            }
+                        }
+                    });
+                    if (valid_1) {
+                        zExtremes = { zMin: zMin_1, zMax: zMax_1 };
+                        this.chart.bubbleZExtremes = zExtremes;
+                    }
+                    else {
+                        zExtremes = { zMin: 0, zMax: 0 };
+                    }
+                }
                 // Set the shape type and arguments to be picked up in drawPoints
                 for (i = 0, len = zData.length; i < len; i++) {
                     value = zData[i];
                     // Separate method to get individual radius for bubbleLegend
-                    radii.push(this.getRadius(zMin, zMax, minSize, maxSize, value, yData[i]));
+                    radii.push(this.getRadius(zExtremes.zMin, zExtremes.zMax, minPxSize, maxPxSize, value, yData[i]));
                 }
                 this.radii = radii;
             };
@@ -5919,25 +6990,28 @@
              * @private
              */
             BubbleSeries.prototype.translate = function () {
-                var i,
-                    data = this.data,
-                    point,
-                    radius,
-                    radii = this.radii;
                 // Run the parent method
                 _super.prototype.translate.call(this);
+                this.getRadii();
+                this.translateBubble();
+            };
+            BubbleSeries.prototype.translateBubble = function () {
+                var _a = this,
+                    data = _a.data,
+                    radii = _a.radii;
+                var minPxSize = this.getPxExtremes().minPxSize;
                 // Set the shape type and arguments to be picked up in drawPoints
-                i = data.length;
+                var i = data.length;
                 while (i--) {
-                    point = data[i];
-                    radius = radii ? radii[i] : 0; // #1737
-                    if (isNumber(radius) && radius >= this.minPxSize / 2) {
-                        // Shape arguments
-                        point.marker = extend(point.marker, {
-                            radius: radius,
-                            width: 2 * radius,
-                            height: 2 * radius
-                        });
+                    var point = data[i];
+                    var radius = radii ? radii[i] : 0; // #1737
+                        if (isNumber(radius) && radius >= minPxSize / 2) {
+                            // Shape arguments
+                            point.marker = extend(point.marker, {
+                                radius: radius,
+                                width: 2 * radius,
+                                height: 2 * radius
+                            });
                         // Alignment box for the data label
                         point.dlBox = {
                             x: point.plotX - radius,
@@ -5949,6 +7023,41 @@
                     else { // below zThreshold
                         // #1691
                         point.shapeArgs = point.plotY = point.dlBox = void 0;
+                    }
+                }
+            };
+            BubbleSeries.prototype.getPxExtremes = function () {
+                var smallestSize = Math.min(this.chart.plotWidth,
+                    this.chart.plotHeight);
+                var getPxSize = function (length) {
+                        var isPercent;
+                    if (typeof length === 'string') {
+                        isPercent = /%$/.test(length);
+                        length = parseInt(length, 10);
+                    }
+                    return isPercent ? smallestSize * length / 100 : length;
+                };
+                var minPxSize = getPxSize(pick(this.options.minSize, 8));
+                // Prioritize min size if conflict to make sure bubbles are
+                // always visible. #5873
+                var maxPxSize = Math.max(getPxSize(pick(this.options.maxSize, '20%')),
+                    minPxSize);
+                return { minPxSize: minPxSize, maxPxSize: maxPxSize };
+            };
+            BubbleSeries.prototype.getZExtremes = function () {
+                var options = this.options,
+                    zData = (this.zData || []).filter(isNumber);
+                if (zData.length) {
+                    var zMin = pick(options.zMin,
+                        clamp(arrayMin(zData),
+                        options.displayNegative === false ?
+                            (options.zThreshold || 0) :
+                            -Number.MAX_VALUE,
+                        Number.MAX_VALUE));
+                    var zMax = pick(options.zMax,
+                        arrayMax(zData));
+                    if (isNumber(zMin) && isNumber(zMax)) {
+                        return { zMin: zMin, zMax: zMax };
                     }
                 }
             };
@@ -6204,6 +7313,10 @@
             specialGroup: 'group',
             zoneAxis: 'z'
         });
+        // On updated data in any series, delete the chart-level Z extremes cache
+        addEvent(BubbleSeries, 'updatedData', function (e) {
+            delete e.target.chart.bubbleZExtremes;
+        });
         /* *
          *
          *  Axis ?
@@ -6220,70 +7333,36 @@
                 isXAxis = this.isXAxis,
                 dataKey = isXAxis ? 'xData' : 'yData',
                 min = this.min,
-                extremes = {},
-                smallestSize = Math.min(chart.plotWidth,
-                chart.plotHeight),
-                zMin = Number.MAX_VALUE,
-                zMax = -Number.MAX_VALUE,
                 range = this.max - min,
                 transA = axisLength / range,
-                activeSeries = [];
+                hasActiveSeries;
             // Handle padding on the second pass, or on redraw
             this.series.forEach(function (series) {
-                var seriesOptions = series.options,
-                    zData;
                 if (series.bubblePadding &&
                     (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
                     // Correction for #1673
                     axis.allowZoomOutside = true;
-                    // Cache it
-                    activeSeries.push(series);
-                    if (isXAxis) { // because X axis is evaluated first
-                        // For each series, translate the size extremes to pixel values
-                        ['minSize', 'maxSize'].forEach(function (prop) {
-                            var length = seriesOptions[prop],
-                                isPercent = /%$/.test(length);
-                            length = pInt(length);
-                            extremes[prop] = isPercent ?
-                                smallestSize * length / 100 :
-                                length;
-                        });
-                        series.minPxSize = extremes.minSize;
-                        // Prioritize min size if conflict to make sure bubbles are
-                        // always visible. #5873
-                        series.maxPxSize = Math.max(extremes.maxSize, extremes.minSize);
-                        // Find the min and max Z
-                        zData = series.zData.filter(isNumber);
-                        if (zData.length) { // #1735
-                            zMin = pick(seriesOptions.zMin, clamp(arrayMin(zData), seriesOptions.displayNegative === false ?
-                                seriesOptions.zThreshold :
-                                -Number.MAX_VALUE, zMin));
-                            zMax = pick(seriesOptions.zMax, Math.max(zMax, arrayMax(zData)));
-                        }
+                    hasActiveSeries = true;
+                    var data = series[dataKey];
+                    if (isXAxis) {
+                        series.getRadii(0, 0, series);
                     }
-                }
-            });
-            activeSeries.forEach(function (series) {
-                var data = series[dataKey],
-                    i = data.length,
-                    radius;
-                if (isXAxis) {
-                    series.getRadii(zMin, zMax, series);
-                }
-                if (range > 0) {
-                    while (i--) {
-                        if (isNumber(data[i]) &&
-                            axis.dataMin <= data[i] &&
-                            data[i] <= axis.max) {
-                            radius = series.radii ? series.radii[i] : 0;
-                            pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
-                            pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
+                    if (range > 0) {
+                        var i = data.length;
+                        while (i--) {
+                            if (isNumber(data[i]) &&
+                                axis.dataMin <= data[i] &&
+                                data[i] <= axis.max) {
+                                var radius = series.radii && series.radii[i] || 0;
+                                pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
+                                pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
+                            }
                         }
                     }
                 }
             });
             // Apply the padding to the min and max properties
-            if (activeSeries.length && range > 0 && !this.logarithmic) {
+            if (hasActiveSeries && range > 0 && !this.logarithmic) {
                 pxMax -= axisLength;
                 transA *= (axisLength +
                     Math.max(0, pxMin) - // #8901
@@ -6477,9 +7556,6 @@
             };
             return MapBubblePoint;
         }(BubbleSeries.prototype.pointClass));
-        extend(MapBubblePoint.prototype, {
-            ttBelow: false
-        });
         /* *
          *
          *  Default Export
@@ -6514,6 +7590,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
+        var MapPointSeries = SeriesRegistry.seriesTypes.mappoint;
         var extend = U.extend,
             merge = U.merge;
         /* *
@@ -6543,6 +7620,11 @@
                 _this.points = void 0;
                 return _this;
             }
+            MapBubbleSeries.prototype.translate = function () {
+                MapPointSeries.prototype.translate.call(this);
+                this.getRadii();
+                this.translateBubble();
+            };
             /* *
              *
              *  Static Properties
@@ -6678,12 +7760,15 @@
         }(BubbleSeries));
         extend(MapBubbleSeries.prototype, {
             type: 'mapbubble',
-            getBox: MapSeries.prototype.getBox,
+            axisTypes: ['colorAxis'],
+            getProjectedBounds: MapSeries.prototype.getProjectedBounds,
+            isCartesian: false,
             // If one single value is passed, it is interpreted as z
             pointArrayMap: ['z'],
             pointClass: MapBubblePoint,
             setData: MapSeries.prototype.setData,
             setOptions: MapSeries.prototype.setOptions,
+            useMapGeometry: true,
             xyFromShape: true
         });
         SeriesRegistry.registerSeriesType('mapbubble', MapBubbleSeries);
@@ -6761,7 +7846,7 @@
 
         return MapBubbleSeries;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapPoint.js', [_modules['Mixins/ColorMapSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColorMapMixin, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -6787,7 +7872,6 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var colorMapPointMixin = ColorMapMixin.colorMapPointMixin;
         var ScatterPoint = SeriesRegistry.seriesTypes.scatter.prototype.pointClass;
         var clamp = U.clamp,
             extend = U.extend,
@@ -6931,8 +8015,9 @@
             return HeatmapPoint;
         }(ScatterPoint));
         extend(HeatmapPoint.prototype, {
-            dataLabelOnNull: colorMapPointMixin.dataLabelOnNull,
-            moveToTopOnHover: colorMapPointMixin.moveToTopOnHover
+            dataLabelOnNull: true,
+            moveToTopOnHover: true,
+            ttBelow: false
         });
         /* *
          *
@@ -6942,7 +8027,7 @@
 
         return HeatmapPoint;
     });
-    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Mixins/ColorMapSeries.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, HeatmapPoint, LegendSymbol, palette, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Heatmap/HeatmapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Series/Heatmap/HeatmapPoint.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, HeatmapPoint, LegendSymbol, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -6968,7 +8053,7 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
+        var colorMapSeriesMixin = ColorMapComposition.colorMapSeriesMixin;
         var Series = SeriesRegistry.series,
             _a = SeriesRegistry.seriesTypes,
             ColumnSeries = _a.column,
@@ -7034,11 +8119,25 @@
                     this.points.forEach(function (point) {
                         if (point.graphic) {
                             point.graphic[_this.chart.styledMode ? 'css' : 'animate'](_this.colorAttribs(point));
+                            // @todo
+                            // Applying the border radius here is not optimal. It should
+                            // be set in the shapeArgs or returned from `markerAttribs`.
+                            // However, Series.drawPoints does not pick up markerAttribs
+                            // to be passed over to `renderer.symbol`. Also, image
+                            // symbols are not positioned by their top left corner like
+                            // other symbols are. This should be refactored, then we
+                            // could save ourselves some tests for .hasImage etc. And
+                            // the evaluation of borderRadius would be moved to
+                            // `markerAttribs`.
                             if (_this.options.borderRadius) {
                                 point.graphic.attr({
                                     r: _this.options.borderRadius
                                 });
                             }
+                            // Saving option for reapplying later
+                            // when changing point's states (#16165)
+                            (point.shapeArgs || {}).r = _this.options.borderRadius;
+                            (point.shapeArgs || {}).d = point.graphic.pathArray;
                             if (point.value === null) { // #15708
                                 point.graphic.addClass('highcharts-null-point');
                             }
@@ -7334,7 +8433,7 @@
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                nullColor: palette.neutralColor3,
+                nullColor: "#f7f7f7" /* neutralColor3 */,
                 dataLabels: {
                     formatter: function () {
                         var numberFormatter = this.series.chart.numberFormatter;
@@ -7520,8 +8619,7 @@
              */
             alignDataLabel: ColumnSeries.prototype.alignDataLabel,
             axisTypes: colorMapSeriesMixin.axisTypes,
-            colorAttribs: colorMapSeriesMixin.colorAttribs,
-            colorKey: colorMapSeriesMixin.colorKey,
+            colorKey: 'value',
             directTouch: true,
             /**
              * @private
@@ -7534,6 +8632,7 @@
             pointClass: HeatmapPoint,
             trackerGroups: colorMapSeriesMixin.trackerGroups
         });
+        ColorMapComposition.compose(HeatmapSeries);
         SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
         /* *
          *
@@ -8051,6 +9150,11 @@
         * @name Highcharts.MapLatLonObject#lon
         * @type {number}
         */
+        /**
+         * An array of longitude, latitude.
+         *
+         * @typedef {Array<number>} Highcharts.LonLatArray
+         */
         ''; // detach doclets above
         /* eslint-disable no-invalid-this, valid-jsdoc */
         /**
@@ -8110,9 +9214,7 @@
              * @product    highmaps
              * @apioption  chart.proj4
              */
-            var proj4 = (this.userOptions.chart &&
-                    this.userOptions.chart.proj4 ||
-                    win.proj4);
+            var proj4 = this.options.chart.proj4 || win.proj4;
             if (!proj4) {
                 error(21, false, this);
                 return {
@@ -8120,6 +9222,22 @@
                     y: null
                 };
             }
+            var _a = transform.jsonmarginX,
+                jsonmarginX = _a === void 0 ? 0 : _a,
+                _b = transform.jsonmarginY,
+                jsonmarginY = _b === void 0 ? 0 : _b,
+                _c = transform.jsonres,
+                jsonres = _c === void 0 ? 1 : _c,
+                _d = transform.scale,
+                scale = _d === void 0 ? 1 : _d,
+                _e = transform.xoffset,
+                xoffset = _e === void 0 ? 0 : _e,
+                _f = transform.xpan,
+                xpan = _f === void 0 ? 0 : _f,
+                _g = transform.yoffset,
+                yoffset = _g === void 0 ? 0 : _g,
+                _h = transform.ypan,
+                ypan = _h === void 0 ? 0 : _h;
             var projected = proj4(transform.crs,
                 [latLon.lon,
                 latLon.lat]),
@@ -8132,12 +9250,8 @@
                     -projected[0] * sinAngle + projected[1] * cosAngle
                 ] : projected;
             return {
-                x: ((rotated[0] - (transform.xoffset || 0)) * (transform.scale || 1) +
-                    (transform.xpan || 0)) * (transform.jsonres || 1) +
-                    (transform.jsonmarginX || 0),
-                y: (((transform.yoffset || 0) - rotated[1]) * (transform.scale || 1) +
-                    (transform.ypan || 0)) * (transform.jsonres || 1) -
-                    (transform.jsonmarginY || 0)
+                x: ((rotated[0] - xoffset) * scale + xpan) * jsonres + jsonmarginX,
+                y: -(((yoffset - rotated[1]) * scale + ypan) * jsonres - jsonmarginY)
             };
         };
         /**
@@ -8163,18 +9277,33 @@
          *         An object with `lat` and `lon` properties.
          */
         Chart.prototype.transformToLatLon = function (point, transform) {
-            if (typeof win.proj4 === 'undefined') {
+            var proj4 = this.options.chart.proj4 || win.proj4;
+            if (!proj4) {
                 error(21, false, this);
                 return;
             }
+            if (point.y === null) {
+                return;
+            }
+            var _a = transform.jsonmarginX,
+                jsonmarginX = _a === void 0 ? 0 : _a,
+                _b = transform.jsonmarginY,
+                jsonmarginY = _b === void 0 ? 0 : _b,
+                _c = transform.jsonres,
+                jsonres = _c === void 0 ? 1 : _c,
+                _d = transform.scale,
+                scale = _d === void 0 ? 1 : _d,
+                _e = transform.xoffset,
+                xoffset = _e === void 0 ? 0 : _e,
+                _f = transform.xpan,
+                xpan = _f === void 0 ? 0 : _f,
+                _g = transform.yoffset,
+                yoffset = _g === void 0 ? 0 : _g,
+                _h = transform.ypan,
+                ypan = _h === void 0 ? 0 : _h;
             var normalized = {
-                    x: ((point.x -
-                        (transform.jsonmarginX || 0)) / (transform.jsonres || 1) -
-                        (transform.xpan || 0)) / (transform.scale || 1) +
-                        (transform.xoffset || 0),
-                    y: ((-point.y - (transform.jsonmarginY || 0)) / (transform.jsonres || 1) +
-                        (transform.ypan || 0)) / (transform.scale || 1) +
-                        (transform.yoffset || 0)
+                    x: ((point.x - jsonmarginX) / jsonres - xpan) / scale + xoffset,
+                    y: ((point.y - jsonmarginY) / jsonres + ypan) / scale + yoffset
                 },
                 cosAngle = transform.cosAngle ||
                     (transform.rotation && Math.cos(transform.rotation)),
@@ -8207,16 +9336,15 @@
          *         An object with `lat` and `lon` properties.
          */
         Chart.prototype.fromPointToLatLon = function (point) {
-            var transforms = this.mapTransforms,
-                transform;
+            var transforms = this.mapTransforms;
             if (!transforms) {
                 error(22, false, this);
                 return;
             }
-            for (transform in transforms) {
+            for (var transform in transforms) {
                 if (Object.hasOwnProperty.call(transforms, transform) &&
                     transforms[transform].hitZone &&
-                    pointInPolygon({ x: point.x, y: -point.y }, transforms[transform].hitZone.coordinates[0])) {
+                    pointInPolygon(point, transforms[transform].hitZone.coordinates[0])) {
                     return this.transformToLatLon(point, transforms[transform]);
                 }
             }
@@ -8255,7 +9383,7 @@
                 if (Object.hasOwnProperty.call(transforms, transform) &&
                     transforms[transform].hitZone) {
                     coords = this.transformFromLatLon(latLon, transforms[transform]);
-                    if (pointInPolygon({ x: coords.x, y: -coords.y }, transforms[transform].hitZone.coordinates[0])) {
+                    if (pointInPolygon(coords, transforms[transform].hitZone.coordinates[0])) {
                         return coords;
                     }
                 }
@@ -8294,64 +9422,36 @@
          *         An object ready for the `mapData` option.
          */
         H.geojson = function (geojson, hType, series) {
-            var mapData = [],
-                path = [],
-                polygonToPath = function (polygon) {
-                    polygon.forEach(function (point,
-                i) {
-                        if (i === 0) {
-                            path.push(['M',
-                point[0], -point[1]]);
-                    }
-                    else {
-                        path.push(['L', point[0], -point[1]]);
-                    }
-                });
-            };
-            hType = hType || 'map';
+            if (hType === void 0) { hType = 'map'; }
+            var mapData = [];
+            var path = [];
             geojson.features.forEach(function (feature) {
-                var geometry = feature.geometry,
+                var geometry = feature.geometry || {},
                     type = geometry.type,
                     coordinates = geometry.coordinates,
                     properties = feature.properties,
-                    point;
+                    pointOptions;
                 path = [];
-                if (hType === 'map' || hType === 'mapbubble') {
-                    if (type === 'Polygon') {
-                        coordinates.forEach(polygonToPath);
-                        path.push(['Z']);
-                    }
-                    else if (type === 'MultiPolygon') {
-                        coordinates.forEach(function (items) {
-                            items.forEach(polygonToPath);
-                        });
-                        path.push(['Z']);
-                    }
-                    if (path.length) {
-                        point = { path: path };
+                if ((hType === 'map' || hType === 'mapbubble') &&
+                    (type === 'Polygon' || type === 'MultiPolygon')) {
+                    if (coordinates.length) {
+                        pointOptions = { geometry: { coordinates: coordinates, type: type } };
                     }
                 }
-                else if (hType === 'mapline') {
-                    if (type === 'LineString') {
-                        polygonToPath(coordinates);
-                    }
-                    else if (type === 'MultiLineString') {
-                        coordinates.forEach(polygonToPath);
-                    }
-                    if (path.length) {
-                        point = { path: path };
+                else if (hType === 'mapline' &&
+                    (type === 'LineString' ||
+                        type === 'MultiLineString')) {
+                    if (coordinates.length) {
+                        pointOptions = { geometry: { coordinates: coordinates, type: type } };
                     }
                 }
-                else if (hType === 'mappoint') {
-                    if (type === 'Point') {
-                        point = {
-                            x: coordinates[0],
-                            y: -coordinates[1]
-                        };
+                else if (hType === 'mappoint' && type === 'Point') {
+                    if (coordinates.length) {
+                        pointOptions = { geometry: { coordinates: coordinates, type: type } };
                     }
                 }
-                if (point) {
-                    mapData.push(extend(point, {
+                if (pointOptions) {
+                    mapData.push(extend(pointOptions, {
                         name: properties.name || properties.NAME,
                         /**
                          * In Highmaps, when data is loaded from GeoJSON, the GeoJSON

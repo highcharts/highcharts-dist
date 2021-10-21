@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.2.2 (2021-08-24)
+ * @license Highmaps JS v9.3.0 (2021-10-21)
  * @module highcharts/modules/heatmap
  * @requires highcharts
  *
@@ -10,7 +10,6 @@
 'use strict';
 import Highcharts from '../../Core/Globals.js';
 import ColorAxis from '../../Core/Axis/Color/ColorAxis.js';
-import '../../Mixins/ColorMapSeries.js';
 import '../../Series/Heatmap/HeatmapSeries.js';
 var G = Highcharts;
 G.ColorAxis = ColorAxis;

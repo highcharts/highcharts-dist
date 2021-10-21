@@ -8,7 +8,6 @@
  *
  * */
 'use strict';
-import Palette from '../Color/Palette.js';
 /* *
  *
  *  API Options
@@ -982,7 +981,7 @@ var seriesDefaults = {
          *
          * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          */
-        lineColor: Palette.backgroundColor,
+        lineColor: "#ffffff" /* backgroundColor */,
         /**
          * The width of the point marker's outline.
          *
@@ -1182,7 +1181,7 @@ var seriesDefaults = {
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                fillColor: Palette.neutralColor20,
+                fillColor: "#cccccc" /* neutralColor20 */,
                 /**
                  * The color of the point marker's outline. When
                  * `undefined`, the series' or point's color is used.
@@ -1192,7 +1191,7 @@ var seriesDefaults = {
                  *
                  * @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                  */
-                lineColor: Palette.neutralColor100,
+                lineColor: "#000000" /* neutralColor100 */,
                 /**
                  * The width of the point marker's outline.
                  *

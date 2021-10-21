@@ -162,8 +162,7 @@ var HeikinAshiSeries = /** @class */ (function (_super) {
 }(CandlestickSeries));
 // Assign haikinashi data into the points.
 addEvent(HeikinAshiSeries, 'afterTranslate', function () {
-    var series = this, points = series.points, heikiashiData = series.heikiashiData;
-    var cropStart = series.cropStart || 0;
+    var series = this, points = series.points, heikiashiData = series.heikiashiData, cropStart = series.cropStart || 0;
     // Reset the proccesed data.
     series.processedYData.length = 0;
     // Modify points.
@@ -196,7 +195,7 @@ addEvent(Axis, 'postProcessData', function () {
 });
 /* *
  *
- *  Prototype Properties
+ *  Class Prototype
  *
  * */
 HeikinAshiSeries.prototype.pointClass = HeikinAshiPoint;

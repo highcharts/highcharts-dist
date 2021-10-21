@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -26,7 +26,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Pane.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js'], _modules['Mixins/CenteredSeries.js']], function (Chart, H, palette, Pointer, U, centeredSeriesMixin) {
+    _registerModule(_modules, 'Extensions/Pane.js', [_modules['Core/Chart/Chart.js'], _modules['Series/CenteredUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (Chart, CU, H, Pointer, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -185,7 +185,7 @@
                      * @since   2.3.0
                      * @product highcharts
                      */
-                    borderColor: palette.neutralColor20,
+                    borderColor: "#cccccc" /* neutralColor20 */,
                     /**
                      * The background color or gradient for the pane.
                      *
@@ -199,8 +199,8 @@
                         linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
                         /** @ignore-option */
                         stops: [
-                            [0, palette.backgroundColor],
-                            [1, palette.neutralColor10]
+                            [0, "#ffffff" /* backgroundColor */],
+                            [1, "#e6e6e6" /* neutralColor10 */]
                         ]
                     },
                     /** @ignore-option */
@@ -334,7 +334,7 @@
             Pane.prototype.updateCenter = function (axis) {
                 this.center = (axis ||
                     this.axis ||
-                    {}).center = centeredSeriesMixin.getCenter.call(this);
+                    {}).center = CU.getCenter.call(this);
             };
             /**
              * Destroy the pane item
@@ -1716,8 +1716,7 @@
              */
             AreaRangeSeries.prototype.translate = function () {
                 var series = this,
-                    yAxis = series.yAxis,
-                    hasModifyValue = !!series.modifyValue;
+                    yAxis = series.yAxis;
                 areaProto.translate.apply(series);
                 // Set plotLow and plotHigh
                 series.points.forEach(function (point) {
@@ -1728,10 +1727,9 @@
                     }
                     else {
                         point.plotLow = plotY;
-                        point.plotHigh = yAxis.translate(hasModifyValue ?
-                            series.modifyValue(high, point) :
-                            high, 0, 1, 0, 1);
-                        if (hasModifyValue) {
+                        point.plotHigh = yAxis.translate(series.dataModify ?
+                            series.dataModify.modifyValue(high) : high, 0, 1, 0, 1);
+                        if (series.dataModify) {
                             point.yBottom = point.plotHigh;
                         }
                     }
@@ -2489,7 +2487,7 @@
 
         return AreaSplineRangeSeries;
     });
-    _registerModule(_modules, 'Series/BoxPlot/BoxPlotSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, palette, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/BoxPlot/BoxPlotSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ColumnSeries, H, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -2805,7 +2803,7 @@
                  * @since   3.0
                  * @product highcharts
                  */
-                fillColor: palette.backgroundColor,
+                fillColor: "#ffffff" /* backgroundColor */,
                 /**
                  * The width of the line surrounding the box. If any of
                  * [stemWidth](#plotOptions.boxplot.stemWidth),
@@ -3202,7 +3200,7 @@
 
         return BoxPlotSeries;
     });
-    _registerModule(_modules, 'Series/Bubble/BubbleLegendDefaults.js', [_modules['Core/Color/Palette.js']], function (Palette) {
+    _registerModule(_modules, 'Series/Bubble/BubbleLegendDefaults.js', [], function () {
         /* *
          *
          *  (c) 2010-2021 Highsoft AS
@@ -3375,7 +3373,7 @@
                         /** @ignore-option */
                         fontSize: '10px',
                         /** @ignore-option */
-                        color: Palette.neutralColor100
+                        color: "#000000" /* neutralColor100 */
                     },
                     /**
                      * The x position offset of the label relative to the
@@ -3961,8 +3959,9 @@
                     plotSizeX = chart.plotSizeX,
                     plotSizeY = chart.plotSizeY,
                     bubbleSeries = chart.series[this.options.seriesIndex],
-                    minSize = Math.ceil(bubbleSeries.minPxSize),
-                    maxPxSize = Math.ceil(bubbleSeries.maxPxSize),
+                    pxSizes = bubbleSeries.getPxExtremes(),
+                    minSize = Math.ceil(pxSizes.minPxSize),
+                    maxPxSize = Math.ceil(pxSizes.maxPxSize),
                     plotSize = Math.min(plotSizeY,
                     plotSizeX);
                 var calculatedSize,
@@ -4013,11 +4012,12 @@
                 var legend = this.legend,
                     chart = this.chart,
                     bubbleSeries = chart.series[this.options.seriesIndex],
-                    bubbleSeriesSize = bubbleSeries.maxPxSize,
+                    pxSizes = bubbleSeries.getPxExtremes(),
+                    bubbleSeriesSize = pxSizes.maxPxSize,
                     bubbleLegendSize = this.options.maxSize;
                 if (Math.abs(Math.ceil(bubbleSeriesSize) - bubbleLegendSize) >
                     1) {
-                    this.updateRanges(this.options.minSize, bubbleSeries.maxPxSize);
+                    this.updateRanges(this.options.minSize, pxSizes.maxPxSize);
                     legend.render();
                 }
             };
@@ -4392,6 +4392,11 @@
             };
             return BubblePoint;
         }(ScatterPoint));
+        /* *
+         *
+         *  Class Prototype
+         *
+         * */
         extend(BubblePoint.prototype, {
             ttBelow: false
         });
@@ -4434,14 +4439,14 @@
         var _a = SeriesRegistry.seriesTypes,
             ColumnSeries = _a.column,
             ScatterSeries = _a.scatter;
-        var arrayMax = U.arrayMax,
+        var addEvent = U.addEvent,
+            arrayMax = U.arrayMax,
             arrayMin = U.arrayMin,
             clamp = U.clamp,
             extend = U.extend,
             isNumber = U.isNumber,
             merge = U.merge,
-            pick = U.pick,
-            pInt = U.pInt;
+            pick = U.pick;
         /* *
          *
          *  Class
@@ -4511,20 +4516,49 @@
              * the axis needs to add padding in accordance with the point sizes.
              * @private
              */
-            BubbleSeries.prototype.getRadii = function (zMin, zMax, series) {
+            BubbleSeries.prototype.getRadii = function () {
+                var _this = this;
                 var len,
                     i,
                     zData = this.zData,
                     yData = this.yData,
-                    minSize = series.minPxSize,
-                    maxSize = series.maxPxSize,
                     radii = [],
-                    value;
+                    value,
+                    zExtremes = this.chart.bubbleZExtremes;
+                var _a = this.getPxExtremes(),
+                    minPxSize = _a.minPxSize,
+                    maxPxSize = _a.maxPxSize;
+                // Get the collective Z extremes of all bubblish series. The chart-level
+                // `bubbleZExtremes` are only computed once, and reset on `updatedData`
+                // in any member series.
+                if (!zExtremes) {
+                    var zMin_1 = Number.MAX_VALUE;
+                    var zMax_1 = -Number.MAX_VALUE;
+                    var valid_1;
+                    this.chart.series.forEach(function (otherSeries) {
+                        if (otherSeries.bubblePadding && (otherSeries.visible ||
+                            !_this.chart.options.chart.ignoreHiddenSeries)) {
+                            var zExtremes_1 = otherSeries.getZExtremes();
+                            if (zExtremes_1) {
+                                zMin_1 = Math.min(zMin_1 || zExtremes_1.zMin, zExtremes_1.zMin);
+                                zMax_1 = Math.max(zMax_1 || zExtremes_1.zMax, zExtremes_1.zMax);
+                                valid_1 = true;
+                            }
+                        }
+                    });
+                    if (valid_1) {
+                        zExtremes = { zMin: zMin_1, zMax: zMax_1 };
+                        this.chart.bubbleZExtremes = zExtremes;
+                    }
+                    else {
+                        zExtremes = { zMin: 0, zMax: 0 };
+                    }
+                }
                 // Set the shape type and arguments to be picked up in drawPoints
                 for (i = 0, len = zData.length; i < len; i++) {
                     value = zData[i];
                     // Separate method to get individual radius for bubbleLegend
-                    radii.push(this.getRadius(zMin, zMax, minSize, maxSize, value, yData[i]));
+                    radii.push(this.getRadius(zExtremes.zMin, zExtremes.zMax, minPxSize, maxPxSize, value, yData[i]));
                 }
                 this.radii = radii;
             };
@@ -4594,25 +4628,28 @@
              * @private
              */
             BubbleSeries.prototype.translate = function () {
-                var i,
-                    data = this.data,
-                    point,
-                    radius,
-                    radii = this.radii;
                 // Run the parent method
                 _super.prototype.translate.call(this);
+                this.getRadii();
+                this.translateBubble();
+            };
+            BubbleSeries.prototype.translateBubble = function () {
+                var _a = this,
+                    data = _a.data,
+                    radii = _a.radii;
+                var minPxSize = this.getPxExtremes().minPxSize;
                 // Set the shape type and arguments to be picked up in drawPoints
-                i = data.length;
+                var i = data.length;
                 while (i--) {
-                    point = data[i];
-                    radius = radii ? radii[i] : 0; // #1737
-                    if (isNumber(radius) && radius >= this.minPxSize / 2) {
-                        // Shape arguments
-                        point.marker = extend(point.marker, {
-                            radius: radius,
-                            width: 2 * radius,
-                            height: 2 * radius
-                        });
+                    var point = data[i];
+                    var radius = radii ? radii[i] : 0; // #1737
+                        if (isNumber(radius) && radius >= minPxSize / 2) {
+                            // Shape arguments
+                            point.marker = extend(point.marker, {
+                                radius: radius,
+                                width: 2 * radius,
+                                height: 2 * radius
+                            });
                         // Alignment box for the data label
                         point.dlBox = {
                             x: point.plotX - radius,
@@ -4624,6 +4661,41 @@
                     else { // below zThreshold
                         // #1691
                         point.shapeArgs = point.plotY = point.dlBox = void 0;
+                    }
+                }
+            };
+            BubbleSeries.prototype.getPxExtremes = function () {
+                var smallestSize = Math.min(this.chart.plotWidth,
+                    this.chart.plotHeight);
+                var getPxSize = function (length) {
+                        var isPercent;
+                    if (typeof length === 'string') {
+                        isPercent = /%$/.test(length);
+                        length = parseInt(length, 10);
+                    }
+                    return isPercent ? smallestSize * length / 100 : length;
+                };
+                var minPxSize = getPxSize(pick(this.options.minSize, 8));
+                // Prioritize min size if conflict to make sure bubbles are
+                // always visible. #5873
+                var maxPxSize = Math.max(getPxSize(pick(this.options.maxSize, '20%')),
+                    minPxSize);
+                return { minPxSize: minPxSize, maxPxSize: maxPxSize };
+            };
+            BubbleSeries.prototype.getZExtremes = function () {
+                var options = this.options,
+                    zData = (this.zData || []).filter(isNumber);
+                if (zData.length) {
+                    var zMin = pick(options.zMin,
+                        clamp(arrayMin(zData),
+                        options.displayNegative === false ?
+                            (options.zThreshold || 0) :
+                            -Number.MAX_VALUE,
+                        Number.MAX_VALUE));
+                    var zMax = pick(options.zMax,
+                        arrayMax(zData));
+                    if (isNumber(zMin) && isNumber(zMax)) {
+                        return { zMin: zMin, zMax: zMax };
                     }
                 }
             };
@@ -4879,6 +4951,10 @@
             specialGroup: 'group',
             zoneAxis: 'z'
         });
+        // On updated data in any series, delete the chart-level Z extremes cache
+        addEvent(BubbleSeries, 'updatedData', function (e) {
+            delete e.target.chart.bubbleZExtremes;
+        });
         /* *
          *
          *  Axis ?
@@ -4895,70 +4971,36 @@
                 isXAxis = this.isXAxis,
                 dataKey = isXAxis ? 'xData' : 'yData',
                 min = this.min,
-                extremes = {},
-                smallestSize = Math.min(chart.plotWidth,
-                chart.plotHeight),
-                zMin = Number.MAX_VALUE,
-                zMax = -Number.MAX_VALUE,
                 range = this.max - min,
                 transA = axisLength / range,
-                activeSeries = [];
+                hasActiveSeries;
             // Handle padding on the second pass, or on redraw
             this.series.forEach(function (series) {
-                var seriesOptions = series.options,
-                    zData;
                 if (series.bubblePadding &&
                     (series.visible || !chart.options.chart.ignoreHiddenSeries)) {
                     // Correction for #1673
                     axis.allowZoomOutside = true;
-                    // Cache it
-                    activeSeries.push(series);
-                    if (isXAxis) { // because X axis is evaluated first
-                        // For each series, translate the size extremes to pixel values
-                        ['minSize', 'maxSize'].forEach(function (prop) {
-                            var length = seriesOptions[prop],
-                                isPercent = /%$/.test(length);
-                            length = pInt(length);
-                            extremes[prop] = isPercent ?
-                                smallestSize * length / 100 :
-                                length;
-                        });
-                        series.minPxSize = extremes.minSize;
-                        // Prioritize min size if conflict to make sure bubbles are
-                        // always visible. #5873
-                        series.maxPxSize = Math.max(extremes.maxSize, extremes.minSize);
-                        // Find the min and max Z
-                        zData = series.zData.filter(isNumber);
-                        if (zData.length) { // #1735
-                            zMin = pick(seriesOptions.zMin, clamp(arrayMin(zData), seriesOptions.displayNegative === false ?
-                                seriesOptions.zThreshold :
-                                -Number.MAX_VALUE, zMin));
-                            zMax = pick(seriesOptions.zMax, Math.max(zMax, arrayMax(zData)));
-                        }
+                    hasActiveSeries = true;
+                    var data = series[dataKey];
+                    if (isXAxis) {
+                        series.getRadii(0, 0, series);
                     }
-                }
-            });
-            activeSeries.forEach(function (series) {
-                var data = series[dataKey],
-                    i = data.length,
-                    radius;
-                if (isXAxis) {
-                    series.getRadii(zMin, zMax, series);
-                }
-                if (range > 0) {
-                    while (i--) {
-                        if (isNumber(data[i]) &&
-                            axis.dataMin <= data[i] &&
-                            data[i] <= axis.max) {
-                            radius = series.radii ? series.radii[i] : 0;
-                            pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
-                            pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
+                    if (range > 0) {
+                        var i = data.length;
+                        while (i--) {
+                            if (isNumber(data[i]) &&
+                                axis.dataMin <= data[i] &&
+                                data[i] <= axis.max) {
+                                var radius = series.radii && series.radii[i] || 0;
+                                pxMin = Math.min(((data[i] - min) * transA) - radius, pxMin);
+                                pxMax = Math.max(((data[i] - min) * transA) + radius, pxMax);
+                            }
                         }
                     }
                 }
             });
             // Apply the padding to the min and max properties
-            if (activeSeries.length && range > 0 && !this.logarithmic) {
+            if (hasActiveSeries && range > 0 && !this.logarithmic) {
                 pxMax -= axisLength;
                 transA *= (axisLength +
                     Math.max(0, pxMin) - // #8901
@@ -5649,10 +5691,10 @@
                     bottomXwidth = stackHeight ? (barW * (barY + barH - topPointY)) / stackHeight : 0;
                     /*
                             /\
-                            /  \
+                           /  \
                     x1,y1,------ x2,y1
-                            /      \
-                        ----------
+                        /      \
+                       ----------
                     x4,y2        x3,y2
                     */
                     x1 = barX - topXwidth + barW;
@@ -5667,9 +5709,9 @@
                     }
                     // inverted chart
                     if (chart.inverted) {
-                        invBarPos = chart.plotWidth - barY;
-                        stackHeight = (topPointY -
-                            (chart.plotWidth - translatedThreshold));
+                        invBarPos = yAxis.width - barY;
+                        stackHeight =
+                            topPointY - (yAxis.width - translatedThreshold);
                         // proportion tanges
                         topXwidth = (barW *
                             (topPointY - invBarPos)) / stackHeight;
@@ -5826,7 +5868,7 @@
 
         return ColumnPyramidSeries;
     });
-    _registerModule(_modules, 'Series/ErrorBar/ErrorBarSeries.js', [_modules['Series/BoxPlot/BoxPlotSeries.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BoxPlotSeries, ColumnSeries, palette, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/ErrorBar/ErrorBarSeries.js', [_modules['Series/BoxPlot/BoxPlotSeries.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BoxPlotSeries, ColumnSeries, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -5941,7 +5983,7 @@
                  * @since   3.0
                  * @product highcharts
                  */
-                color: palette.neutralColor100,
+                color: "#000000" /* neutralColor100 */,
                 grouping: false,
                 /**
                  * The parent series of the error bar. The default value links it to
@@ -6122,13 +6164,13 @@
         }(Point));
         /* *
          *
-         *  Default export
+         *  Default Export
          *
          * */
 
         return GaugePoint;
     });
-    _registerModule(_modules, 'Series/Gauge/GaugeSeries.js', [_modules['Series/Gauge/GaugePoint.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (GaugePoint, H, palette, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/Gauge/GaugeSeries.js', [_modules['Series/Gauge/GaugePoint.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (GaugePoint, H, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -6226,8 +6268,8 @@
                         rearLength = ((pInt(pick(dialOptions.rearLength, '10%')) * radius) /
                             100),
                         baseWidth = dialOptions.baseWidth || 3,
-                        topWidth = dialOptions.topWidth || 1,
-                        overshoot = options.overshoot,
+                        topWidth = dialOptions.topWidth || 1;
+                    var overshoot = options.overshoot,
                         rotation = yAxis.startAngleRad + yAxis.translate(point.y,
                         null,
                         null,
@@ -6307,7 +6349,7 @@
                             stroke: dialOptions.borderColor || 'none',
                             'stroke-width': dialOptions.borderWidth || 0,
                             fill: dialOptions.backgroundColor ||
-                                palette.neutralColor100
+                                "#000000" /* neutralColor100 */
                         });
                     }
                 });
@@ -6332,9 +6374,9 @@
                         series.pivot.attr({
                             'stroke-width': pivotOptions.borderWidth || 0,
                             stroke: pivotOptions.borderColor ||
-                                palette.neutralColor20,
+                                "#cccccc" /* neutralColor20 */,
                             fill: pivotOptions.backgroundColor ||
-                                palette.neutralColor100
+                                "#000000" /* neutralColor100 */
                         });
                     }
                 }
@@ -6431,7 +6473,7 @@
                  * @product highcharts
                  */
                 dataLabels: {
-                    borderColor: palette.neutralColor20,
+                    borderColor: "#cccccc" /* neutralColor20 */,
                     borderRadius: 3,
                     borderWidth: 1,
                     crop: false,
@@ -6669,7 +6711,7 @@
         SeriesRegistry.registerSeriesType('gauge', GaugeSeries);
         /* *
          *
-         *  Default export
+         *  Default Export
          *
          * */
         /* *
@@ -8752,7 +8794,16 @@
                     parentNodeLayout = series.parentNodeLayout,
                     nodeAdded,
                     parentNode = series.parentNode,
-                    PackedBubblePoint = series.pointClass;
+                    PackedBubblePoint = series.pointClass,
+                    layoutOptions = series.layout.options,
+                    parentMarkerOptions = {
+                        radius: series.parentNodeRadius,
+                        lineColor: series.color,
+                        fillColor: color(series.color).brighten(0.4).get()
+                    };
+                if (layoutOptions.parentNodeOptions) {
+                    parentMarkerOptions = merge(layoutOptions.parentNodeOptions.marker || {}, parentMarkerOptions);
+                }
                 series.parentNodeMass = 0;
                 series.points.forEach(function (p) {
                     series.parentNodeMass +=
@@ -8769,11 +8820,17 @@
                     if (!parentNode) {
                         parentNode = (new PackedBubblePoint()).init(this, {
                             mass: series.parentNodeRadius / 2,
-                            marker: {
-                                radius: series.parentNodeRadius
-                            },
+                            marker: parentMarkerOptions,
                             dataLabels: {
                                 inside: false
+                            },
+                            states: {
+                                normal: {
+                                    marker: parentMarkerOptions
+                                },
+                                hover: {
+                                    marker: parentMarkerOptions
+                                }
                             },
                             dataLabelOnNull: true,
                             degree: series.parentNodeRadius,
@@ -8863,7 +8920,8 @@
                         fill: nodeMarker.fillColor || color(series.color).brighten(0.4).get(),
                         opacity: nodeMarker.fillOpacity,
                         stroke: nodeMarker.lineColor || series.color,
-                        'stroke-width': nodeMarker.lineWidth
+                        'stroke-width': pick(nodeMarker.lineWidth,
+                    series.options.lineWidth)
                     };
                 // create the group for parent Nodes if doesn't exist
                 if (!this.parentNodesGroup) {
@@ -9116,6 +9174,36 @@
                     arr = series.chart.rawPositions;
                 }
                 return arr;
+            };
+            /**
+             * Function that checks for a parentMarker and sets the correct opacity.
+             * @private
+             * @param {Highcharts.Pack} point
+             * Candidate point for opacity correction.
+             * @param {string} [state]
+             * The point state, can be either `hover`, `select` or 'normal'. If
+             * undefined, normal state is assumed.
+             *
+             * @return {Highcharts.SVGAttributes}
+             * The presentational attributes to be set on the point.
+             */
+            PackedBubbleSeries.prototype.pointAttribs = function (point, state) {
+                var options = this.options,
+                    hasParentMarker = point && point.isParentNode;
+                var attr,
+                    fillOpacity,
+                    markerOptions = options.marker;
+                if (hasParentMarker &&
+                    options.layoutAlgorithm &&
+                    options.layoutAlgorithm.parentNodeOptions) {
+                    markerOptions = options.layoutAlgorithm.parentNodeOptions.marker;
+                }
+                fillOpacity = markerOptions.fillOpacity;
+                attr = Series.prototype.pointAttribs.call(this, point, state);
+                if (fillOpacity !== 1) {
+                    attr['fill-opacity'] = fillOpacity;
+                }
+                return attr;
             };
             /**
              * Function that is adding one bubble based on positions and sizes of
@@ -9648,7 +9736,7 @@
                         marker: {
                             fillColor: null,
                             fillOpacity: 1,
-                            lineWidth: 1,
+                            lineWidth: null,
                             lineColor: null,
                             symbol: 'circle'
                         }
@@ -10288,7 +10376,7 @@
 
         return WaterfallPoint;
     });
-    _registerModule(_modules, 'Series/Waterfall/WaterfallSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/WaterfallAxis.js'], _modules['Series/Waterfall/WaterfallPoint.js']], function (Axis, Chart, palette, SeriesRegistry, U, WaterfallAxis, WaterfallPoint) {
+    _registerModule(_modules, 'Series/Waterfall/WaterfallSeries.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/WaterfallAxis.js'], _modules['Series/Waterfall/WaterfallPoint.js']], function (Axis, Chart, SeriesRegistry, U, WaterfallAxis, WaterfallPoint) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -10954,7 +11042,7 @@
                  * @since   3.0
                  * @product highcharts
                  */
-                lineColor: palette.neutralColor80,
+                lineColor: "#333333" /* neutralColor80 */,
                 /**
                  * A name for the dash style to use for the line connecting the columns
                  * of the waterfall series. Possible values: Dash, DashDot, Dot,
@@ -10979,7 +11067,7 @@
                  * @since   3.0
                  * @product highcharts
                  */
-                borderColor: palette.neutralColor80,
+                borderColor: "#333333" /* neutralColor80 */,
                 states: {
                     hover: {
                         lineWidthPlus: 0 // #3126

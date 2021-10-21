@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Highcharts Drilldown module
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Extensions/Drilldown.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, Color, ColumnSeries, F, H, D, palette, Point, Series, SeriesRegistry, SVGRenderer, Tick, U) {
+    _registerModule(_modules, 'Extensions/Drilldown.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Color/Color.js'], _modules['Series/Column/ColumnSeries.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Axis/Tick.js'], _modules['Core/Utilities.js']], function (A, Axis, Chart, Color, ColumnSeries, F, H, D, Point, Series, SeriesRegistry, SVGRenderer, Tick, U) {
         /* *
          *
          *  Highcharts Drilldown module
@@ -248,7 +248,7 @@
                 /** @ignore-option */
                 cursor: 'pointer',
                 /** @ignore-option */
-                color: palette.highlightColor100,
+                color: "#003399" /* highlightColor100 */,
                 /** @ignore-option */
                 fontWeight: 'bold',
                 /** @ignore-option */
@@ -272,7 +272,7 @@
              */
             activeDataLabelStyle: {
                 cursor: 'pointer',
-                color: palette.highlightColor100,
+                color: "#003399" /* highlightColor100 */,
                 fontWeight: 'bold',
                 textDecoration: 'underline'
             },

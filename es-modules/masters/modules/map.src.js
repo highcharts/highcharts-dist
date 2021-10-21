@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.2.2 (2021-08-24)
+ * @license Highmaps JS v9.3.0 (2021-10-21)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -11,9 +11,7 @@
  */
 'use strict';
 import Highcharts from '../../Core/Globals.js';
-import '../../Core/Axis/MapAxis.js';
 import ColorAxis from '../../Core/Axis/Color/ColorAxis.js';
-import '../../Mixins/ColorMapSeries.js';
 import '../../Maps/MapNavigation.js';
 import '../../Maps/MapPointer.js';
 import '../../Series/Map/MapSeries.js';

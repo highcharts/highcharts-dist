@@ -163,6 +163,7 @@ var XRangePoint = /** @class */ (function (_super) {
     return XRangePoint;
 }(ColumnSeries.prototype.pointClass));
 extend(XRangePoint.prototype, {
+    ttBelow: false,
     tooltipDateKeys: ['x', 'x2']
 });
 /* *

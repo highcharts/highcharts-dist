@@ -72,7 +72,7 @@ var CrookedLine = /** @class */ (function (_super) {
                     return target.annotation.points[i];
                 };
             })
-        }), false);
+        }), 0);
         typeOptions.line = shape.options;
     };
     return CrookedLine;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Timeline series
  *
@@ -226,7 +226,7 @@
 
         return TimelinePoint;
     });
-    _registerModule(_modules, 'Series/Timeline/TimelineSeries.js', [_modules['Core/Legend/LegendSymbol.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Series/Timeline/TimelinePoint.js'], _modules['Core/Utilities.js']], function (LegendSymbol, palette, SeriesRegistry, SVGElement, TimelinePoint, U) {
+    _registerModule(_modules, 'Series/Timeline/TimelineSeries.js', [_modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGElement.js'], _modules['Series/Timeline/TimelinePoint.js'], _modules['Core/Utilities.js']], function (LegendSymbol, SeriesRegistry, SVGElement, TimelinePoint, U) {
         /* *
          *
          *  Timeline Series.
@@ -589,11 +589,11 @@
                      *         Alternate disabled
                      */
                     alternate: true,
-                    backgroundColor: palette.backgroundColor,
+                    backgroundColor: "#ffffff" /* backgroundColor */,
                     borderWidth: 1,
-                    borderColor: palette.neutralColor40,
+                    borderColor: "#999999" /* neutralColor40 */,
                     borderRadius: 3,
-                    color: palette.neutralColor80,
+                    color: "#333333" /* neutralColor80 */,
                     /**
                      * The color of the line connecting the data label to the point.
                      * The default color is the same as the point's color.

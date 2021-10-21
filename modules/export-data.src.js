@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Exporting module
  *
@@ -134,12 +134,12 @@
                 }
             }
         };
-        var exports = {
+        var DownloadURL = {
                 dataURLtoBlob: dataURLtoBlob,
                 downloadURL: downloadURL
             };
 
-        return exports;
+        return DownloadURL;
     });
     _registerModule(_modules, 'Extensions/ExportData.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Utilities.js'], _modules['Extensions/DownloadURL.js']], function (Axis, Chart, AST, H, D, U, DownloadURL) {
         /* *

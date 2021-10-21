@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * Exporting module
  *
@@ -275,7 +275,7 @@
 
         return H.Fullscreen;
     });
-    _registerModule(_modules, 'Mixins/Navigation.js', [], function () {
+    _registerModule(_modules, 'Core/Chart/ChartNavigationComposition.js', [], function () {
         /**
          *
          *  (c) 2010-2021 Paweł Fus
@@ -285,56 +285,91 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var chartNavigation = {
+        /* *
+         *
+         *  Composition
+         *
+         * */
+        var ChartNavigationComposition;
+        (function (ChartNavigationComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(chart) {
+                if (!chart.navigation) {
+                    chart.navigation = new Additions(chart);
+                }
+                return chart;
+            }
+            ChartNavigationComposition.compose = compose;
+            /* *
+             *
+             *  Class
+             *
+             * */
+            /**
+             * Initializes `chart.navigation` object which delegates `update()` methods
+             * to all other common classes (used in exporting and navigationBindings).
+             * @private
+             */
+            var Additions = /** @class */ (function () {
+                    /* *
+                     *
+                     *  Constructor
+                     *
+                     * */
+                    function Additions(chart) {
+                        this.updates = [];
+                    this.chart = chart;
+                }
+                /* *
+                 *
+                 *  Functions
+                 *
+                 * */
                 /**
-                 * Initializes `chart.navigation` object which delegates `update()` methods
-                 * to all other common classes (used in exporting and navigationBindings).
+                 * Registers an `update()` method in the `chart.navigation` object.
                  *
                  * @private
-                 * @param {Highcharts.Chart} chart
-                 *        The chart instance.
-                 * @return {void}
+                 * @param {UpdateFunction} updateFn
+                 * The `update()` method that will be called in `chart.update()`.
                  */
-                initUpdate: function (chart) {
-                    if (!chart.navigation) {
-                        chart.navigation = {
-                            updates: [],
-                            update: function (options,
-            redraw) {
-                                this.updates.forEach(function (updateConfig) {
-                                    updateConfig.update.call(updateConfig.context,
-            options,
-            redraw);
-                            });
-                        }
-                    };
-                }
-            },
-            /**
-             * Registers an `update()` method in the `chart.navigation` object.
-             *
-             * @private
-             * @param {Highcharts.ChartNavigationUpdateFunction} update
-             *        The `update()` method that will be called in `chart.update()`.
-             * @param {Highcharts.Chart} chart
-             *        The chart instance. `update()` will use that as a context
-             *        (`this`).
-             * @return {void}
-             */
-            addUpdate: function (update, chart) {
-                if (!chart.navigation) {
-                    this.initUpdate(chart);
-                }
-                chart.navigation.updates.push({
-                    update: update,
-                    context: chart
-                });
-            }
-        };
+                Additions.prototype.addUpdate = function (updateFn) {
+                    this.chart.navigation.updates.push(updateFn);
+                };
+                /**
+                 * @private
+                 */
+                Additions.prototype.update = function (options, redraw) {
+                    var _this = this;
+                    this.updates.forEach(function (updateFn) {
+                        updateFn.call(_this.chart, options, redraw);
+                    });
+                };
+                return Additions;
+            }());
+            ChartNavigationComposition.Additions = Additions;
+        })(ChartNavigationComposition || (ChartNavigationComposition = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
-        return chartNavigation;
+        return ChartNavigationComposition;
     });
-    _registerModule(_modules, 'Extensions/Exporting/ExportingDefaults.js', [_modules['Core/Globals.js'], _modules['Core/Color/Palette.js']], function (H, Palette) {
+    _registerModule(_modules, 'Extensions/Exporting/ExportingDefaults.js', [_modules['Core/Globals.js']], function (H) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -857,12 +892,6 @@
                  */
                 contextButtonTitle: 'Chart context menu'
             };
-        /**
-         * A collection of options for buttons and menus appearing in the exporting
-         * module.
-         *
-         * @optionparent navigation
-         */
         var navigation = {
                 /**
                  * A collection of options for buttons appearing in the exporting
@@ -993,7 +1022,7 @@
                      * @type  {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
                      * @since 2.0
                      */
-                    symbolFill: Palette.neutralColor60,
+                    symbolFill: "#666666" /* neutralColor60 */,
                     /**
                      * The color of the symbol's stroke or line.
                      *
@@ -1003,7 +1032,7 @@
                      * @type  {Highcharts.ColorString}
                      * @since 2.0
                      */
-                    symbolStroke: Palette.neutralColor60,
+                    symbolStroke: "#666666" /* neutralColor60 */,
                     /**
                      * The pixel stroke width of the symbol on the button.
                      *
@@ -1031,7 +1060,7 @@
                          * The default fill exists only to capture hover events.
                          *
                          * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-                         * @default   ${palette.backgroundColor}
+                         * @default   #ffffff
                          * @apioption navigation.buttonOptions.theme.fill
                          */
                         /**
@@ -1064,9 +1093,9 @@
                  */
                 menuStyle: {
                     /** @ignore-option */
-                    border: "1px solid " + Palette.neutralColor40,
+                    border: "1px solid " + "#999999" /* neutralColor40 */,
                     /** @ignore-option */
-                    background: Palette.backgroundColor,
+                    background: "#ffffff" /* backgroundColor */,
                     /** @ignore-option */
                     padding: '5px 0'
                 },
@@ -1092,7 +1121,7 @@
                     /** @ignore-option */
                     padding: '0.5em 1em',
                     /** @ignore-option */
-                    color: Palette.neutralColor80,
+                    color: "#333333" /* neutralColor80 */,
                     /** @ignore-option */
                     background: 'none',
                     /** @ignore-option */
@@ -1119,9 +1148,9 @@
                  */
                 menuItemHoverStyle: {
                     /** @ignore-option */
-                    background: Palette.highlightColor80,
+                    background: "#335cad" /* highlightColor80 */,
                     /** @ignore-option */
-                    color: Palette.backgroundColor
+                    color: "#ffffff" /* backgroundColor */
                 }
             };
         /* *
@@ -1330,7 +1359,7 @@
          *        function instead.
          */
         function getJSON(url, success) {
-            exports.ajax({
+            HttpUtilities.ajax({
                 url: url,
                 success: success,
                 dataType: 'json',
@@ -1386,7 +1415,7 @@
          *  Default Export
          *
          * */
-        var exports = {
+        var HttpUtilities = {
                 ajax: ajax,
                 getJSON: getJSON,
                 post: post
@@ -1425,9 +1454,9 @@
         */
         (''); // keeps doclets above in JS file
 
-        return exports;
+        return HttpUtilities;
     });
-    _registerModule(_modules, 'Extensions/Exporting/Exporting.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Mixins/Navigation.js'], _modules['Core/DefaultOptions.js'], _modules['Extensions/Exporting/ExportingDefaults.js'], _modules['Extensions/Exporting/ExportingSymbols.js'], _modules['Core/Globals.js'], _modules['Core/HttpUtilities.js'], _modules['Core/Color/Palette.js'], _modules['Core/Utilities.js']], function (AST, Chart, chartNavigationMixin, D, ExportingDefaults, ExportingSymbols, G, HU, Palette, U) {
+    _registerModule(_modules, 'Extensions/Exporting/Exporting.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Chart/ChartNavigationComposition.js'], _modules['Core/DefaultOptions.js'], _modules['Extensions/Exporting/ExportingDefaults.js'], _modules['Extensions/Exporting/ExportingSymbols.js'], _modules['Core/Globals.js'], _modules['Core/HttpUtilities.js'], _modules['Core/Utilities.js']], function (AST, Chart, ChartNavigationComposition, D, ExportingDefaults, ExportingSymbols, G, HU, U) {
         /* *
          *
          *  Exporting module
@@ -1549,7 +1578,7 @@
                     select = states && states.select;
                 var callback;
                 if (!chart.styledMode) {
-                    attr.fill = pick(attr.fill, Palette.backgroundColor);
+                    attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
                     attr.stroke = pick(attr.stroke, 'none');
                 }
                 delete attr.states;
@@ -1583,7 +1612,7 @@
                 }
                 if (!chart.styledMode) {
                     attr['stroke-linecap'] = 'round';
-                    attr.fill = pick(attr.fill, Palette.backgroundColor);
+                    attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
                     attr.stroke = pick(attr.stroke, 'none');
                 }
                 var button = renderer
@@ -2499,9 +2528,11 @@
                 // Register update() method for navigation. Can not be set the same way
                 // as for exporting, because navigation options are shared with bindings
                 // which has separate update() logic.
-                chartNavigationMixin.addUpdate(function (options, redraw) {
+                ChartNavigationComposition
+                    .compose(chart).navigation
+                    .addUpdate(function (options, redraw) {
                     update('navigation', options, redraw);
-                }, chart);
+                });
             }
             /**
              * Exporting module required. Clears away other elements in the page and
@@ -2639,7 +2670,7 @@
         // zoom and pan right click menus.
         /**
          * A collection of options for buttons and menus appearing in the exporting
-         * module.
+         * module or in Stock Tools.
          *
          * @requires     modules/exporting
          * @optionparent navigation

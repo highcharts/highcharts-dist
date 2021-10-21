@@ -12,7 +12,6 @@ import Color from './Color/Color.js';
 var color = Color.parse;
 import H from './Globals.js';
 var charts = H.charts, noop = H.noop;
-import Palette from '../Core/Color/Palette.js';
 import Tooltip from './Tooltip.js';
 import U from './Utilities.js';
 var addEvent = U.addEvent, attr = U.attr, css = U.css, defined = U.defined, extend = U.extend, find = U.find, fireEvent = U.fireEvent, isNumber = U.isNumber, isObject = U.isObject, objectEach = U.objectEach, offset = U.offset, pick = U.pick, splat = U.splat;
@@ -163,7 +162,7 @@ var Pointer = /** @class */ (function () {
                 visiblePlotOnly: true
             });
             // make a selection
-            if (chart.hasCartesianSeries &&
+            if ((chart.hasCartesianSeries || chart.mapView) &&
                 (this.zoomX || this.zoomY) &&
                 clickedInside &&
                 !panKey) {
@@ -178,7 +177,7 @@ var Pointer = /** @class */ (function () {
                     if (!chart.styledMode) {
                         selectionMarker.attr({
                             fill: (chartOptions.selectionMarkerFill ||
-                                color(Palette.highlightColor80)
+                                color("#335cad" /* highlightColor80 */)
                                     .setOpacity(0.25).get())
                         });
                     }
@@ -229,20 +228,22 @@ var Pointer = /** @class */ (function () {
     Pointer.prototype.drop = function (e) {
         var pointer = this, chart = this.chart, hasPinched = this.hasPinched;
         if (this.selectionMarker) {
-            var selectionData_1 = {
+            var selectionBox = this.selectionMarker, x_1 = selectionBox.attr ? selectionBox.attr('x') : selectionBox.x, y_1 = selectionBox.attr ? selectionBox.attr('y') : selectionBox.y, width_1 = selectionBox.attr ?
+                selectionBox.attr('width') :
+                selectionBox.width, height_1 = selectionBox.attr ?
+                selectionBox.attr('height') :
+                selectionBox.height, selectionData_1 = {
                 originalEvent: e,
                 xAxis: [],
-                yAxis: []
-            }, selectionBox = this.selectionMarker, selectionLeft_1 = selectionBox.attr ?
-                selectionBox.attr('x') :
-                selectionBox.x, selectionTop_1 = selectionBox.attr ?
-                selectionBox.attr('y') :
-                selectionBox.y, selectionWidth_1 = selectionBox.attr ?
-                selectionBox.attr('width') :
-                selectionBox.width, selectionHeight_1 = selectionBox.attr ?
-                selectionBox.attr('height') :
-                selectionBox.height;
-            var runZoom_1;
+                yAxis: [],
+                x: x_1,
+                y: y_1,
+                width: width_1,
+                height: height_1
+            }, 
+            // Start by false runZoom, unless when we have a mapView, in
+            // which case the zoom will be handled in the selection event.
+            runZoom_1 = Boolean(chart.mapView);
             // a selection has been made
             if (this.hasDragged || hasPinched) {
                 // record each axis' min and max
@@ -254,15 +255,13 @@ var Pointer = /** @class */ (function () {
                                 xAxis: 'zoomX',
                                 yAxis: 'zoomY'
                             }[axis.coll]]) &&
-                        isNumber(selectionLeft_1) &&
-                        isNumber(selectionTop_1)) { // #859, #3569
+                        isNumber(x_1) &&
+                        isNumber(y_1)) { // #859, #3569
                         var horiz = axis.horiz, minPixelPadding = e.type === 'touchend' ?
                             axis.minPixelPadding :
                             0, // #1207, #3075
-                        selectionMin = axis.toValue((horiz ? selectionLeft_1 : selectionTop_1) +
-                            minPixelPadding), selectionMax = axis.toValue((horiz ?
-                            selectionLeft_1 + selectionWidth_1 :
-                            selectionTop_1 + selectionHeight_1) - minPixelPadding);
+                        selectionMin = axis.toValue((horiz ? x_1 : y_1) + minPixelPadding), selectionMax = axis.toValue((horiz ? x_1 + width_1 : y_1 + height_1) -
+                            minPixelPadding);
                         selectionData_1[axis.coll].push({
                             axis: axis,
                             // Min/max for reversed axes
@@ -939,20 +938,22 @@ var Pointer = /** @class */ (function () {
         }
         else if (pinchDown.length) { // can be 0 when releasing, if touchend
             // fires first
-            // Set the marker
-            if (!selectionMarker) {
-                // @todo It's a mock object, so maybe we need a separate
-                // interface
-                self.selectionMarker = selectionMarker = extend({
-                    destroy: noop,
-                    touch: true
-                }, chart.plotBox);
-            }
-            self.pinchTranslate(pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
-            self.hasPinched = hasZoom;
-            // Scale and translate the groups to provide visual feedback during
-            // pinching
-            self.scaleGroups(transform, clip);
+            fireEvent(chart, 'touchpan', { originalEvent: e }, function () {
+                // Set the marker
+                if (!selectionMarker) {
+                    // @todo It's a mock object, so maybe we need a separate
+                    // interface
+                    self.selectionMarker = selectionMarker = extend({
+                        destroy: noop,
+                        touch: true
+                    }, chart.plotBox);
+                }
+                self.pinchTranslate(pinchDown, touches, transform, selectionMarker, clip, lastValidTouch);
+                self.hasPinched = hasZoom;
+                // Scale and translate the groups to provide visual feedback
+                // during pinching
+                self.scaleGroups(transform, clip);
+            });
             if (self.res) {
                 self.res = false;
                 this.reset(false, 0);
@@ -1252,7 +1253,9 @@ var Pointer = /** @class */ (function () {
         // Scale each series
         chart.series.forEach(function (series) {
             var seriesAttribs = attribs || series.getPlotBox(); // #1701
-            if (series.xAxis && series.xAxis.zoomEnabled && series.group) {
+            if (series.group &&
+                ((series.xAxis && series.xAxis.zoomEnabled) ||
+                    chart.mapView)) {
                 series.group.attr(seriesAttribs);
                 if (series.markerGroup) {
                     series.markerGroup.attr(seriesAttribs);

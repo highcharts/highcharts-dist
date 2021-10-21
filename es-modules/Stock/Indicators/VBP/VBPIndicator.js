@@ -32,7 +32,7 @@ import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var SMAIndicator = SeriesRegistry.seriesTypes.sma;
 import U from '../../../Core/Utilities.js';
 import StockChart from '../../../Core/Chart/StockChart.js';
-var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
+var addEvent = U.addEvent, arrayMax = U.arrayMax, arrayMin = U.arrayMin, correctFloat = U.correctFloat, defined = U.defined, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge;
 /* eslint-disable require-jsdoc */
 // Utils
 function arrayExtremesOHLC(data) {
@@ -284,7 +284,15 @@ var VBPIndicator = /** @class */ (function (_super) {
             arrayMin(yValues), highRange = rangeExtremes ?
             rangeExtremes.max :
             arrayMax(yValues), zoneStarts = indicator.zoneStarts = [], priceZones = [], i = 0, j = 1, rangeStep, zoneStartsLength;
-        if (!lowRange || !highRange) {
+        // If the compare mode is set on the main series, change the VBP
+        // zones to fit new extremes, #16277.
+        var mainSeries = indicator.linkedParent;
+        if (!indicator.options.compareToMain &&
+            mainSeries.dataModify) {
+            lowRange = mainSeries.dataModify.modifyValue(lowRange);
+            highRange = mainSeries.dataModify.modifyValue(highRange);
+        }
+        if (!defined(lowRange) || !defined(highRange)) {
             if (this.points.length) {
                 this.setData([]);
                 this.zoneStarts = [];
@@ -344,6 +352,15 @@ var VBPIndicator = /** @class */ (function (_super) {
                         yValues[i - 1][3] :
                         yValues[i - 1]) :
                     value;
+                // If the compare mode is set on the main series,
+                // change the VBP zones to fit new extremes, #16277.
+                var mainSeries = indicator.linkedParent;
+                if (!indicator.options.compareToMain &&
+                    mainSeries.dataModify) {
+                    value = mainSeries.dataModify.modifyValue(value);
+                    previousValue = mainSeries.dataModify
+                        .modifyValue(previousValue);
+                }
                 // Checks if this is the point with the
                 // lowest close value and if so, adds it calculations
                 if (value <= zone.start && zone.index === 0) {
@@ -532,7 +549,7 @@ export default VBPIndicator;
  * @extends   series,plotOptions.vbp
  * @since     6.0.0
  * @product   highstock
- * @excluding dataParser, dataURL
+ * @excluding dataParser, dataURL, compare, compareBase, compareStart
  * @requires  stock/indicators/indicators
  * @requires  stock/indicators/volume-by-price
  * @apioption series.vbp

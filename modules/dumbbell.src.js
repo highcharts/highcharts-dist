@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.2.2 (2021-08-24)
+ * @license Highcharts JS v9.3.0 (2021-10-21)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -289,7 +289,7 @@
 
         return DumbbellPoint;
     });
-    _registerModule(_modules, 'Series/Dumbbell/DumbbellSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Series/Dumbbell/DumbbellPoint.js'], _modules['Core/Globals.js'], _modules['Core/Color/Palette.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColumnSeries, DumbbellPoint, H, palette, Series, SeriesRegistry, SVGRenderer, U) {
+    _registerModule(_modules, 'Series/Dumbbell/DumbbellSeries.js', [_modules['Series/Column/ColumnSeries.js'], _modules['Series/Dumbbell/DumbbellPoint.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js']], function (ColumnSeries, DumbbellPoint, H, Series, SeriesRegistry, SVGRenderer, U) {
         /* *
          *
          *  (c) 2010-2021 Sebastian Bochan, Rafal Sebestjanski
@@ -647,7 +647,7 @@
                  * @since 8.0.0
                  * @product   highcharts highstock
                  */
-                lowColor: palette.neutralColor80,
+                lowColor: "#333333" /* neutralColor80 */,
                 /**
                  * Color of the line that connects the dumbbell point's values.
                  * By default it is the series' color.
@@ -787,7 +787,7 @@
          *
          * @type        {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
          * @since       8.0.0
-         * @default     ${palette.neutralColor80}
+         * @default     #333333
          * @product     highcharts highstock
          * @apioption   series.dumbbell.data.lowColor
          */

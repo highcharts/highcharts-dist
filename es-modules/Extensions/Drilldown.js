@@ -22,7 +22,6 @@ import H from '../Core/Globals.js';
 var noop = H.noop;
 import D from '../Core/DefaultOptions.js';
 var defaultOptions = D.defaultOptions;
-import palette from '../Core/Color/Palette.js';
 import Point from '../Core/Series/Point.js';
 import Series from '../Core/Series/Series.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
@@ -226,7 +225,7 @@ defaultOptions.drilldown = {
         /** @ignore-option */
         cursor: 'pointer',
         /** @ignore-option */
-        color: palette.highlightColor100,
+        color: "#003399" /* highlightColor100 */,
         /** @ignore-option */
         fontWeight: 'bold',
         /** @ignore-option */
@@ -250,7 +249,7 @@ defaultOptions.drilldown = {
      */
     activeDataLabelStyle: {
         cursor: 'pointer',
-        color: palette.highlightColor100,
+        color: "#003399" /* highlightColor100 */,
         fontWeight: 'bold',
         textDecoration: 'underline'
     },

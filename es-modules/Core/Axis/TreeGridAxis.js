@@ -13,8 +13,8 @@ import BrokenAxis from './BrokenAxis.js';
 import GridAxis from './GridAxis.js';
 import Tree from '../../Gantt/Tree.js';
 import TreeGridTick from './TreeGridTick.js';
-import mixinTreeSeries from '../../Mixins/TreeSeries.js';
-var getLevelOptions = mixinTreeSeries.getLevelOptions;
+import TU from '../../Series/TreeUtilities.js';
+var getLevelOptions = TU.getLevelOptions;
 import U from '../Utilities.js';
 var addEvent = U.addEvent, find = U.find, fireEvent = U.fireEvent, isArray = U.isArray, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, wrap = U.wrap;
 /**

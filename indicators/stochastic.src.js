@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,7 +28,56 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/MultipleLines.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
+    _registerModule(_modules, 'Stock/Indicators/ArrayUtilities.js', [], function () {
+        /**
+         *
+         *  (c) 2010-2021 Pawel Fus & Daniel Studencki
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Get extremes of array filled by OHLC data.
+         *
+         * @private
+         *
+         * @param {Array<Array<number>>} arr
+         * Array of OHLC points (arrays).
+         *
+         * @param {number} minIndex
+         * Index of "low" value in point array.
+         *
+         * @param {number} maxIndex
+         * Index of "high" value in point array.
+         *
+         * @return {Array<number,number>}
+         * Returns array with min and max value.
+         */
+        function getArrayExtremes(arr, minIndex, maxIndex) {
+            return arr.reduce(function (prev, target) { return [
+                Math.min(prev[0], target[minIndex]),
+                Math.max(prev[1], target[maxIndex])
+            ]; }, [Number.MAX_VALUE, -Number.MAX_VALUE]);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var ArrayUtilities = {
+                getArrayExtremes: getArrayExtremes
+            };
+
+        return ArrayUtilities;
+    });
+    _registerModule(_modules, 'Stock/Indicators/MultipleLinesComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /**
          *
          *  (c) 2010-2021 Wojciech Chmiel
@@ -38,118 +87,96 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var defined = U.defined,
             error = U.error,
             merge = U.merge;
-        var SMA = H.seriesTypes.sma;
+        /* *
+         *
+         *  Composition
+         *
+         * */
         /**
-         * Mixin useful for all indicators that have more than one line.
-         * Merge it with your implementation where you will provide
-         * getValues method appropriate to your indicator and pointArrayMap,
-         * pointValKey, linesApiNames properites. Notice that pointArrayMap
-         * should be consistent with amount of lines calculated in getValues method.
+         * Composition useful for all indicators that have more than one line. Compose
+         * it with your implementation where you will provide the `getValues` method
+         * appropriate to your indicator and `pointArrayMap`, `pointValKey`,
+         * `linesApiNames` properties. Notice that `pointArrayMap` should be consistent
+         * with the amount of lines calculated in the `getValues` method.
          *
          * @private
          * @mixin multipleLinesMixin
          */
-        var multipleLinesMixin = {
-                /* eslint-disable valid-jsdoc */
-                /**
-                 * Lines ids. Required to plot appropriate amount of lines.
-                 * Notice that pointArrayMap should have more elements than
-                 * linesApiNames, because it contains main line and additional lines ids.
-                 * Also it should be consistent with amount of lines calculated in
-                 * getValues method from your implementation.
-                 *
-                 * @private
-                 * @name multipleLinesMixin.pointArrayMap
-                 * @type {Array<string>}
-                 */
-                pointArrayMap: ['top', 'bottom'],
-                /**
-                 * Main line id.
-                 *
-                 * @private
-                 * @name multipleLinesMixin.pointValKey
-                 * @type {string}
-                 */
-                pointValKey: 'top',
-                /**
-                 * Additional lines DOCS names. Elements of linesApiNames array should
-                 * be consistent with DOCS line names defined in your implementation.
-                 * Notice that linesApiNames should have decreased amount of elements
-                 * relative to pointArrayMap (without pointValKey).
-                 *
-                 * @private
-                 * @name multipleLinesMixin.linesApiNames
-                 * @type {Array<string>}
-                 */
-                linesApiNames: ['bottomLine'],
-                /**
-                 * Create translatedLines Collection based on pointArrayMap.
-                 *
-                 * @private
-                 * @function multipleLinesMixin.getTranslatedLinesNames
-                 * @param {string} [excludedValue]
-                 *        Main line id
-                 * @return {Array<string>}
-                 *         Returns translated lines names without excluded value.
-                 */
-                getTranslatedLinesNames: function (excludedValue) {
-                    var translatedLines = [];
-                (this.pointArrayMap || []).forEach(function (propertyName) {
-                    if (propertyName !== excludedValue) {
-                        translatedLines.push('plot' +
-                            propertyName.charAt(0).toUpperCase() +
-                            propertyName.slice(1));
-                    }
-                });
-                return translatedLines;
-            },
+        var MultipleLinesComposition;
+        (function (MultipleLinesComposition) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
             /**
-             * @private
-             * @function multipleLinesMixin.toYData
-             * @param {Highcharts.Point} point
-             *        Indicator point
-             * @return {Array<number>}
-             *         Returns point Y value for all lines
-             */
-            toYData: function (point) {
-                var pointColl = [];
-                (this.pointArrayMap || []).forEach(function (propertyName) {
-                    pointColl.push(point[propertyName]);
-                });
-                return pointColl;
-            },
-            /**
-             * Add lines plot pixel values.
+             * Additional lines DOCS names. Elements of linesApiNames array should
+             * be consistent with DOCS line names defined in your implementation.
+             * Notice that linesApiNames should have decreased amount of elements
+             * relative to pointArrayMap (without pointValKey).
              *
              * @private
-             * @function multipleLinesMixin.translate
-             * @return {void}
+             * @name multipleLinesMixin.linesApiNames
+             * @type {Array<string>}
              */
-            translate: function () {
-                var indicator = this,
-                    pointArrayMap = indicator.pointArrayMap,
-                    LinesNames = [],
-                    value;
-                var modfidyValue = indicator.modifyValue;
-                LinesNames = indicator.getTranslatedLinesNames();
-                SMA.prototype.translate.apply(indicator, arguments);
-                indicator.points.forEach(function (point) {
-                    pointArrayMap.forEach(function (propertyName, i) {
-                        value = point[propertyName];
-                        // If the modifier, like for example compare exists,
-                        // modified the original value by that method, #15867.
-                        if (modfidyValue) {
-                            value = modfidyValue.call(indicator, value);
-                        }
-                        if (value !== null) {
-                            point[LinesNames[i]] = indicator.yAxis.toPixels(value, true);
-                        }
-                    });
-                });
-            },
+            var linesApiNames = ['bottomLine'];
+            /**
+             * Lines ids. Required to plot appropriate amount of lines.
+             * Notice that pointArrayMap should have more elements than
+             * linesApiNames, because it contains main line and additional lines ids.
+             * Also it should be consistent with amount of lines calculated in
+             * getValues method from your implementation.
+             *
+             * @private
+             * @name multipleLinesMixin.pointArrayMap
+             * @type {Array<string>}
+             */
+            var pointArrayMap = ['top', 'bottom'];
+            /**
+             * Main line id.
+             *
+             * @private
+             * @name multipleLinesMixin.pointValKey
+             * @type {string}
+             */
+            var pointValKey = 'top';
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(IndicatorClass) {
+                if (composedClasses.indexOf(IndicatorClass) === -1) {
+                    composedClasses.push(IndicatorClass);
+                    var proto = IndicatorClass.prototype;
+                    proto.linesApiNames = (proto.linesApiNames ||
+                        linesApiNames.slice());
+                    proto.pointArrayMap = (proto.pointArrayMap ||
+                        pointArrayMap.slice());
+                    proto.pointValKey = (proto.pointValKey ||
+                        pointValKey);
+                    proto.drawGraph = drawGraph;
+                    proto.toYData = toYData;
+                    proto.translate = translate;
+                    proto.getTranslatedLinesNames = getTranslatedLinesNames;
+                }
+                return IndicatorClass;
+            }
+            MultipleLinesComposition.compose = compose;
             /**
              * Draw main and additional lines.
              *
@@ -157,12 +184,11 @@
              * @function multipleLinesMixin.drawGraph
              * @return {void}
              */
-            drawGraph: function () {
+            function drawGraph() {
                 var indicator = this,
                     pointValKey = indicator.pointValKey,
                     linesApiNames = indicator.linesApiNames,
                     mainLinePoints = indicator.points,
-                    pointsLength = mainLinePoints.length,
                     mainLineOptions = indicator.options,
                     mainLinePath = indicator.graph,
                     gappedExtend = {
@@ -172,7 +198,8 @@
                     }, 
                     // additional lines point place holders:
                     secondaryLines = [],
-                    secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey),
+                    secondaryLinesNames = indicator.getTranslatedLinesNames(pointValKey);
+                var pointsLength = mainLinePoints.length,
                     point;
                 // Generate points for additional lines:
                 secondaryLinesNames.forEach(function (plotLine, index) {
@@ -203,7 +230,7 @@
                                 ' at mixin/multiple-line.js:34');
                         }
                         indicator.graph = indicator['graph' + lineName];
-                        SMA.prototype.drawGraph.call(indicator);
+                        SMAIndicator.prototype.drawGraph.call(indicator);
                         // Now save lines:
                         indicator['graph' + lineName] = indicator.graph;
                     }
@@ -217,71 +244,82 @@
                 indicator.points = mainLinePoints;
                 indicator.options = mainLineOptions;
                 indicator.graph = mainLinePath;
-                SMA.prototype.drawGraph.call(indicator);
+                SMAIndicator.prototype.drawGraph.call(indicator);
             }
-        };
-
-        return multipleLinesMixin;
-    });
-    _registerModule(_modules, 'Mixins/ReduceArray.js', [], function () {
-        /**
+            /**
+             * Create translatedLines Collection based on pointArrayMap.
+             *
+             * @private
+             * @function multipleLinesMixin.getTranslatedLinesNames
+             * @param {string} [excludedValue]
+             *        Main line id
+             * @return {Array<string>}
+             *         Returns translated lines names without excluded value.
+             */
+            function getTranslatedLinesNames(excludedValue) {
+                var translatedLines = [];
+                (this.pointArrayMap || []).forEach(function (propertyName) {
+                    if (propertyName !== excludedValue) {
+                        translatedLines.push('plot' +
+                            propertyName.charAt(0).toUpperCase() +
+                            propertyName.slice(1));
+                    }
+                });
+                return translatedLines;
+            }
+            /**
+             * @private
+             * @function multipleLinesMixin.toYData
+             * @param {Highcharts.Point} point
+             *        Indicator point
+             * @return {Array<number>}
+             *         Returns point Y value for all lines
+             */
+            function toYData(point) {
+                var pointColl = [];
+                (this.pointArrayMap || []).forEach(function (propertyName) {
+                    pointColl.push(point[propertyName]);
+                });
+                return pointColl;
+            }
+            /**
+             * Add lines plot pixel values.
+             *
+             * @private
+             * @function multipleLinesMixin.translate
+             * @return {void}
+             */
+            function translate() {
+                var indicator = this,
+                    pointArrayMap = indicator.pointArrayMap;
+                var LinesNames = [],
+                    value;
+                LinesNames = indicator.getTranslatedLinesNames();
+                SMAIndicator.prototype.translate.apply(indicator, arguments);
+                indicator.points.forEach(function (point) {
+                    pointArrayMap.forEach(function (propertyName, i) {
+                        value = point[propertyName];
+                        // If the modifier, like for example compare exists,
+                        // modified the original value by that method, #15867.
+                        if (indicator.dataModify) {
+                            value = indicator.dataModify.modifyValue(value);
+                        }
+                        if (value !== null) {
+                            point[LinesNames[i]] = indicator.yAxis.toPixels(value, true);
+                        }
+                    });
+                });
+            }
+        })(MultipleLinesComposition || (MultipleLinesComposition = {}));
+        /* *
          *
-         *  (c) 2010-2021 Pawel Fus & Daniel Studencki
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *  Default Export
          *
          * */
-        var reduceArrayMixin = {
-                /**
-                 * Get min value of array filled by OHLC data.
-                 * @private
-                 * @param {Array<*>} arr Array of OHLC points (arrays).
-                 * @param {string} index Index of "low" value in point array.
-                 * @return {number} Returns min value.
-                 */
-                minInArray: function (arr,
-            index) {
-                    return arr.reduce(function (min,
-            target) {
-                        return Math.min(min,
-            target[index]);
-                }, Number.MAX_VALUE);
-            },
-            /**
-             * Get max value of array filled by OHLC data.
-             * @private
-             * @param {Array<*>} arr Array of OHLC points (arrays).
-             * @param {string} index Index of "high" value in point array.
-             * @return {number} Returns max value.
-             */
-            maxInArray: function (arr, index) {
-                return arr.reduce(function (max, target) {
-                    return Math.max(max, target[index]);
-                }, -Number.MAX_VALUE);
-            },
-            /**
-             * Get extremes of array filled by OHLC data.
-             * @private
-             * @param {Array<*>} arr Array of OHLC points (arrays).
-             * @param {string} minIndex Index of "low" value in point array.
-             * @param {string} maxIndex Index of "high" value in point array.
-             * @return {Array<number,number>} Returns array with min and max value.
-             */
-            getArrayExtremes: function (arr, minIndex, maxIndex) {
-                return arr.reduce(function (prev, target) {
-                    return [
-                        Math.min(prev[0], target[minIndex]),
-                        Math.max(prev[1], target[maxIndex])
-                    ];
-                }, [Number.MAX_VALUE, -Number.MAX_VALUE]);
-            }
-        };
 
-        return reduceArrayMixin;
+        return MultipleLinesComposition;
     });
-    _registerModule(_modules, 'Stock/Indicators/Stochastic/StochasticIndicator.js', [_modules['Mixins/MultipleLines.js'], _modules['Mixins/ReduceArray.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (MultipleLinesMixin, ReduceArrayMixin, SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/Stochastic/StochasticIndicator.js', [_modules['Stock/Indicators/ArrayUtilities.js'], _modules['Stock/Indicators/MultipleLinesComposition.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (AU, MultipleLinesComposition, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -309,6 +347,11 @@
         var extend = U.extend,
             isArray = U.isArray,
             merge = U.merge;
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The Stochastic series type.
          *
@@ -321,6 +364,11 @@
         var StochasticIndicator = /** @class */ (function (_super) {
                 __extends(StochasticIndicator, _super);
             function StochasticIndicator() {
+                /* *
+                 *
+                 *  Static Properties
+                 *
+                 * */
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 _this.data = void 0;
@@ -373,7 +421,7 @@
                 for (i = periodK - 1; i < yValLen; i++) {
                     slicedY = yVal.slice(i - periodK + 1, i + 1);
                     // Calculate %K
-                    extremes = ReduceArrayMixin.getArrayExtremes(slicedY, low, high);
+                    extremes = AU.getArrayExtremes(slicedY, low, high);
                     LL = extremes[0]; // Lowest low in %K periods
                     CL = yVal[i][close] - LL;
                     HL = extremes[1] - LL;
@@ -472,12 +520,9 @@
             pointArrayMap: ['y', 'smoothed'],
             parallelArrays: ['x', 'y', 'smoothed'],
             pointValKey: 'y',
-            linesApiNames: ['smoothedLine'],
-            drawGraph: MultipleLinesMixin.drawGraph,
-            getTranslatedLinesNames: MultipleLinesMixin.getTranslatedLinesNames,
-            translate: MultipleLinesMixin.translate,
-            toYData: MultipleLinesMixin.toYData
+            linesApiNames: ['smoothedLine']
         });
+        MultipleLinesComposition.compose(StochasticIndicator);
         SeriesRegistry.registerSeriesType('stochastic', StochasticIndicator);
         /* *
          *

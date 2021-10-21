@@ -10,7 +10,7 @@
 'use strict';
 import Annotation from './Annotations.js';
 import Chart from '../../Core/Chart/Chart.js';
-import chartNavigationMixin from '../../Mixins/Navigation.js';
+import ChartNavigationComposition from '../../Core/Chart/ChartNavigationComposition.js';
 import F from '../../Core/FormatUtilities.js';
 var format = F.format;
 import H from '../../Core/Globals.js';
@@ -133,7 +133,7 @@ var bindingsUtils = {
      */
     getAssignedAxis: function (coords) {
         return coords.filter(function (coord) {
-            var axisMin = coord.axis.min, axisMax = coord.axis.max, 
+            var extremes = coord.axis.getExtremes(), axisMin = extremes.min, axisMax = extremes.max, 
             // Correct axis edges when axis has series
             // with pointRange (like column)
             minPointOffset = pick(coord.axis.minPointOffset, 0);
@@ -230,9 +230,11 @@ var NavigationBindings = /** @class */ (function () {
      */
     NavigationBindings.prototype.initUpdate = function () {
         var navigation = this;
-        chartNavigationMixin.addUpdate(function (options) {
+        ChartNavigationComposition
+            .compose(this.chart).navigation
+            .addUpdate(function (options) {
             navigation.update(options);
-        }, this.chart);
+        });
     };
     /**
      * Hook for click on a button, method selcts/unselects buttons,
@@ -657,6 +659,7 @@ var NavigationBindings = /** @class */ (function () {
         },
         // Simple shapes:
         circle: ['shapes'],
+        ellipse: ['shapes'],
         verticalLine: [],
         label: ['labelOptions'],
         // Measure
@@ -673,7 +676,9 @@ var NavigationBindings = /** @class */ (function () {
     // Define non editable fields per annotation, for example Rectangle inherits
     // options from Measure, but crosshairs are not available
     NavigationBindings.annotationsNonEditable = {
-        rectangle: ['crosshairX', 'crosshairY', 'label']
+        rectangle: ['crosshairX', 'crosshairY', 'labelOptions'],
+        ellipse: ['labelOptions'],
+        circle: ['labelOptions']
     };
     return NavigationBindings;
 }());
@@ -786,7 +791,6 @@ setOptions({
          * Configure the Popup strings in the chart. Requires the
          * `annotations.js` or `annotations-advanced.src.js` module to be
          * loaded.
-         *
          * @since   7.0.0
          * @product highcharts highstock
          */
@@ -800,6 +804,7 @@ setOptions({
                 simpleShapes: 'Simple shapes',
                 lines: 'Lines',
                 circle: 'Circle',
+                ellipse: 'Ellipse',
                 rectangle: 'Rectangle',
                 label: 'Label',
                 shapeOptions: 'Shape options',
@@ -860,9 +865,16 @@ setOptions({
          * - `end`: last event to be called after last step event
          *
          * @type         {Highcharts.Dictionary<Highcharts.NavigationBindingsOptionsObject>|*}
-         * @sample       stock/stocktools/stocktools-thresholds
-         *               Custom bindings in Highcharts Stock
+         *
+         * @sample {highstock} stock/stocktools/stocktools-thresholds
+         *               Custom bindings
+         * @sample {highcharts} highcharts/annotations/bindings/
+         *               Simple binding
+         * @sample {highcharts} highcharts/annotations/bindings-custom-annotation/
+         *               Custom annotation binding
+         *
          * @since        7.0.0
+         * @requires     modules/annotations
          * @product      highcharts highstock
          */
         bindings: {
@@ -896,22 +908,17 @@ setOptions({
                                 },
                                 r: 5
                             }]
-                    }, navigation
-                        .annotationsOptions, navigation
-                        .bindings
-                        .circleAnnotation
-                        .annotationsOptions));
+                    }, navigation.annotationsOptions, navigation.bindings.circleAnnotation.annotationsOptions));
                 },
                 /** @ignore-option */
                 steps: [
                     function (e, annotation) {
                         var mockPointOpts = annotation.options.shapes[0]
-                            .point, inverted = this.chart.inverted, x, y, distance;
+                            .point, distance;
                         if (isNumber(mockPointOpts.xAxis) &&
                             isNumber(mockPointOpts.yAxis)) {
-                            x = this.chart.xAxis[mockPointOpts.xAxis]
-                                .toPixels(mockPointOpts.x);
-                            y = this.chart.yAxis[mockPointOpts.yAxis]
+                            var inverted = this.chart.inverted, x = this.chart.xAxis[mockPointOpts.xAxis]
+                                .toPixels(mockPointOpts.x), y = this.chart.yAxis[mockPointOpts.yAxis]
                                 .toPixels(mockPointOpts.y);
                             distance = Math.max(Math.sqrt(Math.pow(inverted ? y - e.chartX : x - e.chartX, 2) +
                                 Math.pow(inverted ? x - e.chartY : y - e.chartY, 2)), 5);
@@ -921,6 +928,46 @@ setOptions({
                                     r: distance
                                 }]
                         });
+                    }
+                ]
+            },
+            ellipseAnnotation: {
+                className: 'highcharts-ellipse-annotation',
+                start: function (e) {
+                    var coords = this.chart.pointer.getCoordinates(e), coordsX = this.utils.getAssignedAxis(coords.xAxis), coordsY = this.utils.getAssignedAxis(coords.yAxis), navigation = this.chart.options.navigation;
+                    if (!coordsX || !coordsY) {
+                        return;
+                    }
+                    return this.chart.addAnnotation(merge({
+                        langKey: 'ellipse',
+                        type: 'basicAnnotation',
+                        shapes: [
+                            {
+                                type: 'ellipse',
+                                xAxis: coordsX.axis.options.index,
+                                yAxis: coordsY.axis.options.index,
+                                points: [{
+                                        x: coordsX.value,
+                                        y: coordsY.value
+                                    }, {
+                                        x: coordsX.value,
+                                        y: coordsY.value
+                                    }],
+                                ry: 1
+                            }
+                        ]
+                    }, navigation.annotationsOptions, navigation.bindings.ellipseAnnotation.annotationOptions));
+                },
+                steps: [
+                    function (e, annotation) {
+                        var target = annotation.shapes[0], position = target.getAbsolutePosition(target.points[1]);
+                        target.translatePoint(e.chartX - position.x, e.chartY - position.y, 1);
+                        target.redraw(false);
+                    },
+                    function (e, annotation) {
+                        var target = annotation.shapes[0], position = target.getAbsolutePosition(target.points[0]), position2 = target.getAbsolutePosition(target.points[1]), newR = target.getDistanceFromLine(position, position2, e.chartX, e.chartY), yAxis = target.getYAxis(), newRY = Math.abs(yAxis.toValue(0) - yAxis.toValue(newR));
+                        target.setYRadius(newRY);
+                        target.redraw(false);
                     }
                 ]
             },
@@ -951,7 +998,8 @@ setOptions({
                                     { xAxis: xAxis, yAxis: yAxis, x: x, y: y },
                                     { xAxis: xAxis, yAxis: yAxis, x: x, y: y },
                                     { xAxis: xAxis, yAxis: yAxis, x: x, y: y },
-                                    { xAxis: xAxis, yAxis: yAxis, x: x, y: y }
+                                    { xAxis: xAxis, yAxis: yAxis, x: x, y: y },
+                                    { command: 'Z' }
                                 ]
                             }]
                     }, navigation
@@ -1028,7 +1076,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/9.2.2/gfx/stock-icons/
+         * @default   https://code.highcharts.com/9.3.0/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */
@@ -1084,6 +1132,7 @@ setOptions({
          * @extends   annotations
          * @exclude   crookedLine, elliottWave, fibonacci, infinityLine,
          *            measure, pitchfork, tunnel, verticalLine, basicAnnotation
+         * @requires     modules/annotations
          * @apioption navigation.annotationsOptions
          */
         annotationsOptions: {

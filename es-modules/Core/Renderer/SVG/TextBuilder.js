@@ -10,7 +10,7 @@
 'use strict';
 import AST from '../HTML/AST.js';
 import H from '../../Globals.js';
-var doc = H.doc, SVG_NS = H.SVG_NS;
+var doc = H.doc, SVG_NS = H.SVG_NS, win = H.win;
 import U from '../../Utilities.js';
 var attr = U.attr, isString = U.isString, objectEach = U.objectEach, pick = U.pick;
 /* *
@@ -229,7 +229,7 @@ var TextBuilder = /** @class */ (function () {
         var modifyChildren = (function (node) {
             var childNodes = [].slice.call(node.childNodes);
             childNodes.forEach(function (childNode) {
-                if (childNode.nodeType === Node.TEXT_NODE) {
+                if (childNode.nodeType === win.Node.TEXT_NODE) {
                     modifyTextNode(childNode, node);
                 }
                 else {
@@ -255,7 +255,7 @@ var TextBuilder = /** @class */ (function () {
     TextBuilder.prototype.getLineHeight = function (node) {
         var fontSizeStyle;
         // If the node is a text node, use its parent
-        var element = node.nodeType === Node.TEXT_NODE ?
+        var element = node.nodeType === win.Node.TEXT_NODE ?
             node.parentElement :
             node;
         if (!this.renderer.styledMode) {

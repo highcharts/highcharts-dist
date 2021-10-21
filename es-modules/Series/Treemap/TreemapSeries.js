@@ -25,19 +25,18 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import Color from '../../Core/Color/Color.js';
 var color = Color.parse;
-import ColorMapMixin from '../../Mixins/ColorMapSeries.js';
-var colorMapSeriesMixin = ColorMapMixin.colorMapSeriesMixin;
+import ColorMapComposition from '../ColorMapComposition.js';
+var colorMapSeriesMixin = ColorMapComposition.colorMapSeriesMixin;
 import H from '../../Core/Globals.js';
 var noop = H.noop;
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
-import palette from '../../Core/Color/Palette.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var Series = SeriesRegistry.series, _a = SeriesRegistry.seriesTypes, ColumnSeries = _a.column, HeatmapSeries = _a.heatmap, ScatterSeries = _a.scatter;
 import TreemapAlgorithmGroup from './TreemapAlgorithmGroup.js';
 import TreemapPoint from './TreemapPoint.js';
 import TreemapUtilities from './TreemapUtilities.js';
-import TreeSeriesMixin from '../../Mixins/TreeSeries.js';
-var getColor = TreeSeriesMixin.getColor, getLevelOptions = TreeSeriesMixin.getLevelOptions, updateRootId = TreeSeriesMixin.updateRootId;
+import TU from '../TreeUtilities.js';
+var getColor = TU.getColor, getLevelOptions = TU.getLevelOptions, updateRootId = TU.updateRootId;
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, correctFloat = U.correctFloat, defined = U.defined, error = U.error, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, stableSort = U.stableSort;
 import './TreemapComposition.js';
@@ -511,7 +510,7 @@ var TreemapSeries = /** @class */ (function (_super) {
         var series = this, setOptionsEvent;
         // If color series logic is loaded, add some properties
         if (colorMapSeriesMixin) {
-            this.colorAttribs = colorMapSeriesMixin.colorAttribs;
+            this.colorAttribs = ColorMapComposition.seriesColorAttribs;
         }
         setOptionsEvent = addEvent(series, 'setOptions', function (event) {
             var options = event.userOptions;
@@ -1305,7 +1304,7 @@ var TreemapSeries = /** @class */ (function (_super) {
          *
          * @type {Highcharts.ColorString}
          */
-        borderColor: palette.neutralColor10,
+        borderColor: "#e6e6e6" /* neutralColor10 */,
         /**
          * The width of the border surrounding each tree map item.
          */
@@ -1334,7 +1333,7 @@ var TreemapSeries = /** @class */ (function (_super) {
                 /**
                  * The border color for the hovered state.
                  */
-                borderColor: palette.neutralColor40,
+                borderColor: "#999999" /* neutralColor40 */,
                 /**
                  * Brightness for the hovered point. Defaults to 0 if the
                  * heatmap series is loaded first, otherwise 0.1.
@@ -1379,6 +1378,7 @@ extend(TreemapSeries.prototype, {
         recursive: TreemapUtilities.recursive
     }
 });
+ColorMapComposition.compose(TreemapSeries);
 SeriesRegistry.registerSeriesType('treemap', TreemapSeries);
 /* *
  *

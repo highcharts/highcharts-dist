@@ -21,7 +21,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import Palette from '../../Core/Color/Palette.js';
 import Series from '../../Core/Series/Series.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
@@ -79,7 +78,7 @@ var LineSeries = /** @class */ (function (_super) {
         if (!styledMode) {
             props[0].push((options.lineColor ||
                 this.color ||
-                Palette.neutralColor20 // when colorByPoint = true
+                "#cccccc" /* neutralColor20 */ // when colorByPoint = true
             ), options.dashStyle);
         }
         props = series.getZonesGraphs(props);

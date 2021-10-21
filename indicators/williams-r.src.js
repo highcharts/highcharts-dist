@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -28,7 +28,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Mixins/ReduceArray.js', [], function () {
+    _registerModule(_modules, 'Stock/Indicators/ArrayUtilities.js', [], function () {
         /**
          *
          *  (c) 2010-2021 Pawel Fus & Daniel Studencki
@@ -38,55 +38,46 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
-        var reduceArrayMixin = {
-                /**
-                 * Get min value of array filled by OHLC data.
-                 * @private
-                 * @param {Array<*>} arr Array of OHLC points (arrays).
-                 * @param {string} index Index of "low" value in point array.
-                 * @return {number} Returns min value.
-                 */
-                minInArray: function (arr,
-            index) {
-                    return arr.reduce(function (min,
-            target) {
-                        return Math.min(min,
-            target[index]);
-                }, Number.MAX_VALUE);
-            },
-            /**
-             * Get max value of array filled by OHLC data.
-             * @private
-             * @param {Array<*>} arr Array of OHLC points (arrays).
-             * @param {string} index Index of "high" value in point array.
-             * @return {number} Returns max value.
-             */
-            maxInArray: function (arr, index) {
-                return arr.reduce(function (max, target) {
-                    return Math.max(max, target[index]);
-                }, -Number.MAX_VALUE);
-            },
-            /**
-             * Get extremes of array filled by OHLC data.
-             * @private
-             * @param {Array<*>} arr Array of OHLC points (arrays).
-             * @param {string} minIndex Index of "low" value in point array.
-             * @param {string} maxIndex Index of "high" value in point array.
-             * @return {Array<number,number>} Returns array with min and max value.
-             */
-            getArrayExtremes: function (arr, minIndex, maxIndex) {
-                return arr.reduce(function (prev, target) {
-                    return [
-                        Math.min(prev[0], target[minIndex]),
-                        Math.max(prev[1], target[maxIndex])
-                    ];
-                }, [Number.MAX_VALUE, -Number.MAX_VALUE]);
-            }
-        };
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /**
+         * Get extremes of array filled by OHLC data.
+         *
+         * @private
+         *
+         * @param {Array<Array<number>>} arr
+         * Array of OHLC points (arrays).
+         *
+         * @param {number} minIndex
+         * Index of "low" value in point array.
+         *
+         * @param {number} maxIndex
+         * Index of "high" value in point array.
+         *
+         * @return {Array<number,number>}
+         * Returns array with min and max value.
+         */
+        function getArrayExtremes(arr, minIndex, maxIndex) {
+            return arr.reduce(function (prev, target) { return [
+                Math.min(prev[0], target[minIndex]),
+                Math.max(prev[1], target[maxIndex])
+            ]; }, [Number.MAX_VALUE, -Number.MAX_VALUE]);
+        }
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+        var ArrayUtilities = {
+                getArrayExtremes: getArrayExtremes
+            };
 
-        return reduceArrayMixin;
+        return ArrayUtilities;
     });
-    _registerModule(_modules, 'Stock/Indicators/WilliamsR/WilliamsRIndicator.js', [_modules['Mixins/ReduceArray.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (ReduceArrayMixin, SeriesRegistry, U) {
+    _registerModule(_modules, 'Stock/Indicators/WilliamsR/WilliamsRIndicator.js', [_modules['Stock/Indicators/ArrayUtilities.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (AU, SeriesRegistry, U) {
         /* *
          *
          *  License: www.highcharts.com/license
@@ -110,7 +101,6 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var getArrayExtremes = ReduceArrayMixin.getArrayExtremes;
         var SMAIndicator = SeriesRegistry.seriesTypes.sma;
         var extend = U.extend,
             isArray = U.isArray,
@@ -163,7 +153,7 @@
                 // with (+1)
                 for (i = period - 1; i < yValLen; i++) {
                     slicedY = yVal.slice(i - period + 1, i + 1);
-                    extremes = getArrayExtremes(slicedY, low, high);
+                    extremes = AU.getArrayExtremes(slicedY, low, high);
                     LL = extremes[0];
                     HH = extremes[1];
                     CC = yVal[i][close];

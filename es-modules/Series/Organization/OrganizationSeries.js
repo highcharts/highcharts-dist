@@ -24,7 +24,6 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import OrganizationPoint from './OrganizationPoint.js';
-import palette from '../../Core/Color/Palette.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var SankeySeries = SeriesRegistry.seriesTypes.sankey;
 import U from '../../Core/Utilities.js';
@@ -303,7 +302,7 @@ var OrganizationSeries = /** @class */ (function (_super) {
          * @type {Highcharts.ColorString}
          * @private
          */
-        borderColor: palette.neutralColor60,
+        borderColor: "#666666" /* neutralColor60 */,
         /**
          * The border radius of the node cards.
          *
@@ -433,7 +432,7 @@ var OrganizationSeries = /** @class */ (function (_super) {
          * @type {Highcharts.ColorString}
          * @private
          */
-        linkColor: palette.neutralColor60,
+        linkColor: "#666666" /* neutralColor60 */,
         /**
          * The line width of the links connecting nodes, in pixels.
          *

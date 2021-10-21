@@ -248,8 +248,7 @@ var langOptions = {
          */
         exporting: {
             chartMenuLabel: 'Chart menu',
-            menuButtonLabel: 'View chart menu',
-            exportRegionLabel: 'Chart menu, {chartTitle}'
+            menuButtonLabel: 'View chart menu, {chartTitle}'
         },
         /**
          * Lang configuration for different series types. For more dynamic

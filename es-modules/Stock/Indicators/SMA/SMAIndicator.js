@@ -20,13 +20,11 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import Chart from '../../../Core/Chart/Chart.js';
-import RequiredIndicatorMixin from '../../../Mixins/IndicatorRequired.js';
 import SeriesRegistry from '../../../Core/Series/SeriesRegistry.js';
 var LineSeries = SeriesRegistry.seriesTypes.line;
 import U from '../../../Core/Utilities.js';
 var addEvent = U.addEvent, error = U.error, extend = U.extend, isArray = U.isArray, merge = U.merge, pick = U.pick, splat = U.splat;
 import './SMAComposition.js';
-var generateMessage = RequiredIndicatorMixin.generateMessage;
 /* *
  *
  *  Class
@@ -127,11 +125,7 @@ var SMAIndicator = /** @class */ (function (_super) {
      * @private
      */
     SMAIndicator.prototype.init = function (chart, options) {
-        var indicator = this, requiredIndicators = indicator.requireIndicators();
-        // Check whether all required indicators are loaded.
-        if (!requiredIndicators.allLoaded) {
-            return error(generateMessage(indicator.type, requiredIndicators.needed));
-        }
+        var indicator = this;
         _super.prototype.init.call(indicator, chart, options);
         // Only after series are linked indicator can be processed.
         var linkedSeriesUnbiner = addEvent(Chart, 'afterLinkSeries', function () {
@@ -240,30 +234,15 @@ var SMAIndicator = /** @class */ (function (_super) {
     SMAIndicator.prototype.processData = function () {
         var series = this, compareToMain = series.options.compareToMain, linkedParent = series.linkedParent;
         _super.prototype.processData.apply(series, arguments);
-        if (linkedParent && linkedParent.compareValue && compareToMain) {
-            series.compareValue = linkedParent.compareValue;
+        if (series.dataModify &&
+            linkedParent &&
+            linkedParent.dataModify &&
+            linkedParent.dataModify.compareValue &&
+            compareToMain) {
+            series.dataModify.compareValue =
+                linkedParent.dataModify.compareValue;
         }
         return;
-    };
-    /**
-     * @private
-     */
-    SMAIndicator.prototype.requireIndicators = function () {
-        var obj = {
-            allLoaded: true
-        };
-        // Check whether all required indicators are loaded, else return
-        // the object with missing indicator's name.
-        this.requiredIndicators.forEach(function (indicator) {
-            if (SeriesRegistry.seriesTypes[indicator]) {
-                SeriesRegistry.seriesTypes[indicator].prototype.requireIndicators();
-            }
-            else {
-                obj.allLoaded = false;
-                obj.needed = indicator;
-            }
-        });
-        return obj;
     };
     /**
      * The parameter allows setting line series type and use OHLC indicators.
@@ -335,7 +314,7 @@ var SMAIndicator = /** @class */ (function (_super) {
              * example using OHLC data, index=2 means the indicator will be
              * calculated using Low values.
              */
-            index: 0,
+            index: 3,
             /**
              * The base period for indicator calculations. This is the number of
              * data points which are taken into account for the indicator
@@ -355,8 +334,6 @@ extend(SMAIndicator.prototype, {
     hasDerivedData: true,
     nameComponents: ['period'],
     nameSuffixes: [],
-    // Defines on which other indicators is this indicator based on.
-    requiredIndicators: [],
     useCommonDataGrouping: true
 });
 SeriesRegistry.registerSeriesType('sma', SMAIndicator);

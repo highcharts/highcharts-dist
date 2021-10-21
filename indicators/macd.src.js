@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.2.2 (2021-08-24)
+ * @license Highstock JS v9.3.0 (2021-10-21)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -318,7 +318,7 @@
             /**
              * Moving Average Convergence Divergence (MACD). This series requires
              * `linkedTo` option to be set and should be loaded after the
-             * `stock/indicators/indicators.js` and `stock/indicators/ema.js`.
+             * `stock/indicators/indicators.js`.
              *
              * @sample stock/indicators/macd
              *         MACD indicator
@@ -423,7 +423,6 @@
         }(SMAIndicator));
         extend(MACDIndicator.prototype, {
             nameComponents: ['longPeriod', 'shortPeriod', 'signalPeriod'],
-            requiredIndicators: ['ema'],
             // "y" value is treated as Histogram data
             pointArrayMap: ['y', 'signal', 'MACD'],
             parallelArrays: ['x', 'y', 'signal', 'MACD'],

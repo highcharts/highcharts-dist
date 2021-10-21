@@ -29,7 +29,6 @@ var __extends = (this && this.__extends) || (function () {
 import HollowCandlestickPoint from './HollowCandlestickPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 import U from '../../Core/Utilities.js';
-import palette from '../../Core/Color/Palette.js';
 import Axis from '../../Core/Axis/Axis.js';
 var CandlestickSeries = SeriesRegistry.seriesTypes.candlestick;
 var addEvent = U.addEvent, merge = U.merge;
@@ -113,8 +112,8 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
         var series = this;
         // Return line color based on trend direction
         return trendDirection === 'up' ?
-            series.options.upColor || palette.positiveColor :
-            series.options.color || palette.negativeColor;
+            series.options.upColor || "#06b535" /* positiveColor */ :
+            series.options.color || "#f21313" /* negativeColor */;
     };
     /**
      * Return fill color based on candle type.
@@ -135,8 +134,8 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
             return 'transparent';
         }
         return hollowcandleInfo.trendDirection === 'up' ?
-            series.options.upColor || palette.positiveColor :
-            series.options.color || palette.negativeColor;
+            series.options.upColor || "#06b535" /* positiveColor */ :
+            series.options.color || "#f21313" /* negativeColor */;
     };
     /**
      * @private
@@ -223,7 +222,7 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
          * @type    {ColorType}
          * @product highstock
          */
-        color: palette.negativeColor,
+        color: "#f21313" /* negativeColor */,
         dataGrouping: {
             groupAll: true,
             groupPixelWidth: 10
@@ -240,7 +239,7 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
          * @type    {ColorType}
          * @product highstock
          */
-        lineColor: palette.negativeColor,
+        lineColor: "#f21313" /* negativeColor */,
         /**
          * The fill color of the candlestick when the current
          * close is higher than the previous one.
@@ -253,7 +252,7 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
          * @type    {ColorType}
          * @product highstock
          */
-        upColor: palette.positiveColor,
+        upColor: "#06b535" /* positiveColor */,
         /**
          * The color of the line/border of the hollow candlestick when
          * the current close is higher than the previous one.
@@ -266,7 +265,7 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
          * @type    {ColorType}
          * @product highstock
          */
-        upLineColor: palette.positiveColor
+        upLineColor: "#06b535" /* positiveColor */
     });
     return HollowCandlestickSeries;
 }(CandlestickSeries));
@@ -290,7 +289,7 @@ addEvent(Axis, 'postProcessData', function () {
 });
 /* *
  *
- *  Prototype Properties
+ *  Class Prototype
  *
  * */
 HollowCandlestickSeries.prototype.pointClass = HollowCandlestickPoint;
