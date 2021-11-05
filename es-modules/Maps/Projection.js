@@ -52,6 +52,9 @@ var Projection = /** @class */ (function () {
         this.def = name ? Projection.registry[name] : void 0;
         var _a = this, def = _a.def, rotator = _a.rotator;
         if (def) {
+            if (def.init) {
+                def.init(options);
+            }
             this.maxLatitude = def.maxLatitude || 90;
             this.hasGeoProjection = true;
         }

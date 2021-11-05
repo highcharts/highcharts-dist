@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.0 (2021-10-21)
+ * @license Highcharts JS v9.3.1 (2021-11-05)
  * @module highcharts/modules/accessibility
  * @requires highcharts
  *
@@ -25,4 +25,4 @@ G.A11yHTMLUtilities = HTMLUtilities;
 G.AccessibilityComponent = AccessibilityComponent;
 G.KeyboardNavigationHandler = KeyboardNavigationHandler;
 G.SeriesAccessibilityDescriber = SeriesDescriber;
-Accessibility.compose(G.Chart, G.Point, G.Series, G.SVGElement);
+Accessibility.compose(G.Chart, G.Point, G.Series, G.SVGElement, G.RangeSelector);

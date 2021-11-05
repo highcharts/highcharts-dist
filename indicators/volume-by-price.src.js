@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.0 (2021-10-21)
+ * @license Highstock JS v9.3.1 (2021-11-05)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -681,11 +681,10 @@
         extend(VBPIndicator.prototype, {
             nameBase: 'Volume by Price',
             nameComponents: ['ranges'],
-            bindTo: {
-                series: false,
-                eventName: 'afterSetExtremes'
+            calculateOn: {
+                chart: 'render',
+                xAxis: 'afterSetExtremes'
             },
-            calculateOn: 'render',
             pointClass: VBPPoint,
             markerAttribs: noop,
             drawGraph: noop,

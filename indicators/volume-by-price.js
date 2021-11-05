@@ -1,5 +1,5 @@
 /*
- Highstock JS v9.3.0 (2021-10-21)
+ Highstock JS v9.3.1 (2021-11-05)
 
  Indicator series type for Highcharts Stock
 
@@ -22,5 +22,5 @@ a){f.push([b.x,b.end]);h.push(f[a][0]);m.push(f[a][1])}),{values:f,xData:h,yData
 f=d.processedXData,h=d.processedYData,k=a.length-1,g=l.length;d=h.length;var u,n,q,t,p;v(g-d)&&(e[0]!==f[0]&&h.unshift(0),e[g-1]!==f[d-1]&&h.push(0));c.volumeDataArray=[];a.forEach(function(a){a.wholeVolumeData=0;a.positiveVolumeData=0;for(p=a.negativeVolumeData=0;p<g;p++){q=n=!1;t=b?l[p][3]:l[p];u=p?b?l[p-1][3]:l[p-1]:t;var d=c.linkedParent;!c.options.compareToMain&&d.dataModify&&(t=d.dataModify.modifyValue(t),u=d.dataModify.modifyValue(u));t<=a.start&&0===a.index&&(n=!0);t>=a.end&&a.index===k&&
 (q=!0);(t>a.start||n)&&(t<a.end||q)&&(a.wholeVolumeData+=h[p],u>t?a.negativeVolumeData+=h[p]:a.positiveVolumeData+=h[p])}c.volumeDataArray.push(a.wholeVolumeData)});return a};a.prototype.drawZones=function(a,b,d,e){var c=a.renderer,k=this.zoneLinesSVG,f=[],h=a.plotWidth,m=a.plotTop,g;d.forEach(function(c){g=b.toPixels(c)-m;f=f.concat(a.renderer.crispLine([["M",0,g],["L",h,g]],e.lineWidth))});k?k.animate({d:f}):k=this.zoneLinesSVG=c.path(f).attr({"stroke-width":e.lineWidth,stroke:e.color,dashstyle:e.dashStyle,
 zIndex:this.group.zIndex+.1}).add(this.group)};a.defaultOptions=L(D.defaultOptions,{params:{index:void 0,period:void 0,ranges:12,volumeSeriesID:"volume"},zoneLines:{enabled:!0,styles:{color:"#0A9AC9",dashStyle:"LongDash",lineWidth:1}},volumeDivision:{enabled:!0,styles:{positiveColor:"rgba(144, 237, 125, 0.8)",negativeColor:"rgba(244, 91, 91, 0.8)"}},animationLimit:1E3,enableMouseTracking:!1,pointPadding:0,zIndex:-1,crisp:!0,dataGrouping:{enabled:!1},dataLabels:{allowOverlap:!0,enabled:!0,format:"P: {point.volumePos:.2f} | N: {point.volumeNeg:.2f}",
-padding:0,style:{fontSize:"7px"},verticalAlign:"top"}});return a}(D);G(a.prototype,{nameBase:"Volume by Price",nameComponents:["ranges"],bindTo:{series:!1,eventName:"afterSetExtremes"},calculateOn:"render",pointClass:b,markerAttribs:d,drawGraph:d,getColumnMetrics:y.getColumnMetrics,crispCol:y.crispCol});q.registerSeriesType("vbp",a);"";return a});d(b,"masters/indicators/volume-by-price.src.js",[],function(){})});
+padding:0,style:{fontSize:"7px"},verticalAlign:"top"}});return a}(D);G(a.prototype,{nameBase:"Volume by Price",nameComponents:["ranges"],calculateOn:{chart:"render",xAxis:"afterSetExtremes"},pointClass:b,markerAttribs:d,drawGraph:d,getColumnMetrics:y.getColumnMetrics,crispCol:y.crispCol});q.registerSeriesType("vbp",a);"";return a});d(b,"masters/indicators/volume-by-price.src.js",[],function(){})});
 //# sourceMappingURL=volume-by-price.js.map

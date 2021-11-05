@@ -2,9 +2,8 @@
  * Web Mercator projection, used for most online map tile services
  * */
 'use strict';
-var maxLatitude = 85.0511287798; // The latitude that defines a square
-var r = 6378137;
-var deg2rad = Math.PI / 180;
+var maxLatitude = 85.0511287798, // The latitude that defines a square
+r = 63.78137, deg2rad = Math.PI / 180;
 var WebMercator = {
     forward: function (lonLat) {
         if (Math.abs(lonLat[1]) > maxLatitude) {

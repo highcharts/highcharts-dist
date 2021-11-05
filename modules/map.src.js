@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.3.0 (2021-10-21)
+ * @license Highmaps JS v9.3.1 (2021-11-05)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -2289,10 +2289,14 @@
                  * GeoJSON.
                  *
                  * Sub-options are:
-                 * * `projection.name`,
+                 * * `name`,
             which as of v9.3 can be `EqualEarth`,
+                 * `LambertConformalConic`,
             `Miller`,
-                 * `Orthographic` or `WebMercator`.
+            `Orthographic` or `WebMercator`.
+                 * * `parallels`,
+            the standard parallels for the LambertConformalConic
+                 * projection.
                  * * `rotation`,
             a three-axis rotation of the globe prior to projection,
                  * which in practice can be used for example to render a world map with the
@@ -2330,6 +2334,74 @@
 
         return defaultOptions;
     });
+    _registerModule(_modules, 'Maps/Projections/LambertConformalConic.js', [], function () {
+        /* *
+         * Lambert Conformal Conic projection
+         * */
+        var sign = Math.sign ||
+                (function (n) { return (n === 0 ? 0 : n > 0 ? 1 : -1); }),
+            scale = 63.78137,
+            deg2rad = Math.PI / 180,
+            halfPI = Math.PI / 2,
+            eps10 = 1e-6,
+            tany = function (y) { return Math.tan((halfPI + y) / 2); };
+        var n = 0,
+            c = 0;
+        var LambertConformalConic = {
+                init: function (options) {
+                    var parallels = (options.parallels || [])
+                        .map(function (n) { return n * deg2rad; }),
+            lat1 = parallels[0] || 0,
+            lat2 = parallels[1] || lat1,
+            cosLat1 = Math.cos(lat1);
+                // Apply the global variables
+                n = lat1 === lat2 ?
+                    Math.sin(lat1) :
+                    Math.log(cosLat1 / Math.cos(lat2)) / Math.log(tany(lat2) / tany(lat1));
+                if (Math.abs(n) < 1e-10) {
+                    n = (sign(n) || 1) * 1e-10;
+                }
+                c = cosLat1 * Math.pow(tany(lat1), n) / n;
+            },
+            forward: function (lonLat) {
+                var lon = lonLat[0] * deg2rad;
+                var lat = lonLat[1] * deg2rad;
+                if (c > 0) {
+                    if (lat < -halfPI + eps10) {
+                        lat = -halfPI + eps10;
+                    }
+                }
+                else {
+                    if (lat > halfPI - eps10) {
+                        lat = halfPI - eps10;
+                    }
+                }
+                var r = c / Math.pow(tany(lat),
+                    n);
+                return [
+                    r * Math.sin(n * lon) * scale,
+                    (c - r * Math.cos(n * lon)) * scale
+                ];
+            },
+            inverse: function (xy) {
+                var x = xy[0] / scale,
+                    y = xy[1] / scale,
+                    cy = c - y,
+                    rho = sign(n) * Math.sqrt(x * x + cy * cy);
+                var l = Math.atan2(x,
+                    Math.abs(cy)) * sign(cy);
+                if (cy * n < 0) {
+                    l -= Math.PI * sign(x) * sign(cy);
+                }
+                return [
+                    (l / n) / deg2rad,
+                    (2 * Math.atan(Math.pow(c / rho, 1 / n)) - halfPI) / deg2rad
+                ];
+            }
+        };
+
+        return LambertConformalConic;
+    });
     _registerModule(_modules, 'Maps/Projections/EqualEarth.js', [], function () {
         /* *
          *
@@ -2344,25 +2416,28 @@
             A2 = -0.081106,
             A3 = 0.000893,
             A4 = 0.003796,
-            M = Math.sqrt(3) / 2.0;
+            M = Math.sqrt(3) / 2.0,
+            scale = 74.03120656864502;
         var EqualEarth = {
                 forward: function (lonLat) {
                     var d = Math.PI / 180,
             paramLat = Math.asin(M * Math.sin(lonLat[1] * d)),
             paramLatSq = paramLat * paramLat,
             paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
-                var x = lonLat[0] * d * Math.cos(paramLat) / (M *
+                var x = lonLat[0] * d * Math.cos(paramLat) * scale / (M *
                         (A1 +
                             3 * A2 * paramLatSq +
                             paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)));
-                var y = paramLat * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq));
+                var y = paramLat * scale * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq));
                 return [x, y];
             },
             inverse: function (xy) {
-                var d = 180 / Math.PI,
+                var x = xy[0] / scale,
+                    y = xy[1] / scale,
+                    d = 180 / Math.PI,
                     epsilon = 1e-9,
                     iterations = 12;
-                var paramLat = xy[1],
+                var paramLat = y,
                     paramLatSq,
                     paramLatPow6,
                     fy,
@@ -2372,7 +2447,7 @@
                 for (i = 0; i < iterations; ++i) {
                     paramLatSq = paramLat * paramLat;
                     paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
-                    fy = paramLat * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq)) - xy[1];
+                    fy = paramLat * (A1 + A2 * paramLatSq + paramLatPow6 * (A3 + A4 * paramLatSq)) - y;
                     fpy = A1 + 3 * A2 * paramLatSq + paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq);
                     paramLat -= dlat = fy / fpy;
                     if (Math.abs(dlat) < epsilon) {
@@ -2381,7 +2456,7 @@
                 }
                 paramLatSq = paramLat * paramLat;
                 paramLatPow6 = paramLatSq * paramLatSq * paramLatSq;
-                var lon = d * M * xy[0] * (A1 + 3 * A2 * paramLatSq + paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)) / Math.cos(paramLat);
+                var lon = d * M * x * (A1 + 3 * A2 * paramLatSq + paramLatPow6 * (7 * A3 + 9 * A4 * paramLatSq)) / Math.cos(paramLat);
                 var lat = d * Math.asin(Math.sin(paramLat) / M);
                 return [lon, lat];
             }
@@ -2393,16 +2468,17 @@
         /* *
          * Miller projection
          * */
-        var quarterPI = Math.PI / 4;
-        var deg2rad = Math.PI / 180;
+        var quarterPI = Math.PI / 4,
+            deg2rad = Math.PI / 180,
+            scale = 63.78137;
         var Miller = {
                 forward: function (lonLat) { return [
-                    lonLat[0] * deg2rad,
-                    1.25 * Math.log(Math.tan(quarterPI + 0.4 * lonLat[1] * deg2rad))
+                    lonLat[0] * deg2rad * scale,
+                    1.25 * scale * Math.log(Math.tan(quarterPI + 0.4 * lonLat[1] * deg2rad))
                 ]; },
                 inverse: function (xy) { return [
-                    xy[0] / deg2rad,
-                    2.5 * (Math.atan(Math.exp(0.8 * xy[1])) - quarterPI) / deg2rad
+                    (xy[0] / scale) / deg2rad,
+                    2.5 * (Math.atan(Math.exp(0.8 * (xy[1] / scale))) - quarterPI) / deg2rad
                 ]; }
             };
 
@@ -2412,7 +2488,8 @@
         /* *
          * Orthographic projection
          * */
-        var deg2rad = Math.PI / 180;
+        var deg2rad = Math.PI / 180,
+            scale = 63.78460826781007;
         var Orthographic = {
                 forward: function (lonLat) {
                     var lonDeg = lonLat[0],
@@ -2422,13 +2499,13 @@
                 }
                 var lat = latDeg * deg2rad;
                 return [
-                    Math.cos(lat) * Math.sin(lonDeg * deg2rad),
-                    Math.sin(lat)
+                    Math.cos(lat) * Math.sin(lonDeg * deg2rad) * scale,
+                    Math.sin(lat) * scale
                 ];
             },
             inverse: function (xy) {
-                var x = xy[0],
-                    y = xy[1],
+                var x = xy[0] / scale,
+                    y = xy[1] / scale,
                     z = Math.sqrt(x * x + y * y),
                     c = Math.asin(z),
                     cSin = Math.sin(c),
@@ -2446,9 +2523,9 @@
         /* *
          * Web Mercator projection, used for most online map tile services
          * */
-        var maxLatitude = 85.0511287798; // The latitude that defines a square
-            var r = 6378137;
-        var deg2rad = Math.PI / 180;
+        var maxLatitude = 85.0511287798, // The latitude that defines a square
+            r = 63.78137,
+            deg2rad = Math.PI / 180;
         var WebMercator = {
                 forward: function (lonLat) {
                     if (Math.abs(lonLat[1]) > maxLatitude) {
@@ -2470,7 +2547,7 @@
 
         return WebMercator;
     });
-    _registerModule(_modules, 'Maps/Projections/ProjectionRegistry.js', [_modules['Maps/Projections/EqualEarth.js'], _modules['Maps/Projections/Miller.js'], _modules['Maps/Projections/Orthographic.js'], _modules['Maps/Projections/WebMercator.js']], function (EqualEarth, Miller, Orthographic, WebMercator) {
+    _registerModule(_modules, 'Maps/Projections/ProjectionRegistry.js', [_modules['Maps/Projections/LambertConformalConic.js'], _modules['Maps/Projections/EqualEarth.js'], _modules['Maps/Projections/Miller.js'], _modules['Maps/Projections/Orthographic.js'], _modules['Maps/Projections/WebMercator.js']], function (LambertConformalConic, EqualEarth, Miller, Orthographic, WebMercator) {
         /* *
          *
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
@@ -2478,6 +2555,7 @@
          * */
         var registry = {
                 EqualEarth: EqualEarth,
+                LambertConformalConic: LambertConformalConic,
                 Miller: Miller,
                 Orthographic: Orthographic,
                 WebMercator: WebMercator
@@ -2542,6 +2620,9 @@
                     def = _a.def,
                     rotator = _a.rotator;
                 if (def) {
+                    if (def.init) {
+                        def.init(options);
+                    }
                     this.maxLatitude = def.maxLatitude || 90;
                     this.hasGeoProjection = true;
                 }
@@ -2987,10 +3068,10 @@
             pick = U.pick,
             relativeLength = U.relativeLength;
         /**
-         * The world size equals meters in the Web Mercator projection, to match a
-         * 256 square tile to zoom level 0
+         * The world size in terms of 10k meters in the Web Mercator projection, to
+         * match a 256 square tile to zoom level 0
          */
-        var worldSize = 40097932.2;
+        var worldSize = 400.979322;
         var tileSize = 256;
         /**
          * The map view handles zooming and centering on the map, and various
@@ -3070,11 +3151,11 @@
                         if (_this.projection.options.name === 'Orthographic' &&
                             // ... but don't rotate if we're loading only a part of the
                             // world
-                            (_this.minZoom || Infinity) < 25.2) {
+                            (_this.minZoom || Infinity) < 3) {
                             // Empirical ratio where the globe rotates roughly the same
                             // speed as moving the pointer across the center of the
                             // projection
-                            var ratio = 28000 / (_this.getScale() * Math.min(chart.plotWidth,
+                            var ratio = 440 / (_this.getScale() * Math.min(chart.plotWidth,
                                 chart.plotHeight));
                             if (mouseDownRotation) {
                                 var lon = (mouseDownX - chartX) * ratio -
@@ -4954,6 +5035,9 @@
          * it is recommended to use `mapData` to define that paths instead
          * of defining them on the data points themselves.
          *
+         * For providing true geographical shapes based on longitude and latitude, use
+         * the `geometry` option instead.
+         *
          * @sample maps/series/data-path/
          *         Paths defined in data
          *
@@ -5161,6 +5245,8 @@
          *  ```
          *
          * @type      {Array<number|Array<string,(number|null)>|null|*>}
+         * @extends   series.map.data
+         * @excluding drilldown
          * @product   highmaps
          * @apioption series.mapline.data
          */
@@ -5406,7 +5492,8 @@
             forceDL: true,
             isCartesian: false,
             pointClass: MapPointPoint,
-            searchPoint: noop
+            searchPoint: noop,
+            useMapGeometry: true // #16534
         });
         SeriesRegistry.registerSeriesType('mappoint', MapPointSeries);
         /* *
@@ -5442,16 +5529,17 @@
          *    data: [0, 5, 3, 5]
          *    ```
          *
-         * 2. An array of arrays with 2 values. In this case, the values correspond to
-         *    `x,y`. If the first value is a string, it is applied as the name of the
-         *    point, and the `x` value is inferred.
-         *    ```js
-         *        data: [
-         *            [0, 1],
-         *            [1, 8],
-         *            [2, 7]
-         *        ]
-         *    ```
+         * 2. An array of arrays with 2 values. In this case, the values correspond
+         * to `[hc-key, value]`. Example:
+         *
+         *  ```js
+         *     data: [
+         *         ['us-ny', 0],
+         *         ['us-mi', 5],
+         *         ['us-tx', 3],
+         *         ['us-ak', 5]
+         *     ]
+         *  ```
          *
          * 3. An array of objects with named values. The following snippet shows only a
          *    few settings, see the complete options set below. If the total number of

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.0 (2021-10-21)
+ * @license Highstock JS v9.3.1 (2021-11-05)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -938,10 +938,6 @@
                             };
                             fakeAxis.series.push(fakeSeries);
                             series.processData.apply(fakeSeries);
-                        });
-                        // Apply grouping if needed.
-                        axis.applyGrouping.call(fakeAxis, {
-                            hasExtemesChanged: false
                         });
                         // Force to use the ordinal when points are evenly spaced
                         // (e.g. weeks), #3825.

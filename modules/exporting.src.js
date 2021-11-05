@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.0 (2021-10-21)
+ * @license Highcharts JS v9.3.1 (2021-11-05)
  *
  * Exporting module
  *
@@ -2238,8 +2238,8 @@
                         }));
                     }
                 });
-                // generate the chart copy
-                var chartCopy = new Chart(options,
+                // Generate the chart copy
+                var chartCopy = new chart.constructor(options,
                     chart.callback);
                 // Axis options and series options  (#2022, #3900, #5982)
                 if (chartOptions) {

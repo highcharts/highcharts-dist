@@ -739,8 +739,8 @@ var Exporting;
                 }));
             }
         });
-        // generate the chart copy
-        var chartCopy = new Chart(options, chart.callback);
+        // Generate the chart copy
+        var chartCopy = new chart.constructor(options, chart.callback);
         // Axis options and series options  (#2022, #3900, #5982)
         if (chartOptions) {
             ['xAxis', 'yAxis', 'series'].forEach(function (coll) {

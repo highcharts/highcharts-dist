@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.0 (2021-10-21)
+ * @license Highcharts JS v9.3.1 (2021-11-05)
  *
  * Annotations module
  *
@@ -4479,8 +4479,13 @@
              */
             NavigationBindings.prototype.bindingsButtonClick = function (button, events, clickEvent) {
                 var navigation = this,
-                    chart = navigation.chart;
+                    chart = navigation.chart,
+                    svgContainer = chart.renderer.boxWrapper;
+                var shouldEventBeFired = true;
                 if (navigation.selectedButtonElement) {
+                    if (navigation.selectedButtonElement.classList === button.classList) {
+                        shouldEventBeFired = false;
+                    }
                     fireEvent(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
                     if (navigation.nextEvent) {
                         // Remove in-progress annotations adders:
@@ -4491,15 +4496,24 @@
                         navigation.mouseMoveEvent = navigation.nextEvent = false;
                     }
                 }
-                navigation.selectedButton = events;
-                navigation.selectedButtonElement = button;
-                fireEvent(navigation, 'selectButton', { button: button });
-                // Call "init" event, for example to open modal window
-                if (events.init) {
-                    events.init.call(navigation, button, clickEvent);
+                if (shouldEventBeFired) {
+                    navigation.selectedButton = events;
+                    navigation.selectedButtonElement = button;
+                    fireEvent(navigation, 'selectButton', { button: button });
+                    // Call "init" event, for example to open modal window
+                    if (events.init) {
+                        events.init.call(navigation, button, clickEvent);
+                    }
+                    if (events.start || events.steps) {
+                        chart.renderer.boxWrapper.addClass(PREFIX + 'draw-mode');
+                    }
                 }
-                if (events.start || events.steps) {
-                    chart.renderer.boxWrapper.addClass(PREFIX + 'draw-mode');
+                else {
+                    chart.stockTools && chart.stockTools.toggleButtonAciveClass(button);
+                    svgContainer.removeClass(PREFIX + 'draw-mode');
+                    navigation.nextEvent = false;
+                    navigation.mouseMoveEvent = false;
+                    navigation.selectedButton = null;
                 }
             };
             /**
@@ -5357,7 +5371,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.3.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.3.1/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -6667,7 +6681,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/9.3.0/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/9.3.1/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

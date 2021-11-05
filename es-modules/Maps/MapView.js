@@ -13,10 +13,10 @@ import Projection from './Projection.js';
 import U from '../Core/Utilities.js';
 var addEvent = U.addEvent, clamp = U.clamp, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength;
 /**
- * The world size equals meters in the Web Mercator projection, to match a
- * 256 square tile to zoom level 0
+ * The world size in terms of 10k meters in the Web Mercator projection, to
+ * match a 256 square tile to zoom level 0
  */
-var worldSize = 40097932.2;
+var worldSize = 400.979322;
 var tileSize = 256;
 /**
  * The map view handles zooming and centering on the map, and various
@@ -94,11 +94,11 @@ var MapView = /** @class */ (function () {
                 if (_this.projection.options.name === 'Orthographic' &&
                     // ... but don't rotate if we're loading only a part of the
                     // world
-                    (_this.minZoom || Infinity) < 25.2) {
+                    (_this.minZoom || Infinity) < 3) {
                     // Empirical ratio where the globe rotates roughly the same
                     // speed as moving the pointer across the center of the
                     // projection
-                    var ratio = 28000 / (_this.getScale() * Math.min(chart.plotWidth, chart.plotHeight));
+                    var ratio = 440 / (_this.getScale() * Math.min(chart.plotWidth, chart.plotHeight));
                     if (mouseDownRotation) {
                         var lon = (mouseDownX - chartX) * ratio -
                             mouseDownRotation[0];

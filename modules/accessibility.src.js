@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.0 (2021-10-21)
+ * @license Highcharts JS v9.3.1 (2021-11-05)
  *
  * Accessibility module
  *
@@ -2112,7 +2112,7 @@
 
         return AnnotationsA11y;
     });
-    _registerModule(_modules, 'Accessibility/Components/InfoRegionsComponent.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/A11yI18n.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (AST, Chart, F, H, U, A11yI18n, AccessibilityComponent, Announcer, AnnotationsA11y, ChartUtilities, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/InfoRegionsComponent.js', [_modules['Accessibility/A11yI18n.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/FormatUtilities.js'], _modules['Core/Globals.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (A11yI18n, AccessibilityComponent, Announcer, AnnotationsA11y, AST, CU, F, H, HU, U) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -2124,27 +2124,47 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var getAnnotationsInfoHTML = AnnotationsA11y.getAnnotationsInfoHTML;
+        var getAxisDescription = CU.getAxisDescription,
+            getAxisRangeDescription = CU.getAxisRangeDescription,
+            getChartTitle = CU.getChartTitle,
+            unhideChartElementFromAT = CU.unhideChartElementFromAT;
         var format = F.format;
         var doc = H.doc;
+        var addClass = HU.addClass,
+            getElement = HU.getElement,
+            getHeadingTagNameForElement = HU.getHeadingTagNameForElement,
+            stripHTMLTagsFromString = HU.stripHTMLTagsFromString,
+            visuallyHideElement = HU.visuallyHideElement;
         var attr = U.attr,
-            extend = U.extend,
             pick = U.pick;
-        var getAnnotationsInfoHTML = AnnotationsA11y.getAnnotationsInfoHTML;
-        var getAxisDescription = ChartUtilities.getAxisDescription,
-            getAxisRangeDescription = ChartUtilities.getAxisRangeDescription,
-            getChartTitle = ChartUtilities.getChartTitle,
-            unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
-        var addClass = HTMLUtilities.addClass,
-            getElement = HTMLUtilities.getElement,
-            getHeadingTagNameForElement = HTMLUtilities.getHeadingTagNameForElement,
-            stripHTMLTagsFromString = HTMLUtilities.stripHTMLTagsFromString,
-            visuallyHideElement = HTMLUtilities.visuallyHideElement;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
         /**
          * @private
          */
-        function stripEmptyHTMLTags(str) {
-            return str.replace(/<(\w+)[^>]*?>\s*<\/\1>/g, '');
+        function getTableSummary(chart) {
+            return chart.langFormat('accessibility.table.tableSummary', { chart: chart });
         }
         /**
          * @private
@@ -2175,40 +2195,46 @@
                 chart.langFormat('accessibility.chartTypes.default' + multi, context)) + (typeExplaination ? ' ' + typeExplaination : '');
         }
         /**
-         * @private
-         */
-        function getTableSummary(chart) {
-            return chart.langFormat('accessibility.table.tableSummary', { chart: chart });
-        }
-        /**
-         * Return simplified explaination of chart type. Some types will not be familiar
-         * to most users, but in those cases we try to add an explaination of the type.
+         * Return simplified explaination of chart type. Some types will not be
+         * familiar to most users, but in those cases we try to add an explaination
+         * of the type.
          *
          * @private
          * @function Highcharts.Chart#getTypeDescription
          * @param {Array<string>} types The series types in this chart.
          * @return {string} The text description of the chart type.
          */
-        Chart.prototype.getTypeDescription = function (types) {
+        function getTypeDescription(chart, types) {
             var firstType = types[0],
-                firstSeries = this.series && this.series[0] || {},
+                firstSeries = chart.series && chart.series[0] || {},
                 formatContext = {
-                    numSeries: this.series.length,
+                    numSeries: chart.series.length,
                     numPoints: firstSeries.points && firstSeries.points.length,
-                    chart: this,
+                    chart: chart,
                     mapTitle: firstSeries.mapTitle
                 };
             if (!firstType) {
-                return getTypeDescForEmptyChart(this, formatContext);
+                return getTypeDescForEmptyChart(chart, formatContext);
             }
             if (firstType === 'map') {
-                return getTypeDescForMapChart(this, formatContext);
+                return getTypeDescForMapChart(chart, formatContext);
             }
-            if (this.types.length > 1) {
-                return getTypeDescForCombinationChart(this, formatContext);
+            if (chart.types.length > 1) {
+                return getTypeDescForCombinationChart(chart, formatContext);
             }
-            return buildTypeDescriptionFromSeries(this, types, formatContext);
-        };
+            return buildTypeDescriptionFromSeries(chart, types, formatContext);
+        }
+        /**
+         * @private
+         */
+        function stripEmptyHTMLTags(str) {
+            return str.replace(/<(\w+)[^>]*?>\s*<\/\1>/g, '');
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
         /**
          * The InfoRegionsComponent class
          *
@@ -2216,14 +2242,31 @@
          * @class
          * @name Highcharts.InfoRegionsComponent
          */
-        var InfoRegionsComponent = function () { };
-        InfoRegionsComponent.prototype = new AccessibilityComponent();
-        extend(InfoRegionsComponent.prototype, /** @lends Highcharts.InfoRegionsComponent */ {
+        var InfoRegionsComponent = /** @class */ (function (_super) {
+                __extends(InfoRegionsComponent, _super);
+            function InfoRegionsComponent() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.announcer = void 0;
+                _this.screenReaderSections = {};
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
             /**
              * Init the component
              * @private
              */
-            init: function () {
+            InfoRegionsComponent.prototype.init = function () {
                 var chart = this.chart;
                 var component = this;
                 this.initRegionsDefinitions();
@@ -2238,11 +2281,11 @@
                     }, 300);
                 });
                 this.announcer = new Announcer(chart, 'assertive');
-            },
+            };
             /**
              * @private
              */
-            initRegionsDefinitions: function () {
+            InfoRegionsComponent.prototype.initRegionsDefinitions = function () {
                 var component = this;
                 this.screenReaderSections = {
                     before: {
@@ -2284,23 +2327,23 @@
                         }
                     }
                 };
-            },
+            };
             /**
              * Called on chart render. Have to update the sections on render, in order
              * to get a11y info from series.
              */
-            onChartRender: function () {
+            InfoRegionsComponent.prototype.onChartRender = function () {
                 var component = this;
                 this.linkedDescriptionElement = this.getLinkedDescriptionElement();
                 this.setLinkedDescriptionAttrs();
                 Object.keys(this.screenReaderSections).forEach(function (regionKey) {
                     component.updateScreenReaderSection(regionKey);
                 });
-            },
+            };
             /**
              * @private
              */
-            getLinkedDescriptionElement: function () {
+            InfoRegionsComponent.prototype.getLinkedDescriptionElement = function () {
                 var chartOptions = this.chart.options,
                     linkedDescOption = chartOptions.accessibility.linkedDescription;
                 if (!linkedDescOption) {
@@ -2315,22 +2358,23 @@
                 if (queryMatch.length === 1) {
                     return queryMatch[0];
                 }
-            },
+            };
             /**
              * @private
              */
-            setLinkedDescriptionAttrs: function () {
+            InfoRegionsComponent.prototype.setLinkedDescriptionAttrs = function () {
                 var el = this.linkedDescriptionElement;
                 if (el) {
                     el.setAttribute('aria-hidden', 'true');
                     addClass(el, 'highcharts-linked-description');
                 }
-            },
+            };
             /**
              * @private
-             * @param {string} regionKey The name/key of the region to update
+             * @param {string} regionKey
+             * The name/key of the region to update
              */
-            updateScreenReaderSection: function (regionKey) {
+            InfoRegionsComponent.prototype.updateScreenReaderSection = function (regionKey) {
                 var chart = this.chart;
                 var region = this.screenReaderSections[regionKey];
                 var content = region.buildContent(chart);
@@ -2358,13 +2402,13 @@
                     }
                     delete region.element;
                 }
-            },
+            };
             /**
              * @private
              * @param {Highcharts.HTMLDOMElement} sectionDiv The section element
              * @param {string} regionKey Name/key of the region we are setting attrs for
              */
-            setScreenReaderSectionAttribs: function (sectionDiv, regionKey) {
+            InfoRegionsComponent.prototype.setScreenReaderSectionAttribs = function (sectionDiv, regionKey) {
                 var labelLangKey = ('accessibility.screenReaderSection.' + regionKey + 'RegionLabel'), chart = this.chart, labelText = chart.langFormat(labelLangKey, { chart: chart, chartTitle: getChartTitle(chart) }), sectionId = 'highcharts-screen-reader-region-' + regionKey + '-' +
                         chart.index;
                 attr(sectionDiv, {
@@ -2378,12 +2422,12 @@
                     labelText) {
                     sectionDiv.setAttribute('role', 'region');
                 }
-            },
+            };
             /**
              * @private
              * @return {string}
              */
-            defaultBeforeChartFormatter: function () {
+            InfoRegionsComponent.prototype.defaultBeforeChartFormatter = function () {
                 var chart = this.chart;
                 var format = chart.options.accessibility.screenReaderSection.beforeChartFormat;
                 if (!format) {
@@ -2420,12 +2464,12 @@
                 this.dataTableButtonId = dataTableButtonId;
                 this.sonifyButtonId = sonifyButtonId;
                 return stripEmptyHTMLTags(formattedString);
-            },
+            };
             /**
              * @private
              * @return {string}
              */
-            defaultAfterChartFormatter: function () {
+            InfoRegionsComponent.prototype.defaultAfterChartFormatter = function () {
                 var chart = this.chart;
                 var format = chart.options.accessibility.screenReaderSection.afterChartFormat;
                 if (!format) {
@@ -2436,21 +2480,21 @@
                     context,
                     chart);
                 return stripEmptyHTMLTags(formattedString);
-            },
+            };
             /**
              * @private
              * @return {string}
              */
-            getLinkedDescription: function () {
+            InfoRegionsComponent.prototype.getLinkedDescription = function () {
                 var el = this.linkedDescriptionElement,
                     content = el && el.innerHTML || '';
                 return stripHTMLTagsFromString(content);
-            },
+            };
             /**
              * @private
              * @return {string}
              */
-            getLongdescText: function () {
+            InfoRegionsComponent.prototype.getLongdescText = function () {
                 var chartOptions = this.chart.options,
                     captionOptions = chartOptions.caption,
                     captionText = captionOptions && captionOptions.text,
@@ -2459,34 +2503,34 @@
                     linkedDescription ||
                     captionText ||
                     '');
-            },
+            };
             /**
              * @private
              * @return {string}
              */
-            getTypeDescriptionText: function () {
+            InfoRegionsComponent.prototype.getTypeDescriptionText = function () {
                 var chart = this.chart;
                 return chart.types ?
                     chart.options.accessibility.typeDescription ||
-                        chart.getTypeDescription(chart.types) : '';
-            },
+                        getTypeDescription(chart, chart.types) : '';
+            };
             /**
              * @private
              * @param {string} buttonId
              * @return {string}
              */
-            getDataTableButtonText: function (buttonId) {
+            InfoRegionsComponent.prototype.getDataTableButtonText = function (buttonId) {
                 var chart = this.chart,
                     buttonText = chart.langFormat('accessibility.table.viewAsDataTableButtonText', { chart: chart,
                     chartTitle: getChartTitle(chart) });
                 return '<button id="' + buttonId + '">' + buttonText + '</button>';
-            },
+            };
             /**
              * @private
              * @param {string} buttonId
              * @return {string}
              */
-            getSonifyButtonText: function (buttonId) {
+            InfoRegionsComponent.prototype.getSonifyButtonText = function (buttonId) {
                 var chart = this.chart;
                 if (chart.options.sonification &&
                     chart.options.sonification.enabled === false) {
@@ -2495,28 +2539,28 @@
                 var buttonText = chart.langFormat('accessibility.sonification.playAsSoundButtonText', { chart: chart,
                     chartTitle: getChartTitle(chart) });
                 return '<button id="' + buttonId + '">' + buttonText + '</button>';
-            },
+            };
             /**
              * @private
              * @return {string}
              */
-            getSubtitleText: function () {
+            InfoRegionsComponent.prototype.getSubtitleText = function () {
                 var subtitle = (this.chart.options.subtitle);
                 return stripHTMLTagsFromString(subtitle && subtitle.text || '');
-            },
+            };
             /**
              * @private
              * @return {string}
              */
-            getEndOfChartMarkerText: function () {
+            InfoRegionsComponent.prototype.getEndOfChartMarkerText = function () {
                 var chart = this.chart, markerText = chart.langFormat('accessibility.screenReaderSection.endOfChartMarker', { chart: chart }), id = 'highcharts-end-of-chart-marker-' + chart.index;
                 return '<div id="' + id + '">' + markerText + '</div>';
-            },
+            };
             /**
              * @private
              * @param {Highcharts.Dictionary<string>} e
              */
-            onDataTableCreated: function (e) {
+            InfoRegionsComponent.prototype.onDataTableCreated = function (e) {
                 var chart = this.chart;
                 if (chart.options.accessibility.enabled) {
                     if (this.viewDataTableButton) {
@@ -2527,22 +2571,22 @@
                     attributes.summary = getTableSummary(chart);
                     e.tree.attributes = attributes;
                 }
-            },
+            };
             /**
              * @private
              */
-            focusDataTable: function () {
+            InfoRegionsComponent.prototype.focusDataTable = function () {
                 var tableDiv = this.dataTableDiv,
                     table = tableDiv && tableDiv.getElementsByTagName('table')[0];
                 if (table && table.focus) {
                     table.focus();
                 }
-            },
+            };
             /**
              * @private
              * @param {string} sonifyButtonId
              */
-            initSonifyButton: function (sonifyButtonId) {
+            InfoRegionsComponent.prototype.initSonifyButton = function (sonifyButtonId) {
                 var _this = this;
                 var el = this.sonifyButton = getElement(sonifyButtonId);
                 var chart = this.chart;
@@ -2573,13 +2617,13 @@
                         (onPlayAsSoundClick || defaultHandler).call(this, e, chart);
                     };
                 }
-            },
+            };
             /**
              * Set attribs and handlers for default viewAsDataTable button if exists.
              * @private
              * @param {string} tableButtonId
              */
-            initDataTableButton: function (tableButtonId) {
+            InfoRegionsComponent.prototype.initDataTableButton = function (tableButtonId) {
                 var el = this.viewDataTableButton = getElement(tableButtonId), chart = this.chart, tableId = tableButtonId.replace('hc-linkto-', '');
                 if (el) {
                     attr(el, {
@@ -2592,13 +2636,13 @@
                             chart.viewData();
                         };
                 }
-            },
+            };
             /**
              * Return object with text description of each of the chart's axes.
              * @private
              * @return {Highcharts.Dictionary<string>}
              */
-            getAxesDescription: function () {
+            InfoRegionsComponent.prototype.getAxesDescription = function () {
                 var chart = this.chart,
                     shouldDescribeColl = function (collectionKey,
                     defaultCondition) {
@@ -2614,13 +2658,13 @@
                     desc.yAxis = this.getAxisDescriptionText('yAxis');
                 }
                 return desc;
-            },
+            };
             /**
              * @private
              * @param {string} collectionKey
              * @return {string}
              */
-            getAxisDescriptionText: function (collectionKey) {
+            InfoRegionsComponent.prototype.getAxisDescriptionText = function (collectionKey) {
                 var chart = this.chart;
                 var axes = chart[collectionKey];
                 return chart.langFormat('accessibility.axis.' + collectionKey + 'Description' + (axes.length > 1 ? 'Plural' : 'Singular'), {
@@ -2633,20 +2677,482 @@
                     }),
                     numAxes: axes.length
                 });
-            },
+            };
             /**
              * Remove component traces
              */
-            destroy: function () {
+            InfoRegionsComponent.prototype.destroy = function () {
                 if (this.announcer) {
                     this.announcer.destroy();
                 }
-            }
-        });
+            };
+            return InfoRegionsComponent;
+        }(AccessibilityComponent));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return InfoRegionsComponent;
     });
-    _registerModule(_modules, 'Accessibility/KeyboardNavigation.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (Chart, H, U, EventProvider, HTMLUtilities) {
+    _registerModule(_modules, 'Accessibility/Components/MenuComponent.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (Chart, U, AccessibilityComponent, KeyboardNavigationHandler, ChartUtilities, HTMLUtilities) {
+        /* *
+         *
+         *  (c) 2009-2021 Øystein Moseng
+         *
+         *  Accessibility component for exporting menu.
+         *
+         *  License: www.highcharts.com/license
+         *
+         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
+         *
+         * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
+        var attr = U.attr;
+        var getChartTitle = ChartUtilities.getChartTitle,
+            unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
+        var getFakeMouseEvent = HTMLUtilities.getFakeMouseEvent;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
+        /**
+         * Get the wrapped export button element of a chart.
+         *
+         * @private
+         * @param {Highcharts.Chart} chart
+         * @returns {Highcharts.SVGElement}
+         */
+        function getExportMenuButtonElement(chart) {
+            return chart.exportSVGElements && chart.exportSVGElements[0];
+        }
+        /**
+         * @private
+         * @param {Highcharts.Chart} chart
+         */
+        function exportingShouldHaveA11y(chart) {
+            var exportingOpts = chart.options.exporting,
+                exportButton = getExportMenuButtonElement(chart);
+            return !!(exportingOpts &&
+                exportingOpts.enabled !== false &&
+                exportingOpts.accessibility &&
+                exportingOpts.accessibility.enabled &&
+                exportButton &&
+                exportButton.element);
+        }
+        /* *
+         *
+         *  Class
+         *
+         * */
+        /**
+         * The MenuComponent class
+         *
+         * @private
+         * @class
+         * @name Highcharts.MenuComponent
+         */
+        var MenuComponent = /** @class */ (function (_super) {
+                __extends(MenuComponent, _super);
+            function MenuComponent() {
+                return _super !== null && _super.apply(this, arguments) || this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Init the component
+             */
+            MenuComponent.prototype.init = function () {
+                var chart = this.chart,
+                    component = this;
+                this.addEvent(chart, 'exportMenuShown', function () {
+                    component.onMenuShown();
+                });
+                this.addEvent(chart, 'exportMenuHidden', function () {
+                    component.onMenuHidden();
+                });
+                this.createProxyGroup();
+            };
+            /**
+             * @private
+             */
+            MenuComponent.prototype.onMenuHidden = function () {
+                var menu = this.chart.exportContextMenu;
+                if (menu) {
+                    menu.setAttribute('aria-hidden', 'true');
+                }
+                this.isExportMenuShown = false;
+                this.setExportButtonExpandedState('false');
+            };
+            /**
+             * @private
+             */
+            MenuComponent.prototype.onMenuShown = function () {
+                var chart = this.chart,
+                    menu = chart.exportContextMenu;
+                if (menu) {
+                    this.addAccessibleContextMenuAttribs();
+                    unhideChartElementFromAT(chart, menu);
+                }
+                this.isExportMenuShown = true;
+                this.setExportButtonExpandedState('true');
+            };
+            /**
+             * @private
+             * @param {string} stateStr
+             */
+            MenuComponent.prototype.setExportButtonExpandedState = function (stateStr) {
+                if (this.exportButtonProxy) {
+                    this.exportButtonProxy.buttonElement.setAttribute('aria-expanded', stateStr);
+                }
+            };
+            /**
+             * Called on each render of the chart. We need to update positioning of the
+             * proxy overlay.
+             */
+            MenuComponent.prototype.onChartRender = function () {
+                this.proxyProvider.clearGroup('chartMenu');
+                this.proxyMenuButton();
+            };
+            /**
+             * @private
+             */
+            MenuComponent.prototype.proxyMenuButton = function () {
+                var chart = this.chart;
+                var proxyProvider = this.proxyProvider;
+                var buttonEl = getExportMenuButtonElement(chart);
+                if (exportingShouldHaveA11y(chart) && buttonEl) {
+                    this.exportButtonProxy = proxyProvider.addProxyElement('chartMenu', { click: buttonEl }, {
+                        'aria-label': chart.langFormat('accessibility.exporting.menuButtonLabel', {
+                            chart: chart,
+                            chartTitle: getChartTitle(chart)
+                        }),
+                        'aria-expanded': false
+                    });
+                }
+            };
+            /**
+             * @private
+             */
+            MenuComponent.prototype.createProxyGroup = function () {
+                var chart = this.chart;
+                if (chart && this.proxyProvider) {
+                    this.proxyProvider.addGroup('chartMenu', 'div');
+                }
+            };
+            /**
+             * @private
+             */
+            MenuComponent.prototype.addAccessibleContextMenuAttribs = function () {
+                var chart = this.chart,
+                    exportList = chart.exportDivElements;
+                if (exportList && exportList.length) {
+                    // Set tabindex on the menu items to allow focusing by script
+                    // Set role to give screen readers a chance to pick up the contents
+                    exportList.forEach(function (item) {
+                        if (item) {
+                            if (item.tagName === 'LI' &&
+                                !(item.children && item.children.length)) {
+                                item.setAttribute('tabindex', -1);
+                            }
+                            else {
+                                item.setAttribute('aria-hidden', 'true');
+                            }
+                        }
+                    });
+                    // Set accessibility properties on parent div
+                    var parentDiv = (exportList[0] && exportList[0].parentNode);
+                    if (parentDiv) {
+                        attr(parentDiv, {
+                            'aria-hidden': void 0,
+                            'aria-label': chart.langFormat('accessibility.exporting.chartMenuLabel', { chart: chart }),
+                            role: 'list' // Needed for webkit/VO
+                        });
+                    }
+                }
+            };
+            /**
+             * Get keyboard navigation handler for this component.
+             * @return {Highcharts.KeyboardNavigationHandler}
+             */
+            MenuComponent.prototype.getKeyboardNavigation = function () {
+                var keys = this.keyCodes,
+                    chart = this.chart,
+                    component = this;
+                return new KeyboardNavigationHandler(chart, {
+                    keyCodeMap: [
+                        // Arrow prev handler
+                        [
+                            [keys.left, keys.up],
+                            function () {
+                                return component.onKbdPrevious(this);
+                            }
+                        ],
+                        // Arrow next handler
+                        [
+                            [keys.right, keys.down],
+                            function () {
+                                return component.onKbdNext(this);
+                            }
+                        ],
+                        // Click handler
+                        [
+                            [keys.enter, keys.space],
+                            function () {
+                                return component.onKbdClick(this);
+                            }
+                        ]
+                    ],
+                    // Only run exporting navigation if exporting support exists and is
+                    // enabled on chart
+                    validate: function () {
+                        return !!chart.exporting &&
+                            chart.options.exporting.enabled !== false &&
+                            chart.options.exporting.accessibility.enabled !==
+                                false;
+                    },
+                    // Focus export menu button
+                    init: function () {
+                        var proxy = component.exportButtonProxy;
+                        var svgEl = component.chart.exportingGroup;
+                        if (proxy && svgEl) {
+                            chart.setFocusToElement(svgEl, proxy.buttonElement);
+                        }
+                    },
+                    // Hide the menu
+                    terminate: function () {
+                        chart.hideExportMenu();
+                    }
+                });
+            };
+            /**
+             * @private
+             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
+             * @return {number} Response code
+             */
+            MenuComponent.prototype.onKbdPrevious = function (keyboardNavigationHandler) {
+                var chart = this.chart;
+                var a11yOptions = chart.options.accessibility;
+                var response = keyboardNavigationHandler.response;
+                // Try to highlight prev item in list. Highlighting e.g.
+                // separators will fail.
+                var i = chart.highlightedExportItemIx || 0;
+                while (i--) {
+                    if (chart.highlightExportItem(i)) {
+                        return response.success;
+                    }
+                }
+                // We failed, so wrap around or move to prev module
+                if (a11yOptions.keyboardNavigation.wrapAround) {
+                    chart.highlightLastExportItem();
+                    return response.success;
+                }
+                return response.prev;
+            };
+            /**
+             * @private
+             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
+             * @return {number} Response code
+             */
+            MenuComponent.prototype.onKbdNext = function (keyboardNavigationHandler) {
+                var chart = this.chart;
+                var a11yOptions = chart.options.accessibility;
+                var response = keyboardNavigationHandler.response;
+                // Try to highlight next item in list. Highlighting e.g.
+                // separators will fail.
+                for (var i = (chart.highlightedExportItemIx || 0) + 1; i < chart.exportDivElements.length; ++i) {
+                    if (chart.highlightExportItem(i)) {
+                        return response.success;
+                    }
+                }
+                // We failed, so wrap around or move to next module
+                if (a11yOptions.keyboardNavigation.wrapAround) {
+                    chart.highlightExportItem(0);
+                    return response.success;
+                }
+                return response.next;
+            };
+            /**
+             * @private
+             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
+             * @return {number} Response code
+             */
+            MenuComponent.prototype.onKbdClick = function (keyboardNavigationHandler) {
+                var chart = this.chart;
+                var curHighlightedItem = chart.exportDivElements[chart.highlightedExportItemIx];
+                var exportButtonElement = getExportMenuButtonElement(chart).element;
+                if (this.isExportMenuShown) {
+                    this.fakeClickEvent(curHighlightedItem);
+                }
+                else {
+                    this.fakeClickEvent(exportButtonElement);
+                    chart.highlightExportItem(0);
+                }
+                return keyboardNavigationHandler.response.success;
+            };
+            return MenuComponent;
+        }(AccessibilityComponent));
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
+        (function (MenuComponent) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * @private
+             */
+            function compose(ChartClass) {
+                if (composedClasses.indexOf(ChartClass) === -1) {
+                    composedClasses.push(ChartClass);
+                    var chartProto = Chart.prototype;
+                    chartProto.hideExportMenu = chartHideExportMenu;
+                    chartProto.highlightExportItem = chartHighlightExportItem;
+                    chartProto.highlightLastExportItem = chartHighlightLastExportItem;
+                    chartProto.showExportMenu = chartShowExportMenu;
+                }
+            }
+            MenuComponent.compose = compose;
+            /**
+             * Show the export menu and focus the first item (if exists).
+             *
+             * @private
+             * @function Highcharts.Chart#showExportMenu
+             */
+            function chartShowExportMenu() {
+                var exportButton = getExportMenuButtonElement(this);
+                if (exportButton) {
+                    var el = exportButton.element;
+                    if (el.onclick) {
+                        el.onclick(getFakeMouseEvent('click'));
+                    }
+                }
+            }
+            /**
+             * @private
+             * @function Highcharts.Chart#hideExportMenu
+             */
+            function chartHideExportMenu() {
+                var chart = this,
+                    exportList = chart.exportDivElements;
+                if (exportList && chart.exportContextMenu) {
+                    // Reset hover states etc.
+                    exportList.forEach(function (el) {
+                        if (el &&
+                            el.className === 'highcharts-menu-item' &&
+                            el.onmouseout) {
+                            el.onmouseout(getFakeMouseEvent('mouseout'));
+                        }
+                    });
+                    chart.highlightedExportItemIx = 0;
+                    // Hide the menu div
+                    chart.exportContextMenu.hideMenu();
+                    // Make sure the chart has focus and can capture keyboard events
+                    chart.container.focus();
+                }
+            }
+            /**
+             * Highlight export menu item by index.
+             *
+             * @private
+             * @function Highcharts.Chart#highlightExportItem
+             *
+             * @param {number} ix
+             *
+             * @return {boolean}
+             */
+            function chartHighlightExportItem(ix) {
+                var listItem = this.exportDivElements && this.exportDivElements[ix];
+                var curHighlighted = this.exportDivElements &&
+                        this.exportDivElements[this.highlightedExportItemIx];
+                if (listItem &&
+                    listItem.tagName === 'LI' &&
+                    !(listItem.children && listItem.children.length)) {
+                    // Test if we have focus support for SVG elements
+                    var hasSVGFocusSupport = !!(this.renderTo.getElementsByTagName('g')[0] || {}).focus;
+                    // Only focus if we can set focus back to the elements after
+                    // destroying the menu (#7422)
+                    if (listItem.focus && hasSVGFocusSupport) {
+                        listItem.focus();
+                    }
+                    if (curHighlighted && curHighlighted.onmouseout) {
+                        curHighlighted.onmouseout(getFakeMouseEvent('mouseout'));
+                    }
+                    if (listItem.onmouseover) {
+                        listItem.onmouseover(getFakeMouseEvent('mouseover'));
+                    }
+                    this.highlightedExportItemIx = ix;
+                    return true;
+                }
+                return false;
+            }
+            /**
+             * Try to highlight the last valid export menu item.
+             *
+             * @private
+             * @function Highcharts.Chart#highlightLastExportItem
+             * @return {boolean}
+             */
+            function chartHighlightLastExportItem() {
+                var chart = this;
+                if (chart.exportDivElements) {
+                    var i = chart.exportDivElements.length;
+                    while (i--) {
+                        if (chart.highlightExportItem(i)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+        })(MenuComponent || (MenuComponent = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
+
+        return MenuComponent;
+    });
+    _registerModule(_modules, 'Accessibility/KeyboardNavigation.js', [_modules['Core/Globals.js'], _modules['Accessibility/Components/MenuComponent.js'], _modules['Core/Utilities.js'], _modules['Accessibility/Utils/EventProvider.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (H, MenuComponent, U, EventProvider, HTMLUtilities) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -3055,6 +3561,7 @@
              * @private
              */
             function compose(ChartClass) {
+                MenuComponent.compose(ChartClass);
                 if (composedItems.indexOf(ChartClass) === -1) {
                     composedItems.push(ChartClass);
                     var chartProto = ChartClass.prototype;
@@ -3510,385 +4017,6 @@
         });
 
         return LegendComponent;
-    });
-    _registerModule(_modules, 'Accessibility/Components/MenuComponent.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (Chart, U, AccessibilityComponent, KeyboardNavigationHandler, ChartUtilities, HTMLUtilities) {
-        /* *
-         *
-         *  (c) 2009-2021 Øystein Moseng
-         *
-         *  Accessibility component for exporting menu.
-         *
-         *  License: www.highcharts.com/license
-         *
-         *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
-         *
-         * */
-        var attr = U.attr,
-            extend = U.extend;
-        var getChartTitle = ChartUtilities.getChartTitle,
-            unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
-        var getFakeMouseEvent = HTMLUtilities.getFakeMouseEvent;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
-        /**
-         * Get the wrapped export button element of a chart.
-         *
-         * @private
-         * @param {Highcharts.Chart} chart
-         * @returns {Highcharts.SVGElement}
-         */
-        function getExportMenuButtonElement(chart) {
-            return chart.exportSVGElements && chart.exportSVGElements[0];
-        }
-        /**
-         * Show the export menu and focus the first item (if exists).
-         *
-         * @private
-         * @function Highcharts.Chart#showExportMenu
-         */
-        Chart.prototype.showExportMenu = function () {
-            var exportButton = getExportMenuButtonElement(this);
-            if (exportButton) {
-                var el = exportButton.element;
-                if (el.onclick) {
-                    el.onclick(getFakeMouseEvent('click'));
-                }
-            }
-        };
-        /**
-         * @private
-         * @function Highcharts.Chart#hideExportMenu
-         */
-        Chart.prototype.hideExportMenu = function () {
-            var chart = this,
-                exportList = chart.exportDivElements;
-            if (exportList && chart.exportContextMenu) {
-                // Reset hover states etc.
-                exportList.forEach(function (el) {
-                    if (el &&
-                        el.className === 'highcharts-menu-item' &&
-                        el.onmouseout) {
-                        el.onmouseout(getFakeMouseEvent('mouseout'));
-                    }
-                });
-                chart.highlightedExportItemIx = 0;
-                // Hide the menu div
-                chart.exportContextMenu.hideMenu();
-                // Make sure the chart has focus and can capture keyboard events
-                chart.container.focus();
-            }
-        };
-        /**
-         * Highlight export menu item by index.
-         *
-         * @private
-         * @function Highcharts.Chart#highlightExportItem
-         *
-         * @param {number} ix
-         *
-         * @return {boolean}
-         */
-        Chart.prototype.highlightExportItem = function (ix) {
-            var listItem = this.exportDivElements && this.exportDivElements[ix];
-            var curHighlighted = this.exportDivElements &&
-                    this.exportDivElements[this.highlightedExportItemIx];
-            if (listItem &&
-                listItem.tagName === 'LI' &&
-                !(listItem.children && listItem.children.length)) {
-                // Test if we have focus support for SVG elements
-                var hasSVGFocusSupport = !!(this.renderTo.getElementsByTagName('g')[0] || {}).focus;
-                // Only focus if we can set focus back to the elements after
-                // destroying the menu (#7422)
-                if (listItem.focus && hasSVGFocusSupport) {
-                    listItem.focus();
-                }
-                if (curHighlighted && curHighlighted.onmouseout) {
-                    curHighlighted.onmouseout(getFakeMouseEvent('mouseout'));
-                }
-                if (listItem.onmouseover) {
-                    listItem.onmouseover(getFakeMouseEvent('mouseover'));
-                }
-                this.highlightedExportItemIx = ix;
-                return true;
-            }
-            return false;
-        };
-        /**
-         * Try to highlight the last valid export menu item.
-         *
-         * @private
-         * @function Highcharts.Chart#highlightLastExportItem
-         * @return {boolean}
-         */
-        Chart.prototype.highlightLastExportItem = function () {
-            var chart = this;
-            if (chart.exportDivElements) {
-                var i = chart.exportDivElements.length;
-                while (i--) {
-                    if (chart.highlightExportItem(i)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        };
-        /**
-         * @private
-         * @param {Highcharts.Chart} chart
-         */
-        function exportingShouldHaveA11y(chart) {
-            var exportingOpts = chart.options.exporting,
-                exportButton = getExportMenuButtonElement(chart);
-            return !!(exportingOpts &&
-                exportingOpts.enabled !== false &&
-                exportingOpts.accessibility &&
-                exportingOpts.accessibility.enabled &&
-                exportButton &&
-                exportButton.element);
-        }
-        /**
-         * The MenuComponent class
-         *
-         * @private
-         * @class
-         * @name Highcharts.MenuComponent
-         */
-        var MenuComponent = function () { };
-        MenuComponent.prototype = new AccessibilityComponent();
-        extend(MenuComponent.prototype, /** @lends Highcharts.MenuComponent */ {
-            /**
-             * Init the component
-             */
-            init: function () {
-                var chart = this.chart,
-                    component = this;
-                this.addEvent(chart, 'exportMenuShown', function () {
-                    component.onMenuShown();
-                });
-                this.addEvent(chart, 'exportMenuHidden', function () {
-                    component.onMenuHidden();
-                });
-                this.createProxyGroup();
-            },
-            /**
-             * @private
-             */
-            onMenuHidden: function () {
-                var menu = this.chart.exportContextMenu;
-                if (menu) {
-                    menu.setAttribute('aria-hidden', 'true');
-                }
-                this.isExportMenuShown = false;
-                this.setExportButtonExpandedState('false');
-            },
-            /**
-             * @private
-             */
-            onMenuShown: function () {
-                var chart = this.chart,
-                    menu = chart.exportContextMenu;
-                if (menu) {
-                    this.addAccessibleContextMenuAttribs();
-                    unhideChartElementFromAT(chart, menu);
-                }
-                this.isExportMenuShown = true;
-                this.setExportButtonExpandedState('true');
-            },
-            /**
-             * @private
-             * @param {string} stateStr
-             */
-            setExportButtonExpandedState: function (stateStr) {
-                if (this.exportButtonProxy) {
-                    this.exportButtonProxy.buttonElement.setAttribute('aria-expanded', stateStr);
-                }
-            },
-            /**
-             * Called on each render of the chart. We need to update positioning of the
-             * proxy overlay.
-             */
-            onChartRender: function () {
-                this.proxyProvider.clearGroup('chartMenu');
-                this.proxyMenuButton();
-            },
-            /**
-             * @private
-             */
-            proxyMenuButton: function () {
-                var chart = this.chart;
-                var proxyProvider = this.proxyProvider;
-                var buttonEl = getExportMenuButtonElement(chart);
-                if (exportingShouldHaveA11y(chart) && buttonEl) {
-                    this.exportButtonProxy = proxyProvider.addProxyElement('chartMenu', { click: buttonEl }, {
-                        'aria-label': chart.langFormat('accessibility.exporting.menuButtonLabel', {
-                            chart: chart,
-                            chartTitle: getChartTitle(chart)
-                        }),
-                        'aria-expanded': false
-                    });
-                }
-            },
-            /**
-             * @private
-             */
-            createProxyGroup: function () {
-                var chart = this.chart;
-                if (chart && this.proxyProvider) {
-                    this.proxyProvider.addGroup('chartMenu', 'div');
-                }
-            },
-            /**
-             * @private
-             */
-            addAccessibleContextMenuAttribs: function () {
-                var chart = this.chart,
-                    exportList = chart.exportDivElements;
-                if (exportList && exportList.length) {
-                    // Set tabindex on the menu items to allow focusing by script
-                    // Set role to give screen readers a chance to pick up the contents
-                    exportList.forEach(function (item) {
-                        if (item) {
-                            if (item.tagName === 'LI' &&
-                                !(item.children && item.children.length)) {
-                                item.setAttribute('tabindex', -1);
-                            }
-                            else {
-                                item.setAttribute('aria-hidden', 'true');
-                            }
-                        }
-                    });
-                    // Set accessibility properties on parent div
-                    var parentDiv = (exportList[0] && exportList[0].parentNode);
-                    if (parentDiv) {
-                        attr(parentDiv, {
-                            'aria-hidden': void 0,
-                            'aria-label': chart.langFormat('accessibility.exporting.chartMenuLabel', { chart: chart }),
-                            role: 'list' // Needed for webkit/VO
-                        });
-                    }
-                }
-            },
-            /**
-             * Get keyboard navigation handler for this component.
-             * @return {Highcharts.KeyboardNavigationHandler}
-             */
-            getKeyboardNavigation: function () {
-                var keys = this.keyCodes,
-                    chart = this.chart,
-                    component = this;
-                return new KeyboardNavigationHandler(chart, {
-                    keyCodeMap: [
-                        // Arrow prev handler
-                        [
-                            [keys.left, keys.up],
-                            function () {
-                                return component.onKbdPrevious(this);
-                            }
-                        ],
-                        // Arrow next handler
-                        [
-                            [keys.right, keys.down],
-                            function () {
-                                return component.onKbdNext(this);
-                            }
-                        ],
-                        // Click handler
-                        [
-                            [keys.enter, keys.space],
-                            function () {
-                                return component.onKbdClick(this);
-                            }
-                        ]
-                    ],
-                    // Only run exporting navigation if exporting support exists and is
-                    // enabled on chart
-                    validate: function () {
-                        return !!chart.exporting &&
-                            chart.options.exporting.enabled !== false &&
-                            chart.options.exporting.accessibility.enabled !==
-                                false;
-                    },
-                    // Focus export menu button
-                    init: function () {
-                        var proxy = component.exportButtonProxy;
-                        var svgEl = component.chart.exportingGroup;
-                        if (proxy && svgEl) {
-                            chart.setFocusToElement(svgEl, proxy.buttonElement);
-                        }
-                    },
-                    // Hide the menu
-                    terminate: function () {
-                        chart.hideExportMenu();
-                    }
-                });
-            },
-            /**
-             * @private
-             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-             * @return {number} Response code
-             */
-            onKbdPrevious: function (keyboardNavigationHandler) {
-                var chart = this.chart;
-                var a11yOptions = chart.options.accessibility;
-                var response = keyboardNavigationHandler.response;
-                // Try to highlight prev item in list. Highlighting e.g.
-                // separators will fail.
-                var i = chart.highlightedExportItemIx || 0;
-                while (i--) {
-                    if (chart.highlightExportItem(i)) {
-                        return response.success;
-                    }
-                }
-                // We failed, so wrap around or move to prev module
-                if (a11yOptions.keyboardNavigation.wrapAround) {
-                    chart.highlightLastExportItem();
-                    return response.success;
-                }
-                return response.prev;
-            },
-            /**
-             * @private
-             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-             * @return {number} Response code
-             */
-            onKbdNext: function (keyboardNavigationHandler) {
-                var chart = this.chart;
-                var a11yOptions = chart.options.accessibility;
-                var response = keyboardNavigationHandler.response;
-                // Try to highlight next item in list. Highlighting e.g.
-                // separators will fail.
-                for (var i = (chart.highlightedExportItemIx || 0) + 1; i < chart.exportDivElements.length; ++i) {
-                    if (chart.highlightExportItem(i)) {
-                        return response.success;
-                    }
-                }
-                // We failed, so wrap around or move to next module
-                if (a11yOptions.keyboardNavigation.wrapAround) {
-                    chart.highlightExportItem(0);
-                    return response.success;
-                }
-                return response.next;
-            },
-            /**
-             * @private
-             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-             * @return {number} Response code
-             */
-            onKbdClick: function (keyboardNavigationHandler) {
-                var chart = this.chart;
-                var curHighlightedItem = chart.exportDivElements[chart.highlightedExportItemIx];
-                var exportButtonElement = getExportMenuButtonElement(chart).element;
-                if (this.isExportMenuShown) {
-                    this.fakeClickEvent(curHighlightedItem);
-                }
-                else {
-                    this.fakeClickEvent(exportButtonElement);
-                    chart.highlightExportItem(0);
-                }
-                return keyboardNavigationHandler.response.success;
-            }
-        });
-
-        return MenuComponent;
     });
     _registerModule(_modules, 'Accessibility/Components/SeriesComponent/SeriesDescriber.js', [_modules['Accessibility/Components/AnnotationsA11y.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Core/FormatUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Core/Utilities.js']], function (AnnotationsA11y, ChartUtilities, F, HTMLUtilities, U) {
         /* *
@@ -7609,7 +7737,7 @@
 
         return RangeSelector;
     });
-    _registerModule(_modules, 'Accessibility/Components/RangeSelectorComponent.js', [_modules['Extensions/RangeSelector.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Core/Chart/Chart.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (RangeSelector, AccessibilityComponent, ChartUtilities, Announcer, Chart, KeyboardNavigationHandler, U) {
+    _registerModule(_modules, 'Accessibility/Components/RangeSelectorComponent.js', [_modules['Extensions/RangeSelector.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/Announcer.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Core/Utilities.js']], function (RangeSelector, AccessibilityComponent, ChartUtilities, Announcer, KeyboardNavigationHandler, U) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -7621,12 +7749,32 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT,
             getAxisRangeDescription = ChartUtilities.getAxisRangeDescription;
         var addEvent = U.addEvent,
-            attr = U.attr,
-            extend = U.extend;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+            attr = U.attr;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
         /**
          * @private
          */
@@ -7638,49 +7786,11 @@
                 chart.rangeSelector.minInput &&
                 chart.rangeSelector.maxInput);
         }
-        /**
-         * Highlight range selector button by index.
+        /* *
          *
-         * @private
-         * @function Highcharts.Chart#highlightRangeSelectorButton
+         *  Class
          *
-         * @param {number} ix
-         *
-         * @return {boolean}
-         */
-        Chart.prototype.highlightRangeSelectorButton = function (ix) {
-            var buttons = (this.rangeSelector &&
-                    this.rangeSelector.buttons ||
-                    []);
-            var curHighlightedIx = this.highlightedRangeSelectorItemIx;
-            var curSelectedIx = (this.rangeSelector &&
-                    this.rangeSelector.selected);
-            // Deselect old
-            if (typeof curHighlightedIx !== 'undefined' &&
-                buttons[curHighlightedIx] &&
-                curHighlightedIx !== curSelectedIx) {
-                buttons[curHighlightedIx].setState(this.oldRangeSelectorItemState || 0);
-            }
-            // Select new
-            this.highlightedRangeSelectorItemIx = ix;
-            if (buttons[ix]) {
-                this.setFocusToElement(buttons[ix].box, buttons[ix].element);
-                if (ix !== curSelectedIx) {
-                    this.oldRangeSelectorItemState = buttons[ix].state;
-                    buttons[ix].setState(1);
-                }
-                return true;
-            }
-            return false;
-        };
-        // Range selector does not have destroy-setup for class instance events - so
-        // we set it on the class and call the component from here.
-        addEvent(RangeSelector, 'afterBtnClick', function () {
-            if (this.chart.accessibility &&
-                this.chart.accessibility.components.rangeSelector) {
-                return this.chart.accessibility.components.rangeSelector.onAfterBtnClick();
-            }
-        });
+         * */
         /**
          * The RangeSelectorComponent class
          *
@@ -7688,21 +7798,37 @@
          * @class
          * @name Highcharts.RangeSelectorComponent
          */
-        var RangeSelectorComponent = function () { };
-        RangeSelectorComponent.prototype = new AccessibilityComponent();
-        extend(RangeSelectorComponent.prototype, /** @lends Highcharts.RangeSelectorComponent */ {
+        var RangeSelectorComponent = /** @class */ (function (_super) {
+                __extends(RangeSelectorComponent, _super);
+            function RangeSelectorComponent() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.announcer = void 0;
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
             /**
              * Init the component
              * @private
              */
-            init: function () {
+            RangeSelectorComponent.prototype.init = function () {
                 var chart = this.chart;
                 this.announcer = new Announcer(chart, 'polite');
-            },
+            };
             /**
              * Called on first render/updates to the chart, including options changes.
              */
-            onChartUpdate: function () {
+            RangeSelectorComponent.prototype.onChartUpdate = function () {
                 var chart = this.chart,
                     component = this,
                     rangeSelector = chart.rangeSelector;
@@ -7728,12 +7854,12 @@
                         }
                     });
                 }
-            },
+            };
             /**
              * Hide buttons from AT when showing dropdown, and vice versa.
              * @private
              */
-            updateSelectorVisibility: function () {
+            RangeSelectorComponent.prototype.updateSelectorVisibility = function () {
                 var chart = this.chart;
                 var rangeSelector = chart.rangeSelector;
                 var dropdown = (rangeSelector &&
@@ -7755,12 +7881,12 @@
                     }
                     buttons.forEach(function (btn) { return unhideChartElementFromAT(chart, btn.element); });
                 }
-            },
+            };
             /**
              * Set accessibility related attributes on dropdown element.
              * @private
              */
-            setDropdownAttrs: function () {
+            RangeSelectorComponent.prototype.setDropdownAttrs = function () {
                 var chart = this.chart;
                 var dropdown = (chart.rangeSelector &&
                         chart.rangeSelector.dropdown);
@@ -7769,34 +7895,34 @@
                     dropdown.setAttribute('aria-label', label);
                     dropdown.setAttribute('tabindex', -1);
                 }
-            },
+            };
             /**
              * @private
              * @param {Highcharts.SVGElement} button
              */
-            setRangeButtonAttrs: function (button) {
+            RangeSelectorComponent.prototype.setRangeButtonAttrs = function (button) {
                 attr(button.element, {
                     tabindex: -1,
                     role: 'button'
                 });
-            },
+            };
             /**
              * @private
              */
-            setRangeInputAttrs: function (input, langKey) {
+            RangeSelectorComponent.prototype.setRangeInputAttrs = function (input, langKey) {
                 var chart = this.chart;
                 attr(input, {
                     tabindex: -1,
                     'aria-label': chart.langFormat(langKey, { chart: chart })
                 });
-            },
+            };
             /**
              * @private
              * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
              * @param {number} keyCode
              * @return {number} Response code
              */
-            onButtonNavKbdArrowKey: function (keyboardNavigationHandler, keyCode) {
+            RangeSelectorComponent.prototype.onButtonNavKbdArrowKey = function (keyboardNavigationHandler, keyCode) {
                 var response = keyboardNavigationHandler.response,
                     keys = this.keyCodes,
                     chart = this.chart,
@@ -7812,11 +7938,11 @@
                     return response[direction > 0 ? 'next' : 'prev'];
                 }
                 return response.success;
-            },
+            };
             /**
              * @private
              */
-            onButtonNavKbdClick: function (keyboardNavigationHandler) {
+            RangeSelectorComponent.prototype.onButtonNavKbdClick = function (keyboardNavigationHandler) {
                 var response = keyboardNavigationHandler.response,
                     chart = this.chart,
                     wasDisabled = chart.oldRangeSelectorItemState === 3;
@@ -7824,13 +7950,13 @@
                     this.fakeClickEvent(chart.rangeSelector.buttons[chart.highlightedRangeSelectorItemIx].element);
                 }
                 return response.success;
-            },
+            };
             /**
              * Called whenever a range selector button has been clicked, either by
              * mouse, touch, or kbd/voice/other.
              * @private
              */
-            onAfterBtnClick: function () {
+            RangeSelectorComponent.prototype.onAfterBtnClick = function () {
                 var chart = this.chart;
                 var axisRangeDescription = getAxisRangeDescription(chart.xAxis[0]);
                 var announcement = chart.langFormat('accessibility.rangeSelector.clickButtonAnnouncement', { chart: chart,
@@ -7838,11 +7964,11 @@
                 if (announcement) {
                     this.announcer.announce(announcement);
                 }
-            },
+            };
             /**
              * @private
              */
-            onInputKbdMove: function (direction) {
+            RangeSelectorComponent.prototype.onInputKbdMove = function (direction) {
                 var chart = this.chart;
                 var rangeSel = chart.rangeSelector;
                 var newIx = chart.highlightedInputRangeIx = (chart.highlightedInputRangeIx || 0) + direction;
@@ -7860,12 +7986,12 @@
                         chart.setFocusToElement(svgEl, inputEl);
                     }
                 }
-            },
+            };
             /**
              * @private
              * @param {number} direction
              */
-            onInputNavInit: function (direction) {
+            RangeSelectorComponent.prototype.onInputNavInit = function (direction) {
                 var _this = this;
                 var component = this;
                 var chart = this.chart;
@@ -7901,11 +8027,11 @@
                         maxRemover_1();
                     };
                 }
-            },
+            };
             /**
              * @private
              */
-            onInputNavTerminate: function () {
+            RangeSelectorComponent.prototype.onInputNavTerminate = function () {
                 var rangeSel = (this.chart.rangeSelector || {});
                 if (rangeSel.maxInput) {
                     rangeSel.hideInput('max');
@@ -7917,11 +8043,11 @@
                     this.removeInputKeydownHandler();
                     delete this.removeInputKeydownHandler;
                 }
-            },
+            };
             /**
              * @private
              */
-            initDropdownNav: function () {
+            RangeSelectorComponent.prototype.initDropdownNav = function () {
                 var _this = this;
                 var chart = this.chart;
                 var rangeSelector = chart.rangeSelector;
@@ -7945,13 +8071,13 @@
                         }
                     });
                 }
-            },
+            };
             /**
              * Get navigation for the range selector buttons.
              * @private
              * @return {Highcharts.KeyboardNavigationHandler} The module object.
              */
-            getRangeSelectorButtonNavigation: function () {
+            RangeSelectorComponent.prototype.getRangeSelectorButtonNavigation = function () {
                 var chart = this.chart;
                 var keys = this.keyCodes;
                 var component = this;
@@ -7992,14 +8118,14 @@
                         }
                     }
                 });
-            },
+            };
             /**
              * Get navigation for the range selector input boxes.
              * @private
              * @return {Highcharts.KeyboardNavigationHandler}
              *         The module object.
              */
-            getRangeSelectorInputNavigation: function () {
+            RangeSelectorComponent.prototype.getRangeSelectorInputNavigation = function () {
                 var chart = this.chart;
                 var component = this;
                 return new KeyboardNavigationHandler(chart, {
@@ -8014,22 +8140,22 @@
                         component.onInputNavTerminate();
                     }
                 });
-            },
+            };
             /**
              * Get keyboard navigation handlers for this component.
              * @return {Array<Highcharts.KeyboardNavigationHandler>}
              *         List of module objects.
              */
-            getKeyboardNavigation: function () {
+            RangeSelectorComponent.prototype.getKeyboardNavigation = function () {
                 return [
                     this.getRangeSelectorButtonNavigation(),
                     this.getRangeSelectorInputNavigation()
                 ];
-            },
+            };
             /**
              * Remove component traces
              */
-            destroy: function () {
+            RangeSelectorComponent.prototype.destroy = function () {
                 if (this.removeDropdownKeydownHandler) {
                     this.removeDropdownKeydownHandler();
                 }
@@ -8039,8 +8165,99 @@
                 if (this.announcer) {
                     this.announcer.destroy();
                 }
+            };
+            return RangeSelectorComponent;
+        }(AccessibilityComponent));
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
+        (function (RangeSelectorComponent) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Highlight range selector button by index.
+             *
+             * @private
+             * @function Highcharts.Chart#highlightRangeSelectorButton
+             *
+             * @param {number} ix
+             *
+             * @return {boolean}
+             */
+            function chartHighlightRangeSelectorButton(ix) {
+                var buttons = (this.rangeSelector &&
+                        this.rangeSelector.buttons ||
+                        []);
+                var curHighlightedIx = this.highlightedRangeSelectorItemIx;
+                var curSelectedIx = (this.rangeSelector &&
+                        this.rangeSelector.selected);
+                // Deselect old
+                if (typeof curHighlightedIx !== 'undefined' &&
+                    buttons[curHighlightedIx] &&
+                    curHighlightedIx !== curSelectedIx) {
+                    buttons[curHighlightedIx].setState(this.oldRangeSelectorItemState || 0);
+                }
+                // Select new
+                this.highlightedRangeSelectorItemIx = ix;
+                if (buttons[ix]) {
+                    this.setFocusToElement(buttons[ix].box, buttons[ix].element);
+                    if (ix !== curSelectedIx) {
+                        this.oldRangeSelectorItemState = buttons[ix].state;
+                        buttons[ix].setState(1);
+                    }
+                    return true;
+                }
+                return false;
             }
-        });
+            /**
+             * @private
+             */
+            function compose(ChartClass, RangeSelectorClass) {
+                if (composedClasses.indexOf(ChartClass) === -1) {
+                    composedClasses.push(ChartClass);
+                    var chartProto = ChartClass.prototype;
+                    chartProto.highlightRangeSelectorButton = chartHighlightRangeSelectorButton;
+                }
+                if (composedClasses.indexOf(RangeSelectorClass) === -1) {
+                    composedClasses.push(RangeSelectorClass);
+                    addEvent(RangeSelector, 'afterBtnClick', rangeSelectorAfterBtnClick);
+                }
+            }
+            RangeSelectorComponent.compose = compose;
+            /**
+             * Range selector does not have destroy-setup for class instance events - so
+             * we set it on the class and call the component from here.
+             * @private
+             */
+            function rangeSelectorAfterBtnClick() {
+                if (this.chart.accessibility &&
+                    this.chart.accessibility.components.rangeSelector) {
+                    return this.chart.accessibility.components.rangeSelector.onAfterBtnClick();
+                }
+            }
+        })(RangeSelectorComponent || (RangeSelectorComponent = {}));
+        /* *
+         *
+         *  Export Default
+         *
+         * */
 
         return RangeSelectorComponent;
     });
@@ -11458,12 +11675,16 @@
             /**
              * @private
              */
-            function compose(ChartClass, PointClass, SeriesClass, SVGElementClass) {
+            function compose(ChartClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
                 A11yI18n.compose(ChartClass);
                 FocusBorder.compose(ChartClass, SVGElementClass);
                 KeyboardNavigation.compose(ChartClass);
+                MenuComponent.compose(ChartClass);
                 NewDataAnnouncer.compose(SeriesClass);
                 SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
+                if (RangeSelectorClass) {
+                    RangeSelectorComponent.compose(ChartClass, RangeSelectorClass);
+                }
                 if (composedClasses.indexOf(ChartClass) === -1) {
                     composedClasses.push(ChartClass);
                     var chartProto = ChartClass.prototype;
@@ -11543,7 +11764,7 @@
         G.AccessibilityComponent = AccessibilityComponent;
         G.KeyboardNavigationHandler = KeyboardNavigationHandler;
         G.SeriesAccessibilityDescriber = SeriesDescriber;
-        Accessibility.compose(G.Chart, G.Point, G.Series, G.SVGElement);
+        Accessibility.compose(G.Chart, G.Point, G.Series, G.SVGElement, G.RangeSelector);
 
     });
 }));

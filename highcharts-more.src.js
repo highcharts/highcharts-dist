@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.0 (2021-10-21)
+ * @license Highcharts JS v9.3.1 (2021-11-05)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -11542,7 +11542,7 @@
             animation = this.options.animation,
             group = this.group,
             markerGroup = this.markerGroup,
-            center = this.xAxis.center,
+            center = this.xAxis && this.xAxis.center,
             plotLeft = chart.plotLeft,
             plotTop = chart.plotTop,
             attribs,

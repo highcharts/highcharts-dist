@@ -306,7 +306,7 @@ wrap(seriesTypes.line.prototype, 'getGraphPath', function (proceed, points) {
     return ret;
 });
 var polarAnimate = function (proceed, init) {
-    var series = this, chart = this.chart, animation = this.options.animation, group = this.group, markerGroup = this.markerGroup, center = this.xAxis.center, plotLeft = chart.plotLeft, plotTop = chart.plotTop, attribs, paneInnerR, graphic, shapeArgs, r, innerR;
+    var series = this, chart = this.chart, animation = this.options.animation, group = this.group, markerGroup = this.markerGroup, center = this.xAxis && this.xAxis.center, plotLeft = chart.plotLeft, plotTop = chart.plotTop, attribs, paneInnerR, graphic, shapeArgs, r, innerR;
     // Specific animation for polar charts
     if (chart.polar) {
         if (series.isRadialBar) {

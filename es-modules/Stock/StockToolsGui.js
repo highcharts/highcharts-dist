@@ -1616,7 +1616,7 @@ var Toolbar = /** @class */ (function () {
             button.style.backgroundImage;
         // set active class
         if (redraw) {
-            this.selectButton(mainNavButton);
+            this.toggleButtonAciveClass(mainNavButton);
         }
     };
     /*
@@ -1625,7 +1625,7 @@ var Toolbar = /** @class */ (function () {
      * @param {HTMLDOMElement} - button
      *
      */
-    Toolbar.prototype.selectButton = function (button) {
+    Toolbar.prototype.toggleButtonAciveClass = function (button) {
         if (button.className.indexOf(activeClass) >= 0) {
             button.classList.remove(activeClass);
         }
@@ -1690,7 +1690,7 @@ var Toolbar = /** @class */ (function () {
     Toolbar.prototype.getIconsURL = function () {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/9.3.0/gfx/stock-icons/';
+            'https://code.highcharts.com/9.3.1/gfx/stock-icons/';
     };
     return Toolbar;
 }());
@@ -1771,7 +1771,7 @@ addEvent(NavigationBindings, 'selectButton', function (event) {
             button = button.parentNode.parentNode;
         }
         // Set active class on the current button
-        gui.selectButton(button);
+        gui.toggleButtonAciveClass(button);
     }
 });
 addEvent(NavigationBindings, 'deselectButton', function (event) {
@@ -1781,7 +1781,7 @@ addEvent(NavigationBindings, 'deselectButton', function (event) {
         if (button.parentNode.className.indexOf(className) >= 0) {
             button = button.parentNode.parentNode;
         }
-        gui.selectButton(button);
+        gui.toggleButtonAciveClass(button);
     }
 });
 // Check if the correct price indicator button is displayed, #15029.

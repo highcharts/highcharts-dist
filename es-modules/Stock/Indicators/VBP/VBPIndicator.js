@@ -524,11 +524,10 @@ var VBPIndicator = /** @class */ (function (_super) {
 extend(VBPIndicator.prototype, {
     nameBase: 'Volume by Price',
     nameComponents: ['ranges'],
-    bindTo: {
-        series: false,
-        eventName: 'afterSetExtremes'
+    calculateOn: {
+        chart: 'render',
+        xAxis: 'afterSetExtremes'
     },
-    calculateOn: 'render',
     pointClass: VBPPoint,
     markerAttribs: noop,
     drawGraph: noop,

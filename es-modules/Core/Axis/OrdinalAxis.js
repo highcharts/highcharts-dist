@@ -827,10 +827,6 @@ var OrdinalAxis;
                     fakeAxis.series.push(fakeSeries);
                     series.processData.apply(fakeSeries);
                 });
-                // Apply grouping if needed.
-                axis.applyGrouping.call(fakeAxis, {
-                    hasExtemesChanged: false
-                });
                 // Force to use the ordinal when points are evenly spaced
                 // (e.g. weeks), #3825.
                 if (fakeSeries.closestPointRange !== fakeSeries.basePointRange &&

@@ -253,8 +253,12 @@ var NavigationBindings = /** @class */ (function () {
      *        Browser's click event
      */
     NavigationBindings.prototype.bindingsButtonClick = function (button, events, clickEvent) {
-        var navigation = this, chart = navigation.chart;
+        var navigation = this, chart = navigation.chart, svgContainer = chart.renderer.boxWrapper;
+        var shouldEventBeFired = true;
         if (navigation.selectedButtonElement) {
+            if (navigation.selectedButtonElement.classList === button.classList) {
+                shouldEventBeFired = false;
+            }
             fireEvent(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
             if (navigation.nextEvent) {
                 // Remove in-progress annotations adders:
@@ -265,15 +269,24 @@ var NavigationBindings = /** @class */ (function () {
                 navigation.mouseMoveEvent = navigation.nextEvent = false;
             }
         }
-        navigation.selectedButton = events;
-        navigation.selectedButtonElement = button;
-        fireEvent(navigation, 'selectButton', { button: button });
-        // Call "init" event, for example to open modal window
-        if (events.init) {
-            events.init.call(navigation, button, clickEvent);
+        if (shouldEventBeFired) {
+            navigation.selectedButton = events;
+            navigation.selectedButtonElement = button;
+            fireEvent(navigation, 'selectButton', { button: button });
+            // Call "init" event, for example to open modal window
+            if (events.init) {
+                events.init.call(navigation, button, clickEvent);
+            }
+            if (events.start || events.steps) {
+                chart.renderer.boxWrapper.addClass(PREFIX + 'draw-mode');
+            }
         }
-        if (events.start || events.steps) {
-            chart.renderer.boxWrapper.addClass(PREFIX + 'draw-mode');
+        else {
+            chart.stockTools && chart.stockTools.toggleButtonAciveClass(button);
+            svgContainer.removeClass(PREFIX + 'draw-mode');
+            navigation.nextEvent = false;
+            navigation.mouseMoveEvent = false;
+            navigation.selectedButton = null;
         }
     };
     /**
@@ -1076,7 +1089,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/9.3.0/gfx/stock-icons/
+         * @default   https://code.highcharts.com/9.3.1/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */

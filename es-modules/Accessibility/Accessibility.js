@@ -315,12 +315,16 @@ var Accessibility = /** @class */ (function () {
     /**
      * @private
      */
-    function compose(ChartClass, PointClass, SeriesClass, SVGElementClass) {
+    function compose(ChartClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
         A11yI18n.compose(ChartClass);
         FocusBorder.compose(ChartClass, SVGElementClass);
         KeyboardNavigation.compose(ChartClass);
+        MenuComponent.compose(ChartClass);
         NewDataAnnouncer.compose(SeriesClass);
         SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
+        if (RangeSelectorClass) {
+            RangeSelectorComponent.compose(ChartClass, RangeSelectorClass);
+        }
         if (composedClasses.indexOf(ChartClass) === -1) {
             composedClasses.push(ChartClass);
             var chartProto = ChartClass.prototype;

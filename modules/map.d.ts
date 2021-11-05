@@ -344,8 +344,8 @@ declare module "../highcharts" {
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
     /**
-     * The world size equals meters in the Web Mercator projection, to match a
-     * 256 square tile to zoom level 0
+     * The world size in terms of 10k meters in the Web Mercator projection, to
+     * match a 256 square tile to zoom level 0
      */
     let worldSize: any;
     /**

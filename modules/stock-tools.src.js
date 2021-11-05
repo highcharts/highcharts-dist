@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.0 (2021-10-21)
+ * @license Highstock JS v9.3.1 (2021-11-05)
  *
  * Advanced Highcharts Stock tools
  *
@@ -4480,8 +4480,13 @@
              */
             NavigationBindings.prototype.bindingsButtonClick = function (button, events, clickEvent) {
                 var navigation = this,
-                    chart = navigation.chart;
+                    chart = navigation.chart,
+                    svgContainer = chart.renderer.boxWrapper;
+                var shouldEventBeFired = true;
                 if (navigation.selectedButtonElement) {
+                    if (navigation.selectedButtonElement.classList === button.classList) {
+                        shouldEventBeFired = false;
+                    }
                     fireEvent(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
                     if (navigation.nextEvent) {
                         // Remove in-progress annotations adders:
@@ -4492,15 +4497,24 @@
                         navigation.mouseMoveEvent = navigation.nextEvent = false;
                     }
                 }
-                navigation.selectedButton = events;
-                navigation.selectedButtonElement = button;
-                fireEvent(navigation, 'selectButton', { button: button });
-                // Call "init" event, for example to open modal window
-                if (events.init) {
-                    events.init.call(navigation, button, clickEvent);
+                if (shouldEventBeFired) {
+                    navigation.selectedButton = events;
+                    navigation.selectedButtonElement = button;
+                    fireEvent(navigation, 'selectButton', { button: button });
+                    // Call "init" event, for example to open modal window
+                    if (events.init) {
+                        events.init.call(navigation, button, clickEvent);
+                    }
+                    if (events.start || events.steps) {
+                        chart.renderer.boxWrapper.addClass(PREFIX + 'draw-mode');
+                    }
                 }
-                if (events.start || events.steps) {
-                    chart.renderer.boxWrapper.addClass(PREFIX + 'draw-mode');
+                else {
+                    chart.stockTools && chart.stockTools.toggleButtonAciveClass(button);
+                    svgContainer.removeClass(PREFIX + 'draw-mode');
+                    navigation.nextEvent = false;
+                    navigation.mouseMoveEvent = false;
+                    navigation.selectedButton = null;
                 }
             };
             /**
@@ -5358,7 +5372,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.3.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.3.1/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -9348,7 +9362,7 @@
                     button.style.backgroundImage;
                 // set active class
                 if (redraw) {
-                    this.selectButton(mainNavButton);
+                    this.toggleButtonAciveClass(mainNavButton);
                 }
             };
             /*
@@ -9357,7 +9371,7 @@
              * @param {HTMLDOMElement} - button
              *
              */
-            Toolbar.prototype.selectButton = function (button) {
+            Toolbar.prototype.toggleButtonAciveClass = function (button) {
                 if (button.className.indexOf(activeClass) >= 0) {
                     button.classList.remove(activeClass);
                 }
@@ -9423,7 +9437,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/9.3.0/gfx/stock-icons/';
+                    'https://code.highcharts.com/9.3.1/gfx/stock-icons/';
             };
             return Toolbar;
         }());
@@ -9510,7 +9524,7 @@
                     button = button.parentNode.parentNode;
                 }
                 // Set active class on the current button
-                gui.selectButton(button);
+                gui.toggleButtonAciveClass(button);
             }
         });
         addEvent(NavigationBindings, 'deselectButton', function (event) {
@@ -9522,7 +9536,7 @@
                 if (button.parentNode.className.indexOf(className) >= 0) {
                     button = button.parentNode.parentNode;
                 }
-                gui.selectButton(button);
+                gui.toggleButtonAciveClass(button);
             }
         });
         // Check if the correct price indicator button is displayed, #15029.

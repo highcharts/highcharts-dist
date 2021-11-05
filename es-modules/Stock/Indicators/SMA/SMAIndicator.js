@@ -132,25 +132,33 @@ var SMAIndicator = /** @class */ (function (_super) {
             var hasEvents = !!indicator.dataEventsToUnbind.length;
             if (indicator.linkedParent) {
                 if (!hasEvents) {
-                    indicator.dataEventsToUnbind.push(addEvent(indicator.bindTo.series ?
-                        indicator.linkedParent :
-                        indicator.linkedParent.xAxis, indicator.bindTo.eventName, function () {
+                    // No matter which indicator,
+                    // always recalculate after updating the data.
+                    indicator.dataEventsToUnbind.push(addEvent(indicator.linkedParent, 'updatedData', function () {
                         indicator.recalculateValues();
                     }));
+                    // Some indicators (like VBP) requires an additional
+                    // event (afterSetExtremes) to properly show the data.
+                    if (indicator.calculateOn.xAxis) {
+                        indicator.dataEventsToUnbind.push(addEvent(indicator.linkedParent.xAxis, indicator.calculateOn.xAxis, function () {
+                            indicator.recalculateValues();
+                        }));
+                    }
                 }
-                if (indicator.calculateOn === 'init') {
+                // Most indicators are being calculated on chart's init.
+                if (indicator.calculateOn.chart === 'init') {
                     if (!indicator.processedYData) {
                         indicator.recalculateValues();
                     }
                 }
-                else {
-                    if (!hasEvents) {
-                        var unbinder_1 = addEvent(indicator.chart, indicator.calculateOn, function () {
-                            indicator.recalculateValues();
-                            // Call this just once, on init
-                            unbinder_1();
-                        });
-                    }
+                else if (!hasEvents) {
+                    // Some indicators (like VBP) has to recalculate their
+                    // values after other chart's events (render).
+                    var unbinder_1 = addEvent(indicator.chart, indicator.calculateOn.chart, function () {
+                        indicator.recalculateValues();
+                        // Call this just once.
+                        unbinder_1();
+                    });
                 }
             }
             else {
@@ -221,7 +229,7 @@ var SMAIndicator = /** @class */ (function (_super) {
         }
         // Removal of processedXData property is required because on
         // first translate processedXData array is empty
-        if (indicator.bindTo.series === false) {
+        if (indicator.calculateOn.xAxis && indicator.processedXData) {
             delete indicator.processedXData;
             indicator.isDirty = true;
             indicator.redraw();
@@ -326,11 +334,9 @@ var SMAIndicator = /** @class */ (function (_super) {
     return SMAIndicator;
 }(LineSeries));
 extend(SMAIndicator.prototype, {
-    bindTo: {
-        series: true,
-        eventName: 'updatedData'
+    calculateOn: {
+        chart: 'init'
     },
-    calculateOn: 'init',
     hasDerivedData: true,
     nameComponents: ['period'],
     nameSuffixes: [],

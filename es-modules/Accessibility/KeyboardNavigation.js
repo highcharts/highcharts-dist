@@ -10,9 +10,9 @@
  *
  * */
 'use strict';
-import Chart from '../Core/Chart/Chart.js';
 import H from '../Core/Globals.js';
 var doc = H.doc, win = H.win;
+import MenuComponent from './Components/MenuComponent.js';
 import U from '../Core/Utilities.js';
 var addEvent = U.addEvent, fireEvent = U.fireEvent;
 import EventProvider from './Utils/EventProvider.js';
@@ -397,6 +397,7 @@ var KeyboardNavigation = /** @class */ (function () {
      * @private
      */
     function compose(ChartClass) {
+        MenuComponent.compose(ChartClass);
         if (composedItems.indexOf(ChartClass) === -1) {
             composedItems.push(ChartClass);
             var chartProto = ChartClass.prototype;
