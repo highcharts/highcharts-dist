@@ -80,7 +80,6 @@ var BubbleLegendItem = /** @class */ (function () {
      *        Bubble legend options
      * @param {Highcharts.Legend} legend
      *        Legend
-     * @return {void}
      */
     BubbleLegendItem.prototype.init = function (options, legend) {
         this.options = options;
@@ -93,9 +92,8 @@ var BubbleLegendItem = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.BubbleLegend#addToLegend
-     * @param {Array<(Highcharts.Point|Highcharts.Series)>}
-     *        All legend items
-     * @return {void}
+     * @param {Array<(Highcharts.Point|Highcharts.Series)>} items
+     * All legend items
      */
     BubbleLegendItem.prototype.addToLegend = function (items) {
         // Insert bubbleLegend into legend items
@@ -109,7 +107,6 @@ var BubbleLegendItem = /** @class */ (function () {
      * @function Highcharts.BubbleLegend#drawLegendSymbol
      * @param {Highcharts.Legend} legend
      *        Legend instance
-     * @return {void}
      */
     BubbleLegendItem.prototype.drawLegendSymbol = function (legend) {
         var chart = this.chart, options = this.options, itemDistance = pick(legend.options.itemDistance, 20), ranges = options.ranges, connectorDistance = options.connectorDistance;
@@ -146,7 +143,6 @@ var BubbleLegendItem = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.BubbleLegend#setOptions
-     * @return {void}
      */
     BubbleLegendItem.prototype.setOptions = function () {
         var ranges = this.ranges, options = this.options, series = this.chart.series[options.seriesIndex], baseline = this.legend.baseline, bubbleAttribs = {
@@ -205,7 +201,6 @@ var BubbleLegendItem = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.BubbleLegend#render
-     * @return {void}
      */
     BubbleLegendItem.prototype.render = function () {
         var renderer = this.chart.renderer, zThreshold = this.options.zThreshold;
@@ -239,7 +234,6 @@ var BubbleLegendItem = /** @class */ (function () {
      * @function Highcharts.BubbleLegend#renderRange
      * @param {Highcharts.LegendBubbleLegendRangesOptions} range
      *        Range options
-     * @return {void}
      */
     BubbleLegendItem.prototype.renderRange = function (range) {
         var mainRange = this.ranges[0], legend = this.legend, options = this.options, labelsOptions = options.labels, chart = this.chart, bubbleSeries = chart.series[options.seriesIndex], renderer = chart.renderer, symbols = this.symbols, labels = symbols.labels, elementCenter = range.center, absoluteRadius = Math.abs(range.radius), connectorDistance = options.connectorDistance || 0, labelsAlign = labelsOptions.align, rtl = legend.options.rtl, borderWidth = options.borderWidth, connectorWidth = options.connectorWidth, posX = mainRange.radius || 0, posY = elementCenter - absoluteRadius -
@@ -297,7 +291,6 @@ var BubbleLegendItem = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.BubbleLegend#getMaxLabelSize
-     * @return {Highcharts.BBoxObject}
      */
     BubbleLegendItem.prototype.getMaxLabelSize = function () {
         var labels = this.symbols.labels;
@@ -337,7 +330,6 @@ var BubbleLegendItem = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.BubbleLegend#hideOverlappingLabels
-     * @return {void}
      */
     BubbleLegendItem.prototype.hideOverlappingLabels = function () {
         var chart = this.chart, allowOverlap = this.options.labels.allowOverlap, symbols = this.symbols;
@@ -437,7 +429,6 @@ var BubbleLegendItem = /** @class */ (function () {
      * @function Highcharts.BubbleLegend#updateRanges
      * @param {number} min
      * @param {number} max
-     * @return {void}
      */
     BubbleLegendItem.prototype.updateRanges = function (min, max) {
         var bubbleLegendOptions = this.legend.options.bubbleLegend;
@@ -452,7 +443,6 @@ var BubbleLegendItem = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.BubbleLegend#correctSizes
-     * @return {void}
      */
     BubbleLegendItem.prototype.correctSizes = function () {
         var legend = this.legend, chart = this.chart, bubbleSeries = chart.series[this.options.seriesIndex], pxSizes = bubbleSeries.getPxExtremes(), bubbleSeriesSize = pxSizes.maxPxSize, bubbleLegendSize = this.options.maxSize;

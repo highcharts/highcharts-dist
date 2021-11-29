@@ -48,9 +48,12 @@ var SonificationUtilities = {
     /**
      * Calculate the extreme values in a chart for a data prop.
      * @private
-     * @param {Highcharts.Chart} chart - The chart
-     * @param {string} prop - The data prop to find extremes for
-     * @return {Highcharts.RangeObject} Object with min and max properties
+     * @param {Highcharts.Chart} chart
+     * The chart
+     * @param {string} prop
+     * The data prop to find extremes for
+     * @return {Highcharts.RangeObject}
+     * Object with min and max properties
      */
     calculateDataExtremes: function (chart, prop) {
         return chart.series.reduce(function (extremes, series) {
@@ -76,7 +79,7 @@ var SonificationUtilities = {
      * The relative data value to translate.
      * @param {Highcharts.RangeObject} DataExtremesObject
      * The possible extremes for this value.
-     * @param {object} limits
+     * @param {Object} limits
      * Limits for the virtual axis.
      * @param {boolean} [invert]
      * Invert the virtual axis.
@@ -130,9 +133,10 @@ function getExtremesForInstrumentProps(chart, instruments, dataExtremes) {
         Object.keys(instrumentDefinition.instrumentMapping || {}).forEach(function (instrumentParameter) {
             var value = instrumentDefinition.instrumentMapping[instrumentParameter];
             if (typeof value === 'string' && !newExtremes[value]) {
-                // This instrument parameter is mapped to a data prop.
-                // If we don't have predefined data extremes, find them.
-                newExtremes[value] = SonificationUtilities.calculateDataExtremes(chart, value);
+                // This instrument parameter is mapped to a data prop. If we
+                // don't have predefined data extremes, find them.
+                newExtremes[value] = SonificationUtilities
+                    .calculateDataExtremes(chart, value);
             }
         });
         return newExtremes;

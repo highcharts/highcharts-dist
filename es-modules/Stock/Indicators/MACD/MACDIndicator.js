@@ -188,7 +188,7 @@ var MACDIndicator = /** @class */ (function (_super) {
         this.zones = histogramZones;
     };
     MACDIndicator.prototype.getValues = function (series, params) {
-        var indexToShift = params.longPeriod - params.shortPeriod, // #14197
+        var indexToShift = (params.longPeriod - params.shortPeriod), // #14197
         j = 0, MACD = [], xMACD = [], yMACD = [], signalLine = [], shortEMA, longEMA, i;
         if (series.xData.length <
             params.longPeriod + params.signalPeriod) {

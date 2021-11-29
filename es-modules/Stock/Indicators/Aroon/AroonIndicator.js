@@ -166,6 +166,7 @@ var AroonIndicator = /** @class */ (function (_super) {
     return AroonIndicator;
 }(SMAIndicator));
 extend(AroonIndicator.prototype, {
+    areaLinesNames: [],
     linesApiNames: ['aroonDown'],
     nameBase: 'Aroon',
     pointArrayMap: ['y', 'aroonDown'],

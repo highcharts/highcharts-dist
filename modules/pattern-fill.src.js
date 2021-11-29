@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Module for adding patterns and images as point fills.
  *
@@ -95,7 +95,7 @@
          * @private
          * @function hashFromObject
          *
-         * @param {object} obj
+         * @param {Object} obj
          *        The javascript object to compute the hash from.
          *
          * @param {boolean} [preSeed=false]
@@ -242,7 +242,10 @@
             }, attribs;
             if (!id) {
                 this.idCounter = this.idCounter || 0;
-                id = 'highcharts-pattern-' + this.idCounter + '-' + (this.chartIndex || 0);
+                id = ('highcharts-pattern-' +
+                    this.idCounter +
+                    '-' +
+                    (this.chartIndex || 0));
                 ++this.idCounter;
             }
             if (this.forExport) {
@@ -357,10 +360,10 @@
                             !(point.shapeArgs &&
                                 point.shapeArgs.width &&
                                 point.shapeArgs.height)) {
-                            colorOptions.pattern._width =
-                                'defer';
-                            colorOptions.pattern._height =
-                                'defer';
+                            colorOptions
+                                .pattern._width = 'defer';
+                            colorOptions
+                                .pattern._height = 'defer';
                         }
                         else {
                             point.calculatePatternDimensions(colorOptions.pattern);
@@ -465,10 +468,10 @@
                         var colorOptions = point.options && point.options.color;
                         if (colorOptions &&
                             colorOptions.pattern) {
-                            colorOptions.pattern._width =
-                                'defer';
-                            colorOptions.pattern._height =
-                                'defer';
+                            colorOptions.pattern
+                                ._width = 'defer';
+                            colorOptions.pattern
+                                ._height = 'defer';
                         }
                     });
                 });
@@ -494,7 +497,10 @@
                             node.getAttribute('color') ||
                             node.getAttribute('stroke');
                     if (id) {
-                        var sanitizedId = id.replace(renderer.url, '').replace('url(#', '').replace(')', '');
+                        var sanitizedId = id
+                                .replace(renderer.url, '')
+                                .replace('url(#', '')
+                                .replace(')', '');
                         usedIds[sanitizedId] = true;
                     }
                 });

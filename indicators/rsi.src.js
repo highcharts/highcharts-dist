@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -122,7 +122,8 @@
                     // longer then 4 (HLC, range), this ensures that we are not trying
                     // to reach the index out of bounds
                     index = Math.min(index, yVal[0].length - 1);
-                    values = yVal.map(function (value) { return value[index]; });
+                    values = yVal
+                        .map(function (value) { return value[index]; });
                 }
                 // Calculate changes for first N points
                 while (range < period) {

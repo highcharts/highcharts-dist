@@ -31,7 +31,6 @@ var addEvent = U.addEvent, pick = U.pick, wrap = U.wrap;
  * Chart with stacks
  * @param {string} stacking
  * Stacking option
- * @return {Highcharts.Stack3DDictionary}
  */
 function retrieveStacks(chart, stacking) {
     var series = chart.series, stacks = { totalStacks: 0 };
@@ -67,7 +66,7 @@ columnProto.translate3dShapes = function () {
     var series = this, chart = series.chart, seriesOptions = series.options, depth = seriesOptions.depth, stack = seriesOptions.stacking ?
         (seriesOptions.stack || 0) :
         series.index, // #4743
-    z = stack * (depth + (seriesOptions.groupZPadding || 1)), borderCrisp = series.borderWidth % 2 ? 0.5 : 0, point2dPos; // Position of point in 2D, used for 3D position calculation.
+    z = stack * (depth + (seriesOptions.groupZPadding || 1)), borderCrisp = series.borderWidth % 2 ? 0.5 : 0, point2dPos; // Position of point in 2D, used for 3D position calculation
     if (chart.inverted && !series.yAxis.reversed) {
         borderCrisp *= -1;
     }

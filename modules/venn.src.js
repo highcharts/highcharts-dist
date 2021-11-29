@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * (c) 2017-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -192,7 +192,8 @@
              * Returns the area of the circular segment.
              */
             function getCircularSegmentArea(r, h) {
-                return r * r * Math.acos(1 - h / r) - (r - h) * Math.sqrt(h * (2 * r - h));
+                return (r * r * Math.acos(1 - h / r) -
+                    (r - h) * Math.sqrt(h * (2 * r - h)));
             }
             CircleUtilities.getCircularSegmentArea = getCircularSegmentArea;
             /**
@@ -1064,11 +1065,10 @@
              * Takes a set and updates the position, and add the set to the list of
              * positioned sets.
              * @private
-             * @param {object} set
+             * @param {Object} set
              * The set to add to its final position.
-             * @param {object} coordinates
+             * @param {Object} coordinates
              * The coordinates to position the set at.
-             * @return {void}
              */
             var positionSet = function positionSet(set,
                 coordinates) {
@@ -1374,10 +1374,12 @@
         /**
          * Takes two sets and finds the one with the largest total overlap.
          * @private
-         * @param {object} a The first set to compare.
-         * @param {object} b The second set to compare.
-         * @return {number} Returns 0 if a and b are equal, <0 if a is greater, >0 if b
-         * is greater.
+         * @param {Object} a
+         * The first set to compare.
+         * @param {Object} b
+         * The second set to compare.
+         * @return {number}
+         * Returns 0 if a and b are equal, <0 if a is greater, >0 if b is greater.
          */
         function sortByTotalOverlap(a, b) {
             return b.totalOverlap - a.totalOverlap;
@@ -1521,14 +1523,14 @@
                         { x: circle.x, y: circle.y + d },
                         { x: circle.x, y: circle.y - d }
                     ]
-                        // Iterate the given points and return the one with the largest
-                        // margin.
+                        // Iterate the given points and return the one with the
+                        // largest margin.
                         .reduce(function (best, point) {
                         var margin = VennUtils.getMarginFromCircles(point,
                             internal,
                             external);
-                        // If the margin better than the current best, then update
-                        // sbest.
+                        // If the margin better than the current best, then
+                        // update sbest.
                         if (best.margin < margin) {
                             best.point = point;
                             best.margin = margin;
@@ -1633,16 +1635,13 @@
                 if (relations.length > 0) {
                     var mapOfIdToCircles_1 = VennUtils.layoutGreedyVenn(relations);
                     var setRelations_1 = relations.filter(VennUtils.isSet);
-                    relations
-                        .forEach(function (relation) {
+                    relations.forEach(function (relation) {
                         var sets = relation.sets;
                         var id = sets.join();
                         // Get shape from map of circles, or calculate intersection.
                         var shape = VennUtils.isSet(relation) ?
                                 mapOfIdToCircles_1[id] :
-                                getAreaOfIntersectionBetweenCircles(sets.map(function (set) {
-                                    return mapOfIdToCircles_1[set];
-                            }));
+                                getAreaOfIntersectionBetweenCircles(sets.map(function (set) { return mapOfIdToCircles_1[set]; }));
                         // Calculate label values if the set has a shape
                         if (shape) {
                             mapOfIdToShape[id] = shape;

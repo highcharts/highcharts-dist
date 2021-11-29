@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.3.1 (2021-11-05)
+ * @license Highmaps JS v9.3.2 (2021-11-29)
  *
  * Tilemap module
  *
@@ -91,8 +91,6 @@
             /**
              * @private
              * @function Highcharts.Point#haloPath
-             *
-             * @return {Highcharts.SVGElement|Highcharts.SVGPathArray|Array<Highcharts.SVGElement>}
              */
             TilemapPoint.prototype.haloPath = function () {
                 return this.series.tileShape.haloPath.apply(this, arguments);
@@ -133,13 +131,6 @@
         /**
          * Utility func to get padding definition from tile size division
          * @private
-         * @param {Highcharts.TilemapSeries} series
-         * series
-         * @param {Highcharts.number} xDiv
-         * xDiv
-         * @param {Highcharts.number} yDiv
-         * yDiv
-         * @return {Highcharts.TilemapPaddingObject}
          */
         function tilePaddingFromTileSize(series, xDiv, yDiv) {
             var options = series.options;

@@ -200,8 +200,6 @@ var RadialAxis;
      * anti-collision.
      *
      * @private
-     *
-     * @return {Highcharts.ChartLabelCollectorFunction}
      */
     function createLabelCollector() {
         var _this = this;
@@ -275,17 +273,12 @@ var RadialAxis;
      * getPlotLinePath method.
      *
      * @private
-     *
      * @param {number} _lineWidth
      * Line width is not used.
-     *
      * @param {number} [radius]
      * Radius of radial path.
-     *
      * @param {number} [innerRadius]
      * Inner radius of radial path.
-     *
-     * @return {Highcharts.RadialAxisPath}
      */
     function getLinePath(_lineWidth, radius, innerRadius) {
         var center = this.pane.center, chart = this.chart, left = this.left || 0, top = this.top || 0;
@@ -312,7 +305,11 @@ var RadialAxis;
         else {
             end = this.postTranslate(this.angleRad, r);
             path = [
-                ['M', this.center[0] + chart.plotLeft, this.center[1] + chart.plotTop],
+                [
+                    'M',
+                    this.center[0] + chart.plotLeft,
+                    this.center[1] + chart.plotTop
+                ],
                 ['L', end.x, end.y]
             ];
         }
@@ -334,17 +331,6 @@ var RadialAxis;
      * Find the path for plot bands along the radial axis.
      *
      * @private
-     *
-     * @param {number} from
-     * From value.
-     *
-     * @param {number} to
-     * To value.
-     *
-     * @param {Highcharts.AxisPlotBandsOptions} options
-     * Band options.
-     *
-     * @return {Highcharts.RadialAxisPath}
      */
     function getPlotBandPath(from, to, options) {
         var chart = this.chart, radiusToPixels = function (radius) {
@@ -518,14 +504,10 @@ var RadialAxis;
      * distance from center.
      *
      * @private
-     *
      * @param {number} value
      * Point value.
-     *
      * @param {number} [length]
      * Distance from center.
-     *
-     * @return {Highcharts.PositionObject}
      */
     function getPosition(value, length) {
         var translatedVal = this.translate(value);
@@ -671,7 +653,8 @@ var RadialAxis;
                     AxisDefaults.defaultYAxisOptions, defaultRadialOptions);
             // Apply the stack labels for yAxis in case of inverted chart
             if (inverted && coll === 'yAxis') {
-                this.defaultPolarOptions.stackLabels = AxisDefaults.defaultYAxisOptions.stackLabels;
+                this.defaultPolarOptions.stackLabels = AxisDefaults
+                    .defaultYAxisOptions.stackLabels;
                 this.defaultPolarOptions.reversedStacks = true;
             }
         }
@@ -840,14 +823,10 @@ var RadialAxis;
      * to final chart coordinates.
      *
      * @private
-     *
      * @param {number} angle
      * Translation angle.
-     *
      * @param {number} radius
      * Translation radius.
-     *
-     * @return {Highcharts.PositionObject}
      */
     function postTranslate(angle, radius) {
         var chart = this.chart, center = this.center;

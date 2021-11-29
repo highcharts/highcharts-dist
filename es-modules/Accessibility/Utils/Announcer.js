@@ -51,12 +51,12 @@ var Announcer = /** @class */ (function () {
             clearTimeout(this.clearAnnouncementRegionTimer);
         }
         this.clearAnnouncementRegionTimer = setTimeout(function () {
-            _this.announceRegion.innerHTML = '';
+            _this.announceRegion.innerHTML = AST.emptyHTML;
             delete _this.clearAnnouncementRegionTimer;
         }, 1000);
     };
     Announcer.prototype.addAnnounceRegion = function (type) {
-        var chartContainer = this.chart.announcerContainer || this.createAnnouncerContainer(), div = this.domElementProvider.createElement('div');
+        var chartContainer = (this.chart.announcerContainer || this.createAnnouncerContainer()), div = this.domElementProvider.createElement('div');
         attr(div, {
             'aria-hidden': false,
             'aria-live': type

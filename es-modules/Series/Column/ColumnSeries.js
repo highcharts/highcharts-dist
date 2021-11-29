@@ -84,7 +84,9 @@ var ColumnSeries = /** @class */ (function (_super) {
      *        Whether to initialize the animation or run it
      */
     ColumnSeries.prototype.animate = function (init) {
-        var series = this, yAxis = this.yAxis, options = series.options, inverted = this.chart.inverted, attr = {}, translateProp = inverted ? 'translateX' : 'translateY';
+        var series = this, yAxis = this.yAxis, options = series.options, inverted = this.chart.inverted, attr = {}, translateProp = inverted ?
+            'translateX' :
+            'translateY';
         var translateStart, translatedThreshold;
         if (init) {
             attr.scaleY = 0.001;
@@ -144,7 +146,6 @@ var ColumnSeries = /** @class */ (function (_super) {
      *
      * @private
      * @function Highcharts.seriesTypes.column#getColumnMetrics
-     * @return {Highcharts.ColumnMetricsObject}
      */
     ColumnSeries.prototype.getColumnMetrics = function () {
         var series = this, options = series.options, xAxis = series.xAxis, yAxis = series.yAxis, reversedStacks = xAxis.options.reversedStacks, 
@@ -168,7 +169,8 @@ var ColumnSeries = /** @class */ (function (_super) {
                         !series.chart.options.chart.ignoreHiddenSeries) &&
                     yAxis.len === otherYAxis.len &&
                     yAxis.pos === otherYAxis.pos) { // #642, #2086
-                    if (otherOptions.stacking && otherOptions.stacking !== 'group') {
+                    if (otherOptions.stacking &&
+                        otherOptions.stacking !== 'group') {
                         stackKey = otherSeries.stackKey;
                         if (typeof stackGroups[stackKey] ===
                             'undefined') {
@@ -268,20 +270,20 @@ var ColumnSeries = /** @class */ (function (_super) {
         if (!point.isNull && metrics.columnCount > 1) {
             var indexInCategory_1 = 0;
             var totalInCategory_1 = 0;
-            // Loop over all the stacks on the Y axis. When stacking is
-            // enabled, these are real point stacks. When stacking is not
-            // enabled, but `centerInCategory` is true, there is one stack
-            // handling the grouping of points in each category. This is
-            // done in the `setGroupedPoints` function.
+            // Loop over all the stacks on the Y axis. When stacking is enabled,
+            // these are real point stacks. When stacking is not enabled, but
+            // `centerInCategory` is true, there is one stack handling the
+            // grouping of points in each category. This is done in the
+            // `setGroupedPoints` function.
             objectEach(this.yAxis.stacking && this.yAxis.stacking.stacks, function (stack) {
                 if (typeof point.x === 'number') {
                     var stackItem = stack[point.x.toString()];
                     if (stackItem) {
                         var pointValues = stackItem.points[_this.index], total = stackItem.total;
-                        // If true `stacking` is enabled, count the
-                        // total number of non-null stacks in the
-                        // category, and note which index this point is
-                        // within those stacks.
+                        // If true `stacking` is enabled, count the total
+                        // number of non-null stacks in the category, and
+                        // note which index this point is within those
+                        // stacks.
                         if (stacking) {
                             if (pointValues) {
                                 indexInCategory_1 = totalInCategory_1;
@@ -289,8 +291,8 @@ var ColumnSeries = /** @class */ (function (_super) {
                             if (stackItem.hasValidPoints) {
                                 totalInCategory_1++;
                             }
-                            // If `stacking` is not enabled, look for the
-                            // index and total of the `group` stack.
+                            // If `stacking` is not enabled, look for the index
+                            // and total of the `group` stack.
                         }
                         else if (isArray(pointValues)) {
                             indexInCategory_1 = pointValues[1];

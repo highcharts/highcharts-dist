@@ -53,7 +53,9 @@ var ColorAxisComposition;
             composedClasses.push(ChartClass);
             var chartProto = ChartClass.prototype;
             chartProto.collectionsWithUpdate.push('colorAxis');
-            chartProto.collectionsWithInit.colorAxis = [chartProto.addColorAxis];
+            chartProto.collectionsWithInit.colorAxis = [
+                chartProto.addColorAxis
+            ];
             addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
             wrapChartCreateAxis(ChartClass);
         }
@@ -199,7 +201,6 @@ var ColorAxisComposition;
      * @private
      * @function Highcharts.colorPointMixin.setVisible
      * @param {boolean} visible
-     * @return {void}
      */
     function pointSetVisible(vis) {
         var point = this, method = vis ? 'show' : 'hide';
@@ -218,7 +219,6 @@ var ColorAxisComposition;
      * translation too
      * @private
      * @function Highcharts.colorSeriesMixin.translateColors
-     * @return {void}
      */
     function seriesTranslateColors() {
         var series = this, points = this.data.length ? this.data : this.points, nullColor = this.options.nullColor, colorAxis = this.colorAxis, colorKey = this.colorKey;

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Advanced Highcharts Stock tools
  *
@@ -138,7 +138,8 @@
                 }
                 // Unbind event as it's necessary only before exiting from fullscreen.
                 if (fullscreen.unbindFullscreenEvent) {
-                    fullscreen.unbindFullscreenEvent = fullscreen.unbindFullscreenEvent();
+                    fullscreen.unbindFullscreenEvent = fullscreen
+                        .unbindFullscreenEvent();
                 }
                 chart.setSize(fullscreen.origWidth, fullscreen.origHeight, false);
                 fullscreen.origWidth = void 0;
@@ -213,7 +214,6 @@
              * @since 8.0.1
              *
              * @requires modules/full-screen
-             * @return {void}
              */
             Fullscreen.prototype.setButtonText = function () {
                 var chart = this.chart,
@@ -233,7 +233,8 @@
                     var exportDivElement = exportDivElements[menuItems.indexOf('viewFullscreen')];
                     if (exportDivElement) {
                         AST.setElementHTML(exportDivElement, !this.isOpen ?
-                            (exportingOptions.menuItemDefinitions.viewFullscreen.text ||
+                            (exportingOptions.menuItemDefinitions.viewFullscreen
+                                .text ||
                                 lang.viewFullscreen) : lang.exitFullscreen);
                     }
                 }

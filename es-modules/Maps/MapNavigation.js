@@ -12,7 +12,7 @@ import Chart from '../Core/Chart/Chart.js';
 import H from '../Core/Globals.js';
 var doc = H.doc;
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, extend = U.extend, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
+var addEvent = U.addEvent, extend = U.extend, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick;
 import './MapNavigationOptionsDefault.js';
 /* eslint-disable no-invalid-this, valid-jsdoc */
 /**
@@ -164,8 +164,8 @@ MapNavigation.prototype.updateEvents = function (options) {
         this.unbindMouseWheel = this.unbindMouseWheel || addEvent(chart.container, doc.onwheel !== void 0 ? 'wheel' : // Newer Firefox
             doc.onmousewheel !== void 0 ? 'mousewheel' :
                 'DOMMouseScroll', function (e) {
-            // Prevent scrolling when the pointer is over the element
-            // with that class, for example anotation popup #12100.
+            // Prevent scrolling when the pointer is over the element with
+            // that class, for example anotation popup #12100.
             if (!chart.pointer.inClass(e.target, 'highcharts-no-mousewheel')) {
                 chart.pointer.onContainerMouseWheel(e);
                 // Issue #5011, returning false from non-jQuery event does
@@ -253,17 +253,16 @@ extend(Chart.prototype, /** @lends Chart.prototype */ {
      *        Keep this chart position stationary if possible.
      *
      * @deprecated
-     * @return {void}
      */
     mapZoom: function (howMuch, xProjected, yProjected, chartX, chartY) {
         if (this.mapView) {
-            if (typeof howMuch === 'number') {
+            if (isNumber(howMuch)) {
                 // Compliance, mapView.zoomBy uses different values
                 howMuch = Math.log(howMuch) / Math.log(0.5);
             }
-            this.mapView.zoomBy(howMuch, typeof xProjected === 'number' && typeof yProjected === 'number' ?
+            this.mapView.zoomBy(howMuch, isNumber(xProjected) && isNumber(yProjected) ?
                 this.mapView.projection.inverse([xProjected, yProjected]) :
-                void 0, typeof chartX === 'number' && typeof chartY === 'number' ?
+                void 0, isNumber(chartX) && isNumber(chartY) ?
                 [chartX, chartY] :
                 void 0);
         }

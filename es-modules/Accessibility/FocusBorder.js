@@ -158,11 +158,6 @@ var FocusBorderComposition;
         // For text elements, apply x and y offset, #11397.
         /**
          * @private
-         * @function
-         *
-         * @param {Highcharts.SVGElement} text
-         *
-         * @return {TextAnchorCorrectionObject}
          */
         function getTextAnchorCorrection(text) {
             var posXCorrection = 0, posYCorrection = 0;

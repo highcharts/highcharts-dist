@@ -75,10 +75,9 @@ var StockChart = /** @class */ (function (_super) {
      *        Function to run when the chart has loaded and and all external
      *        images are loaded.
      *
-     * @return {void}
      *
-     * @fires Highcharts.StockChart#event:init
-     * @fires Highcharts.StockChart#event:afterInit
+     * @emits Highcharts.StockChart#event:init
+     * @emits Highcharts.StockChart#event:afterInit
      */
     StockChart.prototype.init = function (userOptions, callback) {
         var defaultOptions = getOptions(), xAxisOptions = userOptions.xAxis, yAxisOptions = userOptions.yAxis, 
@@ -100,7 +99,8 @@ var StockChart = /** @class */ (function (_super) {
             },
             scrollbar: {
                 // #4988 - check if setOptions was called
-                enabled: pick(defaultOptions.scrollbar && defaultOptions.scrollbar.enabled, true)
+                enabled: pick((defaultOptions.scrollbar &&
+                    defaultOptions.scrollbar.enabled), true)
             },
             rangeSelector: {
                 // #4988 - check if setOptions was called
@@ -125,15 +125,15 @@ var StockChart = /** @class */ (function (_super) {
         // apply X axis options to both single and multi y axes
         options.xAxis = splat(userOptions.xAxis || {}).map(function (xAxisOptions, i) {
             return merge(getDefaultAxisOptions('xAxis', xAxisOptions), defaultOptions.xAxis, // #3802
-            defaultOptions.xAxis && defaultOptions.xAxis[i], // #7690
-            xAxisOptions, // user options
+            // #7690
+            defaultOptions.xAxis && defaultOptions.xAxis[i], xAxisOptions, // user options
             getForcedAxisOptions('xAxis', userOptions));
         });
         // apply Y axis options to both single and multi y axes
         options.yAxis = splat(userOptions.yAxis || {}).map(function (yAxisOptions, i) {
             return merge(getDefaultAxisOptions('yAxis', yAxisOptions), defaultOptions.yAxis, // #3802
-            defaultOptions.yAxis && defaultOptions.yAxis[i], // #7690
-            yAxisOptions // user options
+            // #7690
+            defaultOptions.yAxis && defaultOptions.yAxis[i], yAxisOptions // user options
             );
         });
         _super.prototype.init.call(this, options, callback);
@@ -144,14 +144,10 @@ var StockChart = /** @class */ (function (_super) {
      *
      * @private
      * @function Highcharts.StockChart#createAxis
-     *
      * @param {string} type
-     *        An axis type.
-     *
+     * An axis type.
      * @param {Chart.CreateAxisOptionsObject} options
-     *        The axis creation options.
-     *
-     * @return {Highcharts.Axis | Highcharts.ColorAxis}
+     * The axis creation options.
      */
     StockChart.prototype.createAxis = function (type, options) {
         options.axis = merge(getDefaultAxisOptions(type, options.axis), options.axis, getForcedAxisOptions(type, this.userOptions));
@@ -207,9 +203,6 @@ var StockChart = /** @class */ (function (_super) {
  *
  * @private
  * @function getDefaultAxisOptions
- * @param {string} type
- * @param {Highcharts.AxisOptions} options
- * @return {Highcharts.AxisOptions}
  */
 function getDefaultAxisOptions(type, options) {
     if (type === 'xAxis') {
@@ -256,9 +249,6 @@ function getDefaultAxisOptions(type, options) {
  *
  * @private
  * @function getForcedAxisOptions
- * @param {string} type
- * @param {Highcharts.Options} chartOptions
- * @return {Highcharts.AxisOptions}
  */
 function getForcedAxisOptions(type, chartOptions) {
     if (type === 'xAxis') {
@@ -453,9 +443,6 @@ addEvent(Axis, 'getPlotLinePath', function (e) {
  *
  * @private
  * @function Highcharts.SVGRenderer#crispPolyLine
- * @param {Highcharts.SVGPathArray} points
- * @param {number} width
- * @return {Highcharts.SVGPathArray}
  */
 SVGRenderer.prototype.crispPolyLine = function (points, width) {
     // points format: [['M', 0, 0], ['L', 100, 0]]

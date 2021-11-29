@@ -69,7 +69,8 @@ var DisparityIndexIndicator = /** @class */ (function (_super) {
         var args = arguments, ctx = this, // Disparity Index indicator
         params = args[1].params, // options.params
         averageType = params && params.average ? params.average : void 0;
-        ctx.averageIndicator = SeriesRegistry.seriesTypes[averageType] || SMAIndicator;
+        ctx.averageIndicator = SeriesRegistry
+            .seriesTypes[averageType] || SMAIndicator;
         ctx.averageIndicator.prototype.init.apply(ctx, args);
     };
     DisparityIndexIndicator.prototype.calculateDisparityIndex = function (curPrice, periodAverage) {

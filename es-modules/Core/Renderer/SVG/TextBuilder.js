@@ -112,7 +112,6 @@ var TextBuilder = /** @class */ (function () {
      *
      * @private
      *
-     * @return {void}
      */
     TextBuilder.prototype.modifyDOM = function () {
         var _this = this;
@@ -255,7 +254,7 @@ var TextBuilder = /** @class */ (function () {
     TextBuilder.prototype.getLineHeight = function (node) {
         var fontSizeStyle;
         // If the node is a text node, use its parent
-        var element = node.nodeType === win.Node.TEXT_NODE ?
+        var element = (node.nodeType === win.Node.TEXT_NODE) ?
             node.parentElement :
             node;
         if (!this.renderer.styledMode) {
@@ -277,21 +276,18 @@ var TextBuilder = /** @class */ (function () {
      *
      * @param {ASTNode[]} nodes The AST nodes
      *
-     * @return {void}
      */
     TextBuilder.prototype.modifyTree = function (nodes) {
         var _this = this;
         var modifyChild = function (node, i) {
-            var tagName = node.tagName;
-            var styledMode = _this.renderer.styledMode;
-            var attributes = node.attributes || {};
+            var _a = node.attributes, attributes = _a === void 0 ? {} : _a, children = node.children, tagName = node.tagName, styledMode = _this.renderer.styledMode;
             // Apply styling to text tags
             if (tagName === 'b' || tagName === 'strong') {
                 if (styledMode) {
                     attributes['class'] = 'highcharts-strong'; // eslint-disable-line dot-notation
                 }
                 else {
-                    attributes.style = 'font-weight:bold;' + (attributes.style || '');
+                    attributes.style = ('font-weight:bold;' + (attributes.style || ''));
                 }
             }
             else if (tagName === 'i' || tagName === 'em') {
@@ -299,13 +295,14 @@ var TextBuilder = /** @class */ (function () {
                     attributes['class'] = 'highcharts-emphasized'; // eslint-disable-line dot-notation
                 }
                 else {
-                    attributes.style = 'font-style:italic;' + (attributes.style || '');
+                    attributes.style = ('font-style:italic;' + (attributes.style || ''));
                 }
             }
             // Modify attributes
             if (isString(attributes.style)) {
                 attributes.style = attributes.style.replace(/(;| |^)color([ :])/, '$1fill$2');
             }
+            // Handle breaks
             if (tagName === 'br') {
                 attributes['class'] = 'highcharts-br'; // eslint-disable-line dot-notation
                 node.textContent = '\u200B'; // zero-width space
@@ -315,14 +312,23 @@ var TextBuilder = /** @class */ (function () {
                     nextNode.textContent =
                         nextNode.textContent.replace(/^ +/gm, '');
                 }
+                // If an anchor has direct text node children, the text is unable to
+                // wrap because there is no `getSubStringLength` function on the
+                // element. Therefore we need to wrap the child text node or nodes
+                // in a tspan. #16173.
+            }
+            else if (tagName === 'a' &&
+                children &&
+                children.some(function (child) { return child.tagName === '#text'; })) {
+                node.children = [{ children: children, tagName: 'tspan' }];
             }
             if (tagName !== '#text' && tagName !== 'a') {
                 node.tagName = 'tspan';
             }
             node.attributes = attributes;
             // Recurse
-            if (node.children) {
-                node.children
+            if (children) {
+                children
                     .filter(function (c) { return c.tagName !== '#text'; })
                     .forEach(modifyChild);
             }

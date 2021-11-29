@@ -132,8 +132,8 @@ var SMAIndicator = /** @class */ (function (_super) {
             var hasEvents = !!indicator.dataEventsToUnbind.length;
             if (indicator.linkedParent) {
                 if (!hasEvents) {
-                    // No matter which indicator,
-                    // always recalculate after updating the data.
+                    // No matter which indicator, always recalculate after
+                    // updating the data.
                     indicator.dataEventsToUnbind.push(addEvent(indicator.linkedParent, 'updatedData', function () {
                         indicator.recalculateValues();
                     }));
@@ -176,7 +176,6 @@ var SMAIndicator = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @return {void}
      */
     SMAIndicator.prototype.recalculateValues = function () {
         var indicator = this, oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, processedData = (indicator.getValues(indicator.linkedParent, indicator.options.params) || {

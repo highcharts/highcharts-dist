@@ -89,10 +89,7 @@ var HLCSeries = /** @class */ (function (_super) {
     /**
      * Function to create SVGPath of the point based on the
      * plot positions of this point.
-     *
-     * @param {SVGPath} point
-     * @param {SVGElement} graphic
-     * @returns {SVGPath}
+     * @private
      */
     HLCSeries.prototype.getPointPath = function (point, graphic) {
         // crisp vector coordinates
@@ -145,7 +142,6 @@ var HLCSeries = /** @class */ (function (_super) {
     /**
      * @private
      * @function Highcharts.seriesTypes.hlc#init
-     * @return {void}
      */
     HLCSeries.prototype.init = function () {
         _super.prototype.init.apply(this, arguments);
@@ -169,7 +165,6 @@ var HLCSeries = /** @class */ (function (_super) {
      *
      * @private
      * @function Highcharts.seriesTypes.hlc#translate
-     * @return {void}
      */
     HLCSeries.prototype.translate = function () {
         var series = this, yAxis = series.yAxis, names = (this.pointArrayMap && this.pointArrayMap.slice()) || [], translated = names.map(function (name) {

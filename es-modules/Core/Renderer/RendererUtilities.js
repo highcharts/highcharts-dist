@@ -42,8 +42,8 @@ var RendererUtilities;
      * @private
      */
     function distribute(boxes, len, maxDistance) {
-        var origBoxes = boxes, // Original array will be altered with added .pos
-        reducedLen = origBoxes.reducedLen || len, sortByRank = function (a, b) {
+        // Original array will be altered with added .pos
+        var origBoxes = boxes, reducedLen = origBoxes.reducedLen || len, sortByRank = function (a, b) {
             return (b.rank || 0) - (a.rank || 0);
         }, sortByTarget = function (a, b) {
             return a.target - b.target;

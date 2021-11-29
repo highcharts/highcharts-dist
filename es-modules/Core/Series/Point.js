@@ -186,7 +186,9 @@ var Point = /** @class */ (function () {
         options = Point.prototype.optionsToObject.call(this, options);
         // copy options directly to point
         extend(point, options);
-        point.options = point.options ? extend(point.options, options) : options;
+        point.options = point.options ?
+            extend(point.options, options) :
+            options;
         // Since options are copied into the Point instance, some accidental
         // options must be shielded (#5681)
         if (options.group) {
@@ -321,7 +323,7 @@ var Point = /** @class */ (function () {
      * @param {Highcharts.EventCallbackFunction<Highcharts.Point>|Function} [defaultFunction]
      *        Default event handler.
      *
-     * @fires Highcharts.Point#event:*
+     * @emits Highcharts.Point#event:*
      */
     Point.prototype.firePointEvent = function (eventType, eventArgs, defaultFunction) {
         var point = this, series = this.series, seriesOptions = series.options;
@@ -370,8 +372,6 @@ var Point = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Point#getGraphicalProps
-     * @param {Highcharts.Dictionary<number>} [kinds]
-     * @return {Highcharts.PointGraphicalProps}
      */
     Point.prototype.getGraphicalProps = function (kinds) {
         var point = this, props = [], graphicalProps = { singular: [], plural: [] };
@@ -463,8 +463,7 @@ var Point = /** @class */ (function () {
     /**
      * Utility to check if point has new shape type. Used in column series and
      * all others that are based on column series.
-     *
-     * @return boolean|undefined
+     * @private
      */
     Point.prototype.hasNewShapeType = function () {
         var point = this;
@@ -490,7 +489,7 @@ var Point = /** @class */ (function () {
      * @return {Highcharts.Point}
      *         The Point instance.
      *
-     * @fires Highcharts.Point#event:afterInit
+     * @emits Highcharts.Point#event:afterInit
      */
     Point.prototype.init = function (series, options, x) {
         this.series = series;
@@ -570,7 +569,6 @@ var Point = /** @class */ (function () {
     /**
      * @private
      * @function Highcharts.Point#resolveColor
-     * @return {void}
      */
     Point.prototype.resolveColor = function () {
         var series = this.series, optionsChart = series.chart.options.chart, styledMode = series.chart.styledMode;
@@ -700,7 +698,7 @@ var Point = /** @class */ (function () {
      *        Whether to apply animation, and optionally animation
      *        configuration.
      *
-     * @fires Highcharts.Point#event:update
+     * @emits Highcharts.Point#event:update
      */
     Point.prototype.update = function (options, redraw, animation, runEvent) {
         var point = this, series = point.series, graphic = point.graphic, chart = series.chart, seriesOptions = series.options;
@@ -714,7 +712,9 @@ var Point = /** @class */ (function () {
             // Update visuals, #4146
             // Handle dummy graphic elements for a11y, #12718
             var hasDummyGraphic = graphic && point.hasDummyGraphic;
-            var shouldDestroyGraphic = point.y === null ? !hasDummyGraphic : hasDummyGraphic;
+            var shouldDestroyGraphic = point.y === null ?
+                !hasDummyGraphic :
+                hasDummyGraphic;
             if (graphic && shouldDestroyGraphic) {
                 point.graphic = graphic.destroy();
                 delete point.hasDummyGraphic;
@@ -817,8 +817,8 @@ var Point = /** @class */ (function () {
      * is `true`, selected points are accumulated on Control, Shift or Cmd
      * clicking the point.
      *
-     * @fires Highcharts.Point#event:select
-     * @fires Highcharts.Point#event:unselect
+     * @emits Highcharts.Point#event:select
+     * @emits Highcharts.Point#event:unselect
      */
     Point.prototype.select = function (selected, accumulate) {
         var point = this, series = point.series, chart = series.chart;
@@ -882,7 +882,7 @@ var Point = /** @class */ (function () {
      * events.
      *
      * @function Highcharts.Point#onMouseOut
-     * @fires Highcharts.Point#event:mouseOut
+     * @emits Highcharts.Point#event:mouseOut
      */
     Point.prototype.onMouseOut = function () {
         var point = this, chart = point.series.chart;
@@ -925,7 +925,7 @@ var Point = /** @class */ (function () {
      * @param {boolean} [move]
      *        State for animation.
      *
-     * @fires Highcharts.Point#event:afterSetState
+     * @emits Highcharts.Point#event:afterSetState
      */
     Point.prototype.setState = function (state, move) {
         var point = this, series = point.series, previousState = point.state, stateOptions = (series.options.states[state || 'normal'] ||
@@ -971,8 +971,9 @@ var Point = /** @class */ (function () {
                 pointAttribs = series.pointAttribs(point, state);
                 pointAttribsAnimation = pick(chart.options.chart.animation, stateOptions.animation);
                 // Some inactive points (e.g. slices in pie) should apply
-                // oppacity also for it's labels
-                if (series.options.inactiveOtherPoints && isNumber(pointAttribs.opacity)) {
+                // opacity also for their labels
+                if (series.options.inactiveOtherPoints &&
+                    isNumber(pointAttribs.opacity)) {
                     (point.dataLabels || []).forEach(function (label) {
                         if (label) {
                             label.animate({

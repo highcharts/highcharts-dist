@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Dependency wheel module
  *
@@ -363,7 +363,7 @@
                                         var angle = factor * top,
                                     x = Math.cos(startAngle + angle) * (innerR_1 + 1),
                                     y = Math.sin(startAngle + angle) * (innerR_1 + 1),
-                                    curveFactor = options.curveFactor;
+                                    curveFactor = options.curveFactor || 0;
                                     // The distance between the from and to node
                                     // along the perimeter. This affect how curved
                                     // the link is, so that links between neighbours

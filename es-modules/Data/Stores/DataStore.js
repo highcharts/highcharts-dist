@@ -265,7 +265,7 @@ var DataStore = /** @class */ (function () {
      * Regular expression to extract the store name (group 1) from the
      * stringified class type.
      */
-    DataStore.nameRegExp = /^function\s+(\w*?)(?:DataStore)?\s*\(/;
+    DataStore.nameRegExp = (/^function\s+(\w*?)(?:DataStore)?\s*\(/);
     return DataStore;
 }());
 /* *

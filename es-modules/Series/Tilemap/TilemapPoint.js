@@ -59,8 +59,6 @@ var TilemapPoint = /** @class */ (function (_super) {
     /**
      * @private
      * @function Highcharts.Point#haloPath
-     *
-     * @return {Highcharts.SVGElement|Highcharts.SVGPathArray|Array<Highcharts.SVGElement>}
      */
     TilemapPoint.prototype.haloPath = function () {
         return this.series.tileShape.haloPath.apply(this, arguments);

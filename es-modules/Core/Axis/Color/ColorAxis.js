@@ -64,7 +64,8 @@ var ColorAxis = /** @class */ (function (_super) {
      */
     function ColorAxis(chart, userOptions) {
         var _this = _super.call(this, chart, userOptions) || this;
-        _this.beforePadding = false; // Prevents unnecessary padding with `hc-more`
+        // Prevents unnecessary padding with `hc-more`
+        _this.beforePadding = false;
         _this.chart = void 0;
         _this.coll = 'colorAxis';
         _this.dataClasses = void 0;
@@ -351,7 +352,9 @@ var ColorAxis = /** @class */ (function (_super) {
             zIndex: 1
         }).add(item.legendGroup);
         // Set how much space this legend item takes up
-        axis.legendItemWidth = width + padding + (horiz ? itemDistance : labelPadding);
+        axis.legendItemWidth = (width +
+            padding +
+            (horiz ? itemDistance : labelPadding));
         axis.legendItemHeight = height + padding + (horiz ? labelPadding : 0);
     };
     /**
@@ -434,8 +437,8 @@ var ColorAxis = /** @class */ (function (_super) {
      * @param {Highcharts.Point} [point]
      *        The Point object if the crosshair snaps to points.
      *
-     * @fires Highcharts.ColorAxis#event:afterDrawCrosshair
-     * @fires Highcharts.ColorAxis#event:drawCrosshair
+     * @emits Highcharts.ColorAxis#event:afterDrawCrosshair
+     * @emits Highcharts.ColorAxis#event:drawCrosshair
      */
     ColorAxis.prototype.drawCrosshair = function (e, point) {
         var axis = this;

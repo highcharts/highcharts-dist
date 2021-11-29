@@ -49,10 +49,6 @@ Chart.prototype.isChartSeriesBoosting = function () {
  *
  * @private
  * @function Highcharts.Chart#getBoostClipRect
- *
- * @param {Highcharts.Chart} target
- *
- * @return {Highcharts.BBoxObject}
  */
 Chart.prototype.getBoostClipRect = function (target) {
     var clipBox = {
@@ -65,7 +61,9 @@ Chart.prototype.getBoostClipRect = function (target) {
         var verticalAxes = this.inverted ? this.xAxis : this.yAxis; // #14444
         if (verticalAxes.length <= 1) {
             clipBox.y = Math.min(verticalAxes[0].pos, clipBox.y);
-            clipBox.height = verticalAxes[0].pos - this.plotTop + verticalAxes[0].len;
+            clipBox.height = (verticalAxes[0].pos -
+                this.plotTop +
+                verticalAxes[0].len);
         }
         else {
             clipBox.height = this.plotHeight;
@@ -332,10 +330,6 @@ Series.prototype.exitBoost = function () {
 /**
  * @private
  * @function Highcharts.Series#hasExtremes
- *
- * @param {boolean} checkX
- *
- * @return {boolean}
  */
 Series.prototype.hasExtremes = function (checkX) {
     var options = this.options, data = options.data, xAxis = this.xAxis && this.xAxis.options, yAxis = this.yAxis && this.yAxis.options, colorAxis = this.colorAxis && this.colorAxis.options;

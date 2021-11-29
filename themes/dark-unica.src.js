@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -53,8 +53,10 @@
              *
              * */
             DarkUnicaTheme.options = {
-                colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066',
-                    '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+                colors: [
+                    '#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066',
+                    '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
+                ],
                 chart: {
                     backgroundColor: {
                         linearGradient: { x1: 0, y1: 0, x2: 1, y2: 1 },

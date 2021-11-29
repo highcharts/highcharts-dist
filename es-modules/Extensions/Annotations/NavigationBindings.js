@@ -200,7 +200,9 @@ var NavigationBindings = /** @class */ (function () {
         [].forEach.call(bindingsContainer, function (subContainer) {
             navigation.eventsToUnbind.push(addEvent(subContainer, 'click', function (event) {
                 var bindings = navigation.getButtonEvents(subContainer, event);
-                if (bindings && bindings.button.className.indexOf('highcharts-disabled-btn') === -1) {
+                if (bindings &&
+                    bindings.button.className
+                        .indexOf('highcharts-disabled-btn') === -1) {
                     navigation.bindingsButtonClick(bindings.button, bindings.events, event);
                 }
             }));
@@ -246,7 +248,7 @@ var NavigationBindings = /** @class */ (function () {
      * @param {Highcharts.HTMLDOMElement} [button]
      *        Clicked button
      *
-     * @param {object} events
+     * @param {Object} events
      *        Events passed down from bindings (`init`, `start`, `step`, `end`)
      *
      * @param {Highcharts.PointerEventObject} clickEvent
@@ -354,8 +356,7 @@ var NavigationBindings = /** @class */ (function () {
                 navigation.stepIndex++;
                 if (selectedButton.steps[navigation.stepIndex]) {
                     // If we have more steps, bind them one by one:
-                    navigation.mouseMoveEvent = navigation.nextEvent =
-                        selectedButton.steps[navigation.stepIndex];
+                    navigation.mouseMoveEvent = navigation.nextEvent = selectedButton.steps[navigation.stepIndex];
                 }
                 else {
                     fireEvent(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
@@ -478,10 +479,10 @@ var NavigationBindings = /** @class */ (function () {
          * @param {string} key
          *        Option name, for example "visible" or "x", "y"
          *
-         * @param {object} parentEditables
+         * @param {Object} parentEditables
          *        Editables from NavigationBindings.annotationsEditable
          *
-         * @param {object} parent
+         * @param {Object} parent
          *        Where new options will be assigned
          */
         function traverse(option, key, parentEditables, parent) {
@@ -522,7 +523,9 @@ var NavigationBindings = /** @class */ (function () {
                         parent[key] = nextParent;
                     }
                     objectEach(option, function (nestedOption, nestedKey) {
-                        traverse(nestedOption, nestedKey, key === 0 ? parentEditables : nestedEditables[key], nextParent);
+                        traverse(nestedOption, nestedKey, key === 0 ?
+                            parentEditables :
+                            nestedEditables[key], nextParent);
                     });
                 }
                 else {
@@ -561,14 +564,14 @@ var NavigationBindings = /** @class */ (function () {
      *
      * @function Highcharts.NavigationBindings#getClickedClassNames
      *
-     * @param {Highcharts.HTMLDOMElement}
-     *        Container that event is bound to.
+     * @param {Highcharts.HTMLDOMElement} container
+     * Container that event is bound to.
      *
      * @param {global.Event} event
-     *        Browser's event.
+     * Browser's event.
      *
      * @return {Array<Array<string, Highcharts.HTMLDOMElement>>}
-     *         Array of class names with corresponding elements
+     * Array of class names with corresponding elements
      */
     NavigationBindings.prototype.getClickedClassNames = function (container, event) {
         var element = event.target, classNames = [], elemClassName;
@@ -604,7 +607,7 @@ var NavigationBindings = /** @class */ (function () {
      * @param {global.Event} event
      *        Browser's event.
      *
-     * @return {object}
+     * @return {Object}
      *         Object with events (init, start, steps, and end)
      */
     NavigationBindings.prototype.getButtonEvents = function (container, event) {
@@ -764,10 +767,10 @@ function selectableAnnotation(annotationType) {
                         if (annotation.options.type === 'measure') {
                             // Manually disable crooshars according to
                             // stroke width of the shape:
-                            typeOptions.crosshairY.enabled =
-                                typeOptions.crosshairY.strokeWidth !== 0;
-                            typeOptions.crosshairX.enabled =
-                                typeOptions.crosshairX.strokeWidth !== 0;
+                            typeOptions.crosshairY.enabled = (typeOptions.crosshairY
+                                .strokeWidth !== 0);
+                            typeOptions.crosshairX.enabled = (typeOptions.crosshairX
+                                .strokeWidth !== 0);
                         }
                         annotation.update(config);
                     }
@@ -921,7 +924,8 @@ setOptions({
                                 },
                                 r: 5
                             }]
-                    }, navigation.annotationsOptions, navigation.bindings.circleAnnotation.annotationsOptions));
+                    }, navigation.annotationsOptions, navigation.bindings.circleAnnotation
+                        .annotationsOptions));
                 },
                 /** @ignore-option */
                 steps: [
@@ -969,7 +973,8 @@ setOptions({
                                 ry: 1
                             }
                         ]
-                    }, navigation.annotationsOptions, navigation.bindings.ellipseAnnotation.annotationOptions));
+                    }, navigation.annotationsOptions, navigation.bindings.ellipseAnnotation
+                        .annotationOptions));
                 },
                 steps: [
                     function (e, annotation) {
@@ -1089,7 +1094,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/9.3.1/gfx/stock-icons/
+         * @default   https://code.highcharts.com/9.3.2/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */
@@ -1170,28 +1175,28 @@ addEvent(Chart, 'render', function () {
             if (chart.navigationBindings &&
                 chart.navigationBindings.container &&
                 chart.navigationBindings.container[0]) {
-                // Get the HTML element coresponding to the
-                // className taken from StockToolsBindings.
-                var buttonNode = chart.navigationBindings.container[0].querySelectorAll('.' + key);
+                // Get the HTML element coresponding to the className taken
+                // from StockToolsBindings.
+                var buttonNode = chart.navigationBindings.container[0]
+                    .querySelectorAll('.' + key);
                 if (buttonNode) {
                     for (var i = 0; i < buttonNode.length; i++) {
-                        var button = buttonNode[i];
+                        var button = buttonNode[i], cls = button.className;
                         if (value.noDataState === 'normal') {
-                            // If button has noDataState: 'normal',
-                            // and has disabledClassName,
-                            // remove this className.
-                            if (button.className.indexOf(disabledClassName) !== -1) {
+                            // If button has noDataState: 'normal', and has
+                            // disabledClassName, remove this className.
+                            if (cls.indexOf(disabledClassName) !== -1) {
                                 button.classList.remove(disabledClassName);
                             }
                         }
                         else if (!buttonsEnabled_1) {
-                            if (button.className.indexOf(disabledClassName) === -1) {
+                            if (cls.indexOf(disabledClassName) === -1) {
                                 button.className += ' ' + disabledClassName;
                             }
                         }
                         else {
                             // Enable all buttons by deleting the className.
-                            if (button.className.indexOf(disabledClassName) !== -1) {
+                            if (cls.indexOf(disabledClassName) !== -1) {
                                 button.classList.remove(disabledClassName);
                             }
                         }

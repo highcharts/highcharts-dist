@@ -80,10 +80,6 @@ declare module "../highcharts.src" {
          */
         static destroy(): void;
         /**
-         * Get keyboard navigation handler for this component.
-         */
-        static getKeyboardNavigation(): KeyboardNavigationHandler;
-        /**
          * Called on component initialization.
          */
         static init(): void;
@@ -197,37 +193,6 @@ declare module "../highcharts.src" {
      *        The series to add info on.
      */
     function describeSeries(series: Series): void;
-    /**
-     * Fire an event on an element that is either wrapped by Highcharts, or a
-     * DOM element
-     */
-    function fireEventOnWrappedOrUnwrappedElement(): void;
-    /**
-     * Return string with the axis name/title.
-     */
-    function getAxisDescription(axis: Axis): string;
-    /**
-     * Describe an axis from-to range.
-     */
-    function getAxisFromToDescription(axis: Axis): string;
-    /**
-     * Return string with text description of the axis range.
-     *
-     * @param axis
-     *        The axis to get range desc of.
-     *
-     * @return A string with the range description for the axis.
-     */
-    function getAxisRangeDescription(axis: Axis): string;
-    /**
-     * Describe the length of the time window shown on an axis.
-     */
-    function getAxisTimeLengthDesc(axis: Axis): string;
-    /**
-     * Describe the range of a category axis.
-     */
-    function getCategoryAxisRangeDesc(axis: Axis): string;
-    function getChartTitle(): string;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

@@ -20,9 +20,7 @@ var clamp = U.clamp, error = U.error, pick = U.pick;
  * @function GLShader
  *
  * @param {WebGLContext} gl
- *        the context in which the shader is active
- *
- * @return {*}
+ * the context in which the shader is active
  */
 function GLShader(gl) {
     var vertShade = [
@@ -231,9 +229,10 @@ function GLShader(gl) {
     /**
      * String to shader program
      * @private
-     * @param {string} str - the program source
-     * @param {string} type - the program type: either `vertex` or `fragment`
-     * @returns {bool|shader}
+     * @param {string} str
+     * the program source
+     * @param {string} type
+     * the program type: either `vertex` or `fragment`
      */
     function stringToProgram(str, type) {
         var t = type === 'vertex' ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER, shader = gl.createShader(t);
@@ -328,7 +327,8 @@ function GLShader(gl) {
     /**
      * Set the active texture
      * @private
-     * @param texture - the texture
+     * @param texture
+     * the texture
      */
     function setTexture(texture) {
         if (gl && shaderProgram) {
@@ -338,7 +338,8 @@ function GLShader(gl) {
     /**
      * Set if inversion state
      * @private
-     * @flag is the state
+     * @param {number} flag
+     * is the state
      */
     function setInverted(flag) {
         if (gl && shaderProgram) {

@@ -54,7 +54,6 @@ var OHLCPoint = /** @class */ (function (_super) {
      * Extend the parent method by adding up or down to the class name.
      * @private
      * @function Highcharts.seriesTypes.ohlc#getClassName
-     * @return {string}
      */
     OHLCPoint.prototype.getClassName = function () {
         return _super.prototype.getClassName.call(this) +

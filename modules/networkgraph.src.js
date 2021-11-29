@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Force directed graph module
  *
@@ -105,7 +105,8 @@
                     node.linksTo = [];
                     node.linksFrom = [];
                     node.formatPrefix = 'node';
-                    node.name = node.name || node.options.id || ''; // for use in formats
+                    // for use in formats
+                    node.name = node.name || node.options.id || '';
                     // Mass is used in networkgraph:
                     node.mass = pick(
                     // Node:
@@ -316,8 +317,7 @@
                  * `plotX` and `plotY` position.
                  *
                  * @private
-                 * @return {void}
-                 */
+                     */
                 barycenter: function () {
                     var gravitationalConstant = this.options.gravitationalConstant,
                         xFactor = this.barycenter.xFactor,
@@ -349,8 +349,7 @@
                  *        Force calcualated in `repulsiveForceFunction`
                  * @param {Highcharts.PositionObject} distance
                  *        Distance between two nodes e.g. `{x, y}`
-                 * @return {void}
-                 */
+                     */
                 repulsive: function (node, force, distanceXY) {
                     var factor = force * this.diffTemperature / node.mass / node.degree;
                     if (!node.fixedPosition) {
@@ -371,8 +370,7 @@
                  *        Force calcualated in `repulsiveForceFunction`
                  * @param {Highcharts.PositionObject} distance
                  *        Distance between two nodes e.g. `{x, y}`
-                 * @return {void}
-                 */
+                     */
                 attractive: function (link, force, distanceXY) {
                     var massFactor = link.getMass(),
                         translatedX = -distanceXY.x * force * this.diffTemperature,
@@ -420,8 +418,7 @@
                  * @private
                  * @param {Highcharts.NetworkgraphLayout} layout layout object
                  * @param {Highcharts.Point} node node that should be translated
-                 * @return {void}
-                 */
+                     */
                 integrate: function (layout, node) {
                     var friction = -layout.options.friction,
                         maxSpeed = layout.options.maxSpeed,
@@ -452,10 +449,7 @@
                 /**
                  * Estiamte the best possible distance between two nodes, making graph
                  * readable.
-                 *
                  * @private
-                 * @param {Highcharts.NetworkgraphLayout} layout layout object
-                 * @return {number}
                  */
                 getK: function (layout) {
                     return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.5);
@@ -510,8 +504,7 @@
                  * position. Later, in `integrate()` forces are applied on nodes.
                  *
                  * @private
-                 * @return {void}
-                 */
+                     */
                 barycenter: function () {
                     var gravitationalConstant = this.options.gravitationalConstant,
                         xFactor = this.barycenter.xFactor,
@@ -539,8 +532,7 @@
                  *        Force calcualated in `repulsiveForceFunction`
                  * @param {Highcharts.PositionObject} distanceXY
                  *        Distance between two nodes e.g. `{x, y}`
-                 * @return {void}
-                 */
+                     */
                 repulsive: function (node, force, distanceXY, distanceR) {
                     node.dispX +=
                         (distanceXY.x / distanceR) * force / node.degree;
@@ -561,8 +553,7 @@
                  * @param {Highcharts.PositionObject} distanceXY
                  *        Distance between two nodes e.g. `{x, y}`
                  * @param {number} distanceR
-                 * @return {void}
-                 */
+                     */
                 attractive: function (link, force, distanceXY, distanceR) {
                     var massFactor = link.getMass(),
                         translatedX = (distanceXY.x / distanceR) * force,
@@ -611,8 +602,7 @@
                  *        Layout object
                  * @param {Highcharts.Point} node
                  *        Node that should be translated
-                 * @return {void}
-                 */
+                     */
                 integrate: function (layout, node) {
                     var distanceR;
                     node.dispX +=
@@ -633,10 +623,7 @@
                 /**
                  * Estiamte the best possible distance between two nodes, making graph
                  * readable.
-                 *
                  * @private
-                 * @param {object} layout layout object
-                 * @return {number}
                  */
                 getK: function (layout) {
                     return Math.pow(layout.box.width * layout.box.height / layout.nodes.length, 0.3);
@@ -866,9 +853,7 @@
             /**
              * Determine which of the quadrants should be used when placing node in
              * the QuadTree. Returned index is always in range `< 0 , 3 >`.
-             *
-             * @param {Highcharts.Point} point
-             * @return {number}
+             * @private
              */
             getBoxPosition: function (point) {
                 var left = point.plotX < this.box.left + this.box.width / 2,
@@ -1610,7 +1595,6 @@
              * @private
              * @param {Highcharts.Point} point The point that event occured.
              * @param {Highcharts.PointerEventObject} event Browser event, before normalization.
-             * @return {void}
              */
             onMouseDown: function (point, event) {
                 var normalizedEvent = this.chart.pointer.normalize(event);
@@ -1630,7 +1614,6 @@
              * @param {global.Event} event Browser event, before normalization.
              * @param {Highcharts.Point} point The point that event occured.
              *
-             * @return {void}
              */
             onMouseMove: function (point, event) {
                 if (point.fixedPosition && point.inDragMode) {
@@ -1663,7 +1646,6 @@
              *
              * @private
              * @param {Highcharts.Point} point The point that event occured.
-             * @return {void}
              */
             onMouseUp: function (point, event) {
                 if (point.fixedPosition) {
@@ -1687,7 +1669,6 @@
              *
              * @private
              * @param {Highcharts.Point} point The point that should show halo.
-             * @return {void}
              */
             redrawHalo: function (point) {
                 if (point && this.halo) {
@@ -2563,7 +2544,6 @@
              * Return degree of a node. If node has no connections, it still has
              * deg=1.
              * @private
-             * @return {number}
              */
             getDegree: function () {
                 var deg = this.isNode ?
@@ -2575,7 +2555,6 @@
             /**
              * Get presentational attributes of link connecting two nodes.
              * @private
-             * @return {Highcharts.SVGAttributes}
              */
             getLinkAttributes: function () {
                 var linkOptions = this.series.options.link,
@@ -2708,7 +2687,6 @@
              * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation=false]
              *        Whether to apply animation, and optionally animation
              *        configuration.
-             * @return {void}
              */
             remove: function (redraw, animation) {
                 var point = this,
@@ -2769,7 +2747,6 @@
              * Destroy point. If it's a node, remove all links coming out of this
              * node. Then remove point from the layout.
              * @private
-             * @return {void}
              */
             destroy: function () {
                 if (this.isNode) {
@@ -2831,7 +2808,7 @@
          *     }]
          *  ```
          *
-         * @type      {Array<Object|Array|Number>}
+         * @type      {Array<Object|Array|number>}
          * @extends   series.line.data
          * @excluding drilldown,marker,x,y,draDrop
          * @sample    {highcharts} highcharts/chart/reflow-true/

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Data grouping module
  *
@@ -266,13 +266,17 @@
                         groupedXData = groupedData.groupedXData,
                         groupedYData = groupedData.groupedYData,
                         gapSize = 0;
-                    // The smoothed option is deprecated, instead,
-                    // there is a fallback to the new anchoring mechanism. #12455.
-                    if (dataGroupingOptions && dataGroupingOptions.smoothed && groupedXData.length) {
+                    // The smoothed option is deprecated, instead, there is a fallback
+                    // to the new anchoring mechanism. #12455.
+                    if (dataGroupingOptions &&
+                        dataGroupingOptions.smoothed &&
+                        groupedXData.length) {
                         dataGroupingOptions.firstAnchor = 'firstPoint';
                         dataGroupingOptions.anchor = 'middle';
                         dataGroupingOptions.lastAnchor = 'lastPoint';
-                        error(32, false, chart, { 'dataGrouping.smoothed': 'use dataGrouping.anchor' });
+                        error(32, false, chart, {
+                            'dataGrouping.smoothed': 'use dataGrouping.anchor'
+                        });
                     }
                     anchorPoints(series, groupedXData, xMax);
                     // Record what data grouping values were used
@@ -349,7 +353,8 @@
             pointArrayMap = series.pointArrayMap,
             pointArrayMapLength = pointArrayMap && pointArrayMap.length,
             extendedPointArrayMap = ['x'].concat(pointArrayMap || ['y']),
-            groupAll = this.options.dataGrouping && this.options.dataGrouping.groupAll,
+            groupAll = (this.options.dataGrouping &&
+                    this.options.dataGrouping.groupAll),
             pos = 0,
             start = 0,
             valuesLen,
@@ -479,7 +484,7 @@
             xMax) {
                 var options = series.options,
             dataGroupingOptions = options.dataGrouping,
-            totalRange = series.currentDataGrouping && series.currentDataGrouping.gapSize;
+            totalRange = (series.currentDataGrouping && series.currentDataGrouping.gapSize);
             var i;
             // DataGrouping x-coordinates.
             if (dataGroupingOptions && series.xData && totalRange && series.groupMap) {
@@ -491,9 +496,9 @@
                     anchor);
                 // Anchor points that are not extremes.
                 if (anchor && anchor !== 'start') {
-                    var shiftInterval = totalRange *
+                    var shiftInterval = (totalRange *
                             { middle: 0.5,
-                        end: 1 }[anchor];
+                        end: 1 }[anchor]);
                     i = groupedXData.length - 1;
                     while (i-- && i > 0) {
                         groupedXData[i] += shiftInterval;
@@ -759,7 +764,8 @@
             series.forEach(function (series) {
                 // Reset the groupPixelWidth, then calculate if needed.
                 series.groupPixelWidth = void 0; // #2110
-                series.groupPixelWidth = axis.getGroupPixelWidth && axis.getGroupPixelWidth();
+                series.groupPixelWidth = (axis.getGroupPixelWidth &&
+                    axis.getGroupPixelWidth());
                 if (series.groupPixelWidth) {
                     series.hasProcessed = true; // #2692
                 }
@@ -798,7 +804,8 @@
                     // Execute grouping if the amount of points is greater than the
                     // limit defined in groupPixelWidth
                     if (series[i].groupPixelWidth ||
-                        dataLength > (this.chart.plotSizeX / groupPixelWidth) ||
+                        (dataLength >
+                            (this.chart.plotSizeX / groupPixelWidth)) ||
                         (dataLength && dgOptions.forced)) {
                         doGrouping = true;
                     }
@@ -939,10 +946,10 @@
                 type = this.type,
                 plotOptions = this.chart.options.plotOptions,
                 defaultOptions = D.defaultOptions.plotOptions[type].dataGrouping, 
-                // External series, for example technical indicators should also
-                // inherit commonOptions which are not available outside this module
-                baseOptions = this.useCommonDataGrouping && commonOptions;
-            if (specificOptions[type] || baseOptions) { // #1284
+                // External series, for example technical indicators should also inherit
+                // commonOptions which are not available outside this module
+                baseOptions = (this.useCommonDataGrouping && commonOptions);
+            if (plotOptions && (specificOptions[type] || baseOptions)) { // #1284
                 if (!defaultOptions) {
                     defaultOptions = merge(commonOptions, specificOptions[type]);
                 }
@@ -1075,7 +1082,7 @@
          * to two weeks, the second and third item of the week array are used,
          *  and applied to the start and end date of the time span.
          *
-         * @type      {object}
+         * @type      {Object}
          * @apioption plotOptions.series.dataGrouping.dateTimeLabelFormats
          */
         /**

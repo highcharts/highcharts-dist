@@ -89,7 +89,8 @@ var StochasticIndicator = /** @class */ (function (_super) {
             yData.push([K, null]);
             // Calculate smoothed %D, which is SMA of %K
             if (i >= (periodK - 1) + (periodD - 1)) {
-                points = SeriesRegistry.seriesTypes.sma.prototype.getValues.call(this, {
+                points = SeriesRegistry.seriesTypes.sma.prototype.getValues
+                    .call(this, {
                     xData: xData.slice(-periodD),
                     yData: yData.slice(-periodD)
                 }, {
@@ -174,6 +175,7 @@ var StochasticIndicator = /** @class */ (function (_super) {
     return StochasticIndicator;
 }(SMAIndicator));
 extend(StochasticIndicator.prototype, {
+    areaLinesNames: [],
     nameComponents: ['periods'],
     nameBase: 'Stochastic',
     pointArrayMap: ['y', 'smoothed'],

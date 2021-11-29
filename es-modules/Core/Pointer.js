@@ -114,7 +114,7 @@ var Pointer = /** @class */ (function () {
                 Pointer.unbindDocumentMouseUp = Pointer.unbindDocumentMouseUp();
             }
             if (Pointer.unbindDocumentTouchEnd) {
-                Pointer.unbindDocumentTouchEnd = Pointer.unbindDocumentTouchEnd();
+                Pointer.unbindDocumentTouchEnd = (Pointer.unbindDocumentTouchEnd());
             }
         }
         // memory and CPU leak
@@ -439,6 +439,7 @@ var Pointer = /** @class */ (function () {
      * Pointer event, extended with `chartX` and `chartY` properties.
      *
      * @return {Highcharts.PointerAxisCoordinatesObject}
+     * Axis coordinates.
      */
     Pointer.prototype.getCoordinates = function (e) {
         var coordinates = {
@@ -477,7 +478,7 @@ var Pointer = /** @class */ (function () {
      * @param {Highcharts.PointerEventObject} [e]
      * The triggering event, containing chart coordinates of the pointer.
      *
-     * @return {object}
+     * @return {Object}
      * Object containing resulting hover data: hoverPoint, hoverSeries, and
      * hoverPoints.
      */
@@ -765,9 +766,8 @@ var Pointer = /** @class */ (function () {
             // Also reset the chart position, used in #149 fix
             chart.pointer.chartPosition = void 0;
         }
-        if ( // #11635, Firefox wheel scroll does not fire out events consistently
-        tooltip &&
-            !tooltip.isHidden) {
+        // #11635, Firefox wheel scroll does not fire out events consistently
+        if (tooltip && !tooltip.isHidden) {
             this.reset();
         }
     };
@@ -904,7 +904,10 @@ var Pointer = /** @class */ (function () {
         }
         // On touch devices, only proceed to trigger click if a handler is
         // defined
-        if (hasZoom && self.initiated && !fireClickEvent && e.cancelable !== false) {
+        if (hasZoom &&
+            self.initiated &&
+            !fireClickEvent &&
+            e.cancelable !== false) {
             e.preventDefault();
         }
         // Normalize each touch
@@ -1028,7 +1031,8 @@ var Pointer = /** @class */ (function () {
             clip[xy] = clipXY - plotLeftTop;
             clip[wh] = selectionWH;
         }
-        var scaleKey = inverted ? (horiz ? 'scaleY' : 'scaleX') : 'scale' + XY;
+        var scaleKey = inverted ?
+            (horiz ? 'scaleY' : 'scaleX') : 'scale' + XY;
         var transformScale = inverted ? 1 / scale : scale;
         selectionMarker[wh] = selectionWH;
         selectionMarker[xy] = selectionXY;
@@ -1125,8 +1129,8 @@ var Pointer = /** @class */ (function () {
      * @private
      * @function Highcharts.Pointer#runPointActions
      *
-     * @fires Highcharts.Point#event:mouseOut
-     * @fires Highcharts.Point#event:mouseOver
+     * @emits Highcharts.Point#event:mouseOut
+     * @emits Highcharts.Point#event:mouseOver
      */
     Pointer.prototype.runPointActions = function (e, p) {
         var pointer = this, chart = pointer.chart, series = chart.series, tooltip = (chart.tooltip && chart.tooltip.options.enabled ?

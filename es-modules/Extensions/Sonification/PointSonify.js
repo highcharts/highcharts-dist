@@ -102,11 +102,12 @@ var PointSonify;
                     } :
                     value(point, dataExtremes);
             }
-            // String, this is a data prop. Potentially with
-            // negative polarity.
+            // String, this is a data prop. Potentially with negative
+            // polarity.
             if (typeof value === 'string') {
                 var hasInvertedPolarity = value.charAt(0) === '-';
-                var dataProp = hasInvertedPolarity ? value.slice(1) : value;
+                var dataProp = hasInvertedPolarity ?
+                    value.slice(1) : value;
                 var pointValue = pick(point[dataProp], point.options[dataProp]);
                 // Find data extremes if we don't have them
                 dataExtremes[dataProp] = dataExtremes[dataProp] ||
@@ -136,7 +137,7 @@ var PointSonify;
         }
         // Go through instruments and play them
         options.instruments.forEach(function (instrumentDefinition) {
-            var instrument = typeof instrumentDefinition.instrument === 'string' ?
+            var instrument = (typeof instrumentDefinition.instrument === 'string') ?
                 Instrument.definitions[instrumentDefinition.instrument] :
                 instrumentDefinition.instrument, mapping = instrumentDefinition.instrumentMapping || {}, extremes = merge(defaultInstrumentOptions, instrumentDefinition.instrumentOptions), id = instrument.id, onEnd = function (cancelled) {
                 // Instrument on end
@@ -149,7 +150,8 @@ var PointSonify;
                     delete chart.sonification.currentlyPlayingPoint;
                 }
                 // Remove reference from instruments playing
-                if (point.sonification && point.sonification.instrumentsPlaying) {
+                if (point.sonification &&
+                    point.sonification.instrumentsPlaying) {
                     delete point.sonification.instrumentsPlaying[id];
                     // This was the last instrument?
                     if (!Object.keys(point.sonification.instrumentsPlaying).length) {
@@ -165,7 +167,10 @@ var PointSonify;
                 point.sonification.instrumentsPlaying[instrument.id] =
                     instrument;
                 instrument.play({
-                    frequency: getMappingValue(mapping.frequency, true, { min: extremes.minFrequency, max: extremes.maxFrequency }),
+                    frequency: getMappingValue(mapping.frequency, true, {
+                        min: extremes.minFrequency,
+                        max: extremes.maxFrequency
+                    }),
                     duration: getMappingValue(mapping.duration, false, { min: extremes.minDuration, max: extremes.maxDuration }),
                     pan: getMappingValue(mapping.pan, true, { min: extremes.minPan, max: extremes.maxPan }),
                     volume: getMappingValue(mapping.volume, true, { min: extremes.minVolume, max: extremes.maxVolume }),
@@ -190,10 +195,9 @@ var PointSonify;
      *        Whether or not to fade out as we stop. If false, the points are
      *        cancelled synchronously.
      *
-     * @return {void}
      */
     function pointCancelSonify(fadeOut) {
-        var playing = this.sonification && this.sonification.instrumentsPlaying, instrIds = playing && Object.keys(playing);
+        var playing = (this.sonification && this.sonification.instrumentsPlaying), instrIds = playing && Object.keys(playing);
         if (instrIds && instrIds.length) {
             instrIds.forEach(function (instr) {
                 playing[instr].stop(!fadeOut, null, 'cancelled');

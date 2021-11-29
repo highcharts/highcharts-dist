@@ -23,8 +23,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 import A from '../../Core/Animation/AnimationUtilities.js';
 var animObject = A.animObject;
-import ColorMapComposition from '../ColorMapComposition.js';
-var colorMapSeriesMixin = ColorMapComposition.colorMapSeriesMixin;
+import ColorMapMixin from '../ColorMapMixin.js';
 import CU from '../CenteredUtilities.js';
 import H from '../../Core/Globals.js';
 var noop = H.noop;
@@ -253,24 +252,24 @@ var MapSeries = /** @class */ (function (_super) {
             var strokeWidth_1 = pick(this.options[(this.pointAttrToOptions &&
                 this.pointAttrToOptions['stroke-width']) || 'borderWidth'], 1 // Styled mode
             );
-            /* Animate or move to the new zoom level. In order to prevent
-                flickering as the different transform components are set out
-                of sync (#5991), we run a fake animator attribute and set
-                scale and translation synchronously in the same step.
+            /*
+            Animate or move to the new zoom level. In order to prevent
+            flickering as the different transform components are set out of sync
+            (#5991), we run a fake animator attribute and set scale and
+            translation synchronously in the same step.
 
-                A possible improvement to the API would be to handle this in
-                the renderer or animation engine itself, to ensure that when
-                we are animating multiple properties, we make sure that each
-                step for each property is performed in the same step. Also,
-                for symbols and for transform properties, it should induce a
-                single updateTransform and symbolAttr call. */
+            A possible improvement to the API would be to handle this in the
+            renderer or animation engine itself, to ensure that when we are
+            animating multiple properties, we make sure that each step for each
+            property is performed in the same step. Also, for symbols and for
+            transform properties, it should induce a single updateTransform and
+            symbolAttr call.
+            */
             var scale_1 = svgTransform.scaleX;
             var flipFactor_1 = svgTransform.scaleY > 0 ? 1 : -1;
             var transformGroup_1 = this.transformGroup;
             if (renderer.globalAnimation && chart.hasRendered) {
-                var startTranslateX_1 = Number(transformGroup_1.attr('translateX'));
-                var startTranslateY_1 = Number(transformGroup_1.attr('translateY'));
-                var startScale_1 = Number(transformGroup_1.attr('scaleX'));
+                var startTranslateX_1 = Number(transformGroup_1.attr('translateX')), startTranslateY_1 = Number(transformGroup_1.attr('translateY')), startScale_1 = Number(transformGroup_1.attr('scaleX'));
                 var step = function (now, fx) {
                     var scaleStep = startScale_1 +
                         (scale_1 - startScale_1) * fx.pos;
@@ -340,7 +339,8 @@ var MapSeries = /** @class */ (function (_super) {
                         if (validBounds_1) {
                             // Cache point bounding box for use to position data
                             // labels, bubbles etc
-                            var propMiddleX = properties && properties['hc-middle-x'], midX = (x1_1 + (x2_1 - x1_1) * pick(point.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5)), propMiddleY = properties && properties['hc-middle-y'];
+                            var propMiddleX = (properties && properties['hc-middle-x']), midX = (x1_1 + (x2_1 - x1_1) * pick(point.middleX, isNumber(propMiddleX) ?
+                                propMiddleX : 0.5)), propMiddleY = (properties && properties['hc-middle-y']);
                             var middleYFraction = pick(point.middleY, isNumber(propMiddleY) ? propMiddleY : 0.5);
                             // No geographic geometry, only path given => flip
                             if (!point.geometry) {
@@ -566,8 +566,7 @@ var MapSeries = /** @class */ (function (_super) {
             var _a = mapView.projection.forward(mapView.center), x = _a[0], y = _a[1];
             // When dealing with unprojected coordinates, y axis is flipped.
             var flipFactor = mapView.projection.hasCoordinates ? -1 : 1;
-            var translateX = this.chart.plotWidth / 2 - x * scale;
-            var translateY = this.chart.plotHeight / 2 - y * scale * flipFactor;
+            var translateX = this.chart.plotWidth / 2 - x * scale, translateY = this.chart.plotHeight / 2 - y * scale * flipFactor;
             svgTransform = {
                 scaleX: scale,
                 scaleY: scale * flipFactor,
@@ -842,8 +841,9 @@ var MapSeries = /** @class */ (function (_super) {
 }(ScatterSeries));
 extend(MapSeries.prototype, {
     type: 'map',
-    axisTypes: ['colorAxis'],
-    colorKey: 'value',
+    axisTypes: ColorMapMixin.SeriesMixin.axisTypes,
+    colorAttribs: ColorMapMixin.SeriesMixin.colorAttribs,
+    colorKey: ColorMapMixin.SeriesMixin.colorKey,
     // When tooltip is not shared, this series (and derivatives) requires
     // direct touch/hover. KD-tree does not apply.
     directTouch: true,
@@ -856,19 +856,18 @@ extend(MapSeries.prototype, {
     forceDL: true,
     getCenter: CU.getCenter,
     getExtremesFromAll: true,
-    getSymbol: noop,
+    getSymbol: ColorMapMixin.SeriesMixin.getSymbol,
     isCartesian: false,
-    parallelArrays: colorMapSeriesMixin.parallelArrays,
-    pointArrayMap: colorMapSeriesMixin.pointArrayMap,
+    parallelArrays: ColorMapMixin.SeriesMixin.parallelArrays,
+    pointArrayMap: ColorMapMixin.SeriesMixin.pointArrayMap,
     pointClass: MapPoint,
     // X axis and Y axis must have same translation slope
     preserveAspectRatio: true,
     searchPoint: noop,
-    trackerGroups: colorMapSeriesMixin.trackerGroups,
+    trackerGroups: ColorMapMixin.SeriesMixin.trackerGroups,
     // Get axis extremes from paths, not values
     useMapGeometry: true
 });
-ColorMapComposition.compose(MapSeries, MapPoint);
 SeriesRegistry.registerSeriesType('map', MapSeries);
 /* *
  *

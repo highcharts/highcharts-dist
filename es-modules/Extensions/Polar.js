@@ -161,8 +161,10 @@ if (seriesTypes.spline) {
             }
             else { // curve from last point to this
                 connectors = this.getConnectors(segment, i, true, this.connectEnds);
-                var rightContX = connectors.prevPointCont && connectors.prevPointCont.rightContX;
-                var rightContY = connectors.prevPointCont && connectors.prevPointCont.rightContY;
+                var rightContX = connectors.prevPointCont &&
+                    connectors.prevPointCont.rightContX;
+                var rightContY = connectors.prevPointCont &&
+                    connectors.prevPointCont.rightContY;
                 ret = [
                     'C',
                     isNumber(rightContX) ? rightContX : connectors.plotX,
@@ -186,7 +188,8 @@ if (seriesTypes.spline) {
     // #6430 Areasplinerange series use unwrapped getPointSpline method, so
     // we need to set this method again.
     if (seriesTypes.areasplinerange) {
-        seriesTypes.areasplinerange.prototype.getPointSpline = seriesTypes.spline.prototype.getPointSpline;
+        seriesTypes.areasplinerange.prototype
+            .getPointSpline = seriesTypes.spline.prototype.getPointSpline;
     }
 }
 /**

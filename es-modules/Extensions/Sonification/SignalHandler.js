@@ -62,7 +62,6 @@ var SignalHandler = /** @class */ (function () {
      * @param {Highcharts.Dictionary<(Function|undefined)>} signals
      * An object that contains a mapping from the signal name to the callbacks.
      * Only supported events are considered.
-     * @return {void}
      */
     SignalHandler.prototype.registerSignalCallbacks = function (signals) {
         var signalHandler = this;
@@ -77,9 +76,9 @@ var SignalHandler = /** @class */ (function () {
     /**
      * Clear signal callbacks, optionally by name.
      * @private
-     * @param {Array<string>} [signalNames] - A list of signal names to clear. If
-     * not supplied, all signal callbacks are removed.
-     * @return {void}
+     * @param {Array<string>} [signalNames]
+     * A list of signal names to clear. If not supplied, all signal callbacks
+     * are removed.
      */
     SignalHandler.prototype.clearSignalCallbacks = function (signalNames) {
         var signalHandler = this;
@@ -98,11 +97,10 @@ var SignalHandler = /** @class */ (function () {
      * Emit a signal. Does nothing if the signal does not exist, or has no
      * registered callbacks.
      * @private
-     * @param {string} signalNames
+     * @param {string} signalName
      * Name of signal to emit.
      * @param {*} [data]
      * Data to pass to the callback.
-     * @return {*}
      */
     SignalHandler.prototype.emitSignal = function (signalName, data) {
         var retval;

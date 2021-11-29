@@ -92,8 +92,9 @@ var NewDataAnnouncer = /** @class */ (function () {
      */
     NewDataAnnouncer.prototype.init = function () {
         var chart = this.chart;
-        var announceOptions = chart.options.accessibility.announceNewData;
-        var announceType = announceOptions.interruptUser ? 'assertive' : 'polite';
+        var announceOptions = (chart.options.accessibility.announceNewData);
+        var announceType = announceOptions.interruptUser ?
+            'assertive' : 'polite';
         this.lastAnnouncementTime = 0;
         this.dirty = {
             allSeries: {}
@@ -157,7 +158,9 @@ var NewDataAnnouncer = /** @class */ (function () {
             }
             this.queueAnnouncement(Object
                 .keys(this.dirty.allSeries)
-                .map(function (ix) { return announcer.dirty.allSeries[ix]; }), this.dirty.newSeries, newPoint);
+                .map(function (ix) {
+                return announcer.dirty.allSeries[ix];
+            }), this.dirty.newSeries, newPoint);
             // Reset
             this.dirty = {
                 allSeries: {}
@@ -232,7 +235,8 @@ var NewDataAnnouncer = /** @class */ (function () {
             }
         }
         // Default formatter - use lang options
-        var multiple = H.charts && H.charts.length > 1 ? 'Multiple' : 'Single', langKey = newSeries ? 'newSeriesAnnounce' + multiple :
+        var multiple = H.charts && H.charts.length > 1 ?
+            'Multiple' : 'Single', langKey = newSeries ? 'newSeriesAnnounce' + multiple :
             newPoint ? 'newPointAnnounce' + multiple : 'newDataAnnounce', chartTitle = getChartTitle(chart);
         return chart.langFormat('accessibility.announceNewData.' + langKey, {
             chartTitle: chartTitle,

@@ -467,11 +467,11 @@ var VBPIndicator = /** @class */ (function (_super) {
              * @default {"color": "#0A9AC9", "dashStyle": "LongDash", "lineWidth": 1}
              */
             styles: {
-                /** @ignore-options */
+                /** @ignore-option */
                 color: '#0A9AC9',
-                /** @ignore-options */
+                /** @ignore-option */
                 dashStyle: 'LongDash',
-                /** @ignore-options */
+                /** @ignore-option */
                 lineWidth: 1
             }
         },

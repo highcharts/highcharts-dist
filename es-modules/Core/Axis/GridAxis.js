@@ -159,7 +159,8 @@ var GridAxis;
             this.treeGrid &&
             this.treeGrid.mapOfPosToGridNode) {
             var treeDepth = this.treeGrid.mapOfPosToGridNode[-1].height || 0;
-            dimensions.width += this.options.labels.indentation * (treeDepth - 1);
+            dimensions.width += (this.options.labels.indentation *
+                (treeDepth - 1));
         }
         return dimensions;
     }
@@ -301,7 +302,10 @@ var GridAxis;
                             'L',
                             axis.left,
                             startPoint[2] || 0
-                        ], upperBorderPath = [upperBorderStartPoint, upperBorderEndPoint], lowerBorderEndPoint = [
+                        ], upperBorderPath = [
+                            upperBorderStartPoint,
+                            upperBorderEndPoint
+                        ], lowerBorderEndPoint = [
                             'L',
                             axis.chart.chartWidth - axis.chart.marginRight,
                             axis.toPixels(max + axis.tickmarkOffset)
@@ -309,7 +313,10 @@ var GridAxis;
                             'M',
                             endPoint[1] || 0,
                             axis.toPixels(max + axis.tickmarkOffset)
-                        ], lowerBorderPath = [lowerBorderStartPoint, lowerBorderEndPoint];
+                        ], lowerBorderPath = [
+                            lowerBorderStartPoint,
+                            lowerBorderEndPoint
+                        ];
                         if (!axis.grid.upperBorder && min % 1 !== 0) {
                             axis.grid.upperBorder = axis.grid.renderBorder(upperBorderPath);
                         }
@@ -335,8 +342,8 @@ var GridAxis;
                             });
                         }
                     }
-                    // Render an extra line parallel to the existing axes,
-                    // to close the grid.
+                    // Render an extra line parallel to the existing axes, to
+                    // close the grid.
                     if (!axis.grid.axisLineExtra) {
                         axis.grid.axisLineExtra = axis.grid.renderBorder(linePath);
                     }
@@ -349,8 +356,7 @@ var GridAxis;
                             d: linePath
                         });
                     }
-                    // show or hide the line depending on
-                    // options.showEmpty
+                    // show or hide the line depending on options.showEmpty
                     axis.axisLine[axis.showAxis ? 'show' : 'hide'](true);
                 }
             }
@@ -390,7 +396,8 @@ var GridAxis;
                 }
                 var mark = axis.ticks[lastTick].mark;
                 if (mark) {
-                    if (lastTick - max < tickmarkOffset && lastTick - max > 0 && axis.ticks[lastTick].isLast) {
+                    if (lastTick - max < tickmarkOffset &&
+                        lastTick - max > 0 && axis.ticks[lastTick].isLast) {
                         mark.hide();
                     }
                     else if (axis.ticks[lastTick - 1]) {
@@ -423,7 +430,8 @@ var GridAxis;
                     options.dateTimeLabelFormats &&
                     options.labels &&
                     !defined(userLabels.align) &&
-                    (options.dateTimeLabelFormats[tickInfo.unitName].range === false ||
+                    (options.dateTimeLabelFormats[tickInfo.unitName]
+                        .range === false ||
                         tickInfo.count > 1 // years
                     )) {
                     options.labels.align = 'left';
@@ -629,7 +637,8 @@ var GridAxis;
         if (gridOptions.enabled && maxLabelDimensions) {
             var labelPadding = (Math.abs(defaultLeftAxisOptions.labels.x) * 2);
             var distance = horiz ?
-                gridOptions.cellHeight || labelPadding + maxLabelDimensions.height :
+                (gridOptions.cellHeight ||
+                    labelPadding + maxLabelDimensions.height) :
                 labelPadding + maxLabelDimensions.width;
             if (isArray(e.tickSize)) {
                 e.tickSize[0] = distance;
@@ -669,7 +678,7 @@ var GridAxis;
         var userOptions = e.userOptions || {};
         var gridOptions = userOptions.grid || {};
         if (gridOptions.enabled && defined(gridOptions.borderColor)) {
-            userOptions.tickColor = userOptions.lineColor = gridOptions.borderColor;
+            userOptions.tickColor = userOptions.lineColor = (gridOptions.borderColor);
         }
         if (!axis.grid) {
             axis.grid = new Additions(axis);
@@ -891,7 +900,8 @@ var GridAxis;
             var parentAxis = columnIndex ? axis.linkedParent : axis;
             var thisIndex = -1, lastIndex = 0;
             chart[axis.coll].forEach(function (otherAxis, index) {
-                if (otherAxis.side === axis.side && !otherAxis.options.isInternal) {
+                if (otherAxis.side === axis.side &&
+                    !otherAxis.options.isInternal) {
                     lastIndex = index;
                     if (otherAxis === parentAxis) {
                         // Get the index of the axis in question
@@ -900,17 +910,17 @@ var GridAxis;
                 }
             });
             return (lastIndex === thisIndex &&
-                (isNumber(columnIndex) ? columns.length === columnIndex : true));
+                (isNumber(columnIndex) ?
+                    columns.length === columnIndex :
+                    true));
         };
         /**
          * Add extra border based on the provided path.
-         *  *
          * @private
-         *
          * @param {SVGPath} path
          * The path of the border.
-         *
          * @return {Highcharts.SVGElement}
+         * Border
          */
         Additions.prototype.renderBorder = function (path) {
             var axis = this.axis, renderer = axis.chart.renderer, options = axis.options, extraBorderLine = renderer.path(path)

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.3.1 (2021-11-05)
+ * @license Highcharts Gantt JS v9.3.2 (2021-11-29)
  *
  * Pathfinder
  *
@@ -1005,11 +1005,11 @@
              *        The radius of the marker, to calculate the additional distance to
              *        the center of the marker.
              *
-             * @param {object} anchor
+             * @param {Object} anchor
              *        The anchor point of the path and marker as an object with x/y
              *        properties.
              *
-             * @return {object}
+             * @return {Object}
              *         The marker vector as an object with x/y properties.
              */
             getMarkerVector: function (radians, markerRadius, anchor) {
@@ -1162,7 +1162,7 @@
          * @private
          * @function pointWithinObstacle
          *
-         * @param {object} obstacle
+         * @param {Object} obstacle
          *        Obstacle to test.
          *
          * @param {Highcharts.Point} point
@@ -1234,10 +1234,10 @@
          * @private
          * @function limitObstacleToBounds
          *
-         * @param {object} obstacle
+         * @param {Object} obstacle
          *        Obstacle to limit.
          *
-         * @param {object} bounds
+         * @param {Object} bounds
          *        Bounds to use as limit.
          *
          * @return {void}
@@ -1260,7 +1260,7 @@
          * @param {Highcharts.PositionObject} end
          *        Ending coordinate, object with x/y props.
          *
-         * @return {object}
+         * @return {Object}
          *         An object with the SVG path in Array form as accepted by the SVG
          *         renderer, as well as an array of new obstacles making up this
          *         path.
@@ -1287,14 +1287,14 @@
          * @param {Highcharts.PositionObject} end
          *        Ending coordinate, object with x/y props.
          *
-         * @param {object} options
+         * @param {Object} options
          *        Options for the algorithm:
          *        - chartObstacles: Array of chart obstacles to avoid
          *        - startDirectionX: Optional. True if starting in the X direction.
          *          If not provided, the algorithm starts in the direction that is
          *          the furthest between start/end.
          *
-         * @return {object}
+         * @return {Object}
          *         An object with the SVG path in Array form as accepted by the SVG
          *         renderer, as well as an array of new obstacles making up this
          *         path.
@@ -1419,7 +1419,7 @@
          * @param {Highcharts.PositionObject} end
          *        Ending coordinate, object with x/y props.
          *
-         * @param {object} options
+         * @param {Object} options
          *        Options for the algorithm.
          *        - chartObstacles:  Array of chart obstacles to avoid
          *        - lineObstacles:   Array of line obstacles to jump over
@@ -1431,7 +1431,7 @@
          *                           direction that is the furthest between
          *                           start/end.
          *
-         * @return {object}
+         * @return {Object}
          *         An object with the SVG path in Array form as accepted by the SVG
          *         renderer, as well as an array of new obstacles making up this
          *         path.
@@ -1566,19 +1566,19 @@
              * @private
              * @function
              *
-             * @param {object} obstacle
+             * @param {Object} obstacle
              *        Obstacle to dodge/escape.
              *
-             * @param {object} fromPoint
+             * @param {Object} fromPoint
              *        Point with x/y props that's dodging/escaping.
              *
-             * @param {object} toPoint
+             * @param {Object} toPoint
              *        Goal point.
              *
              * @param {boolean} dirIsX
              *        Dodge in X dimension.
              *
-             * @param {object} bounds
+             * @param {Object} bounds
              *        Hard and soft boundaries.
              *
              * @return {boolean}
@@ -2290,7 +2290,8 @@
                             // For Gantt series the connect could be
                             // defined as a dependency
                             if (ganttPointOptions && ganttPointOptions.dependency) {
-                                ganttPointOptions.connect = ganttPointOptions.dependency;
+                                ganttPointOptions.connect = ganttPointOptions
+                                    .dependency;
                             }
                             var to,
                                 connects = (point.options &&
@@ -2392,7 +2393,7 @@
              *
              * @function Highcharts.Pathfinder#getChartObstacles
              *
-             * @param {object} options
+             * @param {Object} options
              *        Options for the calculation. Currenlty only
              *        options.algorithmMargin.
              *
@@ -2451,7 +2452,7 @@
              * @param {Array<object>} obstacles
              *        An array of obstacles to inspect.
              *
-             * @return {object}
+             * @return {Object}
              *         The calculated metrics, as an object with maxHeight and maxWidth
              *         properties.
              */
@@ -2581,11 +2582,11 @@
              *        The radius of the marker, to calculate the additional distance to
              *        the center of the marker.
              *
-             * @param {object} anchor
+             * @param {Object} anchor
              *        The anchor point of the path and marker as an object with x/y
              *        properties.
              *
-             * @return {object}
+             * @return {Object}
              *         The marker vector as an object with x/y properties.
              */
             getMarkerVector: function (radians, markerRadius, anchor) {

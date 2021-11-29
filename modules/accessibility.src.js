@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Accessibility module
  *
@@ -88,13 +88,9 @@
              *
              * @private
              * @function formatExtendedStatement
-             *
              * @param {string} statement
-             *
              * @param {Highcharts.Dictionary<*>} ctx
              * Context to apply to the format string.
-             *
-             * @return {string}
              */
             function formatExtendedStatement(statement, ctx) {
                 var eachStart = statement.indexOf('#each('), pluralStart = statement.indexOf('#plural('), indexStart = statement.indexOf('['), indexEnd = statement.indexOf(']');
@@ -121,7 +117,7 @@
                 }
                 // Dealing with a plural-function?
                 if (pluralStart > -1) {
-                    var pluralEnd = statement.slice(pluralStart).indexOf(')') + pluralStart, pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(ctx[pluralArguments[0]]);
+                    var pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(ctx[pluralArguments[0]]);
                     switch (num) {
                         case 0:
                             result = pick(pluralArguments[4], pluralArguments[1]);
@@ -456,8 +452,6 @@
         }
         /**
          * @private
-         * @param {string} str
-         * @return {string}
          */
         function escapeStringForHTML(str) {
             return str
@@ -470,18 +464,14 @@
         }
         /**
          * Get an element by ID
-         * @param {string} id
          * @private
-         * @return {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement|null}
          */
         function getElement(id) {
             return doc.getElementById(id);
         }
         /**
          * Get a fake mouse event of a given type
-         * @param {string} type
          * @private
-         * @return {global.MouseEvent}
          */
         function getFakeMouseEvent(type, position) {
             var pos = position || {
@@ -596,8 +586,6 @@
         /**
          * Utility function. Reverses child nodes of a DOM element.
          * @private
-         * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} node
-         * @return {void}
          */
         function reverseChildNodes(node) {
             var i = node.childNodes.length;
@@ -609,8 +597,6 @@
          * Used for aria-label attributes, painting on a canvas will fail if the
          * text contains tags.
          * @private
-         * @param {string} str
-         * @return {string}
          */
         function stripHTMLTagsFromString(str) {
             return typeof str === 'string' ?
@@ -620,8 +606,6 @@
          * Utility function for hiding an element visually, but still keeping it
          * available to screen reader users.
          * @private
-         * @param {Highcharts.HTMLDOMElement} element
-         * @return {void}
          */
         function visuallyHideElement(element) {
             css(element, {
@@ -685,12 +669,14 @@
         /* eslint-disable valid-jsdoc */
         /**
          * Fire an event on an element that is either wrapped by Highcharts,
-         * or a DOM element
+         * or a DOM element.
+         * @private
          */
         function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
             var type = eventObject.type;
             var hcEvents = el.hcEvents;
-            if (doc.createEvent && (el.dispatchEvent || el.fireEvent)) {
+            if (doc.createEvent &&
+                (el.dispatchEvent || el.fireEvent)) {
                 if (el.dispatchEvent) {
                     el.dispatchEvent(eventObject);
                 }
@@ -706,7 +692,7 @@
             }
         }
         /**
-         * @return {string}
+         * @private
          */
         function getChartTitle(chart) {
             return stripHTMLTags(chart.options.title.text ||
@@ -714,8 +700,7 @@
         }
         /**
          * Return string with the axis name/title.
-         * @param {Highcharts.Axis} axis
-         * @return {string}
+         * @private
          */
         function getAxisDescription(axis) {
             return axis && (axis.userOptions && axis.userOptions.accessibility &&
@@ -728,8 +713,11 @@
         }
         /**
          * Return string with text description of the axis range.
-         * @param {Highcharts.Axis} axis The axis to get range desc of.
-         * @return {string} A string with the range description for the axis.
+         * @private
+         * @param {Highcharts.Axis} axis
+         * The axis to get range desc of.
+         * @return {string}
+         * A string with the range description for the axis.
          */
         function getAxisRangeDescription(axis) {
             var axisOptions = axis.options || {};
@@ -752,8 +740,7 @@
         }
         /**
          * Describe the range of a category axis.
-         * @param {Highcharts.Axis} axis
-         * @return {string}
+         * @private
          */
         function getCategoryAxisRangeDesc(axis) {
             var chart = axis.chart;
@@ -768,8 +755,7 @@
         }
         /**
          * Describe the length of the time window shown on an axis.
-         * @param {Highcharts.Axis} axis
-         * @return {string}
+         * @private
          */
         function getAxisTimeLengthDesc(axis) {
             var chart = axis.chart,
@@ -796,14 +782,14 @@
         }
         /**
          * Describe an axis from-to range.
-         * @param {Highcharts.Axis} axis
-         * @return {string}
+         * @private
          */
         function getAxisFromToDescription(axis) {
             var chart = axis.chart,
-                dateRangeFormat = (chart.options &&
-                    chart.options.accessibility &&
-                    chart.options.accessibility.screenReaderSection.axisRangeDateFormat ||
+                options = chart.options,
+                dateRangeFormat = (options &&
+                    options.accessibility &&
+                    options.accessibility.screenReaderSection.axisRangeDateFormat ||
                     ''),
                 format = function (axisKey) {
                     return axis.dateTime ? chart.time.dateFormat(dateRangeFormat,
@@ -852,8 +838,6 @@
          * Remove aria-hidden from element. Also unhides parents of the element, and
          * hides siblings that are not explicitly unhidden.
          * @private
-         * @param {Highcharts.Chart} chart
-         * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} element
          */
         function unhideChartElementFromAT(chart, element) {
             element.setAttribute('aria-hidden', false);
@@ -875,9 +859,6 @@
         /**
          * Hide series from screen readers.
          * @private
-         * @param {Highcharts.Series} series
-         * The series to hide
-         * @return {void}
          */
         function hideSeriesFromAT(series) {
             var seriesEl = getSeriesA11yElement(series);
@@ -888,9 +869,6 @@
         /**
          * Get series objects by series name.
          * @private
-         * @param {Highcharts.Chart} chart
-         * @param {string} name
-         * @return {Array<Highcharts.Series>}
          */
         function getSeriesFromName(chart, name) {
             if (!name) {
@@ -903,10 +881,6 @@
         /**
          * Get point in a series from x/y values.
          * @private
-         * @param {Array<Highcharts.Series>} series
-         * @param {number} x
-         * @param {number} y
-         * @return {Highcharts.Point|undefined}
          */
         function getPointFromXY(series, x, y) {
             var i = series.length,
@@ -923,9 +897,6 @@
         /**
          * Get relative position of point on an x/y axis from 0 to 1.
          * @private
-         * @param {Highcharts.Axis} axis
-         * @param {Highcharts.Point} point
-         * @return {number}
          */
         function getRelativePointAxisPosition(axis, point) {
             if (!defined(axis.dataMin) || !defined(axis.dataMax)) {
@@ -941,7 +912,6 @@
         /**
          * Get relative position of point on an x/y axis from 0 to 1.
          * @private
-         * @param {Highcharts.Point} point
          */
         function scrollToPoint(point) {
             var xAxis = point.series.xAxis,
@@ -1229,7 +1199,7 @@
             init: function () { },
             /**
              * Get keyboard navigation handler for this component.
-             * @return {Highcharts.KeyboardNavigationHandler}
+             * @private
              */
             getKeyboardNavigation: function () { },
             /**
@@ -1514,7 +1484,7 @@
             };
             /**
              * Empty handler to just set focus on chart
-             * @return {Highcharts.KeyboardNavigationHandler}
+             * @private
              */
             ContainerComponent.prototype.getKeyboardNavigation = function () {
                 var chart = this.chart;
@@ -1712,11 +1682,6 @@
                 // For text elements, apply x and y offset, #11397.
                 /**
                  * @private
-                 * @function
-                 *
-                 * @param {Highcharts.SVGElement} text
-                 *
-                 * @return {TextAnchorCorrectionObject}
                  */
                 function getTextAnchorCorrection(text) {
                     var posXCorrection = 0,
@@ -1912,12 +1877,12 @@
                     clearTimeout(this.clearAnnouncementRegionTimer);
                 }
                 this.clearAnnouncementRegionTimer = setTimeout(function () {
-                    _this.announceRegion.innerHTML = '';
+                    _this.announceRegion.innerHTML = AST.emptyHTML;
                     delete _this.clearAnnouncementRegionTimer;
                 }, 1000);
             };
             Announcer.prototype.addAnnounceRegion = function (type) {
-                var chartContainer = this.chart.announcerContainer || this.createAnnouncerContainer(),
+                var chartContainer = (this.chart.announcerContainer || this.createAnnouncerContainer()),
                     div = this.domElementProvider.createElement('div');
                 attr(div, {
                     'aria-hidden': false,
@@ -1994,7 +1959,7 @@
          * Get the text of an annotation label.
          *
          * @private
-         * @param {object} label The annotation label object
+         * @param {Object} label The annotation label object
          * @return {string} The text in the label.
          */
         function getLabelText(label) {
@@ -2010,7 +1975,7 @@
          * Describe an annotation label.
          *
          * @private
-         * @param {object} label The annotation label object to describe
+         * @param {Object} label The annotation label object to describe
          * @return {string} The description for the label.
          */
         function getAnnotationLabelDescription(label) {
@@ -2039,10 +2004,14 @@
             var pointValueDescriptions = points
                     .filter(function (p) { return !!p.graphic; }) // Filter out mock points
                     .map(getValueDesc)
-                    .filter(function (desc) { return !!desc; }); // Filter out points we can't describe
-                var numPoints = pointValueDescriptions.length;
-            var pointsSelector = numPoints > 1 ? 'MultiplePoints' : numPoints ? 'SinglePoint' : 'NoPoints';
-            var langFormatStr = 'accessibility.screenReaderSection.annotations.description' + pointsSelector;
+                    // Filter out points we can't describe
+                    .filter(function (desc) { return !!desc; });
+            var numPoints = pointValueDescriptions.length;
+            var pointsSelector = numPoints > 1 ?
+                    'MultiplePoints' : numPoints ?
+                    'SinglePoint' : 'NoPoints';
+            var langFormatStr = ('accessibility.screenReaderSection.annotations.description' +
+                    pointsSelector);
             var context = {
                     annotationText: labelText,
                     annotation: label,
@@ -2311,7 +2280,8 @@
                     after: {
                         element: null,
                         buildContent: function (chart) {
-                            var formatter = chart.options.accessibility.screenReaderSection
+                            var formatter = chart.options.accessibility
+                                    .screenReaderSection
                                     .afterChartFormatter;
                             return formatter ? formatter(chart) :
                                 component.defaultAfterChartFormatter();
@@ -2425,11 +2395,11 @@
             };
             /**
              * @private
-             * @return {string}
              */
             InfoRegionsComponent.prototype.defaultBeforeChartFormatter = function () {
-                var chart = this.chart;
-                var format = chart.options.accessibility.screenReaderSection.beforeChartFormat;
+                var chart = this.chart,
+                    format = chart.options.accessibility.screenReaderSection
+                        .beforeChartFormat;
                 if (!format) {
                     return '';
                 }
@@ -2467,11 +2437,11 @@
             };
             /**
              * @private
-             * @return {string}
              */
             InfoRegionsComponent.prototype.defaultAfterChartFormatter = function () {
                 var chart = this.chart;
-                var format = chart.options.accessibility.screenReaderSection.afterChartFormat;
+                var format = chart.options.accessibility.screenReaderSection
+                        .afterChartFormat;
                 if (!format) {
                     return '';
                 }
@@ -2483,7 +2453,6 @@
             };
             /**
              * @private
-             * @return {string}
              */
             InfoRegionsComponent.prototype.getLinkedDescription = function () {
                 var el = this.linkedDescriptionElement,
@@ -2492,7 +2461,6 @@
             };
             /**
              * @private
-             * @return {string}
              */
             InfoRegionsComponent.prototype.getLongdescText = function () {
                 var chartOptions = this.chart.options,
@@ -2506,7 +2474,6 @@
             };
             /**
              * @private
-             * @return {string}
              */
             InfoRegionsComponent.prototype.getTypeDescriptionText = function () {
                 var chart = this.chart;
@@ -2516,8 +2483,6 @@
             };
             /**
              * @private
-             * @param {string} buttonId
-             * @return {string}
              */
             InfoRegionsComponent.prototype.getDataTableButtonText = function (buttonId) {
                 var chart = this.chart,
@@ -2527,8 +2492,6 @@
             };
             /**
              * @private
-             * @param {string} buttonId
-             * @return {string}
              */
             InfoRegionsComponent.prototype.getSonifyButtonText = function (buttonId) {
                 var chart = this.chart;
@@ -2542,7 +2505,6 @@
             };
             /**
              * @private
-             * @return {string}
              */
             InfoRegionsComponent.prototype.getSubtitleText = function () {
                 var subtitle = (this.chart.options.subtitle);
@@ -2550,7 +2512,6 @@
             };
             /**
              * @private
-             * @return {string}
              */
             InfoRegionsComponent.prototype.getEndOfChartMarkerText = function () {
                 var chart = this.chart, markerText = chart.langFormat('accessibility.screenReaderSection.endOfChartMarker', { chart: chart }), id = 'highcharts-end-of-chart-marker-' + chart.index;
@@ -2613,7 +2574,8 @@
                     el.setAttribute('tabindex', -1);
                     el.onclick = function (e) {
                         var onPlayAsSoundClick = (chart.options.accessibility &&
-                                chart.options.accessibility.screenReaderSection.onPlayAsSoundClick);
+                                chart.options.accessibility.screenReaderSection
+                                    .onPlayAsSoundClick);
                         (onPlayAsSoundClick || defaultHandler).call(this, e, chart);
                     };
                 }
@@ -2640,7 +2602,6 @@
             /**
              * Return object with text description of each of the chart's axes.
              * @private
-             * @return {Highcharts.Dictionary<string>}
              */
             InfoRegionsComponent.prototype.getAxesDescription = function () {
                 var chart = this.chart,
@@ -2661,8 +2622,6 @@
             };
             /**
              * @private
-             * @param {string} collectionKey
-             * @return {string}
              */
             InfoRegionsComponent.prototype.getAxisDescriptionText = function (collectionKey) {
                 var chart = this.chart;
@@ -2736,17 +2695,13 @@
         /* eslint-disable valid-jsdoc */
         /**
          * Get the wrapped export button element of a chart.
-         *
          * @private
-         * @param {Highcharts.Chart} chart
-         * @returns {Highcharts.SVGElement}
          */
         function getExportMenuButtonElement(chart) {
             return chart.exportSVGElements && chart.exportSVGElements[0];
         }
         /**
          * @private
-         * @param {Highcharts.Chart} chart
          */
         function exportingShouldHaveA11y(chart) {
             var exportingOpts = chart.options.exporting,
@@ -2895,7 +2850,7 @@
             };
             /**
              * Get keyboard navigation handler for this component.
-             * @return {Highcharts.KeyboardNavigationHandler}
+             * @private
              */
             MenuComponent.prototype.getKeyboardNavigation = function () {
                 var keys = this.keyCodes,
@@ -3094,10 +3049,6 @@
              *
              * @private
              * @function Highcharts.Chart#highlightExportItem
-             *
-             * @param {number} ix
-             *
-             * @return {boolean}
              */
             function chartHighlightExportItem(ix) {
                 var listItem = this.exportDivElements && this.exportDivElements[ix];
@@ -3129,7 +3080,6 @@
              *
              * @private
              * @function Highcharts.Chart#highlightLastExportItem
-             * @return {boolean}
              */
             function chartHighlightLastExportItem() {
                 var chart = this;
@@ -3184,7 +3134,7 @@
          * @class
          * @param {Highcharts.Chart} chart
          *        Chart object
-         * @param {object} components
+         * @param {Object} components
          *        Map of component names to AccessibilityComponent objects.
          * @name Highcharts.KeyboardNavigation
          */
@@ -3220,7 +3170,7 @@
              * @private
              * @param {Highcharts.Chart} chart
              *        Chart object
-             * @param {object} components
+             * @param {Object} components
              *        Map of component names to AccessibilityComponent objects.
              */
             KeyboardNavigation.prototype.init = function (chart, components) {
@@ -3264,7 +3214,8 @@
                     order.length) {
                     // We (still) have keyboard navigation. Update module list
                     this.modules = order.reduce(function (modules, componentName) {
-                        var navModules = components[componentName].getKeyboardNavigation();
+                        var navModules = components[componentName]
+                                .getKeyboardNavigation();
                         return modules.concat(navModules);
                     }, []);
                     this.updateExitAnchor();
@@ -3411,7 +3362,7 @@
              * @private
              */
             KeyboardNavigation.prototype.updateExitAnchor = function () {
-                var endMarkerId = 'highcharts-end-of-chart-marker-' + this.chart.index,
+                var endMarkerId = ('highcharts-end-of-chart-marker-' + this.chart.index),
                     endMarker = getElement(endMarkerId);
                 this.removeExitAnchor();
                 if (endMarker) {
@@ -3612,7 +3563,7 @@
 
         return KeyboardNavigation;
     });
-    _registerModule(_modules, 'Accessibility/Components/LegendComponent.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/HTMLUtilities.js'], _modules['Accessibility/Utils/ChartUtilities.js']], function (A, Chart, H, Legend, U, AccessibilityComponent, KeyboardNavigationHandler, HTMLUtilities, ChartUtils) {
+    _registerModule(_modules, 'Accessibility/Components/LegendComponent.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Globals.js'], _modules['Core/Legend/Legend.js'], _modules['Core/Utilities.js'], _modules['Accessibility/AccessibilityComponent.js'], _modules['Accessibility/KeyboardNavigationHandler.js'], _modules['Accessibility/Utils/ChartUtilities.js'], _modules['Accessibility/Utils/HTMLUtilities.js']], function (A, H, Legend, U, AccessibilityComponent, KeyboardNavigationHandler, CU, HU) {
         /* *
          *
          *  (c) 2009-2021 Øystein Moseng
@@ -3624,18 +3575,38 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var animObject = A.animObject;
         var addEvent = U.addEvent,
-            extend = U.extend,
             fireEvent = U.fireEvent,
             isNumber = U.isNumber,
             pick = U.pick,
             syncTimeout = U.syncTimeout;
-        var stripHTMLTags = HTMLUtilities.stripHTMLTagsFromString,
-            addClass = HTMLUtilities.addClass,
-            removeClass = HTMLUtilities.removeClass;
-        var getChartTitle = ChartUtils.getChartTitle;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+        var getChartTitle = CU.getChartTitle;
+        var stripHTMLTags = HU.stripHTMLTagsFromString,
+            addClass = HU.addClass,
+            removeClass = HU.removeClass;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
         /**
          * @private
          */
@@ -3656,47 +3627,11 @@
                 !(chart.colorAxis && chart.colorAxis.length) &&
                 legendA11yOptions.enabled !== false);
         }
-        /**
-         * Highlight legend item by index.
+        /* *
          *
-         * @private
-         * @function Highcharts.Chart#highlightLegendItem
+         *  Class
          *
-         * @param {number} ix
-         *
-         * @return {boolean}
-         */
-        Chart.prototype.highlightLegendItem = function (ix) {
-            var items = this.legend.allItems;
-            var oldIx = this.accessibility &&
-                    this.accessibility.components.legend.highlightedLegendItemIx;
-            var itemToHighlight = items[ix];
-            if (itemToHighlight) {
-                if (isNumber(oldIx) && items[oldIx]) {
-                    fireEvent(items[oldIx].legendGroup.element, 'mouseout');
-                }
-                scrollLegendToItem(this.legend, ix);
-                var legendItemProp = itemToHighlight.legendItem;
-                var proxyBtn = itemToHighlight.a11yProxyElement && itemToHighlight.a11yProxyElement.buttonElement;
-                if (legendItemProp && legendItemProp.element && proxyBtn) {
-                    this.setFocusToElement(legendItemProp, proxyBtn);
-                }
-                if (itemToHighlight.legendGroup) {
-                    fireEvent(itemToHighlight.legendGroup.element, 'mouseover');
-                }
-                return true;
-            }
-            return false;
-        };
-        // Keep track of pressed state for legend items
-        addEvent(Legend, 'afterColorizeItem', function (e) {
-            var chart = this.chart,
-                a11yOptions = chart.options.accessibility,
-                legendItem = e.item;
-            if (a11yOptions.enabled && legendItem && legendItem.a11yProxyElement) {
-                legendItem.a11yProxyElement.buttonElement.setAttribute('aria-pressed', e.visible ? 'true' : 'false');
-            }
-        });
+         * */
         /**
          * The LegendComponent class
          *
@@ -3704,18 +3639,36 @@
          * @class
          * @name Highcharts.LegendComponent
          */
-        var LegendComponent = function () { };
-        LegendComponent.prototype = new AccessibilityComponent();
-        extend(LegendComponent.prototype, /** @lends Highcharts.LegendComponent */ {
+        var LegendComponent = /** @class */ (function (_super) {
+                __extends(LegendComponent, _super);
+            function LegendComponent() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.highlightedLegendItemIx = NaN;
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
             /**
              * Init the component
              * @private
              */
-            init: function () {
+            LegendComponent.prototype.init = function () {
                 var component = this;
                 this.recreateProxies();
                 // Note: Chart could create legend dynamically, so events can not be
                 // tied to the component's chart's current legend.
+                // @todo 1. attach component to created legends
+                // @todo 2. move listeners to composition and access `this.component`
                 this.addEvent(Legend, 'afterScroll', function () {
                     if (this.chart === component.chart) {
                         component.proxyProvider.updateGroupProxyElementPositions('legend');
@@ -3734,15 +3687,16 @@
                     if (this.chart === component.chart &&
                         this.chart.renderer &&
                         component.recreateProxies()) {
-                        syncTimeout(function () { return component.proxyProvider.updateGroupProxyElementPositions('legend'); }, animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
+                        syncTimeout(function () { return component.proxyProvider
+                            .updateGroupProxyElementPositions('legend'); }, animObject(pick(this.chart.renderer.globalAnimation, true)).duration);
                     }
                 });
-            },
+            };
             /**
              * Update visibility of legend items when using paged legend
              * @private
              */
-            updateLegendItemProxyVisibility: function () {
+            LegendComponent.prototype.updateLegendItemProxyVisibility = function () {
                 var chart = this.chart;
                 var legend = chart.legend;
                 var items = legend.allItems || [];
@@ -3756,8 +3710,11 @@
                         if (hasPages) {
                             var itemPage = item.pageIx || 0;
                             var y = item._legendItemPos ? item._legendItemPos[1] : 0;
-                            var h = item.legendItem ? Math.round(item.legendItem.getBBox().height) : 0;
-                            hide = y + h - legend.pages[itemPage] > clipHeight || itemPage !== curPage - 1;
+                            var h = item.legendItem ?
+                                    Math.round(item.legendItem.getBBox().height) :
+                                    0;
+                            hide = y + h - legend.pages[itemPage] > clipHeight ||
+                                itemPage !== curPage - 1;
                         }
                         if (hide) {
                             if (chart.styledMode) {
@@ -3773,19 +3730,19 @@
                         }
                     }
                 });
-            },
+            };
             /**
              * @private
              */
-            onChartRender: function () {
+            LegendComponent.prototype.onChartRender = function () {
                 if (!shouldDoLegendA11y(this.chart)) {
                     this.removeProxies();
                 }
-            },
+            };
             /**
              * @private
              */
-            highlightAdjacentLegendPage: function (direction) {
+            LegendComponent.prototype.highlightAdjacentLegendPage = function (direction) {
                 var chart = this.chart;
                 var legend = chart.legend;
                 var curPageIx = legend.currentPage || 1;
@@ -3803,21 +3760,21 @@
                         }
                     }
                 }
-            },
+            };
             /**
              * @private
              */
-            updateProxyPositionForItem: function (item) {
+            LegendComponent.prototype.updateProxyPositionForItem = function (item) {
                 if (item.a11yProxyElement) {
                     item.a11yProxyElement.refreshPosition();
                 }
-            },
+            };
             /**
              * Returns false if legend a11y is disabled and proxies were not created,
              * true otherwise.
              * @private
              */
-            recreateProxies: function () {
+            LegendComponent.prototype.recreateProxies = function () {
                 this.removeProxies();
                 if (shouldDoLegendA11y(this.chart)) {
                     this.addLegendProxyGroup();
@@ -3827,17 +3784,17 @@
                     return true;
                 }
                 return false;
-            },
+            };
             /**
              * @private
              */
-            removeProxies: function () {
+            LegendComponent.prototype.removeProxies = function () {
                 this.proxyProvider.removeGroup('legend');
-            },
+            };
             /**
              * @private
              */
-            updateLegendTitle: function () {
+            LegendComponent.prototype.updateLegendTitle = function () {
                 var chart = this.chart;
                 var legendTitle = stripHTMLTags((chart.legend &&
                         chart.legend.options.title &&
@@ -3851,22 +3808,25 @@
                 this.proxyProvider.updateGroupAttrs('legend', {
                     'aria-label': legendLabel
                 });
-            },
+            };
             /**
              * @private
              */
-            addLegendProxyGroup: function () {
+            LegendComponent.prototype.addLegendProxyGroup = function () {
                 var a11yOptions = this.chart.options.accessibility;
-                var groupRole = a11yOptions.landmarkVerbosity === 'all' ? 'region' : null;
+                var groupRole = a11yOptions.landmarkVerbosity === 'all' ?
+                        'region' : null;
                 this.proxyProvider.addGroup('legend', 'ul', {
+                    // Filled by updateLegendTitle, to keep up to date without
+                    // recreating group
                     'aria-label': '_placeholder_',
                     role: groupRole
                 });
-            },
+            };
             /**
              * @private
              */
-            proxyLegendItems: function () {
+            LegendComponent.prototype.proxyLegendItems = function () {
                 var component = this,
                     items = (this.chart.legend &&
                         this.chart.legend.allItems || []);
@@ -3875,12 +3835,12 @@
                         component.proxyLegendItem(item);
                     }
                 });
-            },
+            };
             /**
              * @private
              * @param {Highcharts.BubbleLegendItem|Point|Highcharts.Series} item
              */
-            proxyLegendItem: function (item) {
+            LegendComponent.prototype.proxyLegendItem = function (item) {
                 if (!item.legendItem || !item.legendGroup) {
                     return;
                 }
@@ -3895,17 +3855,19 @@
                         'aria-label': itemLabel
                     };
                 // Considers useHTML
-                var proxyPositioningElement = item.legendGroup.div ? item.legendItem : item.legendGroup;
+                var proxyPositioningElement = item.legendGroup.div ?
+                        item.legendItem :
+                        item.legendGroup;
                 item.a11yProxyElement = this.proxyProvider.addProxyElement('legend', {
                     click: item.legendItem,
                     visual: proxyPositioningElement.element
                 }, attribs);
-            },
+            };
             /**
              * Get keyboard navigation handler for this component.
-             * @return {Highcharts.KeyboardNavigationHandler}
+             * @private
              */
-            getKeyboardNavigation: function () {
+            LegendComponent.prototype.getKeyboardNavigation = function () {
                 var keys = this.keyCodes,
                     component = this,
                     chart = this.chart;
@@ -3946,7 +3908,7 @@
                         chart.legend.allItems.forEach(function (item) { return item.setState('', true); });
                     }
                 });
-            },
+            };
             /**
              * @private
              * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
@@ -3954,7 +3916,7 @@
              * @return {number}
              * Response code
              */
-            onKbdArrowKey: function (keyboardNavigationHandler, keyCode) {
+            LegendComponent.prototype.onKbdArrowKey = function (keyboardNavigationHandler, keyCode) {
                 var keys = this.keyCodes,
                     response = keyboardNavigationHandler.response,
                     chart = this.chart,
@@ -3973,24 +3935,23 @@
                 }
                 // No wrap, move
                 return response[direction > 0 ? 'next' : 'prev'];
-            },
+            };
             /**
              * @private
              * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
              * @return {number} Response code
              */
-            onKbdClick: function (keyboardNavigationHandler) {
+            LegendComponent.prototype.onKbdClick = function (keyboardNavigationHandler) {
                 var legendItem = this.chart.legend.allItems[this.highlightedLegendItemIx];
                 if (legendItem && legendItem.a11yProxyElement) {
                     legendItem.a11yProxyElement.click();
                 }
                 return keyboardNavigationHandler.response.success;
-            },
+            };
             /**
              * @private
-             * @return {boolean|undefined}
              */
-            shouldHaveLegendNavigation: function () {
+            LegendComponent.prototype.shouldHaveLegendNavigation = function () {
                 var chart = this.chart,
                     legendOptions = chart.options.legend || {},
                     hasLegend = chart.legend && chart.legend.allItems,
@@ -4002,19 +3963,103 @@
                     legendA11yOptions.enabled &&
                     legendA11yOptions.keyboardNavigation &&
                     legendA11yOptions.keyboardNavigation.enabled);
-            },
+            };
             /**
              * @private
              * @param {number} direction
              */
-            onKbdNavigationInit: function (direction) {
+            LegendComponent.prototype.onKbdNavigationInit = function (direction) {
                 var chart = this.chart,
                     lastIx = chart.legend.allItems.length - 1,
                     ixToHighlight = direction > 0 ? 0 : lastIx;
                 chart.highlightLegendItem(ixToHighlight);
                 this.highlightedLegendItemIx = ixToHighlight;
+            };
+            return LegendComponent;
+        }(AccessibilityComponent));
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
+        (function (LegendComponent) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            var composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /* eslint-disable valid-jsdoc */
+            /**
+             * Highlight legend item by index.
+             * @private
+             */
+            function chartHighlightLegendItem(ix) {
+                var items = this.legend.allItems;
+                var oldIx = this.accessibility &&
+                        this.accessibility.components.legend.highlightedLegendItemIx;
+                var itemToHighlight = items[ix];
+                if (itemToHighlight) {
+                    if (isNumber(oldIx) && items[oldIx]) {
+                        fireEvent(items[oldIx].legendGroup.element, 'mouseout');
+                    }
+                    scrollLegendToItem(this.legend, ix);
+                    var legendItemProp = itemToHighlight.legendItem;
+                    var proxyBtn = itemToHighlight.a11yProxyElement &&
+                            itemToHighlight.a11yProxyElement.buttonElement;
+                    if (legendItemProp && legendItemProp.element && proxyBtn) {
+                        this.setFocusToElement(legendItemProp, proxyBtn);
+                    }
+                    if (itemToHighlight.legendGroup) {
+                        fireEvent(itemToHighlight.legendGroup.element, 'mouseover');
+                    }
+                    return true;
+                }
+                return false;
             }
-        });
+            /**
+             * @private
+             */
+            function compose(ChartClass, LegendClass) {
+                if (composedClasses.indexOf(ChartClass) === -1) {
+                    composedClasses.push(ChartClass);
+                    var chartProto = ChartClass.prototype;
+                    chartProto.highlightLegendItem = chartHighlightLegendItem;
+                }
+                if (composedClasses.indexOf(LegendClass) === -1) {
+                    composedClasses.push(LegendClass);
+                    addEvent(LegendClass, 'afterColorizeItem', legendOnAfterColorizeItem);
+                }
+            }
+            LegendComponent.compose = compose;
+            /**
+             * Keep track of pressed state for legend items.
+             * @private
+             */
+            function legendOnAfterColorizeItem(e) {
+                var chart = this.chart,
+                    a11yOptions = chart.options.accessibility,
+                    legendItem = e.item;
+                if (a11yOptions.enabled && legendItem && legendItem.a11yProxyElement) {
+                    legendItem.a11yProxyElement.buttonElement.setAttribute('aria-pressed', e.visible ? 'true' : 'false');
+                }
+            }
+        })(LegendComponent || (LegendComponent = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return LegendComponent;
     });
@@ -4093,8 +4138,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.Point} point
-         * @return {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement|undefined}
          */
         function addDummyPointElement(point) {
             var series = point.series,
@@ -4125,8 +4168,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.Series} series
-         * @return {boolean}
          */
         function hasMorePointsThanDescriptionThreshold(series) {
             var chartA11yOptions = series.chart.options.accessibility,
@@ -4137,8 +4178,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.Series} series
-         * @return {boolean}
          */
         function shouldSetScreenReaderPropsOnPoints(series) {
             var seriesA11yOptions = series.options.accessibility || {};
@@ -4147,8 +4186,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.Series} series
-         * @return {boolean}
          */
         function shouldSetKeyboardNavPropsOnPoints(series) {
             var chartA11yOptions = series.chart.options.accessibility,
@@ -4159,8 +4196,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.Series} series
-         * @return {boolean}
          */
         function shouldDescribeSeriesElement(series) {
             var chart = series.chart,
@@ -4175,15 +4210,13 @@
         }
         /**
          * @private
-         * @param {Highcharts.Point} point
-         * @param {number} value
-         * @return {string}
          */
         function pointNumberToString(point, value) {
             var series = point.series,
                 chart = series.chart,
                 a11yPointOptions = chart.options.accessibility.point || {},
-                seriesA11yPointOptions = series.options.accessibility && series.options.accessibility.point || {},
+                seriesA11yPointOptions = series.options.accessibility &&
+                    series.options.accessibility.point || {},
                 tooltipOptions = series.tooltipOptions || {},
                 lang = chart.options.lang;
             if (isNumber(value)) {
@@ -4196,8 +4229,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.Series} series
-         * @return {string}
          */
         function getSeriesDescriptionText(series) {
             var seriesA11yOptions = series.options.accessibility || {},
@@ -4209,9 +4240,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.series} series
-         * @param {string} axisCollection
-         * @return {string}
          */
         function getSeriesAxisDescriptionText(series, axisCollection) {
             var axis = series[axisCollection];
@@ -4224,21 +4252,19 @@
          * Get accessible time description for a point on a datetime axis.
          *
          * @private
-         * @function Highcharts.Point#getTimeDescription
-         * @param {Highcharts.Point} point
-         * @return {string|undefined}
-         * The description as string.
          */
         function getPointA11yTimeDescription(point) {
             var series = point.series,
                 chart = series.chart,
-                seriesA11yOptions = series.options.accessibility && series.options.accessibility.point || {},
+                seriesA11yOptions = series.options.accessibility &&
+                    series.options.accessibility.point || {},
                 a11yOptions = chart.options.accessibility.point || {},
                 dateXAxis = series.xAxis && series.xAxis.dateTime;
             if (dateXAxis) {
                 var tooltipDateFormat = dateXAxis.getXDateFormat(point.x || 0,
                     chart.options.tooltip.dateTimeLabelFormats),
-                    dateFormat = seriesA11yOptions.dateFormatter && seriesA11yOptions.dateFormatter(point) ||
+                    dateFormat = seriesA11yOptions.dateFormatter &&
+                        seriesA11yOptions.dateFormatter(point) ||
                         a11yOptions.dateFormatter && a11yOptions.dateFormatter(point) ||
                         seriesA11yOptions.dateFormat ||
                         a11yOptions.dateFormat ||
@@ -4248,8 +4274,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.Point} point
-         * @return {string}
          */
         function getPointXDescription(point) {
             var timeDesc = getPointA11yTimeDescription(point), xAxis = point.series.xAxis || {}, pointCategory = xAxis.categories && defined(point.category) &&
@@ -4259,10 +4283,6 @@
         }
         /**
          * @private
-         * @param {Highcharts.Point} point
-         * @param {string} prefix
-         * @param {string} suffix
-         * @return {string}
          */
         function getPointArrayMapValueDescription(point, prefix, suffix) {
             var pre = prefix || '', suf = suffix || '', keyToValStr = function (key) {
@@ -4275,13 +4295,12 @@
         }
         /**
          * @private
-         * @param {Highcharts.Point} point
-         * @return {string}
          */
         function getPointValue(point) {
             var series = point.series,
                 a11yPointOpts = series.chart.options.accessibility.point || {},
-                seriesA11yPointOpts = series.chart.options.accessibility && series.chart.options.accessibility.point || {},
+                seriesA11yPointOpts = series.chart.options.accessibility &&
+                    series.chart.options.accessibility.point || {},
                 tooltipOptions = series.tooltipOptions || {},
                 valuePrefix = seriesA11yPointOpts.valuePrefix ||
                     a11yPointOpts.valuePrefix ||
@@ -4311,8 +4330,10 @@
          * empty string if none.
          *
          * @private
-         * @param {Highcharts.Point} point The data point to get the annotation info from.
-         * @return {string} Annotation description
+         * @param {Highcharts.Point} point
+         * The data point to get the annotation info from.
+         * @return {string}
+         * Annotation description
          */
         function getPointAnnotationDescription(point) {
             var chart = point.series.chart;
@@ -4325,7 +4346,6 @@
         /**
          * Return string with information about point.
          * @private
-         * @return {string}
          */
         function getPointValueDescription(point) {
             var series = point.series, chart = series.chart, seriesA11yOptions = series.options.accessibility, seriesValueDescFormat = seriesA11yOptions && seriesA11yOptions.point &&
@@ -4344,7 +4364,6 @@
         /**
          * Return string with information about point.
          * @private
-         * @return {string}
          */
         function defaultPointDescriptionFormatter(point) {
             var series = point.series, chart = series.chart, valText = getPointValueDescription(point), description = point.options && point.options.accessibility &&
@@ -4363,7 +4382,8 @@
         function setPointScreenReaderAttribs(point, pointElement) {
             var series = point.series,
                 a11yPointOptions = series.chart.options.accessibility.point || {},
-                seriesPointA11yOptions = series.options.accessibility && series.options.accessibility.point || {},
+                seriesPointA11yOptions = series.options.accessibility &&
+                    series.options.accessibility.point || {},
                 label = stripHTMLTags(seriesPointA11yOptions.descriptionFormatter &&
                     seriesPointA11yOptions.descriptionFormatter(point) ||
                     a11yPointOptions.descriptionFormatter &&
@@ -4408,7 +4428,6 @@
         /**
          * Return string with information about series.
          * @private
-         * @return {string}
          */
         function defaultSeriesDescriptionFormatter(series) {
             var chart = series.chart,
@@ -4444,7 +4463,8 @@
             } /* else do not add role */
             seriesElement.setAttribute('tabindex', '-1');
             if (!series.chart.styledMode) {
-                seriesElement.style.outline = 'none'; // Don't show browser outline on click, despite tabindex
+                // Don't show browser outline on click, despite tabindex
+                seriesElement.style.outline = 'none';
             }
             seriesElement.setAttribute('aria-label', stripHTMLTags(a11yOptions.series.descriptionFormatter &&
                 a11yOptions.series.descriptionFormatter(series) ||
@@ -4581,8 +4601,9 @@
              */
             NewDataAnnouncer.prototype.init = function () {
                 var chart = this.chart;
-                var announceOptions = chart.options.accessibility.announceNewData;
-                var announceType = announceOptions.interruptUser ? 'assertive' : 'polite';
+                var announceOptions = (chart.options.accessibility.announceNewData);
+                var announceType = announceOptions.interruptUser ?
+                        'assertive' : 'polite';
                 this.lastAnnouncementTime = 0;
                 this.dirty = {
                     allSeries: {}
@@ -4649,7 +4670,9 @@
                     }
                     this.queueAnnouncement(Object
                         .keys(this.dirty.allSeries)
-                        .map(function (ix) { return announcer.dirty.allSeries[ix]; }), this.dirty.newSeries, newPoint);
+                        .map(function (ix) {
+                        return announcer.dirty.allSeries[ix];
+                    }), this.dirty.newSeries, newPoint);
                     // Reset
                     this.dirty = {
                         allSeries: {}
@@ -4731,7 +4754,8 @@
                     }
                 }
                 // Default formatter - use lang options
-                var multiple = H.charts && H.charts.length > 1 ? 'Multiple' : 'Single', langKey = newSeries ? 'newSeriesAnnounce' + multiple :
+                var multiple = H.charts && H.charts.length > 1 ?
+                        'Multiple' : 'Single', langKey = newSeries ? 'newSeriesAnnounce' + multiple :
                         newPoint ? 'newPointAnnounce' + multiple : 'newDataAnnounce', chartTitle = getChartTitle(chart);
                 return chart.langFormat('accessibility.announceNewData.' + langKey, {
                     chartTitle: chartTitle,
@@ -4868,13 +4892,17 @@
                     this.chart = chart;
                 this.target = target;
                 this.groupType = groupType;
+                var isListItem = groupType === 'ul';
                 this.eventProvider = new EventProvider();
-                var wrapperEl = groupType === 'ul' ? doc.createElement('li') : null;
+                var wrapperEl = isListItem ? doc.createElement('li') : null;
                 var btnEl = this.buttonElement = doc.createElement('button');
                 if (!chart.styledMode) {
                     this.hideButtonVisually(btnEl);
                 }
                 if (wrapperEl) {
+                    if (isListItem && !chart.styledMode) {
+                        wrapperEl.style.listStyle = 'none';
+                    }
                     wrapperEl.appendChild(btnEl);
                     this.element = wrapperEl;
                 }
@@ -4901,10 +4929,11 @@
                 fireEventOnWrappedOrUnwrappedElement(this.target.click, fakeEventObject);
             };
             /**
-             * Update the target to be proxied.
-             * The position and events are updated to match the new target.
+             * Update the target to be proxied. The position and events are updated to
+             * match the new target.
              * @param target The new target definition
-             * @param attributes New HTML attributes to apply to the button. Set an attribute to null to remove.
+             * @param attributes New HTML attributes to apply to the button. Set an
+             * attribute to null to remove.
              */
             ProxyElement.prototype.updateTarget = function (target, attributes) {
                 this.target = target;
@@ -4940,7 +4969,7 @@
              * Update the CSS class name to match target
              */
             ProxyElement.prototype.updateCSSClassName = function () {
-                var stringHasNoTooltip = function (s) { return s.indexOf('highcharts-no-tooltip') > -1; };
+                var stringHasNoTooltip = function (s) { return (s.indexOf('highcharts-no-tooltip') > -1); };
                 var legend = this.chart.legend;
                 var groupDiv = legend.group && legend.group.div;
                 var noTooltipOnGroup = stringHasNoTooltip(groupDiv && groupDiv.className || '');
@@ -4968,7 +4997,8 @@
                             fireEventOnWrappedOrUnwrappedElement(target, clonedEvent);
                         }
                         e.stopPropagation();
-                        // #9682, #15318: Touch scrolling didnt work when touching proxy
+                        // #9682, #15318: Touch scrolling didnt work when touching
+                        // proxy
                         if (!isTouchEvent) {
                             e.preventDefault();
                         }
@@ -5136,9 +5166,6 @@
                 };
                 attr(groupElement, attributes || {});
                 if (groupType === 'ul') {
-                    if (!this.chart.styledMode) {
-                        proxyContainer.style.listStyle = 'none';
-                    }
                     proxyContainer.setAttribute('role', 'list'); // Needed for webkit
                 }
                 // Add the group to the end by default, and perhaps then we
@@ -5934,7 +5961,6 @@
              * @param {number} i
              *        The index of the button
              * @param {boolean} [redraw]
-             * @return {void}
              */
             RangeSelector.prototype.clickButton = function (i, redraw) {
                 var rangeSelector = this,
@@ -6032,7 +6058,8 @@
                     // If the navigator exist and the axis range is declared reset that
                     // range and from now on only use the range set by a user, #14742.
                     if (chart.navigator && chart.navigator.baseSeries[0]) {
-                        chart.navigator.baseSeries[0].xAxis.options.range = void 0;
+                        chart.navigator.baseSeries[0].xAxis.options
+                            .range = void 0;
                     }
                     newMin = dataMin;
                     newMax = dataMax;
@@ -6077,7 +6104,6 @@
              * @private
              * @function Highcharts.RangeSelector#setSelected
              * @param {number} [selected]
-             * @return {void}
              */
             RangeSelector.prototype.setSelected = function (selected) {
                 this.selected = this.options.selected = selected;
@@ -6088,12 +6114,11 @@
              * @private
              * @function Highcharts.RangeSelector#init
              * @param {Highcharts.Chart} chart
-             * @return {void}
              */
             RangeSelector.prototype.init = function (chart) {
                 var rangeSelector = this,
                     options = chart.options.rangeSelector,
-                    buttonOptions = options.buttons || rangeSelector.defaultButtons.slice(),
+                    buttonOptions = (options.buttons || rangeSelector.defaultButtons.slice()),
                     selectedOption = options.selected,
                     blurInputs = function () {
                         var minInput = rangeSelector.minInput,
@@ -6143,7 +6168,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#updateButtonStates
-             * @return {void}
              */
             RangeSelector.prototype.updateButtonStates = function () {
                 var rangeSelector = this,
@@ -6249,7 +6273,6 @@
              * @private
              * @function Highcharts.RangeSelector#computeButtonRange
              * @param {Highcharts.RangeSelectorButtonsOptions} rangeOptions
-             * @return {void}
              */
             RangeSelector.prototype.computeButtonRange = function (rangeOptions) {
                 var type = rangeOptions.type,
@@ -6284,12 +6307,11 @@
              *
              * @private
              * @function Highcharts.RangeSelector#getInputValue
-             * @param {string} name
-             * @return {number}
              */
             RangeSelector.prototype.getInputValue = function (name) {
                 var input = name === 'min' ? this.minInput : this.maxInput;
-                var options = this.chart.options.rangeSelector;
+                var options = this.chart.options
+                        .rangeSelector;
                 var time = this.chart.time;
                 if (input) {
                     return ((input.type === 'text' && options.inputDateParser) ||
@@ -6302,9 +6324,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#setInputValue
-             * @param {string} name
-             * @param {number} [inputTime]
-             * @return {void}
              */
             RangeSelector.prototype.setInputValue = function (name, inputTime) {
                 var options = this.options, time = this.chart.time, input = name === 'min' ? this.minInput : this.maxInput, dateBox = name === 'min' ? this.minDateBox : this.maxDateBox;
@@ -6319,7 +6338,8 @@
                         input.setAttribute('data-hc-time', inputTime);
                         updatedTime = inputTime;
                     }
-                    input.value = time.dateFormat(this.inputTypeFormats[input.type] || options.inputEditDateFormat, updatedTime);
+                    input.value = time.dateFormat((this.inputTypeFormats[input.type] ||
+                        options.inputEditDateFormat), updatedTime);
                     if (dateBox) {
                         dateBox.attr({
                             text: time.dateFormat(options.inputDateFormat, updatedTime)
@@ -6332,10 +6352,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#setInputExtremes
-             * @param {string} name
-             * @param {number} min
-             * @param {number} max
-             * @return {void}
              */
             RangeSelector.prototype.setInputExtremes = function (name, min, max) {
                 var input = name === 'min' ? this.minInput : this.maxInput;
@@ -6360,7 +6376,6 @@
              * @private
              * @function Highcharts.RangeSelector#showInput
              * @param {string} name
-             * @return {void}
              */
             RangeSelector.prototype.showInput = function (name) {
                 var dateBox = name === 'min' ? this.minDateBox : this.maxDateBox;
@@ -6372,7 +6387,9 @@
                         translateY = _a.translateY;
                     var inputBoxWidth = this.options.inputBoxWidth;
                     css(input, {
-                        width: isTextInput ? ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') : 'auto',
+                        width: isTextInput ?
+                            ((dateBox.width + (inputBoxWidth ? -2 : 20)) + 'px') :
+                            'auto',
                         height: isTextInput ? ((dateBox.height - 2) + 'px') : 'auto',
                         border: '2px solid silver'
                     });
@@ -6398,7 +6415,6 @@
              * @private
              * @function Highcharts.RangeSelector#hideInput
              * @param {string} name
-             * @return {void}
              */
             RangeSelector.prototype.hideInput = function (name) {
                 var input = name === 'min' ? this.minInput : this.maxInput;
@@ -6450,8 +6466,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#drawInput
-             * @param {string} name
-             * @return {RangeSelectorInputElements}
              */
             RangeSelector.prototype.drawInput = function (name) {
                 var _a = this,
@@ -6620,8 +6634,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#getPosition
-             *
-             * @return {Highcharts.Dictionary<number>}
              */
             RangeSelector.prototype.getPosition = function () {
                 var chart = this.chart,
@@ -6641,13 +6653,8 @@
              *
              * @private
              * @function Highcharts.RangeSelector#getYTDExtremes
-             *
-             * @param {number} dataMax
-             *
-             * @param {number} dataMin
-             *
              * @return {*}
-             *         Returns min and max for the YTD
+             * Returns min and max for the YTD
              */
             RangeSelector.prototype.getYTDExtremes = function (dataMax, dataMin, useUTC) {
                 var time = this.chart.time,
@@ -6676,7 +6683,6 @@
              *        X axis minimum
              * @param {number} [max]
              *        X axis maximum
-             * @return {void}
              */
             RangeSelector.prototype.render = function (min, max) {
                 var chart = this.chart,
@@ -6730,7 +6736,8 @@
                     this.setInputValue('min', min);
                     this.setInputValue('max', max);
                     var unionExtremes = (chart.scroller && chart.scroller.getUnionExtremes()) || chart.xAxis[0] || {};
-                    if (defined(unionExtremes.dataMin) && defined(unionExtremes.dataMax)) {
+                    if (defined(unionExtremes.dataMin) &&
+                        defined(unionExtremes.dataMax)) {
                         var minRange = chart.xAxis[0].minRange || 0;
                         this.setInputExtremes('min', unionExtremes.dataMin, Math.min(unionExtremes.dataMax, this.getInputValue('max')) - minRange);
                         this.setInputExtremes('max', Math.max(unionExtremes.dataMin, this.getInputValue('min')) + minRange, unionExtremes.dataMax);
@@ -6763,7 +6770,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#renderButtons
-             * @return {void}
              */
             RangeSelector.prototype.renderButtons = function () {
                 var _this = this;
@@ -6864,7 +6870,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#alignElements
-             * @return {void}
              */
             RangeSelector.prototype.alignElements = function () {
                 var _this = this;
@@ -7020,7 +7025,6 @@
              * @function Highcharts.RangeSelector#alignButtonGroup
              * @param {number} xOffsetForExportButton
              * @param {number} [width]
-             * @return {void}
              */
             RangeSelector.prototype.alignButtonGroup = function (xOffsetForExportButton, width) {
                 var _a = this,
@@ -7050,7 +7054,6 @@
             /**
              * @private
              * @function Highcharts.RangeSelector#positionButtons
-             * @return {void}
              */
             RangeSelector.prototype.positionButtons = function () {
                 var _a = this,
@@ -7091,7 +7094,6 @@
              * @param  {number} xOffsetForExportButton
              *                  The X offset of the group required to make room for the
              *                  exporting button
-             * @return {void}
              */
             RangeSelector.prototype.handleCollision = function (xOffsetForExportButton) {
                 var _this = this;
@@ -7192,7 +7194,6 @@
              * @private
              * @function Highcharts.RangeSelector#collapseButtons
              * @param {number} xOffsetForExportButton
-             * @return {void}
              */
             RangeSelector.prototype.collapseButtons = function (xOffsetForExportButton) {
                 var _a = this,
@@ -7246,7 +7247,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#expandButtons
-             * @return {void}
              */
             RangeSelector.prototype.expandButtons = function () {
                 var _a = this,
@@ -7278,7 +7278,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#currentButtonIndex
-             * @return {number}
              */
             RangeSelector.prototype.currentButtonIndex = function () {
                 var dropdown = this.dropdown;
@@ -7292,7 +7291,6 @@
              *
              * @private
              * @function Highcharts.RangeSelector#showDropdown
-             * @return {void}
              */
             RangeSelector.prototype.showDropdown = function () {
                 var _a = this,
@@ -7316,7 +7314,6 @@
             /**
              * @private
              * @function Highcharts.RangeSelector#hideDropdown
-             * @return {void}
              */
             RangeSelector.prototype.hideDropdown = function () {
                 var dropdown = this.dropdown;
@@ -7335,7 +7332,7 @@
              * @private
              * @function Highcharts.RangeSelector#getHeight
              * @return {number}
-             *         Returns rangeSelector height
+             * Returns rangeSelector height
              */
             RangeSelector.prototype.getHeight = function () {
                 var rangeSelector = this,
@@ -7371,11 +7368,8 @@
              *
              * @private
              * @function Highcharts.RangeSelector#titleCollision
-             *
-             * @param {Highcharts.Chart} chart
-             *
              * @return {boolean}
-             *         Returns collision status
+             * Returns collision status
              */
             RangeSelector.prototype.titleCollision = function (chart) {
                 return !(chart.options.title.text ||
@@ -7387,7 +7381,6 @@
              * @private
              * @function Highcharts.RangeSelector#update
              * @param {Highcharts.RangeSelectorOptions} options
-             * @return {void}
              */
             RangeSelector.prototype.update = function (options) {
                 var chart = this.chart;
@@ -7483,17 +7476,14 @@
          *
          * @private
          * @function preferredInputType
-         * @param {string} format
-         * @return {string}
          */
         function preferredInputType(format) {
             var ms = format.indexOf('%L') !== -1;
             if (ms) {
                 return 'text';
             }
-            var date = ['a', 'A', 'd', 'e', 'w', 'b', 'B', 'm', 'o', 'y', 'Y'].some(function (char) {
-                    return format.indexOf('%' + char) !== -1;
-            });
+            var date = ['a', 'A', 'd', 'e', 'w', 'b', 'B', 'm', 'o', 'y', 'Y']
+                    .some(function (char) { return format.indexOf('%' + char) !== -1; });
             var time = ['H', 'k', 'I', 'l', 'M', 'S'].some(function (char) {
                     return format.indexOf('%' + char) !== -1;
             });
@@ -7530,7 +7520,8 @@
                 // Get the true range from a start date
                 getTrueRange = function (base,
                 count) {
-                    var timeName = type === 'year' ? 'FullYear' : 'Month';
+                    var timeName = type === 'year' ?
+                        'FullYear' : 'Month';
                 var date = new time.Date(base);
                 var basePeriod = time.get(timeName,
                     date);
@@ -7975,7 +7966,8 @@
                 var newIxOutOfRange = newIx > 1 || newIx < 0;
                 if (newIxOutOfRange) {
                     if (chart.accessibility) {
-                        chart.accessibility.keyboardNavigation.tabindexContainer.focus();
+                        chart.accessibility.keyboardNavigation.tabindexContainer
+                            .focus();
                         chart.accessibility.keyboardNavigation[direction < 0 ? 'prev' : 'next']();
                     }
                 }
@@ -8060,13 +8052,14 @@
                     // Tab-press with dropdown focused does not propagate to chart
                     // automatically, so we manually catch and handle it when relevant.
                     this.removeDropdownKeydownHandler = addEvent(dropdown, 'keydown', function (e) {
-                        var isTab = (e.which || e.keyCode) === _this.keyCodes.tab;
+                        var isTab = (e.which || e.keyCode) === _this.keyCodes.tab,
+                            a11y = chart.accessibility;
                         if (isTab) {
                             e.preventDefault();
                             e.stopPropagation();
-                            if (chart.accessibility) {
-                                chart.accessibility.keyboardNavigation.tabindexContainer.focus();
-                                chart.accessibility.keyboardNavigation[e.shiftKey ? 'prev' : 'next']();
+                            if (a11y) {
+                                a11y.keyboardNavigation.tabindexContainer.focus();
+                                a11y.keyboardNavigation[e.shiftKey ? 'prev' : 'next']();
                             }
                         }
                     });
@@ -8196,10 +8189,6 @@
              *
              * @private
              * @function Highcharts.Chart#highlightRangeSelectorButton
-             *
-             * @param {number} ix
-             *
-             * @return {boolean}
              */
             function chartHighlightRangeSelectorButton(ix) {
                 var buttons = (this.rangeSelector &&
@@ -8233,7 +8222,7 @@
                 if (composedClasses.indexOf(ChartClass) === -1) {
                     composedClasses.push(ChartClass);
                     var chartProto = ChartClass.prototype;
-                    chartProto.highlightRangeSelectorButton = chartHighlightRangeSelectorButton;
+                    chartProto.highlightRangeSelectorButton = (chartHighlightRangeSelectorButton);
                 }
                 if (composedClasses.indexOf(RangeSelectorClass) === -1) {
                     composedClasses.push(RangeSelectorClass);
@@ -8247,9 +8236,9 @@
              * @private
              */
             function rangeSelectorAfterBtnClick() {
-                if (this.chart.accessibility &&
-                    this.chart.accessibility.components.rangeSelector) {
-                    return this.chart.accessibility.components.rangeSelector.onAfterBtnClick();
+                var a11y = this.chart.accessibility;
+                if (a11y && a11y.components.rangeSelector) {
+                    return a11y.components.rangeSelector.onAfterBtnClick();
                 }
             }
         })(RangeSelectorComponent || (RangeSelectorComponent = {}));
@@ -8345,7 +8334,8 @@
                     var hadForcedMarker = point.hasForcedA11yMarker;
                     delete point.hasForcedA11yMarker;
                     if (pointOptions.marker) {
-                        var isStillForcedMarker = hadForcedMarker && getPointMarkerOpacity(pointOptions) === 0;
+                        var isStillForcedMarker = hadForcedMarker &&
+                                getPointMarkerOpacity(pointOptions) === 0;
                         if (pointOptions.marker.enabled && !isStillForcedMarker) {
                             unforcePointMarkerOptions(pointOptions);
                             point.hasForcedA11yMarker = false;
@@ -8361,7 +8351,9 @@
              * @private
              */
             function hasIndividualPointMarkerOptions(series) {
-                return !!(series._hasPointMarkers && series.points && series.points.length);
+                return !!(series._hasPointMarkers &&
+                    series.points &&
+                    series.points.length);
             }
             /**
              * @private
@@ -8370,7 +8362,8 @@
                 var a11yOptions = series.chart.options.accessibility;
                 return series.points.length <
                     a11yOptions.series.pointDescriptionEnabledThreshold ||
-                    a11yOptions.series.pointDescriptionEnabledThreshold === false;
+                    a11yOptions.series
+                        .pointDescriptionEnabledThreshold === false;
             }
             /**
              * Process marker graphics after render
@@ -8388,8 +8381,11 @@
                     if (hasIndividualPointMarkerOptions(series)) {
                         series.points.forEach(function (point) {
                             if (point.graphic) {
-                                point.graphic[point.hasForcedA11yMarker ? 'addClass' : 'removeClass']('highcharts-a11y-marker-hidden');
-                                point.graphic[point.hasForcedA11yMarker === false ? 'addClass' : 'removeClass']('highcharts-a11y-marker-visible');
+                                point.graphic[point.hasForcedA11yMarker ?
+                                    'addClass' : 'removeClass']('highcharts-a11y-marker-hidden');
+                                point.graphic[point.hasForcedA11yMarker === false ?
+                                    'addClass' :
+                                    'removeClass']('highcharts-a11y-marker-visible');
                             }
                         });
                     }
@@ -8431,7 +8427,9 @@
                     chartA11yEnabled = chart.options.accessibility.enabled,
                     seriesA11yEnabled = (series.options.accessibility &&
                         series.options.accessibility.enabled) !== false;
-                return chartA11yEnabled && seriesA11yEnabled && isWithinDescriptionThreshold(series);
+                return (chartA11yEnabled &&
+                    seriesA11yEnabled &&
+                    isWithinDescriptionThreshold(series));
             }
             /**
              * @private
@@ -8505,12 +8503,10 @@
          *
          * @private
          * @function getPointIndex
-         *
          * @param {Highcharts.AccessibilityPoint} point
-         *        The point to find index of.
-         *
+         * The point to find index of.
          * @return {number|undefined}
-         *         The index in the series.points array of the point.
+         * The index in the series.points array of the point.
          */
         function getPointIndex(point) {
             var index = point.index,
@@ -8529,13 +8525,7 @@
         }
         /**
          * Determine if series navigation should be skipped
-         *
          * @private
-         * @function isSkipSeries
-         *
-         * @param {Highcharts.Series} series
-         *
-         * @return {boolean|number|undefined}
          */
         function isSkipSeries(series) {
             var a11yOptions = series.chart.options.accessibility,
@@ -8554,13 +8544,7 @@
         }
         /**
          * Determine if navigation for a point should be skipped
-         *
          * @private
-         * @function isSkipPoint
-         *
-         * @param {Highcharts.Point} point
-         *
-         * @return {boolean|number|undefined}
          */
         function isSkipPoint(point) {
             var a11yOptions = point.series.chart.options.accessibility;
@@ -8607,7 +8591,9 @@
         function highlightFirstValidPointInChart(chart) {
             var res = false;
             delete chart.highlightedPoint;
-            res = chart.series.reduce(function (acc, cur) { return acc || cur.highlightFirstValidPoint(); }, false);
+            res = chart.series.reduce(function (acc, cur) {
+                return acc || cur.highlightFirstValidPoint();
+            }, false);
             return res;
         }
         /* *
@@ -8673,7 +8659,7 @@
                     // If then navigating with virtual cursor, it is possible to leave
                     // keyboard nav module state on the data points and still activate
                     // proxy buttons.
-                    var focusedElClassName = focusedElement && focusedElement.getAttribute('class');
+                    var focusedElClassName = (focusedElement && focusedElement.getAttribute('class'));
                     var isProxyFocused = focusedElClassName &&
                             focusedElClassName.indexOf('highcharts-a11y-proxy-button') > -1;
                     if (chart.highlightedPoint === point &&
@@ -8711,7 +8697,7 @@
                 }
             };
             /**
-             * @return {Highcharts.KeyboardNavigationHandler}
+             * @private
              */
             SeriesKeyboardNavigation.prototype.getKeyboardNavigationHandler = function () {
                 var keyboardNavigation = this,
@@ -8802,7 +8788,7 @@
                 if (chart.tooltip) {
                     chart.tooltip.hide(0);
                 }
-                var hoverSeries = chart.highlightedPoint && chart.highlightedPoint.series;
+                var hoverSeries = (chart.highlightedPoint && chart.highlightedPoint.series);
                 if (hoverSeries && hoverSeries.onMouseOut) {
                     hoverSeries.onMouseOut();
                 }
@@ -8896,7 +8882,9 @@
                     curPointIndex = curPoint && getPointIndex(curPoint) || 0,
                     curPoints = curPoint && curPoint.series.points || [],
                     lastSeries = chart.series && chart.series[chart.series.length - 1],
-                    lastPoint = lastSeries && lastSeries.points && lastSeries.points[lastSeries.points.length - 1];
+                    lastPoint = lastSeries &&
+                        lastSeries.points &&
+                        lastSeries.points[lastSeries.points.length - 1];
                 var newSeries,
                     newPoint;
                 // If no points, return false
@@ -8909,8 +8897,7 @@
                     newPoint = next ? series[0].points[0] : lastPoint;
                 }
                 else {
-                    // We have a highlighted point.
-                    // Grab next/prev point & series
+                    // We have a highlighted point. Grab next/prev point & series.
                     newSeries = series[curPoint.series.index + (next ? 1 : -1)];
                     newPoint = curPoints[curPointIndex + (next ? 1 : -1)];
                     if (!newPoint && newSeries) {
@@ -8970,7 +8957,7 @@
                             if (series.yAxis && series.yAxis.reversed) {
                                 yDistance *= -1;
                         }
-                        if (yDistance <= 0 && down || yDistance >= 0 && !down || // Chk dir
+                        if (yDistance <= 0 && down || yDistance >= 0 && !down ||
                             distance < 5 || // Points in same spot => infinite loop
                             isSkipPoint(point)) {
                             return;
@@ -9001,10 +8988,11 @@
                 if (!chart.highlightedPoint) {
                     newSeries = down ? (chart.series && chart.series[0]) : lastSeries;
                     newPoint = down ?
-                        (newSeries && newSeries.points && newSeries.points[0]) : lastPoint;
+                        (newSeries && newSeries.points && newSeries.points[0]) :
+                        lastPoint;
                     return newPoint ? newPoint.highlight() : false;
                 }
-                newSeries = chart.series[curPoint.series.index + (down ? -1 : 1)];
+                newSeries = (chart.series[curPoint.series.index + (down ? -1 : 1)]);
                 if (!newSeries) {
                     return false;
                 }
@@ -9018,7 +9006,8 @@
                 if (isSkipSeries(newSeries)) {
                     // Skip the series
                     newPoint.highlight();
-                    adjacentNewPoint = chart.highlightAdjacentSeries(down); // Try recurse
+                    // Try recurse
+                    adjacentNewPoint = chart.highlightAdjacentSeries(down);
                     if (!adjacentNewPoint) {
                         // Recurse failed
                         curPoint.highlight();
@@ -9040,7 +9029,7 @@
                     composedClasses.push(ChartClass);
                     var chartProto = ChartClass.prototype;
                     chartProto.highlightAdjacentPoint = chartHighlightAdjacentPoint;
-                    chartProto.highlightAdjacentPointVertical = chartHighlightAdjacentPointVertical;
+                    chartProto.highlightAdjacentPointVertical = (chartHighlightAdjacentPointVertical);
                     chartProto.highlightAdjacentSeries = chartHighlightAdjacentSeries;
                 }
                 if (composedClasses.indexOf(PointClass) === -1) {
@@ -9067,7 +9056,7 @@
                             seriesTypes[type].prototype.keyboardMoveVertical = false;
                         }
                     });
-                    seriesProto.highlightFirstValidPoint = seriesHighlightFirstValidPoint;
+                    seriesProto.highlightFirstValidPoint = (seriesHighlightFirstValidPoint);
                 }
             }
             SeriesKeyboardNavigation.compose = compose;
@@ -9141,8 +9130,6 @@
              *
              * @private
              * @function Highcharts.Series#highlightFirstValidPoint
-             *
-             * @return {boolean|Highcharts.Point}
              */
             function seriesHighlightFirstValidPoint() {
                 var curPoint = this.chart.highlightedPoint,
@@ -9232,6 +9219,7 @@
              */
             SeriesComponent.compose = function (ChartClass, PointClass, SeriesClass) {
                 // Handle forcing markers
+                NewDataAnnouncer.compose(SeriesClass);
                 ForcedMarkers.compose(SeriesClass);
                 SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);
             };
@@ -9296,13 +9284,14 @@
             };
             /**
              * Get keyboard navigation handler for this component.
-             * @return {Highcharts.KeyboardNavigationHandler}
+             * @private
              */
             SeriesComponent.prototype.getKeyboardNavigation = function () {
                 return this.keyboardNavigation.getKeyboardNavigationHandler();
             };
             /**
              * Remove traces
+             * @private
              */
             SeriesComponent.prototype.destroy = function () {
                 this.newDataAnnouncer.destroy();
@@ -9330,12 +9319,33 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        var __extends = (this && this.__extends) || (function () {
+                var extendStatics = function (d,
+            b) {
+                    extendStatics = Object.setPrototypeOf ||
+                        ({ __proto__: [] } instanceof Array && function (d,
+            b) { d.__proto__ = b; }) ||
+                        function (d,
+            b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+                return extendStatics(d, b);
+            };
+            return function (d, b) {
+                extendStatics(d, b);
+                function __() { this.constructor = d; }
+                d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+            };
+        })();
         var unhideChartElementFromAT = ChartUtilities.unhideChartElementFromAT;
         var noop = H.noop;
         var attr = U.attr,
             extend = U.extend,
             pick = U.pick;
-        /* eslint-disable no-invalid-this, valid-jsdoc */
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        /* eslint-disable valid-jsdoc */
         /**
          * @private
          */
@@ -9344,33 +9354,11 @@
                 chart.mapNavButtons &&
                 chart.mapNavButtons.length);
         }
-        /**
-         * Pan along axis in a direction (1 or -1), optionally with a defined
-         * granularity (number of steps it takes to walk across current view)
+        /* *
          *
-         * @private
-         * @function Highcharts.Axis#panStep
+         *  Class
          *
-         * @param {number} direction
-         * @param {number} [granularity]
-         */
-        H.Axis.prototype.panStep = function (direction, granularity) {
-            var gran = granularity || 3;
-            var extremes = this.getExtremes();
-            var step = (extremes.max - extremes.min) / gran * direction;
-            var newMax = extremes.max + step;
-            var newMin = extremes.min + step;
-            var size = newMax - newMin;
-            if (direction < 0 && newMin < extremes.dataMin) {
-                newMin = extremes.dataMin;
-                newMax = newMin + size;
-            }
-            else if (direction > 0 && newMax > extremes.dataMax) {
-                newMax = extremes.dataMax;
-                newMin = newMax - size;
-            }
-            this.setExtremes(newMin, newMax);
-        };
+         * */
         /**
          * The ZoomComponent class
          *
@@ -9378,13 +9366,28 @@
          * @class
          * @name Highcharts.ZoomComponent
          */
-        var ZoomComponent = noop;
-        ZoomComponent.prototype = new AccessibilityComponent();
-        extend(ZoomComponent.prototype, /** @lends Highcharts.ZoomComponent */ {
+        var ZoomComponent = /** @class */ (function (_super) {
+                __extends(ZoomComponent, _super);
+            function ZoomComponent() {
+                /* *
+                 *
+                 *  Properties
+                 *
+                 * */
+                var _this = _super !== null && _super.apply(this,
+                    arguments) || this;
+                _this.focusedMapNavButtonIx = -1;
+                return _this;
+            }
+            /* *
+             *
+             *  Functions
+             *
+             * */
             /**
              * Initialize the component
              */
-            init: function () {
+            ZoomComponent.prototype.init = function () {
                 var component = this,
                     chart = this.chart;
                 this.proxyProvider.addGroup('zoom', 'div');
@@ -9395,11 +9398,11 @@
                         component.updateProxyOverlays();
                     });
                 });
-            },
+            };
             /**
              * Called when chart is updated
              */
-            onChartUpdate: function () {
+            ZoomComponent.prototype.onChartUpdate = function () {
                 var chart = this.chart,
                     component = this;
                 // Make map zoom buttons accessible
@@ -9409,13 +9412,13 @@
                         component.setMapNavButtonAttrs(button.element, 'accessibility.zoom.mapZoom' + (i ? 'Out' : 'In'));
                     });
                 }
-            },
+            };
             /**
              * @private
              * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} button
              * @param {string} labelFormatKey
              */
-            setMapNavButtonAttrs: function (button, labelFormatKey) {
+            ZoomComponent.prototype.setMapNavButtonAttrs = function (button, labelFormatKey) {
                 var chart = this.chart,
                     label = chart.langFormat(labelFormatKey, { chart: chart });
                 attr(button, {
@@ -9423,18 +9426,18 @@
                     role: 'button',
                     'aria-label': label
                 });
-            },
+            };
             /**
              * Update the proxy overlays on every new render to ensure positions are
              * correct.
              */
-            onChartRender: function () {
+            ZoomComponent.prototype.onChartRender = function () {
                 this.updateProxyOverlays();
-            },
+            };
             /**
              * Update proxy overlays, recreating the buttons.
              */
-            updateProxyOverlays: function () {
+            ZoomComponent.prototype.updateProxyOverlays = function () {
                 var chart = this.chart;
                 // Always start with a clean slate
                 this.proxyProvider.clearGroup('zoom');
@@ -9447,27 +9450,27 @@
                         buttonText: chart.getDrilldownBackText()
                     }));
                 }
-            },
+            };
             /**
              * @private
              * @param {Highcharts.SVGElement} buttonEl
              * @param {string} buttonProp
              * @param {string} label
              */
-            createZoomProxyButton: function (buttonEl, buttonProp, label) {
+            ZoomComponent.prototype.createZoomProxyButton = function (buttonEl, buttonProp, label) {
                 this[buttonProp] = this.proxyProvider.addProxyElement('zoom', {
                     click: buttonEl
                 }, {
                     'aria-label': label,
                     tabindex: -1
                 });
-            },
+            };
             /**
              * Get keyboard navigation handler for map zoom.
              * @private
              * @return {Highcharts.KeyboardNavigationHandler} The module object
              */
-            getMapZoomNavigation: function () {
+            ZoomComponent.prototype.getMapZoomNavigation = function () {
                 var keys = this.keyCodes,
                     chart = this.chart,
                     component = this;
@@ -9499,14 +9502,14 @@
                         return component.onMapNavInit(direction);
                     }
                 });
-            },
+            };
             /**
              * @private
              * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
              * @param {number} keyCode
              * @return {number} Response code
              */
-            onMapKbdArrow: function (keyboardNavigationHandler, keyCode) {
+            ZoomComponent.prototype.onMapKbdArrow = function (keyboardNavigationHandler, keyCode) {
                 var keys = this.keyCodes,
                     panAxis = (keyCode === keys.up || keyCode === keys.down) ?
                         'yAxis' : 'xAxis',
@@ -9514,14 +9517,14 @@
                         -1 : 1;
                 this.chart[panAxis][0].panStep(stepDirection);
                 return keyboardNavigationHandler.response.success;
-            },
+            };
             /**
              * @private
              * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
              * @param {global.KeyboardEvent} event
              * @return {number} Response code
              */
-            onMapKbdTab: function (keyboardNavigationHandler, event) {
+            ZoomComponent.prototype.onMapKbdTab = function (keyboardNavigationHandler, event) {
                 var chart = this.chart;
                 var response = keyboardNavigationHandler.response;
                 var isBackwards = event.shiftKey;
@@ -9539,22 +9542,22 @@
                 chart.setFocusToElement(button.box, button.element);
                 button.setState(2);
                 return response.success;
-            },
+            };
             /**
              * @private
              * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
              * @return {number} Response code
              */
-            onMapKbdClick: function (keyboardNavigationHandler) {
+            ZoomComponent.prototype.onMapKbdClick = function (keyboardNavigationHandler) {
                 var el = this.chart.mapNavButtons[this.focusedMapNavButtonIx].element;
                 this.fakeClickEvent(el);
                 return keyboardNavigationHandler.response.success;
-            },
+            };
             /**
              * @private
              * @param {number} direction
              */
-            onMapNavInit: function (direction) {
+            ZoomComponent.prototype.onMapNavInit = function (direction) {
                 var chart = this.chart,
                     zoomIn = chart.mapNavButtons[0],
                     zoomOut = chart.mapNavButtons[1],
@@ -9562,7 +9565,7 @@
                 chart.setFocusToElement(initialButton.box, initialButton.element);
                 initialButton.setState(2);
                 this.focusedMapNavButtonIx = direction > 0 ? 0 : 1;
-            },
+            };
             /**
              * Get keyboard navigation handler for a simple chart button. Provide the
              * button reference for the chart, and a function to call on click.
@@ -9571,7 +9574,7 @@
              * @param {string} buttonProp The property on chart referencing the button.
              * @return {Highcharts.KeyboardNavigationHandler} The module object
              */
-            simpleButtonNavigation: function (buttonProp, proxyProp, onClick) {
+            ZoomComponent.prototype.simpleButtonNavigation = function (buttonProp, proxyProp, onClick) {
                 var keys = this.keyCodes,
                     component = this,
                     chart = this.chart;
@@ -9580,8 +9583,9 @@
                         [
                             [keys.tab, keys.up, keys.down, keys.left, keys.right],
                             function (keyCode, e) {
-                                var isBackwards = keyCode === keys.tab && e.shiftKey ||
-                                        keyCode === keys.left || keyCode === keys.up;
+                                var isBackwards = (keyCode === keys.tab && e.shiftKey ||
+                                        keyCode === keys.left ||
+                                        keyCode === keys.up);
                                 // Arrow/tab => just move
                                 return this.response[isBackwards ? 'prev' : 'next'];
                             }
@@ -9605,13 +9609,13 @@
                         chart.setFocusToElement(chart[buttonProp].box, component[proxyProp].buttonElement);
                     }
                 });
-            },
+            };
             /**
              * Get keyboard navigation handlers for this component.
              * @return {Array<Highcharts.KeyboardNavigationHandler>}
              *         List of module objects
              */
-            getKeyboardNavigation: function () {
+            ZoomComponent.prototype.getKeyboardNavigation = function () {
                 return [
                     this.simpleButtonNavigation('resetZoomButton', 'resetZoomProxyButton', function (_handler, chart) {
                         chart.zoomOut();
@@ -9622,8 +9626,75 @@
                     }),
                     this.getMapZoomNavigation()
                 ];
+            };
+            return ZoomComponent;
+        }(AccessibilityComponent));
+        /* *
+         *
+         *  Class Namespace
+         *
+         * */
+        (function (ZoomComponent) {
+            /* *
+             *
+             *  Declarations
+             *
+             * */
+            /* *
+             *
+             *  Constants
+             *
+             * */
+            ZoomComponent.composedClasses = [];
+            /* *
+             *
+             *  Functions
+             *
+             * */
+            /**
+             * @private
+             */
+            function compose(AxisClass) {
+                if (ZoomComponent.composedClasses.indexOf(AxisClass) === -1) {
+                    ZoomComponent.composedClasses.push(AxisClass);
+                    var axisProto = AxisClass.prototype;
+                    axisProto.panStep = axisPanStep;
+                }
             }
-        });
+            ZoomComponent.compose = compose;
+            /**
+             * Pan along axis in a direction (1 or -1), optionally with a defined
+             * granularity (number of steps it takes to walk across current view)
+             *
+             * @private
+             * @function Highcharts.Axis#panStep
+             *
+             * @param {number} direction
+             * @param {number} [granularity]
+             */
+            function axisPanStep(direction, granularity) {
+                var gran = granularity || 3;
+                var extremes = this.getExtremes();
+                var step = (extremes.max - extremes.min) / gran * direction;
+                var newMax = extremes.max + step;
+                var newMin = extremes.min + step;
+                var size = newMax - newMin;
+                if (direction < 0 && newMin < extremes.dataMin) {
+                    newMin = extremes.dataMin;
+                    newMax = newMin + size;
+                }
+                else if (direction > 0 && newMax > extremes.dataMax) {
+                    newMax = extremes.dataMax;
+                    newMin = newMax - size;
+                }
+                this.setExtremes(newMin, newMax);
+            }
+        })(ZoomComponent || (ZoomComponent = {}));
+        /* *
+         *
+         *  Default Export
+         *
+         * */
 
         return ZoomComponent;
     });
@@ -9663,7 +9734,8 @@
             // Test BG image for IE
             if (isMS && win.getComputedStyle) {
                 var testDiv = doc.createElement('div');
-                var imageSrc = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+                var imageSrc = 'data:image/gif;base64,' +
+                        'R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
                 testDiv.style.backgroundImage = "url(" + imageSrc + ")"; // #13071
                 doc.body.appendChild(testDiv);
                 var bi = (testDiv.currentStyle ||
@@ -10860,9 +10932,9 @@
                          */
                         annotations: {
                             heading: 'Chart annotations summary',
-                            descriptionSinglePoint: '{annotationText}. Related to {annotationPoint}',
-                            descriptionMultiplePoints: '{annotationText}. Related to {annotationPoint}' +
-                                '{ Also related to, #each(additionalAnnotationPoints)}',
+                            descriptionSinglePoint: ('{annotationText}. Related to {annotationPoint}'),
+                            descriptionMultiplePoints: ('{annotationText}. Related to {annotationPoint}' +
+                                '{ Also related to, #each(additionalAnnotationPoints)}'),
                             descriptionNoPoints: '{annotationText}'
                         },
                         /**
@@ -11229,7 +11301,8 @@
                 if (typeof val !== 'undefined') {
                     traverseSetOption(rootNew, mapToNewOptions[oldOptionKey], val);
                     error(32, false, chart, (_a = {},
-                        _a[rootOldAsArray.join('.') + "." + oldOptionKey] = rootNewAsArray.join('.') + "." + mapToNewOptions[oldOptionKey].join('.'),
+                        _a[rootOldAsArray.join('.') + '.' + oldOptionKey] = (rootNewAsArray.join('.') + '.' +
+                            mapToNewOptions[oldOptionKey].join('.')),
                         _a));
                 }
             });
@@ -11257,7 +11330,9 @@
                 if (opts && opts.description) {
                     opts.accessibility = opts.accessibility || {};
                     opts.accessibility.description = opts.description;
-                    error(32, false, chart, { 'axis.description': 'use axis.accessibility.description' });
+                    error(32, false, chart, {
+                        'axis.description': 'use axis.accessibility.description'
+                    });
                 }
             });
         }
@@ -11287,8 +11362,9 @@
                     var optionVal = series.options[oldOption];
                     // Special case
                     if (oldOption === 'accessibility.pointDescriptionFormatter') {
-                        optionVal = series.options.accessibility &&
-                            series.options.accessibility.pointDescriptionFormatter;
+                        optionVal = (series.options.accessibility &&
+                            series.options.accessibility
+                                .pointDescriptionFormatter);
                     }
                     if (typeof optionVal !== 'undefined') {
                         // Set the new option
@@ -11297,7 +11373,10 @@
                         // value, since we set enabled rather than disabled
                         oldOption === 'skipKeyboardNavigation' ?
                             !optionVal : optionVal);
-                        error(32, false, chart, (_a = {}, _a["series." + oldOption] = "series." + oldToNewSeriesOptions[oldOption].join('.'), _a));
+                        error(32, false, chart, (_a = {},
+                            _a["series." + oldOption] = ('series.' +
+                                oldToNewSeriesOptions[oldOption].join('.')),
+                            _a));
                     }
                 });
             });
@@ -11453,7 +11532,6 @@
                 this.proxyProvider = new ProxyProvider(this.chart);
                 this.initComponents();
                 this.keyboardNavigation = new KeyboardNavigation(chart, this.components);
-                this.update();
             };
             /**
              * @private
@@ -11658,6 +11736,9 @@
                     }
                     else {
                         this.accessibility = a11y = new Accessibility(this);
+                        if (a11y && !a11y.zombie) {
+                            a11y.update();
+                        }
                     }
                 }
                 else if (a11y) {
@@ -11675,13 +11756,17 @@
             /**
              * @private
              */
-            function compose(ChartClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
+            function compose(AxisClass, ChartClass, LegendClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
+                // ordered:
+                KeyboardNavigation.compose(ChartClass);
+                NewDataAnnouncer.compose(SeriesClass);
+                LegendComponent.compose(ChartClass, LegendClass);
+                MenuComponent.compose(ChartClass);
+                SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
+                ZoomComponent.compose(AxisClass);
+                // RangeSelector
                 A11yI18n.compose(ChartClass);
                 FocusBorder.compose(ChartClass, SVGElementClass);
-                KeyboardNavigation.compose(ChartClass);
-                MenuComponent.compose(ChartClass);
-                NewDataAnnouncer.compose(SeriesClass);
-                SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
                 if (RangeSelectorClass) {
                     RangeSelectorComponent.compose(ChartClass, RangeSelectorClass);
                 }
@@ -11764,7 +11849,7 @@
         G.AccessibilityComponent = AccessibilityComponent;
         G.KeyboardNavigationHandler = KeyboardNavigationHandler;
         G.SeriesAccessibilityDescriber = SeriesDescriber;
-        Accessibility.compose(G.Chart, G.Point, G.Series, G.SVGElement, G.RangeSelector);
+        Accessibility.compose(G.Axis, G.Chart, G.Legend, G.Point, G.Series, G.SVGElement, G.RangeSelector);
 
     });
 }));

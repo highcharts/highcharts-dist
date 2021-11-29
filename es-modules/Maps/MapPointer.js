@@ -54,7 +54,8 @@ extend(Pointer.prototype, {
             }, 50);
         }
         if (totalWheelDelta < 10 && chart.isInsidePlot(e.chartX - chart.plotLeft, e.chartY - chart.plotTop) && chart.mapView) {
-            chart.mapView.zoomBy((chart.options.mapNavigation.mouseWheelSensitivity - 1) * -delta, void 0, [e.chartX, e.chartY], 
+            chart.mapView.zoomBy((chart.options.mapNavigation.mouseWheelSensitivity -
+                1) * -delta, void 0, [e.chartX, e.chartY], 
             // Delta less than 1 indicates stepless/trackpad zooming, avoid
             // animation delaying the zoom
             Math.abs(delta) < 1 ? false : void 0);

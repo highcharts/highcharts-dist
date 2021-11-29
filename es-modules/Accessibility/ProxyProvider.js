@@ -98,9 +98,6 @@ var ProxyProvider = /** @class */ (function () {
         };
         attr(groupElement, attributes || {});
         if (groupType === 'ul') {
-            if (!this.chart.styledMode) {
-                proxyContainer.style.listStyle = 'none';
-            }
             proxyContainer.setAttribute('role', 'list'); // Needed for webkit
         }
         // Add the group to the end by default, and perhaps then we

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Annotations module
  *
@@ -49,7 +49,6 @@
          *
          * @private
          * @mixin
-         * @memberOf Annotation
          */
         var eventEmitterMixin = {
                 /**
@@ -361,7 +360,6 @@
              * @param {boolean} visible
              * Visibility of the control point.
              *
-             * @return {void}
              */
             ControlPoint.prototype.setVisibility = function (visible) {
                 this.graphic.attr('visibility', visible ? 'visible' : 'hidden');
@@ -411,7 +409,6 @@
              * @param {Partial<Highcharts.AnnotationControlPointOptionsObject>} userOptions
              * New options for the control point.
              *
-             * @return {void}
              */
             ControlPoint.prototype.update = function (userOptions) {
                 var chart = this.chart,
@@ -966,7 +963,8 @@
              */
             getPointsOptions: function () {
                 var options = this.options;
-                return (options.points || (options.point && splat(options.point)));
+                return (options.points ||
+                    (options.point && splat(options.point)));
             },
             /**
              * Utility function for mapping item's options
@@ -1205,8 +1203,10 @@
                 // Options stored in:
                 // - chart (for exporting)
                 // - current config (for redraws)
-                chartOptions[this.collection][this.index].point = this.options.point;
-                shapeOptions[this.collection][this.index].point = this.options.point;
+                chartOptions[this.collection][this.index]
+                    .point = this.options.point;
+                shapeOptions[this.collection][this.index]
+                    .point = this.options.point;
             },
             /**
              * Rotate a controllable.
@@ -1424,13 +1424,13 @@
             fill = itemOptions.fill,
             color = defined(fill) && fill !== 'none' ?
                         fill :
-                        itemOptions.stroke,
-            setMarker = function (markerType) {
+                        itemOptions.stroke;
+                var setMarker = function (markerType) {
                         var markerId = itemOptions[markerType],
-            def,
-            predefinedMarker,
-            key,
-            marker;
+                    def,
+                    predefinedMarker,
+                    key,
+                    marker;
                     if (markerId) {
                         for (key in defs) { // eslint-disable-line guard-for-in
                             def = defs[key];
@@ -1445,13 +1445,13 @@
                         }
                         if (predefinedMarker) {
                             marker = item[markerType] = chart.renderer
-                                .addMarker((itemOptions.id || uniqueKey()) + '-' +
-                                markerId, merge(predefinedMarker, { color: color }));
+                                .addMarker((itemOptions.id || uniqueKey()) + '-' + markerId, merge(predefinedMarker, { color: color }));
                             item.attr(markerType, marker.getAttribute('id'));
                         }
                     }
                 };
-                ['markerStart', 'markerEnd'].forEach(setMarker);
+                ['markerStart', 'markerEnd']
+                    .forEach(setMarker);
             }
         };
         addEvent(Chart, 'afterGetContainer', function () {
@@ -1522,7 +1522,7 @@
                 this.point = ControllableMixin.point;
                 this.rotate = ControllableMixin.rotate;
                 this.scale = ControllableMixin.scale;
-                this.setControlPointsVisibility = ControllableMixin.setControlPointsVisibility;
+                this.setControlPointsVisibility = (ControllableMixin.setControlPointsVisibility);
                 this.setMarkers = MarkerMixin.setItemMarkers;
                 this.transform = ControllableMixin.transform;
                 this.transformPoint = ControllableMixin.transformPoint;
@@ -1586,7 +1586,8 @@
                     null;
             };
             ControllablePath.prototype.shouldBeDrawn = function () {
-                return (ControllableMixin.shouldBeDrawn.call(this) || Boolean(this.options.d));
+                return (ControllableMixin.shouldBeDrawn.call(this) ||
+                    Boolean(this.options.d));
             };
             ControllablePath.prototype.render = function (parent) {
                 var options = this.options,
@@ -1713,7 +1714,7 @@
                 this.point = ControllableMixin.point;
                 this.rotate = ControllableMixin.rotate;
                 this.scale = ControllableMixin.scale;
-                this.setControlPointsVisibility = ControllableMixin.setControlPointsVisibility;
+                this.setControlPointsVisibility = (ControllableMixin.setControlPointsVisibility);
                 this.shouldBeDrawn = ControllableMixin.shouldBeDrawn;
                 this.transform = ControllableMixin.transform;
                 this.transformPoint = ControllableMixin.transformPoint;
@@ -1823,7 +1824,7 @@
                 this.point = ControllableMixin.point;
                 this.rotate = ControllableMixin.rotate;
                 this.scale = ControllableMixin.scale;
-                this.setControlPointsVisibility = ControllableMixin.setControlPointsVisibility;
+                this.setControlPointsVisibility = (ControllableMixin.setControlPointsVisibility);
                 this.shouldBeDrawn = ControllableMixin.shouldBeDrawn;
                 this.transform = ControllableMixin.transform;
                 this.transformPoint = ControllableMixin.transformPoint;
@@ -1939,7 +1940,7 @@
                 this.linkPoints = ControllableMixin.linkPoints;
                 this.point = ControllableMixin.point;
                 this.scale = ControllableMixin.scale;
-                this.setControlPointsVisibility = ControllableMixin.setControlPointsVisibility;
+                this.setControlPointsVisibility = (ControllableMixin.setControlPointsVisibility);
                 this.shouldBeDrawn = ControllableMixin.shouldBeDrawn;
                 this.transform = ControllableMixin.transform;
                 this.translatePoint = ControllableMixin.translatePoint;
@@ -2159,7 +2160,7 @@
                 this.point = ControllableMixin.point;
                 this.rotate = ControllableMixin.rotate;
                 this.scale = ControllableMixin.scale;
-                this.setControlPointsVisibility = ControllableMixin.setControlPointsVisibility;
+                this.setControlPointsVisibility = (ControllableMixin.setControlPointsVisibility);
                 this.shouldBeDrawn = ControllableMixin.shouldBeDrawn;
                 this.transform = ControllableMixin.transform;
                 this.transformPoint = ControllableMixin.transformPoint;
@@ -2392,10 +2393,6 @@
             };
             /**
              * Returns the label position relative to its anchor.
-             *
-             * @param {Highcharts.AnnotationAnchorObject} anchor
-             *
-             * @return {Highcharts.PositionObject|null}
              */
             ControllableLabel.prototype.position = function (anchor) {
                 var item = this.graphic,
@@ -2424,7 +2421,8 @@
                             plotY: anchorRelativePosition.y,
                             negative: point.negative,
                             ttBelow: point.ttBelow,
-                            h: (anchorRelativePosition.height || anchorRelativePosition.width)
+                            h: (anchorRelativePosition.height ||
+                                anchorRelativePosition.width)
                         });
                     }
                     else if (itemOptions.positioner) {
@@ -2572,7 +2570,7 @@
                 this.point = ControllableMixin.point;
                 this.rotate = ControllableMixin.rotate;
                 this.scale = ControllableMixin.scale;
-                this.setControlPointsVisibility = ControllableMixin.setControlPointsVisibility;
+                this.setControlPointsVisibility = (ControllableMixin.setControlPointsVisibility);
                 this.shouldBeDrawn = ControllableMixin.shouldBeDrawn;
                 this.transform = ControllableMixin.transform;
                 this.transformPoint = ControllableMixin.transformPoint;
@@ -3054,7 +3052,6 @@
              * @param {Partial<Highcharts.AnnotationsOptions>} userOptions
              * New user options for the annotation.
              *
-             * @return {void}
              */
             Annotation.prototype.update = function (userOptions, redraw) {
                 var chart = this.chart,
@@ -3084,10 +3081,11 @@
             /**
              * Initialisation of a single shape
              * @private
-             * @param {Object} shapeOptions - a confg object for a single shape
-             * @param {number} index - annotation may have many shapes,
-             * this is the shape's index saved in shapes.index.
-
+             * @param {Object} shapeOptions
+             * a confg object for a single shape
+             * @param {number} index
+             * annotation may have many shapes, this is the shape's index saved in
+             * shapes.index.
              */
             Annotation.prototype.initShape = function (shapeOptions, index) {
                 var options = merge(this.options.shapeOptions, {
@@ -3830,7 +3828,8 @@
          ******************************************************************** */
         extend(chartProto, /** @lends Highcharts.Chart# */ {
             initAnnotation: function (userOptions) {
-                var Constructor = Annotation.types[userOptions.type] || Annotation,
+                var Constructor = Annotation
+                        .types[userOptions.type] || Annotation,
                     annotation = new Constructor(this,
                     userOptions);
                 this.annotations.push(annotation);
@@ -3865,7 +3864,7 @@
              */
             removeAnnotation: function (idOrAnnotation) {
                 var annotations = this.annotations,
-                    annotation = idOrAnnotation.coll === 'annotations' ?
+                    annotation = (idOrAnnotation.coll === 'annotations') ?
                         idOrAnnotation :
                         find(annotations,
                     function (annotation) {
@@ -3984,15 +3983,15 @@
                                     // Annotation placed on a exported data point
                                     // - add new column
                                     if (!wasAdded) {
-                                        event.dataRows.forEach(function (row, rowIndex) {
+                                        event.dataRows.forEach(function (row) {
                                             if (!wasAdded &&
                                                 row.xValues &&
                                                 xAxisIndex !== void 0 &&
                                                 annotationX === row.xValues[xAxisIndex]) {
                                                 if (joinAnnotations &&
                                                     row.length > startRowLength) {
-                                                    row[row.length - 1] +=
-                                                        annotationSeparator + annotationText_1;
+                                                    row[row.length - 1] += (annotationSeparator +
+                                                        annotationText_1);
                                                 }
                                                 else {
                                                     row.push(annotationText_1);
@@ -4537,8 +4536,10 @@
                             var translation = this.mouseMoveToTranslation(e);
                             target.translatePoint(translation.x, translation.y, this.index);
                             // Update options:
-                            target.options.typeOptions.points[this.index].x = target.points[this.index].x;
-                            target.options.typeOptions.points[this.index].y = target.points[this.index].y;
+                            target.options.typeOptions
+                                .points[this.index].x = target.points[this.index].x;
+                            target.options.typeOptions
+                                .points[this.index].y = target.points[this.index].y;
                             target.redraw(false);
                         }
                     }
@@ -4625,7 +4626,7 @@
                  * @apioption annotations.elliottWave.typeOptions.points.label
                  */
                 /**
-                 * @ignore-options
+                 * @ignore-option
                  */
                 labels: ['(0)', '(A)', '(B)', '(C)', '(D)', '(E)'],
                 line: {
@@ -4758,9 +4759,12 @@
             /**
              * Translate start or end ("left" or "right") side of the tunnel.
              * @private
-             * @param {number} dx - the amount of x translation
-             * @param {number} dy - the amount of y translation
-             * @param {boolean} [end] - whether to translate start or end side
+             * @param {number} dx
+             * the amount of x translation
+             * @param {number} dy
+             * the amount of y translation
+             * @param {boolean} [end]
+             * whether to translate start or end side
              */
             Tunnel.prototype.translateSide = function (dx, dy, end) {
                 var topIndex = Number(end),
@@ -4771,12 +4775,14 @@
             /**
              * Translate height of the tunnel.
              * @private
-             * @param {number} dh - the amount of height translation
+             * @param {number} dh
+             * the amount of height translation
              */
             Tunnel.prototype.translateHeight = function (dh) {
                 this.translatePoint(0, dh, 2);
                 this.translatePoint(0, dh, 3);
-                this.options.typeOptions.height = this.points[3].y - this.points[0].y;
+                this.options.typeOptions.height = this.points[3].y -
+                    this.points[0].y;
             };
             return Tunnel;
         }(CrookedLine));
@@ -5160,7 +5166,9 @@
                 var _this = this;
                 var options = this.options,
                     typeOptions = options.typeOptions;
-                options.controlPointOptions.style.cursor = this.chart.inverted ? 'ns-resize' : 'ew-resize';
+                options.controlPointOptions.style.cursor = this.chart.inverted ?
+                    'ns-resize' :
+                    'ew-resize';
                 typeOptions.controlPointOptions.forEach(function (option) {
                     var controlPointsOptions = merge(options.controlPointOptions,
                         option);
@@ -5188,15 +5196,17 @@
                 if (!xValue1 || !xValue2) {
                     return;
                 }
-                var y = isNumber(yValue) ? yAxis.toPixels(yValue) : yAxis.top + yAxis.height,
+                var y = isNumber(yValue) ?
+                        yAxis.toPixels(yValue) :
+                        yAxis.top + yAxis.height,
                     x = isNumber(xValue1) ? xAxis.toPixels(xValue1) : xAxis.left,
                     x2 = isNumber(xValue2) ? xAxis.toPixels(xValue2) : xAxis.left + 30,
                     xAxisLength = xAxis.len,
                     pixelInterval = Math.round(Math.max(Math.abs(x2 - x), 2)), 
                     // There can be 2 not full circles on the chart, so add 2.
                     numberOfCircles = Math.floor(xAxisLength / pixelInterval) + 2, 
-                    // Calculate where the annotation should start drawing
-                    // relative to first point.
+                    // Calculate where the annotation should start drawing relative to
+                    // first point.
                     pixelShift = (Math.floor((x - xAxis.left) / pixelInterval) + 1) * pixelInterval;
                 this.startX = x - pixelShift;
                 this.y = y;
@@ -5791,7 +5801,8 @@
                 };
             };
             Pitchfork.findEdgePoint = function (point, firstAnglePoint, secondAnglePoint) {
-                var angle = Math.atan2(secondAnglePoint.plotY - firstAnglePoint.plotY,
+                var angle = Math.atan2((secondAnglePoint.plotY -
+                        firstAnglePoint.plotY),
                     secondAnglePoint.plotX - firstAnglePoint.plotX),
                     distance = 1e7;
                 return {
@@ -6192,7 +6203,6 @@
             /**
              * Get measure points configuration objects.
              * @private
-             * @return {Array<Highcharts.AnnotationMockPointOptionsObject>}
              */
             Measure.prototype.pointsOptions = function () {
                 return this.options.points;
@@ -6200,7 +6210,6 @@
             /**
              * Get points configuration objects for shapes.
              * @private
-             * @return {Array<Highcharts.AnnotationMockPointOptionsObject>}
              */
             Measure.prototype.shapePointsOptions = function () {
                 var options = this.options.typeOptions,
@@ -6270,8 +6279,8 @@
                     return;
                 }
                 if (this.labels.length > 0) {
-                    this.labels[0].text = (formatter && formatter.call(this)) ||
-                        Measure.calculations.defaultFormatter.call(this);
+                    this.labels[0].text = ((formatter && formatter.call(this)) ||
+                        Measure.calculations.defaultFormatter.call(this));
                 }
                 else {
                     this.initLabel(extend({
@@ -6406,10 +6415,14 @@
              * Translate start or end ("left" or "right") side of the measure.
              * Update start points (startXMin, startXMax, startYMin, startYMax)
              * @private
-             * @param {number} dx - the amount of x translation
-             * @param {number} dy - the amount of y translation
-             * @param {number} cpIndex - index of control point
-             * @param {Highcharts.AnnotationDraggableValue} selectType - x / y / xy
+             * @param {number} dx
+             * the amount of x translation
+             * @param {number} dy
+             * the amount of y translation
+             * @param {number} cpIndex
+             * index of control point
+             * @param {Highcharts.AnnotationDraggableValue} selectType
+             * x / y / xy
              */
             Measure.prototype.resize = function (dx, dy, cpIndex, selectType) {
                 // background shape
@@ -6448,8 +6461,10 @@
              * Redraw event which render elements and update start points if needed.
              * @private
              * @param {boolean} animation
-             * @param {boolean} [resize] - flag if resized
-             * @param {boolean} [setStartPoints] - update position of start points
+             * @param {boolean} [resize]
+             * flag if resized
+             * @param {boolean} [setStartPoints]
+             * update position of start points
              */
             Measure.prototype.redraw = function (animation, resize, setStartPoints) {
                 this.linkPoints();
@@ -6920,7 +6935,7 @@
                      *
                      * </table>
                      *
-                     * @type      {function}
+                     * @type {Function}
                      *
                      */
                     formatter: void 0
@@ -7313,7 +7328,9 @@
                     navigation.eventsToUnbind.push(addEvent(subContainer, 'click', function (event) {
                         var bindings = navigation.getButtonEvents(subContainer,
                             event);
-                        if (bindings && bindings.button.className.indexOf('highcharts-disabled-btn') === -1) {
+                        if (bindings &&
+                            bindings.button.className
+                                .indexOf('highcharts-disabled-btn') === -1) {
                             navigation.bindingsButtonClick(bindings.button, bindings.events, event);
                         }
                     }));
@@ -7359,7 +7376,7 @@
              * @param {Highcharts.HTMLDOMElement} [button]
              *        Clicked button
              *
-             * @param {object} events
+             * @param {Object} events
              *        Events passed down from bindings (`init`, `start`, `step`, `end`)
              *
              * @param {Highcharts.PointerEventObject} clickEvent
@@ -7472,8 +7489,7 @@
                         navigation.stepIndex++;
                         if (selectedButton.steps[navigation.stepIndex]) {
                             // If we have more steps, bind them one by one:
-                            navigation.mouseMoveEvent = navigation.nextEvent =
-                                selectedButton.steps[navigation.stepIndex];
+                            navigation.mouseMoveEvent = navigation.nextEvent = selectedButton.steps[navigation.stepIndex];
                         }
                         else {
                             fireEvent(navigation, 'deselectButton', { button: navigation.selectedButtonElement });
@@ -7607,10 +7623,10 @@
                  * @param {string} key
                  *        Option name, for example "visible" or "x", "y"
                  *
-                 * @param {object} parentEditables
+                 * @param {Object} parentEditables
                  *        Editables from NavigationBindings.annotationsEditable
                  *
-                 * @param {object} parent
+                 * @param {Object} parent
                  *        Where new options will be assigned
                  */
                 function traverse(option, key, parentEditables, parent) {
@@ -7651,7 +7667,9 @@
                                 parent[key] = nextParent;
                             }
                             objectEach(option, function (nestedOption, nestedKey) {
-                                traverse(nestedOption, nestedKey, key === 0 ? parentEditables : nestedEditables[key], nextParent);
+                                traverse(nestedOption, nestedKey, key === 0 ?
+                                    parentEditables :
+                                    nestedEditables[key], nextParent);
                             });
                         }
                         else {
@@ -7690,14 +7708,14 @@
              *
              * @function Highcharts.NavigationBindings#getClickedClassNames
              *
-             * @param {Highcharts.HTMLDOMElement}
-             *        Container that event is bound to.
+             * @param {Highcharts.HTMLDOMElement} container
+             * Container that event is bound to.
              *
              * @param {global.Event} event
-             *        Browser's event.
+             * Browser's event.
              *
              * @return {Array<Array<string, Highcharts.HTMLDOMElement>>}
-             *         Array of class names with corresponding elements
+             * Array of class names with corresponding elements
              */
             NavigationBindings.prototype.getClickedClassNames = function (container, event) {
                 var element = event.target,
@@ -7735,7 +7753,7 @@
              * @param {global.Event} event
              *        Browser's event.
              *
-             * @return {object}
+             * @return {Object}
              *         Object with events (init, start, steps, and end)
              */
             NavigationBindings.prototype.getButtonEvents = function (container, event) {
@@ -7902,10 +7920,10 @@
                                 if (annotation.options.type === 'measure') {
                                     // Manually disable crooshars according to
                                     // stroke width of the shape:
-                                    typeOptions.crosshairY.enabled =
-                                        typeOptions.crosshairY.strokeWidth !== 0;
-                                    typeOptions.crosshairX.enabled =
-                                        typeOptions.crosshairX.strokeWidth !== 0;
+                                    typeOptions.crosshairY.enabled = (typeOptions.crosshairY
+                                        .strokeWidth !== 0);
+                                    typeOptions.crosshairX.enabled = (typeOptions.crosshairX
+                                        .strokeWidth !== 0);
                                 }
                                 annotation.update(config);
                             }
@@ -8062,7 +8080,8 @@
                                         },
                                         r: 5
                                     }]
-                            }, navigation.annotationsOptions, navigation.bindings.circleAnnotation.annotationsOptions));
+                            }, navigation.annotationsOptions, navigation.bindings.circleAnnotation
+                                .annotationsOptions));
                         },
                         /** @ignore-option */
                         steps: [
@@ -8116,7 +8135,8 @@
                                         ry: 1
                                     }
                                 ]
-                            }, navigation.annotationsOptions, navigation.bindings.ellipseAnnotation.annotationOptions));
+                            }, navigation.annotationsOptions, navigation.bindings.ellipseAnnotation
+                                .annotationOptions));
                         },
                         steps: [
                             function (e, annotation) {
@@ -8259,7 +8279,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.3.1/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.3.2/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -8342,28 +8362,29 @@
                     if (chart.navigationBindings &&
                         chart.navigationBindings.container &&
                         chart.navigationBindings.container[0]) {
-                        // Get the HTML element coresponding to the
-                        // className taken from StockToolsBindings.
-                        var buttonNode = chart.navigationBindings.container[0].querySelectorAll('.' + key);
+                        // Get the HTML element coresponding to the className taken
+                        // from StockToolsBindings.
+                        var buttonNode = chart.navigationBindings.container[0]
+                                .querySelectorAll('.' + key);
                         if (buttonNode) {
                             for (var i = 0; i < buttonNode.length; i++) {
-                                var button = buttonNode[i];
+                                var button = buttonNode[i],
+                                    cls = button.className;
                                 if (value.noDataState === 'normal') {
-                                    // If button has noDataState: 'normal',
-                                    // and has disabledClassName,
-                                    // remove this className.
-                                    if (button.className.indexOf(disabledClassName) !== -1) {
+                                    // If button has noDataState: 'normal', and has
+                                    // disabledClassName, remove this className.
+                                    if (cls.indexOf(disabledClassName) !== -1) {
                                         button.classList.remove(disabledClassName);
                                     }
                                 }
                                 else if (!buttonsEnabled_1) {
-                                    if (button.className.indexOf(disabledClassName) === -1) {
+                                    if (cls.indexOf(disabledClassName) === -1) {
                                         button.className += ' ' + disabledClassName;
                                     }
                                 }
                                 else {
                                     // Enable all buttons by deleting the className.
-                                    if (button.className.indexOf(disabledClassName) !== -1) {
+                                    if (cls.indexOf(disabledClassName) !== -1) {
                                         button.classList.remove(disabledClassName);
                                     }
                                 }
@@ -8379,7 +8400,7 @@
 
         return NavigationBindings;
     });
-    _registerModule(_modules, 'Extensions/Annotations/Popup.js', [_modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (H, NavigationBindings, D, Pointer, U) {
+    _registerModule(_modules, 'Extensions/Annotations/Popup.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Globals.js'], _modules['Extensions/Annotations/NavigationBindings.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Pointer.js'], _modules['Core/Utilities.js']], function (AST, H, NavigationBindings, D, Pointer, U) {
         /* *
          *
          *  Popup generator for Stock tools
@@ -8602,12 +8623,10 @@
              * @private
              *
              * @param {Highcharts.HTMLDOMElement} parentDiv
-             *        The container where inputs and selections are created.
+             * The container where inputs and selections are created.
              *
              * @param {string} type
-             *         Type of the popup bookmark (add|edit|remove).
-             *
-             * @return {Highcharts.PopupFieldsObject}
+             * Type of the popup bookmark (add|edit|remove).
              */
             getFields: function (parentDiv, type) {
                 var inputList = Array.prototype.slice.call(parentDiv.querySelectorAll(INPUT)), selectList = Array.prototype.slice.call(parentDiv.querySelectorAll(SELECT)), optionSeries = '#' + PREFIX + 'select-series > option:checked', optionVolume = '#' + PREFIX + 'select-volume > option:checked', linkedTo = parentDiv.querySelectorAll(optionSeries)[0], volumeTo = parentDiv.querySelectorAll(optionVolume)[0];
@@ -8634,13 +8653,15 @@
                 selectList.forEach(function (select) {
                     var id = select.id;
                     // Get inputs only for the parameters, not for series and volume.
-                    if (id !== PREFIX + 'select-series' && id !== PREFIX + 'select-volume') {
+                    if (id !== PREFIX + 'select-series' &&
+                        id !== PREFIX + 'select-volume') {
                         var parameter = id.split('highcharts-select-')[1];
                         fieldsOutput.fields[parameter] = select.value;
                     }
                 });
                 if (volumeTo) {
-                    fieldsOutput.fields['params.volumeSeriesID'] = volumeTo.getAttribute('value') || '';
+                    fieldsOutput.fields['params.volumeSeriesID'] = volumeTo
+                        .getAttribute('value') || '';
                 }
                 return fieldsOutput;
             },
@@ -8655,7 +8676,7 @@
                         .querySelectorAll('.' + PREFIX + 'popup-close')[0];
                 this.formType = void 0;
                 // reset content
-                popupDiv.innerHTML = '';
+                popupDiv.innerHTML = AST.emptyHTML;
                 // reset toolbar styles if exists
                 if (popupDiv.className.indexOf(toolbarClass) >= 0) {
                     popupDiv.classList.remove(toolbarClass);
@@ -8789,7 +8810,7 @@
                     lhsCol.appendChild(doc.createTextNode(lang[options.langKey] || options.langKey || ''));
                     // left column
                     lhsCol = createElement(DIV, {
-                        className: PREFIX + 'popup-lhs-col ' + PREFIX + 'popup-lhs-full'
+                        className: (PREFIX + 'popup-lhs-col ' + PREFIX + 'popup-lhs-full')
                     }, void 0, popupDiv);
                     bottomRow = createElement(DIV, {
                         className: PREFIX + 'popup-bottom-row'
@@ -8956,7 +8977,8 @@
                                     alias = indicatorAliases &&
                                         indicatorAliases[indicatorType] &&
                                         indicatorAliases[indicatorType].join(' ') || '';
-                                if (indicatorFullName.match(regex) || alias.match(regex)) {
+                                if (indicatorFullName.match(regex) ||
+                                    alias.match(regex)) {
                                     filteredSeries = {
                                         indicatorFullName: indicatorFullName,
                                         indicatorType: indicatorType,
@@ -9064,8 +9086,7 @@
                     indicatorList = createElement(UL, {
                         className: PREFIX + 'indicator-list'
                     }, void 0, lhsCol);
-                    rhsColWrapper = rhsCol
-                        .querySelectorAll('.' + PREFIX + 'popup-rhs-col-wrapper')[0];
+                    rhsColWrapper = rhsCol.querySelectorAll('.' + PREFIX + 'popup-rhs-col-wrapper')[0];
                     filteredSeriesArray.forEach(function (seriesSet) {
                         var indicatorFullName = seriesSet.indicatorFullName,
                             indicatorType = seriesSet.indicatorType,
@@ -9076,7 +9097,8 @@
                         item.appendChild(doc.createTextNode(indicatorFullName));
                         ['click', 'touchstart'].forEach(function (eventName) {
                             addEvent(item, eventName, function () {
-                                var button = rhsColWrapper.parentNode.children[1];
+                                var button = rhsColWrapper.parentNode
+                                        .children[1];
                                 addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
                                 if (button) {
                                     button.style.display = 'block';
@@ -9097,8 +9119,9 @@
                         indicatorList.childNodes[0].click();
                     }
                     else if (!isEdit) {
-                        rhsColWrapper.parentNode.children[0].innerHTML = lang.noFilterMatch || '';
-                        rhsColWrapper.parentNode.children[1].style.display = 'none';
+                        AST.setElementHTML(rhsColWrapper.parentNode.children[0], lang.noFilterMatch || '');
+                        rhsColWrapper.parentNode.children[1]
+                            .style.display = 'none';
                     }
                 },
                 /**
@@ -9168,15 +9191,13 @@
                  * @private
                  *
                  * @param {string} indicatorType
-                 *        Type of the indicator i.e. sma, ema...
+                 * Type of the indicator i.e. sma, ema...
                  *
                  * @param {string} [optionName]
-                 *        Name of the option into which selection is being added.
+                 * Name of the option into which selection is being added.
                  *
                  * @param {HTMLDOMElement} [parentDiv]
-                 *        HTML parent element.
-                 *
-                 * @return {HTMLSelectElement}
+                 * HTML parent element.
                  */
                 addSelection: function (indicatorType, optionName, parentDiv) {
                     var optionParamList = optionName.split('.'),
@@ -9228,9 +9249,13 @@
                         chart.series.forEach(function (series) {
                             var seriesOptions = series.options,
                                 seriesName = seriesOptions.name ||
-                                    seriesOptions.params ? series.name : seriesOptions.id || '';
+                                    seriesOptions.params ?
+                                    series.name :
+                                    seriesOptions.id || '';
                             if (seriesOptions.id !== PREFIX + 'navigator-series' &&
-                                seriesOptions.id !== (currentSeries && currentSeries.options && currentSeries.options.id)) {
+                                seriesOptions.id !== (currentSeries &&
+                                    currentSeries.options &&
+                                    currentSeries.options.id)) {
                                 if (!defined(selectedOption) &&
                                     optionName === 'volume' &&
                                     series.type === 'column') {
@@ -9263,14 +9288,14 @@
                  * @private
                  *
                  * @param {Highcharts.Series} series
-                 *        Series which name is needed(EDITmode - defaultOptions.series,
-                 *        ADDmode - indicator series).
+                 * Series which name is needed(EDITmode - defaultOptions.series,
+                 * ADDmode - indicator series).
                  *
-                 * @param {string} [IndicatorType]
-                 *        Type of the indicator i.e. sma, ema...
+                 * @param {string} [indicatorType]
+                 * Type of the indicator i.e. sma, ema...
                  *
-                 * @return Highcharts.Dictionary<string>
-                 *        Full name and series type.
+                 * @return {Highcharts.Dictionary<string>}
+                 * Full name and series type.
                  */
                 getNameType: function (series, indicatorType) {
                     var options = series.options,
@@ -9350,7 +9375,7 @@
                     var fields = series.params || series.options.params,
                         getNameType = this.indicators.getNameType;
                     // reset current content
-                    rhsColWrapper.innerHTML = '';
+                    rhsColWrapper.innerHTML = AST.emptyHTML;
                     // create title (indicator name in the right column)
                     createElement(H3, {
                         className: PREFIX + 'indicator-title'
@@ -9400,8 +9425,9 @@
                         if (defined(value) && // skip if field is unnecessary, #15362
                             parentFullName) {
                             if (isObject(value)) {
-                                addInput.call(// (15733) 'Periods' has an arrayed value. Label must be created here.
-                                popup, parentFullName, type, parentDiv, {});
+                                // (15733) 'Periods' has an arrayed value. Label must be
+                                // created here.
+                                addInput.call(popup, parentFullName, type, parentDiv, {});
                                 addParamInputs.call(popup, chart, parentFullName, value, type, parentDiv);
                             }
                             // If the option is listed in dropdown enum,
@@ -9505,7 +9531,9 @@
                 addContentItem: function () {
                     var popupDiv = this.popup.container;
                     return createElement(DIV, {
-                        className: PREFIX + 'tab-item-content ' + PREFIX + 'no-mousewheel' // #12100
+                        // #12100
+                        className: PREFIX + 'tab-item-content ' +
+                            PREFIX + 'no-mousewheel'
                     }, void 0, popupDiv);
                 },
                 /**
@@ -9569,7 +9597,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/9.3.1/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/9.3.2/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

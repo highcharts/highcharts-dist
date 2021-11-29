@@ -137,7 +137,6 @@ var DumbbellSeries = /** @class */ (function (_super) {
      *
      * @param {Highcharts.Point} point The point to inspect.
      *
-     * @return {void}
      */
     DumbbellSeries.prototype.drawConnector = function (point) {
         var series = this, animationLimit = pick(series.options.animationLimit, 250), verb = point.connector && series.chart.pointCount < animationLimit ?
@@ -180,7 +179,6 @@ var DumbbellSeries = /** @class */ (function (_super) {
      *
      * @param {Highcharts.Series} this The series of points.
      *
-     * @return {void}
      */
     DumbbellSeries.prototype.translate = function () {
         // Calculate shapeargs
@@ -205,7 +203,6 @@ var DumbbellSeries = /** @class */ (function (_super) {
      *
      * @param {Highcharts.Series} this The series of points.
      *
-     * @return {void}
      */
     DumbbellSeries.prototype.drawPoints = function () {
         var series = this, chart = series.chart, pointLength = series.points.length, seriesLowColor = series.lowColor = series.options.lowColor, i = 0, lowerGraphicColor, point, zoneColor;

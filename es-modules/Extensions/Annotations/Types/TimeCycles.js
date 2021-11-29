@@ -103,7 +103,9 @@ var TimeCycles = /** @class */ (function (_super) {
     TimeCycles.prototype.addControlPoints = function () {
         var _this = this;
         var options = this.options, typeOptions = options.typeOptions;
-        options.controlPointOptions.style.cursor = this.chart.inverted ? 'ns-resize' : 'ew-resize';
+        options.controlPointOptions.style.cursor = this.chart.inverted ?
+            'ns-resize' :
+            'ew-resize';
         typeOptions.controlPointOptions.forEach(function (option) {
             var controlPointsOptions = merge(options.controlPointOptions, option);
             var controlPoint = new ControlPoint(_this.chart, _this, controlPointsOptions, 0);
@@ -119,11 +121,13 @@ var TimeCycles = /** @class */ (function (_super) {
         if (!xValue1 || !xValue2) {
             return;
         }
-        var y = isNumber(yValue) ? yAxis.toPixels(yValue) : yAxis.top + yAxis.height, x = isNumber(xValue1) ? xAxis.toPixels(xValue1) : xAxis.left, x2 = isNumber(xValue2) ? xAxis.toPixels(xValue2) : xAxis.left + 30, xAxisLength = xAxis.len, pixelInterval = Math.round(Math.max(Math.abs(x2 - x), 2)), 
+        var y = isNumber(yValue) ?
+            yAxis.toPixels(yValue) :
+            yAxis.top + yAxis.height, x = isNumber(xValue1) ? xAxis.toPixels(xValue1) : xAxis.left, x2 = isNumber(xValue2) ? xAxis.toPixels(xValue2) : xAxis.left + 30, xAxisLength = xAxis.len, pixelInterval = Math.round(Math.max(Math.abs(x2 - x), 2)), 
         // There can be 2 not full circles on the chart, so add 2.
         numberOfCircles = Math.floor(xAxisLength / pixelInterval) + 2, 
-        // Calculate where the annotation should start drawing
-        // relative to first point.
+        // Calculate where the annotation should start drawing relative to
+        // first point.
         pixelShift = (Math.floor((x - xAxis.left) / pixelInterval) + 1) * pixelInterval;
         this.startX = x - pixelShift;
         this.y = y;

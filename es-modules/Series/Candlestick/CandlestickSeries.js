@@ -95,7 +95,6 @@ var CandlestickSeries = /** @class */ (function (_super) {
      *
      * @private
      * @function Highcharts.seriesTypes.candlestick#drawPoints
-     * @return {void}
      */
     CandlestickSeries.prototype.drawPoints = function () {
         var series = this, points = series.points, chart = series.chart, reversedYAxis = series.yAxis.reversed;

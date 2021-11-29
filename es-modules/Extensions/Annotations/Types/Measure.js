@@ -62,7 +62,6 @@ var Measure = /** @class */ (function (_super) {
     /**
      * Get measure points configuration objects.
      * @private
-     * @return {Array<Highcharts.AnnotationMockPointOptionsObject>}
      */
     Measure.prototype.pointsOptions = function () {
         return this.options.points;
@@ -70,7 +69,6 @@ var Measure = /** @class */ (function (_super) {
     /**
      * Get points configuration objects for shapes.
      * @private
-     * @return {Array<Highcharts.AnnotationMockPointOptionsObject>}
      */
     Measure.prototype.shapePointsOptions = function () {
         var options = this.options.typeOptions, xAxis = options.xAxis, yAxis = options.yAxis;
@@ -135,8 +133,8 @@ var Measure = /** @class */ (function (_super) {
             return;
         }
         if (this.labels.length > 0) {
-            this.labels[0].text = (formatter && formatter.call(this)) ||
-                Measure.calculations.defaultFormatter.call(this);
+            this.labels[0].text = ((formatter && formatter.call(this)) ||
+                Measure.calculations.defaultFormatter.call(this));
         }
         else {
             this.initLabel(extend({
@@ -255,10 +253,14 @@ var Measure = /** @class */ (function (_super) {
      * Translate start or end ("left" or "right") side of the measure.
      * Update start points (startXMin, startXMax, startYMin, startYMax)
      * @private
-     * @param {number} dx - the amount of x translation
-     * @param {number} dy - the amount of y translation
-     * @param {number} cpIndex - index of control point
-     * @param {Highcharts.AnnotationDraggableValue} selectType - x / y / xy
+     * @param {number} dx
+     * the amount of x translation
+     * @param {number} dy
+     * the amount of y translation
+     * @param {number} cpIndex
+     * index of control point
+     * @param {Highcharts.AnnotationDraggableValue} selectType
+     * x / y / xy
      */
     Measure.prototype.resize = function (dx, dy, cpIndex, selectType) {
         // background shape
@@ -297,8 +299,10 @@ var Measure = /** @class */ (function (_super) {
      * Redraw event which render elements and update start points if needed.
      * @private
      * @param {boolean} animation
-     * @param {boolean} [resize] - flag if resized
-     * @param {boolean} [setStartPoints] - update position of start points
+     * @param {boolean} [resize]
+     * flag if resized
+     * @param {boolean} [setStartPoints]
+     * update position of start points
      */
     Measure.prototype.redraw = function (animation, resize, setStartPoints) {
         this.linkPoints();
@@ -725,7 +729,7 @@ Measure.prototype.defaultOptions = merge(Annotation.prototype.defaultOptions,
              *
              * </table>
              *
-             * @type      {function}
+             * @type {Function}
              *
              */
             formatter: void 0

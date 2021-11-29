@@ -40,17 +40,13 @@ var getFakeMouseEvent = HTMLUtilities.getFakeMouseEvent;
 /* eslint-disable valid-jsdoc */
 /**
  * Get the wrapped export button element of a chart.
- *
  * @private
- * @param {Highcharts.Chart} chart
- * @returns {Highcharts.SVGElement}
  */
 function getExportMenuButtonElement(chart) {
     return chart.exportSVGElements && chart.exportSVGElements[0];
 }
 /**
  * @private
- * @param {Highcharts.Chart} chart
  */
 function exportingShouldHaveA11y(chart) {
     var exportingOpts = chart.options.exporting, exportButton = getExportMenuButtonElement(chart);
@@ -195,7 +191,7 @@ var MenuComponent = /** @class */ (function (_super) {
     };
     /**
      * Get keyboard navigation handler for this component.
-     * @return {Highcharts.KeyboardNavigationHandler}
+     * @private
      */
     MenuComponent.prototype.getKeyboardNavigation = function () {
         var keys = this.keyCodes, chart = this.chart, component = this;
@@ -391,10 +387,6 @@ var MenuComponent = /** @class */ (function (_super) {
      *
      * @private
      * @function Highcharts.Chart#highlightExportItem
-     *
-     * @param {number} ix
-     *
-     * @return {boolean}
      */
     function chartHighlightExportItem(ix) {
         var listItem = this.exportDivElements && this.exportDivElements[ix];
@@ -426,7 +418,6 @@ var MenuComponent = /** @class */ (function (_super) {
      *
      * @private
      * @function Highcharts.Chart#highlightLastExportItem
-     * @return {boolean}
      */
     function chartHighlightLastExportItem() {
         var chart = this;

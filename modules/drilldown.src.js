@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Highcharts Drilldown module
  *
@@ -341,7 +341,7 @@
                  * @sample {highmaps} highcharts/drilldown/drillupbutton/
                  *         Button theming
                  *
-                 * @type      {object}
+                 * @type      {Object}
                  * @since     3.0.8
                  * @product   highcharts highmaps
                  * @apioption drilldown.drillUpButton.theme
@@ -777,8 +777,13 @@
         addEvent(Chart, 'afterShowResetZoom', function () {
             var chart = this,
                 bbox = chart.resetZoomButton && chart.resetZoomButton.getBBox(),
-                buttonOptions = chart.options.drilldown && chart.options.drilldown.drillUpButton;
-            if (this.drillUpButton && bbox && buttonOptions && buttonOptions.position && buttonOptions.position.x) {
+                buttonOptions = (chart.options.drilldown &&
+                    chart.options.drilldown.drillUpButton);
+            if (this.drillUpButton &&
+                bbox &&
+                buttonOptions &&
+                buttonOptions.position &&
+                buttonOptions.position.x) {
                 this.drillUpButton.align({
                     x: buttonOptions.position.x - bbox.width - 10,
                     y: buttonOptions.position.y,
@@ -1237,7 +1242,7 @@
         // After zooming out, shift the drillUpButton to the previous position, #8095.
         addEvent(Chart, 'selection', function (event) {
             if (event.resetSelection === true && this.drillUpButton) {
-                var buttonOptions = this.options.drilldown && this.options.drilldown.drillUpButton;
+                var buttonOptions = (this.options.drilldown && this.options.drilldown.drillUpButton);
                 if (buttonOptions && buttonOptions.position) {
                     this.drillUpButton.align({
                         x: buttonOptions.position.x,

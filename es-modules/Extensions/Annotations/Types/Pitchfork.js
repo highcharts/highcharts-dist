@@ -45,7 +45,8 @@ var Pitchfork = /** @class */ (function (_super) {
         };
     };
     Pitchfork.findEdgePoint = function (point, firstAnglePoint, secondAnglePoint) {
-        var angle = Math.atan2(secondAnglePoint.plotY - firstAnglePoint.plotY, secondAnglePoint.plotX - firstAnglePoint.plotX), distance = 1e7;
+        var angle = Math.atan2((secondAnglePoint.plotY -
+            firstAnglePoint.plotY), secondAnglePoint.plotX - firstAnglePoint.plotX), distance = 1e7;
         return {
             x: point.plotX + distance * Math.cos(angle),
             y: point.plotY + distance * Math.sin(angle)

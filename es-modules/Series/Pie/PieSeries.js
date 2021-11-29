@@ -926,7 +926,7 @@ var PieSeries = /** @class */ (function (_super) {
          */
         borderWidth: 1,
         /**
-         * @ignore-options
+         * @ignore-option
          * @private
          */
         lineWidth: void 0,

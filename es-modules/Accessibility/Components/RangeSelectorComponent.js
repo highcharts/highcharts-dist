@@ -225,7 +225,8 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
         var newIxOutOfRange = newIx > 1 || newIx < 0;
         if (newIxOutOfRange) {
             if (chart.accessibility) {
-                chart.accessibility.keyboardNavigation.tabindexContainer.focus();
+                chart.accessibility.keyboardNavigation.tabindexContainer
+                    .focus();
                 chart.accessibility.keyboardNavigation[direction < 0 ? 'prev' : 'next']();
             }
         }
@@ -308,13 +309,13 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
             // Tab-press with dropdown focused does not propagate to chart
             // automatically, so we manually catch and handle it when relevant.
             this.removeDropdownKeydownHandler = addEvent(dropdown, 'keydown', function (e) {
-                var isTab = (e.which || e.keyCode) === _this.keyCodes.tab;
+                var isTab = (e.which || e.keyCode) === _this.keyCodes.tab, a11y = chart.accessibility;
                 if (isTab) {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (chart.accessibility) {
-                        chart.accessibility.keyboardNavigation.tabindexContainer.focus();
-                        chart.accessibility.keyboardNavigation[e.shiftKey ? 'prev' : 'next']();
+                    if (a11y) {
+                        a11y.keyboardNavigation.tabindexContainer.focus();
+                        a11y.keyboardNavigation[e.shiftKey ? 'prev' : 'next']();
                     }
                 }
             });
@@ -444,10 +445,6 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
      *
      * @private
      * @function Highcharts.Chart#highlightRangeSelectorButton
-     *
-     * @param {number} ix
-     *
-     * @return {boolean}
      */
     function chartHighlightRangeSelectorButton(ix) {
         var buttons = (this.rangeSelector &&
@@ -481,7 +478,7 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
         if (composedClasses.indexOf(ChartClass) === -1) {
             composedClasses.push(ChartClass);
             var chartProto = ChartClass.prototype;
-            chartProto.highlightRangeSelectorButton = chartHighlightRangeSelectorButton;
+            chartProto.highlightRangeSelectorButton = (chartHighlightRangeSelectorButton);
         }
         if (composedClasses.indexOf(RangeSelectorClass) === -1) {
             composedClasses.push(RangeSelectorClass);
@@ -495,9 +492,9 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
      * @private
      */
     function rangeSelectorAfterBtnClick() {
-        if (this.chart.accessibility &&
-            this.chart.accessibility.components.rangeSelector) {
-            return this.chart.accessibility.components.rangeSelector.onAfterBtnClick();
+        var a11y = this.chart.accessibility;
+        if (a11y && a11y.components.rangeSelector) {
+            return a11y.components.rangeSelector.onAfterBtnClick();
         }
     }
 })(RangeSelectorComponent || (RangeSelectorComponent = {}));

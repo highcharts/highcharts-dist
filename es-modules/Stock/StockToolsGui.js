@@ -628,7 +628,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'label',
                      *   'circle',
@@ -685,7 +685,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'flagCirclepin',
                      *   'flagDiamondpin',
@@ -740,7 +740,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'segment',
                      *   'arrowSegment',
@@ -832,7 +832,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'elliott3',
                      *   'elliott5',
@@ -885,7 +885,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'verticalCounter',
                      *   'verticalLabel',
@@ -927,7 +927,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'fibonacci',
                      *   'fibonacciTimeZones',
@@ -989,7 +989,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'measureXY',
                      *   'measureX',
@@ -1055,7 +1055,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'zoomX',
                      *   'zoomY',
@@ -1097,7 +1097,7 @@ setOptions({
                      * A collection of strings pointing to config options for
                      * the items.
                      *
-                     * @type {array}
+                     * @type {Array}
                      * @default [
                      *   'typeOHLC',
                      *   'typeLine',
@@ -1238,9 +1238,11 @@ addEvent(Chart, 'redraw', function () {
 /**
  * Toolbar Class
  * @private
- * @constructor
- * @param {Object} - options of toolbar
- * @param {Chart} - Reference to chart
+ * @class
+ * @param {Object}
+ * Options of toolbar
+ * @param {Highcharts.Chart}
+ * Reference to chart
  */
 var Toolbar = /** @class */ (function () {
     function Toolbar(options, langOptions, chart) {
@@ -1292,11 +1294,14 @@ var Toolbar = /** @class */ (function () {
     /**
      * Create submenu (list of buttons) for the option. In example main button
      * is Line, in submenu will be buttons with types of lines.
+     *
      * @private
-     * @param {Highcharts.Dictionary<Highcharts.HTMLDOMElement>}
-     * button which has submenu
-     * @param {Highcharts.StockToolsGuiDefinitionsButtonsOptions}
-     * list of all buttons
+     *
+     * @param {Highcharts.Dictionary<Highcharts.HTMLDOMElement>} parentBtn
+     * Button which has submenu
+     *
+     * @param {Highcharts.StockToolsGuiDefinitionsButtonsOptions} button
+     * List of all buttons
      */
     Toolbar.prototype.addSubmenu = function (parentBtn, button) {
         var _self = this, submenuArrow = parentBtn.submenuArrow, buttonWrapper = parentBtn.buttonWrapper, buttonWidth = getStyle(buttonWrapper, 'width'), wrapper = this.wrapper, menuWrapper = this.listWrapper, allButtons = this.toolbar.childNodes, topMargin = 0, submenuWrapper;
@@ -1350,12 +1355,14 @@ var Toolbar = /** @class */ (function () {
     };
     /**
      * Create buttons in submenu
-     * @private
-     * @param {Highcharts.HTMLDOMElement}
-     * button where submenu is placed
-     * @param {Highcharts.StockToolsGuiDefinitionsButtonsOptions}
-     * list of all buttons options
      *
+     * @private
+     *
+     * @param {Highcharts.HTMLDOMElement} buttonWrapper
+     * Button where submenu is placed
+     *
+     * @param {Highcharts.StockToolsGuiDefinitionsButtonsOptions} button
+     * List of all buttons options
      */
     Toolbar.prototype.addSubmenuItems = function (buttonWrapper, button) {
         var _self = this, submenuWrapper = this.submenu, lang = this.lang, menuWrapper = this.listWrapper, items = button.items, firstSubmenuItem, submenuBtn;
@@ -1690,7 +1697,7 @@ var Toolbar = /** @class */ (function () {
     Toolbar.prototype.getIconsURL = function () {
         return this.chart.options.navigation.iconsURL ||
             this.options.iconsURL ||
-            'https://code.highcharts.com/9.3.1/gfx/stock-icons/';
+            'https://code.highcharts.com/9.3.2/gfx/stock-icons/';
     };
     return Toolbar;
 }());
@@ -1790,8 +1797,12 @@ addEvent(Chart, 'render', function () {
         stockTools.toolbar &&
         stockTools.toolbar.querySelector('.highcharts-current-price-indicator');
     // Change the initial button background.
-    if (stockTools && chart.navigationBindings && chart.options.series && button) {
-        if (chart.navigationBindings.constructor.prototype.utils.isPriceIndicatorEnabled(chart.series)) {
+    if (stockTools &&
+        chart.navigationBindings &&
+        chart.options.series &&
+        button) {
+        if (chart.navigationBindings.constructor.prototype.utils
+            .isPriceIndicatorEnabled(chart.series)) {
             button.firstChild.style['background-image'] =
                 'url("' + stockTools.getIconsURL() + 'current-price-hide.svg")';
         }

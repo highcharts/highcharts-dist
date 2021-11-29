@@ -21,6 +21,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+import ColorMapMixin from '../ColorMapMixin.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
 import U from '../../Core/Utilities.js';
@@ -122,6 +123,11 @@ var MapPoint = /** @class */ (function (_super) {
     };
     return MapPoint;
 }(ScatterSeries.prototype.pointClass));
+extend(MapPoint.prototype, {
+    dataLabelOnNull: ColorMapMixin.PointMixin.dataLabelOnNull,
+    isValid: ColorMapMixin.PointMixin.isValid,
+    moveToTopOnHover: ColorMapMixin.PointMixin.moveToTopOnHover
+});
 /* *
  *
  *  Default Export

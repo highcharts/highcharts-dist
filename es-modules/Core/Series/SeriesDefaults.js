@@ -1586,9 +1586,9 @@ var seriesDefaults = {
          */
         // eslint-disable-next-line valid-jsdoc
         /**
-         * Callback JavaScript function to format the data label. Note that
-         * if a `format` is defined, the format takes precedence and the
-         * formatter is ignored.
+         * Callback JavaScript function to format the data label. Note that if a
+         * `format` is defined, the format takes precedence and the formatter is
+         * ignored.
          *
          * @sample {highmaps} maps/plotoptions/series-datalabels-format/
          *         Formatted value
@@ -1597,7 +1597,8 @@ var seriesDefaults = {
          */
         formatter: function () {
             var numberFormatter = this.series.chart.numberFormatter;
-            return typeof this.y !== 'number' ? '' : numberFormatter(this.y, -1);
+            return typeof this.y !== 'number' ?
+                '' : numberFormatter(this.y, -1);
         },
         /**
          * For points with an extent, like columns or map areas, whether to

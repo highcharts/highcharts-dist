@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -195,8 +195,8 @@
                         var hasEvents = !!indicator.dataEventsToUnbind.length;
                     if (indicator.linkedParent) {
                         if (!hasEvents) {
-                            // No matter which indicator,
-                            // always recalculate after updating the data.
+                            // No matter which indicator, always recalculate after
+                            // updating the data.
                             indicator.dataEventsToUnbind.push(addEvent(indicator.linkedParent, 'updatedData', function () {
                                 indicator.recalculateValues();
                             }));
@@ -241,7 +241,6 @@
             };
             /**
              * @private
-             * @return {void}
              */
             SMAIndicator.prototype.recalculateValues = function () {
                 var indicator = this,

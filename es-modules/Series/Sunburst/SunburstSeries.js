@@ -395,7 +395,7 @@ var SunburstSeries = /** @class */ (function (_super) {
             };
         }
         points.forEach(function (point) {
-            var node = point.node, level = mapOptionsToLevel[node.level], shapeExisting = point.shapeExisting || {}, shape = node.shapeArgs || {}, animationInfo, onComplete, visible = !!(node.visible && node.shapeArgs);
+            var node = point.node, level = mapOptionsToLevel[node.level], shapeExisting = (point.shapeExisting || {}), shape = node.shapeArgs || {}, animationInfo, onComplete, visible = !!(node.visible && node.shapeArgs);
             if (hasRendered && animation) {
                 animationInfo = getAnimation(shape, {
                     center: center,
@@ -689,7 +689,7 @@ var SunburstSeries = /** @class */ (function (_super) {
         /**
          * Can set a `levelSize` on all points which lies on the same level.
          *
-         * @type      {object}
+         * @type      {Object}
          * @apioption plotOptions.sunburst.levels.levelSize
          */
         /**

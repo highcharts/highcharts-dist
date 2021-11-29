@@ -307,7 +307,7 @@ bindingsUtils.isNotNavigatorYAxis = function (axis) {
  * @private
  * @function bindingsUtils.isLastPriceEnabled
  *
- * @param {array} series
+ * @param {Array} series
  *        Array of series.
  *
  * @return {boolean}
@@ -399,7 +399,8 @@ extend(NavigationBindings.prototype, {
                 if (!isNumber(height)) {
                     // Check if the previous axis is the
                     // indicator axis (every indicator inherits from sma)
-                    height = yAxes[index - 1].series.every(function (s) { return s.is('sma'); }) ?
+                    height = yAxes[index - 1].series
+                        .every(function (s) { return s.is('sma'); }) ?
                         previousAxisHeight : defaultHeight / 100;
                 }
                 if (!isNumber(top)) {
@@ -800,7 +801,8 @@ var stockToolsBindings = {
                             y: coordsY.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.arrowInfinityLine.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings.arrowInfinityLine
+                .annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -1302,7 +1304,8 @@ var stockToolsBindings = {
                         { x: x, y: y }
                     ]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.parallelChannel.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings.parallelChannel
+                .annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -1578,7 +1581,8 @@ var stockToolsBindings = {
                             x: coordsX.value
                         }]
                 }
-            }, navigation.annotationsOptions, navigation.bindings.fibonacciTimeZones.annotationsOptions);
+            }, navigation.annotationsOptions, navigation.bindings.fibonacciTimeZones
+                .annotationsOptions);
             return this.chart.addAnnotation(options);
         },
         /** @ignore-option */
@@ -1879,7 +1883,10 @@ var stockToolsBindings = {
                 series.forEach(function (series) {
                     series.update({
                         lastPrice: { enabled: !priceIndicatorEnabled },
-                        lastVisiblePrice: { enabled: !priceIndicatorEnabled, label: { enabled: true } }
+                        lastVisiblePrice: {
+                            enabled: !priceIndicatorEnabled,
+                            label: { enabled: true }
+                        }
                     }, false);
                 });
                 chart.redraw();

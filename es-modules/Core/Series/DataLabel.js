@@ -245,8 +245,10 @@ var DataLabel;
                 // Merge in series options for the point.
                 // @note dataLabelAttribs (like pointAttribs) would eradicate
                 // the need for dlOptions, and simplify the section below.
-                pointOptions = splat(mergeArrays(seriesDlOptions, point.dlOptions || // dlOptions is used in treemaps
-                    (point.options && point.options.dataLabels)));
+                pointOptions = splat(mergeArrays(seriesDlOptions, 
+                // dlOptions is used in treemaps
+                (point.dlOptions ||
+                    (point.options && point.options.dataLabels))));
                 // Handle each individual data label for this point
                 pointOptions.forEach(function (labelOptions, i) {
                     // Options for one datalabel
@@ -256,8 +258,8 @@ var DataLabel;
                         applyFilter(point, labelOptions)), connector = point.connectors ?
                         point.connectors[i] :
                         point.connector;
-                    var labelConfig, formatString, labelText, style, rotation, attr, dataLabel = point.dataLabels ? point.dataLabels[i] :
-                        point.dataLabel;
+                    var labelConfig, formatString, labelText, style, rotation, attr, dataLabel = point.dataLabels ?
+                        point.dataLabels[i] : point.dataLabel;
                     var labelDistance = pick(labelOptions.distance, point.labelDistance), isNew = !dataLabel;
                     if (labelEnabled) {
                         // Create individual options structure that can be
@@ -310,8 +312,10 @@ var DataLabel;
                     }
                     // If the point is outside the plot area, destroy it. #678,
                     // #820
-                    if (dataLabel && (!labelEnabled || !defined(labelText))) {
-                        point.dataLabel =
+                    if (dataLabel && (!labelEnabled ||
+                        !defined(labelText) ||
+                        !!dataLabel.div !== !!labelOptions.useHTML)) {
+                        point.dataLabel = dataLabel =
                             point.dataLabel && point.dataLabel.destroy();
                         if (point.dataLabels) {
                             // Remove point.dataLabels if this was the last one
@@ -338,11 +342,11 @@ var DataLabel;
                                 }
                             }
                         }
-                        // Individual labels are disabled if the are explicitly
-                        // disabled in the point options, or if they fall outside
-                        // the plot area.
                     }
-                    else if (labelEnabled && defined(labelText)) {
+                    // Individual labels are disabled if the are explicitly
+                    // disabled in the point options, or if they fall outside
+                    // the plot area.
+                    if (labelEnabled && defined(labelText)) {
                         if (!dataLabel) {
                             // Create new label element
                             point.dataLabels = point.dataLabels || [];
@@ -356,7 +360,8 @@ var DataLabel;
                             if (!i) {
                                 point.dataLabel = dataLabel;
                             }
-                            dataLabel.addClass(' highcharts-data-label-color-' + point.colorIndex +
+                            dataLabel.addClass(' highcharts-data-label-color-' +
+                                point.colorIndex +
                                 ' ' + (labelOptions.className || '') +
                                 ( // #3398
                                 labelOptions.useHTML ?
@@ -384,7 +389,7 @@ var DataLabel;
                             if (point.dataLabelPath &&
                                 !labelOptions.textPath.enabled) {
                                 // clean the DOM
-                                point.dataLabelPath = point.dataLabelPath.destroy();
+                                point.dataLabelPath = (point.dataLabelPath.destroy());
                             }
                         }
                         // Now the data label is created and placed at 0,0, so

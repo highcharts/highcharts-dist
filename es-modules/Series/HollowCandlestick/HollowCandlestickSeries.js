@@ -78,13 +78,15 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
      *
      * @function Highcharts.seriesTypes.hollowcandlestick#getPriceMovement
      *
-     * @return {void}
      *
      */
     HollowCandlestickSeries.prototype.getPriceMovement = function () {
-        var series = this, processedYData = series.allGroupedData || series.yData, // procesed and grouped data
-        hollowCandlestickData = this.hollowCandlestickData;
-        if (!hollowCandlestickData.length && processedYData && processedYData.length) {
+        var series = this, 
+        // procesed and grouped data
+        processedYData = series.allGroupedData || series.yData, hollowCandlestickData = this.hollowCandlestickData;
+        if (!hollowCandlestickData.length &&
+            processedYData &&
+            processedYData.length) {
             // First point is allways bullish (transparent).
             hollowCandlestickData.push({
                 isBullish: true,
@@ -103,10 +105,10 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
      * @function Highcharts.seriesTypes.hollowcandlestick#getLineColor
      *
      * @param {string} trendDirection
-     *        Type of candle direction (bearish/bullish)(down/up).
+     * Type of candle direction (bearish/bullish)(down/up).
      *
      * @return {ColorType}
-     *
+     * Line color
      */
     HollowCandlestickSeries.prototype.getLineColor = function (trendDirection) {
         var series = this;
@@ -125,7 +127,7 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
      *        Information about the current candle.
      *
      * @return {ColorType}
-     *
+     * Point fill color
      */
     HollowCandlestickSeries.prototype.getPointFill = function (hollowcandleInfo) {
         var series = this;
@@ -140,7 +142,6 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
     /**
      * @private
      * @function Highcarts.seriesTypes.hollowcandlestick#init
-     * @return {void}
      */
     HollowCandlestickSeries.prototype.init = function () {
         _super.prototype.init.apply(this, arguments);
@@ -153,13 +154,10 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
      * @function Highcharts.seriesTypes.hollowcandlestick#isBullish
      *
      * @param {Array<(number)>} dataPoint
-     *        Current point which we calculate.
-
-      * @param {Array<(number)>} previousDataPoint
-     *        Previous point.
+     * Current point which we calculate.
      *
-     * @return {HollowcandleInfo}
-     *
+     * @param {Array<(number)>} previousDataPoint
+     * Previous point.
      */
     HollowCandlestickSeries.prototype.isBullish = function (dataPoint, previousDataPoint) {
         return {
@@ -172,21 +170,22 @@ var HollowCandlestickSeries = /** @class */ (function (_super) {
     /**
      * Add color and fill attribute for each point.
      *
+     * @private
+     *
      * @function Highcharts.seriesTypes.hollowcandlestick#pointAttribs
      *
      * @param {HollowCandlestickPoint} point
-     *        Point to which we are adding attributes.
+     * Point to which we are adding attributes.
+     *
      * @param {StatesOptionsKey} state
-     *        Current point state.
-     *
-     * @return {SVGAttributes}
-     *
+     * Current point state.
      */
     HollowCandlestickSeries.prototype.pointAttribs = function (point, state) {
         var attribs = _super.prototype.pointAttribs.call(this, point, state), stateOptions;
         var index = point.index, hollowcandleInfo = this.hollowCandlestickData[index];
         attribs.fill = this.getPointFill(hollowcandleInfo) || attribs.fill;
-        attribs.stroke = this.getLineColor(hollowcandleInfo.trendDirection) || attribs.stroke;
+        attribs.stroke = this.getLineColor(hollowcandleInfo.trendDirection) ||
+            attribs.stroke;
         // Select or hover states
         if (state) {
             stateOptions = this.options.states[state];

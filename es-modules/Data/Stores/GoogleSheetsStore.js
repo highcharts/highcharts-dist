@@ -65,7 +65,9 @@ var GoogleSheetsStore = /** @class */ (function (_super) {
     function GoogleSheetsStore(table, options, parser) {
         var _this = _super.call(this, table) || this;
         _this.options = merge(GoogleSheetsStore.defaultOptions, options);
-        _this.parser = parser || new GoogleSheetsParser({ firstRowAsNames: _this.options.firstRowAsNames });
+        _this.parser = parser || new GoogleSheetsParser({
+            firstRowAsNames: _this.options.firstRowAsNames
+        });
         return _this;
     }
     /* *

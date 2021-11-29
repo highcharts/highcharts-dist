@@ -45,13 +45,17 @@ var ProxyElement = /** @class */ (function () {
         this.chart = chart;
         this.target = target;
         this.groupType = groupType;
+        var isListItem = groupType === 'ul';
         this.eventProvider = new EventProvider();
-        var wrapperEl = groupType === 'ul' ? doc.createElement('li') : null;
+        var wrapperEl = isListItem ? doc.createElement('li') : null;
         var btnEl = this.buttonElement = doc.createElement('button');
         if (!chart.styledMode) {
             this.hideButtonVisually(btnEl);
         }
         if (wrapperEl) {
+            if (isListItem && !chart.styledMode) {
+                wrapperEl.style.listStyle = 'none';
+            }
             wrapperEl.appendChild(btnEl);
             this.element = wrapperEl;
         }
@@ -77,10 +81,11 @@ var ProxyElement = /** @class */ (function () {
         fireEventOnWrappedOrUnwrappedElement(this.target.click, fakeEventObject);
     };
     /**
-     * Update the target to be proxied.
-     * The position and events are updated to match the new target.
+     * Update the target to be proxied. The position and events are updated to
+     * match the new target.
      * @param target The new target definition
-     * @param attributes New HTML attributes to apply to the button. Set an attribute to null to remove.
+     * @param attributes New HTML attributes to apply to the button. Set an
+     * attribute to null to remove.
      */
     ProxyElement.prototype.updateTarget = function (target, attributes) {
         this.target = target;
@@ -116,7 +121,7 @@ var ProxyElement = /** @class */ (function () {
      * Update the CSS class name to match target
      */
     ProxyElement.prototype.updateCSSClassName = function () {
-        var stringHasNoTooltip = function (s) { return s.indexOf('highcharts-no-tooltip') > -1; };
+        var stringHasNoTooltip = function (s) { return (s.indexOf('highcharts-no-tooltip') > -1); };
         var legend = this.chart.legend;
         var groupDiv = legend.group && legend.group.div;
         var noTooltipOnGroup = stringHasNoTooltip(groupDiv && groupDiv.className || '');
@@ -144,7 +149,8 @@ var ProxyElement = /** @class */ (function () {
                     fireEventOnWrappedOrUnwrappedElement(target, clonedEvent);
                 }
                 e.stopPropagation();
-                // #9682, #15318: Touch scrolling didnt work when touching proxy
+                // #9682, #15318: Touch scrolling didnt work when touching
+                // proxy
                 if (!isTouchEvent) {
                     e.preventDefault();
                 }

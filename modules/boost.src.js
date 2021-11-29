@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Boost module
  *
@@ -101,9 +101,7 @@
          * @function GLShader
          *
          * @param {WebGLContext} gl
-         *        the context in which the shader is active
-         *
-         * @return {*}
+         * the context in which the shader is active
          */
         function GLShader(gl) {
             var vertShade = [
@@ -312,9 +310,10 @@
             /**
              * String to shader program
              * @private
-             * @param {string} str - the program source
-             * @param {string} type - the program type: either `vertex` or `fragment`
-             * @returns {bool|shader}
+             * @param {string} str
+             * the program source
+             * @param {string} type
+             * the program type: either `vertex` or `fragment`
              */
             function stringToProgram(str, type) {
                 var t = type === 'vertex' ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER,
@@ -411,7 +410,8 @@
             /**
              * Set the active texture
              * @private
-             * @param texture - the texture
+             * @param texture
+             * the texture
              */
             function setTexture(texture) {
                 if (gl && shaderProgram) {
@@ -421,7 +421,8 @@
             /**
              * Set if inversion state
              * @private
-             * @flag is the state
+             * @param {number} flag
+             * is the state
              */
             function setInverted(flag) {
                 if (gl && shaderProgram) {
@@ -574,14 +575,10 @@
          *
          * @private
          * @function GLVertexBuffer
-         *
          * @param {WebGLContext} gl
-         *        the context in which to create the buffer
-         *
+         * the context in which to create the buffer
          * @param {GLShader} shader
-         *        the shader to use
-         *
-         * @return {*}
+         * the shader to use
          */
         function GLVertexBuffer(gl, shader, dataComponents
         /* , type */
@@ -661,7 +658,8 @@
              * @param drawMode {String} - the draw mode
              */
             function render(from, to, drawMode) {
-                var length = preAllocated ? preAllocated.length : data.length;
+                var length = preAllocated ?
+                        preAllocated.length : data.length;
                 if (!buffer) {
                     return false;
                 }
@@ -746,10 +744,6 @@
          *
          * @private
          * @function GLRenderer
-         *
-         * @param {Function} postRenderCallback
-         *
-         * @return {*}
          */
         function GLRenderer(postRenderCallback) {
             //  // Shader
@@ -870,8 +864,10 @@
             /**
              * Returns an orthographic perspective matrix
              * @private
-             * @param {number} width - the width of the viewport in pixels
-             * @param {number} height - the height of the viewport in pixels
+             * @param {number} width
+             * the width of the viewport in pixels
+             * @param {number} height
+             * the height of the viewport in pixels
              */
             function orthoMatrix(width, height) {
                 var near = 0,
@@ -893,7 +889,8 @@
             /**
              * Get the WebGL context
              * @private
-             * @returns {WebGLContext} - the context
+             * @return {WebGLContext}
+             * the context
              */
             function getGL() {
                 return gl;
@@ -1262,8 +1259,10 @@
                         zone, i) {
                             var last = zones[i - 1];
                             if (zoneAxis === 'x') {
-                                if (typeof zone.value !== 'undefined' && x <= zone.value) {
-                                    if (zoneColors[i] && (!last || x >= last.value)) {
+                                if (typeof zone.value !== 'undefined' &&
+                                    x <= zone.value) {
+                                    if (zoneColors[i] &&
+                                        (!last || x >= last.value)) {
                                         zoneColor_1 = zoneColors[i];
                                     }
                                     return true;
@@ -1271,7 +1270,8 @@
                                 return false;
                             }
                             if (typeof zone.value !== 'undefined' && y <= zone.value) {
-                                if (zoneColors[i] && (!last || y >= last.value)) {
+                                if (zoneColors[i] &&
+                                    (!last || y >= last.value)) {
                                     zoneColor_1 = zoneColors[i];
                                 }
                                 return true;
@@ -1876,7 +1876,8 @@
             /**
              * Check if we have a valid OGL context
              * @private
-             * @returns {Boolean} - true if the context is valid
+             * @return {boolean}
+             * true if the context is valid
              */
             function valid() {
                 return gl !== false;
@@ -1884,7 +1885,8 @@
             /**
              * Check if the renderer has been initialized
              * @private
-             * @returns {Boolean} - true if it has, false if not
+             * @return {boolean}
+             * true if it has, false if not
              */
             function inited() {
                 return isInited;
@@ -2278,8 +2280,6 @@
          *
          * @private
          * @function hasWebGLSupport
-         *
-         * @return {boolean}
          */
         function hasWebGLSupport() {
             var i = 0, canvas, contexts = ['webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'], context = false;
@@ -2305,10 +2305,6 @@
          *
          * @private
          * @function pointDrawHandler
-         *
-         * @param {Function} proceed
-         *
-         * @return {*}
          */
         function pointDrawHandler(proceed) {
             var enabled = true,
@@ -3280,10 +3276,6 @@
          *
          * @private
          * @function Highcharts.Chart#getBoostClipRect
-         *
-         * @param {Highcharts.Chart} target
-         *
-         * @return {Highcharts.BBoxObject}
          */
         Chart.prototype.getBoostClipRect = function (target) {
             var clipBox = {
@@ -3297,7 +3289,9 @@
                     if (verticalAxes.length <= 1) {
                         clipBox.y = Math.min(verticalAxes[0].pos,
                     clipBox.y);
-                    clipBox.height = verticalAxes[0].pos - this.plotTop + verticalAxes[0].len;
+                    clipBox.height = (verticalAxes[0].pos -
+                        this.plotTop +
+                        verticalAxes[0].len);
                 }
                 else {
                     clipBox.height = this.plotHeight;
@@ -3577,10 +3571,6 @@
         /**
          * @private
          * @function Highcharts.Series#hasExtremes
-         *
-         * @param {boolean} checkX
-         *
-         * @return {boolean}
          */
         Series.prototype.hasExtremes = function (checkX) {
             var options = this.options,

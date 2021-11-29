@@ -107,12 +107,12 @@ var VennSeries = /** @class */ (function (_super) {
                 { x: circle.x, y: circle.y + d },
                 { x: circle.x, y: circle.y - d }
             ]
-                // Iterate the given points and return the one with the largest
-                // margin.
+                // Iterate the given points and return the one with the
+                // largest margin.
                 .reduce(function (best, point) {
                 var margin = VennUtils.getMarginFromCircles(point, internal, external);
-                // If the margin better than the current best, then update
-                // sbest.
+                // If the margin better than the current best, then
+                // update sbest.
                 if (best.margin < margin) {
                     best.point = point;
                     best.margin = margin;
@@ -210,16 +210,13 @@ var VennSeries = /** @class */ (function (_super) {
         if (relations.length > 0) {
             var mapOfIdToCircles_1 = VennUtils.layoutGreedyVenn(relations);
             var setRelations_1 = relations.filter(VennUtils.isSet);
-            relations
-                .forEach(function (relation) {
+            relations.forEach(function (relation) {
                 var sets = relation.sets;
                 var id = sets.join();
                 // Get shape from map of circles, or calculate intersection.
                 var shape = VennUtils.isSet(relation) ?
                     mapOfIdToCircles_1[id] :
-                    getAreaOfIntersectionBetweenCircles(sets.map(function (set) {
-                        return mapOfIdToCircles_1[set];
-                    }));
+                    getAreaOfIntersectionBetweenCircles(sets.map(function (set) { return mapOfIdToCircles_1[set]; }));
                 // Calculate label values if the set has a shape
                 if (shape) {
                     mapOfIdToShape[id] = shape;

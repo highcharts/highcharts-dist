@@ -126,7 +126,7 @@ var ContainerComponent = /** @class */ (function (_super) {
     };
     /**
      * Empty handler to just set focus on chart
-     * @return {Highcharts.KeyboardNavigationHandler}
+     * @private
      */
     ContainerComponent.prototype.getKeyboardNavigation = function () {
         var chart = this.chart;

@@ -82,7 +82,8 @@ var ForcedMarkersComposition;
             var hadForcedMarker = point.hasForcedA11yMarker;
             delete point.hasForcedA11yMarker;
             if (pointOptions.marker) {
-                var isStillForcedMarker = hadForcedMarker && getPointMarkerOpacity(pointOptions) === 0;
+                var isStillForcedMarker = hadForcedMarker &&
+                    getPointMarkerOpacity(pointOptions) === 0;
                 if (pointOptions.marker.enabled && !isStillForcedMarker) {
                     unforcePointMarkerOptions(pointOptions);
                     point.hasForcedA11yMarker = false;
@@ -98,7 +99,9 @@ var ForcedMarkersComposition;
      * @private
      */
     function hasIndividualPointMarkerOptions(series) {
-        return !!(series._hasPointMarkers && series.points && series.points.length);
+        return !!(series._hasPointMarkers &&
+            series.points &&
+            series.points.length);
     }
     /**
      * @private
@@ -107,7 +110,8 @@ var ForcedMarkersComposition;
         var a11yOptions = series.chart.options.accessibility;
         return series.points.length <
             a11yOptions.series.pointDescriptionEnabledThreshold ||
-            a11yOptions.series.pointDescriptionEnabledThreshold === false;
+            a11yOptions.series
+                .pointDescriptionEnabledThreshold === false;
     }
     /**
      * Process marker graphics after render
@@ -125,8 +129,11 @@ var ForcedMarkersComposition;
             if (hasIndividualPointMarkerOptions(series)) {
                 series.points.forEach(function (point) {
                     if (point.graphic) {
-                        point.graphic[point.hasForcedA11yMarker ? 'addClass' : 'removeClass']('highcharts-a11y-marker-hidden');
-                        point.graphic[point.hasForcedA11yMarker === false ? 'addClass' : 'removeClass']('highcharts-a11y-marker-visible');
+                        point.graphic[point.hasForcedA11yMarker ?
+                            'addClass' : 'removeClass']('highcharts-a11y-marker-hidden');
+                        point.graphic[point.hasForcedA11yMarker === false ?
+                            'addClass' :
+                            'removeClass']('highcharts-a11y-marker-visible');
                     }
                 });
             }
@@ -165,7 +172,9 @@ var ForcedMarkersComposition;
     function shouldForceMarkers(series) {
         var chart = series.chart, chartA11yEnabled = chart.options.accessibility.enabled, seriesA11yEnabled = (series.options.accessibility &&
             series.options.accessibility.enabled) !== false;
-        return chartA11yEnabled && seriesA11yEnabled && isWithinDescriptionThreshold(series);
+        return (chartA11yEnabled &&
+            seriesA11yEnabled &&
+            isWithinDescriptionThreshold(series));
     }
     /**
      * @private

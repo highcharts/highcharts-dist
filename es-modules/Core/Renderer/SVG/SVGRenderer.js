@@ -193,7 +193,7 @@ var SVGRenderer = /** @class */ (function () {
         this.url = this.getReferenceURL();
         // Add description
         var desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.3.1'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.3.2'));
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
         renderer.forExport = forExport;
@@ -384,6 +384,7 @@ var SVGRenderer = /** @class */ (function () {
      * @function Highcharts.SVGRenderer#destroy
      *
      * @return {null}
+     * Pass through value.
      */
     SVGRenderer.prototype.destroy = function () {
         var renderer = this, rendererDefs = renderer.defs;
@@ -1041,6 +1042,7 @@ var SVGRenderer = /** @class */ (function () {
      * Additional options, depending on the actual symbol drawn.
      *
      * @return {Highcharts.SVGElement}
+     * SVG symbol.
      */
     SVGRenderer.prototype.symbol = function (symbol, x, y, width, height, options) {
         var ren = this, imageRegex = /^url\((.*?)\)$/, isImage = imageRegex.test(symbol), sym = (!isImage && (this.symbols[symbol] ? symbol : 'circle')), 
@@ -1262,8 +1264,8 @@ var SVGRenderer = /** @class */ (function () {
                 var tspans = element.getElementsByTagName('tspan'), parentVal = element.getAttribute(key);
                 for (var i = 0, tspan = void 0; i < tspans.length; i++) {
                     tspan = tspans[i];
-                    // If the x values are equal, the tspan represents a
-                    // linebreak
+                    // If the x values are equal, the tspan represents a line
+                    // break
                     if (tspan.getAttribute(key) === parentVal) {
                         tspan.setAttribute(key, value);
                     }
@@ -1326,14 +1328,6 @@ var SVGRenderer = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.SVGRenderer#rotCorr
-     *
-     * @param {number} baseline
-     *
-     * @param {number} rotation
-     *
-     * @param {boolean} [alterY]
-     *
-     * @param {Highcharts.PositionObject}
      */
     SVGRenderer.prototype.rotCorr = function (baseline, rotation, alterY) {
         var y = baseline;
@@ -1637,7 +1631,6 @@ var SVGRenderer = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.SVGRenderer#alignElements
-     * @return {void}
      */
     SVGRenderer.prototype.alignElements = function () {
         this.alignedObjects.forEach(function (el) { return el.align(); });

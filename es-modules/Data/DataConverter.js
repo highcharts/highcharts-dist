@@ -117,8 +117,6 @@ var DataConverter = /** @class */ (function () {
      * */
     /**
      * Getter for a date format.
-     *
-     * @return {string|undefined}
      */
     DataConverter.prototype.getDateFormat = function () {
         return this.options.dateFormat;
@@ -302,8 +300,6 @@ var DataConverter = /** @class */ (function () {
      * @param {string} dateFormatProp
      * Which of the predefined date formats
      * to use to parse date values.
-     *
-     * @return {number}
      */
     DataConverter.prototype.parseDate = function (value, dateFormatProp) {
         var converter = this;
@@ -381,8 +377,6 @@ var DataConverter = /** @class */ (function () {
      *
      * @param {boolean} save
      * Whether to save the date format in the converter options.
-     *
-     * @return {string}
      */
     DataConverter.prototype.deduceDateFormat = function (data, limit, save) {
         var parser = this, stable = [], max = [];

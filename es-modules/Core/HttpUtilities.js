@@ -40,9 +40,10 @@ function ajax(attr) {
     }, r = new XMLHttpRequest();
     /**
      * @private
-     * @param {XMLHttpRequest} xhr - Internal request object.
-     * @param {string|Error} err - Occured error.
-     * @return {void}
+     * @param {XMLHttpRequest} xhr
+     * Internal request object.
+     * @param {string|Error} err
+     * Occured error.
      */
     function handleError(xhr, err) {
         if (options.error) {
@@ -120,7 +121,7 @@ function getJSON(url, success) {
  * @param {string} url
  * Post URL
  *
- * @param {object} data
+ * @param {Object} data
  * Post data
  *
  * @param {Highcharts.Dictionary<string>} [formAttributes]

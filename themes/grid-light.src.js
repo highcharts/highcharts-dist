@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -53,8 +53,10 @@
              *
              * */
             GridLightTheme.options = {
-                colors: ['#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF', '#aaeeee', '#ff0066',
-                    '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
+                colors: [
+                    '#7cb5ec', '#f7a35c', '#90ee7e', '#7798BF', '#aaeeee', '#ff0066',
+                    '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
+                ],
                 chart: {
                     backgroundColor: null,
                     style: {

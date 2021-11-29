@@ -57,19 +57,12 @@ var DateTimeAxis;
      *
      * @private
      * @function Highcharts.Axis#getTimeTicks
-     *
      * @param {Highcharts.TimeNormalizeObject} normalizedInterval
      * The interval in axis values (ms) and thecount.
-     *
      * @param {number} min
      * The minimum in axis values.
-     *
      * @param {number} max
      * The maximum in axis values.
-     *
-     * @param {number} startOfWeek
-     *
-     * @return {Highcharts.AxisTickPositionsArray}
      */
     function getTimeTicks() {
         return this.chart.time.getTimeTicks.apply(this.chart.time, arguments);
@@ -119,8 +112,10 @@ var DateTimeAxis;
          */
         Additions.prototype.normalizeTimeTickInterval = function (tickInterval, unitsOption) {
             var units = (unitsOption || [[
+                    // unit name
                     'millisecond',
-                    [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // allowed multiples
+                    // allowed multiples
+                    [1, 2, 5, 10, 20, 25, 50, 100, 200, 500]
                 ], [
                     'second',
                     [1, 2, 5, 10, 15, 30]
@@ -182,12 +177,6 @@ var DateTimeAxis;
          * point range on the axis.
          *
          * @private
-         *
-         * @param {number} x
-         *
-         * @param {Highcharts.Dictionary<string>} dateTimeLabelFormats
-         *
-         * @return {string}
          */
         Additions.prototype.getXDateFormat = function (x, dateTimeLabelFormats) {
             var axis = this.axis;

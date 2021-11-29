@@ -145,6 +145,17 @@ var BBIndicator = /** @class */ (function (_super) {
      * @optionparent plotOptions.bb
      */
     BBIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+        /**
+         * Option for fill color between lines in Bollinger Bands Indicator.
+         *
+         * @sample {highstock} stock/indicators/indicator-area-fill
+         *      Background fill between lines.
+         *
+         * @type      {Highcharts.Color}
+         * @since 9.3.2
+         * @apioption plotOptions.bb.fillColor
+         *
+         */
         params: {
             period: 20,
             /**
@@ -201,6 +212,7 @@ var BBIndicator = /** @class */ (function (_super) {
     return BBIndicator;
 }(SMAIndicator));
 extend(BBIndicator.prototype, {
+    areaLinesNames: ['top', 'bottom'],
     pointArrayMap: ['top', 'middle', 'bottom'],
     pointValKey: 'middle',
     nameComponents: ['period', 'standardDeviation'],

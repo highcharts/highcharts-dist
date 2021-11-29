@@ -76,7 +76,6 @@ var HeikinAshiSeries = /** @class */ (function (_super) {
      *
      * @function Highcharts.seriesTypes.heikinashi#getHeikinashiData
      *
-     * @return {void}
      *
      */
     HeikinAshiSeries.prototype.getHeikinashiData = function () {
@@ -98,7 +97,6 @@ var HeikinAshiSeries = /** @class */ (function (_super) {
     /**
      * @private
      * @function Highcarts.seriesTypes.heikinashi#init
-     * @return {void}
      */
     HeikinAshiSeries.prototype.init = function () {
         _super.prototype.init.apply(this, arguments);
@@ -113,11 +111,13 @@ var HeikinAshiSeries = /** @class */ (function (_super) {
      * @param {Array<(number)>} dataPoint
      *        Current data point.
      *
-     * @return {void}
      *
      */
     HeikinAshiSeries.prototype.modifyFirstPointValue = function (dataPoint) {
-        var open = (dataPoint[0] + dataPoint[1] + dataPoint[2] + dataPoint[3]) / 4, close = (dataPoint[0] + dataPoint[3]) / 2;
+        var open = (dataPoint[0] +
+            dataPoint[1] +
+            dataPoint[2] +
+            dataPoint[3]) / 4, close = (dataPoint[0] + dataPoint[3]) / 2;
         this.heikiashiData.push([open, dataPoint[1], dataPoint[2], close]);
     };
     /**
@@ -132,11 +132,13 @@ var HeikinAshiSeries = /** @class */ (function (_super) {
      * @param {Array<(number)>} previousDataPoint
      *        Previous data point.
      *
-     * @return {void}
      *
      */
     HeikinAshiSeries.prototype.modifyDataPoint = function (dataPoint, previousDataPoint) {
-        var newOpen = (previousDataPoint[0] + previousDataPoint[3]) / 2, newClose = (dataPoint[0] + dataPoint[1] + dataPoint[2] + dataPoint[3]) / 4, newHigh = Math.max(dataPoint[1], newClose, newOpen), newLow = Math.min(dataPoint[2], newClose, newOpen);
+        var newOpen = (previousDataPoint[0] + previousDataPoint[3]) / 2, newClose = (dataPoint[0] +
+            dataPoint[1] +
+            dataPoint[2] +
+            dataPoint[3]) / 4, newHigh = Math.max(dataPoint[1], newClose, newOpen), newLow = Math.min(dataPoint[2], newClose, newOpen);
         // Add new points to the array in order to properly calculate extremes.
         this.heikiashiData.push([newOpen, newHigh, newLow, newClose]);
     };

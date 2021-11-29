@@ -75,7 +75,6 @@ var Timeline = /** @class */ (function () {
      * @param {Function} [onEnd]
      * Callback to call when play finished. Does not override other onEnd
      * callbacks.
-     * @return {void}
      */
     Timeline.prototype.play = function (onEnd) {
         this.pause();
@@ -89,7 +88,6 @@ var Timeline = /** @class */ (function () {
      * @param {Function} onEnd
      * Callback to call when play finished. Does not override other onEnd
      * callbacks.
-     * @return {void}
      */
     Timeline.prototype.rewind = function (onEnd) {
         this.pause();
@@ -102,7 +100,6 @@ var Timeline = /** @class */ (function () {
      * @private
      * @param {number} direction
      * Direction to play in. 1 for forwards, -1 for backwards.
-     * @return {void}
      */
     Timeline.prototype.playPaths = function (direction) {
         var timeline = this, signalHandler = timeline.signalHandler;
@@ -141,7 +138,8 @@ var Timeline = /** @class */ (function () {
                         timeline.cursor += direction;
                         // Reset upcoming path cursors before playing
                         splat(nextPaths).forEach(function (nextPath) {
-                            nextPath[direction > 0 ? 'resetCursor' : 'resetCursorEnd']();
+                            nextPath[direction > 0 ?
+                                'resetCursor' : 'resetCursorEnd']();
                         });
                         // Play next
                         timeline.playPaths(direction);
@@ -174,7 +172,6 @@ var Timeline = /** @class */ (function () {
      * @param {boolean} [fadeOut=false]
      * Whether or not to fade out as we stop. If false, the timeline is
      * cancelled synchronously.
-     * @return {void}
      */
     Timeline.prototype.pause = function (fadeOut) {
         var timeline = this;
@@ -189,7 +186,6 @@ var Timeline = /** @class */ (function () {
     /**
      * Reset the cursor to the beginning of the timeline.
      * @private
-     * @return {void}
      */
     Timeline.prototype.resetCursor = function () {
         this.paths.forEach(function (paths) {
@@ -202,7 +198,6 @@ var Timeline = /** @class */ (function () {
     /**
      * Reset the cursor to the end of the timeline.
      * @private
-     * @return {void}
      */
     Timeline.prototype.resetCursorEnd = function () {
         this.paths.forEach(function (paths) {

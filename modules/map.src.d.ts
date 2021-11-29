@@ -341,6 +341,8 @@ declare module "../highcharts.src" {
     function mapChart(renderTo: (string|HTMLDOMElement), options: Options, callback?: ChartCallbackFunction): MapChart;
     /**
      * Utility for reading SVG paths directly.
+     *
+     * @return Splitted SVG path
      */
     function splitPath(path: (string|Array<(string|number)>)): SVGPathArray;
     /**

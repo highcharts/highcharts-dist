@@ -110,6 +110,17 @@ var KeltnerChannelsIndicator = /** @class */ (function (_super) {
      * @optionparent plotOptions.keltnerchannels
      */
     KeltnerChannelsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+        /**
+         * Option for fill color between lines in Keltner Channels Indicator.
+         *
+         * @sample {highstock} stock/indicators/indicator-area-fill
+         *      Background fill between lines.
+         *
+         * @type {Highcharts.Color}
+         * @since 9.3.2
+         * @apioption plotOptions.keltnerchannels.fillColor
+         *
+         */
         params: {
             /**
              * The point index which indicator calculations will base. For
@@ -174,6 +185,7 @@ var KeltnerChannelsIndicator = /** @class */ (function (_super) {
 }(SMAIndicator));
 extend(KeltnerChannelsIndicator.prototype, {
     nameBase: 'Keltner Channels',
+    areaLinesNames: ['top', 'bottom'],
     nameComponents: ['period', 'periodATR', 'multiplierATR'],
     linesApiNames: ['topLine', 'bottomLine'],
     pointArrayMap: ['top', 'middle', 'bottom'],

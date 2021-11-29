@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -286,7 +286,8 @@
                                             null;
                             }
                         }
-                        SeriesRegistry.seriesTypes.sma.prototype.drawDataLabels.apply(indicator, arguments);
+                        SeriesRegistry.seriesTypes.sma.prototype.drawDataLabels
+                            .apply(indicator, arguments);
                     });
                 }
             };

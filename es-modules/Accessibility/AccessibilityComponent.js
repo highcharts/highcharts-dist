@@ -128,7 +128,7 @@ extend(AccessibilityComponent.prototype,
     init: function () { },
     /**
      * Get keyboard navigation handler for this component.
-     * @return {Highcharts.KeyboardNavigationHandler}
+     * @private
      */
     getKeyboardNavigation: function () { },
     /**

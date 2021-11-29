@@ -78,7 +78,8 @@ var BellcurveSeries = /** @class */ (function (_super) {
      */
     BellcurveSeries.standardDeviation = function (data, average) {
         var len = data.length, sum;
-        average = isNumber(average) ? average : BellcurveSeries.mean(data);
+        average = isNumber(average) ?
+            average : BellcurveSeries.mean(data);
         sum = data.reduce(function (sum, value) {
             var diff = value - average;
             return (sum += diff * diff);

@@ -16,7 +16,6 @@ var addEvent = U.addEvent, fireEvent = U.fireEvent, objectEach = U.objectEach, p
  *
  * @private
  * @mixin
- * @memberOf Annotation
  */
 var eventEmitterMixin = {
     /**

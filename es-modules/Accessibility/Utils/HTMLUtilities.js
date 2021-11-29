@@ -115,8 +115,6 @@ function cloneTouchEvent(e) {
 }
 /**
  * @private
- * @param {string} str
- * @return {string}
  */
 function escapeStringForHTML(str) {
     return str
@@ -129,18 +127,14 @@ function escapeStringForHTML(str) {
 }
 /**
  * Get an element by ID
- * @param {string} id
  * @private
- * @return {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement|null}
  */
 function getElement(id) {
     return doc.getElementById(id);
 }
 /**
  * Get a fake mouse event of a given type
- * @param {string} type
  * @private
- * @return {global.MouseEvent}
  */
 function getFakeMouseEvent(type, position) {
     var pos = position || {
@@ -253,8 +247,6 @@ function removeChildNodes(element) {
 /**
  * Utility function. Reverses child nodes of a DOM element.
  * @private
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} node
- * @return {void}
  */
 function reverseChildNodes(node) {
     var i = node.childNodes.length;
@@ -266,8 +258,6 @@ function reverseChildNodes(node) {
  * Used for aria-label attributes, painting on a canvas will fail if the
  * text contains tags.
  * @private
- * @param {string} str
- * @return {string}
  */
 function stripHTMLTagsFromString(str) {
     return typeof str === 'string' ?
@@ -277,8 +267,6 @@ function stripHTMLTagsFromString(str) {
  * Utility function for hiding an element visually, but still keeping it
  * available to screen reader users.
  * @private
- * @param {Highcharts.HTMLDOMElement} element
- * @return {void}
  */
 function visuallyHideElement(element) {
     css(element, {

@@ -80,7 +80,8 @@ var controllableMixin = {
      */
     getPointsOptions: function () {
         var options = this.options;
-        return (options.points || (options.point && splat(options.point)));
+        return (options.points ||
+            (options.point && splat(options.point)));
     },
     /**
      * Utility function for mapping item's options
@@ -304,8 +305,10 @@ var controllableMixin = {
         // Options stored in:
         // - chart (for exporting)
         // - current config (for redraws)
-        chartOptions[this.collection][this.index].point = this.options.point;
-        shapeOptions[this.collection][this.index].point = this.options.point;
+        chartOptions[this.collection][this.index]
+            .point = this.options.point;
+        shapeOptions[this.collection][this.index]
+            .point = this.options.point;
     },
     /**
      * Rotate a controllable.

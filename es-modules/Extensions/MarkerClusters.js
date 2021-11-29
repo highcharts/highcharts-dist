@@ -496,7 +496,8 @@ Scatter.prototype.animateClusterPoint = function (clusterObj) {
                 oldPointObj.point.plotY !== newPointObj.point.plotY) {
                 newPointBBox = newPointObj.point.graphic.getBBox();
                 // Marker image does not have the offset (#14342).
-                offset = newPointObj.point.graphic && newPointObj.point.graphic.isImg ?
+                offset = (newPointObj.point.graphic &&
+                    newPointObj.point.graphic.isImg) ?
                     0 : newPointBBox.width / 2;
                 newPointObj.point.graphic.attr({
                     x: oldPointObj.point.plotX - offset,
@@ -792,6 +793,7 @@ Scatter.prototype.markerClusterAlgorithms = {
         }
         // Start kmeans iteration process.
         while (repeat) {
+            // eslint-disable-next-line no-loop-func
             clusters.map(function (c) {
                 c.points.length = 0;
                 return c;

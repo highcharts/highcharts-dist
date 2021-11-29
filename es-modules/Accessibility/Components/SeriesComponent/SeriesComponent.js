@@ -60,6 +60,7 @@ var SeriesComponent = /** @class */ (function (_super) {
      */
     SeriesComponent.compose = function (ChartClass, PointClass, SeriesClass) {
         // Handle forcing markers
+        NewDataAnnouncer.compose(SeriesClass);
         ForcedMarkers.compose(SeriesClass);
         SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);
     };
@@ -124,13 +125,14 @@ var SeriesComponent = /** @class */ (function (_super) {
     };
     /**
      * Get keyboard navigation handler for this component.
-     * @return {Highcharts.KeyboardNavigationHandler}
+     * @private
      */
     SeriesComponent.prototype.getKeyboardNavigation = function () {
         return this.keyboardNavigation.getKeyboardNavigationHandler();
     };
     /**
      * Remove traces
+     * @private
      */
     SeriesComponent.prototype.destroy = function () {
         this.newDataAnnouncer.destroy();

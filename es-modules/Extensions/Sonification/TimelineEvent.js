@@ -66,7 +66,6 @@ var TimelineEvent = /** @class */ (function () {
      * @param {Highcharts.TimelineEventOptionsObject} [options]
      *        Options to pass in to the eventObject when playing it.
      *
-     * @return {void}
      */
     TimelineEvent.prototype.play = function (options) {
         var eventObject = this.options.eventObject, masterOnEnd = this.options.onEnd, playOnEnd = options && options.onEnd, playOptionsOnEnd = this.options.playOptions &&

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -409,16 +409,14 @@
                             }
                             else {
                                 // Compare middle point of the section
-                                concatArrIndex =
-                                    sectionPoints[x].plotY > sectionNextPoints[x].plotY ? 0 : 1;
+                                concatArrIndex = (sectionPoints[x].plotY > sectionNextPoints[x].plotY) ? 0 : 1;
                                 points[concatArrIndex] = points[concatArrIndex].concat(sectionPoints);
                                 nextPoints[concatArrIndex] = nextPoints[concatArrIndex].concat(sectionNextPoints);
                             }
                         }
                         else {
                             // Compare first point of the section
-                            concatArrIndex =
-                                sectionPoints[0].plotY > sectionNextPoints[0].plotY ? 0 : 1;
+                            concatArrIndex = (sectionPoints[0].plotY > sectionNextPoints[0].plotY) ? 0 : 1;
                             points[concatArrIndex] = points[concatArrIndex].concat(sectionPoints);
                             nextPoints[concatArrIndex] = nextPoints[concatArrIndex].concat(sectionNextPoints);
                         }
@@ -478,7 +476,8 @@
                     indicator.nextPoints);
                     if (spanA && spanA.length) {
                         spanA[0][0] = 'L';
-                        path = SeriesRegistry.seriesTypes.sma.prototype.getGraphPath.call(indicator, points);
+                        path = SeriesRegistry.seriesTypes.sma.prototype.getGraphPath
+                            .call(indicator, points);
                         spanAarr = spanA.slice(0, path.length);
                         for (var i = spanAarr.length - 1; i >= 0; i--) {
                             path.push(spanAarr[i]);
@@ -486,7 +485,8 @@
                     }
                 }
                 else {
-                    path = SeriesRegistry.seriesTypes.sma.prototype.getGraphPath.apply(indicator, arguments);
+                    path = SeriesRegistry.seriesTypes.sma.prototype.getGraphPath
+                        .apply(indicator, arguments);
                 }
                 return path;
             };

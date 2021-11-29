@@ -590,9 +590,6 @@ var Data = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Data#init
-     * @param {Highcharts.DataOptions} options
-     * @param {Highcharts.Options} [chartOptions]
-     * @param {Highcharts.Chart} [chart]
      */
     Data.prototype.init = function (options, chartOptions, chart) {
         var decimalPoint = options.decimalPoint, hasData;
@@ -758,10 +755,6 @@ var Data = /** @class */ (function () {
      * Parse a CSV input string
      *
      * @function Highcharts.Data#parseCSV
-     *
-     * @param {Highcharts.DataOptions} [inOptions]
-     *
-     * @return {Array<Array<Highcharts.DataValueType>>}
      */
     Data.prototype.parseCSV = function (inOptions) {
         var self = this, options = inOptions || this.options, csv = options.csv, columns, startRow = (typeof options.startRow !== 'undefined' && options.startRow ?
@@ -1184,8 +1177,6 @@ var Data = /** @class */ (function () {
      * Parse a HTML table
      *
      * @function Highcharts.Data#parseTable
-     *
-     * @return {Array<Array<Highcharts.DataValueType>>}
      */
     Data.prototype.parseTable = function () {
         var options = this.options, table = options.table, columns = this.columns || [], startRow = options.startRow || 0, endRow = options.endRow || Number.MAX_VALUE, startColumn = options.startColumn || 0, endColumn = options.endColumn || Number.MAX_VALUE;
@@ -1561,10 +1552,6 @@ var Data = /** @class */ (function () {
      * `options.parseDate`.
      *
      * @function Highcharts.Data#parseDate
-     *
-     * @param {string} val
-     *
-     * @return {number}
      */
     Data.prototype.parseDate = function (val) {
         var parseDate = this.options.parseDate;
@@ -1628,10 +1615,6 @@ var Data = /** @class */ (function () {
      * Reorganize rows into columns.
      *
      * @function Highcharts.Data#rowsToColumns
-     *
-     * @param {Array<Array<Highcharts.DataValueType>>} rows
-     *
-     * @return {Array<Array<Highcharts.DataValueType>>|undefined}
      */
     Data.prototype.rowsToColumns = function (rows) {
         var row, rowsLength, col, colsLength, columns;
@@ -1673,8 +1656,6 @@ var Data = /** @class */ (function () {
      * A hook for working directly on the parsed columns
      *
      * @function Highcharts.Data#parsed
-     *
-     * @return {boolean|undefined}
      */
     Data.prototype.parsed = function () {
         if (this.options.parsed) {
@@ -1719,7 +1700,10 @@ var Data = /** @class */ (function () {
             // Get the names and shift the top row
             if (this.firstRowAsNames) {
                 for (i = 0; i < columns.length; i++) {
-                    columns[i].name = columns[i].shift();
+                    var curCol = columns[i];
+                    if (!defined(curCol.name)) {
+                        curCol.name = pick(curCol.shift(), '').toString();
+                    }
                 }
             }
             // Use the next columns for series
@@ -1862,14 +1846,6 @@ var Data = /** @class */ (function () {
  * Creates a data object to parse data for a chart.
  *
  * @function Highcharts.data
- *
- * @param {Highcharts.DataOptions} dataOptions
- *
- * @param {Highcharts.Options} [chartOptions]
- *
- * @param {Highcharts.Chart} [chart]
- *
- * @return {Highcharts.Data}
  */
 G.data = function (dataOptions, chartOptions, chart) {
     return new G.Data(dataOptions, chartOptions, chart);
@@ -1944,10 +1920,6 @@ var SeriesBuilder = /** @class */ (function () {
      * from the free columns (this is handled by the ColumnCursor instance).
      *
      * @function SeriesBuilder#populateColumns
-     *
-     * @param {Array<number>} freeIndexes
-     *
-     * @returns {boolean}
      */
     SeriesBuilder.prototype.populateColumns = function (freeIndexes) {
         var builder = this, enoughColumns = true;
@@ -1974,12 +1946,6 @@ var SeriesBuilder = /** @class */ (function () {
      * on the names of the readers.
      *
      * @function SeriesBuilder#read<T>
-     *
-     * @param {Array<Array<T>>} columns
-     *
-     * @param {number} rowIndex
-     *
-     * @returns {Array<T>|Highcharts.Dictionary<T>}
      */
     SeriesBuilder.prototype.read = function (columns, rowIndex) {
         var builder = this, pointIsArray = builder.pointIsArray, point = pointIsArray ? [] : {}, columnIndexes;
@@ -2022,10 +1988,6 @@ var SeriesBuilder = /** @class */ (function () {
      * an index when columns are populated.
      *
      * @function SeriesBuilder#addColumnReader
-     *
-     * @param {number} columnIndex
-     *
-     * @param {string} configName
      */
     SeriesBuilder.prototype.addColumnReader = function (columnIndex, configName) {
         this.readers.push({
@@ -2043,8 +2005,6 @@ var SeriesBuilder = /** @class */ (function () {
      * reading data.
      *
      * @function SeriesBuilder#getReferencedColumnIndexes
-     *
-     * @returns {Array<number>}
      */
     SeriesBuilder.prototype.getReferencedColumnIndexes = function () {
         var i, referencedColumnIndexes = [], columnReader;
@@ -2060,10 +2020,6 @@ var SeriesBuilder = /** @class */ (function () {
      * Returns true if the builder has a reader for the given configName.
      *
      * @function SeriesBuider#hasReader
-     *
-     * @param {string} configName
-     *
-     * @returns {boolean|undefined}
      */
     SeriesBuilder.prototype.hasReader = function (configName) {
         var i, columnReader;

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Exporting module
  *
@@ -483,7 +483,7 @@
          * @return {Array<Array<(number|string)>>}
          *         The current chart data
          *
-         * @fires Highcharts.Chart#event:exportData
+         * @emits Highcharts.Chart#event:exportData
          */
         Chart.prototype.getDataRows = function (multiLevelHeaders) {
             var hasParallelCoords = this.hasParallelCoordinates,
@@ -564,7 +564,8 @@
                     !xAxis.categories &&
                     !series.keyToAxis) {
                     if (series.pointArrayMap) {
-                        var pointArrayMapCheck = series.pointArrayMap.filter(function (p) { return p === 'x'; });
+                        var pointArrayMapCheck = series.pointArrayMap
+                                .filter(function (p) { return p === 'x'; });
                         if (pointArrayMapCheck.length) {
                             series.pointArrayMap.unshift('x');
                             return series.pointArrayMap;
@@ -795,7 +796,7 @@
          * @return {string}
          *         HTML representation of the data.
          *
-         * @fires Highcharts.Chart#event:afterGetTable
+         * @emits Highcharts.Chart#event:afterGetTable
          */
         Chart.prototype.getTable = function (useLocalDecimalPoint) {
             var serialize = function (node) {
@@ -1101,7 +1102,7 @@
          *
          * @function Highcharts.Chart#viewData
          *
-         * @fires Highcharts.Chart#event:afterViewData
+         * @emits Highcharts.Chart#event:afterViewData
          */
         Chart.prototype.viewData = function () {
             this.toggleDataTable(true);
@@ -1128,7 +1129,7 @@
                 this.dataTableDiv.style.display = show ? 'block' : 'none';
                 // Generate the data table
                 if (show) {
-                    this.dataTableDiv.innerHTML = '';
+                    this.dataTableDiv.innerHTML = AST.emptyHTML;
                     var ast = new AST([this.getTableAST()]);
                     ast.addToDOM(this.dataTableDiv);
                     fireEvent(this, 'afterViewData', this.dataTableDiv);

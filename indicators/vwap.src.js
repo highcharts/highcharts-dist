@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -118,15 +118,27 @@
             /**
              * Main algorithm used to calculate Volume Weighted Average Price (VWAP)
              * values
+             *
              * @private
-             * @param {boolean} isOHLC - says if data has OHLC format
-             * @param {Array<number>} xValues - array of timestamps
-             * @param {Array<number|Array<number,number,number,number>>} yValues -
-             * array of yValues, can be an array of a four arrays (OHLC) or array of
+             *
+             * @param {boolean} isOHLC
+             * Says if data has OHLC format
+             *
+             * @param {Array<number>} xValues
+             * Array of timestamps
+             *
+             * @param {Array<number|Array<number,number,number,number>>} yValues
+             * Array of yValues, can be an array of a four arrays (OHLC) or array of
              * values (line)
-             * @param {Array<*>} volumeSeries - volume series
-             * @param {number} period - number of points to be calculated
-             * @return {object} - Object contains computed VWAP
+             *
+             * @param {Array<*>} volumeSeries
+             * Volume series
+             *
+             * @param {number} period
+             * Number of points to be calculated
+             *
+             * @return {Object}
+             * Object contains computed VWAP
              **/
             VWAPIndicator.prototype.calculateVWAPValues = function (isOHLC, xValues, yValues, volumeSeries, period) {
                 var volumeValues = volumeSeries.yData,

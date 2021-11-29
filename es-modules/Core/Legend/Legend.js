@@ -153,7 +153,8 @@ var Legend = /** @class */ (function () {
         this.symbolWidth = pick(options.symbolWidth, 16);
         this.pages = [];
         this.proximate = options.layout === 'proximate' && !this.chart.inverted;
-        this.baseline = void 0; // #12705: baseline has to be reset on every update
+        // #12705: baseline has to be reset on every update
+        this.baseline = void 0;
     };
     /**
      * Update the legend with new options. Equivalent to running `chart.update`
@@ -172,7 +173,7 @@ var Legend = /** @class */ (function () {
      * operations on the chart, it is a good idea to set redraw to false and
      * call {@link Chart#redraw} after. Whether to redraw the chart.
      *
-     * @fires Highcharts.Legends#event:afterUpdate
+     * @emits Highcharts.Legends#event:afterUpdate
      */
     Legend.prototype.update = function (options, redraw) {
         var chart = this.chart;
@@ -306,8 +307,7 @@ var Legend = /** @class */ (function () {
         /**
          * @private
          * @param {string} key
-         * @return {void}
-         */
+             */
         function destroyItems(key) {
             if (this[key]) {
                 this[key] = this[key].destroy();
@@ -503,13 +503,16 @@ var Legend = /** @class */ (function () {
         legend.setText(item);
         // calculate the positions for the next line
         var bBox = li.getBBox();
+        var fontMetricsH = (legend.fontMetrics && legend.fontMetrics.h) || 0;
         item.itemWidth = item.checkboxOffset =
             options.itemWidth ||
                 item.legendItemWidth ||
                 bBox.width + itemExtraWidth;
         legend.maxItemWidth = Math.max(legend.maxItemWidth, item.itemWidth);
         legend.totalItemWidth += item.itemWidth;
-        legend.itemHeight = item.itemHeight = Math.round(item.legendItemHeight || bBox.height || legend.symbolHeight);
+        legend.itemHeight = item.itemHeight = Math.round(item.legendItemHeight ||
+            // use bBox for multiline (#16398)
+            (bBox.height > fontMetricsH * 1.5 ? bBox.height : fontMetricsH));
     };
     /**
      * Get the position of the item in the layout. We now know the
@@ -565,7 +568,7 @@ var Legend = /** @class */ (function () {
      * @function Highcharts.Legend#getAllItems
      * @return {Array<(Highcharts.BubbleLegendItem|Highcharts.Point|Highcharts.Series)>}
      * The current items in the legend.
-     * @fires Highcharts.Legend#event:afterGetAllItems
+     * @emits Highcharts.Legend#event:afterGetAllItems
      */
     Legend.prototype.getAllItems = function () {
         var allItems = [];
@@ -818,7 +821,6 @@ var Legend = /** @class */ (function () {
      * @private
      * @function Highcharts.align
      * @param {Highcharts.BBoxObject} alignTo
-     * @return {void}
      */
     Legend.prototype.align = function (alignTo) {
         if (alignTo === void 0) { alignTo = this.chart.spacingBox; }
@@ -849,8 +851,6 @@ var Legend = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Legend#handleOverflow
-     * @param {number} legendHeight
-     * @return {number}
      */
     Legend.prototype.handleOverflow = function (legendHeight) {
         var legend = this, chart = this.chart, renderer = chart.renderer, options = this.options, optionsY = options.y, alignTop = options.verticalAlign === 'top', padding = this.padding, maxHeight = options.maxHeight, navOptions = options.navigation, animation = pick(navOptions.animation, true), arrowSize = navOptions.arrowSize || 12, pages = this.pages, allItems = this.allItems, clipToHeight = function (height) {
@@ -992,7 +992,6 @@ var Legend = /** @class */ (function () {
      * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
      *        Whether and how to apply animation.
      *
-     * @return {void}
      */
     Legend.prototype.scroll = function (scrollBy, animation) {
         var _this = this;
@@ -1073,8 +1072,8 @@ var Legend = /** @class */ (function () {
      * @param {Highcharts.BubbleLegendItem|Point|Highcharts.Series} item
      * @param {Highcharts.SVGElement} legendItem
      * @param {boolean} [useHTML=false]
-     * @fires Highcharts.Point#event:legendItemClick
-     * @fires Highcharts.Series#event:legendItemClick
+     * @emits Highcharts.Point#event:legendItemClick
+     * @emits Highcharts.Series#event:legendItemClick
      */
     Legend.prototype.setItemEvents = function (item, legendItem, useHTML) {
         var legend = this, boxWrapper = legend.chart.renderer.boxWrapper, isPoint = item instanceof Point, activeClass = 'highcharts-legend-' +
@@ -1158,7 +1157,7 @@ var Legend = /** @class */ (function () {
      * @private
      * @function Highcharts.Legend#createCheckboxForItem
      * @param {Highcharts.BubbleLegendItem|Point|Highcharts.Series} item
-     * @fires Highcharts.Series#event:checkboxClick
+     * @emits Highcharts.Series#event:checkboxClick
      */
     Legend.prototype.createCheckboxForItem = function (item) {
         var legend = this;

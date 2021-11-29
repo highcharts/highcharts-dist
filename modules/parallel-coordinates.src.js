@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Support for parallel coordinates in Highcharts
  *
@@ -260,7 +260,6 @@
              * @function Highcharts.Chart#setParallelInfo
              * @param {Highcharts.Options} options
              * User options
-             * @return {void}
              * @requires modules/parallel-coordinates
              */
             setParallelInfo: function (options) {
@@ -443,7 +442,8 @@
                 var parallel = this,
                     axis = parallel.axis,
                     chart = axis.chart,
-                    fraction = ((parallel.position || 0) + 0.5) / (chart.parallelInfo.counter + 1);
+                    fraction = ((parallel.position || 0) + 0.5) /
+                        (chart.parallelInfo.counter + 1);
                 if (chart.polar) {
                     options.angle = 360 * fraction;
                 }
@@ -484,7 +484,9 @@
                 var axis = this,
                     chart = axis.chart,
                     parallelCoordinates = axis.parallelCoordinates;
-                var axisPosition = ['left', 'width', 'height', 'top'];
+                var axisPosition = [
+                        'left', 'width', 'height', 'top'
+                    ];
                 if (chart.hasParallelCoordinates) {
                     if (chart.inverted) {
                         axisPosition = axisPosition.reverse();

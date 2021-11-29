@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Highcharts funnel module
  *
@@ -213,10 +213,13 @@
                         funnel3d.color = funnel3d.fill = fill;
                         // change gradientUnits to userSpaceOnUse for linearGradient
                         if (fillColor.linearGradient) {
-                            [funnel3d.frontLower, funnel3d.frontUpper].forEach(function (part) {
+                            [funnel3d.frontLower, funnel3d.frontUpper]
+                                .forEach(function (part) {
                                 var elem = part.element,
-                                    grad = elem && funnel3d.renderer.gradients[elem.gradient];
-                                if (grad && grad.attr('gradientUnits') !== 'userSpaceOnUse') {
+                                    grad = (elem &&
+                                        funnel3d.renderer.gradients[elem.gradient]);
+                                if (grad &&
+                                    grad.attr('gradientUnits') !== 'userSpaceOnUse') {
                                     grad.attr({
                                         gradientUnits: 'userSpaceOnUse'
                                     });
@@ -333,8 +336,8 @@
                             chart = charts[renderer.chartIndex], 
                             // adjust angles for visible edges
                             // based on alpha, selected through visual tests
-                            alphaCorrection = shapeArgs.alphaCorrection = 90 -
-                                Math.abs((chart.options.chart.options3d.alpha % 180) - 90), 
+                            alphaCorrection = shapeArgs.alphaCorrection = 90 - Math.abs((chart.options.chart.options3d.alpha % 180) -
+                                90), 
                             // set zIndexes of parts based on cubiod logic, for
                             // consistency
                             cuboidData = rendererProto.cuboidPath.call(renderer,
@@ -373,7 +376,8 @@
                         if (hasMiddle) {
                             middleWidth = shapeArgs.middle.width;
                             middleTopArgs = merge(shapeArgs, {
-                                y: shapeArgs.y + shapeArgs.middle.fraction * shapeArgs.height,
+                                y: (shapeArgs.y +
+                                    shapeArgs.middle.fraction * shapeArgs.height),
                                 width: middleWidth,
                                 x: shapeArgs.x - middleWidth / 2,
                                 z: shapeArgs.z - middleWidth / 2
@@ -400,9 +404,11 @@
                         ret.rightUpper = renderer.getCylinderFront(renderer.getCylinderEnd(chart, merge(shapeArgs, {
                             x: shapeArgs.x - shapeArgs.width / 2,
                             z: shapeArgs.z - shapeArgs.width / 2,
-                            alphaCorrection: useAlphaCorrection ? -alphaCorrection : 0
+                            alphaCorrection: useAlphaCorrection ?
+                                -alphaCorrection : 0
                         }), false), renderer.getCylinderEnd(chart, merge(middleTopArgs, {
-                            alphaCorrection: useAlphaCorrection ? -alphaCorrection : 0
+                            alphaCorrection: useAlphaCorrection ?
+                                -alphaCorrection : 0
                         }), !hasMiddle));
                         if (hasMiddle) {
                             useAlphaCorrection = (Math.min(middleWidth, bottomWidth) /
@@ -549,7 +555,8 @@
         /**
          * The funnel3d series type.
          *
-         * @constructor seriesTypes.funnel3d
+         * @class
+         * @name Highcharts.seriesTypes.funnel3d
          * @augments seriesTypes.column
          * @requires highcharts-3d
          * @requires modules/cylinder

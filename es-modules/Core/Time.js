@@ -166,7 +166,8 @@ var Time = /** @class */ (function () {
             // time
             if (unit === 'Milliseconds' ||
                 unit === 'Seconds' ||
-                (unit === 'Minutes' && this.getTimezoneOffset(date) % 3600000 === 0) // #13961
+                (unit === 'Minutes' &&
+                    this.getTimezoneOffset(date) % 3600000 === 0) // #13961
             ) {
                 return date['setUTC' + unit](value);
             }
@@ -183,8 +184,8 @@ var Time = /** @class */ (function () {
         }
         // UTC time with no timezone handling
         if (this.useUTC ||
-            (hasNewSafariBug && unit === 'FullYear') // leap calculation in UTC only
-        ) {
+            // leap calculation in UTC only
+            (hasNewSafariBug && unit === 'FullYear')) {
             return date['setUTC' + unit](value);
         }
         // Else, local time
@@ -200,7 +201,6 @@ var Time = /** @class */ (function () {
      *
      * @param {Highcharts.TimeOptions} options
      *
-     * @return {void}
      */
     Time.prototype.update = function (options) {
         var useUTC = pick(options && options.useUTC, true), time = this;
@@ -283,7 +283,7 @@ var Time = /** @class */ (function () {
      *         A getTimezoneOffset function
      */
     Time.prototype.timezoneOffsetFunction = function () {
-        var time = this, options = this.options, moment = options.moment || win.moment;
+        var time = this, options = this.options, getTimezoneOffset = options.getTimezoneOffset, moment = options.moment || win.moment;
         if (!this.useUTC) {
             return function (timestamp) {
                 return new Date(timestamp.toString()).getTimezoneOffset() * 60000;
@@ -302,9 +302,9 @@ var Time = /** @class */ (function () {
             }
         }
         // If not timezone is set, look for the getTimezoneOffset callback
-        if (this.useUTC && options.getTimezoneOffset) {
+        if (this.useUTC && getTimezoneOffset) {
             return function (timestamp) {
-                return options.getTimezoneOffset(timestamp.valueOf()) * 60000;
+                return getTimezoneOffset(timestamp.valueOf()) * 60000;
             };
         }
         // Last, use the `timezoneOffset` option if set
@@ -438,8 +438,10 @@ var Time = /** @class */ (function () {
      * Resolve legacy formats of dateTimeLabelFormats (strings and arrays) into
      * an object.
      * @private
-     * @param {string|Array<T>|Highcharts.Dictionary<T>} f - General format description
-     * @return {Highcharts.Dictionary<T>} - The object definition
+     * @param {string|Array<T>|Highcharts.Dictionary<T>} f
+     * General format description
+     * @return {Highcharts.Dictionary<T>}
+     * The object definition
      */
     Time.prototype.resolveDTLFormat = function (f) {
         if (!isObject(f, true)) { // check for string or array
@@ -471,6 +473,7 @@ var Time = /** @class */ (function () {
      * @param {number} [startOfWeek=1]
      *
      * @return {Highcharts.AxisTickPositionsArray}
+     * Time positions
      */
     Time.prototype.getTimeTicks = function (normalizedInterval, min, max, startOfWeek) {
         var time = this, Date = time.Date, tickPositions = [], higherRanks = {}, 
@@ -731,8 +734,8 @@ export default Time;
  * In case of loading the library from a `script` tag,
  * this option is not needed, it will be loaded from there by default.
  *
- * @type {function}
- * @since 8.2.0
+ * @type      {Function}
+ * @since     8.2.0
  * @apioption time.moment
  */
 ''; // keeps doclets above in JS file

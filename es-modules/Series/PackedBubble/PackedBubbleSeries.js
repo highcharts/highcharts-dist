@@ -200,9 +200,6 @@ var PackedBubbleSeries = /** @class */ (function (_super) {
     /**
      * Check if two bubbles overlaps.
      * @private
-     * @param {Array} first bubble
-     * @param {Array} second bubble
-     * @return {Boolean} overlap or not
      */
     PackedBubbleSeries.prototype.checkOverlap = function (bubble1, bubble2) {
         var diffX = bubble1[0] - bubble2[0], // diff of X center values
@@ -332,7 +329,8 @@ var PackedBubbleSeries = /** @class */ (function (_super) {
             return;
         }
         var series = this, chart = series.chart, parentAttribs = {}, nodeMarker = this.layout.options.parentNodeOptions.marker, parentOptions = {
-            fill: nodeMarker.fillColor || color(series.color).brighten(0.4).get(),
+            fill: (nodeMarker.fillColor ||
+                color(series.color).brighten(0.4).get()),
             opacity: nodeMarker.fillOpacity,
             stroke: nodeMarker.lineColor || series.color,
             'stroke-width': pick(nodeMarker.lineWidth, series.options.lineWidth)

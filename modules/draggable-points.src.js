@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -284,7 +284,7 @@
                     resize: true,
                     resizeSide: 'bottom',
                     handlePositioner: function (point) {
-                        var bBox = point.shapeArgs || point.graphic.getBBox();
+                        var bBox = (point.shapeArgs || point.graphic.getBBox());
                         return {
                             x: bBox.x || 0,
                             y: (bBox.y || 0) + (bBox.height || 0)
@@ -310,7 +310,7 @@
                     resize: true,
                     resizeSide: 'top',
                     handlePositioner: function (point) {
-                        var bBox = point.shapeArgs || point.graphic.getBBox();
+                        var bBox = (point.shapeArgs || point.graphic.getBBox());
                         return {
                             x: bBox.x || 0,
                             y: bBox.y || 0
@@ -760,7 +760,6 @@
          * @private
          * @param {string} type
          *        Unsupported series type
-         * @return {void}
          */
         function (type) {
             if (seriesTypes[type]) {
@@ -1281,7 +1280,7 @@
          * @param {Highcharts.SVGElement} [guideBox]
          *        The guide box to take snapshot of.
          *
-         * @return {object}
+         * @return {Object}
          *         Snapshot object. Point properties are placed in a hashmap with IDs as
          *         keys.
          */
@@ -1434,7 +1433,7 @@
          * @private
          * @function getNewPoints
          *
-         * @param {object} dragDropData
+         * @param {Object} dragDropData
          *        A chart's dragDropData with drag/drop origin information, and info on
          *        which points are being dragged.
          *
@@ -1639,7 +1638,7 @@
          * @private
          * @function Highcharts.Point#getDropValues
          *
-         * @param {object} origin
+         * @param {Object} origin
          *        Mouse position (chartX/Y) and point props at current data values.
          *        Point props should be organized per point.id in a hashmap.
          *
@@ -1738,7 +1737,7 @@
                 changed;
             // Find bounding box of all points
             points.forEach(function (point) {
-                var bBox = point.graphic && point.graphic.getBBox() || point.shapeArgs;
+                var bBox = (point.graphic && point.graphic.getBBox() || point.shapeArgs);
                 if (bBox) {
                     var plotX2 = void 0;
                     var x2 = point.x2;
@@ -1937,7 +1936,7 @@
          * @private
          * @function countProps
          *
-         * @param {object} obj
+         * @param {Object} obj
          *        The object to count.
          *
          * @return {number}

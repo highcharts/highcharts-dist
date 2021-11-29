@@ -113,16 +113,16 @@ declare module "../highcharts.src" {
         /**
          * Parse a CSV input string
          */
-        parseCSV(inOptions?: DataOptions): Array<Array<DataValueType>>;
+        parseCSV(): void;
         /**
          * A hook for working directly on the parsed columns
          */
-        parsed(): (boolean|undefined);
+        parsed(): void;
         /**
          * Parse a date and return it as a number. Overridable through
          * `options.parseDate`.
          */
-        parseDate(val: string): number;
+        parseDate(): void;
         /**
          * Parse a Google spreadsheet.
          *
@@ -132,7 +132,7 @@ declare module "../highcharts.src" {
         /**
          * Parse a HTML table
          */
-        parseTable(): Array<Array<DataValueType>>;
+        parseTable(): void;
         /**
          * Parse numeric cells in to number types and date types in to true
          * dates.
@@ -141,7 +141,7 @@ declare module "../highcharts.src" {
         /**
          * Reorganize rows into columns.
          */
-        rowsToColumns(rows: Array<Array<DataValueType>>): (Array<Array<DataValueType>>|undefined);
+        rowsToColumns(): void;
         /**
          * Trim a string from whitespaces.
          *
@@ -171,7 +171,7 @@ declare module "../highcharts.src" {
     /**
      * Creates a data object to parse data for a chart.
      */
-    function data(dataOptions: DataOptions, chartOptions?: Options, chart?: Chart): Data;
+    function data(): void;
     /**
      * Get a JSON resource over XHR, also supporting CORS without preflight.
      *

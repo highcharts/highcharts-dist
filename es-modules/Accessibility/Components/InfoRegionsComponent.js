@@ -193,7 +193,8 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
             after: {
                 element: null,
                 buildContent: function (chart) {
-                    var formatter = chart.options.accessibility.screenReaderSection
+                    var formatter = chart.options.accessibility
+                        .screenReaderSection
                         .afterChartFormatter;
                     return formatter ? formatter(chart) :
                         component.defaultAfterChartFormatter();
@@ -304,11 +305,10 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @return {string}
      */
     InfoRegionsComponent.prototype.defaultBeforeChartFormatter = function () {
-        var chart = this.chart;
-        var format = chart.options.accessibility.screenReaderSection.beforeChartFormat;
+        var chart = this.chart, format = chart.options.accessibility.screenReaderSection
+            .beforeChartFormat;
         if (!format) {
             return '';
         }
@@ -337,11 +337,11 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @return {string}
      */
     InfoRegionsComponent.prototype.defaultAfterChartFormatter = function () {
         var chart = this.chart;
-        var format = chart.options.accessibility.screenReaderSection.afterChartFormat;
+        var format = chart.options.accessibility.screenReaderSection
+            .afterChartFormat;
         if (!format) {
             return '';
         }
@@ -351,7 +351,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @return {string}
      */
     InfoRegionsComponent.prototype.getLinkedDescription = function () {
         var el = this.linkedDescriptionElement, content = el && el.innerHTML || '';
@@ -359,7 +358,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @return {string}
      */
     InfoRegionsComponent.prototype.getLongdescText = function () {
         var chartOptions = this.chart.options, captionOptions = chartOptions.caption, captionText = captionOptions && captionOptions.text, linkedDescription = this.getLinkedDescription();
@@ -370,7 +368,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @return {string}
      */
     InfoRegionsComponent.prototype.getTypeDescriptionText = function () {
         var chart = this.chart;
@@ -380,8 +377,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @param {string} buttonId
-     * @return {string}
      */
     InfoRegionsComponent.prototype.getDataTableButtonText = function (buttonId) {
         var chart = this.chart, buttonText = chart.langFormat('accessibility.table.viewAsDataTableButtonText', { chart: chart, chartTitle: getChartTitle(chart) });
@@ -389,8 +384,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @param {string} buttonId
-     * @return {string}
      */
     InfoRegionsComponent.prototype.getSonifyButtonText = function (buttonId) {
         var chart = this.chart;
@@ -403,7 +396,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @return {string}
      */
     InfoRegionsComponent.prototype.getSubtitleText = function () {
         var subtitle = (this.chart.options.subtitle);
@@ -411,7 +403,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @return {string}
      */
     InfoRegionsComponent.prototype.getEndOfChartMarkerText = function () {
         var chart = this.chart, markerText = chart.langFormat('accessibility.screenReaderSection.endOfChartMarker', { chart: chart }), id = 'highcharts-end-of-chart-marker-' + chart.index;
@@ -473,7 +464,8 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
             el.setAttribute('tabindex', -1);
             el.onclick = function (e) {
                 var onPlayAsSoundClick = (chart.options.accessibility &&
-                    chart.options.accessibility.screenReaderSection.onPlayAsSoundClick);
+                    chart.options.accessibility.screenReaderSection
+                        .onPlayAsSoundClick);
                 (onPlayAsSoundClick || defaultHandler).call(this, e, chart);
             };
         }
@@ -500,7 +492,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     /**
      * Return object with text description of each of the chart's axes.
      * @private
-     * @return {Highcharts.Dictionary<string>}
      */
     InfoRegionsComponent.prototype.getAxesDescription = function () {
         var chart = this.chart, shouldDescribeColl = function (collectionKey, defaultCondition) {
@@ -519,8 +510,6 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
     };
     /**
      * @private
-     * @param {string} collectionKey
-     * @return {string}
      */
     InfoRegionsComponent.prototype.getAxisDescriptionText = function (collectionKey) {
         var chart = this.chart;

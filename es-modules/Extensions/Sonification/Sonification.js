@@ -64,7 +64,7 @@ export default Sonification;
 * Utility functions.
 * @name Highcharts.SonificationObject#utilities
 * @private
-* @type {object}
+* @type {Object}
 */ /**
 * The Instrument class.
 * @name Highcharts.SonificationObject#Instrument

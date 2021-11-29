@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -624,11 +624,11 @@
                      * @default {"color": "#0A9AC9", "dashStyle": "LongDash", "lineWidth": 1}
                      */
                     styles: {
-                        /** @ignore-options */
+                        /** @ignore-option */
                         color: '#0A9AC9',
-                        /** @ignore-options */
+                        /** @ignore-option */
                         dashStyle: 'LongDash',
-                        /** @ignore-options */
+                        /** @ignore-option */
                         lineWidth: 1
                     }
                 },

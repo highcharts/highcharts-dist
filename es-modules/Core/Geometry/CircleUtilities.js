@@ -75,7 +75,8 @@ var CircleUtilities;
      * Returns the area of the circular segment.
      */
     function getCircularSegmentArea(r, h) {
-        return r * r * Math.acos(1 - h / r) - (r - h) * Math.sqrt(h * (2 * r - h));
+        return (r * r * Math.acos(1 - h / r) -
+            (r - h) * Math.sqrt(h * (2 * r - h)));
     }
     CircleUtilities.getCircularSegmentArea = getCircularSegmentArea;
     /**

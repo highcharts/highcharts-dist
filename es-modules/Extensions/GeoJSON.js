@@ -199,9 +199,9 @@ Chart.prototype.transformFromLatLon = function (latLon, transform) {
      * In case of loading the library from a `script` tag,
      * this option is not needed, it will be loaded from there by default.
      *
-     * @type       {function}
-     * @product    highmaps
-     * @apioption  chart.proj4
+     * @type      {Function}
+     * @product   highmaps
+     * @apioption chart.proj4
      */
     var proj4 = this.options.chart.proj4 || win.proj4;
     if (!proj4) {

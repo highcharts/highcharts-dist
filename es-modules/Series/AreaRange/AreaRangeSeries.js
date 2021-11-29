@@ -191,11 +191,17 @@ var AreaRangeSeries = /** @class */ (function (_super) {
         // Create a line on both top and bottom of the range
         linePath = []
             .concat(lowerPath, higherPath);
-        // For the area path, we need to change the 'move' statement
-        // into 'lineTo'
-        if (!this.chart.polar && higherAreaPath[0] && higherAreaPath[0][0] === 'M') {
+        // For the area path, we need to change the 'move' statement into
+        // 'lineTo'
+        if (!this.chart.polar &&
+            higherAreaPath[0] &&
+            higherAreaPath[0][0] === 'M') {
             // This probably doesn't work for spline
-            higherAreaPath[0] = ['L', higherAreaPath[0][1], higherAreaPath[0][2]];
+            higherAreaPath[0] = [
+                'L',
+                higherAreaPath[0][1],
+                higherAreaPath[0][2]
+            ];
         }
         this.graphPath = linePath;
         this.areaPath = lowerPath.concat(higherAreaPath);
@@ -218,13 +224,17 @@ var AreaRangeSeries = /** @class */ (function (_super) {
             //
             // TODO: We want to change this and allow multiple labels for both
             // upper and lower values in the future - introducing some options
-            // for which point value to use as Y for the dataLabel, so that
-            // this could be handled in Series.drawDataLabels. This would also
-            // improve performance since we now have to loop over all the
-            // points multiple times to work around the data label logic.
+            // for which point value to use as Y for the dataLabel, so that this
+            // could be handled in Series.drawDataLabels. This would also
+            // improve performance since we now have to loop over all the points
+            // multiple times to work around the data label logic.
             if (isArray(dataLabelOptions)) {
-                upperDataLabelOptions = dataLabelOptions[0] || { enabled: false };
-                lowerDataLabelOptions = dataLabelOptions[1] || { enabled: false };
+                upperDataLabelOptions = dataLabelOptions[0] || {
+                    enabled: false
+                };
+                lowerDataLabelOptions = dataLabelOptions[1] || {
+                    enabled: false
+                };
             }
             else {
                 // Make copies
@@ -257,7 +267,8 @@ var AreaRangeSeries = /** @class */ (function (_super) {
                         point.below = up;
                         if (inverted) {
                             if (!upperDataLabelOptions.align) {
-                                upperDataLabelOptions.align = up ? 'right' : 'left';
+                                upperDataLabelOptions.align = up ?
+                                    'right' : 'left';
                             }
                         }
                         else {
@@ -302,7 +313,8 @@ var AreaRangeSeries = /** @class */ (function (_super) {
                         point.below = !up;
                         if (inverted) {
                             if (!lowerDataLabelOptions.align) {
-                                lowerDataLabelOptions.align = up ? 'left' : 'right';
+                                lowerDataLabelOptions.align = up ?
+                                    'left' : 'right';
                             }
                         }
                         else {

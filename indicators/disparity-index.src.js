@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Indicator series type for Highstock
  *
@@ -106,7 +106,8 @@
                     ctx = this, // Disparity Index indicator
                     params = args[1].params, // options.params
                     averageType = params && params.average ? params.average : void 0;
-                ctx.averageIndicator = SeriesRegistry.seriesTypes[averageType] || SMAIndicator;
+                ctx.averageIndicator = SeriesRegistry
+                    .seriesTypes[averageType] || SMAIndicator;
                 ctx.averageIndicator.prototype.init.apply(ctx, args);
             };
             DisparityIndexIndicator.prototype.calculateDisparityIndex = function (curPrice, periodAverage) {

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
@@ -296,7 +296,8 @@
                 return node;
             };
             OrganizationSeries.prototype.createNodeColumn = function () {
-                var column = _super.prototype.createNodeColumn.call(this);
+                var column = _super.prototype.createNodeColumn
+                        .call(this);
                 // Wrap the offset function so that the hanging node's children are
                 // aligned to their parent
                 wrap(column, 'offset', function (proceed, node, factor) {
@@ -314,7 +315,8 @@
                 return column;
             };
             OrganizationSeries.prototype.pointAttribs = function (point, state) {
-                var series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states && levelOptions.states[state]) || {}, values = ['borderRadius', 'linkColor', 'linkLineWidth']
+                var series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states &&
+                        levelOptions.states[state]) || {}, values = ['borderRadius', 'linkColor', 'linkLineWidth']
                         .reduce(function (obj, key) {
                         obj[key] = pick(stateOptions[key], options[key], levelOptions[key], series.options[key]);
                     return obj;

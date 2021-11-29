@@ -182,13 +182,8 @@ var PlotLineOrBandAxis;
          *
          * @private
          * @function Highcharts.Axis#addPlotBandOrLine
-         *
          * @param {Highcharts.AxisPlotBandsOptions|Highcharts.AxisPlotLinesOptions} options
          * The plotBand or plotLine configuration object.
-         *
-         * @param {"plotBands"|"plotLines"} [coll]
-         *
-         * @return {Highcharts.PlotLineOrBand|undefined}
          */
         Additions.prototype.addPlotBandOrLine = function (options, coll) {
             var _this = this;

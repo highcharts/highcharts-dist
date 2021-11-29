@@ -169,7 +169,8 @@ var CSVParser = /** @class */ (function (_super) {
      * Internal method that parses a single CSV row
      */
     CSVParser.prototype.parseCSVRow = function (columnStr, rowNumber) {
-        var parser = this, converter = this.converter, columns = parser.columns || [], dataTypes = parser.dataTypes, _a = parser.options, startColumn = _a.startColumn, endColumn = _a.endColumn, itemDelimiter = parser.options.itemDelimiter || parser.guessedItemDelimiter;
+        var parser = this, converter = this.converter, columns = parser.columns || [], dataTypes = parser.dataTypes, _a = parser.options, startColumn = _a.startColumn, endColumn = _a.endColumn, itemDelimiter = (parser.options.itemDelimiter ||
+            parser.guessedItemDelimiter);
         var decimalPoint = parser.options.decimalPoint;
         if (!decimalPoint || decimalPoint === itemDelimiter) {
             decimalPoint = parser.guessedDecimalPoint || '.';
@@ -374,7 +375,7 @@ var CSVParser = /** @class */ (function (_super) {
     /**
      * Handles converting the parsed data to a table.
      *
-     * @returns {DataTable}
+     * @return {DataTable}
      * Table from the parsed CSV.
      */
     CSVParser.prototype.getTable = function () {

@@ -54,11 +54,8 @@ var HollowCandlestickPoint = /** @class */ (function (_super) {
     /* eslint-disable valid-jsdoc */
     /**
      * Update class name if needed.
-     *
+     * @private
      * @function Highcharts.seriesTypes.hollowcandlestick#getClassName
-     *
-     * @return {string}
-     *
      */
     HollowCandlestickPoint.prototype.getClassName = function () {
         var className = _super.prototype.getClassName.apply(this);

@@ -66,12 +66,8 @@ var MapLineSeries = /** @class */ (function (_super) {
     /* eslint-disable valid-jsdoc */
     /**
      * Get presentational attributes
-     *
      * @private
      * @function Highcharts.seriesTypes.mapline#pointAttribs
-     * @param {Highcharts.Point} point
-     * @param {string} state
-     * @return {Highcharts.SVGAttributes}
      */
     MapLineSeries.prototype.pointAttribs = function (point, state) {
         var attr = MapSeries.prototype.pointAttribs.call(this, point, state);

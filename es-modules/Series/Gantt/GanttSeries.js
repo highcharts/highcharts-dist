@@ -89,7 +89,9 @@ var GanttSeries = /** @class */ (function (_super) {
     GanttSeries.prototype.drawPoint = function (point, verb) {
         var series = this, seriesOpts = series.options, renderer = series.chart.renderer, shapeArgs = point.shapeArgs, plotY = point.plotY, graphic = point.graphic, state = point.selected && 'select', cutOff = seriesOpts.stacking && !seriesOpts.borderRadius, diamondShape;
         if (point.options.milestone) {
-            if (isNumber(plotY) && point.y !== null && point.visible !== false) {
+            if (isNumber(plotY) &&
+                point.y !== null &&
+                point.visible !== false) {
                 diamondShape = renderer.symbols.diamond(shapeArgs.x || 0, shapeArgs.y || 0, shapeArgs.width || 0, shapeArgs.height || 0);
                 if (graphic) {
                     graphic[verb]({

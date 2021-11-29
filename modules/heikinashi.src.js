@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * HeikinAshi series type for Highcharts Stock
  *
@@ -172,7 +172,6 @@
              *
              * @function Highcharts.seriesTypes.heikinashi#getHeikinashiData
              *
-             * @return {void}
              *
              */
             HeikinAshiSeries.prototype.getHeikinashiData = function () {
@@ -197,7 +196,6 @@
             /**
              * @private
              * @function Highcarts.seriesTypes.heikinashi#init
-             * @return {void}
              */
             HeikinAshiSeries.prototype.init = function () {
                 _super.prototype.init.apply(this, arguments);
@@ -212,11 +210,13 @@
              * @param {Array<(number)>} dataPoint
              *        Current data point.
              *
-             * @return {void}
              *
              */
             HeikinAshiSeries.prototype.modifyFirstPointValue = function (dataPoint) {
-                var open = (dataPoint[0] + dataPoint[1] + dataPoint[2] + dataPoint[3]) / 4,
+                var open = (dataPoint[0] +
+                        dataPoint[1] +
+                        dataPoint[2] +
+                        dataPoint[3]) / 4,
                     close = (dataPoint[0] + dataPoint[3]) / 2;
                 this.heikiashiData.push([open, dataPoint[1], dataPoint[2], close]);
             };
@@ -232,12 +232,14 @@
              * @param {Array<(number)>} previousDataPoint
              *        Previous data point.
              *
-             * @return {void}
              *
              */
             HeikinAshiSeries.prototype.modifyDataPoint = function (dataPoint, previousDataPoint) {
                 var newOpen = (previousDataPoint[0] + previousDataPoint[3]) / 2,
-                    newClose = (dataPoint[0] + dataPoint[1] + dataPoint[2] + dataPoint[3]) / 4,
+                    newClose = (dataPoint[0] +
+                        dataPoint[1] +
+                        dataPoint[2] +
+                        dataPoint[3]) / 4,
                     newHigh = Math.max(dataPoint[1],
                     newClose,
                     newOpen),

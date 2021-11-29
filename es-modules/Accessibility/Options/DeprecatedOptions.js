@@ -100,7 +100,8 @@ function deprecateFromOptionsMap(chart, rootOldAsArray, rootNewAsArray, mapToNew
         if (typeof val !== 'undefined') {
             traverseSetOption(rootNew, mapToNewOptions[oldOptionKey], val);
             error(32, false, chart, (_a = {},
-                _a[rootOldAsArray.join('.') + "." + oldOptionKey] = rootNewAsArray.join('.') + "." + mapToNewOptions[oldOptionKey].join('.'),
+                _a[rootOldAsArray.join('.') + '.' + oldOptionKey] = (rootNewAsArray.join('.') + '.' +
+                    mapToNewOptions[oldOptionKey].join('.')),
                 _a));
         }
     });
@@ -127,7 +128,9 @@ function copyDeprecatedAxisOptions(chart) {
         if (opts && opts.description) {
             opts.accessibility = opts.accessibility || {};
             opts.accessibility.description = opts.description;
-            error(32, false, chart, { 'axis.description': 'use axis.accessibility.description' });
+            error(32, false, chart, {
+                'axis.description': 'use axis.accessibility.description'
+            });
         }
     });
 }
@@ -157,8 +160,9 @@ function copyDeprecatedSeriesOptions(chart) {
             var optionVal = series.options[oldOption];
             // Special case
             if (oldOption === 'accessibility.pointDescriptionFormatter') {
-                optionVal = series.options.accessibility &&
-                    series.options.accessibility.pointDescriptionFormatter;
+                optionVal = (series.options.accessibility &&
+                    series.options.accessibility
+                        .pointDescriptionFormatter);
             }
             if (typeof optionVal !== 'undefined') {
                 // Set the new option
@@ -167,7 +171,10 @@ function copyDeprecatedSeriesOptions(chart) {
                 // value, since we set enabled rather than disabled
                 oldOption === 'skipKeyboardNavigation' ?
                     !optionVal : optionVal);
-                error(32, false, chart, (_a = {}, _a["series." + oldOption] = "series." + oldToNewSeriesOptions[oldOption].join('.'), _a));
+                error(32, false, chart, (_a = {},
+                    _a["series." + oldOption] = ('series.' +
+                        oldToNewSeriesOptions[oldOption].join('.')),
+                    _a));
             }
         });
     });

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * (c) 2014-2021 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -27,7 +27,7 @@
             obj[path] = fn.apply(null, args);
         }
     }
-    _registerModule(_modules, 'Series/ColorMapComposition.js', [_modules['Core/Utilities.js']], function (U) {
+    _registerModule(_modules, 'Series/ColorMapMixin.js', [_modules['Core/Globals.js'], _modules['Core/Series/Point.js'], _modules['Core/Utilities.js']], function (H, Point, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -37,79 +37,66 @@
          *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
          *
          * */
+        // @todo cleanup & reduction - consider composition
+        var noop = H.noop,
+            seriesTypes = H.seriesTypes;
         var defined = U.defined,
-            wrap = U.wrap;
+            addEvent = U.addEvent;
+        // Move points to the top of the z-index order when hovered
+        addEvent(Point, 'afterSetState', function (e) {
+            var point = this;
+            if (point.moveToTopOnHover && point.graphic) {
+                point.graphic.attr({
+                    zIndex: e && e.state === 'hover' ? 1 : 0
+                });
+            }
+        });
+        /**
+         * Mixin for maps and heatmaps
+         *
+         * @private
+         * @mixin Highcharts.colorMapPointMixin
+         */
+        var PointMixin = {
+                dataLabelOnNull: true,
+                moveToTopOnHover: true,
+                /* eslint-disable valid-jsdoc */
+                /**
+                 * Color points have a value option that determines whether or not it is
+                 * a null point
+                 * @private
+                 */
+                isValid: function () {
+                    // undefined is allowed
+                    return (this.value !== null &&
+                        this.value !== Infinity &&
+                        this.value !== -Infinity);
+            }
+            /* eslint-enable valid-jsdoc */
+        };
         /**
          * @private
          * @mixin Highcharts.colorMapSeriesMixin
          */
-        var colorMapSeriesMixinOld = {
+        var SeriesMixin = {
                 pointArrayMap: ['value'],
                 axisTypes: ['xAxis', 'yAxis', 'colorAxis'],
                 trackerGroups: ['group', 'markerGroup', 'dataLabelsGroup'],
-                // getSymbol: noop,
+                getSymbol: noop,
                 parallelArrays: ['x', 'y', 'value'],
-                colorKey: 'value'
-                // pointAttribs: seriesTypes.column.prototype.pointAttribs,
+                colorKey: 'value',
+                pointAttribs: seriesTypes.column.prototype.pointAttribs,
                 /* eslint-disable valid-jsdoc */
-            };
-        /* *
-         *
-         *  Composition
-         *
-         * */
-        var ColorMapComposition;
-        (function (ColorMapComposition) {
-            ColorMapComposition.colorMapSeriesMixin = colorMapSeriesMixinOld;
-            /* *
-             *
-             *  Constants
-             *
-             * */
-            var composedClasses = [];
-            /* *
-             *
-             *  Functions
-             *
-             * */
-            /* eslint-disable valid-jsdoc */
-            /**
-             * @private
-             */
-            function compose(SeriesClass, PointClass) {
-                if (PointClass && composedClasses.indexOf(PointClass) === -1) {
-                    composedClasses.push(PointClass);
-                    var pointProto = PointClass.prototype;
-                    pointProto.dataLabelOnNull = true;
-                    pointProto.moveToTopOnHover = true;
-                    pointProto.isValid = pointIsValid;
-                }
-                if (composedClasses.indexOf(SeriesClass) === -1) {
-                    composedClasses.push(SeriesClass);
-                    var seriesProto = SeriesClass.prototype;
-                    seriesProto.colorAttribs = seriesColorAttribs;
-                    wrap(seriesProto, 'pointAttribs', seriesWrapPointAttribs);
-                }
-                return SeriesClass;
-            }
-            ColorMapComposition.compose = compose;
-            /**
-             * Color points have a value option that determines whether or not it is
-             * a null point
-             * @private
-             */
-            function pointIsValid() {
-                // undefined is allowed
-                return (this.value !== null &&
-                    this.value !== Infinity &&
-                    this.value !== -Infinity);
-            }
-            /**
-             * Get the color attibutes to apply on the graphic
-             * @private
-             */
-            function seriesColorAttribs(point) {
-                var ret = {};
+                /**
+                 * Get the color attibutes to apply on the graphic
+                 * @private
+                 * @function Highcharts.colorMapSeriesMixin.colorAttribs
+                 * @param {Highcharts.Point} point
+                 * @return {Highcharts.SVGAttributes}
+                 *         The SVG attributes
+                 */
+                colorAttribs: function (point) {
+                    var ret = {};
                 if (defined(point.color) &&
                     (!point.state || point.state === 'normal') // #15746
                 ) {
@@ -117,28 +104,13 @@
                 }
                 return ret;
             }
-            ColorMapComposition.seriesColorAttribs = seriesColorAttribs;
-            /**
-             * Move points to the top of the z-index order when hovered
-             * @private
-             */
-            function seriesWrapPointAttribs(original, point, state) {
-                var attribs = original.call(this,
-                    point,
-                    state);
-                if (point.moveToTopOnHover) {
-                    attribs.zIndex = state === 'hover' ? 1 : 0;
-                }
-                return attribs;
-            }
-        })(ColorMapComposition || (ColorMapComposition = {}));
-        /* *
-         *
-         *  Default Export
-         *
-         * */
+        };
+        var ColorMapMixin = {
+                PointMixin: PointMixin,
+                SeriesMixin: SeriesMixin
+            };
 
-        return ColorMapComposition;
+        return ColorMapMixin;
     });
     _registerModule(_modules, 'Series/Treemap/TreemapAlgorithmGroup.js', [], function () {
         /* *
@@ -617,7 +589,7 @@
          *
          * @private
          *
-         * @param {object} params
+         * @param {Object} params
          * Object containing parameters.
          * - `defaults` Object containing default options. The default options are
          *   merged with the userOptions to get the final options for a specific
@@ -727,7 +699,7 @@
          *
          * @private
          *
-         * @param {object} series
+         * @param {Object} series
          * The series to operate on.
          *
          * @return {string}
@@ -825,7 +797,7 @@
         });
 
     });
-    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapComposition.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (Color, ColorMapComposition, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, U) {
+    _registerModule(_modules, 'Series/Treemap/TreemapSeries.js', [_modules['Core/Color/Color.js'], _modules['Series/ColorMapMixin.js'], _modules['Core/Globals.js'], _modules['Core/Legend/LegendSymbol.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Series/Treemap/TreemapAlgorithmGroup.js'], _modules['Series/Treemap/TreemapPoint.js'], _modules['Series/Treemap/TreemapUtilities.js'], _modules['Series/TreeUtilities.js'], _modules['Core/Utilities.js']], function (Color, ColorMapMixin, H, LegendSymbol, SeriesRegistry, TreemapAlgorithmGroup, TreemapPoint, TreemapUtilities, TU, U) {
         /* *
          *
          *  (c) 2014-2021 Highsoft AS
@@ -854,7 +826,6 @@
             };
         })();
         var color = Color.parse;
-        var colorMapSeriesMixin = ColorMapComposition.colorMapSeriesMixin;
         var noop = H.noop;
         var Series = SeriesRegistry.series,
             _a = SeriesRegistry.seriesTypes,
@@ -1121,11 +1092,11 @@
              * @private
              * @function Highcharts.Series#calculateChildrenAreas
              *
-             * @param {object} node
-             *        The node which is parent to the children.
+             * @param {Object} node
+             * The node which is parent to the children.
              *
-             * @param {object} area
-             *        The rectangular area of the parent.
+             * @param {Object} area
+             * The rectangular area of the parent.
              */
             TreemapSeries.prototype.calculateChildrenAreas = function (parent, area) {
                 var series = this,
@@ -1366,7 +1337,7 @@
              * @param {Array<string>} [existingIds]
              *        List of all point ids.
              *
-             * @return {object}
+             * @return {Object}
              *         Map from parent id to children index in data.
              */
             TreemapSeries.prototype.getListOfParents = function (data, existingIds) {
@@ -1419,9 +1390,7 @@
                 var series = this,
                     setOptionsEvent;
                 // If color series logic is loaded, add some properties
-                if (colorMapSeriesMixin) {
-                    this.colorAttribs = ColorMapComposition.seriesColorAttribs;
-                }
+                this.colorAttribs = ColorMapMixin.SeriesMixin.colorAttribs;
                 setOptionsEvent = addEvent(series, 'setOptions', function (event) {
                     var options = event.userOptions;
                     if (defined(options.allowDrillToNode) &&
@@ -1515,7 +1484,8 @@
                     nodeMap = series.nodeMap,
                     node = nodeMap[rootId],
                     name = node.name,
-                    buttonOptions = series.options.traverseUpButton,
+                    buttonOptions = series.options
+                        .traverseUpButton,
                     backText = pick(buttonOptions.text,
                     name, '◁ Back'),
                     attr,
@@ -1647,7 +1617,7 @@
              * @param {boolean} [redraw=true]
              * Wether to redraw the chart or not.
              *
-             * @param {object} [eventArguments]
+             * @param {Object} [eventArguments]
              * Arguments to be accessed in event handler.
              *
              * @param {string} [eventArguments.newRootId]
@@ -1659,14 +1629,14 @@
              * @param {boolean} [eventArguments.redraw]
              * Wether to redraw the chart after.
              *
-             * @param {object} [eventArguments.series]
+             * @param {Object} [eventArguments.series]
              * The series to update the root of.
              *
              * @param {string} [eventArguments.trigger]
              * The action which triggered the event. Undefined if the setRootNode is
              * called directly.
              *
-             * @fires Highcharts.Series#event:setRootNode
+             * @emits Highcharts.Series#event:setRootNode
              */
             TreemapSeries.prototype.setRootNode = function (id, redraw, eventArguments) {
                 var series = this,
@@ -1682,16 +1652,15 @@
                  * The default functionality of the setRootNode event.
                  *
                  * @private
-                 * @param {object} args The event arguments.
+                 * @param {Object} args The event arguments.
                  * @param {string} args.newRootId Id of the new root.
                  * @param {string} args.previousRootId Id of the previous root.
                  * @param {boolean} args.redraw Wether to redraw the chart after.
-                 * @param {object} args.series The series to update the root of.
+                 * @param {Object} args.series The series to update the root of.
                  * @param {string} [args.trigger=undefined] The action which
                  * triggered the event. Undefined if the setRootNode is called
                  * directly.
-                 * @return {void}
-                 */
+                     */
                 var defaultFn = function (args) {
                         var series = args.series;
                     // Store previous and new root ids on the series.
@@ -1922,10 +1891,11 @@
                  * additional properties `newRootId`, `previousRootId`, `redraw` and
                  * `trigger`.
                  *
-                 * @type {function}
-                 * @default undefined
                  * @sample {highcharts} highcharts/plotoptions/treemap-events-setrootnode/
                  *         Alert update information on setRootNode event.
+                 *
+                 * @type {Function}
+                 * @default undefined
                  * @since 7.0.3
                  * @product highcharts
                  * @apioption plotOptions.treemap.events.setRootNode
@@ -2342,7 +2312,6 @@
                 recursive: TreemapUtilities.recursive
             }
         });
-        ColorMapComposition.compose(TreemapSeries);
         SeriesRegistry.registerSeriesType('treemap', TreemapSeries);
         /* *
          *

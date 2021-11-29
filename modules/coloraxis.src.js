@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * ColorAxis module
  *
@@ -85,7 +85,9 @@
                     composedClasses.push(ChartClass);
                     var chartProto = ChartClass.prototype;
                     chartProto.collectionsWithUpdate.push('colorAxis');
-                    chartProto.collectionsWithInit.colorAxis = [chartProto.addColorAxis];
+                    chartProto.collectionsWithInit.colorAxis = [
+                        chartProto.addColorAxis
+                    ];
                     addEvent(ChartClass, 'afterGetAxes', onChartAfterGetAxes);
                     wrapChartCreateAxis(ChartClass);
                 }
@@ -234,7 +236,6 @@
              * @private
              * @function Highcharts.colorPointMixin.setVisible
              * @param {boolean} visible
-             * @return {void}
              */
             function pointSetVisible(vis) {
                 var point = this,
@@ -254,7 +255,6 @@
              * translation too
              * @private
              * @function Highcharts.colorSeriesMixin.translateColors
-             * @return {void}
              */
             function seriesTranslateColors() {
                 var series = this,
@@ -832,7 +832,8 @@
                 var _this = _super.call(this,
                     chart,
                     userOptions) || this;
-                _this.beforePadding = false; // Prevents unnecessary padding with `hc-more`
+                // Prevents unnecessary padding with `hc-more`
+                _this.beforePadding = false;
                 _this.chart = void 0;
                 _this.coll = 'colorAxis';
                 _this.dataClasses = void 0;
@@ -1141,7 +1142,9 @@
                     zIndex: 1
                 }).add(item.legendGroup);
                 // Set how much space this legend item takes up
-                axis.legendItemWidth = width + padding + (horiz ? itemDistance : labelPadding);
+                axis.legendItemWidth = (width +
+                    padding +
+                    (horiz ? itemDistance : labelPadding));
                 axis.legendItemHeight = height + padding + (horiz ? labelPadding : 0);
             };
             /**
@@ -1233,8 +1236,8 @@
              * @param {Highcharts.Point} [point]
              *        The Point object if the crosshair snaps to points.
              *
-             * @fires Highcharts.ColorAxis#event:afterDrawCrosshair
-             * @fires Highcharts.ColorAxis#event:drawCrosshair
+             * @emits Highcharts.ColorAxis#event:afterDrawCrosshair
+             * @emits Highcharts.ColorAxis#event:drawCrosshair
              */
             ColorAxis.prototype.drawCrosshair = function (e, point) {
                 var axis = this;

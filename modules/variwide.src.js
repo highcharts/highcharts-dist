@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Highcharts variwide module
  *
@@ -285,8 +285,12 @@
                     relZ = this.relZ,
                     i = axis.reversed ? relZ.length - index : index,
                     goRight = axis.reversed ? -1 : 1,
-                    minPx = axis.toPixels(axis.reversed ? (axis.dataMax || 0) + axis.pointRange : (axis.dataMin || 0)),
-                    maxPx = axis.toPixels(axis.reversed ? (axis.dataMin || 0) : (axis.dataMax || 0) + axis.pointRange),
+                    minPx = axis.toPixels(axis.reversed ?
+                        (axis.dataMax || 0) + axis.pointRange :
+                        (axis.dataMin || 0)),
+                    maxPx = axis.toPixels(axis.reversed ?
+                        (axis.dataMin || 0) :
+                        (axis.dataMax || 0) + axis.pointRange),
                     len = Math.abs(maxPx - minPx),
                     totalZ = this.totalZ,
                     left = this.chart.inverted ?

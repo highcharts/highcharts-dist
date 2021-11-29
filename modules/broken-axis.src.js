@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -209,8 +209,11 @@
                                         (threshold > brk.from && y < brk.from)) {
                                         eventName = 'pointBreak';
                                     }
-                                    else if ((threshold < brk.from && y > brk.from && y < brk.to) ||
-                                        (threshold > brk.from && y > brk.to && y < brk.from)) {
+                                    else if ((threshold < brk.from &&
+                                        y > brk.from &&
+                                        y < brk.to) || (threshold > brk.from &&
+                                        y > brk.to &&
+                                        y < brk.from)) {
                                         eventName = 'pointInBreak';
                                     }
                                     if (eventName) {
@@ -329,12 +332,9 @@
                                 isNull: true,
                                 x: xRange
                             });
-                            // For stacked chart generate empty stack items,
-                            // #6546
+                            // For stacked chart generate empty stack items, #6546
                             if (yAxis.stacking && this.options.stacking) {
-                                stack = yAxis.stacking.stacks[this.stackKey][xRange] =
-                                    new StackItem(yAxis, yAxis.options
-                                        .stackLabels, false, xRange, this.stack);
+                                stack = yAxis.stacking.stacks[this.stackKey][xRange] = new StackItem(yAxis, yAxis.options.stackLabels, false, xRange, this.stack);
                                 stack.total = 0;
                             }
                         }
@@ -571,10 +571,12 @@
                                     repeat_1 = brk.repeat || Infinity;
                                     if (isNumber(min_1) && isNumber(max_1)) {
                                         if (Additions.isInBreak(brk, min_1)) {
-                                            min_1 += (brk.to % repeat_1) - (min_1 % repeat_1);
+                                            min_1 += ((brk.to % repeat_1) -
+                                                (min_1 % repeat_1));
                                         }
                                         if (Additions.isInBreak(brk, max_1)) {
-                                            max_1 -= (max_1 % repeat_1) - (brk.from % repeat_1);
+                                            max_1 -= ((max_1 % repeat_1) -
+                                                (brk.from % repeat_1));
                                         }
                                     }
                                 });
@@ -622,13 +624,17 @@
                                             to: brk.value,
                                             len: brk.value - start_1 - (brk.size || 0)
                                         });
-                                        length_1 += brk.value - start_1 - (brk.size || 0);
+                                        length_1 += (brk.value -
+                                            start_1 -
+                                            (brk.size || 0));
                                     }
                                 });
                                 brokenAxis.breakArray = breakArray_1;
                                 // Used with staticScale, and below the actual axis
                                 // length, when breaks are substracted.
-                                if (isNumber(min_1) && isNumber(max_1) && isNumber(axis.min)) {
+                                if (isNumber(min_1) &&
+                                    isNumber(max_1) &&
+                                    isNumber(axis.min)) {
                                     brokenAxis.unitLength = max_1 - min_1 - length_1 +
                                         pointRangePadding;
                                     fireEvent(axis, 'afterBreaks');

@@ -110,6 +110,16 @@ var PCIndicator = /** @class */ (function (_super) {
      */
     PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
         /**
+         * Option for fill color between lines in Price channel Indicator.
+         *
+         * @sample {highstock} stock/indicators/indicator-area-fill
+         *      background fill between lines
+         *
+         * @type {Highcharts.Color}
+         * @apioption plotOptions.pc.fillColor
+         *
+         */
+        /**
          * @excluding index
          */
         params: {
@@ -154,6 +164,7 @@ var PCIndicator = /** @class */ (function (_super) {
     return PCIndicator;
 }(SMAIndicator));
 extend(PCIndicator.prototype, {
+    areaLinesNames: ['top', 'bottom'],
     nameBase: 'Price Channel',
     nameComponents: ['period'],
     linesApiNames: ['topLine', 'bottomLine'],

@@ -56,10 +56,9 @@ var MapChart = /** @class */ (function (_super) {
      *        Function to run when the chart has loaded and and all external
      *        images are loaded.
      *
-     * @return {void}
      *
-     * @fires Highcharts.MapChart#event:init
-     * @fires Highcharts.MapChart#event:afterInit
+     * @emits Highcharts.MapChart#event:init
+     * @emits Highcharts.MapChart#event:afterInit
      */
     MapChart.prototype.init = function (userOptions, callback) {
         // Initialize the MapView after initialization, but before firstRender
@@ -144,6 +143,7 @@ var MapChart = /** @class */ (function (_super) {
      * @param {string|Array<string|number>} path
      *
      * @return {Highcharts.SVGPathArray}
+     * Splitted SVG path
      */
     function splitPath(path) {
         var arr;

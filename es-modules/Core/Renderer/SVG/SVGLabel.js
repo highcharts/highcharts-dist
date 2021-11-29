@@ -134,7 +134,8 @@ var SVGLabel = /** @class */ (function (_super) {
                 }
             });
             this.text.css(textStyles_1);
-            var isWidth = 'width' in textStyles_1, isFontStyle = ('fontSize' in textStyles_1 || 'fontWeight' in textStyles_1);
+            var isWidth = 'width' in textStyles_1, isFontStyle = ('fontSize' in textStyles_1 ||
+                'fontWeight' in textStyles_1);
             // Update existing text, box (#9400, #12163)
             if (isFontStyle) {
                 this.updateTextPadding();
@@ -300,13 +301,15 @@ var SVGLabel = /** @class */ (function (_super) {
                     this.renderer.symbol(this.symbolKey) :
                     this.renderer.rect();
                 box.addClass(// Don't use label className for buttons
-                (this.className === 'button' ? '' : 'highcharts-label-box') +
-                    (this.className ? ' highcharts-' + this.className + '-box' : ''));
+                (this.className === 'button' ?
+                    '' : 'highcharts-label-box') +
+                    (this.className ?
+                        ' highcharts-' + this.className + '-box' : ''));
                 box.add(this);
             }
             crispAdjust = this.getCrispAdjust();
             attribs.x = crispAdjust;
-            attribs.y = (this.baseline ? -this.baselineOffset : 0) + crispAdjust;
+            attribs.y = ((this.baseline ? -this.baselineOffset : 0) + crispAdjust);
             // Apply the box attributes
             attribs.width = Math.round(this.width);
             attribs.height = Math.round(this.height);
@@ -328,8 +331,7 @@ var SVGLabel = /** @class */ (function (_super) {
         if (defined(this.widthSetting) &&
             this.bBox &&
             (this.textAlign === 'center' || this.textAlign === 'right')) {
-            textX += { center: 0.5, right: 1 }[this.textAlign] *
-                (this.widthSetting - this.bBox.width);
+            textX += { center: 0.5, right: 1 }[this.textAlign] * (this.widthSetting - this.bBox.width);
         }
         // update if anything changed
         if (textX !== text.x || textY !== text.y) {
@@ -355,7 +357,9 @@ var SVGLabel = /** @class */ (function (_super) {
         var padding = this.padding;
         var paddingLeft = pick(this.paddingLeft, padding);
         var paddingRight = pick(this.paddingRight, padding);
-        return (this.widthSetting || this.bBox.width || 0) + paddingLeft + paddingRight;
+        return ((this.widthSetting || this.bBox.width || 0) +
+            paddingLeft +
+            paddingRight);
     };
     SVGLabel.prototype.xSetter = function (value) {
         this.x = value; // for animation getter
@@ -376,7 +380,12 @@ var SVGLabel = /** @class */ (function (_super) {
      *  Static Properties
      *
      * */
-    SVGLabel.emptyBBox = { width: 0, height: 0, x: 0, y: 0 };
+    SVGLabel.emptyBBox = {
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0
+    };
     /**
      * For labels, these CSS properties are applied to the `text` node directly.
      *

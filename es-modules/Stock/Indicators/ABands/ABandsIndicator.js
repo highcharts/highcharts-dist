@@ -160,6 +160,17 @@ var ABandsIndicator = /** @class */ (function (_super) {
      * @optionparent plotOptions.abands
      */
     ABandsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+        /**
+         * Option for fill color between lines in Accelleration bands Indicator.
+         *
+         * @sample {highstock} stock/indicators/indicator-area-fill
+         *      Background fill between lines.
+         *
+         * @type {Highcharts.Color}
+         * @since 9.3.2
+         * @apioption plotOptions.abands.fillColor
+         *
+         */
         params: {
             period: 20,
             /**
@@ -194,6 +205,7 @@ var ABandsIndicator = /** @class */ (function (_super) {
     return ABandsIndicator;
 }(SMAIndicator));
 extend(ABandsIndicator.prototype, {
+    areaLinesNames: ['top', 'bottom'],
     linesApiNames: ['topLine', 'bottomLine'],
     nameBase: 'Acceleration Bands',
     nameComponents: ['period', 'factor'],

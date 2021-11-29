@@ -110,7 +110,6 @@ var SVGElement = /** @class */ (function () {
      *
      * @param {Highcharts.SVGDOMElement} element
      *
-     * @return {void}
      */
     SVGElement.prototype._defaultSetter = function (value, key, element) {
         element.setAttribute(key, value);
@@ -256,7 +255,8 @@ var SVGElement = /** @class */ (function () {
             alignByTranslate = this.alignByTranslate;
             alignTo = this.alignTo;
         }
-        box = pick(box, renderer[alignTo], alignTo === 'scrollablePlotBox' ? renderer.plotBox : void 0, renderer);
+        box = pick(box, renderer[alignTo], alignTo === 'scrollablePlotBox' ?
+            renderer.plotBox : void 0, renderer);
         // Assign variables
         var align = alignOptions.align, vAlign = alignOptions.verticalAlign;
         // default: left align
@@ -541,7 +541,8 @@ var SVGElement = /** @class */ (function () {
                     // Let the shadow follow the main element
                     if (!this.styledMode &&
                         this.shadows &&
-                        /^(width|height|visibility|x|y|d|transform|cx|cy|r)$/.test(key)) {
+                        /^(width|height|visibility|x|y|d|transform|cx|cy|r)$/
+                            .test(key)) {
                         this.updateShadows(key, val, setter);
                     }
                 }
@@ -910,7 +911,6 @@ var SVGElement = /** @class */ (function () {
      * @private
      * @function Highcharts.SVGElement#destroyShadows
      *
-     * @return {void}
      */
     SVGElement.prototype.destroyShadows = function () {
         (this.shadows || []).forEach(function (shadow) {
@@ -1137,8 +1137,7 @@ var SVGElement = /** @class */ (function () {
                     bBox.height = height = ({
                         '11px,17': 14,
                         '13px,20': 16
-                    }[styles &&
-                        styles.fontSize + ',' + Math.round(height)] ||
+                    }[(fontSize || '') + "," + Math.round(height)] ||
                         height);
                 }
                 // Adjust for rotated text
@@ -1802,12 +1801,13 @@ var SVGElement = /** @class */ (function () {
      * @function Highcharts.SVGElement#translate
      *
      * @param {number} x
-     *        The x value.
+     * The x value.
      *
      * @param {number} y
-     *        The y value.
+     * The y value.
      *
      * @return {Highcharts.SVGElement}
+     * Translated element.
      */
     SVGElement.prototype.translate = function (x, y) {
         return this.attr({
@@ -1894,7 +1894,6 @@ var SVGElement = /** @class */ (function () {
      *
      * @param {Highcharts.SVGDOMElement} element
      *
-     * @return {void}
      */
     SVGElement.prototype.visibilitySetter = function (value, key, element) {
         // IE9-11 doesn't handle visibilty:inherit well, so we remove the
@@ -1910,10 +1909,6 @@ var SVGElement = /** @class */ (function () {
     /**
      * @private
      * @function Highcharts.SVGElement#xGetter
-     *
-     * @param {string} key
-     *
-     * @return {number|string|null}
      */
     SVGElement.prototype.xGetter = function (key) {
         if (this.element.nodeName === 'circle') {
@@ -1929,9 +1924,6 @@ var SVGElement = /** @class */ (function () {
     /**
      * @private
      * @function Highcharts.SVGElement#zIndexSetter
-     * @param {number} [value]
-     * @param {string} [key]
-     * @return {boolean}
      */
     SVGElement.prototype.zIndexSetter = function (value, key) {
         var renderer = this.renderer, parentGroup = this.parentGroup, parentWrapper = parentGroup || renderer, parentNode = parentWrapper.element || renderer.box, element = this.element, svgParent = parentNode === renderer.box;

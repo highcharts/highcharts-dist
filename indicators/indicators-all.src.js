@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -195,8 +195,8 @@
                         var hasEvents = !!indicator.dataEventsToUnbind.length;
                     if (indicator.linkedParent) {
                         if (!hasEvents) {
-                            // No matter which indicator,
-                            // always recalculate after updating the data.
+                            // No matter which indicator, always recalculate after
+                            // updating the data.
                             indicator.dataEventsToUnbind.push(addEvent(indicator.linkedParent, 'updatedData', function () {
                                 indicator.recalculateValues();
                             }));
@@ -241,7 +241,6 @@
             };
             /**
              * @private
-             * @return {void}
              */
             SMAIndicator.prototype.recalculateValues = function () {
                 var indicator = this,
@@ -1116,6 +1115,16 @@
              */
             var pointArrayMap = ['top', 'bottom'];
             /**
+             * Names of the lines, bewteen which the area should be plotted.
+             * If the drawing of the area should
+             * be disabled for some indicators, leave this option as an empty array.
+             * Names should be the same as the names in the pointArrayMap.
+             * @private
+             * @name multipleLinesMixin.areaLinesNames
+             * @type {Array<string>}
+             */
+            var areaLinesNames = ['top'];
+            /**
              * Main line id.
              *
              * @private
@@ -1142,7 +1151,10 @@
                         pointArrayMap.slice());
                     proto.pointValKey = (proto.pointValKey ||
                         pointValKey);
+                    proto.areaLinesNames = (proto.areaLinesNames ||
+                        areaLinesNames.slice());
                     proto.drawGraph = drawGraph;
+                    proto.getGraphPath = getGraphPath;
                     proto.toYData = toYData;
                     proto.translate = translate;
                     proto.getTranslatedLinesNames = getTranslatedLinesNames;
@@ -1151,16 +1163,46 @@
             }
             MultipleLinesComposition.compose = compose;
             /**
+             * Create the path based on points provided as argument.
+             * If indicator.nextPoints option is defined, create the areaFill.
+             *
+             * @param points Points on which the path should be created
+             */
+            function getGraphPath(points) {
+                var indicator = this;
+                var areaPath,
+                    path = [],
+                    higherAreaPath = [];
+                points = points || this.points;
+                // Render Span
+                if (indicator.fillGraph && indicator.nextPoints) {
+                    areaPath = SMAIndicator.prototype.getGraphPath.call(indicator, indicator.nextPoints);
+                    if (areaPath && areaPath.length) {
+                        areaPath[0][0] = 'L';
+                        path = SMAIndicator.prototype.getGraphPath.call(indicator, points);
+                        higherAreaPath = areaPath.slice(0, path.length);
+                        // Reverse points, so that the areaFill will start from the end:
+                        for (var i = higherAreaPath.length - 1; i >= 0; i--) {
+                            path.push(higherAreaPath[i]);
+                        }
+                    }
+                }
+                else {
+                    path = SMAIndicator.prototype.getGraphPath.apply(indicator, arguments);
+                }
+                return path;
+            }
+            /**
              * Draw main and additional lines.
              *
              * @private
              * @function multipleLinesMixin.drawGraph
-             * @return {void}
              */
             function drawGraph() {
                 var indicator = this,
                     pointValKey = indicator.pointValKey,
                     linesApiNames = indicator.linesApiNames,
+                    areaLinesNames = indicator.areaLinesNames,
                     mainLinePoints = indicator.points,
                     mainLineOptions = indicator.options,
                     mainLinePath = indicator.graph,
@@ -1189,6 +1231,27 @@
                     }
                     pointsLength = mainLinePoints.length;
                 });
+                // Modify options and generate area fill:
+                if (this.userOptions.fillColor && areaLinesNames.length) {
+                    var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])),
+                        secondLinePoints = secondaryLines[index],
+                        firstLinePoints = areaLinesNames.length === 1 ?
+                            mainLinePoints :
+                            secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))],
+                        originalColor = indicator.color;
+                    indicator.points = firstLinePoints;
+                    indicator.nextPoints = secondLinePoints;
+                    indicator.color = this.userOptions.fillColor;
+                    indicator.options = merge(mainLinePoints, gappedExtend);
+                    indicator.graph = indicator.area;
+                    indicator.fillGraph = true;
+                    SeriesRegistry.seriesTypes.sma.prototype.drawGraph.call(indicator);
+                    indicator.area = indicator.graph;
+                    // Clean temporary properties:
+                    delete indicator.nextPoints;
+                    delete indicator.fillGraph;
+                    indicator.color = originalColor;
+                }
                 // Modify options and generate additional lines:
                 linesApiNames.forEach(function (lineName, i) {
                     if (secondaryLines[i]) {
@@ -1233,12 +1296,19 @@
                 var translatedLines = [];
                 (this.pointArrayMap || []).forEach(function (propertyName) {
                     if (propertyName !== excludedValue) {
-                        translatedLines.push('plot' +
-                            propertyName.charAt(0).toUpperCase() +
-                            propertyName.slice(1));
+                        translatedLines.push(getLineName(propertyName));
                     }
                 });
                 return translatedLines;
+            }
+            /**
+             * Generate the API name of the line
+             * @param propertyName name of the line
+             */
+            function getLineName(propertyName) {
+                return ('plot' +
+                    propertyName.charAt(0).toUpperCase() +
+                    propertyName.slice(1));
             }
             /**
              * @private
@@ -1260,7 +1330,6 @@
              *
              * @private
              * @function multipleLinesMixin.translate
-             * @return {void}
              */
             function translate() {
                 var indicator = this,
@@ -1478,6 +1547,7 @@
             return AroonIndicator;
         }(SMAIndicator));
         extend(AroonIndicator.prototype, {
+            areaLinesNames: [],
             linesApiNames: ['aroonDown'],
             nameBase: 'Aroon',
             pointArrayMap: ['y', 'aroonDown'],
@@ -2014,6 +2084,17 @@
              * @optionparent plotOptions.bb
              */
             BBIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * Option for fill color between lines in Bollinger Bands Indicator.
+                 *
+                 * @sample {highstock} stock/indicators/indicator-area-fill
+                 *      Background fill between lines.
+                 *
+                 * @type      {Highcharts.Color}
+                 * @since 9.3.2
+                 * @apioption plotOptions.bb.fillColor
+                 *
+                 */
                 params: {
                     period: 20,
                     /**
@@ -2070,6 +2151,7 @@
             return BBIndicator;
         }(SMAIndicator));
         extend(BBIndicator.prototype, {
+            areaLinesNames: ['top', 'bottom'],
             pointArrayMap: ['top', 'middle', 'bottom'],
             pointValKey: 'middle',
             nameComponents: ['period', 'standardDeviation'],
@@ -2384,12 +2466,21 @@
             };
             /**
              * @private
-             * @param {Array<number>} xData - x timestamp values
-             * @param {Array<number>} seriesYData - yData of basic series
-             * @param {Array<number>} volumeSeriesYData - yData of volume series
-             * @param {number} period - indicator's param
-             * @return {Highcharts.IndicatorNullableValuesObject} object containing computed money
-             * flow data
+             *
+             * @param {Array<number>} xData
+             * x timestamp values
+             *
+             * @param {Array<number>} seriesYData
+             * yData of basic series
+             *
+             * @param {Array<number>} volumeSeriesYData
+             * yData of volume series
+             *
+             * @param {number} period
+             * indicator's param
+             *
+             * @return {Highcharts.IndicatorNullableValuesObject}
+             * object containing computed money flow data
              */
             CMFIndicator.prototype.getMoneyFlow = function (xData, seriesYData, volumeSeriesYData, period) {
                 var len = seriesYData.length,
@@ -2405,11 +2496,18 @@
                 /**
                  * Calculates money flow volume, changes i, nullIndex vars from
                  * upper scope!
+                 *
                  * @private
-                 * @param {Array<number>} ohlc - OHLC point
-                 * @param {number} volume - Volume point's y value
-                 * @return {number|null} - volume * moneyFlowMultiplier
-                 **/
+                 *
+                 * @param {Array<number>} ohlc
+                 * OHLC point
+                 *
+                 * @param {number} volume
+                 * Volume point's y value
+                 *
+                 * @return {number|null}
+                 * Volume * moneyFlowMultiplier
+                 */
                 function getMoneyFlowVolume(ohlc, volume) {
                     var high = ohlc[1],
                         low = ohlc[2],
@@ -2421,11 +2519,15 @@
                             high !== low;
                     /**
                      * @private
-                     * @param {number} h - High value
-                     * @param {number} l - Low value
-                     * @param {number} c - Close value
-                     * @return {number} calculated multiplier for the point
-                     **/
+                     * @param {number} h
+                     * High value
+                     * @param {number} l
+                     * Low value
+                     * @param {number} c
+                     * Close value
+                     * @return {number}
+                     * Calculated multiplier for the point
+                     */
                     function getMoneyFlowMultiplier(h, l, c) {
                         return ((c - l) - (h - c)) / (h - l);
                     }
@@ -2726,12 +2828,15 @@
                     enabled: false
                 },
                 tooltip: {
-                    pointFormat: '<span style="color: {point.color}">\u25CF</span><b> {series.name}</b><br/>' +
+                    pointFormat: '<span style="color: {point.color}">' +
+                        '\u25CF</span><b> {series.name}</b><br/>' +
                         '<span style="color: {point.color}">DX</span>: {point.y}<br/>' +
-                        '<span style="color: {point.series.options.plusDILine.styles.lineColor}">+DI</span>' +
-                        ': {point.plusDI}<br/>' +
-                        '<span style="color: {point.series.options.minusDILine.styles.lineColor}">-DI</span>' +
-                        ': {point.minusDI}<br/>'
+                        '<span style="color: ' +
+                        '{point.series.options.plusDILine.styles.lineColor}">' +
+                        '+DI</span>: {point.plusDI}<br/>' +
+                        '<span style="color: ' +
+                        '{point.series.options.minusDILine.styles.lineColor}">' +
+                        '-DI</span>: {point.minusDI}<br/>'
                 },
                 /**
                  * +DI line options.
@@ -2780,6 +2885,7 @@
             return DMIIndicator;
         }(SMAIndicator));
         extend(DMIIndicator.prototype, {
+            areaLinesNames: [],
             nameBase: 'DMI',
             linesApiNames: ['plusDILine', 'minusDILine'],
             pointArrayMap: ['y', 'plusDI', 'minusDI'],
@@ -4442,16 +4548,14 @@
                             }
                             else {
                                 // Compare middle point of the section
-                                concatArrIndex =
-                                    sectionPoints[x].plotY > sectionNextPoints[x].plotY ? 0 : 1;
+                                concatArrIndex = (sectionPoints[x].plotY > sectionNextPoints[x].plotY) ? 0 : 1;
                                 points[concatArrIndex] = points[concatArrIndex].concat(sectionPoints);
                                 nextPoints[concatArrIndex] = nextPoints[concatArrIndex].concat(sectionNextPoints);
                             }
                         }
                         else {
                             // Compare first point of the section
-                            concatArrIndex =
-                                sectionPoints[0].plotY > sectionNextPoints[0].plotY ? 0 : 1;
+                            concatArrIndex = (sectionPoints[0].plotY > sectionNextPoints[0].plotY) ? 0 : 1;
                             points[concatArrIndex] = points[concatArrIndex].concat(sectionPoints);
                             nextPoints[concatArrIndex] = nextPoints[concatArrIndex].concat(sectionNextPoints);
                         }
@@ -4511,7 +4615,8 @@
                     indicator.nextPoints);
                     if (spanA && spanA.length) {
                         spanA[0][0] = 'L';
-                        path = SeriesRegistry.seriesTypes.sma.prototype.getGraphPath.call(indicator, points);
+                        path = SeriesRegistry.seriesTypes.sma.prototype.getGraphPath
+                            .call(indicator, points);
                         spanAarr = spanA.slice(0, path.length);
                         for (var i = spanAarr.length - 1; i >= 0; i--) {
                             path.push(spanAarr[i]);
@@ -4519,7 +4624,8 @@
                     }
                 }
                 else {
-                    path = SeriesRegistry.seriesTypes.sma.prototype.getGraphPath.apply(indicator, arguments);
+                    path = SeriesRegistry.seriesTypes.sma.prototype.getGraphPath
+                        .apply(indicator, arguments);
                 }
                 return path;
             };
@@ -4944,6 +5050,17 @@
              * @optionparent plotOptions.keltnerchannels
              */
             KeltnerChannelsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * Option for fill color between lines in Keltner Channels Indicator.
+                 *
+                 * @sample {highstock} stock/indicators/indicator-area-fill
+                 *      Background fill between lines.
+                 *
+                 * @type {Highcharts.Color}
+                 * @since 9.3.2
+                 * @apioption plotOptions.keltnerchannels.fillColor
+                 *
+                 */
                 params: {
                     /**
                      * The point index which indicator calculations will base. For
@@ -5008,6 +5125,7 @@
         }(SMAIndicator));
         extend(KeltnerChannelsIndicator.prototype, {
             nameBase: 'Keltner Channels',
+            areaLinesNames: ['top', 'bottom'],
             nameComponents: ['period', 'periodATR', 'multiplierATR'],
             linesApiNames: ['topLine', 'bottomLine'],
             pointArrayMap: ['top', 'middle', 'bottom'],
@@ -5297,15 +5415,20 @@
                     approximation: 'averages'
                 },
                 tooltip: {
-                    pointFormat: '<span style="color: {point.color}">\u25CF</span><b> {series.name}</b><br/>' +
-                        '<span style="color: {point.color}">Klinger</span>: {point.y}<br/>' +
-                        '<span style="color: {point.series.options.signalLine.styles.lineColor}">Signal</span>' +
+                    pointFormat: '<span style="color: {point.color}">\u25CF</span>' +
+                        '<b> {series.name}</b><br/>' +
+                        '<span style="color: {point.color}">Klinger</span>: ' +
+                        '{point.y}<br/>' +
+                        '<span style="color: ' +
+                        '{point.series.options.signalLine.styles.lineColor}">' +
+                        'Signal</span>' +
                         ': {point.signal}<br/>'
                 }
             });
             return KlingerIndicator;
         }(SMAIndicator));
         extend(KlingerIndicator.prototype, {
+            areaLinesNames: [],
             linesApiNames: ['signalLine'],
             nameBase: 'Klinger',
             nameComponents: ['fastAvgPeriod', 'slowAvgPeriod'],
@@ -5541,7 +5664,7 @@
                 this.zones = histogramZones;
             };
             MACDIndicator.prototype.getValues = function (series, params) {
-                var indexToShift = params.longPeriod - params.shortPeriod, // #14197
+                var indexToShift = (params.longPeriod - params.shortPeriod), // #14197
                     j = 0,
                     MACD = [],
                     xMACD = [],
@@ -6693,7 +6816,8 @@
                                             null;
                             }
                         }
-                        SeriesRegistry.seriesTypes.sma.prototype.drawDataLabels.apply(indicator, arguments);
+                        SeriesRegistry.seriesTypes.sma.prototype.drawDataLabels
+                            .apply(indicator, arguments);
                     });
                 }
             };
@@ -7228,6 +7352,16 @@
              */
             PCIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
                 /**
+                 * Option for fill color between lines in Price channel Indicator.
+                 *
+                 * @sample {highstock} stock/indicators/indicator-area-fill
+                 *      background fill between lines
+                 *
+                 * @type {Highcharts.Color}
+                 * @apioption plotOptions.pc.fillColor
+                 *
+                 */
+                /**
                  * @excluding index
                  */
                 params: {
@@ -7272,6 +7406,7 @@
             return PCIndicator;
         }(SMAIndicator));
         extend(PCIndicator.prototype, {
+            areaLinesNames: ['top', 'bottom'],
             nameBase: 'Price Channel',
             nameComponents: ['period'],
             linesApiNames: ['topLine', 'bottomLine'],
@@ -8165,7 +8300,8 @@
                     // longer then 4 (HLC, range), this ensures that we are not trying
                     // to reach the index out of bounds
                     index = Math.min(index, yVal[0].length - 1);
-                    values = yVal.map(function (value) { return value[index]; });
+                    values = yVal
+                        .map(function (value) { return value[index]; });
                 }
                 // Calculate changes for first N points
                 while (range < period) {
@@ -8373,7 +8509,8 @@
                     yData.push([K, null]);
                     // Calculate smoothed %D, which is SMA of %K
                     if (i >= (periodK - 1) + (periodD - 1)) {
-                        points = SeriesRegistry.seriesTypes.sma.prototype.getValues.call(this, {
+                        points = SeriesRegistry.seriesTypes.sma.prototype.getValues
+                            .call(this, {
                             xData: xData.slice(-periodD),
                             yData: yData.slice(-periodD)
                         }, {
@@ -8458,6 +8595,7 @@
             return StochasticIndicator;
         }(SMAIndicator));
         extend(StochasticIndicator.prototype, {
+            areaLinesNames: [],
             nameComponents: ['periods'],
             nameBase: 'Stochastic',
             pointArrayMap: ['y', 'smoothed'],
@@ -9756,11 +9894,11 @@
                      * @default {"color": "#0A9AC9", "dashStyle": "LongDash", "lineWidth": 1}
                      */
                     styles: {
-                        /** @ignore-options */
+                        /** @ignore-option */
                         color: '#0A9AC9',
-                        /** @ignore-options */
+                        /** @ignore-option */
                         dashStyle: 'LongDash',
-                        /** @ignore-options */
+                        /** @ignore-option */
                         lineWidth: 1
                     }
                 },
@@ -9935,15 +10073,27 @@
             /**
              * Main algorithm used to calculate Volume Weighted Average Price (VWAP)
              * values
+             *
              * @private
-             * @param {boolean} isOHLC - says if data has OHLC format
-             * @param {Array<number>} xValues - array of timestamps
-             * @param {Array<number|Array<number,number,number,number>>} yValues -
-             * array of yValues, can be an array of a four arrays (OHLC) or array of
+             *
+             * @param {boolean} isOHLC
+             * Says if data has OHLC format
+             *
+             * @param {Array<number>} xValues
+             * Array of timestamps
+             *
+             * @param {Array<number|Array<number,number,number,number>>} yValues
+             * Array of yValues, can be an array of a four arrays (OHLC) or array of
              * values (line)
-             * @param {Array<*>} volumeSeries - volume series
-             * @param {number} period - number of points to be calculated
-             * @return {object} - Object contains computed VWAP
+             *
+             * @param {Array<*>} volumeSeries
+             * Volume series
+             *
+             * @param {number} period
+             * Number of points to be calculated
+             *
+             * @return {Object}
+             * Object contains computed VWAP
              **/
             VWAPIndicator.prototype.calculateVWAPValues = function (isOHLC, xValues, yValues, volumeSeries, period) {
                 var volumeValues = volumeSeries.yData,
@@ -10695,13 +10845,18 @@
              * */
             /**
              * Return the slope and intercept of a straight line function.
+             *
              * @private
-             * @param {Highcharts.LinearRegressionIndicator} this indicator to use
-             * @param {Array<number>} xData -  list of all x coordinates in a period
-             * @param {Array<number>} yData - list of all y coordinates in a period
+             *
+             * @param {Array<number>} xData
+             * List of all x coordinates in a period.
+             *
+             * @param {Array<number>} yData
+             * List of all y coordinates in a period.
+             *
              * @return {Highcharts.RegressionLineParametersObject}
-             *          object that contains the slope and the intercept
-             *          of a straight line function
+             * Object that contains the slope and the intercept of a straight line
+             * function.
              */
             LinearRegressionIndicator.prototype.getRegressionLineParameters = function (xData, yData) {
                 // least squares method
@@ -10729,12 +10884,18 @@
             };
             /**
              * Return the y value on a straight line.
+             *
              * @private
+             *
              * @param {Highcharts.RegressionLineParametersObject} lineParameters
-             *          object that contains the slope and the intercept
-             *          of a straight line function
-             * @param {number} endPointX - x coordinate of the point
-             * @return {number} - y value of the point that lies on the line
+             * Object that contains the slope and the intercept of a straight line
+             * function.
+             *
+             * @param {number} endPointX
+             * X coordinate of the point.
+             *
+             * @return {number}
+             * Y value of the point that lies on the line.
              */
             LinearRegressionIndicator.prototype.getEndPointY = function (lineParameters, endPointX) {
                 return lineParameters.slope * endPointX + lineParameters.intercept;
@@ -10742,10 +10903,17 @@
             /**
              * Transform the coordinate system so that x values start at 0 and
              * apply xAxisUnit.
+             *
              * @private
-             * @param {Array<number>} xData - list of all x coordinates in a period
-             * @param {number} xAxisUnit - option (see the API)
-             * @return {Array<number>} - array of transformed x data
+             *
+             * @param {Array<number>} xData
+             * List of all x coordinates in a period
+             *
+             * @param {number} xAxisUnit
+             * Option (see the API)
+             *
+             * @return {Array<number>}
+             * Array of transformed x data
              */
             LinearRegressionIndicator.prototype.transformXData = function (xData, xAxisUnit) {
                 var xOffset = xData[0];
@@ -11441,6 +11609,17 @@
              * @optionparent plotOptions.abands
              */
             ABandsIndicator.defaultOptions = merge(SMAIndicator.defaultOptions, {
+                /**
+                 * Option for fill color between lines in Accelleration bands Indicator.
+                 *
+                 * @sample {highstock} stock/indicators/indicator-area-fill
+                 *      Background fill between lines.
+                 *
+                 * @type {Highcharts.Color}
+                 * @since 9.3.2
+                 * @apioption plotOptions.abands.fillColor
+                 *
+                 */
                 params: {
                     period: 20,
                     /**
@@ -11475,6 +11654,7 @@
             return ABandsIndicator;
         }(SMAIndicator));
         extend(ABandsIndicator.prototype, {
+            areaLinesNames: ['top', 'bottom'],
             linesApiNames: ['topLine', 'bottomLine'],
             nameBase: 'Acceleration Bands',
             nameComponents: ['period', 'factor'],
@@ -11759,7 +11939,8 @@
                     ctx = this, // Disparity Index indicator
                     params = args[1].params, // options.params
                     averageType = params && params.average ? params.average : void 0;
-                ctx.averageIndicator = SeriesRegistry.seriesTypes[averageType] || SMAIndicator;
+                ctx.averageIndicator = SeriesRegistry
+                    .seriesTypes[averageType] || SMAIndicator;
                 ctx.averageIndicator.prototype.init.apply(ctx, args);
             };
             DisparityIndexIndicator.prototype.calculateDisparityIndex = function (curPrice, periodAverage) {

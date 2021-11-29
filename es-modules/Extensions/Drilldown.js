@@ -318,7 +318,7 @@ defaultOptions.drilldown = {
          * @sample {highmaps} highcharts/drilldown/drillupbutton/
          *         Button theming
          *
-         * @type      {object}
+         * @type      {Object}
          * @since     3.0.8
          * @product   highcharts highmaps
          * @apioption drilldown.drillUpButton.theme
@@ -725,8 +725,13 @@ addEvent(Chart, 'afterInit', function () {
 });
 // Shift the drillUpButton to make the space for resetZoomButton, #8095.
 addEvent(Chart, 'afterShowResetZoom', function () {
-    var chart = this, bbox = chart.resetZoomButton && chart.resetZoomButton.getBBox(), buttonOptions = chart.options.drilldown && chart.options.drilldown.drillUpButton;
-    if (this.drillUpButton && bbox && buttonOptions && buttonOptions.position && buttonOptions.position.x) {
+    var chart = this, bbox = chart.resetZoomButton && chart.resetZoomButton.getBBox(), buttonOptions = (chart.options.drilldown &&
+        chart.options.drilldown.drillUpButton);
+    if (this.drillUpButton &&
+        bbox &&
+        buttonOptions &&
+        buttonOptions.position &&
+        buttonOptions.position.x) {
         this.drillUpButton.align({
             x: buttonOptions.position.x - bbox.width - 10,
             y: buttonOptions.position.y,
@@ -1148,7 +1153,7 @@ addEvent(Point, 'afterSetState', function () {
 // After zooming out, shift the drillUpButton to the previous position, #8095.
 addEvent(Chart, 'selection', function (event) {
     if (event.resetSelection === true && this.drillUpButton) {
-        var buttonOptions = this.options.drilldown && this.options.drilldown.drillUpButton;
+        var buttonOptions = (this.options.drilldown && this.options.drilldown.drillUpButton);
         if (buttonOptions && buttonOptions.position) {
             this.drillUpButton.align({
                 x: buttonOptions.position.x,

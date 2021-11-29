@@ -113,7 +113,8 @@ var GoogleSheetsParser = /** @class */ (function (_super) {
                 cellInner = cell.gs$cell || cell.content;
                 val = null;
                 if (cellInner.numericValue) {
-                    if (cellInner.$t.indexOf('/') >= 0 || (cellInner.$t.indexOf('-') >= 0 && cellInner.$t.indexOf('.') === -1)) {
+                    if (cellInner.$t.indexOf('/') >= 0 || (cellInner.$t.indexOf('-') >= 0 &&
+                        cellInner.$t.indexOf('.') === -1)) {
                         // This is a date - for future reference.
                         val = cellInner.$t;
                     }
@@ -174,7 +175,9 @@ var GoogleSheetsParser = /** @class */ (function (_super) {
         parser.columns = parser.getSheetColumns(json);
         for (var i = 0, iEnd = parser.columns.length; i < iEnd; i++) {
             column = parser.columns[i];
-            parser.headers[i] = parserOptions.firstRowAsNames ? column.splice(0, 1).toString() : uniqueKey();
+            parser.headers[i] = parserOptions.firstRowAsNames ?
+                column.splice(0, 1).toString() :
+                uniqueKey();
             for (var j = 0, jEnd = column.length; j < jEnd; ++j) {
                 if (column[j] && typeof column[j] === 'string') {
                     var cellValue = converter.asGuessedType(column[j]);

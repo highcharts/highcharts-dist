@@ -593,7 +593,7 @@ function extendClass(parent, members) {
     return obj;
 }
 /**
- * Left-pad a string to a given length by adding a character repetetively.
+ * Left-pad a string to a given length by adding a character repetitively.
  *
  * @function Highcharts.pad
  *
@@ -855,7 +855,7 @@ function destroyObjectProperties(obj, except) {
     });
 }
 /**
- * Discard a HTML element by moving it to the bin and delete.
+ * Discard a HTML element
  *
  * @function Highcharts.discardElement
  *
@@ -863,17 +863,10 @@ function destroyObjectProperties(obj, except) {
  *        The HTML node to discard.
  */
 function discardElement(element) {
-    // create a garbage bin element, not part of the DOM
-    if (!garbageBin) {
-        garbageBin = createElement('div');
+    if (element && element.parentElement) {
+        element.parentElement.removeChild(element);
     }
-    // move the node and empty bin
-    if (element) {
-        garbageBin.appendChild(element);
-    }
-    garbageBin.innerHTML = '';
 }
-var garbageBin;
 /**
  * Fix JS round off float errors.
  *
@@ -1069,7 +1062,7 @@ var find = Array.prototype.find ?
         var i;
         var length = arr.length;
         for (i = 0; i < length; i++) {
-            if (callback(arr[i], i)) { // eslint-disable-line callback-return
+            if (callback(arr[i], i)) { // eslint-disable-line node/callback-return
                 return arr[i];
             }
         }
@@ -1337,9 +1330,6 @@ function removeEvent(el, type, fn) {
     /* eslint-enable valid-jsdoc */
     /**
      * @private
-     * @param {string} type - event type
-     * @param {Highcharts.EventCallbackFunction<T>} fn - callback
-     * @return {void}
      */
     function removeOneEvent(type, fn) {
         var removeEventListener = (el.removeEventListener || H.removeEventListenerPolyfill);
@@ -1349,8 +1339,6 @@ function removeEvent(el, type, fn) {
     }
     /**
      * @private
-     * @param {any} eventCollection - collection
-     * @return {void}
      */
     function removeAllEvents(eventCollection) {
         var types, len;

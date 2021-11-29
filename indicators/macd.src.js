@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  *
  * Indicator series type for Highcharts Stock
  *
@@ -234,7 +234,7 @@
                 this.zones = histogramZones;
             };
             MACDIndicator.prototype.getValues = function (series, params) {
-                var indexToShift = params.longPeriod - params.shortPeriod, // #14197
+                var indexToShift = (params.longPeriod - params.shortPeriod), // #14197
                     j = 0,
                     MACD = [],
                     xMACD = [],

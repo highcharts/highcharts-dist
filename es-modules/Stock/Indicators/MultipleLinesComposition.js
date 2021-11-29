@@ -64,6 +64,16 @@ var MultipleLinesComposition;
      */
     var pointArrayMap = ['top', 'bottom'];
     /**
+     * Names of the lines, bewteen which the area should be plotted.
+     * If the drawing of the area should
+     * be disabled for some indicators, leave this option as an empty array.
+     * Names should be the same as the names in the pointArrayMap.
+     * @private
+     * @name multipleLinesMixin.areaLinesNames
+     * @type {Array<string>}
+     */
+    var areaLinesNames = ['top'];
+    /**
      * Main line id.
      *
      * @private
@@ -90,7 +100,10 @@ var MultipleLinesComposition;
                 pointArrayMap.slice());
             proto.pointValKey = (proto.pointValKey ||
                 pointValKey);
+            proto.areaLinesNames = (proto.areaLinesNames ||
+                areaLinesNames.slice());
             proto.drawGraph = drawGraph;
+            proto.getGraphPath = getGraphPath;
             proto.toYData = toYData;
             proto.translate = translate;
             proto.getTranslatedLinesNames = getTranslatedLinesNames;
@@ -99,14 +112,41 @@ var MultipleLinesComposition;
     }
     MultipleLinesComposition.compose = compose;
     /**
+     * Create the path based on points provided as argument.
+     * If indicator.nextPoints option is defined, create the areaFill.
+     *
+     * @param points Points on which the path should be created
+     */
+    function getGraphPath(points) {
+        var indicator = this;
+        var areaPath, path = [], higherAreaPath = [];
+        points = points || this.points;
+        // Render Span
+        if (indicator.fillGraph && indicator.nextPoints) {
+            areaPath = SMAIndicator.prototype.getGraphPath.call(indicator, indicator.nextPoints);
+            if (areaPath && areaPath.length) {
+                areaPath[0][0] = 'L';
+                path = SMAIndicator.prototype.getGraphPath.call(indicator, points);
+                higherAreaPath = areaPath.slice(0, path.length);
+                // Reverse points, so that the areaFill will start from the end:
+                for (var i = higherAreaPath.length - 1; i >= 0; i--) {
+                    path.push(higherAreaPath[i]);
+                }
+            }
+        }
+        else {
+            path = SMAIndicator.prototype.getGraphPath.apply(indicator, arguments);
+        }
+        return path;
+    }
+    /**
      * Draw main and additional lines.
      *
      * @private
      * @function multipleLinesMixin.drawGraph
-     * @return {void}
      */
     function drawGraph() {
-        var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
+        var indicator = this, pointValKey = indicator.pointValKey, linesApiNames = indicator.linesApiNames, areaLinesNames = indicator.areaLinesNames, mainLinePoints = indicator.points, mainLineOptions = indicator.options, mainLinePath = indicator.graph, gappedExtend = {
             options: {
                 gapSize: mainLineOptions.gapSize
             }
@@ -129,6 +169,24 @@ var MultipleLinesComposition;
             }
             pointsLength = mainLinePoints.length;
         });
+        // Modify options and generate area fill:
+        if (this.userOptions.fillColor && areaLinesNames.length) {
+            var index = secondaryLinesNames.indexOf(getLineName(areaLinesNames[0])), secondLinePoints = secondaryLines[index], firstLinePoints = areaLinesNames.length === 1 ?
+                mainLinePoints :
+                secondaryLines[secondaryLinesNames.indexOf(getLineName(areaLinesNames[1]))], originalColor = indicator.color;
+            indicator.points = firstLinePoints;
+            indicator.nextPoints = secondLinePoints;
+            indicator.color = this.userOptions.fillColor;
+            indicator.options = merge(mainLinePoints, gappedExtend);
+            indicator.graph = indicator.area;
+            indicator.fillGraph = true;
+            SeriesRegistry.seriesTypes.sma.prototype.drawGraph.call(indicator);
+            indicator.area = indicator.graph;
+            // Clean temporary properties:
+            delete indicator.nextPoints;
+            delete indicator.fillGraph;
+            indicator.color = originalColor;
+        }
         // Modify options and generate additional lines:
         linesApiNames.forEach(function (lineName, i) {
             if (secondaryLines[i]) {
@@ -173,12 +231,19 @@ var MultipleLinesComposition;
         var translatedLines = [];
         (this.pointArrayMap || []).forEach(function (propertyName) {
             if (propertyName !== excludedValue) {
-                translatedLines.push('plot' +
-                    propertyName.charAt(0).toUpperCase() +
-                    propertyName.slice(1));
+                translatedLines.push(getLineName(propertyName));
             }
         });
         return translatedLines;
+    }
+    /**
+     * Generate the API name of the line
+     * @param propertyName name of the line
+     */
+    function getLineName(propertyName) {
+        return ('plot' +
+            propertyName.charAt(0).toUpperCase() +
+            propertyName.slice(1));
     }
     /**
      * @private
@@ -200,7 +265,6 @@ var MultipleLinesComposition;
      *
      * @private
      * @function multipleLinesMixin.translate
-     * @return {void}
      */
     function translate() {
         var indicator = this, pointArrayMap = indicator.pointArrayMap;

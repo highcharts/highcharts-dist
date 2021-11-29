@@ -2514,6 +2514,7 @@ var defaultTime = new Time(merge(defaultOptions.global, defaultOptions.time));
  * @function Highcharts.getOptions
  *
  * @return {Highcharts.Options}
+ * Default options.
  */
 function getOptions() {
     return defaultOptions;
@@ -2528,10 +2529,10 @@ function getOptions() {
  * @function Highcharts.setOptions
  *
  * @param {Highcharts.Options} options
- *        The new custom chart options.
+ * The new custom chart options.
  *
  * @return {Highcharts.Options}
- *         Updated options.
+ * Updated options.
  */
 function setOptions(options) {
     // Copy in the default options

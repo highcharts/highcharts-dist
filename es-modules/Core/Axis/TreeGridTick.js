@@ -169,7 +169,10 @@ var TreeGridTick;
             node.descendants > 0) {
             collapsed = axis.treeGrid.isCollapsed(node);
             renderLabelIcon(tick, {
-                color: !styledMode && label.styles && label.styles.color || '',
+                color: (!styledMode &&
+                    label.styles &&
+                    label.styles.color ||
+                    ''),
                 collapsed: collapsed,
                 group: label.parentGroup,
                 options: symbolOptions,

@@ -90,9 +90,9 @@ var CSVStore = /** @class */ (function (_super) {
      */
     CSVStore.prototype.poll = function () {
         var _this = this;
-        var _a = this.options, dataRefreshRate = _a.dataRefreshRate, pollingEnabled = _a.enablePolling, csvURL = _a.csvURL;
+        var _a = this.options, dataRefreshRate = _a.dataRefreshRate, enablePolling = _a.enablePolling, csvURL = _a.csvURL;
         var updateIntervalMs = (dataRefreshRate > 1 ? dataRefreshRate : 1) * 1000;
-        if (pollingEnabled && csvURL === this.liveDataURL) {
+        if (enablePolling && csvURL === this.liveDataURL) {
             // We need to stop doing this if the URL has changed
             this.liveDataTimeout = setTimeout(function () {
                 _this.fetchCSV();

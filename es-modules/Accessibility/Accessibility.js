@@ -95,7 +95,6 @@ var Accessibility = /** @class */ (function () {
         this.proxyProvider = new ProxyProvider(this.chart);
         this.initComponents();
         this.keyboardNavigation = new KeyboardNavigation(chart, this.components);
-        this.update();
     };
     /**
      * @private
@@ -298,6 +297,9 @@ var Accessibility = /** @class */ (function () {
             }
             else {
                 this.accessibility = a11y = new Accessibility(this);
+                if (a11y && !a11y.zombie) {
+                    a11y.update();
+                }
             }
         }
         else if (a11y) {
@@ -315,13 +317,17 @@ var Accessibility = /** @class */ (function () {
     /**
      * @private
      */
-    function compose(ChartClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
+    function compose(AxisClass, ChartClass, LegendClass, PointClass, SeriesClass, SVGElementClass, RangeSelectorClass) {
+        // ordered:
+        KeyboardNavigation.compose(ChartClass);
+        NewDataAnnouncer.compose(SeriesClass);
+        LegendComponent.compose(ChartClass, LegendClass);
+        MenuComponent.compose(ChartClass);
+        SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
+        ZoomComponent.compose(AxisClass);
+        // RangeSelector
         A11yI18n.compose(ChartClass);
         FocusBorder.compose(ChartClass, SVGElementClass);
-        KeyboardNavigation.compose(ChartClass);
-        MenuComponent.compose(ChartClass);
-        NewDataAnnouncer.compose(SeriesClass);
-        SeriesComponent.compose(ChartClass, PointClass, SeriesClass);
         if (RangeSelectorClass) {
             RangeSelectorComponent.compose(ChartClass, RangeSelectorClass);
         }

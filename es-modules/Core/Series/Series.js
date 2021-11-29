@@ -365,7 +365,6 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#hasData
-     * @return {boolean}
      */
     Series.prototype.hasData = function () {
         return ((this.visible &&
@@ -383,7 +382,6 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#autoIncrement
-     * @return {number}
      */
     Series.prototype.autoIncrement = function (x) {
         var options = this.options, pointIntervalUnit = options.pointIntervalUnit, relativeXValue = options.relativeXValue, time = this.chart.time;
@@ -439,13 +437,9 @@ var Series = /** @class */ (function () {
      * not redraw the series. For API usage, use {@link Series#update}.
      * @private
      * @function Highcharts.Series#setOptions
-     *
      * @param {Highcharts.SeriesOptionsType} itemOptions
      * The series options.
-     *
-     * @return {Highcharts.SeriesOptionsType}
-     *
-     * @fires Highcharts.Series#event:afterSetOptions
+     * @emits Highcharts.Series#event:afterSetOptions
      */
     Series.prototype.setOptions = function (itemOptions) {
         var chart = this.chart, chartOptions = chart.options, plotOptions = chartOptions.plotOptions, userOptions = chart.userOptions || {}, seriesUserOptions = merge(itemOptions), styledMode = chart.styledMode, e = {
@@ -593,7 +587,6 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#getPointsCollection
-     * @return {Array<Highcharts.Point>}
      */
     Series.prototype.getPointsCollection = function () {
         return (this.hasGroupedData ? this.points : this.data) || [];
@@ -604,7 +597,6 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#getSymbol
-     * @return {void}
      */
     Series.prototype.getSymbol = function () {
         var seriesMarkerOption = this.options.marker;
@@ -616,14 +608,13 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#findPointIndex
-     * @param    {Highcharts.PointOptionsObject} optionsObject
-     *           The options of the point.
-     * @param    {number} fromIndex
-     *           The index to start searching from, used for optimizing
-     *           series with required sorting.
-     * @returns  {number|undefined}
-     *           Returns the index of a matching point, or undefined if no
-     *           match is found.
+     * @param {Highcharts.PointOptionsObject} optionsObject
+     * The options of the point.
+     * @param {number} fromIndex
+     * The index to start searching from, used for optimizing series with
+     * required sorting.
+     * @return {number|undefined}
+     * Returns the index of a matching point, or undefined if no match is found.
      */
     Series.prototype.findPointIndex = function (optionsObject, fromIndex) {
         var id = optionsObject.id, x = optionsObject.x, oldData = this.points, dataSorting = this.options.dataSorting;
@@ -973,11 +964,8 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#sortData
-     *
      * @param {Array<Highcharts.PointOptionsType>} data
      * Force data grouping.
-     *
-     * @return {Array<Highcharts.PointOptionsObject>}
      */
     Series.prototype.sortData = function (data) {
         var series = this, options = series.options, dataSorting = options.dataSorting, sortKey = dataSorting.sortKey || 'y', getPointOptionsObject = function (series, pointOptions) {
@@ -1029,8 +1017,7 @@ var Series = /** @class */ (function () {
      * @private
      * @function Highcharts.Series#getProcessedData
      * @param {boolean} [forceExtremesFromAll]
-     *        Force getting extremes of a total series data range.
-     * @return {Highcharts.SeriesProcessedDataObject}
+     * Force getting extremes of a total series data range.
      */
     Series.prototype.getProcessedData = function (forceExtremesFromAll) {
         var series = this, xAxis = series.xAxis, options = series.options, cropThreshold = options.cropThreshold, getExtremesFromAll = forceExtremesFromAll ||
@@ -1110,8 +1097,7 @@ var Series = /** @class */ (function () {
      * @private
      * @function Highcharts.Series#processData
      * @param {boolean} [force]
-     *        Force data grouping.
-     * @return {boolean|undefined}
+     * Force data grouping.
      */
     Series.prototype.processData = function (force) {
         var series = this, xAxis = series.xAxis;
@@ -1131,7 +1117,7 @@ var Series = /** @class */ (function () {
         series.cropStart = processedData.cropStart;
         series.processedXData = processedData.xData;
         series.processedYData = processedData.yData;
-        series.closestPointRange = series.basePointRange = processedData.closestPointRange;
+        series.closestPointRange = (series.basePointRange = processedData.closestPointRange);
         fireEvent(series, 'afterProcessData');
     };
     /**
@@ -1141,12 +1127,6 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#cropData
-     * @param {Array<number>} xData
-     * @param {Array<number>} yData
-     * @param {number} min
-     * @param {number} max
-     * @param {number} [cropShoulder]
-     * @return {Highcharts.SeriesCropDataObject}
      */
     Series.prototype.cropData = function (xData, yData, min, max, cropShoulder) {
         var dataLength = xData.length;
@@ -1246,7 +1226,8 @@ var Series = /** @class */ (function () {
                  * @readonly
                  */
                 // For faster access in Point.update
-                point.index = hasGroupedData ? (groupCropStartIndex + i) : cursor;
+                point.index = hasGroupedData ?
+                    (groupCropStartIndex + i) : cursor;
                 points[i] = point;
             }
         }
@@ -1306,12 +1287,9 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#getXExtremes
-     *
      * @param {Array<number>} xData
      * The data to inspect. Defaults to the current data within the visible
      * range.
-     *
-     * @return {Highcharts.RangeObject}
      */
     Series.prototype.getXExtremes = function (xData) {
         return {
@@ -1325,14 +1303,11 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#getExtremes
-     *
      * @param {Array<number>} [yData]
      * The data to inspect. Defaults to the current data within the visible
      * range.
      * @param {boolean} [forceExtremesFromAll]
      * Force getting extremes of a total series data range.
-     *
-     * @return {Highcharts.DataExtremesObject}
      */
     Series.prototype.getExtremes = function (yData, forceExtremesFromAll) {
         var xAxis = this.xAxis, yAxis = this.yAxis, xData = this.processedXData || this.xData, activeYData = [], 
@@ -1419,11 +1394,8 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series.getFirstValidPoint
-     *
      * @param {Array<Highcharts.PointOptionsType>} data
      * Array of options for points
-     *
-     * @return {Highcharts.PointOptionsType}
      */
     Series.prototype.getFirstValidPoint = function (data) {
         var dataLength = data.length;
@@ -1442,7 +1414,7 @@ var Series = /** @class */ (function () {
      *
      * @function Highcharts.Series#translate
      *
-     * @fires Highcharts.Series#events:translate
+     * @emits Highcharts.Series#events:translate
      */
     Series.prototype.translate = function () {
         if (!this.processedXData) { // hidden series
@@ -1470,8 +1442,10 @@ var Series = /** @class */ (function () {
                     (stackThreshold ? 0 : threshold) ?
                 '-' :
                 '') + series.stackKey];
-            if (yAxis.positiveValuesOnly && !yAxis.validatePositiveValue(yValue) ||
-                xAxis.positiveValuesOnly && !xAxis.validatePositiveValue(xValue)) {
+            if (yAxis.positiveValuesOnly &&
+                !yAxis.validatePositiveValue(yValue) ||
+                xAxis.positiveValuesOnly &&
+                    !xAxis.validatePositiveValue(xValue)) {
                 point.isNull = true;
             }
             // Get the plotX translation
@@ -1602,8 +1576,6 @@ var Series = /** @class */ (function () {
      *
      * @private
      * @function Highcharts.Series#getClip
-     *
-     * @return {Highcharts.Dictionary<number>}
      */
     Series.prototype.getClipBox = function () {
         var _a = this, chart = _a.chart, xAxis = _a.xAxis, yAxis = _a.yAxis;
@@ -1741,7 +1713,7 @@ var Series = /** @class */ (function () {
      * @private
      * @function Highcharts.Series#afterAnimate
      *
-     * @fires Highcharts.Series#event:afterAnimate
+     * @emits Highcharts.Series#event:afterAnimate
      */
     Series.prototype.afterAnimate = function () {
         var _this = this;
@@ -1930,7 +1902,7 @@ var Series = /** @class */ (function () {
         // Handle hover and select states
         state = state || 'normal';
         if (state) {
-            seriesStateOptions = seriesMarkerOptions.states[state] || {};
+            seriesStateOptions = (seriesMarkerOptions.states[state] || {});
             pointStateOptions = (pointMarkerOptions.states &&
                 pointMarkerOptions.states[state]) || {};
             strokeWidth = pick(pointStateOptions.lineWidth, seriesStateOptions.lineWidth, strokeWidth + pick(pointStateOptions.lineWidthPlus, seriesStateOptions.lineWidthPlus, 0));
@@ -1955,7 +1927,7 @@ var Series = /** @class */ (function () {
      * @private
      * @function Highcharts.Series#destroy
      *
-     * @fires Highcharts.Series#event:destroy
+     * @emits Highcharts.Series#event:destroy
      */
     Series.prototype.destroy = function (keepEventsForUpdate) {
         var series = this, chart = series.chart, issue134 = /AppleWebKit\/533/.test(win.navigator.userAgent), data = series.data || [];
@@ -2221,8 +2193,6 @@ var Series = /** @class */ (function () {
      * Get the translation and scale for the plot area of this series.
      *
      * @function Highcharts.Series#getPlotBox
-     *
-     * @return {Highcharts.SeriesPlotBoxObject}
      */
     Series.prototype.getPlotBox = function () {
         var chart = this.chart;
@@ -2266,7 +2236,7 @@ var Series = /** @class */ (function () {
      *
      * @function Highcharts.Series#render
      *
-     * @fires Highcharts.Series#event:afterRender
+     * @emits Highcharts.Series#event:afterRender
      */
     Series.prototype.render = function () {
         var series = this, chart = series.chart, options = series.options, animOptions = animObject(options.animation), visibility = series.visible ?
@@ -2671,7 +2641,7 @@ var Series = /** @class */ (function () {
      * @param {boolean} [withEvent=true]
      *        Used internally, whether to fire the series `addPoint` event.
      *
-     * @fires Highcharts.Series#event:addPoint
+     * @emits Highcharts.Series#event:addPoint
      */
     Series.prototype.addPoint = function (options, redraw, shift, animation, withEvent) {
         var series = this, seriesOptions = series.options, data = series.data, chart = series.chart, xAxis = series.xAxis, names = xAxis && xAxis.hasNames && xAxis.names, dataOptions = seriesOptions.data, xData = series.xData;
@@ -2755,7 +2725,7 @@ var Series = /** @class */ (function () {
      * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
      *        Whether and optionally how the series should be animated.
      *
-     * @fires Highcharts.Point#event:remove
+     * @emits Highcharts.Point#event:remove
      */
     Series.prototype.removePoint = function (i, redraw, animation) {
         var series = this, data = series.data, point = data[i], points = series.points, chart = series.chart, remove = function () {
@@ -2804,7 +2774,7 @@ var Series = /** @class */ (function () {
      * @param {boolean} [withEvent=true]
      *        Used internally, whether to fire the series `remove` event.
      *
-     * @fires Highcharts.Series#event:remove
+     * @emits Highcharts.Series#event:remove
      */
     Series.prototype.remove = function (redraw, animation, withEvent, keepEvents) {
         var series = this, chart = series.chart;
@@ -2853,8 +2823,8 @@ var Series = /** @class */ (function () {
      *        more operations on the chart, it is a good idea to set redraw to
      *        false and call {@link Chart#redraw} after.
      *
-     * @fires Highcharts.Series#event:update
-     * @fires Highcharts.Series#event:afterUpdate
+     * @emits Highcharts.Series#event:update
+     * @emits Highcharts.Series#event:afterUpdate
      */
     Series.prototype.update = function (options, redraw) {
         options = cleanRecursively(options, this.userOptions);
@@ -2927,7 +2897,9 @@ var Series = /** @class */ (function () {
                 series.index : oldOptions.index,
             pointStart: pick(
             // when updating from blank (#7933)
-            plotOptions && plotOptions.series && plotOptions.series.pointStart, oldOptions.pointStart, 
+            (plotOptions &&
+                plotOptions.series &&
+                plotOptions.series.pointStart), oldOptions.pointStart, 
             // when updating after addPoint
             series.xData[0])
         }, (!keepPoints && { data: series.options.data }), options);
@@ -2957,8 +2929,7 @@ var Series = /** @class */ (function () {
                     // Legacy (IE < 11)
                 }
                 else {
-                    var ownEvents = Object.hasOwnProperty.call(series, 'hcEvents') &&
-                        series.hcEvents;
+                    var ownEvents = Object.hasOwnProperty.call(series, 'hcEvents') && series.hcEvents;
                     for (n in initialSeriesProto) { // eslint-disable-line guard-for-in
                         series[n] = void 0;
                     }
@@ -3052,13 +3023,17 @@ var Series = /** @class */ (function () {
             return option !== oldOption;
         }
         return option !==
-            pick(plotOptions && plotOptions[this.type] && plotOptions[this.type][optionName], plotOptions && plotOptions.series && plotOptions.series[optionName], option);
+            pick(plotOptions &&
+                plotOptions[this.type] &&
+                plotOptions[this.type][optionName], plotOptions &&
+                plotOptions.series &&
+                plotOptions.series[optionName], option);
     };
     /**
      * Runs on mouse over the series graphical items.
      *
      * @function Highcharts.Series#onMouseOver
-     * @fires Highcharts.Series#event:mouseOver
+     * @emits Highcharts.Series#event:mouseOver
      */
     Series.prototype.onMouseOver = function () {
         var series = this, chart = series.chart, hoverSeries = chart.hoverSeries, pointer = chart.pointer;
@@ -3087,7 +3062,7 @@ var Series = /** @class */ (function () {
      *
      * @function Highcharts.Series#onMouseOut
      *
-     * @fires Highcharts.Series#event:mouseOut
+     * @emits Highcharts.Series#event:mouseOut
      */
     Series.prototype.onMouseOut = function () {
         // trigger the event only if listeners exist
@@ -3230,8 +3205,8 @@ var Series = /** @class */ (function () {
      * operations on the chart, it is a good idea to set redraw to false and
      * call {@link Chart#redraw|chart.redraw()} after.
      *
-     * @fires Highcharts.Series#event:hide
-     * @fires Highcharts.Series#event:show
+     * @emits Highcharts.Series#event:hide
+     * @emits Highcharts.Series#event:show
      */
     Series.prototype.setVisible = function (vis, redraw) {
         var series = this, chart = series.chart, legendItem = series.legendItem, ignoreHiddenSeries = chart.options.chart.ignoreHiddenSeries, oldVisibility = series.visible;
@@ -3291,7 +3266,7 @@ var Series = /** @class */ (function () {
      *         Toggle visibility from a button
      *
      * @function Highcharts.Series#show
-     * @fires Highcharts.Series#event:show
+     * @emits Highcharts.Series#event:show
      */
     Series.prototype.show = function () {
         this.setVisible(true);
@@ -3305,7 +3280,7 @@ var Series = /** @class */ (function () {
      *         Toggle visibility from a button
      *
      * @function Highcharts.Series#hide
-     * @fires Highcharts.Series#event:hide
+     * @emits Highcharts.Series#event:hide
      */
     Series.prototype.hide = function () {
         this.setVisible(false);
@@ -3326,8 +3301,8 @@ var Series = /** @class */ (function () {
      * True to select the series, false to unselect. If undefined, the selection
      * state is toggled.
      *
-     * @fires Highcharts.Series#event:select
-     * @fires Highcharts.Series#event:unselect
+     * @emits Highcharts.Series#event:select
+     * @emits Highcharts.Series#event:unselect
      */
     Series.prototype.select = function (selected) {
         var series = this;
@@ -3345,10 +3320,6 @@ var Series = /** @class */ (function () {
      * Checks if a tooltip should be shown for a given point.
      *
      * @private
-     * @param {number} plotX
-     * @param {number} plotY
-     * @param {Highcharts.ChartIsInsideOptionsObject} [options]
-     * @return {boolean}
      */
     Series.prototype.shouldShowTooltip = function (plotX, plotY, options) {
         if (options === void 0) { options = {}; }

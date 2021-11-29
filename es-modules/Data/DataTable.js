@@ -962,7 +962,8 @@ var DataTable = /** @class */ (function () {
                     tableColumn.push.apply(tableColumn, column);
                 }
                 else {
-                    tableColumn.splice.apply(tableColumn, __spreadArrays([rowIndex, (column.length - rowIndex)], column));
+                    tableColumn.splice.apply(tableColumn, __spreadArrays([rowIndex,
+                        (column.length - rowIndex)], column));
                 }
                 table.rowCount = Math.max(table.rowCount, tableColumn.length);
             }

@@ -175,7 +175,9 @@ var AreaSeries = /** @class */ (function (_super) {
             }
             isNull = points[i].isNull;
             plotX = pick(points[i].rectPlotX, points[i].plotX);
-            yBottom = stacking ? pick(points[i].yBottom, translatedThreshold) : translatedThreshold;
+            yBottom = stacking ?
+                pick(points[i].yBottom, translatedThreshold) :
+                translatedThreshold;
             if (!isNull || connectNulls) {
                 if (!connectNulls) {
                     addDummyPoints(i, i - 1, 'left');
@@ -264,24 +266,22 @@ var AreaSeries = /** @class */ (function (_super) {
                                 var si = yAxisSeries[i].index;
                                 stackPoint = otherStack.points[si];
                                 if (!stackPoint) {
-                                    // If the next point in this series
-                                    // is missing, mark the point
-                                    // with point.leftNull or
-                                    // point.rightNull = true.
+                                    // If the next point in this series is
+                                    // missing, mark the point with
+                                    // point.leftNull or point.rightNull = true.
                                     if (si === series.index) {
                                         pointMap[x][nullName] = true;
-                                        // If there are missing points in
-                                        // the next stack in any of the
-                                        // series below this one, we need
-                                        // to substract the missing values
-                                        // and add a hiatus to the left or
+                                        // If there are missing points in the next
+                                        // stack in any of the series below this
+                                        // one, we need to substract the missing
+                                        // values and add a hiatus to the left or
                                         // right.
                                     }
                                     else if (visibleSeries_1[i]) {
-                                        stackedValues =
-                                            stack[x].points[si];
+                                        stackedValues = stack[x].points[si];
                                         if (stackedValues) {
-                                            cliff -= stackedValues[1] - stackedValues[0];
+                                            cliff -= (stackedValues[1] -
+                                                stackedValues[0]);
                                         }
                                     }
                                 }

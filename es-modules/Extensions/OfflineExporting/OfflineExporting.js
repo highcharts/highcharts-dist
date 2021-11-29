@@ -11,6 +11,7 @@
  * */
 /* global MSBlobBuilder */
 'use strict';
+import AST from '../../Core/Renderer/HTML/AST.js';
 import Chart from '../../Core/Chart/Chart.js';
 import D from '../../Core/DefaultOptions.js';
 var defaultOptions = D.defaultOptions;
@@ -22,6 +23,8 @@ var win = H.win, doc = H.doc;
 import OfflineExportingDefaults from './OfflineExportingDefaults.js';
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, error = U.error, extend = U.extend, fireEvent = U.fireEvent, merge = U.merge;
+AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
+AST.allowedTags.push('desc', 'clippath', 'g');
 /* *
  *
  * Constants
@@ -101,21 +104,20 @@ var OfflineExporting;
      * @param {Function} [successCallback]
      * The callback function in case of success
      *
-     * @return {void}
      */
     function downloadSVGLocal(svg, options, failCallback, successCallback) {
         var dummySVGContainer = doc.createElement('div'), imageType = options.type || 'image/png', filename = ((options.filename || 'chart') +
             '.' +
-            (imageType === 'image/svg+xml' ? 'svg' : imageType.split('/')[1])), scale = options.scale || 1;
+            (imageType === 'image/svg+xml' ?
+                'svg' : imageType.split('/')[1])), scale = options.scale || 1;
         var svgurl, blob, finallyHandler, libURL = (options.libURL || defaultOptions.exporting.libURL), objectURLRevoke = true;
         // Allow libURL to end with or without fordward slash
         libURL = libURL.slice(-1) !== '/' ? libURL + '/' : libURL;
-        /**
+        /*
          * @private
-         * @return {void}
          */
         var downloadPDF = function () {
-            dummySVGContainer.innerHTML = svg;
+            AST.setElementHTML(dummySVGContainer, svg);
             var textElements = dummySVGContainer.getElementsByTagName('text'), 
             // Copy style property to element from parents if it's not
             // there. Searches up hierarchy until it finds prop, or hits the
@@ -288,9 +290,9 @@ var OfflineExporting;
      *         a different background color can be added here, or
      *         `dataLabels` for export only.
      *
-     * @return {void}
      *
      * @requires modules/exporting
+     * @requires modules/offline-exporting
      */
     function exportChartLocal(exportingOptions, chartOptions) {
         var chart = this, options = merge(chart.options.exporting, exportingOptions), fallbackToExportServer = function (err) {
@@ -312,27 +314,26 @@ var OfflineExporting;
             if (svg.indexOf('<foreignObject') > -1 &&
                 options.type !== 'image/svg+xml' &&
                 (H.isMS || options.type === 'application/pdf')) {
-                fallbackToExportServer('Image type not supported' +
-                    'for charts with embedded HTML');
+                fallbackToExportServer(new Error('Image type not supported for charts with embedded HTML'));
             }
             else {
                 OfflineExporting.downloadSVGLocal(svg, extend({ filename: chart.getFilename() }, options), fallbackToExportServer, function () { return fireEvent(chart, 'exportChartLocalSuccess'); });
             }
         }, 
-        // Return true if the SVG contains images with external data.
-        // With the boost module there are `image` elements with encoded
-        // PNGs, these are supported by svg2pdf and should
-        // pass (#10243).
+        // Return true if the SVG contains images with external data. With
+        // the boost module there are `image` elements with encoded PNGs,
+        // these are supported by svg2pdf and should pass (#10243).
         hasExternalImages = function () {
             return [].some.call(chart.container.getElementsByTagName('image'), function (image) {
                 var href = image.getAttribute('href');
-                return href !== '' && href.indexOf('data:') !== 0;
+                return (href !== '' &&
+                    typeof href === 'string' &&
+                    href.indexOf('data:') !== 0);
             });
         };
-        // If we are on IE and in styled mode, add a whitelist to the
-        // renderer for inline styles that we want to pass through. There
-        // are so many styles by default in IE that we don't want to
-        // blacklist them all.
+        // If we are on IE and in styled mode, add a whitelist to the renderer
+        // for inline styles that we want to pass through. There are so many
+        // styles by default in IE that we don't want to blacklist them all.
         if (H.isMS && chart.styledMode && !Exporting.inlineWhitelist.length) {
             Exporting.inlineWhitelist.push(/^blockSize/, /^border/, /^caretColor/, /^color/, /^columnRule/, /^columnRuleColor/, /^cssFloat/, /^cursor/, /^fill$/, /^fillOpacity/, /^font/, /^inlineSize/, /^length/, /^lineHeight/, /^opacity/, /^outline/, /^parentRule/, /^rx$/, /^ry$/, /^stroke/, /^textAlign/, /^textAnchor/, /^textDecoration/, /^transform/, /^vectorEffect/, /^visibility/, /^x$/, /^y$/);
         }
@@ -344,7 +345,7 @@ var OfflineExporting;
                 chart.container.getElementsByTagName('image').length &&
                     options.type !== 'image/svg+xml')) || (options.type === 'application/pdf' &&
             hasExternalImages())) {
-            fallbackToExportServer('Image type not supported for this chart/browser.');
+            fallbackToExportServer(new Error('Image type not supported for this chart/browser.'));
             return;
         }
         chart.getSVGForLocalExport(options, chartOptions || {}, fallbackToExportServer, svgSuccess);
@@ -380,7 +381,6 @@ var OfflineExporting;
      * @param {Highcharts.Options} chartOptions
      * @param {Function} failCallback
      * @param {Function} successCallback
-     * @return {void}
      */
     function getSVGForLocalExport(options, chartOptions, failCallback, successCallback) {
         var chart = this, 
@@ -406,7 +406,8 @@ var OfflineExporting;
         chart.unbindGetSVG = addEvent(chart, 'getSVG', function (e) {
             chartCopyOptions = e.chartCopy.options;
             chartCopyContainer = e.chartCopy.container.cloneNode(true);
-            images = chartCopyContainer && chartCopyContainer.getElementsByTagName('image') || [];
+            images = chartCopyContainer && chartCopyContainer
+                .getElementsByTagName('image') || [];
             imagesLength = images.length;
         });
         // Trigger hook to get chart copy
@@ -544,8 +545,6 @@ var OfflineExporting;
      *
      * @private
      * @function Highcharts.svgToDataURL
-     * @param {string} svg
-     * @return {string}
      */
     function svgToDataUrl(svg) {
         // Webkit and not chrome
@@ -574,8 +573,8 @@ var OfflineExporting;
      */
     function svgToPdf(svgElement, margin) {
         var width = svgElement.width.baseVal.value + 2 * margin, height = svgElement.height.baseVal.value + 2 * margin, pdf = new win.jsPDF(// eslint-disable-line new-cap
-        height > width ? 'p' : 'l', // setting orientation to portrait if height exceeds width
-        'pt', [width, height]);
+        // setting orientation to portrait if height exceeds width
+        height > width ? 'p' : 'l', 'pt', [width, height]);
         // Workaround for #7090, hidden elements were drawn anyway. It comes
         // down to https://github.com/yWorks/svg2pdf.js/issues/28. Check this
         // later.

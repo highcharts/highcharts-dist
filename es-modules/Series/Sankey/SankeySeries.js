@@ -320,8 +320,9 @@ var SankeySeries = /** @class */ (function (_super) {
             var exceedsMinLinkWidth;
             var factor = 0;
             var i;
-            var remainingHeight = chart.plotSizeY -
-                options.borderWidth - (column.length - 1) * series.nodePadding;
+            var remainingHeight = (chart.plotSizeY -
+                options.borderWidth -
+                (column.length - 1) * series.nodePadding);
             // Because the minLinkWidth option doesn't obey the direct
             // translation, we need to run translation iteratively, check
             // node heights, remove those nodes affected by minLinkWidth,

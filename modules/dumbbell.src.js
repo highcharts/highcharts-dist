@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * (c) 2009-2021 Sebastian Bochan, Rafal Sebestjanski
  *
@@ -224,7 +224,6 @@
              * @private
              * @param {Highcharts.Point} this The point to inspect.
              *
-             * @return {void}
              */
             DumbbellPoint.prototype.setState = function () {
                 var point = this,
@@ -453,7 +452,6 @@
              *
              * @param {Highcharts.Point} point The point to inspect.
              *
-             * @return {void}
              */
             DumbbellSeries.prototype.drawConnector = function (point) {
                 var series = this,
@@ -499,7 +497,6 @@
              *
              * @param {Highcharts.Series} this The series of points.
              *
-             * @return {void}
              */
             DumbbellSeries.prototype.translate = function () {
                 // Calculate shapeargs
@@ -525,7 +522,6 @@
              *
              * @param {Highcharts.Series} this The series of points.
              *
-             * @return {void}
              */
             DumbbellSeries.prototype.drawPoints = function () {
                 var series = this,

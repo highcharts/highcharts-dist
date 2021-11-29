@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Solid angular gauge module
  *
@@ -226,7 +226,22 @@
                     outerArcStart = path[0],
                     innerArcStart = path[2];
                 if (outerArcStart[0] === 'M' && innerArcStart[0] === 'L') {
-                    var x1 = outerArcStart[1], y1 = outerArcStart[2], x2 = innerArcStart[1], y2 = innerArcStart[2], roundStart = ['A', smallR, smallR, 0, 1, 1, x1, y1], roundEnd = ['A', smallR, smallR, 0, 1, 1, x2, y2];
+                    var x1 = outerArcStart[1],
+                        y1 = outerArcStart[2],
+                        x2 = innerArcStart[1],
+                        y2 = innerArcStart[2],
+                        roundStart = [
+                            'A',
+                        smallR,
+                        smallR, 0, 1, 1,
+                        x1,
+                        y1
+                        ],
+                        roundEnd = ['A',
+                        smallR,
+                        smallR, 0, 1, 1,
+                        x2,
+                        y2];
                     // Replace the line segment and the last close segment
                     path[2] = roundEnd;
                     path[4] = roundStart;

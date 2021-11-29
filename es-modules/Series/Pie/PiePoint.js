@@ -167,10 +167,10 @@ var PiePoint = /** @class */ (function (_super) {
      * @param {boolean} sliced
      * When undefined, the slice state is toggled.
      *
-     * @param {boolean} redraw
+     * @param {boolean} [redraw]
      * Whether to redraw the chart. True by default.
      *
-     * @param {boolean|Partial<Highcharts.AnimationOptionsObject>}
+     * @param {boolean|Partial<Highcharts.AnimationOptionsObject>} [animation]
      * Animation options.
      */
     PiePoint.prototype.slice = function (sliced, redraw, animation) {

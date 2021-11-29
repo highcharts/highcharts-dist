@@ -297,7 +297,6 @@ var Pane = /** @class */ (function () {
      * @private
      * @function Highcharts.Pane#updateCenter
      * @param {Highcharts.Axis} [axis]
-     * @return {void}
      */
     Pane.prototype.updateCenter = function (axis) {
         this.center = (axis ||
@@ -328,7 +327,6 @@ var Pane = /** @class */ (function () {
      * @param {Highcharts.PaneOptions} options
      *        New pane options
      * @param {boolean} [redraw]
-     * @return {void}
      */
     Pane.prototype.update = function (options, redraw) {
         merge(true, this.options, options);
@@ -346,10 +344,12 @@ var Pane = /** @class */ (function () {
 /**
  * Check whether element is inside or outside pane.
  * @private
- * @param  {number} x Element's x coordinate
- * @param  {number} y Element's y coordinate
- * @param  {Array<number>} center Pane's center (x, y) and diameter
- * @return {boolean}
+ * @param  {number} x
+ * Element's x coordinate
+ * @param  {number} y
+ * Element's y coordinate
+ * @param  {Array<number>} center
+ * Pane's center (x, y) and diameter
  */
 function isInsidePane(x, y, center) {
     return Math.sqrt(Math.pow(x - center[0], 2) + Math.pow(y - center[1], 2)) <= center[2] / 2;

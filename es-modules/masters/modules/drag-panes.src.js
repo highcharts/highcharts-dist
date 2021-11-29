@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.1 (2021-11-05)
+ * @license Highstock JS v9.3.2 (2021-11-29)
  * @module highcharts/modules/drag-panes
  * @requires highcharts
  * @requires highcharts/modules/stock

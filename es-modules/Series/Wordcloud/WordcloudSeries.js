@@ -326,7 +326,7 @@ var WordcloudSeries = /** @class */ (function (_super) {
          * cloud. Read more about it in our
          * [documentation](https://www.highcharts.com/docs/chart-and-series-types/word-cloud-series#custom-placement-strategies)
          *
-         * @validvalue: ["center", "random"]
+         * @validvalue ["center", "random"]
          */
         placementStrategy: 'center',
         /**
@@ -359,7 +359,7 @@ var WordcloudSeries = /** @class */ (function (_super) {
          * algorithms for use in word cloud. Read more about it in our
          * [documentation](https://www.highcharts.com/docs/chart-and-series-types/word-cloud-series#custom-spiralling-algorithm)
          *
-         * @validvalue: ["archimedean", "rectangular", "square"]
+         * @validvalue ["archimedean", "rectangular", "square"]
          */
         spiral: 'rectangular',
         /**

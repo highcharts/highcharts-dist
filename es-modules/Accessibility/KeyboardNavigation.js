@@ -33,7 +33,7 @@ var getElement = HTMLUtilities.getElement;
  * @class
  * @param {Highcharts.Chart} chart
  *        Chart object
- * @param {object} components
+ * @param {Object} components
  *        Map of component names to AccessibilityComponent objects.
  * @name Highcharts.KeyboardNavigation
  */
@@ -69,7 +69,7 @@ var KeyboardNavigation = /** @class */ (function () {
      * @private
      * @param {Highcharts.Chart} chart
      *        Chart object
-     * @param {object} components
+     * @param {Object} components
      *        Map of component names to AccessibilityComponent objects.
      */
     KeyboardNavigation.prototype.init = function (chart, components) {
@@ -111,7 +111,8 @@ var KeyboardNavigation = /** @class */ (function () {
             order.length) {
             // We (still) have keyboard navigation. Update module list
             this.modules = order.reduce(function (modules, componentName) {
-                var navModules = components[componentName].getKeyboardNavigation();
+                var navModules = components[componentName]
+                    .getKeyboardNavigation();
                 return modules.concat(navModules);
             }, []);
             this.updateExitAnchor();
@@ -256,7 +257,7 @@ var KeyboardNavigation = /** @class */ (function () {
      * @private
      */
     KeyboardNavigation.prototype.updateExitAnchor = function () {
-        var endMarkerId = 'highcharts-end-of-chart-marker-' + this.chart.index, endMarker = getElement(endMarkerId);
+        var endMarkerId = ('highcharts-end-of-chart-marker-' + this.chart.index), endMarker = getElement(endMarkerId);
         this.removeExitAnchor();
         if (endMarker) {
             this.makeElementAnExitAnchor(endMarker);

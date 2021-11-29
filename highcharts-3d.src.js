@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * 3D features for Highcharts JS
  *
@@ -111,7 +111,8 @@
          * @requires highcharts-3d
          */
         function perspective3D(coordinate, origin, distance) {
-            var projection = ((distance > 0) && (distance < Number.POSITIVE_INFINITY)) ?
+            var projection = ((distance > 0) &&
+                    (distance < Number.POSITIVE_INFINITY)) ?
                     distance / (coordinate.z + origin.z + distance) :
                     1;
             return {
@@ -145,9 +146,9 @@
          */
         function perspective(points, chart, insidePlotArea, useInvertedPersp) {
             var options3d = chart.options.chart.options3d, 
-                /* The useInvertedPersp argument is used for
-                 * inverted charts with already inverted elements,
-                 * such as dataLabels or tooltip positions.
+                /* The useInvertedPersp argument is used for inverted charts with
+                 * already inverted elements,
+                such as dataLabels or tooltip positions.
                  */
                 inverted = pick(useInvertedPersp,
                 insidePlotArea ? chart.inverted : false),
@@ -637,7 +638,8 @@
                             true),
                             area = shapeArea(vertexes2d);
                         hash.d = path;
-                        hash.visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
+                        hash.visibility = (this.enabled && area > 0) ?
+                            'visible' : 'hidden';
                     }
                     return SVGElement.prototype.attr.apply(this, arguments);
                 };
@@ -659,7 +661,8 @@
                             path = renderer.toLinePath(vertexes2d,
                             true),
                             area = shapeArea(vertexes2d),
-                            visibility = (this.enabled && area > 0) ? 'visible' : 'hidden';
+                            visibility = (this.enabled && area > 0) ?
+                                'visible' : 'hidden';
                         params.d = path;
                         this.attr('visibility', visibility);
                     }
@@ -1101,7 +1104,7 @@
                         from = this.attribs,
                         to,
                         anim,
-                        randomProp = 'data-' + Math.random().toString(26).substring(2, 9);
+                        randomProp = ('data-' + Math.random().toString(26).substring(2, 9));
                     // Attribute-line properties connected to 3D. These shouldn't have
                     // been in the attribs collection in the first place.
                     delete params.center;
@@ -1287,7 +1290,9 @@
                     out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end, end2, 0, 0));
                 }
                 out.push([
-                    'L', cx + (rx * Math.cos(end2)) + dx, cy + (ry * Math.sin(end2)) + dy
+                    'L',
+                    cx + (rx * Math.cos(end2)) + dx,
+                    cy + (ry * Math.sin(end2)) + dy
                 ]);
                 out = out.concat(SVGRenderer3D.curveTo(cx, cy, rx, ry, end2, start2, dx, dy));
                 out.push(['Z']);
@@ -1299,7 +1304,9 @@
                     ];
                 inn = inn.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, start, end, 0, 0));
                 inn.push([
-                    'L', cx + (irx * Math.cos(end)) + dx, cy + (iry * Math.sin(end)) + dy
+                    'L',
+                    cx + (irx * Math.cos(end)) + dx,
+                    cy + (iry * Math.sin(end)) + dy
                 ]);
                 inn = inn.concat(SVGRenderer3D.curveTo(cx, cy, irx, iry, end, start, dx, dy));
                 inn.push(['Z']);
@@ -1368,6 +1375,7 @@
                     inn: inn,
                     zInn: Math.max(a1, a2, a3),
                     side1: side1,
+                    // to keep below zOut and zInn in case of same values
                     zSide1: a3 * 0.99,
                     side2: side2,
                     zSide2: a2 * 0.99
@@ -1744,12 +1752,22 @@
                     else {
                         ret.axes = {
                             y: {
-                                'left': { x: xm, z: zm, xDir: { x: 1, y: 0, z: 0 } },
-                                'right': { x: xp, z: zm, xDir: { x: 0, y: 0, z: 1 } }
+                                'left': {
+                                    x: xm, z: zm, xDir: { x: 1, y: 0, z: 0 }
+                                },
+                                'right': {
+                                    x: xp, z: zm, xDir: { x: 0, y: 0, z: 1 }
+                                }
                             },
                             x: {
-                                'top': { y: ym, z: zm, xDir: { x: 1, y: 0, z: 0 } },
-                                'bottom': { y: yp, z: zm, xDir: { x: 1, y: 0, z: 0 } }
+                                'top': {
+                                    y: ym, z: zm, xDir: { x: 1, y: 0, z: 0 }
+                                },
+                                'bottom': {
+                                    y: yp,
+                                    z: zm,
+                                    xDir: { x: 1, y: 0, z: 0 }
+                                }
                             },
                             z: {
                                 'top': {
@@ -1775,7 +1793,7 @@
                  * Calculate scale of the 3D view. That is required to fit chart's 3D
                  * projection into the actual plotting area. Reported as #4933.
                  *
-                 * @notice
+                 * **Note:**
                  * This function should ideally take the plot values instead of a chart
                  * object, but since the chart object is needed for perspective it is
                  * not practical. Possible to make both getScale and perspective more
@@ -2072,7 +2090,8 @@
                     var interpolated;
                     if (this.pos < 1 &&
                         (isArray(this.start) || isArray(this.end))) {
-                        var start = this.start || [1, 0, 0, 1, 0, 0],
+                        var start = (this.start ||
+                                [1, 0, 0, 1, 0, 0]),
                             end = this.end || [1, 0, 0, 1, 0, 0];
                         interpolated = [];
                         for (var i = 0; i < 6; i++) {
@@ -3009,14 +3028,16 @@
                     chart.is3d()) {
                     // Add a 0-360 normalisation for alfa and beta angles in 3d graph
                     if (options3d) {
-                        options3d.alpha = options3d.alpha % 360 + (options3d.alpha >= 0 ? 0 : 360);
-                        options3d.beta = options3d.beta % 360 + (options3d.beta >= 0 ? 0 : 360);
+                        options3d.alpha = options3d.alpha % 360 +
+                            (options3d.alpha >= 0 ? 0 : 360);
+                        options3d.beta = options3d.beta % 360 +
+                            (options3d.beta >= 0 ? 0 : 360);
                     }
                     var inverted = chart.inverted, clipBox = chart.clipBox, margin = chart.margin, x = inverted ? 'y' : 'x', y = inverted ? 'x' : 'y', w = inverted ? 'height' : 'width', h = inverted ? 'width' : 'height';
                     clipBox[x] = -(margin[3] || 0);
                     clipBox[y] = -(margin[0] || 0);
-                    clipBox[w] = chart.chartWidth + (margin[3] || 0) + (margin[1] || 0);
-                    clipBox[h] = chart.chartHeight + (margin[0] || 0) + (margin[2] || 0);
+                    clipBox[w] = (chart.chartWidth + (margin[3] || 0) + (margin[1] || 0));
+                    clipBox[h] = (chart.chartHeight + (margin[0] || 0) + (margin[2] || 0));
                     // Set scale, used later in perspective method():
                     // getScale uses perspective, so scale3d has to be reset.
                     chart.scale3d = 1;
@@ -3240,7 +3261,7 @@
                 var chart = axis.chart;
                 axis.hasVisibleSeries = false;
                 // Reset properties in case we're redrawing (#3353)
-                axis.dataMin = axis.dataMax = axis.ignoreMinPadding = axis.ignoreMaxPadding = void 0;
+                axis.dataMin = axis.dataMax = axis.ignoreMinPadding = (axis.ignoreMaxPadding = void 0);
                 if (axis.stacking) {
                     axis.stacking.buildStacks();
                 }
@@ -3574,7 +3595,9 @@
                         if (reverseFlap) {
                             scale = -scale;
                         }
-                        vecY = { x: scale * vecY.x, y: scale * vecY.y, z: scale * vecY.z };
+                        vecY = {
+                            x: scale * vecY.x, y: scale * vecY.y, z: scale * vecY.z
+                        };
                     }
                 }
                 else { // positionMode  == 'offset'
@@ -3859,14 +3882,15 @@
                     gridGroup &&
                     tick &&
                     tick.label) {
-                    var firstGridLine = gridGroup.element.childNodes[0].getBBox(),
+                    var firstGridLine = (gridGroup.element.childNodes[0].getBBox()),
                         frame3DLeft = chart.frameShapes.left.getBBox(),
                         options3d = chart.options.chart.options3d,
                         origin_1 = {
                             x: chart.plotWidth / 2,
                             y: chart.plotHeight / 2,
                             z: options3d.depth / 2,
-                            vd: pick(options3d.depth, 1) * pick(options3d.viewDistance, 0)
+                            vd: (pick(options3d.depth, 1) *
+                                pick(options3d.viewDistance, 0))
                         },
                         tickId = tick.pos,
                         prevTick = ticks[tickId - 1],
@@ -3876,7 +3900,10 @@
                         nextLabelPos = void 0;
                     // Check whether the tick is not the first one and previous tick
                     // exists, then calculate position of previous label.
-                    if (tickId !== 0 && prevTick && prevTick.label && prevTick.label.xy) {
+                    if (tickId !== 0 &&
+                        prevTick &&
+                        prevTick.label &&
+                        prevTick.label.xy) {
                         prevLabelPos = perspective3D({
                             x: prevTick.label.xy.x,
                             y: prevTick.label.xy.y,
@@ -4214,7 +4241,6 @@
          * Chart with stacks
          * @param {string} stacking
          * Stacking option
-         * @return {Highcharts.Stack3DDictionary}
          */
         function retrieveStacks(chart, stacking) {
             var series = chart.series,
@@ -4258,7 +4284,7 @@
                     series.index, // #4743
                 z = stack * (depth + (seriesOptions.groupZPadding || 1)),
                 borderCrisp = series.borderWidth % 2 ? 0.5 : 0,
-                point2dPos; // Position of point in 2D, used for 3D position calculation.
+                point2dPos; // Position of point in 2D, used for 3D position calculation
                 if (chart.inverted && !series.yAxis.reversed) {
                     borderCrisp *= -1;
             }
@@ -4782,7 +4808,8 @@
              * @private
              */
             Pie3DPoint.prototype.haloPath = function () {
-                return this.series.chart.is3d() ? [] : superHaloPath.apply(this, arguments);
+                return this.series.chart.is3d() ?
+                    [] : superHaloPath.apply(this, arguments);
             };
             return Pie3DPoint;
         }(PiePoint));
@@ -4915,11 +4942,11 @@
                         var shapeArgs = point.shapeArgs,
                             r = shapeArgs.r, 
                             // #3240 issue with datalabels for 0 and null values
-                            a1 = (shapeArgs.alpha || options3d_1.alpha) * deg2rad,
-                            b1 = (shapeArgs.beta || options3d_1.beta) * deg2rad,
-                            a2 = (shapeArgs.start + shapeArgs.end) / 2,
+                            a1 = ((shapeArgs.alpha || options3d_1.alpha) * deg2rad),
+                            b1 = ((shapeArgs.beta || options3d_1.beta) * deg2rad),
+                            a2 = ((shapeArgs.start + shapeArgs.end) / 2),
                             labelPosition = point.labelPosition,
-                            connectorPosition = labelPosition.connectorPosition,
+                            connectorPosition = (labelPosition.connectorPosition),
                             yOffset = (-r * (1 - Math.cos(a1)) * Math.sin(a2)),
                             xOffset = r * (Math.cos(b1) - 1) * Math.cos(a2);
                         // Apply perspective on label positions
@@ -5041,7 +5068,8 @@
          *  Composition
          *
          * */
-        SeriesRegistry.seriesTypes.pie.prototype.pointClass.prototype.haloPath = Pie3DPoint.prototype.haloPath;
+        SeriesRegistry.seriesTypes.pie.prototype.pointClass.prototype
+            .haloPath = Pie3DPoint.prototype.haloPath;
         SeriesRegistry.seriesTypes.pie = Pie3DSeries;
 
     });
@@ -5356,7 +5384,8 @@
                 for (var i_1 = 0; i_1 < series.points.length; i_1++) {
                     bottomPoints.push({
                         x: series.rawPointsX[i_1],
-                        y: options.stacking ? series.points[i_1].yBottom : translatedThreshold,
+                        y: options.stacking ?
+                            series.points[i_1].yBottom : translatedThreshold,
                         z: series.zPadding
                     });
                 }
@@ -5388,7 +5417,8 @@
             if (series.areaPath) {
                 // Remove previously used bottomPath and add the new one.
                 areaPath = series.areaPath.splice(0, series.areaPath.length / 2).concat(bottomPath);
-                areaPath.xMap = series.areaPath.xMap; // Use old xMap in the new areaPath
+                // Use old xMap in the new areaPath
+                areaPath.xMap = series.areaPath.xMap;
                 series.areaPath = areaPath;
                 graphPath = getGraphPath.call(series, graphPoints, false, connectNulls);
             }

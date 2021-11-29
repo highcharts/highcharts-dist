@@ -9,6 +9,7 @@
  *  !!!!!!! SOURCE GETS TRANSPILED BY TYPESCRIPT. EDIT TS FILE ONLY. !!!!!!!
  *
  * */
+import AST from '../../Core/Renderer/HTML/AST.js';
 import H from '../../Core/Globals.js';
 var doc = H.doc, isFirefox = H.isFirefox;
 import NavigationBindings from './NavigationBindings.js';
@@ -209,12 +210,10 @@ H.Popup.prototype = {
      * @private
      *
      * @param {Highcharts.HTMLDOMElement} parentDiv
-     *        The container where inputs and selections are created.
+     * The container where inputs and selections are created.
      *
      * @param {string} type
-     *         Type of the popup bookmark (add|edit|remove).
-     *
-     * @return {Highcharts.PopupFieldsObject}
+     * Type of the popup bookmark (add|edit|remove).
      */
     getFields: function (parentDiv, type) {
         var inputList = Array.prototype.slice.call(parentDiv.querySelectorAll(INPUT)), selectList = Array.prototype.slice.call(parentDiv.querySelectorAll(SELECT)), optionSeries = '#' + PREFIX + 'select-series > option:checked', optionVolume = '#' + PREFIX + 'select-volume > option:checked', linkedTo = parentDiv.querySelectorAll(optionSeries)[0], volumeTo = parentDiv.querySelectorAll(optionVolume)[0];
@@ -241,13 +240,15 @@ H.Popup.prototype = {
         selectList.forEach(function (select) {
             var id = select.id;
             // Get inputs only for the parameters, not for series and volume.
-            if (id !== PREFIX + 'select-series' && id !== PREFIX + 'select-volume') {
+            if (id !== PREFIX + 'select-series' &&
+                id !== PREFIX + 'select-volume') {
                 var parameter = id.split('highcharts-select-')[1];
                 fieldsOutput.fields[parameter] = select.value;
             }
         });
         if (volumeTo) {
-            fieldsOutput.fields['params.volumeSeriesID'] = volumeTo.getAttribute('value') || '';
+            fieldsOutput.fields['params.volumeSeriesID'] = volumeTo
+                .getAttribute('value') || '';
         }
         return fieldsOutput;
     },
@@ -260,7 +261,7 @@ H.Popup.prototype = {
             .querySelectorAll('.' + PREFIX + 'popup-close')[0];
         this.formType = void 0;
         // reset content
-        popupDiv.innerHTML = '';
+        popupDiv.innerHTML = AST.emptyHTML;
         // reset toolbar styles if exists
         if (popupDiv.className.indexOf(toolbarClass) >= 0) {
             popupDiv.classList.remove(toolbarClass);
@@ -385,7 +386,7 @@ H.Popup.prototype = {
             lhsCol.appendChild(doc.createTextNode(lang[options.langKey] || options.langKey || ''));
             // left column
             lhsCol = createElement(DIV, {
-                className: PREFIX + 'popup-lhs-col ' + PREFIX + 'popup-lhs-full'
+                className: (PREFIX + 'popup-lhs-col ' + PREFIX + 'popup-lhs-full')
             }, void 0, popupDiv);
             bottomRow = createElement(DIV, {
                 className: PREFIX + 'popup-bottom-row'
@@ -536,7 +537,8 @@ H.Popup.prototype = {
                         var regex = new RegExp(validFilter, 'i'), alias = indicatorAliases &&
                             indicatorAliases[indicatorType] &&
                             indicatorAliases[indicatorType].join(' ') || '';
-                        if (indicatorFullName.match(regex) || alias.match(regex)) {
+                        if (indicatorFullName.match(regex) ||
+                            alias.match(regex)) {
                             filteredSeries = {
                                 indicatorFullName: indicatorFullName,
                                 indicatorType: indicatorType,
@@ -639,8 +641,7 @@ H.Popup.prototype = {
             indicatorList = createElement(UL, {
                 className: PREFIX + 'indicator-list'
             }, void 0, lhsCol);
-            rhsColWrapper = rhsCol
-                .querySelectorAll('.' + PREFIX + 'popup-rhs-col-wrapper')[0];
+            rhsColWrapper = rhsCol.querySelectorAll('.' + PREFIX + 'popup-rhs-col-wrapper')[0];
             filteredSeriesArray.forEach(function (seriesSet) {
                 var indicatorFullName = seriesSet.indicatorFullName, indicatorType = seriesSet.indicatorType, series = seriesSet.series;
                 item = createElement(LI, {
@@ -649,7 +650,8 @@ H.Popup.prototype = {
                 item.appendChild(doc.createTextNode(indicatorFullName));
                 ['click', 'touchstart'].forEach(function (eventName) {
                     addEvent(item, eventName, function () {
-                        var button = rhsColWrapper.parentNode.children[1];
+                        var button = rhsColWrapper.parentNode
+                            .children[1];
                         addFormFields.call(popup, chart, series, indicatorType, rhsColWrapper);
                         if (button) {
                             button.style.display = 'block';
@@ -670,8 +672,9 @@ H.Popup.prototype = {
                 indicatorList.childNodes[0].click();
             }
             else if (!isEdit) {
-                rhsColWrapper.parentNode.children[0].innerHTML = lang.noFilterMatch || '';
-                rhsColWrapper.parentNode.children[1].style.display = 'none';
+                AST.setElementHTML(rhsColWrapper.parentNode.children[0], lang.noFilterMatch || '');
+                rhsColWrapper.parentNode.children[1]
+                    .style.display = 'none';
             }
         },
         /**
@@ -732,15 +735,13 @@ H.Popup.prototype = {
          * @private
          *
          * @param {string} indicatorType
-         *        Type of the indicator i.e. sma, ema...
+         * Type of the indicator i.e. sma, ema...
          *
          * @param {string} [optionName]
-         *        Name of the option into which selection is being added.
+         * Name of the option into which selection is being added.
          *
          * @param {HTMLDOMElement} [parentDiv]
-         *        HTML parent element.
-         *
-         * @return {HTMLSelectElement}
+         * HTML parent element.
          */
         addSelection: function (indicatorType, optionName, parentDiv) {
             var optionParamList = optionName.split('.'), labelText = optionParamList[optionParamList.length - 1];
@@ -788,9 +789,13 @@ H.Popup.prototype = {
                 // List all series which have id - mandatory for indicator.
                 chart.series.forEach(function (series) {
                     var seriesOptions = series.options, seriesName = seriesOptions.name ||
-                        seriesOptions.params ? series.name : seriesOptions.id || '';
+                        seriesOptions.params ?
+                        series.name :
+                        seriesOptions.id || '';
                     if (seriesOptions.id !== PREFIX + 'navigator-series' &&
-                        seriesOptions.id !== (currentSeries && currentSeries.options && currentSeries.options.id)) {
+                        seriesOptions.id !== (currentSeries &&
+                            currentSeries.options &&
+                            currentSeries.options.id)) {
                         if (!defined(selectedOption) &&
                             optionName === 'volume' &&
                             series.type === 'column') {
@@ -822,14 +827,14 @@ H.Popup.prototype = {
          * @private
          *
          * @param {Highcharts.Series} series
-         *        Series which name is needed(EDITmode - defaultOptions.series,
-         *        ADDmode - indicator series).
+         * Series which name is needed(EDITmode - defaultOptions.series,
+         * ADDmode - indicator series).
          *
-         * @param {string} [IndicatorType]
-         *        Type of the indicator i.e. sma, ema...
+         * @param {string} [indicatorType]
+         * Type of the indicator i.e. sma, ema...
          *
-         * @return Highcharts.Dictionary<string>
-         *        Full name and series type.
+         * @return {Highcharts.Dictionary<string>}
+         * Full name and series type.
          */
         getNameType: function (series, indicatorType) {
             var options = series.options, seriesTypes = H.seriesTypes;
@@ -902,7 +907,7 @@ H.Popup.prototype = {
         addFormFields: function (chart, series, seriesType, rhsColWrapper) {
             var fields = series.params || series.options.params, getNameType = this.indicators.getNameType;
             // reset current content
-            rhsColWrapper.innerHTML = '';
+            rhsColWrapper.innerHTML = AST.emptyHTML;
             // create title (indicator name in the right column)
             createElement(H3, {
                 className: PREFIX + 'indicator-title'
@@ -949,8 +954,9 @@ H.Popup.prototype = {
                 if (defined(value) && // skip if field is unnecessary, #15362
                     parentFullName) {
                     if (isObject(value)) {
-                        addInput.call(// (15733) 'Periods' has an arrayed value. Label must be created here.
-                        popup, parentFullName, type, parentDiv, {});
+                        // (15733) 'Periods' has an arrayed value. Label must be
+                        // created here.
+                        addInput.call(popup, parentFullName, type, parentDiv, {});
                         addParamInputs.call(popup, chart, parentFullName, value, type, parentDiv);
                     }
                     // If the option is listed in dropdown enum,
@@ -1045,7 +1051,9 @@ H.Popup.prototype = {
         addContentItem: function () {
             var popupDiv = this.popup.container;
             return createElement(DIV, {
-                className: PREFIX + 'tab-item-content ' + PREFIX + 'no-mousewheel' // #12100
+                // #12100
+                className: PREFIX + 'tab-item-content ' +
+                    PREFIX + 'no-mousewheel'
             }, void 0, popupDiv);
         },
         /**
@@ -1103,7 +1111,7 @@ addEvent(NavigationBindings, 'showPopup', function (config) {
         this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
             (this.chart.options.stockTools &&
                 this.chart.options.stockTools.gui.iconsURL) ||
-            'https://code.highcharts.com/9.3.1/gfx/stock-icons/'), this.chart);
+            'https://code.highcharts.com/9.3.2/gfx/stock-icons/'), this.chart);
     }
     this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
 });

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Sankey diagram module
  *
@@ -105,7 +105,8 @@
                     node.linksTo = [];
                     node.linksFrom = [];
                     node.formatPrefix = 'node';
-                    node.name = node.name || node.options.id || ''; // for use in formats
+                    // for use in formats
+                    node.name = node.name || node.options.id || '';
                     // Mass is used in networkgraph:
                     node.mass = pick(
                     // Node:
@@ -451,7 +452,7 @@
          *
          * @private
          *
-         * @param {object} params
+         * @param {Object} params
          * Object containing parameters.
          * - `defaults` Object containing default options. The default options are
          *   merged with the userOptions to get the final options for a specific
@@ -561,7 +562,7 @@
          *
          * @private
          *
-         * @param {object} series
+         * @param {Object} series
          * The series to operate on.
          *
          * @return {string}
@@ -942,8 +943,9 @@
                     var exceedsMinLinkWidth;
                     var factor = 0;
                     var i;
-                    var remainingHeight = chart.plotSizeY -
-                            options.borderWidth - (column.length - 1) * series.nodePadding;
+                    var remainingHeight = (chart.plotSizeY -
+                            options.borderWidth -
+                            (column.length - 1) * series.nodePadding);
                     // Because the minLinkWidth option doesn't obey the direct
                     // translation, we need to run translation iteratively, check
                     // node heights, remove those nodes affected by minLinkWidth,

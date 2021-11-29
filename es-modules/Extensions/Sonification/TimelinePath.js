@@ -79,7 +79,9 @@ var TimelinePath = /** @class */ (function () {
         // Get map from event ID to index
         this.updateEventIdMap();
         // Signal events to fire
-        this.signalHandler = new SU.SignalHandler(['playOnEnd', 'masterOnEnd', 'onStart', 'onEventStart', 'onEventEnd']);
+        this.signalHandler = new SU.SignalHandler([
+            'playOnEnd', 'masterOnEnd', 'onStart', 'onEventStart', 'onEventEnd'
+        ]);
         this.signalHandler.registerSignalCallbacks(merge(options, { masterOnEnd: options.onEnd }));
     };
     /**
@@ -105,8 +107,8 @@ var TimelinePath = /** @class */ (function () {
      * Add events to the path. Should not be done while the path is playing.
      * The new events are inserted according to their time property.
      * @private
-     * @param {Array<Highcharts.TimelineEvent>} newEvents - The new timeline events
-     * to add.
+     * @param {Array<Highcharts.TimelineEvent>} newEvents
+     * The new timeline events to add.
      */
     TimelinePath.prototype.addTimelineEvents = function (newEvents) {
         this.events = this.events.concat(newEvents);
@@ -143,7 +145,6 @@ var TimelinePath = /** @class */ (function () {
      * @param {Function} onEnd
      * Callback to call when play finished. Does not override other onEnd
      * callbacks.
-     * @return {void}
      */
     TimelinePath.prototype.play = function (onEnd) {
         this.pause();
@@ -158,7 +159,6 @@ var TimelinePath = /** @class */ (function () {
      * @param {Function} onEnd
      * Callback to call when play finished. Does not override other onEnd
      * callbacks.
-     * @return {void}
      */
     TimelinePath.prototype.rewind = function (onEnd) {
         this.pause();
@@ -184,8 +184,9 @@ var TimelinePath = /** @class */ (function () {
     /**
      * Cancel current playing. Leaves the cursor intact.
      * @private
-     * @param {boolean} [fadeOut=false] - Whether or not to fade out as we stop. If
-     * false, the path is cancelled synchronously.
+     * @param {boolean} [fadeOut=false]
+     * Whether or not to fade out as we stop. If false, the path is cancelled
+     * synchronously.
      */
     TimelinePath.prototype.pause = function (fadeOut) {
         var timelinePath = this;
@@ -205,7 +206,6 @@ var TimelinePath = /** @class */ (function () {
      * @private
      * @param {number} direction
      * The direction to play, 1 for forwards and -1 for backwards.
-     * @return {void}
      */
     TimelinePath.prototype.playEvents = function (direction) {
         var timelinePath = this, curEvent = timelinePath.events[this.cursor], nextEvent = timelinePath.events[this.cursor + direction], onEnd = function (signalData) {

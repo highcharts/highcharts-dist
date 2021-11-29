@@ -48,9 +48,9 @@ var binsNumberFormulas = {
 /**
  * Returns a function for mapping number to the closed (right opened) bins
  * @private
- * @param {Array<number>} bins - Width of the bins
- * @return {Function}
- **/
+ * @param {Array<number>} bins
+ * Width of the bins
+ */
 function fitToBinLeftClosed(bins) {
     return function (y) {
         var i = 1;
@@ -191,7 +191,7 @@ var HistogramSeries = /** @class */ (function (_super) {
          * which takes a `baseSeries` as a parameter and should return a
          * positive integer.
          *
-         * @type {"square-root"|"sturges"|"rice"|number|function}
+         * @type {"square-root"|"sturges"|"rice"|number|Function}
          */
         binsNumber: 'square-root',
         /**

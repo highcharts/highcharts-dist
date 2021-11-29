@@ -65,15 +65,16 @@ var HTMLRenderer = /** @class */ (function (_super) {
      * @function Highcharts.SVGRenderer#html
      *
      * @param {string} str
-     *        The text of (subset) HTML to draw.
+     * The text of (subset) HTML to draw.
      *
      * @param {number} x
-     *        The x position of the text's lower left corner.
+     * The x position of the text's lower left corner.
      *
      * @param {number} y
-     *        The y position of the text's lower left corner.
+     * The y position of the text's lower left corner.
      *
      * @return {Highcharts.HTMLDOMElement}
+     * HTML element.
      */
     HTMLRenderer.prototype.html = function (str, x, y) {
         var wrapper = this.createElement('span'), element = wrapper.element, renderer = wrapper.renderer, isSVG = renderer.isSVG, addSetters = function (gWrapper, style) {
@@ -181,8 +182,7 @@ var HTMLRenderer = /** @class */ (function (_super) {
                              * @private
                              * @param {*} value
                              * @param {string} key
-                             * @return {void}
-                             */
+                                                     */
                             function translateSetter(value, key) {
                                 parentGroup[key] = value;
                                 if (key === 'translateX') {
@@ -205,7 +205,9 @@ var HTMLRenderer = /** @class */ (function (_super) {
                                         display: parentGroup.display,
                                         opacity: parentGroup.opacity,
                                         cursor: parentGroupStyles.cursor,
-                                        pointerEvents: parentGroupStyles.pointerEvents,
+                                        pointerEvents: (
+                                        // #5595
+                                        parentGroupStyles.pointerEvents),
                                         visibility: parentGroup.visibility
                                         // the top group is appended to container
                                     }, htmlGroup || container);

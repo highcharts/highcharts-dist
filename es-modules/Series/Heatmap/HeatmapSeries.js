@@ -22,8 +22,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import Color from '../../Core/Color/Color.js';
-import ColorMapComposition from '../ColorMapComposition.js';
-var colorMapSeriesMixin = ColorMapComposition.colorMapSeriesMixin;
+import ColorMapMixin from '../ColorMapMixin.js';
 import HeatmapPoint from './HeatmapPoint.js';
 import LegendSymbol from '../../Core/Legend/LegendSymbol.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -170,10 +169,10 @@ var HeatmapSeries = /** @class */ (function (_super) {
                 y: point.plotY
             };
         }
-        // Setting width and height attributes on image does not affect
-        // on its dimensions.
+        // Setting width and height attributes on image does not affect on its
+        // dimensions.
         if (state) {
-            seriesStateOptions = seriesMarkerOptions.states[state] || {};
+            seriesStateOptions = (seriesMarkerOptions.states[state] || {});
             pointStateOptions = pointMarkerOptions.states &&
                 pointMarkerOptions.states[state] || {};
             [['width', 'x'], ['height', 'y']].forEach(function (dimension) {
@@ -561,8 +560,9 @@ extend(HeatmapSeries.prototype, {
      * @private
      */
     alignDataLabel: ColumnSeries.prototype.alignDataLabel,
-    axisTypes: colorMapSeriesMixin.axisTypes,
-    colorKey: 'value',
+    axisTypes: ColorMapMixin.SeriesMixin.axisTypes,
+    colorAttribs: ColorMapMixin.SeriesMixin.colorAttribs,
+    colorKey: ColorMapMixin.SeriesMixin.colorKey,
     directTouch: true,
     /**
      * @private
@@ -570,12 +570,11 @@ extend(HeatmapSeries.prototype, {
     drawLegendSymbol: LegendSymbol.drawRectangle,
     getExtremesFromAll: true,
     getSymbol: Series.prototype.getSymbol,
-    parallelArrays: colorMapSeriesMixin.parallelArrays,
+    parallelArrays: ColorMapMixin.SeriesMixin.parallelArrays,
     pointArrayMap: ['y', 'value'],
     pointClass: HeatmapPoint,
-    trackerGroups: colorMapSeriesMixin.trackerGroups
+    trackerGroups: ColorMapMixin.SeriesMixin.trackerGroups
 });
-ColorMapComposition.compose(HeatmapSeries);
 SeriesRegistry.registerSeriesType('heatmap', HeatmapSeries);
 /* *
  *

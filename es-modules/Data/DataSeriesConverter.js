@@ -151,13 +151,15 @@ var DataSeriesConverter = /** @class */ (function () {
                         columns.x = j;
                     }
                     else if (elem instanceof Array) {
-                        xIndex = keys && keys.indexOf('x') > -1 ? keys.indexOf('x') : 0;
-                        yIndex = keys && keys.indexOf('y') > -1 ? keys.indexOf('y') : 1;
+                        xIndex = keys && keys.indexOf('x') > -1 ?
+                            keys.indexOf('x') : 0;
+                        yIndex = keys && keys.indexOf('y') > -1 ?
+                            keys.indexOf('y') : 1;
                         if (needsArrayMap) {
                             for (var k = 0; k < pointArrayMapLength; k++) {
                                 yValueIndex = keys && keys.indexOf(pointArrayMap[k]) > -1 ?
-                                    keys.indexOf(pointArrayMap[k]) : k + elem.length -
-                                    pointArrayMapLength;
+                                    keys.indexOf(pointArrayMap[k]) :
+                                    k + elem.length - pointArrayMapLength;
                                 yValueName = pointArrayMap[k];
                                 columns[yValueName + yValueId] = elem[yValueIndex];
                             }
@@ -165,7 +167,9 @@ var DataSeriesConverter = /** @class */ (function () {
                         else {
                             columns[y] = elem[yIndex];
                         }
-                        columns.x = elem.length - pointArrayMapLength > 0 ? elem[xIndex] : j;
+                        columns.x = elem.length - pointArrayMapLength > 0 ?
+                            elem[xIndex] :
+                            j;
                     }
                     else if (elem instanceof Object) {
                         if (needsArrayMap) {

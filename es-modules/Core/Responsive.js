@@ -130,8 +130,7 @@ var Responsive;
         Additions.prototype.matchResponsiveRule = function (rule, matches) {
             var condition = rule.condition, fn = condition.callback || function () {
                 return (this.chartWidth <= pick(condition.maxWidth, Number.MAX_VALUE) &&
-                    this.chartHeight <=
-                        pick(condition.maxHeight, Number.MAX_VALUE) &&
+                    this.chartHeight <= pick(condition.maxHeight, Number.MAX_VALUE) &&
                     this.chartWidth >= pick(condition.minWidth, 0) &&
                     this.chartHeight >= pick(condition.minHeight, 0));
             };
@@ -169,7 +168,7 @@ var Responsive;
             mergedOptions.isResponsiveOptions = true;
             // Stringified key for the rules that currently apply.
             ruleIds = (ruleIds.toString() || void 0);
-            var currentRuleIds = currentResponsive && currentResponsive.ruleIds;
+            var currentRuleIds = (currentResponsive && currentResponsive.ruleIds);
             // Changes in what rules apply
             if (ruleIds !== currentRuleIds) {
                 // Undo previous rules. Before we apply a new set of rules, we

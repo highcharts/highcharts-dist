@@ -95,9 +95,12 @@ var Tunnel = /** @class */ (function (_super) {
     /**
      * Translate start or end ("left" or "right") side of the tunnel.
      * @private
-     * @param {number} dx - the amount of x translation
-     * @param {number} dy - the amount of y translation
-     * @param {boolean} [end] - whether to translate start or end side
+     * @param {number} dx
+     * the amount of x translation
+     * @param {number} dy
+     * the amount of y translation
+     * @param {boolean} [end]
+     * whether to translate start or end side
      */
     Tunnel.prototype.translateSide = function (dx, dy, end) {
         var topIndex = Number(end), bottomIndex = topIndex === 0 ? 3 : 2;
@@ -107,12 +110,14 @@ var Tunnel = /** @class */ (function (_super) {
     /**
      * Translate height of the tunnel.
      * @private
-     * @param {number} dh - the amount of height translation
+     * @param {number} dh
+     * the amount of height translation
      */
     Tunnel.prototype.translateHeight = function (dh) {
         this.translatePoint(0, dh, 2);
         this.translatePoint(0, dh, 3);
-        this.options.typeOptions.height = this.points[3].y - this.points[0].y;
+        this.options.typeOptions.height = this.points[3].y -
+            this.points[0].y;
     };
     return Tunnel;
 }(CrookedLine));

@@ -24,12 +24,14 @@ var defined = U.defined, find = U.find, fireEvent = U.fireEvent;
 /* eslint-disable valid-jsdoc */
 /**
  * Fire an event on an element that is either wrapped by Highcharts,
- * or a DOM element
+ * or a DOM element.
+ * @private
  */
 function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
     var type = eventObject.type;
     var hcEvents = el.hcEvents;
-    if (doc.createEvent && (el.dispatchEvent || el.fireEvent)) {
+    if (doc.createEvent &&
+        (el.dispatchEvent || el.fireEvent)) {
         if (el.dispatchEvent) {
             el.dispatchEvent(eventObject);
         }
@@ -45,7 +47,7 @@ function fireEventOnWrappedOrUnwrappedElement(el, eventObject) {
     }
 }
 /**
- * @return {string}
+ * @private
  */
 function getChartTitle(chart) {
     return stripHTMLTags(chart.options.title.text ||
@@ -53,8 +55,7 @@ function getChartTitle(chart) {
 }
 /**
  * Return string with the axis name/title.
- * @param {Highcharts.Axis} axis
- * @return {string}
+ * @private
  */
 function getAxisDescription(axis) {
     return axis && (axis.userOptions && axis.userOptions.accessibility &&
@@ -67,8 +68,11 @@ function getAxisDescription(axis) {
 }
 /**
  * Return string with text description of the axis range.
- * @param {Highcharts.Axis} axis The axis to get range desc of.
- * @return {string} A string with the range description for the axis.
+ * @private
+ * @param {Highcharts.Axis} axis
+ * The axis to get range desc of.
+ * @return {string}
+ * A string with the range description for the axis.
  */
 function getAxisRangeDescription(axis) {
     var axisOptions = axis.options || {};
@@ -91,8 +95,7 @@ function getAxisRangeDescription(axis) {
 }
 /**
  * Describe the range of a category axis.
- * @param {Highcharts.Axis} axis
- * @return {string}
+ * @private
  */
 function getCategoryAxisRangeDesc(axis) {
     var chart = axis.chart;
@@ -107,8 +110,7 @@ function getCategoryAxisRangeDesc(axis) {
 }
 /**
  * Describe the length of the time window shown on an axis.
- * @param {Highcharts.Axis} axis
- * @return {string}
+ * @private
  */
 function getAxisTimeLengthDesc(axis) {
     var chart = axis.chart, range = {};
@@ -134,13 +136,12 @@ function getAxisTimeLengthDesc(axis) {
 }
 /**
  * Describe an axis from-to range.
- * @param {Highcharts.Axis} axis
- * @return {string}
+ * @private
  */
 function getAxisFromToDescription(axis) {
-    var chart = axis.chart, dateRangeFormat = (chart.options &&
-        chart.options.accessibility &&
-        chart.options.accessibility.screenReaderSection.axisRangeDateFormat ||
+    var chart = axis.chart, options = chart.options, dateRangeFormat = (options &&
+        options.accessibility &&
+        options.accessibility.screenReaderSection.axisRangeDateFormat ||
         ''), format = function (axisKey) {
         return axis.dateTime ? chart.time.dateFormat(dateRangeFormat, axis[axisKey]) : axis[axisKey];
     };
@@ -186,8 +187,6 @@ function getSeriesA11yElement(series) {
  * Remove aria-hidden from element. Also unhides parents of the element, and
  * hides siblings that are not explicitly unhidden.
  * @private
- * @param {Highcharts.Chart} chart
- * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} element
  */
 function unhideChartElementFromAT(chart, element) {
     element.setAttribute('aria-hidden', false);
@@ -209,9 +208,6 @@ function unhideChartElementFromAT(chart, element) {
 /**
  * Hide series from screen readers.
  * @private
- * @param {Highcharts.Series} series
- * The series to hide
- * @return {void}
  */
 function hideSeriesFromAT(series) {
     var seriesEl = getSeriesA11yElement(series);
@@ -222,9 +218,6 @@ function hideSeriesFromAT(series) {
 /**
  * Get series objects by series name.
  * @private
- * @param {Highcharts.Chart} chart
- * @param {string} name
- * @return {Array<Highcharts.Series>}
  */
 function getSeriesFromName(chart, name) {
     if (!name) {
@@ -237,10 +230,6 @@ function getSeriesFromName(chart, name) {
 /**
  * Get point in a series from x/y values.
  * @private
- * @param {Array<Highcharts.Series>} series
- * @param {number} x
- * @param {number} y
- * @return {Highcharts.Point|undefined}
  */
 function getPointFromXY(series, x, y) {
     var i = series.length, res;
@@ -256,9 +245,6 @@ function getPointFromXY(series, x, y) {
 /**
  * Get relative position of point on an x/y axis from 0 to 1.
  * @private
- * @param {Highcharts.Axis} axis
- * @param {Highcharts.Point} point
- * @return {number}
  */
 function getRelativePointAxisPosition(axis, point) {
     if (!defined(axis.dataMin) || !defined(axis.dataMax)) {
@@ -272,7 +258,6 @@ function getRelativePointAxisPosition(axis, point) {
 /**
  * Get relative position of point on an x/y axis from 0 to 1.
  * @private
- * @param {Highcharts.Point} point
  */
 function scrollToPoint(point) {
     var xAxis = point.series.xAxis, yAxis = point.series.yAxis, axis = (xAxis && xAxis.scrollbar ? xAxis : yAxis), scrollbar = (axis && axis.scrollbar);

@@ -9,18 +9,28 @@
  * */
 'use strict';
 import H from '../../Globals.js';
-var SVG_NS = H.SVG_NS;
+var SVG_NS = H.SVG_NS, win = H.win;
 import U from '../../Utilities.js';
-var attr = U.attr, createElement = U.createElement, discardElement = U.discardElement, error = U.error, isString = U.isString, objectEach = U.objectEach, splat = U.splat;
+var attr = U.attr, createElement = U.createElement, error = U.error, isFunction = U.isFunction, isString = U.isString, objectEach = U.objectEach, splat = U.splat;
+var trustedTypes = win.trustedTypes;
 /* *
  *
  *  Constants
  *
  * */
+// Create the trusted type policy. This should not be exposed.
+var trustedTypesPolicy = (trustedTypes &&
+    isFunction(trustedTypes.createPolicy) &&
+    trustedTypes.createPolicy('highcharts', {
+        createHTML: function (s) { return s; }
+    }));
+var emptyHTML = trustedTypesPolicy ?
+    trustedTypesPolicy.createHTML('') :
+    '';
 // In IE8, DOMParser is undefined. IE9 and PhantomJS are only able to parse XML.
 var hasValidDOMParser = (function () {
     try {
-        return Boolean(new DOMParser().parseFromString('', 'text/html'));
+        return Boolean(new DOMParser().parseFromString(emptyHTML, 'text/html'));
     }
     catch (e) {
         return false;
@@ -103,7 +113,7 @@ var AST = /** @class */ (function () {
      * Markup string
      */
     AST.setElementHTML = function (el, html) {
-        el.innerHTML = ''; // Clear previous
+        el.innerHTML = AST.emptyHTML; // Clear previous
         if (html) {
             var ast = new AST(html);
             ast.addToDOM(el);
@@ -128,9 +138,12 @@ var AST = /** @class */ (function () {
     AST.prototype.addToDOM = function (parent) {
         /**
          * @private
-         * @param {Highcharts.ASTNode} subtree - HTML/SVG definition
-         * @param {Element} [subParent] - parent node
-         * @return {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement} The inserted node.
+         * @param {Highcharts.ASTNode} subtree
+         * HTML/SVG definition
+         * @param {Element} [subParent]
+         * parent node
+         * @return {Highcharts.SVGDOMElement|Highcharts.HTMLDOMElement}
+         * The inserted node.
          */
         function recurse(subtree, subParent) {
             var ret;
@@ -170,7 +183,8 @@ var AST = /** @class */ (function () {
                         node = element;
                     }
                     else {
-                        error("Highcharts warning: Invalid tagName '" + tagName + "' in config");
+                        error('Highcharts warning: Invalid tagName ' +
+                            tagName + ' in config');
                     }
                 }
                 // Add to the tree
@@ -200,12 +214,13 @@ var AST = /** @class */ (function () {
         var nodes = [];
         markup = markup.trim();
         var doc;
-        var body;
         if (hasValidDOMParser) {
-            doc = new DOMParser().parseFromString(markup, 'text/html');
+            doc = new DOMParser().parseFromString(trustedTypesPolicy ?
+                trustedTypesPolicy.createHTML(markup) :
+                markup, 'text/html');
         }
         else {
-            body = createElement('div');
+            var body = createElement('div');
             body.innerHTML = markup;
             doc = { body: body };
         }
@@ -240,9 +255,6 @@ var AST = /** @class */ (function () {
             addTo.push(astNode);
         };
         [].forEach.call(doc.body.childNodes, function (childNode) { return appendChildNodes(childNode, nodes); });
-        if (body) {
-            discardElement(body);
-        }
         return nodes;
     };
     /* *
@@ -429,6 +441,7 @@ var AST = /** @class */ (function () {
         'ul',
         '#text'
     ];
+    AST.emptyHTML = emptyHTML;
     return AST;
 }());
 /* *

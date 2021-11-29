@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Item series type for Highcharts
  *
@@ -362,9 +362,10 @@
                     rowsOption = this.options.rows, 
                     // How many rows (arcs) should be used
                     rowFraction = (diameter - innerSize) / diameter,
-                    isCircle = fullAngle % (2 * Math.PI) === 0;
+                    isCircle = fullAngle % (2 * Math.PI) === 0,
+                    total = this.total || 0;
                 // Increase the itemSize until we find the best fit
-                while (itemCount > this.total + (rows && isCircle ? rows.length : 0)) {
+                while (itemCount > total + (rows && isCircle ? rows.length : 0)) {
                     finalItemCount = itemCount;
                     // Reset
                     slots.length = 0;
@@ -418,8 +419,7 @@
                  * @private
                  * @param {Highcharts.ItemRowContainerObject} item
                  * Wrapped object with angle and row
-                 * @return {void}
-                 */
+                     */
                 function cutOffRow(item) {
                     if (overshoot > 0) {
                         item.row.colCount--;
@@ -638,7 +638,7 @@
          *
          * @type      {Array<number|Array<string,(number|null)>|null|*>}
          * @extends   series.pie.data
-         * @excludes  sliced
+         * @exclude   sliced
          * @product   highcharts
          * @apioption series.item.data
          */

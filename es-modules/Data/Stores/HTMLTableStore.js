@@ -135,7 +135,9 @@ var HTMLTableStore = /** @class */ (function (_super) {
      */
     HTMLTableStore.prototype.getHTMLTableForExport = function (exportOptions) {
         if (exportOptions === void 0) { exportOptions = {}; }
-        var options = exportOptions, decimalPoint = options.useLocalDecimalPoint ? (1.1).toLocaleString()[1] : '.', exportNames = (this.parserOptions.firstRowAsNames !== false), useMultiLevelHeaders = options.useMultiLevelHeaders, useRowspanHeaders = options.useRowspanHeaders;
+        var options = exportOptions, decimalPoint = options.useLocalDecimalPoint ?
+            (1.1).toLocaleString()[1] :
+            '.', exportNames = (this.parserOptions.firstRowAsNames !== false), useMultiLevelHeaders = options.useMultiLevelHeaders, useRowspanHeaders = options.useRowspanHeaders;
         var isRowEqual = function (row1, row2) {
             var i = row1.length;
             if (row2.length === i) {

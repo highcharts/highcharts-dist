@@ -137,7 +137,6 @@ var Instrument = /** @class */ (function () {
      * @private
      * @param {Highcharts.OscillatorOptionsObject} oscillatorOptions
      * The oscillator options passed to Highcharts.Instrument#init.
-     * @return {void}
      */
     Instrument.prototype.initOscillator = function (options) {
         var ctx = Instrument.audioContext;
@@ -151,7 +150,6 @@ var Instrument = /** @class */ (function () {
      * @private
      * @param {number} panValue
      * The pan position to set for the instrument.
-     * @return {void}
      */
     Instrument.prototype.setPan = function (panValue) {
         if (this.panNode) {
@@ -167,7 +165,6 @@ var Instrument = /** @class */ (function () {
      * The gain level to set for the instrument.
      * @param {number} [rampTime=0]
      * Gradually change the gain level, time given in milliseconds.
-     * @return {void}
      */
     Instrument.prototype.setGain = function (gainValue, rampTime) {
         var gainNode = this.gainNode;
@@ -191,7 +188,6 @@ var Instrument = /** @class */ (function () {
     /**
      * Cancel ongoing gain ramps.
      * @private
-     * @return {void}
      */
     Instrument.prototype.cancelGainRamp = function () {
         if (this.gainNode) {
@@ -202,7 +198,6 @@ var Instrument = /** @class */ (function () {
      * Set the master volume multiplier of the instrument after creation.
      * @param {number} volumeMultiplier
      * The gain level to set for the instrument.
-     * @return {void}
      */
     Instrument.prototype.setMasterVolume = function (volumeMultiplier) {
         this.masterVolume = volumeMultiplier || 0;
@@ -210,10 +205,14 @@ var Instrument = /** @class */ (function () {
     /**
      * Get the closest valid frequency for this instrument.
      * @private
-     * @param {number} frequency - The target frequency.
-     * @param {number} [min] - Minimum frequency to return.
-     * @param {number} [max] - Maximum frequency to return.
-     * @return {number} The closest valid frequency to the input frequency.
+     * @param {number} frequency
+     * The target frequency.
+     * @param {number} [min]
+     * Minimum frequency to return.
+     * @param {number} [max]
+     * Maximum frequency to return.
+     * @return {number}
+     * The closest valid frequency to the input frequency.
      */
     Instrument.prototype.getValidFrequency = function (frequency, min, max) {
         var validFrequencies = this.options.allowedFrequencies, maximum = pick(max, Infinity), minimum = pick(min, -Infinity);
@@ -231,7 +230,6 @@ var Instrument = /** @class */ (function () {
     /**
      * Clear existing play callback timers.
      * @private
-     * @return {void}
      */
     Instrument.prototype.clearPlayCallbackTimers = function () {
         this.playCallbackTimers.forEach(function (timer) {
@@ -246,7 +244,6 @@ var Instrument = /** @class */ (function () {
      * The frequency to set.
      * @param {Highcharts.Dictionary<number>} [frequencyLimits]
      * Object with maxFrequency and minFrequency
-     * @return {void}
      */
     Instrument.prototype.setFrequency = function (frequency, frequencyLimits) {
         var limits = frequencyLimits || {}, validFrequency = this.getValidFrequency(frequency, limits.min, limits.max);
@@ -257,7 +254,8 @@ var Instrument = /** @class */ (function () {
     /**
      * Play oscillator instrument.
      * @private
-     * @param {number} frequency - The frequency to play.
+     * @param {number} frequency
+     * The frequency to play.
      */
     Instrument.prototype.oscillatorPlay = function (frequency) {
         if (!this.oscillatorStarted) {
@@ -294,7 +292,6 @@ var Instrument = /** @class */ (function () {
      * @param {Highcharts.InstrumentPlayOptionsObject} options
      *        Options for the playback of the instrument.
      *
-     * @return {void}
      */
     Instrument.prototype.play = function (options) {
         var instrument = this, duration = options.duration || 0, 
@@ -307,7 +304,8 @@ var Instrument = /** @class */ (function () {
             if (typeof value === 'function') {
                 var timer_1 = setInterval(function () {
                     currentDurationIx++;
-                    var curTime = (currentDurationIx * callbackInterval / target);
+                    var curTime = (currentDurationIx *
+                        callbackInterval / target);
                     if (curTime >= 1) {
                         instrument[setter](value(1), setterData);
                         clearInterval(timer_1);
@@ -412,7 +410,6 @@ var Instrument = /** @class */ (function () {
      * @param {*} [callbackData]
      *        Data to send to the onEnd callback functions.
      *
-     * @return {void}
      */
     Instrument.prototype.stop = function (immediately, onStopped, callbackData) {
         var instr = this, reset = function () {

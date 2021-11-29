@@ -59,13 +59,9 @@ var A11yI18nComposition;
      *
      * @private
      * @function formatExtendedStatement
-     *
      * @param {string} statement
-     *
      * @param {Highcharts.Dictionary<*>} ctx
      * Context to apply to the format string.
-     *
-     * @return {string}
      */
     function formatExtendedStatement(statement, ctx) {
         var eachStart = statement.indexOf('#each('), pluralStart = statement.indexOf('#plural('), indexStart = statement.indexOf('['), indexEnd = statement.indexOf(']');
@@ -90,7 +86,7 @@ var A11yI18nComposition;
         }
         // Dealing with a plural-function?
         if (pluralStart > -1) {
-            var pluralEnd = statement.slice(pluralStart).indexOf(')') + pluralStart, pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(ctx[pluralArguments[0]]);
+            var pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(ctx[pluralArguments[0]]);
             switch (num) {
                 case 0:
                     result = pick(pluralArguments[4], pluralArguments[1]);

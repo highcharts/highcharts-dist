@@ -38,7 +38,7 @@ function getChartAnnotationLabels(chart) {
  * Get the text of an annotation label.
  *
  * @private
- * @param {object} label The annotation label object
+ * @param {Object} label The annotation label object
  * @return {string} The text in the label.
  */
 function getLabelText(label) {
@@ -54,7 +54,7 @@ function getLabelText(label) {
  * Describe an annotation label.
  *
  * @private
- * @param {object} label The annotation label object to describe
+ * @param {Object} label The annotation label object to describe
  * @return {string} The description for the label.
  */
 function getAnnotationLabelDescription(label) {
@@ -83,10 +83,14 @@ function getAnnotationLabelDescription(label) {
     var pointValueDescriptions = points
         .filter(function (p) { return !!p.graphic; }) // Filter out mock points
         .map(getValueDesc)
-        .filter(function (desc) { return !!desc; }); // Filter out points we can't describe
+        // Filter out points we can't describe
+        .filter(function (desc) { return !!desc; });
     var numPoints = pointValueDescriptions.length;
-    var pointsSelector = numPoints > 1 ? 'MultiplePoints' : numPoints ? 'SinglePoint' : 'NoPoints';
-    var langFormatStr = 'accessibility.screenReaderSection.annotations.description' + pointsSelector;
+    var pointsSelector = numPoints > 1 ?
+        'MultiplePoints' : numPoints ?
+        'SinglePoint' : 'NoPoints';
+    var langFormatStr = ('accessibility.screenReaderSection.annotations.description' +
+        pointsSelector);
     var context = {
         annotationText: labelText,
         annotation: label,

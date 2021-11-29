@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -312,10 +312,9 @@
          * @private
          * @function project
          * @param {Highcharts.PolygonObject} polygon
-         *        Array of points in a polygon.
+         * Array of points in a polygon.
          * @param {Highcharts.PolygonPointObject} target
-         *        The coordinate of pr
-         * @return {Highcharts.RangeObject}
+         * The coordinate of pr
          */
         function project(polygon, target) {
             var products = polygon.map(function (point) {
@@ -563,7 +562,7 @@
          * @param {number} targetHeight
          * Height of target area.
          *
-         * @param {object} field
+         * @param {Object} field
          * The playing field.
          *
          * @param {Highcharts.Series} series
@@ -599,10 +598,10 @@
          * @param {Array<Highcharts.Point>} data
          * Array of points.
          *
-         * @param {object} data.dimensions
+         * @param {Object} data.dimensions
          * The height and width of the word.
          *
-         * @return {object}
+         * @return {Object}
          * The width and height of the playing field.
          */
         function getPlayingField(targetWidth, targetHeight, data) {
@@ -690,7 +689,7 @@
          * @param {Function} fn
          * The spiral function.
          *
-         * @param {object} params
+         * @param {Object} params
          * Additional parameters for the spiral.
          *
          * @return {Function}
@@ -889,9 +888,6 @@
          *
          * @private
          * @function correctFloat
-         * @param {number} number
-         * @param {number} [precision]
-         * @return {number}
          */
         function correctFloat(number, precision) {
             var p = isNumber(precision) ? precision : 14,
@@ -1403,7 +1399,7 @@
                  * cloud. Read more about it in our
                  * [documentation](https://www.highcharts.com/docs/chart-and-series-types/word-cloud-series#custom-placement-strategies)
                  *
-                 * @validvalue: ["center", "random"]
+                 * @validvalue ["center", "random"]
                  */
                 placementStrategy: 'center',
                 /**
@@ -1436,7 +1432,7 @@
                  * algorithms for use in word cloud. Read more about it in our
                  * [documentation](https://www.highcharts.com/docs/chart-and-series-types/word-cloud-series#custom-spiralling-algorithm)
                  *
-                 * @validvalue: ["archimedean", "rectangular", "square"]
+                 * @validvalue ["archimedean", "rectangular", "square"]
                  */
                 spiral: 'rectangular',
                 /**

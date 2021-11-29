@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.1 (2021-11-05)
+ * @license Highcharts JS v9.3.2 (2021-11-29)
  *
  * Client side exporting module
  *
@@ -157,7 +157,7 @@
          *
          * */
         var OfflineExportingDefaults = {
-                libURL: 'https://code.highcharts.com/9.3.1/lib/',
+                libURL: 'https://code.highcharts.com/9.3.2/lib/',
                 // When offline-exporting is loaded, redefine the menu item definitions
                 // related to download.
                 menuItemDefinitions: {
@@ -201,7 +201,7 @@
 
         return OfflineExportingDefaults;
     });
-    _registerModule(_modules, 'Extensions/OfflineExporting/OfflineExporting.js', [_modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Extensions/DownloadURL.js'], _modules['Extensions/Exporting/Exporting.js'], _modules['Core/Globals.js'], _modules['Extensions/OfflineExporting/OfflineExportingDefaults.js'], _modules['Core/Utilities.js']], function (Chart, D, DownloadURL, Exporting, H, OfflineExportingDefaults, U) {
+    _registerModule(_modules, 'Extensions/OfflineExporting/OfflineExporting.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Extensions/DownloadURL.js'], _modules['Extensions/Exporting/Exporting.js'], _modules['Core/Globals.js'], _modules['Extensions/OfflineExporting/OfflineExportingDefaults.js'], _modules['Core/Utilities.js']], function (AST, Chart, D, DownloadURL, Exporting, H, OfflineExportingDefaults, U) {
         /* *
          *
          *  Client side exporting module
@@ -223,6 +223,8 @@
             extend = U.extend,
             fireEvent = U.fireEvent,
             merge = U.merge;
+        AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
+        AST.allowedTags.push('desc', 'clippath', 'g');
         /* *
          *
          * Constants
@@ -302,12 +304,12 @@
              * @param {Function} [successCallback]
              * The callback function in case of success
              *
-             * @return {void}
              */
             function downloadSVGLocal(svg, options, failCallback, successCallback) {
                 var dummySVGContainer = doc.createElement('div'), imageType = options.type || 'image/png', filename = ((options.filename || 'chart') +
                         '.' +
-                        (imageType === 'image/svg+xml' ? 'svg' : imageType.split('/')[1])), scale = options.scale || 1;
+                        (imageType === 'image/svg+xml' ?
+                            'svg' : imageType.split('/')[1])), scale = options.scale || 1;
                 var svgurl,
                     blob,
                     finallyHandler,
@@ -315,12 +317,12 @@
                     objectURLRevoke = true;
                 // Allow libURL to end with or without fordward slash
                 libURL = libURL.slice(-1) !== '/' ? libURL + '/' : libURL;
-                /**
+                /*
                  * @private
-                 * @return {void}
                  */
                 var downloadPDF = function () {
-                        dummySVGContainer.innerHTML = svg;
+                        AST.setElementHTML(dummySVGContainer,
+                    svg);
                     var textElements = dummySVGContainer.getElementsByTagName('text'), 
                         // Copy style property to element from parents if it's not
                         // there. Searches up hierarchy until it finds prop, or hits the
@@ -494,9 +496,9 @@
              *         a different background color can be added here, or
              *         `dataLabels` for export only.
              *
-             * @return {void}
              *
              * @requires modules/exporting
+             * @requires modules/offline-exporting
              */
             function exportChartLocal(exportingOptions, chartOptions) {
                 var chart = this,
@@ -522,27 +524,26 @@
                     if (svg.indexOf('<foreignObject') > -1 &&
                         options.type !== 'image/svg+xml' &&
                         (H.isMS || options.type === 'application/pdf')) {
-                        fallbackToExportServer('Image type not supported' +
-                            'for charts with embedded HTML');
+                        fallbackToExportServer(new Error('Image type not supported for charts with embedded HTML'));
                     }
                     else {
                         OfflineExporting.downloadSVGLocal(svg, extend({ filename: chart.getFilename() }, options), fallbackToExportServer, function () { return fireEvent(chart, 'exportChartLocalSuccess'); });
                     }
                 }, 
-                // Return true if the SVG contains images with external data.
-                // With the boost module there are `image` elements with encoded
-                // PNGs, these are supported by svg2pdf and should
-                // pass (#10243).
+                // Return true if the SVG contains images with external data. With
+                // the boost module there are `image` elements with encoded PNGs,
+                // these are supported by svg2pdf and should pass (#10243).
                 hasExternalImages = function () {
                     return [].some.call(chart.container.getElementsByTagName('image'), function (image) {
                         var href = image.getAttribute('href');
-                        return href !== '' && href.indexOf('data:') !== 0;
+                        return (href !== '' &&
+                            typeof href === 'string' &&
+                            href.indexOf('data:') !== 0);
                     });
                 };
-                // If we are on IE and in styled mode, add a whitelist to the
-                // renderer for inline styles that we want to pass through. There
-                // are so many styles by default in IE that we don't want to
-                // blacklist them all.
+                // If we are on IE and in styled mode, add a whitelist to the renderer
+                // for inline styles that we want to pass through. There are so many
+                // styles by default in IE that we don't want to blacklist them all.
                 if (H.isMS && chart.styledMode && !Exporting.inlineWhitelist.length) {
                     Exporting.inlineWhitelist.push(/^blockSize/, /^border/, /^caretColor/, /^color/, /^columnRule/, /^columnRuleColor/, /^cssFloat/, /^cursor/, /^fill$/, /^fillOpacity/, /^font/, /^inlineSize/, /^length/, /^lineHeight/, /^opacity/, /^outline/, /^parentRule/, /^rx$/, /^ry$/, /^stroke/, /^textAlign/, /^textAnchor/, /^textDecoration/, /^transform/, /^vectorEffect/, /^visibility/, /^x$/, /^y$/);
                 }
@@ -554,7 +555,7 @@
                         chart.container.getElementsByTagName('image').length &&
                             options.type !== 'image/svg+xml')) || (options.type === 'application/pdf' &&
                     hasExternalImages())) {
-                    fallbackToExportServer('Image type not supported for this chart/browser.');
+                    fallbackToExportServer(new Error('Image type not supported for this chart/browser.'));
                     return;
                 }
                 chart.getSVGForLocalExport(options, chartOptions || {}, fallbackToExportServer, svgSuccess);
@@ -590,7 +591,6 @@
              * @param {Highcharts.Options} chartOptions
              * @param {Function} failCallback
              * @param {Function} successCallback
-             * @return {void}
              */
             function getSVGForLocalExport(options, chartOptions, failCallback, successCallback) {
                 var chart = this, 
@@ -623,7 +623,8 @@
                 chart.unbindGetSVG = addEvent(chart, 'getSVG', function (e) {
                     chartCopyOptions = e.chartCopy.options;
                     chartCopyContainer = e.chartCopy.container.cloneNode(true);
-                    images = chartCopyContainer && chartCopyContainer.getElementsByTagName('image') || [];
+                    images = chartCopyContainer && chartCopyContainer
+                        .getElementsByTagName('image') || [];
                     imagesLength = images.length;
                 });
                 // Trigger hook to get chart copy
@@ -762,8 +763,6 @@
              *
              * @private
              * @function Highcharts.svgToDataURL
-             * @param {string} svg
-             * @return {string}
              */
             function svgToDataUrl(svg) {
                 // Webkit and not chrome
@@ -791,13 +790,9 @@
              * @private
              */
             function svgToPdf(svgElement, margin) {
-                var width = svgElement.width.baseVal.value + 2 * margin,
-                    height = svgElement.height.baseVal.value + 2 * margin,
-                    pdf = new win.jsPDF(// eslint-disable-line new-cap
-                    height > width ? 'p' : 'l', // setting orientation to portrait if height exceeds width
-                    'pt',
-                    [width,
-                    height]);
+                var width = svgElement.width.baseVal.value + 2 * margin, height = svgElement.height.baseVal.value + 2 * margin, pdf = new win.jsPDF(// eslint-disable-line new-cap
+                    // setting orientation to portrait if height exceeds width
+                    height > width ? 'p' : 'l', 'pt', [width, height]);
                 // Workaround for #7090, hidden elements were drawn anyway. It comes
                 // down to https://github.com/yWorks/svg2pdf.js/issues/28. Check this
                 // later.

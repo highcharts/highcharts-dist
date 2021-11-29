@@ -64,7 +64,6 @@ var Fx = /** @class */ (function () {
      *
      * @function Highcharts.Fx#dSetter
      *
-     * @return {void}
      */
     Fx.prototype.dSetter = function () {
         var paths = this.paths, start = paths && paths[0], end = paths && paths[1], now = this.now || 0;
@@ -110,7 +109,6 @@ var Fx = /** @class */ (function () {
      *
      * @function Highcharts.Fx#update
      *
-     * @return {void}
      */
     Fx.prototype.update = function () {
         var elem = this.elem, prop = this.prop, // if destroyed, it is null
@@ -147,7 +145,6 @@ var Fx = /** @class */ (function () {
      * @param {string} unit
      *        The property unit, for example `px`.
      *
-     * @return {void}
      */
     Fx.prototype.run = function (from, to, unit) {
         var self = this, options = self.options, timer = function (gotoEnd) {
@@ -167,7 +164,8 @@ var Fx = /** @class */ (function () {
         };
         if (from === to && !this.elem['forceAnimate:' + this.prop]) {
             delete options.curAnim[this.prop];
-            if (options.complete && Object.keys(options.curAnim).length === 0) {
+            if (options.complete &&
+                Object.keys(options.curAnim).length === 0) {
                 options.complete.call(this.elem);
             }
         }
@@ -220,7 +218,8 @@ var Fx = /** @class */ (function () {
         }
         else {
             this.pos = options.easing((t - this.startTime) / duration);
-            this.now = this.start + ((this.end - this.start) * this.pos);
+            this.now = this.start + ((this.end -
+                this.start) * this.pos);
             this.update();
             ret = true;
         }
@@ -254,9 +253,6 @@ var Fx = /** @class */ (function () {
         /**
          * If shifting points, prepend a dummy point to the end path.
          * @private
-         * @param {Highcharts.SVGPathArray} arr - array
-         * @param {Highcharts.SVGPathArray} other - array
-         * @return {void}
          */
         function prepend(arr, other) {
             while (arr.length < fullLength) {
@@ -291,9 +287,6 @@ var Fx = /** @class */ (function () {
         /**
          * Copy and append last point until the length matches the end length.
          * @private
-         * @param {Highcharts.SVGPathArray} arr - array
-         * @param {Highcharts.SVGPathArray} other - array
-         * @return {void}
          */
         function append(arr, other) {
             while (arr.length < fullLength) {
@@ -365,7 +358,6 @@ var Fx = /** @class */ (function () {
      *
      * @function Highcharts.Fx#fillSetter
      *
-     * @return {void}
      */
     Fx.prototype.fillSetter = function () {
         Fx.prototype.strokeSetter.apply(this, arguments);
@@ -375,10 +367,9 @@ var Fx = /** @class */ (function () {
      *
      * @function Highcharts.Fx#strokeSetter
      *
-     * @return {void}
      */
     Fx.prototype.strokeSetter = function () {
-        this.elem.attr(this.prop, color(this.start).tweenTo(color(this.end), this.pos), null, true);
+        this.elem.attr(this.prop, color(this.start).tweenTo(color(this.end), this.pos), void 0, true);
     };
     /* *
      *

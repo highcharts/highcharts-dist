@@ -50,10 +50,12 @@ var HTMLElement = /** @class */ (function (_super) {
         if (HTMLElement.composedClasses.indexOf(SVGElementClass) === -1) {
             HTMLElement.composedClasses.push(SVGElementClass);
             var htmlElementProto = HTMLElement.prototype, svgElementProto = SVGElementClass.prototype;
-            svgElementProto.getSpanCorrection = htmlElementProto.getSpanCorrection;
+            svgElementProto.getSpanCorrection = htmlElementProto
+                .getSpanCorrection;
             svgElementProto.htmlCss = htmlElementProto.htmlCss;
             svgElementProto.htmlGetBBox = htmlElementProto.htmlGetBBox;
-            svgElementProto.htmlUpdateTransform = htmlElementProto.htmlUpdateTransform;
+            svgElementProto.htmlUpdateTransform = htmlElementProto
+                .htmlUpdateTransform;
             svgElementProto.setSpanRotation = htmlElementProto.setSpanRotation;
         }
         return SVGElementClass;

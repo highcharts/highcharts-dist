@@ -410,7 +410,6 @@ var Annotation = /** @class */ (function () {
      * @param {Partial<Highcharts.AnnotationsOptions>} userOptions
      * New user options for the annotation.
      *
-     * @return {void}
      */
     Annotation.prototype.update = function (userOptions, redraw) {
         var chart = this.chart, labelsAndShapes = this.getLabelsAndShapesOptions(this.userOptions, userOptions), userOptionsIndex = chart.annotations.indexOf(this), options = merge(true, this.userOptions, userOptions);
@@ -434,10 +433,11 @@ var Annotation = /** @class */ (function () {
     /**
      * Initialisation of a single shape
      * @private
-     * @param {Object} shapeOptions - a confg object for a single shape
-     * @param {number} index - annotation may have many shapes,
-     * this is the shape's index saved in shapes.index.
-
+     * @param {Object} shapeOptions
+     * a confg object for a single shape
+     * @param {number} index
+     * annotation may have many shapes, this is the shape's index saved in
+     * shapes.index.
      */
     Annotation.prototype.initShape = function (shapeOptions, index) {
         var options = merge(this.options.shapeOptions, {
@@ -1171,7 +1171,8 @@ H.extendAnnotation = function (Constructor, BaseConstructor, prototype, defaultO
  ******************************************************************** */
 extend(chartProto, /** @lends Highcharts.Chart# */ {
     initAnnotation: function (userOptions) {
-        var Constructor = Annotation.types[userOptions.type] || Annotation, annotation = new Constructor(this, userOptions);
+        var Constructor = Annotation
+            .types[userOptions.type] || Annotation, annotation = new Constructor(this, userOptions);
         this.annotations.push(annotation);
         return annotation;
     },
@@ -1203,7 +1204,7 @@ extend(chartProto, /** @lends Highcharts.Chart# */ {
      * The annotation's id or direct annotation object.
      */
     removeAnnotation: function (idOrAnnotation) {
-        var annotations = this.annotations, annotation = idOrAnnotation.coll === 'annotations' ?
+        var annotations = this.annotations, annotation = (idOrAnnotation.coll === 'annotations') ?
             idOrAnnotation :
             find(annotations, function (annotation) {
                 return annotation.options.id === idOrAnnotation;
@@ -1316,15 +1317,15 @@ chartProto.callbacks.push(function (chart) {
                             // Annotation placed on a exported data point
                             // - add new column
                             if (!wasAdded) {
-                                event.dataRows.forEach(function (row, rowIndex) {
+                                event.dataRows.forEach(function (row) {
                                     if (!wasAdded &&
                                         row.xValues &&
                                         xAxisIndex !== void 0 &&
                                         annotationX === row.xValues[xAxisIndex]) {
                                         if (joinAnnotations &&
                                             row.length > startRowLength) {
-                                            row[row.length - 1] +=
-                                                annotationSeparator + annotationText_1;
+                                            row[row.length - 1] += (annotationSeparator +
+                                                annotationText_1);
                                         }
                                         else {
                                             row.push(annotationText_1);

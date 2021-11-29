@@ -70,7 +70,8 @@ var NodesComposition;
             node.linksTo = [];
             node.linksFrom = [];
             node.formatPrefix = 'node';
-            node.name = node.name || node.options.id || ''; // for use in formats
+            // for use in formats
+            node.name = node.name || node.options.id || '';
             // Mass is used in networkgraph:
             node.mass = pick(
             // Node:
