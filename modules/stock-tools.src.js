@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.2 (2021-11-29)
+ * @license Highstock JS v9.3.3 (2022-02-01)
  *
  * Advanced Highcharts Stock tools
  *
@@ -5376,7 +5376,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.3.2/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/9.3.3/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -9456,7 +9456,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/9.3.2/gfx/stock-icons/';
+                    'https://code.highcharts.com/9.3.3/gfx/stock-icons/';
             };
             return Toolbar;
         }());

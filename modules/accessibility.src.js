@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.2 (2021-11-29)
+ * @license Highcharts JS v9.3.3 (2022-02-01)
  *
  * Accessibility module
  *
@@ -2788,8 +2788,21 @@
              * proxy overlay.
              */
             MenuComponent.prototype.onChartRender = function () {
+                var chart = this.chart,
+                    focusEl = chart.focusElement,
+                    a11y = chart.accessibility;
                 this.proxyProvider.clearGroup('chartMenu');
                 this.proxyMenuButton();
+                if (this.exportButtonProxy &&
+                    focusEl &&
+                    focusEl === chart.exportingGroup) {
+                    if (focusEl.focusBorder) {
+                        chart.setFocusToElement(focusEl, this.exportButtonProxy.buttonElement);
+                    }
+                    else if (a11y) {
+                        a11y.keyboardNavigation.tabindexContainer.focus();
+                    }
+                }
             };
             /**
              * @private

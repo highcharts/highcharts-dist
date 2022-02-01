@@ -1,5 +1,5 @@
 /*
- Highcharts JS v9.3.2 (2021-11-29)
+ Highcharts JS v9.3.3 (2022-02-01)
 
  Annotations module
 
@@ -130,6 +130,6 @@ c,g,d,d.linkedParent&&d.linkedParent.options.id);h.volumeSeriesID&&this.indicato
 l,c)}else"params.volumeSeriesID"===n||u(c)||m.call(e,n,d,f,{value:c,type:"text"})})},getAmount:function(){var a=0;this.series.forEach(function(b){var c=b.options;(b.params||c&&c.params)&&a++});return a}},tabs:{init:function(a){var b=this.tabs,c=this.indicators.getAmount.call(a);a&&(a=b.addMenuItem.call(this,"add"),b.addMenuItem.call(this,"edit",c),b.addContentItem.call(this,"add"),b.addContentItem.call(this,"edit"),b.switchTabs.call(this,c),b.selectTab.call(this,a,0))},addMenuItem:function(a,c){var d=
 this.popup.container,g="highcharts-tab-item",h=this.lang;0===c&&(g+=" highcharts-tab-disabled");c=f("span",{className:g},void 0,d);c.appendChild(b.createTextNode(h[a+"Button"]||a));c.setAttribute("highcharts-data-tab-type",a);return c},addContentItem:function(){return f("div",{className:"highcharts-tab-item-content highcharts-no-mousewheel"},void 0,this.popup.container)},switchTabs:function(a){var b=this,c;this.popup.container.querySelectorAll(".highcharts-tab-item").forEach(function(d,e){c=d.getAttribute("highcharts-data-tab-type");
 "edit"===c&&0===a||["click","touchstart"].forEach(function(a){g(d,a,function(){b.tabs.deselectAll.call(b);b.tabs.selectTab.call(b,this,e)})})})},selectTab:function(a,b){var c=this.popup.container.querySelectorAll(".highcharts-tab-item-content");a.className+=" highcharts-tab-item-active";c[b].className+=" highcharts-tab-item-show"},deselectAll:function(){var a=this.popup.container,b=a.querySelectorAll(".highcharts-tab-item");a=a.querySelectorAll(".highcharts-tab-item-content");var c;for(c=0;c<b.length;c++)b[c].classList.remove("highcharts-tab-item-active"),
-a[c].classList.remove("highcharts-tab-item-show")}}};g(t,"showPopup",function(a){this.popup||(this.popup=new h.Popup(this.chart.container,this.chart.options.navigation.iconsURL||this.chart.options.stockTools&&this.chart.options.stockTools.gui.iconsURL||"https://code.highcharts.com/9.3.2/gfx/stock-icons/",this.chart));this.popup.showForm(a.formType,this.chart,a.options,a.onSubmit)});g(t,"closePopup",function(){this.popup&&this.popup.closePopup()});return h.Popup});u(a,"masters/modules/annotations.src.js",
+a[c].classList.remove("highcharts-tab-item-show")}}};g(t,"showPopup",function(a){this.popup||(this.popup=new h.Popup(this.chart.container,this.chart.options.navigation.iconsURL||this.chart.options.stockTools&&this.chart.options.stockTools.gui.iconsURL||"https://code.highcharts.com/9.3.3/gfx/stock-icons/",this.chart));this.popup.showForm(a.formType,this.chart,a.options,a.onSubmit)});g(t,"closePopup",function(){this.popup&&this.popup.closePopup()});return h.Popup});u(a,"masters/modules/annotations.src.js",
 [],function(){})});
 //# sourceMappingURL=annotations.js.map
