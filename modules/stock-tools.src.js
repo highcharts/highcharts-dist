@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.3 (2022-02-01)
+ * @license Highstock JS v10.0.0 (2022-03-07)
  *
  * Advanced Highcharts Stock tools
  *
@@ -8,7 +8,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -23,10 +22,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Extensions/Annotations/Mixins/EventEmitterMixin.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
@@ -772,7 +781,7 @@
                     this.plotX = xAxis.toPixels(options.x, true);
                 }
                 else {
-                    this.x = null;
+                    this.x = void 0;
                     this.plotX = options.x;
                 }
                 if (yAxis) {
@@ -3799,6 +3808,13 @@
                  * @apioption annotations.events.afterUpdate
                  */
                 /**
+                 * Fires when the annotation is clicked.
+                 *
+                 * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
+                 * @since     7.1.0
+                 * @apioption annotations.events.click
+                 */
+                /**
                  * Event callback when annotation is removed from the chart.
                  *
                  * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
@@ -5376,7 +5392,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.3.3/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/10.0.0/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -9456,7 +9472,7 @@
             Toolbar.prototype.getIconsURL = function () {
                 return this.chart.options.navigation.iconsURL ||
                     this.options.iconsURL ||
-                    'https://code.highcharts.com/9.3.3/gfx/stock-icons/';
+                    'https://code.highcharts.com/10.0.0/gfx/stock-icons/';
             };
             return Toolbar;
         }());

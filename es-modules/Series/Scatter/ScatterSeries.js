@@ -185,7 +185,7 @@ var ScatterSeries = /** @class */ (function (_super) {
          *
          * @type      {boolean}
          * @default   false
-         * @product   highcharts highstock
+         * @product   highcharts highstock highmaps
          * @apioption plotOptions.scatter.stickyTracking
          */
         /**

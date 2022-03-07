@@ -25,6 +25,8 @@ import BubbleSeries from '../Bubble/BubbleSeries.js';
 import MapBubblePoint from './MapBubblePoint.js';
 import MapSeries from '../Map/MapSeries.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
+import H from '../../Core/Globals.js';
+var noop = H.noop;
 var MapPointSeries = SeriesRegistry.seriesTypes.mappoint;
 import U from '../../Core/Utilities.js';
 var extend = U.extend, merge = U.merge;
@@ -57,6 +59,12 @@ var MapBubbleSeries = /** @class */ (function (_super) {
         _this.points = void 0;
         return _this;
     }
+    MapBubbleSeries.prototype.searchPoint = function (e, compareX) {
+        return this.searchKDTree({
+            clientX: e.chartX - this.chart.plotLeft,
+            plotY: e.chartY - this.chart.plotTop
+        }, compareX, e);
+    };
     MapBubbleSeries.prototype.translate = function () {
         MapPointSeries.prototype.translate.call(this);
         this.getRadii();
@@ -189,6 +197,7 @@ var MapBubbleSeries = /** @class */ (function (_super) {
          * @apioption plotOptions.mapbubble.zThreshold
          */
         animationLimit: 500,
+        joinBy: 'hc-key',
         tooltip: {
             pointFormat: '{point.name}: {point.z}'
         }
@@ -203,6 +212,8 @@ extend(MapBubbleSeries.prototype, {
     // If one single value is passed, it is interpreted as z
     pointArrayMap: ['z'],
     pointClass: MapBubblePoint,
+    processData: MapSeries.prototype.processData,
+    projectPoint: MapPointSeries.prototype.projectPoint,
     setData: MapSeries.prototype.setData,
     setOptions: MapSeries.prototype.setOptions,
     useMapGeometry: true,

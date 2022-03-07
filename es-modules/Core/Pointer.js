@@ -600,9 +600,9 @@ var Pointer = /** @class */ (function () {
      * name.
      */
     Pointer.prototype.inClass = function (element, className) {
-        var elemClassName;
-        while (element) {
-            elemClassName = attr(element, 'class');
+        var elem = element, elemClassName;
+        while (elem) {
+            elemClassName = attr(elem, 'class');
             if (elemClassName) {
                 if (elemClassName.indexOf(className) !== -1) {
                     return true;
@@ -611,7 +611,7 @@ var Pointer = /** @class */ (function () {
                     return false;
                 }
             }
-            element = element.parentNode;
+            elem = elem.parentElement;
         }
     };
     /**
@@ -651,6 +651,9 @@ var Pointer = /** @class */ (function () {
      * Takes a browser event object and extends it with custom Highcharts
      * properties `chartX` and `chartY` in order to work on the internal
      * coordinate system.
+     *
+     * On map charts, the properties `lon` and `lat` are added to the event
+     * object given that the chart has projection information.
      *
      * @function Highcharts.Pointer#normalize
      *
@@ -1199,11 +1202,12 @@ var Pointer = /** @class */ (function () {
              * The mouseOver event should be triggered when hoverPoint
              * is correct.
              */
-            hoverPoint.firePointEvent('mouseOver');
-            // Draw tooltip if necessary
-            if (tooltip) {
-                tooltip.refresh(useSharedTooltip ? points : hoverPoint, e);
-            }
+            hoverPoint.firePointEvent('mouseOver', void 0, function () {
+                // Draw tooltip if necessary
+                if (tooltip && hoverPoint) {
+                    tooltip.refresh(useSharedTooltip ? points : hoverPoint, e);
+                }
+            });
             // Update positions (regardless of kdpoint or hoverPoint)
         }
         else if (followPointer && tooltip && !tooltip.isHidden) {
@@ -1232,7 +1236,7 @@ var Pointer = /** @class */ (function () {
                 point = chart.hoverPoint; // #13002
                 if (!point || point.series[axis.coll] !== axis) {
                     point = find(points, function (p) {
-                        return p.series[axis.coll] === axis;
+                        return p.series && p.series[axis.coll] === axis;
                     });
                 }
             }
@@ -1320,7 +1324,7 @@ var Pointer = /** @class */ (function () {
         var hoverChart = H.charts[pick(Pointer.hoverChartIndex, -1)];
         if (hoverChart &&
             hoverChart !== chart) {
-            hoverChart.pointer.onContainerMouseLeave({ relatedTarget: true });
+            hoverChart.pointer.onContainerMouseLeave({ relatedTarget: chart.container });
         }
         if (!hoverChart ||
             !hoverChart.mouseIsDown) {

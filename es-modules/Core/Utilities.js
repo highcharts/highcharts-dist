@@ -197,7 +197,9 @@ function cleanRecursively(newer, older) {
             // Arrays, primitives and DOM nodes are copied directly
         }
         else if (isObject(newer[key]) ||
-            newer[key] !== older[key]) {
+            newer[key] !== older[key] ||
+            // If the newer key is explicitly undefined, keep it (#10525)
+            (key in newer && !(key in older))) {
             result[key] = newer[key];
         }
     });
@@ -365,7 +367,7 @@ function defined(obj) {
  * @param {Highcharts.HTMLDOMElement|Highcharts.SVGDOMElement} elem
  *        The DOM element to receive the attribute(s).
  *
- * @param {string|Highcharts.HTMLAttributes|Highcharts.SVGAttributes} [prop]
+ * @param {string|Highcharts.HTMLAttributes|Highcharts.SVGAttributes} [keyOrAttribs]
  *        The property or an object of key-value pairs.
  *
  * @param {number|string} [value]
@@ -374,33 +376,34 @@ function defined(obj) {
  * @return {string|null|undefined}
  *         When used as a getter, return the value.
  */
-function attr(elem, prop, value) {
+function attr(elem, keyOrAttribs, value) {
+    var isGetter = isString(keyOrAttribs) && !defined(value);
     var ret;
-    // if the prop is a string
-    if (isString(prop)) {
-        // set the value
+    var attrSingle = function (value, key) {
+        // Set the value
         if (defined(value)) {
-            elem.setAttribute(prop, value);
-            // get the value
+            elem.setAttribute(key, value);
+            // Get the value
         }
-        else if (elem && elem.getAttribute) {
-            ret = elem.getAttribute(prop);
+        else if (isGetter) {
+            ret = elem.getAttribute(key);
             // IE7 and below cannot get class through getAttribute (#7850)
-            if (!ret && prop === 'class') {
-                ret = elem.getAttribute(prop + 'Name');
+            if (!ret && key === 'class') {
+                ret = elem.getAttribute(key + 'Name');
             }
+            // Remove the value
         }
-        // else if prop is defined, it is a hash of key/value pairs
+        else {
+            elem.removeAttribute(key);
+        }
+    };
+    // If keyOrAttribs is a string
+    if (isString(keyOrAttribs)) {
+        attrSingle(value, keyOrAttribs);
+        // Else if keyOrAttribs is defined, it is a hash of key/value pairs
     }
     else {
-        objectEach(prop, function (val, key) {
-            if (defined(val)) {
-                elem.setAttribute(key, val);
-            }
-            else {
-                elem.removeAttribute(key);
-            }
-        });
+        objectEach(keyOrAttribs, attrSingle);
     }
     return ret;
 }
@@ -451,10 +454,8 @@ function syncTimeout(fn, delay, context) {
  *
  * @function Highcharts.clearTimeout
  *
- * @param {number} id
- *        Id of a timeout.
- *
- * @return {void}
+ * @param {number|undefined} id
+ * Id of a timeout.
  */
 function internalClearTimeout(id) {
     if (defined(id)) {
@@ -524,9 +525,8 @@ function pick() {
  */
 function css(el, styles) {
     if (H.isMS && !H.svg) { // #2686
-        if (styles && typeof styles.opacity !== 'undefined') {
-            styles.filter =
-                'alpha(opacity=' + (styles.opacity * 100) + ')';
+        if (styles && defined(styles.opacity)) {
+            styles.filter = "alpha(opacity=" + styles.opacity * 100 + ")";
         }
     }
     extend(el.style, styles);

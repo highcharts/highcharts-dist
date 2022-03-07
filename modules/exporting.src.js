@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * Exporting module
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Extensions/FullScreen.js', [_modules['Core/Chart/Chart.js'], _modules['Core/Globals.js'], _modules['Core/Renderer/HTML/AST.js'], _modules['Core/Utilities.js']], function (Chart, H, AST, U) {
@@ -503,7 +512,7 @@
                  * Path where Highcharts will look for export module dependencies to
                  * load on demand if they don't already exist on `window`. Should currently
                  * point to location of [CanVG](https://github.com/canvg/canvg) library,
-                 * [jsPDF](https://github.com/yWorks/jsPDF) and
+                 * [jsPDF](https://github.com/parallax/jsPDF) and
                  * [svg2pdf.js](https://github.com/yWorks/svg2pdf.js), required for client
                  * side export in certain browsers.
                  *
@@ -567,6 +576,54 @@
                  * @since 2.0
                  */
                 url: 'https://export.highcharts.com/',
+                /**
+                 * Settings for a custom font for the exported PDF, when using the
+                 * `offline-exporting` module. This is used for languages containing
+                 * non-ASCII characters, like Chinese, Russian, Japanese etc.
+                 *
+                 * As described in the [jsPDF
+                 * docs](https://github.com/parallax/jsPDF#use-of-unicode-characters--utf-8),
+                 * the 14 standard fonts in PDF are limited to the ASCII-codepage.
+                 * Therefore, in order to support other text in the exported PDF, one or
+                 * more TTF font files have to be passed on to the exporting module.
+                 *
+                 * See more in [the
+                 * docs](https://www.highcharts.com/docs/export-module/client-side-export).
+                 *
+                 * @sample {highcharts} highcharts/exporting/offline-download-pdffont/
+                 *         Download PDF in a language containing non-Latin characters.
+                 *
+                 * @since 10.0.0
+                 * @requires modules/offline-exporting
+                 */
+                pdfFont: {
+                    /**
+                     * The TTF font file for normal `font-style`. If font variations like
+                     * `bold` or `italic` are not defined, the `normal` font will be used
+                     * for those too.
+                     *
+                     * @type string|undefined
+                     */
+                    normal: void 0,
+                    /**
+                     * The TTF font file for bold text.
+                     *
+                     * @type string|undefined
+                     */
+                    bold: void 0,
+                    /**
+                     * The TTF font file for bold and italic text.
+                     *
+                     * @type string|undefined
+                     */
+                    bolditalic: void 0,
+                    /**
+                     * The TTF font file for italic text.
+                     *
+                     * @type string|undefined
+                     */
+                    italic: void 0
+                },
                 /**
                  * When printing the chart from the menu item in the burger menu, if
                  * the on-screen chart exceeds this width, it is resized. After printing
@@ -1323,21 +1380,26 @@
             objectEach(options.headers, function (val, key) {
                 r.setRequestHeader(key, val);
             });
+            if (options.responseType) {
+                r.responseType = options.responseType;
+            }
             // @todo lacking timeout handling
             r.onreadystatechange = function () {
                 var res;
                 if (r.readyState === 4) {
                     if (r.status === 200) {
-                        res = r.responseText;
-                        if (options.dataType === 'json') {
-                            try {
-                                res = JSON.parse(res);
-                            }
-                            catch (e) {
-                                return handleError(r, e);
+                        if (options.responseType !== 'blob') {
+                            res = r.responseText;
+                            if (options.dataType === 'json') {
+                                try {
+                                    res = JSON.parse(res);
+                                }
+                                catch (e) {
+                                    return handleError(r, e);
+                                }
                             }
                         }
-                        return options.success && options.success(res);
+                        return options.success && options.success(res, r);
                     }
                     handleError(r, r.responseText);
                 }
@@ -1953,7 +2015,7 @@
                                     };
                                     css(element, extend({
                                         cursor: 'pointer'
-                                    }, navOptions.menuItemStyle));
+                                    }, navOptions.menuItemStyle || {}));
                                 }
                             }
                             // Keep references to menu divs to be able to destroy them
@@ -2428,14 +2490,16 @@
                             dummySVG.removeChild(dummy);
                         }
                         // Loop through all styles and add them inline if they are ok
-                        if (G.isFirefox || G.isMS) {
-                            // Some browsers put lots of styles on the prototype
-                            for (var p in styles) { // eslint-disable-line guard-for-in
+                        for (var p in styles) {
+                            if (
+                            // Some browsers put lots of styles on the prototype...
+                            G.isFirefox ||
+                                G.isMS ||
+                                G.isSafari || // #16902
+                                // ... Chrome puts them on the instance
+                                Object.hasOwnProperty.call(styles, p)) {
                                 filterStyles(styles[p], p);
                             }
-                        }
-                        else {
-                            objectEach(styles, filterStyles);
                         }
                         // Apply styles
                         if (cssText) {

@@ -227,7 +227,7 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
             if (chart.accessibility) {
                 chart.accessibility.keyboardNavigation.tabindexContainer
                     .focus();
-                chart.accessibility.keyboardNavigation[direction < 0 ? 'prev' : 'next']();
+                chart.accessibility.keyboardNavigation.move(direction);
             }
         }
         else if (rangeSel) {
@@ -315,7 +315,7 @@ var RangeSelectorComponent = /** @class */ (function (_super) {
                     e.stopPropagation();
                     if (a11y) {
                         a11y.keyboardNavigation.tabindexContainer.focus();
-                        a11y.keyboardNavigation[e.shiftKey ? 'prev' : 'next']();
+                        a11y.keyboardNavigation.move(e.shiftKey ? -1 : 1);
                     }
                 }
             });

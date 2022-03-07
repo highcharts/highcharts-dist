@@ -1250,6 +1250,9 @@ var seriesDefaults = {
          * parameter, `event`, is passed to the function, containing common
          * event information.
          *
+         * Returning `false` cancels the default behavior, which is to show a
+         * tooltip for the point.
+         *
          * @sample {highcharts} highcharts/plotoptions/series-point-events-mouseover/
          *         Show values in the chart's corner on mouse over
          *
@@ -1972,7 +1975,7 @@ var seriesDefaults = {
              * @deprecated
              *
              * @extends   plotOptions.series.marker
-             * @excluding states
+             * @excluding states, symbol
              * @product   highcharts highstock
              */
             marker: {

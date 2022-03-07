@@ -259,6 +259,17 @@ var TreeGridTick;
             }
         };
         /**
+         * Destroy remaining labelIcon if exist.
+         *
+         * @private
+         * @function Highcharts.Tick#destroy
+         */
+        Additions.prototype.destroy = function () {
+            if (this.labelIcon) {
+                this.labelIcon.destroy();
+            }
+        };
+        /**
          * Expand the grid cell. Used when axis is of type treegrid.
          *
          * @see gantt/treegrid-axis/collapsed-dynamically/demo.js

@@ -874,16 +874,16 @@ input.highcharts-range-selector {
   font-weight: bold;
 }
 
-/* Highmaps */
+/* Highcharts Maps */
 .highcharts-map-series .highcharts-point {
   transition: fill 500ms, fill-opacity 500ms, stroke-width 250ms;
   stroke: #606063;
+  stroke-width: inherit;
 }
 
 .highcharts-map-series .highcharts-point-hover {
   transition: fill 0ms, fill-opacity 0ms;
   fill-opacity: 0.5;
-  stroke-width: 2px;
 }
 
 .highcharts-mapline-series .highcharts-point {
@@ -898,6 +898,12 @@ input.highcharts-range-selector {
   font-size: 1.3em;
   font-weight: bold;
   text-align: center;
+}
+
+.highcharts-mapview-inset-border {
+  stroke: #606063;
+  stroke-width: 1px;
+  fill: none;
 }
 
 .highcharts-coloraxis {
@@ -953,6 +959,17 @@ input.highcharts-range-selector {
 .highcharts-menu-item:hover {
   background: #335cad;
   color: #2a2a2b;
+}
+
+/* Breadcrumbs */
+.highcharts-breadcrumbs-button {
+  fill: none;
+  stroke-width: 0;
+  cursor: pointer;
+}
+
+.highcharts-breadcrumbs-separator {
+  fill: #E0E0E3;
 }
 
 /* Drilldown module */

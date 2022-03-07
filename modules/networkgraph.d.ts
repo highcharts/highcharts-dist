@@ -23,6 +23,11 @@ declare module "../highcharts" {
      * highlight all connected nodes.
      */
     function setNodeState(): void;
+    /**
+     * When updating a node, don't update `series.options.data`, but
+     * `series.options.nodes`
+     */
+    function updateNode(): void;
 }
 export default factory;
 export let Highcharts: typeof _Highcharts;

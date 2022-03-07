@@ -1133,7 +1133,7 @@ export default Point;
 * @type {Highcharts.Point}
 */
 /**
- * Configuration hash for the data label and tooltip formatters.
+ * Configuration for the data label and tooltip formatters.
  *
  * @interface Highcharts.PointLabelObject
  */ /**
@@ -1175,7 +1175,7 @@ export default Point;
 */ /**
 * The y value of the point.
 * @name Highcharts.PointLabelObject#y
-* @type {number|undefined}
+* @type {number|null|undefined}
 */
 /**
  * Gets fired when the mouse leaves the area close to the point.

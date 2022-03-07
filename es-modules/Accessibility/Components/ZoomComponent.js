@@ -42,8 +42,8 @@ var attr = U.attr, extend = U.extend, pick = U.pick;
  */
 function chartHasMapZoom(chart) {
     return !!(chart.mapZoom &&
-        chart.mapNavButtons &&
-        chart.mapNavButtons.length);
+        chart.mapNavigation &&
+        chart.mapNavigation.navButtons.length);
 }
 /* *
  *
@@ -81,7 +81,7 @@ var ZoomComponent = /** @class */ (function (_super) {
         var component = this, chart = this.chart;
         this.proxyProvider.addGroup('zoom', 'div');
         [
-            'afterShowResetZoom', 'afterDrilldown', 'drillupall'
+            'afterShowResetZoom', 'afterApplyDrilldown', 'drillupall'
         ].forEach(function (eventType) {
             component.addEvent(chart, eventType, function () {
                 component.updateProxyOverlays();
@@ -94,8 +94,8 @@ var ZoomComponent = /** @class */ (function (_super) {
     ZoomComponent.prototype.onChartUpdate = function () {
         var chart = this.chart, component = this;
         // Make map zoom buttons accessible
-        if (chart.mapNavButtons) {
-            chart.mapNavButtons.forEach(function (button, i) {
+        if (chart.mapNavigation) {
+            chart.mapNavigation.navButtons.forEach(function (button, i) {
                 unhideChartElementFromAT(chart, button.element);
                 component.setMapNavButtonAttrs(button.element, 'accessibility.zoom.mapZoom' + (i ? 'Out' : 'In'));
             });
@@ -131,10 +131,13 @@ var ZoomComponent = /** @class */ (function (_super) {
         if (chart.resetZoomButton) {
             this.createZoomProxyButton(chart.resetZoomButton, 'resetZoomProxyButton', chart.langFormat('accessibility.zoom.resetZoomButton', { chart: chart }));
         }
-        if (chart.drillUpButton) {
+        if (chart.drillUpButton &&
+            chart.breadcrumbs &&
+            chart.breadcrumbs.list) {
+            var lastBreadcrumb = chart.breadcrumbs.list[chart.breadcrumbs.list.length - 1];
             this.createZoomProxyButton(chart.drillUpButton, 'drillUpProxyButton', chart.langFormat('accessibility.drillUpButton', {
                 chart: chart,
-                buttonText: chart.getDrilldownBackText()
+                buttonText: chart.breadcrumbs.getButtonText(lastBreadcrumb)
             }));
         }
     };
@@ -214,14 +217,14 @@ var ZoomComponent = /** @class */ (function (_super) {
         var isMoveOutOfRange = isBackwards && !this.focusedMapNavButtonIx ||
             !isBackwards && this.focusedMapNavButtonIx;
         // Deselect old
-        chart.mapNavButtons[this.focusedMapNavButtonIx].setState(0);
+        chart.mapNavigation.navButtons[this.focusedMapNavButtonIx].setState(0);
         if (isMoveOutOfRange) {
             chart.mapZoom(); // Reset zoom
             return response[isBackwards ? 'prev' : 'next'];
         }
         // Select other button
         this.focusedMapNavButtonIx += isBackwards ? -1 : 1;
-        var button = chart.mapNavButtons[this.focusedMapNavButtonIx];
+        var button = chart.mapNavigation.navButtons[this.focusedMapNavButtonIx];
         chart.setFocusToElement(button.box, button.element);
         button.setState(2);
         return response.success;
@@ -241,7 +244,7 @@ var ZoomComponent = /** @class */ (function (_super) {
      * @param {number} direction
      */
     ZoomComponent.prototype.onMapNavInit = function (direction) {
-        var chart = this.chart, zoomIn = chart.mapNavButtons[0], zoomOut = chart.mapNavButtons[1], initialButton = direction > 0 ? zoomIn : zoomOut;
+        var chart = this.chart, zoomIn = chart.mapNavigation.navButtons[0], zoomOut = chart.mapNavigation.navButtons[1], initialButton = direction > 0 ? zoomIn : zoomOut;
         chart.setFocusToElement(initialButton.box, initialButton.element);
         initialButton.setState(2);
         this.focusedMapNavButtonIx = direction > 0 ? 0 : 1;

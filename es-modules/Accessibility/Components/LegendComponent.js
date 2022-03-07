@@ -26,6 +26,7 @@ var __extends = (this && this.__extends) || (function () {
 import A from '../../Core/Animation/AnimationUtilities.js';
 var animObject = A.animObject;
 import H from '../../Core/Globals.js';
+var doc = H.doc;
 import Legend from '../../Core/Legend/Legend.js';
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, fireEvent = U.fireEvent, isNumber = U.isNumber, pick = U.pick, syncTimeout = U.syncTimeout;
@@ -59,6 +60,19 @@ function shouldDoLegendA11y(chart) {
         !(chart.colorAxis && chart.colorAxis.length) &&
         legendA11yOptions.enabled !== false);
 }
+/**
+ * @private
+ */
+function setLegendItemHoverState(hoverActive, legendItem) {
+    legendItem.setState(hoverActive ? 'hover' : '', true);
+    ['legendGroup', 'legendItem', 'legendSymbol'].forEach(function (i) {
+        var obj = legendItem[i];
+        var el = obj && obj.element || obj;
+        if (el) {
+            fireEvent(el, hoverActive ? 'mouseover' : 'mouseout');
+        }
+    });
+}
 /* *
  *
  *  Class
@@ -81,6 +95,7 @@ var LegendComponent = /** @class */ (function (_super) {
          * */
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.highlightedLegendItemIx = NaN;
+        _this.proxyGroup = null;
         return _this;
     }
     /* *
@@ -206,12 +221,19 @@ var LegendComponent = /** @class */ (function (_super) {
      * @private
      */
     LegendComponent.prototype.recreateProxies = function () {
+        var focusedElement = doc.activeElement;
+        var proxyGroup = this.proxyGroup;
+        var shouldRestoreFocus = focusedElement && proxyGroup &&
+            proxyGroup.contains(focusedElement);
         this.removeProxies();
         if (shouldDoLegendA11y(this.chart)) {
             this.addLegendProxyGroup();
             this.proxyLegendItems();
             this.updateLegendItemProxyVisibility();
             this.updateLegendTitle();
+            if (shouldRestoreFocus) {
+                this.chart.highlightLegendItem(this.highlightedLegendItemIx);
+            }
             return true;
         }
         return false;
@@ -247,7 +269,7 @@ var LegendComponent = /** @class */ (function (_super) {
         var a11yOptions = this.chart.options.accessibility;
         var groupRole = a11yOptions.landmarkVerbosity === 'all' ?
             'region' : null;
-        this.proxyProvider.addGroup('legend', 'ul', {
+        this.proxyGroup = this.proxyProvider.addGroup('legend', 'ul', {
             // Filled by updateLegendTitle, to keep up to date without
             // recreating group
             'aria-label': '_placeholder_',
@@ -328,21 +350,19 @@ var LegendComponent = /** @class */ (function (_super) {
             validate: function () {
                 return component.shouldHaveLegendNavigation();
             },
-            init: function (direction) {
-                return component.onKbdNavigationInit(direction);
+            init: function () {
+                chart.highlightLegendItem(0);
+                component.highlightedLegendItemIx = 0;
             },
             terminate: function () {
                 component.highlightedLegendItemIx = -1;
-                chart.legend.allItems.forEach(function (item) { return item.setState('', true); });
+                chart.legend.allItems.forEach(function (item) { return setLegendItemHoverState(false, item); });
             }
         });
     };
     /**
+     * Arrow key navigation
      * @private
-     * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-     * @param {number} keyCode
-     * @return {number}
-     * Response code
      */
     LegendComponent.prototype.onKbdArrowKey = function (keyboardNavigationHandler, keyCode) {
         var keys = this.keyCodes, response = keyboardNavigationHandler.response, chart = this.chart, a11yOptions = chart.options.accessibility, numItems = chart.legend.allItems.length, direction = (keyCode === keys.left || keyCode === keys.up) ? -1 : 1;
@@ -356,8 +376,7 @@ var LegendComponent = /** @class */ (function (_super) {
             keyboardNavigationHandler.init(direction);
             return response.success;
         }
-        // No wrap, move
-        return response[direction > 0 ? 'next' : 'prev'];
+        return response.success;
     };
     /**
      * @private
@@ -382,15 +401,6 @@ var LegendComponent = /** @class */ (function (_super) {
             legendA11yOptions.enabled &&
             legendA11yOptions.keyboardNavigation &&
             legendA11yOptions.keyboardNavigation.enabled);
-    };
-    /**
-     * @private
-     * @param {number} direction
-     */
-    LegendComponent.prototype.onKbdNavigationInit = function (direction) {
-        var chart = this.chart, lastIx = chart.legend.allItems.length - 1, ixToHighlight = direction > 0 ? 0 : lastIx;
-        chart.highlightLegendItem(ixToHighlight);
-        this.highlightedLegendItemIx = ixToHighlight;
     };
     return LegendComponent;
 }(AccessibilityComponent));
@@ -428,7 +438,7 @@ var LegendComponent = /** @class */ (function (_super) {
         var itemToHighlight = items[ix];
         if (itemToHighlight) {
             if (isNumber(oldIx) && items[oldIx]) {
-                fireEvent(items[oldIx].legendGroup.element, 'mouseout');
+                setLegendItemHoverState(false, items[oldIx]);
             }
             scrollLegendToItem(this.legend, ix);
             var legendItemProp = itemToHighlight.legendItem;
@@ -437,9 +447,7 @@ var LegendComponent = /** @class */ (function (_super) {
             if (legendItemProp && legendItemProp.element && proxyBtn) {
                 this.setFocusToElement(legendItemProp, proxyBtn);
             }
-            if (itemToHighlight.legendGroup) {
-                fireEvent(itemToHighlight.legendGroup.element, 'mouseover');
-            }
+            setLegendItemHoverState(true, itemToHighlight);
             return true;
         }
         return false;

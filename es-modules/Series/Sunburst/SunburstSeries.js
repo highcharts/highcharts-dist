@@ -539,7 +539,6 @@ var SunburstSeries = /** @class */ (function (_super) {
         // @todo Only if series.isDirtyData is true
         tree = series.tree = series.getTree();
         // Render traverseUpButton, after series.nodeMap i calculated.
-        series.renderTraverseUpButton(rootId);
         mapIdToNode = series.nodeMap;
         nodeRoot = mapIdToNode[rootId];
         idTop = isString(nodeRoot.parent) ? nodeRoot.parent : '';
@@ -616,6 +615,15 @@ var SunburstSeries = /** @class */ (function (_super) {
      * @private
      */
     SunburstSeries.defaultOptions = merge(TreemapSeries.defaultOptions, {
+        /**
+         * Options for the breadcrumbs, the navigation at the top leading the
+         * way up through the traversed levels.
+         *
+         * @since 10.0.0
+         * @product   highcharts
+         * @extends   navigation.breadcrumbs
+         * @optionparent plotOptions.sunburst.breadcrumbs
+         */
         /**
          * Set options on specific levels. Takes precedence over series options,
          * but not point options.
@@ -812,11 +820,14 @@ var SunburstSeries = /** @class */ (function (_super) {
             unit: 'weight'
         },
         /**
-         * Options for the button appearing when traversing down in a treemap.
+         * Options for the button appearing when traversing down in a sunburst.
+         * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
          *
          * @extends   plotOptions.treemap.traverseUpButton
          * @since     6.0.0
+         * @deprecated
          * @apioption plotOptions.sunburst.traverseUpButton
+         *
          */
         /**
          * If a point is sliced, moved out from the center, how many pixels

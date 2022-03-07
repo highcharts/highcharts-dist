@@ -735,8 +735,11 @@ Axis.prototype.setDataGrouping = function (dataGrouping, redraw) {
     }
     else {
         this.chart.options.series.forEach(function (seriesOptions) {
-            seriesOptions.dataGrouping = dataGrouping;
-        }, false);
+            // Merging dataGrouping options with already defined options #16759
+            seriesOptions.dataGrouping = typeof dataGrouping === 'boolean' ?
+                dataGrouping :
+                merge(dataGrouping, seriesOptions.dataGrouping);
+        });
     }
     // Clear ordinal slope, so we won't accidentaly use the old one (#7827)
     if (axis.ordinal) {

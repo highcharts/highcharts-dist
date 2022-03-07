@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * Accessibility module
  *
@@ -8,7 +8,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -23,10 +22,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Accessibility/A11yI18n.js', [_modules['Core/FormatUtilities.js'], _modules['Core/Utilities.js']], function (F, U) {
@@ -2758,7 +2767,6 @@
                 if (menu) {
                     menu.setAttribute('aria-hidden', 'true');
                 }
-                this.isExportMenuShown = false;
                 this.setExportButtonExpandedState('false');
             };
             /**
@@ -2771,7 +2779,6 @@
                     this.addAccessibleContextMenuAttribs();
                     unhideChartElementFromAT(chart, menu);
                 }
-                this.isExportMenuShown = true;
                 this.setExportButtonExpandedState('true');
             };
             /**
@@ -2817,7 +2824,8 @@
                             chart: chart,
                             chartTitle: getChartTitle(chart)
                         }),
-                        'aria-expanded': false
+                        'aria-expanded': false,
+                        title: chart.options.lang.contextButtonTitle || null
                     });
                 }
             };
@@ -2971,7 +2979,7 @@
                 var chart = this.chart;
                 var curHighlightedItem = chart.exportDivElements[chart.highlightedExportItemIx];
                 var exportButtonElement = getExportMenuButtonElement(chart).element;
-                if (this.isExportMenuShown) {
+                if (chart.openMenu) {
                     this.fakeClickEvent(curHighlightedItem);
                 }
                 else {
@@ -3041,7 +3049,7 @@
             function chartHideExportMenu() {
                 var chart = this,
                     exportList = chart.exportDivElements;
-                if (exportList && chart.exportContextMenu) {
+                if (exportList && chart.exportContextMenu && chart.openMenu) {
                     // Reset hover states etc.
                     exportList.forEach(function (el) {
                         if (el &&
@@ -3240,92 +3248,23 @@
                 }
             };
             /**
-             * Function to run on container focus
+             * We use an exit anchor to move focus out of chart whenever we want, by
+             * setting focus to this div and not preventing the default tab action. We
+             * also use this when users come back into the chart by tabbing back, in
+             * order to navigate from the end of the chart.
              * @private
-             * @param {global.FocusEvent} e Browser focus event.
              */
-            KeyboardNavigation.prototype.onFocus = function (e) {
-                var chart = this.chart;
-                var focusComesFromChart = (e.relatedTarget &&
-                        chart.container.contains(e.relatedTarget));
-                // Init keyboard nav if tabbing into chart
-                if (!this.exiting &&
-                    !this.tabbingInBackwards &&
-                    !this.isClickingChart &&
-                    !focusComesFromChart &&
-                    this.modules[0]) {
-                    this.modules[0].init(1);
+            KeyboardNavigation.prototype.updateExitAnchor = function () {
+                var endMarkerId = "highcharts-end-of-chart-marker-" + this.chart.index,
+                    endMarker = getElement(endMarkerId);
+                this.removeExitAnchor();
+                if (endMarker) {
+                    this.makeElementAnExitAnchor(endMarker);
+                    this.exitAnchor = endMarker;
                 }
-                this.exiting = false;
-            };
-            /**
-             * Reset chart navigation state if we click outside the chart and it's
-             * not already reset.
-             * @private
-             */
-            KeyboardNavigation.prototype.onMouseUp = function () {
-                delete this.isClickingChart;
-                if (!this.keyboardReset && !this.pointerIsOverChart) {
-                    var chart = this.chart,
-                        curMod = this.modules &&
-                            this.modules[this.currentModuleIx || 0];
-                    if (curMod && curMod.terminate) {
-                        curMod.terminate();
-                    }
-                    if (chart.focusElement) {
-                        chart.focusElement.removeFocusBorder();
-                    }
-                    this.currentModuleIx = 0;
-                    this.keyboardReset = true;
+                else {
+                    this.createExitAnchor();
                 }
-            };
-            /**
-             * Function to run on keydown
-             * @private
-             * @param {global.KeyboardEvent} ev Browser keydown event.
-             */
-            KeyboardNavigation.prototype.onKeydown = function (ev) {
-                var e = ev || win.event,
-                    curNavModule = (this.modules &&
-                        this.modules.length &&
-                        this.modules[this.currentModuleIx]);
-                var preventDefault;
-                // Used for resetting nav state when clicking outside chart
-                this.keyboardReset = false;
-                // Used for sending focus out of the chart by the modules.
-                this.exiting = false;
-                // If there is a nav module for the current index, run it.
-                // Otherwise, we are outside of the chart in some direction.
-                if (curNavModule) {
-                    var response = curNavModule.run(e);
-                    if (response === curNavModule.response.success) {
-                        preventDefault = true;
-                    }
-                    else if (response === curNavModule.response.prev) {
-                        preventDefault = this.prev();
-                    }
-                    else if (response === curNavModule.response.next) {
-                        preventDefault = this.next();
-                    }
-                    if (preventDefault) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                }
-            };
-            /**
-             * Go to previous module.
-             * @private
-             */
-            KeyboardNavigation.prototype.prev = function () {
-                return this.move(-1);
-            };
-            /**
-             * Go to next module.
-             * @private
-             */
-            KeyboardNavigation.prototype.next = function () {
-                return this.move(1);
             };
             /**
              * Move to prev/next module.
@@ -3368,22 +3307,84 @@
                 return false;
             };
             /**
-             * We use an exit anchor to move focus out of chart whenever we want, by
-             * setting focus to this div and not preventing the default tab action. We
-             * also use this when users come back into the chart by tabbing back, in
-             * order to navigate from the end of the chart.
+             * Function to run on container focus
+             * @private
+             * @param {global.FocusEvent} e Browser focus event.
+             */
+            KeyboardNavigation.prototype.onFocus = function (e) {
+                var chart = this.chart;
+                var focusComesFromChart = (e.relatedTarget &&
+                        chart.container.contains(e.relatedTarget));
+                // Init keyboard nav if tabbing into chart
+                if (!this.exiting &&
+                    !this.tabbingInBackwards &&
+                    !this.isClickingChart &&
+                    !focusComesFromChart) {
+                    var ix = this.getFirstValidModuleIx();
+                    if (ix !== null) {
+                        this.currentModuleIx = ix;
+                        this.modules[ix].init(1);
+                    }
+                }
+                this.exiting = false;
+            };
+            /**
+             * Reset chart navigation state if we mouse click and it's not already
+             * reset. Reset fully if outside the chart, otherwise just hide focus
+             * indicator.
              * @private
              */
-            KeyboardNavigation.prototype.updateExitAnchor = function () {
-                var endMarkerId = ('highcharts-end-of-chart-marker-' + this.chart.index),
-                    endMarker = getElement(endMarkerId);
-                this.removeExitAnchor();
-                if (endMarker) {
-                    this.makeElementAnExitAnchor(endMarker);
-                    this.exitAnchor = endMarker;
+            KeyboardNavigation.prototype.onMouseUp = function () {
+                delete this.isClickingChart;
+                if (!this.keyboardReset) {
+                    var chart = this.chart;
+                    if (!this.pointerIsOverChart) {
+                        var curMod = this.modules &&
+                                this.modules[this.currentModuleIx || 0];
+                        if (curMod && curMod.terminate) {
+                            curMod.terminate();
+                        }
+                        this.currentModuleIx = 0;
+                    }
+                    if (chart.focusElement) {
+                        chart.focusElement.removeFocusBorder();
+                        delete chart.focusElement;
+                    }
+                    this.keyboardReset = true;
                 }
-                else {
-                    this.createExitAnchor();
+            };
+            /**
+             * Function to run on keydown
+             * @private
+             * @param {global.KeyboardEvent} ev Browser keydown event.
+             */
+            KeyboardNavigation.prototype.onKeydown = function (ev) {
+                var e = ev || win.event,
+                    curNavModule = (this.modules &&
+                        this.modules.length &&
+                        this.modules[this.currentModuleIx]);
+                var preventDefault;
+                // Used for resetting nav state when clicking outside chart
+                this.keyboardReset = false;
+                // Used for sending focus out of the chart by the modules.
+                this.exiting = false;
+                // If there is a nav module for the current index, run it.
+                // Otherwise, we are outside of the chart in some direction.
+                if (curNavModule) {
+                    var response = curNavModule.run(e);
+                    if (response === curNavModule.response.success) {
+                        preventDefault = true;
+                    }
+                    else if (response === curNavModule.response.prev) {
+                        preventDefault = this.move(-1);
+                    }
+                    else if (response === curNavModule.response.next) {
+                        preventDefault = this.move(1);
+                    }
+                    if (preventDefault) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
                 }
             };
             /**
@@ -3414,6 +3415,18 @@
                 }
             };
             /**
+             * Add new exit anchor to the chart.
+             * @private
+             */
+            KeyboardNavigation.prototype.createExitAnchor = function () {
+                var chart = this.chart,
+                    exitAnchor = this.exitAnchor = doc.createElement('div');
+                chart.renderTo.appendChild(exitAnchor);
+                this.makeElementAnExitAnchor(exitAnchor);
+            };
+            /**
+             * Add attributes and events to an element to make it function as an
+             * exit anchor.
              * @private
              */
             KeyboardNavigation.prototype.makeElementAnExitAnchor = function (el) {
@@ -3425,27 +3438,17 @@
                 this.addExitAnchorEventsToEl(el);
             };
             /**
-             * Add new exit anchor to the chart.
-             *
-             * @private
-             */
-            KeyboardNavigation.prototype.createExitAnchor = function () {
-                var chart = this.chart,
-                    exitAnchor = this.exitAnchor = doc.createElement('div');
-                chart.renderTo.appendChild(exitAnchor);
-                this.makeElementAnExitAnchor(exitAnchor);
-            };
-            /**
+             * Destroy the exit anchor and remove from DOM.
              * @private
              */
             KeyboardNavigation.prototype.removeExitAnchor = function () {
                 if (this.exitAnchor && this.exitAnchor.parentNode) {
-                    this.exitAnchor.parentNode
-                        .removeChild(this.exitAnchor);
+                    this.exitAnchor.parentNode.removeChild(this.exitAnchor);
                     delete this.exitAnchor;
                 }
             };
             /**
+             * Add focus handler to exit anchor element.
              * @private
              */
             KeyboardNavigation.prototype.addExitAnchorEventsToEl = function (element) {
@@ -3456,6 +3459,9 @@
                         focusComesFromChart = (e.relatedTarget &&
                             chart.container.contains(e.relatedTarget)),
                         comingInBackwards = !(focusComesFromChart || keyboardNavigation.exiting);
+                    if (chart.focusElement) {
+                        delete chart.focusElement;
+                    }
                     if (comingInBackwards) {
                         // Focus the container instead
                         keyboardNavigation.tabbingInBackwards = true;
@@ -3473,7 +3479,7 @@
                             if (curModule &&
                                 curModule.validate && !curModule.validate()) {
                                 // Invalid. Try moving backwards to find next valid.
-                                keyboardNavigation.prev();
+                                keyboardNavigation.move(-1);
                             }
                             else if (curModule) {
                                 // We have a valid module, init it
@@ -3486,6 +3492,21 @@
                         keyboardNavigation.exiting = false;
                     }
                 });
+            };
+            /**
+             * Get the ix of the first module that either does not require validation or
+             * validates positively.
+             * @private
+             */
+            KeyboardNavigation.prototype.getFirstValidModuleIx = function () {
+                var len = this.modules.length;
+                for (var i = 0; i < len; ++i) {
+                    var mod = this.modules[i];
+                    if (!mod.validate || mod.validate()) {
+                        return i;
+                    }
+                }
+                return null;
             };
             /**
              * Remove all traces of keyboard navigation.
@@ -3522,6 +3543,7 @@
              * */
             /* eslint-disable valid-jsdoc */
             /**
+             * Composition function.
              * @private
              */
             function compose(ChartClass) {
@@ -3605,6 +3627,7 @@
             };
         })();
         var animObject = A.animObject;
+        var doc = H.doc;
         var addEvent = U.addEvent,
             fireEvent = U.fireEvent,
             isNumber = U.isNumber,
@@ -3640,6 +3663,19 @@
                 !(chart.colorAxis && chart.colorAxis.length) &&
                 legendA11yOptions.enabled !== false);
         }
+        /**
+         * @private
+         */
+        function setLegendItemHoverState(hoverActive, legendItem) {
+            legendItem.setState(hoverActive ? 'hover' : '', true);
+            ['legendGroup', 'legendItem', 'legendSymbol'].forEach(function (i) {
+                var obj = legendItem[i];
+                var el = obj && obj.element || obj;
+                if (el) {
+                    fireEvent(el, hoverActive ? 'mouseover' : 'mouseout');
+                }
+            });
+        }
         /* *
          *
          *  Class
@@ -3663,6 +3699,7 @@
                 var _this = _super !== null && _super.apply(this,
                     arguments) || this;
                 _this.highlightedLegendItemIx = NaN;
+                _this.proxyGroup = null;
                 return _this;
             }
             /* *
@@ -3788,12 +3825,19 @@
              * @private
              */
             LegendComponent.prototype.recreateProxies = function () {
+                var focusedElement = doc.activeElement;
+                var proxyGroup = this.proxyGroup;
+                var shouldRestoreFocus = focusedElement && proxyGroup &&
+                        proxyGroup.contains(focusedElement);
                 this.removeProxies();
                 if (shouldDoLegendA11y(this.chart)) {
                     this.addLegendProxyGroup();
                     this.proxyLegendItems();
                     this.updateLegendItemProxyVisibility();
                     this.updateLegendTitle();
+                    if (shouldRestoreFocus) {
+                        this.chart.highlightLegendItem(this.highlightedLegendItemIx);
+                    }
                     return true;
                 }
                 return false;
@@ -3829,7 +3873,7 @@
                 var a11yOptions = this.chart.options.accessibility;
                 var groupRole = a11yOptions.landmarkVerbosity === 'all' ?
                         'region' : null;
-                this.proxyProvider.addGroup('legend', 'ul', {
+                this.proxyGroup = this.proxyProvider.addGroup('legend', 'ul', {
                     // Filled by updateLegendTitle, to keep up to date without
                     // recreating group
                     'aria-label': '_placeholder_',
@@ -3913,21 +3957,19 @@
                     validate: function () {
                         return component.shouldHaveLegendNavigation();
                     },
-                    init: function (direction) {
-                        return component.onKbdNavigationInit(direction);
+                    init: function () {
+                        chart.highlightLegendItem(0);
+                        component.highlightedLegendItemIx = 0;
                     },
                     terminate: function () {
                         component.highlightedLegendItemIx = -1;
-                        chart.legend.allItems.forEach(function (item) { return item.setState('', true); });
+                        chart.legend.allItems.forEach(function (item) { return setLegendItemHoverState(false, item); });
                     }
                 });
             };
             /**
+             * Arrow key navigation
              * @private
-             * @param {Highcharts.KeyboardNavigationHandler} keyboardNavigationHandler
-             * @param {number} keyCode
-             * @return {number}
-             * Response code
              */
             LegendComponent.prototype.onKbdArrowKey = function (keyboardNavigationHandler, keyCode) {
                 var keys = this.keyCodes,
@@ -3946,8 +3988,7 @@
                     keyboardNavigationHandler.init(direction);
                     return response.success;
                 }
-                // No wrap, move
-                return response[direction > 0 ? 'next' : 'prev'];
+                return response.success;
             };
             /**
              * @private
@@ -3976,17 +4017,6 @@
                     legendA11yOptions.enabled &&
                     legendA11yOptions.keyboardNavigation &&
                     legendA11yOptions.keyboardNavigation.enabled);
-            };
-            /**
-             * @private
-             * @param {number} direction
-             */
-            LegendComponent.prototype.onKbdNavigationInit = function (direction) {
-                var chart = this.chart,
-                    lastIx = chart.legend.allItems.length - 1,
-                    ixToHighlight = direction > 0 ? 0 : lastIx;
-                chart.highlightLegendItem(ixToHighlight);
-                this.highlightedLegendItemIx = ixToHighlight;
             };
             return LegendComponent;
         }(AccessibilityComponent));
@@ -4024,7 +4054,7 @@
                 var itemToHighlight = items[ix];
                 if (itemToHighlight) {
                     if (isNumber(oldIx) && items[oldIx]) {
-                        fireEvent(items[oldIx].legendGroup.element, 'mouseout');
+                        setLegendItemHoverState(false, items[oldIx]);
                     }
                     scrollLegendToItem(this.legend, ix);
                     var legendItemProp = itemToHighlight.legendItem;
@@ -4033,9 +4063,7 @@
                     if (legendItemProp && legendItemProp.element && proxyBtn) {
                         this.setFocusToElement(legendItemProp, proxyBtn);
                     }
-                    if (itemToHighlight.legendGroup) {
-                        fireEvent(itemToHighlight.legendGroup.element, 'mouseover');
-                    }
+                    setLegendItemHoverState(true, itemToHighlight);
                     return true;
                 }
                 return false;
@@ -4379,9 +4407,9 @@
          * @private
          */
         function defaultPointDescriptionFormatter(point) {
-            var series = point.series, chart = series.chart, valText = getPointValueDescription(point), description = point.options && point.options.accessibility &&
-                    point.options.accessibility.description, userDescText = description ? ' ' + description : '', seriesNameText = chart.series.length > 1 && series.name ?
-                    ' ' + series.name + '.' : '', annotationsDesc = getPointAnnotationDescription(point), pointAnnotationsText = annotationsDesc ? ' ' + annotationsDesc : '';
+            var series = point.series, shouldExposeSeriesName = series.chart.series.length > 1 ||
+                    series.options.name, valText = getPointValueDescription(point), description = point.options && point.options.accessibility &&
+                    point.options.accessibility.description, userDescText = description ? ' ' + description : '', seriesNameText = shouldExposeSeriesName ? ' ' + series.name + '.' : '', annotationsDesc = getPointAnnotationDescription(point), pointAnnotationsText = annotationsDesc ? ' ' + annotationsDesc : '';
             point.accessibility = point.accessibility || {};
             point.accessibility.valueDescription = valText;
             return valText + userDescText + seriesNameText + pointAnnotationsText;
@@ -4641,7 +4669,7 @@
                 var announcer = this,
                     chart = this.chart,
                     e = this.eventProvider;
-                e.addEvent(chart, 'afterDrilldown', function () {
+                e.addEvent(chart, 'afterApplyDrilldown', function () {
                     announcer.lastAnnouncementTime = 0;
                 });
                 e.addEvent(chart, 'afterAddSeries', function (e) {
@@ -4951,9 +4979,15 @@
             ProxyElement.prototype.updateTarget = function (target, attributes) {
                 this.target = target;
                 this.updateCSSClassName();
+                var attrs = attributes || {};
+                Object.keys(attrs).forEach(function (a) {
+                    if (attrs[a] === null) {
+                        delete attrs[a];
+                    }
+                });
                 attr(this.buttonElement, merge({
                     'aria-label': this.getTargetAttr(target.click, 'aria-label')
-                }, attributes));
+                }, attrs));
                 this.eventProvider.removeAddedEvents();
                 this.addProxyEventsToButton(this.buttonElement, target.click);
                 this.refreshPosition();
@@ -5051,12 +5085,14 @@
                 var chartDiv = this.chart.renderTo;
                 if (chartDiv && posElement && posElement.getBoundingClientRect) {
                     var rectEl = posElement.getBoundingClientRect(),
-                        rectDiv = chartDiv.getBoundingClientRect();
+                        chartPos = this.chart.pointer.getChartPosition();
                     return {
-                        x: rectEl.left - rectDiv.left,
-                        y: rectEl.top - rectDiv.top,
-                        width: rectEl.right - rectEl.left,
-                        height: rectEl.bottom - rectEl.top
+                        x: (rectEl.left - chartPos.left) / chartPos.scaleX,
+                        y: (rectEl.top - chartPos.top) / chartPos.scaleY,
+                        width: rectEl.right / chartPos.scaleX -
+                            rectEl.left / chartPos.scaleX,
+                        height: rectEl.bottom / chartPos.scaleY -
+                            rectEl.top / chartPos.scaleY
                     };
                 }
                 return { x: 0, y: 0, width: 1, height: 1 };
@@ -5153,10 +5189,13 @@
             /**
              * Create a group that will contain proxy elements. The group order is
              * automatically updated according to the last group order keys.
+             *
+             * Returns the added group.
              */
             ProxyProvider.prototype.addGroup = function (groupKey, groupType, attributes) {
-                if (this.groups[groupKey]) {
-                    return;
+                var existingGroup = this.groups[groupKey];
+                if (existingGroup) {
+                    return existingGroup.groupElement;
                 }
                 var proxyContainer = this.domElementProvider.createElement(groupType);
                 // If we want to add a role to the group, and still use e.g.
@@ -5185,6 +5224,7 @@
                 // won't have to reorder the whole set of groups.
                 this.afterChartProxyPosContainer.appendChild(groupElement);
                 this.updateGroupOrder(this.groupOrder);
+                return groupElement;
             };
             /**
              * Update HTML attributes of a group.
@@ -5368,6 +5408,10 @@
              */
             ProxyProvider.prototype.updatePosContainerPositions = function () {
                 var chart = this.chart;
+                // If exporting, don't add these containers to the DOM.
+                if (chart.renderer.forExport) {
+                    return;
+                }
                 var rendererSVGEl = chart.renderer.box;
                 chart.container.insertBefore(this.afterChartProxyPosContainer, rendererSVGEl.nextSibling);
                 chart.container.insertBefore(this.beforeChartProxyPosContainer, rendererSVGEl);
@@ -7981,7 +8025,7 @@
                     if (chart.accessibility) {
                         chart.accessibility.keyboardNavigation.tabindexContainer
                             .focus();
-                        chart.accessibility.keyboardNavigation[direction < 0 ? 'prev' : 'next']();
+                        chart.accessibility.keyboardNavigation.move(direction);
                     }
                 }
                 else if (rangeSel) {
@@ -8072,7 +8116,7 @@
                             e.stopPropagation();
                             if (a11y) {
                                 a11y.keyboardNavigation.tabindexContainer.focus();
-                                a11y.keyboardNavigation[e.shiftKey ? 'prev' : 'next']();
+                                a11y.keyboardNavigation.move(e.shiftKey ? -1 : 1);
                             }
                         }
                     });
@@ -8430,6 +8474,7 @@
                 else if (series.a11yMarkersForced) {
                     delete series.a11yMarkersForced;
                     unforceSeriesMarkerOptions(series);
+                    delete series.resetA11yMarkerOptions;
                 }
             }
             /**
@@ -8457,20 +8502,20 @@
                 });
             }
             /**
+             * Reset markers to normal
              * @private
              */
             function unforceSeriesMarkerOptions(series) {
                 var resetMarkerOptions = series.resetA11yMarkerOptions;
                 if (resetMarkerOptions) {
-                    merge(true, series.options, {
+                    var originalOpactiy = resetMarkerOptions.states &&
+                            resetMarkerOptions.states.normal &&
+                            resetMarkerOptions.states.normal.opacity;
+                    series.update({
                         marker: {
                             enabled: resetMarkerOptions.enabled,
                             states: {
-                                normal: {
-                                    opacity: resetMarkerOptions.states &&
-                                        resetMarkerOptions.states.normal &&
-                                        resetMarkerOptions.states.normal.opacity
-                                }
+                                normal: { opacity: originalOpactiy }
                             }
                         }
                     });
@@ -8571,6 +8616,37 @@
                 isSkipSeries(point.series);
         }
         /**
+         * Get the first point that is not a skip point in this series.
+         * @private
+         */
+        function getFirstValidPointInSeries(series) {
+            var points = series.points || [],
+                len = points.length;
+            for (var i = 0; i < len; ++i) {
+                if (!isSkipPoint(points[i])) {
+                    return points[i];
+                }
+            }
+            return null;
+        }
+        /**
+         * Get the first point that is not a skip point in this chart.
+         * @private
+         */
+        function getFirstValidPointInChart(chart) {
+            var series = chart.series || [],
+                len = series.length;
+            for (var i = 0; i < len; ++i) {
+                if (!isSkipSeries(series[i])) {
+                    var point = getFirstValidPointInSeries(series[i]);
+                    if (point) {
+                        return point;
+                    }
+                }
+            }
+            return null;
+        }
+        /**
          * @private
          */
         function highlightLastValidPointInChart(chart) {
@@ -8582,7 +8658,7 @@
                 // Highlight first valid point in the series will also
                 // look backwards. It always starts from currently
                 // highlighted point.
-                res = chart.series[i].highlightFirstValidPoint();
+                res = chart.series[i].highlightNextValidPoint();
                 if (res) {
                     break;
                 }
@@ -8590,24 +8666,24 @@
             return res;
         }
         /**
+         * After drilling down/up, we need to set focus to the first point for
+         * screen readers and keyboard nav.
          * @private
          */
         function updateChartFocusAfterDrilling(chart) {
-            highlightFirstValidPointInChart(chart);
-            if (chart.focusElement) {
-                chart.focusElement.removeFocusBorder();
+            var point = getFirstValidPointInChart(chart);
+            if (point) {
+                point.highlight(false); // Do not visually highlight
             }
         }
         /**
+         * Highlight the first point in chart that is not a skip point
          * @private
          */
         function highlightFirstValidPointInChart(chart) {
-            var res = false;
             delete chart.highlightedPoint;
-            res = chart.series.reduce(function (acc, cur) {
-                return acc || cur.highlightFirstValidPoint();
-            }, false);
-            return res;
+            var point = getFirstValidPointInChart(chart);
+            return point ? point.highlight() : false;
         }
         /* *
          *
@@ -8645,7 +8721,7 @@
                 e.addEvent(Series, 'destroy', function () {
                     return keyboardNavigation.onSeriesDestroy(this);
                 });
-                e.addEvent(chart, 'afterDrilldown', function () {
+                e.addEvent(chart, 'afterApplyDrilldown', function () {
                     updateChartFocusAfterDrilling(this);
                 });
                 e.addEvent(chart, 'drilldown', function (e) {
@@ -8685,11 +8761,11 @@
                 });
             };
             /**
+             * After drillup we want to find the point that was drilled down to and
+             * highlight it.
              * @private
              */
             SeriesKeyboardNavigation.prototype.onDrillupAll = function () {
-                // After drillup we want to find the point that was drilled down to and
-                // highlight it.
                 var last = this.lastDrilledDownPoint,
                     chart = this.chart,
                     series = last && getSeriesFromName(chart,
@@ -8698,15 +8774,13 @@
                 if (last && series && defined(last.x) && defined(last.y)) {
                     point = getPointFromXY(series, last.x, last.y);
                 }
+                point = point || getFirstValidPointInChart(chart);
                 // Container focus can be lost on drillup due to deleted elements.
                 if (chart.container) {
                     chart.container.focus();
                 }
                 if (point && point.highlight) {
-                    point.highlight();
-                }
-                if (chart.focusElement) {
-                    chart.focusElement.removeFocusBorder();
+                    point.highlight(false); // Do not visually highlight
                 }
             };
             /**
@@ -8750,6 +8824,9 @@
                     init: function () {
                         highlightFirstValidPointInChart(chart);
                         return this.response.success;
+                    },
+                    validate: function () {
+                        return !!getFirstValidPointInChart(chart);
                     },
                     terminate: function () {
                         return keyboardNavigation.onHandlerTerminate();
@@ -8813,10 +8890,6 @@
             /**
              * Function that attempts to highlight next/prev point. Handles wrap around.
              * @private
-             * @param {Highcharts.KeyboardNavigationHandler} handler
-             * @param {boolean} directionIsNext
-             * @return {number}
-             * response
              */
             SeriesKeyboardNavigation.prototype.attemptHighlightAdjacentPoint = function (handler, directionIsNext) {
                 var chart = this.chart,
@@ -8824,8 +8897,10 @@
                         .wrapAround,
                     highlightSuccessful = chart.highlightAdjacentPoint(directionIsNext);
                 if (!highlightSuccessful) {
-                    if (wrapAround) {
-                        return handler.init(directionIsNext ? 1 : -1);
+                    if (wrapAround && (directionIsNext ?
+                        highlightFirstValidPointInChart(chart) :
+                        highlightLastValidPointInChart(chart))) {
+                        return handler.response.success;
                     }
                     return handler.response[directionIsNext ? 'next' : 'prev'];
                 }
@@ -9032,7 +9107,7 @@
                 // Highlight the new point or any first valid point back or forwards
                 // from it
                 newPoint.highlight();
-                return newPoint.series.highlightFirstValidPoint();
+                return newPoint.series.highlightNextValidPoint();
             }
             /**
              * @private
@@ -9069,7 +9144,7 @@
                             seriesTypes[type].prototype.keyboardMoveVertical = false;
                         }
                     });
-                    seriesProto.highlightFirstValidPoint = (seriesHighlightFirstValidPoint);
+                    seriesProto.highlightNextValidPoint = (seriesHighlightNextValidPoint);
                 }
             }
             SeriesKeyboardNavigation.compose = compose;
@@ -9107,7 +9182,7 @@
                 return defined(minIx) ? series.points[minIx] : void 0;
             }
             /**
-             * Highlights a point (show tooltip and display hover state).
+             * Highlights a point (show tooltip, display hover state, focus element).
              *
              * @private
              * @function Highcharts.Point#highlight
@@ -9115,9 +9190,10 @@
              * @return {Highcharts.Point}
              *         This highlighted point.
              */
-            function pointHighlight() {
+            function pointHighlight(highlightVisually) {
+                if (highlightVisually === void 0) { highlightVisually = true; }
                 var chart = this.series.chart;
-                if (!this.isNull) {
+                if (!this.isNull && highlightVisually) {
                     this.onMouseOver(); // Show the hover marker and tooltip
                 }
                 else {
@@ -9132,6 +9208,9 @@
                 // change z-index and mess up the element.
                 if (this.graphic) {
                     chart.setFocusToElement(this.graphic);
+                    if (!highlightVisually && chart.focusElement) {
+                        chart.focusElement.removeFocusBorder();
+                    }
                 }
                 chart.highlightedPoint = this;
                 return this;
@@ -9142,9 +9221,9 @@
              * point in the series, use that as starting point.
              *
              * @private
-             * @function Highcharts.Series#highlightFirstValidPoint
+             * @function Highcharts.Series#highlightNextValidPoint
              */
-            function seriesHighlightFirstValidPoint() {
+            function seriesHighlightNextValidPoint() {
                 var curPoint = this.chart.highlightedPoint,
                     start = (curPoint && curPoint.series) === this ?
                         getPointIndex(curPoint) :
@@ -9231,7 +9310,6 @@
              * @private
              */
             SeriesComponent.compose = function (ChartClass, PointClass, SeriesClass) {
-                // Handle forcing markers
                 NewDataAnnouncer.compose(SeriesClass);
                 ForcedMarkers.compose(SeriesClass);
                 SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);
@@ -9364,8 +9442,8 @@
          */
         function chartHasMapZoom(chart) {
             return !!(chart.mapZoom &&
-                chart.mapNavButtons &&
-                chart.mapNavButtons.length);
+                chart.mapNavigation &&
+                chart.mapNavigation.navButtons.length);
         }
         /* *
          *
@@ -9405,7 +9483,7 @@
                     chart = this.chart;
                 this.proxyProvider.addGroup('zoom', 'div');
                 [
-                    'afterShowResetZoom', 'afterDrilldown', 'drillupall'
+                    'afterShowResetZoom', 'afterApplyDrilldown', 'drillupall'
                 ].forEach(function (eventType) {
                     component.addEvent(chart, eventType, function () {
                         component.updateProxyOverlays();
@@ -9419,8 +9497,8 @@
                 var chart = this.chart,
                     component = this;
                 // Make map zoom buttons accessible
-                if (chart.mapNavButtons) {
-                    chart.mapNavButtons.forEach(function (button, i) {
+                if (chart.mapNavigation) {
+                    chart.mapNavigation.navButtons.forEach(function (button, i) {
                         unhideChartElementFromAT(chart, button.element);
                         component.setMapNavButtonAttrs(button.element, 'accessibility.zoom.mapZoom' + (i ? 'Out' : 'In'));
                     });
@@ -9457,10 +9535,13 @@
                 if (chart.resetZoomButton) {
                     this.createZoomProxyButton(chart.resetZoomButton, 'resetZoomProxyButton', chart.langFormat('accessibility.zoom.resetZoomButton', { chart: chart }));
                 }
-                if (chart.drillUpButton) {
+                if (chart.drillUpButton &&
+                    chart.breadcrumbs &&
+                    chart.breadcrumbs.list) {
+                    var lastBreadcrumb = chart.breadcrumbs.list[chart.breadcrumbs.list.length - 1];
                     this.createZoomProxyButton(chart.drillUpButton, 'drillUpProxyButton', chart.langFormat('accessibility.drillUpButton', {
                         chart: chart,
-                        buttonText: chart.getDrilldownBackText()
+                        buttonText: chart.breadcrumbs.getButtonText(lastBreadcrumb)
                     }));
                 }
             };
@@ -9544,14 +9625,14 @@
                 var isMoveOutOfRange = isBackwards && !this.focusedMapNavButtonIx ||
                         !isBackwards && this.focusedMapNavButtonIx;
                 // Deselect old
-                chart.mapNavButtons[this.focusedMapNavButtonIx].setState(0);
+                chart.mapNavigation.navButtons[this.focusedMapNavButtonIx].setState(0);
                 if (isMoveOutOfRange) {
                     chart.mapZoom(); // Reset zoom
                     return response[isBackwards ? 'prev' : 'next'];
                 }
                 // Select other button
                 this.focusedMapNavButtonIx += isBackwards ? -1 : 1;
-                var button = chart.mapNavButtons[this.focusedMapNavButtonIx];
+                var button = chart.mapNavigation.navButtons[this.focusedMapNavButtonIx];
                 chart.setFocusToElement(button.box, button.element);
                 button.setState(2);
                 return response.success;
@@ -9572,8 +9653,8 @@
              */
             ZoomComponent.prototype.onMapNavInit = function (direction) {
                 var chart = this.chart,
-                    zoomIn = chart.mapNavButtons[0],
-                    zoomOut = chart.mapNavButtons[1],
+                    zoomIn = chart.mapNavigation.navButtons[0],
+                    zoomOut = chart.mapNavigation.navButtons[1],
                     initialButton = direction > 0 ? zoomIn : zoomOut;
                 chart.setFocusToElement(initialButton.box, initialButton.element);
                 initialButton.setState(2);
@@ -9756,8 +9837,8 @@
                 doc.body.removeChild(testDiv);
                 return bi === 'none';
             }
-            // Not used for other browsers
-            return false;
+            // Other browsers use the forced-colors standard
+            return win.matchMedia && win.matchMedia('(forced-colors: active)').matches;
         }
         /**
          * Force high contrast theme for the chart. The default theme is defined in
@@ -11797,7 +11878,7 @@
                         });
                     });
                     // Direct updates (events happen after render)
-                    ['afterDrilldown', 'drillupall'].forEach(function (event) {
+                    ['afterApplyDrilldown', 'drillupall'].forEach(function (event) {
                         addEvent(ChartClass, event, function chartOnAfterDrilldown() {
                             var a11y = this.accessibility;
                             if (a11y && !a11y.zombie) {

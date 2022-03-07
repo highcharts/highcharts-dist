@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.3.3 (2022-02-01)
+ * @license Highcharts Gantt JS v10.0.0 (2022-03-07)
  *
  * Gantt series
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Series/XRange/XRangePoint.js', [_modules['Core/Series/Point.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (Point, SeriesRegistry, U) {
@@ -2101,9 +2110,14 @@
                         var tickmarkOffset = axis.tickmarkOffset,
                             lastTick = axis.tickPositions[axis.tickPositions.length - 1],
                             firstTick = axis.tickPositions[0];
-                        var label = void 0;
+                        var label = void 0,
+                            tickMark = void 0;
                         while ((label = axis.hiddenLabels.pop()) && label.element) {
                             label.show(); // #15453
+                        }
+                        while ((tickMark = axis.hiddenMarks.pop()) &&
+                            tickMark.element) {
+                            tickMark.show(); // #16439
                         }
                         // Hide/show firts tick label.
                         label = axis.ticks[firstTick].label;
@@ -2126,14 +2140,10 @@
                             }
                         }
                         var mark = axis.ticks[lastTick].mark;
-                        if (mark) {
-                            if (lastTick - max < tickmarkOffset &&
-                                lastTick - max > 0 && axis.ticks[lastTick].isLast) {
-                                mark.hide();
-                            }
-                            else if (axis.ticks[lastTick - 1]) {
-                                mark.show();
-                            }
+                        if (mark &&
+                            lastTick - max < tickmarkOffset &&
+                            lastTick - max > 0 && axis.ticks[lastTick].isLast) {
+                            axis.hiddenMarks.push(mark.hide());
                         }
                     }
                 }
@@ -2423,6 +2433,7 @@
                     axis.grid = new Additions(axis);
                 }
                 axis.hiddenLabels = [];
+                axis.hiddenMarks = [];
             }
             /**
              * Center tick labels in cells.
@@ -3244,6 +3255,17 @@
                             node = axis.treeGrid.mapOfPosToGridNode[pos],
                             breaks = axis.treeGrid.collapse(node);
                         brokenAxis.setBreaks(breaks, pick(redraw, true));
+                    }
+                };
+                /**
+                 * Destroy remaining labelIcon if exist.
+                 *
+                 * @private
+                 * @function Highcharts.Tick#destroy
+                 */
+                Additions.prototype.destroy = function () {
+                    if (this.labelIcon) {
+                        this.labelIcon.destroy();
                     }
                 };
                 /**
@@ -12142,19 +12164,21 @@
                     maskInside,
                     !maskInside
                 ].forEach(function (hasMask, index) {
-                    navigator.shades[index] = renderer.rect()
-                        .addClass('highcharts-navigator-mask' +
-                        (index === 1 ? '-inside' : '-outside'))
-                        .add(navigatorGroup);
+                    var shade = renderer.rect()
+                            .addClass('highcharts-navigator-mask' +
+                            (index === 1 ? '-inside' : '-outside'))
+                            .add(navigatorGroup);
                     if (!chart.styledMode) {
-                        navigator.shades[index]
-                            .attr({
+                        shade.attr({
                             fill: hasMask ?
                                 navigatorOptions.maskFill :
                                 'rgba(0,0,0,0)'
-                        })
-                            .css((index === 1) && mouseCursor);
+                        });
+                        if (index === 1) {
+                            shade.css(mouseCursor);
+                        }
                     }
+                    navigator.shades[index] = shade;
                 });
                 // Create the outline:
                 navigator.outline = renderer.path()
@@ -13122,7 +13146,8 @@
             Navigator.prototype.getBaseSeriesMin = function (currentSeriesMin) {
                 return this.baseSeries.reduce(function (min, series) {
                     // (#10193)
-                    return Math.min(min, series.xData ? series.xData[0] : min);
+                    return Math.min(min, series.xData && series.xData.length ?
+                        series.xData[0] : min);
                 }, currentSeriesMin);
             };
             /**

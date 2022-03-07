@@ -178,11 +178,18 @@ var SMAIndicator = /** @class */ (function (_super) {
      * @private
      */
     SMAIndicator.prototype.recalculateValues = function () {
-        var indicator = this, oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, processedData = (indicator.getValues(indicator.linkedParent, indicator.options.params) || {
+        var indicator = this, oldData = indicator.points || [], oldDataLength = (indicator.xData || []).length, emptySet = {
             values: [],
             xData: [],
             yData: []
-        }), croppedDataValues = [], overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
+        }, processedData, croppedDataValues = [], overwriteData = true, oldFirstPointIndex, oldLastPointIndex, croppedData, min, max, i;
+        // Updating an indicator with redraw=false may destroy data.
+        // If there will be a following update for the parent series,
+        // we will try to access Series object without any properties
+        // (except for prototyped ones). This is what happens
+        // for example when using Axis.setDataGrouping(). See #16670
+        processedData = indicator.linkedParent.options ?
+            (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
         // We need to update points to reflect changes in all,
         // x and y's, values. However, do it only for non-grouped
         // data - grouping does it for us (#8572)

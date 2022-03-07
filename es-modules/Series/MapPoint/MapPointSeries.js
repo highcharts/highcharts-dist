@@ -56,6 +56,7 @@ var MapPointSeries = /** @class */ (function (_super) {
          *  Properties
          *
          * */
+        _this.chart = void 0;
         _this.data = void 0;
         _this.options = void 0;
         _this.points = void 0;
@@ -74,6 +75,30 @@ var MapPointSeries = /** @class */ (function (_super) {
             this.dataLabelsGroup.clip(this.chart.clipRect);
         }
     };
+    /**
+     * Resolve `lon`, `lat` or `geometry` options and project the resulted
+     * coordinates.
+     *
+     * @private
+     */
+    MapPointSeries.prototype.projectPoint = function (pointOptions) {
+        var mapView = this.chart.mapView;
+        if (mapView) {
+            var geometry = pointOptions.geometry, lon = pointOptions.lon, lat = pointOptions.lat;
+            var coordinates = (geometry &&
+                geometry.type === 'Point' &&
+                geometry.coordinates);
+            if (isNumber(lon) && isNumber(lat)) {
+                coordinates = [lon, lat];
+            }
+            if (coordinates) {
+                return mapView.lonLatToProjectedUnits({
+                    lon: coordinates[0],
+                    lat: coordinates[1]
+                });
+            }
+        }
+    };
     MapPointSeries.prototype.translate = function () {
         var _this = this;
         var mapView = this.chart.mapView;
@@ -83,16 +108,13 @@ var MapPointSeries = /** @class */ (function (_super) {
         this.generatePoints();
         // Create map based translation
         if (mapView) {
-            var _a = mapView.projection, forward_1 = _a.forward, hasCoordinates_1 = _a.hasCoordinates;
+            var hasCoordinates_1 = mapView.projection.hasCoordinates;
             this.points.forEach(function (p) {
                 var _a = p.x, x = _a === void 0 ? void 0 : _a, _b = p.y, y = _b === void 0 ? void 0 : _b;
-                var geometry = p.options.geometry, coordinates = (geometry &&
-                    geometry.type === 'Point' &&
-                    geometry.coordinates);
-                if (coordinates) {
-                    var xy = forward_1(coordinates);
-                    x = xy[0];
-                    y = xy[1];
+                var xy = _this.projectPoint(p.options);
+                if (xy) {
+                    x = xy.x;
+                    y = xy.y;
                     // Map bubbles getting geometry from shape
                 }
                 else if (p.bounds) {
@@ -100,6 +122,7 @@ var MapPointSeries = /** @class */ (function (_super) {
                     y = p.bounds.midY;
                 }
                 if (isNumber(x) && isNumber(y)) {
+                    // Establish plotX and plotY
                     var plotCoords = mapView.projectedUnitsToPixels({ x: x, y: y });
                     p.plotX = plotCoords.x;
                     p.plotY = hasCoordinates_1 ?
@@ -107,8 +130,7 @@ var MapPointSeries = /** @class */ (function (_super) {
                         _this.chart.plotHeight - plotCoords.y;
                 }
                 else {
-                    p.plotX = void 0;
-                    p.plotY = void 0;
+                    p.y = p.plotX = p.plotY = void 0;
                 }
                 p.isInside = _this.isPointInside(p);
                 // Find point zone
@@ -287,9 +309,9 @@ export default MapPointSeries;
  * @apioption series.mappoint.data.lon
  */
 /**
- * The x coordinate of the point in terms of the map path coordinates.
+ * The x coordinate of the point in terms of projected units.
  *
- * @sample {highmaps} maps/demo/mapline-mappoint/
+ * @sample {highmaps} maps/series/mapline-mappoint-path-xy/
  *         Map point demo
  *
  * @type      {number}
@@ -297,9 +319,9 @@ export default MapPointSeries;
  * @apioption series.mappoint.data.x
  */
 /**
- * The x coordinate of the point in terms of the map path coordinates.
+ * The x coordinate of the point in terms of projected units.
  *
- * @sample {highmaps} maps/demo/mapline-mappoint/
+ * @sample {highmaps} maps/series/mapline-mappoint-path-xy/
  *         Map point demo
  *
  * @type      {number|null}

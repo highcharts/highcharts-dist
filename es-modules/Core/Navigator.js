@@ -747,19 +747,21 @@ var Navigator = /** @class */ (function () {
             maskInside,
             !maskInside
         ].forEach(function (hasMask, index) {
-            navigator.shades[index] = renderer.rect()
+            var shade = renderer.rect()
                 .addClass('highcharts-navigator-mask' +
                 (index === 1 ? '-inside' : '-outside'))
                 .add(navigatorGroup);
             if (!chart.styledMode) {
-                navigator.shades[index]
-                    .attr({
+                shade.attr({
                     fill: hasMask ?
                         navigatorOptions.maskFill :
                         'rgba(0,0,0,0)'
-                })
-                    .css((index === 1) && mouseCursor);
+                });
+                if (index === 1) {
+                    shade.css(mouseCursor);
+                }
             }
+            navigator.shades[index] = shade;
         });
         // Create the outline:
         navigator.outline = renderer.path()
@@ -1643,7 +1645,8 @@ var Navigator = /** @class */ (function () {
     Navigator.prototype.getBaseSeriesMin = function (currentSeriesMin) {
         return this.baseSeries.reduce(function (min, series) {
             // (#10193)
-            return Math.min(min, series.xData ? series.xData[0] : min);
+            return Math.min(min, series.xData && series.xData.length ?
+                series.xData[0] : min);
         }, currentSeriesMin);
     };
     /**

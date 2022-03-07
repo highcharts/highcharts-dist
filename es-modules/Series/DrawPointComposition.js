@@ -69,12 +69,15 @@ var DrawPointComposition;
         params.attribs['class'] = this.getClassName();
         if (this.shouldDraw()) {
             if (!graphic) {
-                this.graphic = graphic =
-                    renderer[params.shapeType](params.shapeArgs)
-                        .add(params.group);
+                this.graphic = graphic = params.shapeType === 'text' ?
+                    renderer.text() :
+                    renderer[params.shapeType](params.shapeArgs || {});
+                graphic.add(params.group);
+            }
+            if (css) {
+                graphic.css(css);
             }
             graphic
-                .css(css)
                 .attr(params.attribs)
                 .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
         }

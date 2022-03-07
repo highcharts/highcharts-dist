@@ -193,7 +193,7 @@ var SVGRenderer = /** @class */ (function () {
         this.url = this.getReferenceURL();
         // Add description
         var desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 9.3.3'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.0.0'));
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
         renderer.forExport = forExport;
@@ -523,29 +523,26 @@ var SVGRenderer = /** @class */ (function () {
         // Make a copy of normalState (#13798)
         // (reference to options.rangeSelector.buttonTheme)
         normalState = theme ? merge(theme) : {};
-        var userNormalStyle = normalState && normalState.style || {};
+        var normalStyle = merge({
+            color: "#333333" /* neutralColor80 */,
+            cursor: 'pointer',
+            fontWeight: 'normal'
+        }, normalState.style);
+        delete normalState.style;
         // Remove stylable attributes
         normalState = AST.filterUserAttributes(normalState);
         // Default, non-stylable attributes
         label.attr(merge({ padding: 8, r: 2 }, normalState));
-        // Presentational
-        var normalStyle, hoverStyle, pressedStyle, disabledStyle;
+        // Presentational. The string type is a mistake, it is just for
+        // compliance with SVGAttribute and is not used in button theme.
+        var hoverStyle, pressedStyle, disabledStyle;
         if (!styledMode) {
             // Normal state - prepare the attributes
             normalState = merge({
                 fill: "#f7f7f7" /* neutralColor3 */,
                 stroke: "#cccccc" /* neutralColor20 */,
-                'stroke-width': 1,
-                style: {
-                    color: "#333333" /* neutralColor80 */,
-                    cursor: 'pointer',
-                    fontWeight: 'normal'
-                }
-            }, {
-                style: userNormalStyle
+                'stroke-width': 1
             }, normalState);
-            normalStyle = normalState.style;
-            delete normalState.style;
             // Hover state
             hoverState = merge(normalState, {
                 fill: "#e6e6e6" /* neutralColor10 */
@@ -600,13 +597,16 @@ var SVGRenderer = /** @class */ (function () {
                     hoverState,
                     pressedState,
                     disabledState
-                ][state || 0])
-                    .css([
+                ][state || 0]);
+                var css_1 = [
                     normalStyle,
                     hoverStyle,
                     pressedStyle,
                     disabledStyle
-                ][state || 0]);
+                ][state || 0];
+                if (isObject(css_1)) {
+                    label.css(css_1);
+                }
             }
         };
         // Presentational attributes

@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.3 (2022-02-01)
+ * @license Highstock JS v10.0.0 (2022-03-07)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Core/Axis/OrdinalAxis.js', [_modules['Core/Axis/Axis.js'], _modules['Core/Globals.js'], _modules['Core/Series/Series.js'], _modules['Core/Utilities.js']], function (Axis, H, Series, U) {
@@ -1614,6 +1623,7 @@
          * @type      {string}
          * @since     1.0.1
          * @product   highstock
+         * @validvalue ["percent", "value"]
          * @apioption plotOptions.series.compare
          */
         /**
@@ -3145,8 +3155,11 @@
             }
             else {
                 this.chart.options.series.forEach(function (seriesOptions) {
-                    seriesOptions.dataGrouping = dataGrouping;
-                }, false);
+                    // Merging dataGrouping options with already defined options #16759
+                    seriesOptions.dataGrouping = typeof dataGrouping === 'boolean' ?
+                        dataGrouping :
+                        merge(dataGrouping, seriesOptions.dataGrouping);
+                });
             }
             // Clear ordinal slope, so we won't accidentaly use the old one (#7827)
             if (axis.ordinal) {
@@ -4396,6 +4409,13 @@
          * @excluding y, marker
          * @product   highstock
          * @apioption series.ohlc.data
+         */
+        /**
+         * The closing value of each data point.
+         *
+         * @type      {number}
+         * @product   highstock
+         * @apioption series.ohlc.data.close
          */
         /**
          * The opening value of each data point.
@@ -7853,19 +7873,21 @@
                     maskInside,
                     !maskInside
                 ].forEach(function (hasMask, index) {
-                    navigator.shades[index] = renderer.rect()
-                        .addClass('highcharts-navigator-mask' +
-                        (index === 1 ? '-inside' : '-outside'))
-                        .add(navigatorGroup);
+                    var shade = renderer.rect()
+                            .addClass('highcharts-navigator-mask' +
+                            (index === 1 ? '-inside' : '-outside'))
+                            .add(navigatorGroup);
                     if (!chart.styledMode) {
-                        navigator.shades[index]
-                            .attr({
+                        shade.attr({
                             fill: hasMask ?
                                 navigatorOptions.maskFill :
                                 'rgba(0,0,0,0)'
-                        })
-                            .css((index === 1) && mouseCursor);
+                        });
+                        if (index === 1) {
+                            shade.css(mouseCursor);
+                        }
                     }
+                    navigator.shades[index] = shade;
                 });
                 // Create the outline:
                 navigator.outline = renderer.path()
@@ -8833,7 +8855,8 @@
             Navigator.prototype.getBaseSeriesMin = function (currentSeriesMin) {
                 return this.baseSeries.reduce(function (min, series) {
                     // (#10193)
-                    return Math.min(min, series.xData ? series.xData[0] : min);
+                    return Math.min(min, series.xData && series.xData.length ?
+                        series.xData[0] : min);
                 }, currentSeriesMin);
             };
             /**

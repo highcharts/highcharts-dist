@@ -259,8 +259,8 @@ var DataLabel;
                         point.connectors[i] :
                         point.connector;
                     var labelConfig, formatString, labelText, style, rotation, attr, dataLabel = point.dataLabels ?
-                        point.dataLabels[i] : point.dataLabel;
-                    var labelDistance = pick(labelOptions.distance, point.labelDistance), isNew = !dataLabel;
+                        point.dataLabels[i] : point.dataLabel, isNew = !dataLabel;
+                    var labelDistance = pick(labelOptions.distance, point.labelDistance);
                     if (labelEnabled) {
                         // Create individual options structure that can be
                         // extended without affecting others
@@ -314,7 +314,15 @@ var DataLabel;
                     // #820
                     if (dataLabel && (!labelEnabled ||
                         !defined(labelText) ||
-                        !!dataLabel.div !== !!labelOptions.useHTML)) {
+                        !!dataLabel.div !== !!labelOptions.useHTML ||
+                        (
+                        // Change from no rotation to rotation and
+                        // vice versa. Don't use defined() because
+                        // rotation = 0 means also rotation = undefined
+                        (!dataLabel.rotation ||
+                            !labelOptions.rotation) &&
+                            dataLabel.rotation !== labelOptions.rotation))) {
+                        isNew = true;
                         point.dataLabel = dataLabel =
                             point.dataLabel && point.dataLabel.destroy();
                         if (point.dataLabels) {

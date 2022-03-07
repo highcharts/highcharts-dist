@@ -302,6 +302,16 @@ var ColorAxis = /** @class */ (function (_super) {
             axis.axisParent = group;
             // Call the base
             _super.prototype.getOffset.call(this);
+            var legend_1 = this.chart.legend;
+            // Adds `maxLabelLength` needed for label padding corrections done
+            // by `render()` and `getMargins()` (#15551).
+            legend_1.allItems.forEach(function (item) {
+                if (item instanceof ColorAxis) {
+                    item.drawLegendSymbol(legend_1, item);
+                }
+            });
+            legend_1.render();
+            this.chart.getMargins(true);
             // First time only
             if (!axis.added) {
                 axis.added = true;
@@ -344,17 +354,24 @@ var ColorAxis = /** @class */ (function (_super) {
         var horiz = axis.horiz;
         var width = pick(legendOptions.symbolWidth, horiz ? ColorAxis.defaultLegendLength : 12);
         var height = pick(legendOptions.symbolHeight, horiz ? 12 : ColorAxis.defaultLegendLength);
-        var labelPadding = pick(legendOptions.labelPadding, horiz ? 16 : 30);
+        var labelPadding = pick(
+        // @todo: This option is not documented, nor implemented when
+        // vertical
+        legendOptions.labelPadding, horiz ? 16 : 30);
         var itemDistance = pick(legendOptions.itemDistance, 10);
         this.setLegendColor();
         // Create the gradient
-        item.legendSymbol = this.chart.renderer.rect(0, legend.baseline - 11, width, height).attr({
-            zIndex: 1
-        }).add(item.legendGroup);
+        if (!item.legendSymbol) {
+            item.legendSymbol = this.chart.renderer.rect(0, legend.baseline - 11, width, height).attr({
+                zIndex: 1
+            }).add(item.legendGroup);
+        }
         // Set how much space this legend item takes up
         axis.legendItemWidth = (width +
             padding +
-            (horiz ? itemDistance : labelPadding));
+            (horiz ?
+                itemDistance :
+                this.options.labels.x + this.maxLabelLength));
         axis.legendItemHeight = height + padding + (horiz ? labelPadding : 0);
     };
     /**

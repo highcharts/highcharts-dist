@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * Marker clusters module for Highcharts
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Extensions/MarkerClusters.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Core/Series/Point.js'], _modules['Core/Series/Series.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Renderer/SVG/SVGRenderer.js'], _modules['Core/Utilities.js'], _modules['Core/Axis/Axis.js']], function (A, Chart, D, Point, Series, SeriesRegistry, SVGRenderer, U, Axis) {
@@ -1446,12 +1455,14 @@
                 mapView = chart.mapView,
                 xAxis = series.xAxis,
                 yAxis = series.yAxis,
+                xData = series.xData,
+                yData = series.yData,
                 clusterOptions = series.options.cluster,
                 realExtremes = series.getRealExtremes(),
                 visibleXData = [],
                 visibleYData = [],
-                visibleDataIndexes = [],
-                oldPointsState,
+                visibleDataIndexes = [];
+            var oldPointsState,
                 oldDataLen,
                 oldMarkerClusterInfo,
                 kmeansThreshold,
@@ -1468,12 +1479,25 @@
                 layoutAlgOptions,
                 point,
                 i;
+            // For map point series, we need to resolve lon, lat and geometry options
+            // and project them on the plane in order to get x and y. In the regular
+            // series flow, this is not done until the `translate` method because the
+            // resulting [x, y] position depends on inset positions in the MapView.
+            if (mapView && series.is('mappoint') && xData && yData) {
+                (series.options.data || []).forEach(function (p, i) {
+                    var xy = series.projectPoint(p);
+                    if (xy) {
+                        xData[i] = xy.x;
+                        yData[i] = xy.y;
+                    }
+                });
+            }
             if (clusterOptions &&
                 clusterOptions.enabled &&
-                series.xData &&
-                series.xData.length &&
-                series.yData &&
-                series.yData.length &&
+                xData &&
+                xData.length &&
+                yData &&
+                yData.length &&
                 !chart.polar) {
                 type = clusterOptions.layoutAlgorithm.type;
                 layoutAlgOptions = clusterOptions.layoutAlgorithm;
@@ -1493,34 +1517,34 @@
                 cropDataOffsetX = Math.abs(p1.x - p2.x);
                 cropDataOffsetY = Math.abs(p1.y - p2.y);
                 // Get only visible data.
-                for (i = 0; i < series.xData.length; i++) {
+                for (i = 0; i < xData.length; i++) {
                     if (!series.dataMaxX) {
                         if (!defined(seriesMaxX) ||
                             !defined(seriesMinX) ||
                             !defined(seriesMaxY) ||
                             !defined(seriesMinY)) {
-                            seriesMaxX = seriesMinX = series.xData[i];
-                            seriesMaxY = seriesMinY = series.yData[i];
+                            seriesMaxX = seriesMinX = xData[i];
+                            seriesMaxY = seriesMinY = yData[i];
                         }
-                        else if (isNumber(series.yData[i]) &&
+                        else if (isNumber(yData[i]) &&
                             isNumber(seriesMaxY) &&
                             isNumber(seriesMinY)) {
-                            seriesMaxX = Math.max(series.xData[i], seriesMaxX);
-                            seriesMinX = Math.min(series.xData[i], seriesMinX);
-                            seriesMaxY = Math.max(series.yData[i] || seriesMaxY, seriesMaxY);
-                            seriesMinY = Math.min(series.yData[i] || seriesMinY, seriesMinY);
+                            seriesMaxX = Math.max(xData[i], seriesMaxX);
+                            seriesMinX = Math.min(xData[i], seriesMinX);
+                            seriesMaxY = Math.max(yData[i] || seriesMaxY, seriesMaxY);
+                            seriesMinY = Math.min(yData[i] || seriesMinY, seriesMinY);
                         }
                     }
                     // Crop data to visible ones with appropriate offset to prevent
                     // cluster size changes on the edge of the plot area.
-                    if (series.xData[i] >= (realExtremes.minX - cropDataOffsetX) &&
-                        series.xData[i] <= (realExtremes.maxX + cropDataOffsetX) &&
-                        (series.yData[i] || realExtremes.minY) >=
+                    if (xData[i] >= (realExtremes.minX - cropDataOffsetX) &&
+                        xData[i] <= (realExtremes.maxX + cropDataOffsetX) &&
+                        (yData[i] || realExtremes.minY) >=
                             (realExtremes.minY - cropDataOffsetY) &&
-                        (series.yData[i] || realExtremes.maxY) <=
+                        (yData[i] || realExtremes.maxY) <=
                             (realExtremes.maxY + cropDataOffsetY)) {
-                        visibleXData.push(series.xData[i]);
-                        visibleYData.push(series.yData[i]);
+                        visibleXData.push(xData[i]);
+                        visibleYData.push(yData[i]);
                         visibleDataIndexes.push(i);
                     }
                 }
@@ -1565,7 +1589,7 @@
                     oldPointsState = {};
                 }
                 // Save points old state info.
-                oldDataLen = series.xData.length;
+                oldDataLen = xData.length;
                 oldMarkerClusterInfo = series.markerClusterInfo;
                 if (clusteredData) {
                     series.processedXData = clusteredData.groupedXData;

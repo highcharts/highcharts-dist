@@ -264,6 +264,8 @@ var WaterfallSeries = /** @class */ (function (_super) {
                     point.tooltipPos[1] = tooltipY;
                 }
             }
+            // Check point position after recalculation (#16788)
+            point.isInside = this.isPointInside(point);
         }
     };
     // Call default processData then override yData to reflect waterfall's

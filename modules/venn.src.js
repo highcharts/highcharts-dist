@@ -1,12 +1,11 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * (c) 2017-2021 Highsoft AS
  * Authors: Jon Arild Nygard
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -21,10 +20,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Core/Geometry/GeometryUtilities.js', [], function () {
@@ -603,12 +612,15 @@
                 params.attribs['class'] = this.getClassName();
                 if (this.shouldDraw()) {
                     if (!graphic) {
-                        this.graphic = graphic =
-                            renderer[params.shapeType](params.shapeArgs)
-                                .add(params.group);
+                        this.graphic = graphic = params.shapeType === 'text' ?
+                            renderer.text() :
+                            renderer[params.shapeType](params.shapeArgs || {});
+                        graphic.add(params.group);
+                    }
+                    if (css) {
+                        graphic.css(css);
                     }
                     graphic
-                        .css(css)
                         .attr(params.attribs)
                         .animate(animatableAttribs, params.isNew ? false : animation, onComplete);
                 }

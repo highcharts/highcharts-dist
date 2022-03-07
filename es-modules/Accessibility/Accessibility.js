@@ -345,7 +345,7 @@ var Accessibility = /** @class */ (function () {
                 });
             });
             // Direct updates (events happen after render)
-            ['afterDrilldown', 'drillupall'].forEach(function (event) {
+            ['afterApplyDrilldown', 'drillupall'].forEach(function (event) {
                 addEvent(ChartClass, event, function chartOnAfterDrilldown() {
                     var a11y = this.accessibility;
                     if (a11y && !a11y.zombie) {

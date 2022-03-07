@@ -19,6 +19,8 @@ import Point from '../Core/Series/Point.js';
 import SeriesRegistry from '../Core/Series/SeriesRegistry.js';
 var seriesTypes = SeriesRegistry.seriesTypes;
 import U from '../Core/Utilities.js';
+import D from '../Core/DefaultOptions.js';
+var getOptions = D.getOptions;
 var addEvent = U.addEvent, defined = U.defined, extend = U.extend, fireEvent = U.fireEvent, isNumber = U.isNumber, merge = U.merge, objectEach = U.objectEach, pick = U.pick, splat = U.splat;
 /**
  * Callback function to modify the CSV before parsing it by the data module.
@@ -609,6 +611,10 @@ var Data = /** @class */ (function () {
         this.firstRowAsNames = pick(options.firstRowAsNames, this.firstRowAsNames, true);
         this.decimalRegex = (decimalPoint &&
             new RegExp('^(-?[0-9]+)' + decimalPoint + '([0-9]+)$'));
+        // Always stop old polling when we have new options
+        if (this.liveDataTimeout !== void 0) {
+            clearTimeout(this.liveDataTimeout);
+        }
         // This is a two-dimensional array holding the raw, trimmed string
         // values with the same organisation as the columns array. It makes it
         // possible for example to revert from interpreted timestamps to
@@ -617,11 +623,7 @@ var Data = /** @class */ (function () {
         // No need to parse or interpret anything
         if (this.columns.length) {
             this.dataFound();
-            hasData = true;
-        }
-        if (this.hasURLOption(options)) {
-            clearTimeout(this.liveDataTimeout);
-            hasData = false;
+            hasData = !this.hasURLOption(options);
         }
         if (!hasData) {
             // Fetch live data
@@ -1357,7 +1359,7 @@ var Data = /** @class */ (function () {
                 success: function (json) {
                     fn(json);
                     if (options.enablePolling) {
-                        setTimeout(function () {
+                        data.liveDataTimeout = setTimeout(function () {
                             fetchSheet(fn);
                         }, refreshRate);
                     }
@@ -1451,9 +1453,10 @@ var Data = /** @class */ (function () {
      *        Column index
      */
     Data.prototype.parseColumn = function (column, col) {
-        var rawColumns = this.rawColumns, columns = this.columns, row = column.length, val, floatVal, trimVal, trimInsideVal, firstRowAsNames = this.firstRowAsNames, isXColumn = this.valueCount.xColumns.indexOf(col) !== -1, dateVal, backup = [], diff, chartOptions = this.chartOptions, descending, columnTypes = this.options.columnTypes || [], columnType = columnTypes[col], forceCategory = isXColumn && ((chartOptions &&
+        var rawColumns = this.rawColumns, columns = this.columns, firstRowAsNames = this.firstRowAsNames, isXColumn = this.valueCount.xColumns.indexOf(col) !== -1, backup = [], chartOptions = this.chartOptions, columnTypes = this.options.columnTypes || [], columnType = columnTypes[col], forceCategory = isXColumn && ((chartOptions &&
             chartOptions.xAxis &&
-            splat(chartOptions.xAxis)[0].type === 'category') || columnType === 'string');
+            splat(chartOptions.xAxis)[0].type === 'category') || columnType === 'string'), columnHasName = defined(column.name);
+        var row = column.length, val, floatVal, trimVal, trimInsideVal, dateVal, diff, descending;
         if (!rawColumns[col]) {
             rawColumns[col] = [];
         }
@@ -1468,7 +1471,8 @@ var Data = /** @class */ (function () {
             }
             // Disable number or date parsing by setting the X axis type to
             // category
-            if (forceCategory || (row === 0 && firstRowAsNames)) {
+            if (forceCategory ||
+                (row === 0 && firstRowAsNames && !columnHasName)) {
                 column[row] = '' + trimVal;
             }
             else if (+trimInsideVal === floatVal) { // is numeric
@@ -1815,7 +1819,7 @@ var Data = /** @class */ (function () {
      * @param {boolean} [redraw=true]
      */
     Data.prototype.update = function (options, redraw) {
-        var chart = this.chart;
+        var chart = this.chart, chartOptions = chart.options;
         if (options) {
             // Set the complete handler
             options.afterComplete = function (dataOptions) {
@@ -1834,8 +1838,13 @@ var Data = /** @class */ (function () {
                 }
             };
             // Apply it
-            merge(true, chart.options.data, options);
-            this.init(chart.options.data);
+            merge(true, chartOptions.data, options);
+            // Reset columns if fetching spreadsheet, to force a re-fetch
+            if (chartOptions.data && chartOptions.data.googleSpreadsheetKey &&
+                !options.columns) {
+                delete chartOptions.data.columns;
+            }
+            this.init(chartOptions.data);
         }
     };
     return Data;
@@ -1855,7 +1864,9 @@ G.data = function (dataOptions, chartOptions, chart) {
 addEvent(Chart, 'init', function (e) {
     var chart = this, // eslint-disable-line no-invalid-this
     userOptions = (e.args[0] || {}), callback = e.args[1];
-    if (userOptions && userOptions.data && !chart.hasDataDef) {
+    var defaultDataOptions = getOptions().data;
+    if ((defaultDataOptions || userOptions && userOptions.data) &&
+        !chart.hasDataDef) {
         chart.hasDataDef = true;
         /**
          * The data parser for this chart.
@@ -1863,7 +1874,8 @@ addEvent(Chart, 'init', function (e) {
          * @name Highcharts.Chart#data
          * @type {Highcharts.Data|undefined}
          */
-        chart.data = new G.Data(extend(userOptions.data, {
+        var dataOptions = merge(defaultDataOptions, userOptions.data);
+        chart.data = new G.Data(extend(dataOptions, {
             afterComplete: function (dataOptions) {
                 var i, series;
                 // Merge series configs

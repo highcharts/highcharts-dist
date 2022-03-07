@@ -22,10 +22,12 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import ColorMapMixin from '../ColorMapMixin.js';
+import MapUtilities from '../../Maps/MapUtilities.js';
+var boundsFromPath = MapUtilities.boundsFromPath;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var ScatterSeries = SeriesRegistry.seriesTypes.scatter;
 import U from '../../Core/Utilities.js';
-var extend = U.extend;
+var extend = U.extend, isNumber = U.isNumber, pick = U.pick;
 /* *
  *
  *  Class
@@ -87,6 +89,27 @@ var MapPoint = /** @class */ (function (_super) {
             }
         }
         return point;
+    };
+    /*
+     * Get the bounds in terms of projected units
+     * @param projection
+     * @return MapBounds|undefined The computed bounds
+     */
+    MapPoint.prototype.getProjectedBounds = function (projection) {
+        var path = MapPoint.getProjectedPath(this, projection), bounds = boundsFromPath(path), properties = this.properties;
+        if (bounds) {
+            // Cache point bounding box for use to position data labels, bubbles
+            // etc
+            var propMiddleX = properties && properties['hc-middle-x'], propMiddleY = properties && properties['hc-middle-y'];
+            bounds.midX = (bounds.x1 + (bounds.x2 - bounds.x1) * pick(this.middleX, isNumber(propMiddleX) ? propMiddleX : 0.5));
+            var middleYFraction = pick(this.middleY, isNumber(propMiddleY) ? propMiddleY : 0.5);
+            // No geographic geometry, only path given => flip
+            if (!this.geometry) {
+                middleYFraction = 1 - middleYFraction;
+            }
+            bounds.midY = bounds.y2 - (bounds.y2 - bounds.y1) * middleYFraction;
+            return bounds;
+        }
     };
     /**
      * Stop the fade-out

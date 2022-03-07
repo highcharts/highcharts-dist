@@ -165,7 +165,7 @@ function init() {
                                 }
                             }
                             // Add points and reset
-                            if (clientX !== lastClientX) {
+                            if (!compareX || clientX !== lastClientX) {
                                 // maxI is number too:
                                 if (typeof minI !== 'undefined') {
                                     plotY =
@@ -238,6 +238,11 @@ function init() {
     }
     seriesTypes.scatter.prototype.fill = true;
     extend(seriesTypes.area.prototype, {
+        fill: true,
+        fillOpacity: true,
+        sampling: true
+    });
+    extend(seriesTypes.areaspline.prototype, {
         fill: true,
         fillOpacity: true,
         sampling: true

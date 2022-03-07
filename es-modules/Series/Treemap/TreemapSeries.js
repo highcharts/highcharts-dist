@@ -35,9 +35,10 @@ import TreemapAlgorithmGroup from './TreemapAlgorithmGroup.js';
 import TreemapPoint from './TreemapPoint.js';
 import TreemapUtilities from './TreemapUtilities.js';
 import TU from '../TreeUtilities.js';
+import Breadcrumbs from '../../Extensions/Breadcrumbs.js';
 var getColor = TU.getColor, getLevelOptions = TU.getLevelOptions, updateRootId = TU.updateRootId;
 import U from '../../Core/Utilities.js';
-var addEvent = U.addEvent, correctFloat = U.correctFloat, defined = U.defined, error = U.error, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, stableSort = U.stableSort;
+var addEvent = U.addEvent, correctFloat = U.correctFloat, defined = U.defined, error = U.error, extend = U.extend, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, stableSort = U.stableSort;
 import './TreemapComposition.js';
 /* *
  *
@@ -73,6 +74,7 @@ var TreemapSeries = /** @class */ (function (_super) {
         _this.points = void 0;
         _this.rootNode = void 0;
         _this.tree = void 0;
+        _this.level = void 0;
         return _this;
         /* eslint-enable valid-jsdoc */
     }
@@ -286,6 +288,44 @@ var TreemapSeries = /** @class */ (function (_super) {
                 series.calculateChildrenAreas(child, child.values);
             }
         });
+    };
+    /**
+    * Create level list.
+    *
+    * @requires  modules/breadcrumbs
+    *
+    * @function TreemapSeries#createList
+    * @param {TreemapSeries} this
+    *        Treemap Series class.
+    */
+    TreemapSeries.prototype.createList = function (e) {
+        var chart = this.chart, breadcrumbs = chart.breadcrumbs, list = [];
+        if (breadcrumbs) {
+            var currentLevelNumber_1 = 0;
+            list.push({
+                level: currentLevelNumber_1,
+                levelOptions: chart.series[0]
+            });
+            var node = e.target.nodeMap[e.newRootId];
+            var extraNodes = [];
+            // When the root node is set and has parent,
+            // recreate the path from the node tree.
+            while (node.parent || node.parent === '') {
+                extraNodes.push(node);
+                node = e.target.nodeMap[node.parent];
+            }
+            extraNodes.reverse().forEach(function (node) {
+                list.push({
+                    level: ++currentLevelNumber_1,
+                    levelOptions: node
+                });
+            });
+            // If the list has only first element, we should clear it
+            if (list.length <= 1) {
+                list.length = 0;
+            }
+        }
+        return list;
     };
     /**
      * Extend drawDataLabels with logic to handle custom options related to
@@ -506,7 +546,8 @@ var TreemapSeries = /** @class */ (function (_super) {
         return !!this.processedXData.length; // != 0
     };
     TreemapSeries.prototype.init = function (chart, options) {
-        var series = this, setOptionsEvent;
+        var series = this, breadcrumbsOptions = merge(options.drillUpButton, options.breadcrumbs);
+        var setOptionsEvent;
         // If color series logic is loaded, add some properties
         this.colorAttribs = ColorMapMixin.SeriesMixin.colorAttribs;
         setOptionsEvent = addEvent(series, 'setOptions', function (event) {
@@ -529,7 +570,38 @@ var TreemapSeries = /** @class */ (function (_super) {
         series.eventsToUnbind.push(setOptionsEvent);
         if (series.options.allowTraversingTree) {
             series.eventsToUnbind.push(addEvent(series, 'click', series.onClickDrillToNode));
+            series.eventsToUnbind.push(addEvent(series, 'setRootNode', function (e) {
+                var chart = series.chart;
+                if (chart.breadcrumbs) {
+                    // Create a list using the event after drilldown.
+                    chart.breadcrumbs.updateProperties(series.createList(e));
+                }
+            }));
+            series.eventsToUnbind.push(addEvent(series, 'update', function (e, redraw) {
+                var breadcrumbs = this.chart.breadcrumbs;
+                if (breadcrumbs && e.options.breadcrumbs) {
+                    breadcrumbs.update(e.options.breadcrumbs);
+                }
+            }));
+            series.eventsToUnbind.push(addEvent(series, 'destroy', function destroyEvents(e) {
+                var chart = this.chart;
+                if (chart.breadcrumbs) {
+                    chart.breadcrumbs.destroy();
+                    if (!e.keepEventsForUpdate) {
+                        chart.breadcrumbs = void 0;
+                    }
+                }
+            }));
         }
+        if (!chart.breadcrumbs) {
+            chart.breadcrumbs = new Breadcrumbs(chart, breadcrumbsOptions);
+        }
+        series.eventsToUnbind.push(addEvent(chart.breadcrumbs, 'up', function (e) {
+            var drillUpsNumber = this.level - e.newLevel;
+            for (var i = 0; i < drillUpsNumber; i++) {
+                series.drillUp();
+            }
+        }));
     };
     /**
      * Add drilling on the suitable points.
@@ -587,39 +659,6 @@ var TreemapSeries = /** @class */ (function (_super) {
                 .get();
         }
         return attr;
-    };
-    TreemapSeries.prototype.renderTraverseUpButton = function (rootId) {
-        var series = this, nodeMap = series.nodeMap, node = nodeMap[rootId], name = node.name, buttonOptions = series.options
-            .traverseUpButton, backText = pick(buttonOptions.text, name, '◁ Back'), attr, states;
-        if (rootId === '' || (series.is('sunburst') &&
-            series.tree.children.length === 1 &&
-            rootId === series.tree.children[0].id)) {
-            if (series.drillUpButton) {
-                series.drillUpButton = series.drillUpButton.destroy();
-            }
-        }
-        else if (!this.drillUpButton) {
-            attr = buttonOptions.theme;
-            states = attr && attr.states;
-            this.drillUpButton = this.chart.renderer
-                .button(backText, 0, 0, function () {
-                series.drillUp();
-            }, attr, states && states.hover, states && states.select)
-                .addClass('highcharts-drillup-button')
-                .attr({
-                align: buttonOptions.position.align,
-                zIndex: 7
-            })
-                .add()
-                .align(buttonOptions.position, false, buttonOptions.relativeTo || 'plotBox');
-        }
-        else {
-            this.drillUpButton.placed = false;
-            this.drillUpButton.attr({
-                text: backText
-            })
-                .align();
-        }
     };
     /**
      * Set the node's color recursively, from the parent down.
@@ -828,7 +867,6 @@ var TreemapSeries = /** @class */ (function (_super) {
             rootId = series.rootNode;
             rootNode = series.nodeMap[rootId];
         }
-        series.renderTraverseUpButton(rootId);
         series.mapOptionsToLevel = getLevelOptions({
             from: rootNode.level + 1,
             levels: options.levels,
@@ -897,7 +935,7 @@ var TreemapSeries = /** @class */ (function (_super) {
      *         Treemap
      *
      * @extends      plotOptions.scatter
-     * @excluding    dragDrop, marker, jitter, dataSorting
+     * @excluding    cluster, connectEnds, connectNulls, dataSorting, dragDrop, jitter, marker
      * @product      highcharts
      * @requires     modules/treemap
      * @optionparent plotOptions.treemap
@@ -934,6 +972,16 @@ var TreemapSeries = /** @class */ (function (_super) {
          * The border radius for each treemap item.
          */
         borderRadius: 0,
+        /**
+         * Options for the breadcrumbs, the navigation at the top leading the
+         * way up through the traversed levels.
+         *
+         *
+         * @since 10.0.0
+         * @product   highcharts
+         * @extends   navigation.breadcrumbs
+         * @optionparent plotOptions.treemap.breadcrumbs
+         */
         /**
          * When the series contains less points than the crop threshold, all
          * points are drawn, event if the points fall outside the visible plot
@@ -1096,51 +1144,11 @@ var TreemapSeries = /** @class */ (function (_super) {
          */
         levelIsConstant: true,
         /**
-         * Options for the button appearing when drilling down in a treemap.
-         * Deprecated and replaced by
-         * [traverseUpButton](#plotOptions.treemap.traverseUpButton).
+         * Options for the button appearing when traversing down in a treemap.
+         *
+         * Since v9.3.3 the `traverseUpButton` is replaced by `breadcrumbs`.
          *
          * @deprecated
-         */
-        drillUpButton: {
-            /**
-             * The position of the button.
-             *
-             * @deprecated
-             */
-            position: {
-                /**
-                 * Vertical alignment of the button.
-                 *
-                 * @deprecated
-                 * @type      {Highcharts.VerticalAlignValue}
-                 * @default   top
-                 * @product   highcharts
-                 * @apioption plotOptions.treemap.drillUpButton.position.verticalAlign
-                 */
-                /**
-                 * Horizontal alignment of the button.
-                 *
-                 * @deprecated
-                 * @type {Highcharts.AlignValue}
-                 */
-                align: 'right',
-                /**
-                 * Horizontal offset of the button.
-                 *
-                 * @deprecated
-                 */
-                x: -10,
-                /**
-                 * Vertical offset of the button.
-                 *
-                 * @deprecated
-                 */
-                y: 10
-            }
-        },
-        /**
-         * Options for the button appearing when traversing down in a treemap.
          */
         traverseUpButton: {
             /**

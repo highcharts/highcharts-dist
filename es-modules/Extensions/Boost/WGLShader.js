@@ -370,7 +370,8 @@ function GLShader(gl) {
      * @private
      * @param series {Highcharts.Series} - the series to use
      */
-    function setBubbleUniforms(series, zCalcMin, zCalcMax) {
+    function setBubbleUniforms(series, zCalcMin, zCalcMax, pixelRatio) {
+        if (pixelRatio === void 0) { pixelRatio = 1; }
         var seriesOptions = series.options, zMin = Number.MAX_VALUE, zMax = -Number.MAX_VALUE;
         if (gl && shaderProgram && series.is('bubble')) {
             var pxSizes = series.getPxExtremes();
@@ -385,8 +386,8 @@ function GLShader(gl) {
             setUniform('bubbleZMin', zMin);
             setUniform('bubbleZMax', zMax);
             setUniform('bubbleZThreshold', series.options.zThreshold);
-            setUniform('bubbleMinSize', pxSizes.minPxSize);
-            setUniform('bubbleMaxSize', pxSizes.maxPxSize);
+            setUniform('bubbleMinSize', pxSizes.minPxSize * pixelRatio);
+            setUniform('bubbleMaxSize', pxSizes.maxPxSize * pixelRatio);
         }
     }
     /**

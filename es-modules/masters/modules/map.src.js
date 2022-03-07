@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v9.3.3 (2022-02-01)
+ * @license Highmaps JS v10.0.0 (2022-03-07)
  * @module highcharts/modules/map
  * @requires highcharts
  *
@@ -21,10 +21,14 @@ import MapBubbleSeries from '../../Series/MapBubble/MapBubbleSeries.js';
 import '../../Series/Heatmap/HeatmapSeries.js';
 import '../../Extensions/GeoJSON.js';
 import MapChart from '../../Core/Chart/MapChart.js';
+import MapView from '../../Maps/MapView.js';
+import Projection from '../../Maps/Projection.js';
 var G = Highcharts;
 G.ColorAxis = ColorAxis;
 G.MapChart = MapChart;
 G.mapChart = G.Map = MapChart.mapChart;
+G.MapView = MapView;
 G.maps = MapChart.maps;
+G.Projection = Projection;
 ColorAxis.compose(G.Chart, G.Fx, G.Legend, G.Series);
 MapBubbleSeries.compose(G.Chart, G.Legend, G.Series);

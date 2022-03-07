@@ -2271,6 +2271,8 @@ var defaultOptions = {
          *
          * @sample {highcharts} highcharts/tooltip/pointformat/
          *         A different point format with value suffix
+         * @sample {highcharts|highstock} highcharts/tooltip/pointformat-extra-information/
+         *         Show extra information about points in the tooltip
          * @sample {highmaps} maps/tooltip/format/
          *         Format demo
          *

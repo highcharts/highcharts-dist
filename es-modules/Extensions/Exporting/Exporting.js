@@ -463,7 +463,7 @@ var Exporting;
                             };
                             css(element, extend({
                                 cursor: 'pointer'
-                            }, navOptions.menuItemStyle));
+                            }, navOptions.menuItemStyle || {}));
                         }
                     }
                     // Keep references to menu divs to be able to destroy them
@@ -917,14 +917,16 @@ var Exporting;
                     dummySVG.removeChild(dummy);
                 }
                 // Loop through all styles and add them inline if they are ok
-                if (G.isFirefox || G.isMS) {
-                    // Some browsers put lots of styles on the prototype
-                    for (var p in styles) { // eslint-disable-line guard-for-in
+                for (var p in styles) {
+                    if (
+                    // Some browsers put lots of styles on the prototype...
+                    G.isFirefox ||
+                        G.isMS ||
+                        G.isSafari || // #16902
+                        // ... Chrome puts them on the instance
+                        Object.hasOwnProperty.call(styles, p)) {
                         filterStyles(styles[p], p);
                     }
-                }
-                else {
-                    objectEach(styles, filterStyles);
                 }
                 // Apply styles
                 if (cssText) {

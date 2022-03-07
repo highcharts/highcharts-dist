@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * Dependency wheel module
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
@@ -136,7 +145,7 @@
 
         return DependencyWheelPoint;
     });
-    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/DependencyWheel/DependencyWheelPoint.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, DependencyWheelPoint, H, SeriesRegistry, U) {
+    _registerModule(_modules, 'Series/DependencyWheel/DependencyWheelSeries.js', [_modules['Core/Animation/AnimationUtilities.js'], _modules['Series/DependencyWheel/DependencyWheelPoint.js'], _modules['Series/Sankey/SankeyColumnComposition.js'], _modules['Core/Globals.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (A, DependencyWheelPoint, SankeyColumnComposition, H, SeriesRegistry, U) {
         /* *
          *
          *  Dependency wheel module
@@ -241,7 +250,6 @@
             DependencyWheelSeries.prototype.createNode = function (id) {
                 var node = SankeySeries.prototype.createNode.call(this,
                     id);
-                node.index = this.nodes.length - 1;
                 /**
                  * Return the sum of incoming and outgoing links.
                  * @private
@@ -300,7 +308,8 @@
              * @private
              */
             DependencyWheelSeries.prototype.createNodeColumns = function () {
-                var columns = [this.createNodeColumn()];
+                var columns = [SankeyColumnComposition.compose([],
+                    this)];
                 this.nodes.forEach(function (node) {
                     node.column = 0;
                     columns[0].push(node);

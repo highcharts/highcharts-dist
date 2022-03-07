@@ -453,11 +453,12 @@ Series.prototype.getStackIndicator = function (stackIndicator, x, index, key) {
     // changed:
     if (!defined(stackIndicator) ||
         stackIndicator.x !== x ||
-        (key && stackIndicator.key !== key)) {
+        (key && stackIndicator.stackKey !== key)) {
         stackIndicator = {
             x: x,
             index: 0,
-            key: key
+            key: key,
+            stackKey: key
         };
     }
     else {

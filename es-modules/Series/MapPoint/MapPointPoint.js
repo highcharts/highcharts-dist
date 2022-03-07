@@ -50,16 +50,10 @@ var MapPointPoint = /** @class */ (function (_super) {
      *
      * */
     /* eslint-disable valid-jsdoc */
-    MapPointPoint.prototype.applyOptions = function (options, x) {
-        var mergedOptions = (typeof options.lat !== 'undefined' &&
-            typeof options.lon !== 'undefined' ?
-            merge(options, this.series.chart.fromLatLonToPoint(options)) :
-            options);
-        return _super.prototype.applyOptions.call(this, mergedOptions, x);
-    };
     MapPointPoint.prototype.isValid = function () {
         return Boolean(this.options.geometry ||
-            (isNumber(this.x) && isNumber(this.y)));
+            (isNumber(this.x) && isNumber(this.y)) ||
+            (isNumber(this.options.lon) && isNumber(this.options.lat)));
     };
     return MapPointPoint;
 }(ScatterSeries.prototype.pointClass));

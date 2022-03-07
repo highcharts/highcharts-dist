@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.3.3 (2022-02-01)
+ * @license Highcharts Gantt JS v10.0.0 (2022-03-07)
  * @module highcharts/modules/static-scale
  * @requires highcharts
  *

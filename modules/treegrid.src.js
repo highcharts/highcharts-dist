@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v9.3.3 (2022-02-01)
+ * @license Highcharts Gantt JS v10.0.0 (2022-03-07)
  *
  * Tree Grid
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Core/Axis/BrokenAxis.js', [_modules['Extensions/Stacking.js'], _modules['Core/Utilities.js']], function (StackItem, U) {
@@ -1082,9 +1091,14 @@
                         var tickmarkOffset = axis.tickmarkOffset,
                             lastTick = axis.tickPositions[axis.tickPositions.length - 1],
                             firstTick = axis.tickPositions[0];
-                        var label = void 0;
+                        var label = void 0,
+                            tickMark = void 0;
                         while ((label = axis.hiddenLabels.pop()) && label.element) {
                             label.show(); // #15453
+                        }
+                        while ((tickMark = axis.hiddenMarks.pop()) &&
+                            tickMark.element) {
+                            tickMark.show(); // #16439
                         }
                         // Hide/show firts tick label.
                         label = axis.ticks[firstTick].label;
@@ -1107,14 +1121,10 @@
                             }
                         }
                         var mark = axis.ticks[lastTick].mark;
-                        if (mark) {
-                            if (lastTick - max < tickmarkOffset &&
-                                lastTick - max > 0 && axis.ticks[lastTick].isLast) {
-                                mark.hide();
-                            }
-                            else if (axis.ticks[lastTick - 1]) {
-                                mark.show();
-                            }
+                        if (mark &&
+                            lastTick - max < tickmarkOffset &&
+                            lastTick - max > 0 && axis.ticks[lastTick].isLast) {
+                            axis.hiddenMarks.push(mark.hide());
                         }
                     }
                 }
@@ -1404,6 +1414,7 @@
                     axis.grid = new Additions(axis);
                 }
                 axis.hiddenLabels = [];
+                axis.hiddenMarks = [];
             }
             /**
              * Center tick labels in cells.
@@ -2225,6 +2236,17 @@
                             node = axis.treeGrid.mapOfPosToGridNode[pos],
                             breaks = axis.treeGrid.collapse(node);
                         brokenAxis.setBreaks(breaks, pick(redraw, true));
+                    }
+                };
+                /**
+                 * Destroy remaining labelIcon if exist.
+                 *
+                 * @private
+                 * @function Highcharts.Tick#destroy
+                 */
+                Additions.prototype.destroy = function () {
+                    if (this.labelIcon) {
+                        this.labelIcon.destroy();
                     }
                 };
                 /**

@@ -27,7 +27,7 @@ import Point from '../../Core/Series/Point.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var ColumnSeries = SeriesRegistry.seriesTypes.column;
 import U from '../../Core/Utilities.js';
-var defined = U.defined, extend = U.extend;
+var defined = U.defined;
 /* *
  *
  *  Class
@@ -80,6 +80,42 @@ var SankeyPoint = /** @class */ (function (_super) {
     SankeyPoint.prototype.getClassName = function () {
         return (this.isNode ? 'highcharts-node ' : 'highcharts-link ') +
             Point.prototype.getClassName.call(this);
+    };
+    /**
+     * If there are incoming links, place it to the right of the
+     * highest order column that links to this one.
+     *
+     * @private
+     */
+    SankeyPoint.prototype.getFromNode = function () {
+        var node = this;
+        var fromColumn = -1, fromNode;
+        for (var i = 0; i < node.linksTo.length; i++) {
+            var point = node.linksTo[i];
+            if (point.fromNode.column > fromColumn &&
+                point.fromNode !== node // #16080
+            ) {
+                fromNode = point.fromNode;
+                fromColumn = fromNode.column;
+            }
+        }
+        return { fromNode: fromNode, fromColumn: fromColumn };
+    };
+    /**
+     * Calculate node.column if it's not set by user
+     * @private
+     */
+    SankeyPoint.prototype.setNodeColumn = function () {
+        var node = this;
+        if (!defined(node.options.column)) {
+            // No links to this node, place it left
+            if (node.linksTo.length === 0) {
+                node.column = 0;
+            }
+            else {
+                node.column = node.getFromNode().fromColumn + 1;
+            }
+        }
     };
     /**
      * @private

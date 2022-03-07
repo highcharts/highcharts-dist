@@ -1,12 +1,11 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  * Organization chart series type
  *
  * (c) 2019-2021 Torstein Honsi
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -21,13 +20,23 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
-    _registerModule(_modules, 'Series/Organization/OrganizationPoint.js', [_modules['Core/Series/SeriesRegistry.js']], function (SeriesRegistry) {
+    _registerModule(_modules, 'Series/Organization/OrganizationPoint.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
         /* *
          *
          *  Organization chart module
@@ -55,7 +64,31 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var SankeyPoint = SeriesRegistry.seriesTypes.sankey.prototype.pointClass;
+        var SankeyPointClass = SeriesRegistry.seriesTypes.sankey.prototype.pointClass;
+        var defined = U.defined,
+            find = U.find,
+            pick = U.pick;
+        /**
+         * Get columns offset including all sibiling and cousins etc.
+         *
+         * @private
+         * @param node Point
+         */
+        function getOffset(node) {
+            var offset = node.linksFrom.length;
+            node.linksFrom.forEach(function (link) {
+                if (link.id === link.toNode.linksTo[0].id) {
+                    // Node has children, that hangs directly from it:
+                    offset += getOffset(link.toNode);
+                }
+                else {
+                    // If the node hangs from multiple parents, and this is not
+                    // the last one, ignore it:
+                    offset--;
+                }
+            });
+            return offset;
+        }
         /* *
          *
          *  Class
@@ -93,8 +126,52 @@
             OrganizationPoint.prototype.getSum = function () {
                 return 1;
             };
+            /**
+             * Set node.column for hanging layout
+             * @private
+             */
+            OrganizationPoint.prototype.setNodeColumn = function () {
+                _super.prototype.setNodeColumn.call(this);
+                var node = this,
+                    fromNode = node.getFromNode().fromNode;
+                // Hanging layout
+                if (
+                // Not defined by user
+                !defined(node.options.column) &&
+                    // Has links to
+                    node.linksTo.length !== 0 &&
+                    // And parent uses hanging layout
+                    fromNode &&
+                    fromNode.options.layout === 'hanging') {
+                    // Default all children of the hanging node
+                    // to have hanging layout
+                    node.options.layout = pick(node.options.layout, 'hanging');
+                    node.hangsFrom = fromNode;
+                    var i_1 = -1;
+                    find(fromNode.linksFrom, function (link, index) {
+                        var found = link.toNode === node;
+                        if (found) {
+                            i_1 = index;
+                        }
+                        return found;
+                    });
+                    // For all siblings' children (recursively)
+                    // increase the column offset to prevent overlapping
+                    for (var j = 0; j < fromNode.linksFrom.length; j++) {
+                        var link = fromNode.linksFrom[j];
+                        if (link.toNode.id === node.id) {
+                            // Break
+                            j = fromNode.linksFrom.length;
+                        }
+                        else {
+                            i_1 += getOffset(link.toNode);
+                        }
+                    }
+                    node.column = (node.column || 0) + i_1;
+                }
+            };
             return OrganizationPoint;
-        }(SankeyPoint));
+        }(SankeyPointClass));
         /* *
          *
          *  Default Export
@@ -295,25 +372,6 @@
                 };
                 return node;
             };
-            OrganizationSeries.prototype.createNodeColumn = function () {
-                var column = _super.prototype.createNodeColumn
-                        .call(this);
-                // Wrap the offset function so that the hanging node's children are
-                // aligned to their parent
-                wrap(column, 'offset', function (proceed, node, factor) {
-                    var offset = proceed.call(this,
-                        node,
-                        factor); // eslint-disable-line no-invalid-this
-                        // Modify the default output if the parent's layout is 'hanging'
-                        if (node.hangsFrom) {
-                            return {
-                                absoluteTop: node.hangsFrom.nodeY
-                            };
-                    }
-                    return offset;
-                });
-                return column;
-            };
             OrganizationSeries.prototype.pointAttribs = function (point, state) {
                 var series = this, attribs = SankeySeries.prototype.pointAttribs.call(series, point, state), level = point.isNode ? point.level : point.fromNode.level, levelOptions = series.mapOptionsToLevel[level || 0] || {}, options = point.options, stateOptions = (levelOptions.states &&
                         levelOptions.states[state]) || {}, values = ['borderRadius', 'linkColor', 'linkLineWidth']
@@ -395,16 +453,42 @@
             };
             OrganizationSeries.prototype.translateNode = function (node, column) {
                 SankeySeries.prototype.translateNode.call(this, node, column);
-                if (node.hangsFrom) {
-                    node.shapeArgs.height -=
-                        this.options.hangingIndent;
-                    if (!this.chart.inverted) {
-                        node.shapeArgs.y += this.options.hangingIndent;
+                var parentNode = node.hangsFrom,
+                    indent = this.options.hangingIndent || 0,
+                    sign = this.chart.inverted ? -1 : 1,
+                    shapeArgs = node.shapeArgs,
+                    indentLogic = this.options.hangingIndentTranslation,
+                    minLength = this.options.minNodeLength || 10;
+                if (parentNode) {
+                    if (indentLogic === 'cumulative') {
+                        // Move to the right:
+                        shapeArgs.height -= indent;
+                        shapeArgs.y -= sign * indent;
+                        while (parentNode) {
+                            shapeArgs.y += sign * indent;
+                            parentNode = parentNode.hangsFrom;
+                        }
+                    }
+                    else if (indentLogic === 'shrink') {
+                        // Resize the node:
+                        while (parentNode &&
+                            shapeArgs.height > indent + minLength) {
+                            shapeArgs.height -= indent;
+                            parentNode = parentNode.hangsFrom;
+                        }
+                    }
+                    else {
+                        // indentLogic === "inherit"
+                        // Do nothing (v9.3.2 and prev versions):
+                        shapeArgs.height -= indent;
+                        if (!this.chart.inverted) {
+                            shapeArgs.y += indent;
+                        }
                     }
                 }
                 node.nodeHeight = this.chart.inverted ?
-                    node.shapeArgs.width :
-                    node.shapeArgs.height;
+                    shapeArgs.width :
+                    shapeArgs.height;
             };
             /**
              * An organization chart is a diagram that shows the structure of an
@@ -564,6 +648,31 @@
                  */
                 hangingIndent: 20,
                 /**
+                 * Defines the indentation of a `hanging` layout parent's children.
+                 * Possible options:
+                 *
+                 * - `inherit` (default): Only the first child adds the indentation,
+                 * children of a child with indentation inherit the indentation.
+                 * - `cumulative`: All children of a child with indentation add its
+                 * own indent. The option may cause overlapping of nodes.
+                 * Then use `shrink` option:
+                 * - `shrink`: Nodes shrink by the
+                 * [hangingIndent](#plotOptions.organization.hangingIndent)
+                 * value until they reach the
+                 * [minNodeLength](#plotOptions.organization.minNodeLength).
+                 *
+                 * @sample highcharts/series-organization/hanging-cumulative
+                 *         Every indent increases the indentation
+                 *
+                 * @sample highcharts/series-organization/hanging-shrink
+                 *         Every indent decreases the nodes' width
+                 *
+                 * @type {Highcharts.OrganizationHangingIndentTranslationValue}
+                 * @since 10.0.0
+                 * @default inherit
+                 */
+                hangingIndentTranslation: 'inherit',
+                /**
                  * The color of the links between nodes.
                  *
                  * @type {Highcharts.ColorString}
@@ -580,9 +689,24 @@
                  */
                 linkLineWidth: 1,
                 /**
-                 * In a horizontal chart, the width of the nodes in pixels. Node that
+                 * In a horizontal chart, the minimum width of the **hanging** nodes
+                 * only, in pixels. In a vertical chart, the minimum height of the
+                 * **haning** nodes only, in pixels too.
+                 *
+                 * Note: Used only when
+                 * [hangingIndentTranslation](#plotOptions.organization.hangingIndentTranslation)
+                 * is set to `shrink`.
+                 *
+                 * @see [nodeWidth](#plotOptions.organization.nodeWidth)
+                 * @private
+                 */
+                minNodeLength: 10,
+                /**
+                 * In a horizontal chart, the width of the nodes in pixels. Note that
                  * most organization charts are vertical, so the name of this option
                  * is counterintuitive.
+                 *
+                 * @see [minNodeLength](#plotOptions.organization.minNodeLength)
                  *
                  * @private
                  */
@@ -613,6 +737,13 @@
          * nodes in the diagram.
          *
          * @typedef {"normal"|"hanging"} Highcharts.SeriesOrganizationNodesLayoutValue
+         */
+        /**
+         * Indent translation value for the child nodes in an organization chart, when
+         * parent has `hanging` layout. Option can shrink nodes (for tight charts),
+         * translate children to the left, or render nodes directly under the parent.
+         *
+         * @typedef {"inherit"|"cumulative"|"shrink"} Highcharts.OrganizationHangingIndentTranslationValue
          */
         ''; // detach doclets above
         /* *
@@ -679,6 +810,9 @@
         /**
          * Layout for the node's children. If `hanging`, this node's children will hang
          * below their parent, allowing a tighter packing of nodes in the diagram.
+         *
+         * Note: Since @next version, the `hanging` layout is set by default for
+         * children of a parent using `hanging` layout.
          *
          * @sample highcharts/demo/organization-chart
          *         Hanging layout

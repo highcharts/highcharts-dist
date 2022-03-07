@@ -26,6 +26,7 @@ var __extends = (this && this.__extends) || (function () {
 import A from '../../Core/Animation/AnimationUtilities.js';
 var animObject = A.animObject;
 import DependencyWheelPoint from './DependencyWheelPoint.js';
+import SankeyColumnComposition from '../Sankey/SankeyColumnComposition.js';
 import H from '../../Core/Globals.js';
 var deg2rad = H.deg2rad;
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
@@ -99,7 +100,6 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
     };
     DependencyWheelSeries.prototype.createNode = function (id) {
         var node = SankeySeries.prototype.createNode.call(this, id);
-        node.index = this.nodes.length - 1;
         /**
          * Return the sum of incoming and outgoing links.
          * @private
@@ -155,7 +155,7 @@ var DependencyWheelSeries = /** @class */ (function (_super) {
      * @private
      */
     DependencyWheelSeries.prototype.createNodeColumns = function () {
-        var columns = [this.createNodeColumn()];
+        var columns = [SankeyColumnComposition.compose([], this)];
         this.nodes.forEach(function (node) {
             node.column = 0;
             columns[0].push(node);

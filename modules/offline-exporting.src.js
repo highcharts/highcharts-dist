@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * Client side exporting module
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Extensions/DownloadURL.js', [_modules['Core/Globals.js']], function (Highcharts) {
@@ -157,7 +166,7 @@
          *
          * */
         var OfflineExportingDefaults = {
-                libURL: 'https://code.highcharts.com/9.3.3/lib/',
+                libURL: 'https://code.highcharts.com/10.0.0/lib/',
                 // When offline-exporting is loaded, redefine the menu item definitions
                 // related to download.
                 menuItemDefinitions: {
@@ -201,7 +210,7 @@
 
         return OfflineExportingDefaults;
     });
-    _registerModule(_modules, 'Extensions/OfflineExporting/OfflineExporting.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Extensions/DownloadURL.js'], _modules['Extensions/Exporting/Exporting.js'], _modules['Core/Globals.js'], _modules['Extensions/OfflineExporting/OfflineExportingDefaults.js'], _modules['Core/Utilities.js']], function (AST, Chart, D, DownloadURL, Exporting, H, OfflineExportingDefaults, U) {
+    _registerModule(_modules, 'Extensions/OfflineExporting/OfflineExporting.js', [_modules['Core/Renderer/HTML/AST.js'], _modules['Core/Chart/Chart.js'], _modules['Core/DefaultOptions.js'], _modules['Extensions/DownloadURL.js'], _modules['Extensions/Exporting/Exporting.js'], _modules['Core/Globals.js'], _modules['Core/HttpUtilities.js'], _modules['Extensions/OfflineExporting/OfflineExportingDefaults.js'], _modules['Core/Utilities.js']], function (AST, Chart, D, DownloadURL, Exporting, H, HU, OfflineExportingDefaults, U) {
         /* *
          *
          *  Client side exporting module
@@ -218,10 +227,12 @@
         var downloadURL = DownloadURL.downloadURL;
         var win = H.win,
             doc = H.doc;
+        var ajax = HU.ajax;
         var addEvent = U.addEvent,
             error = U.error,
             extend = U.extend,
             fireEvent = U.fireEvent,
+            pick = U.pick,
             merge = U.merge;
         AST.allowedAttributes.push('data-z-index', 'fill-opacity', 'rx', 'ry', 'stroke-dasharray', 'stroke-linejoin', 'text-anchor', 'transform', 'version', 'viewBox', 'visibility', 'xmlns', 'xmlns:xlink');
         AST.allowedTags.push('desc', 'clippath', 'g');
@@ -314,9 +325,86 @@
                     blob,
                     finallyHandler,
                     libURL = (options.libURL || defaultOptions.exporting.libURL),
-                    objectURLRevoke = true;
+                    objectURLRevoke = true,
+                    pdfFont = options.pdfFont;
                 // Allow libURL to end with or without fordward slash
                 libURL = libURL.slice(-1) !== '/' ? libURL + '/' : libURL;
+                /*
+                 * Detect if we need to load TTF fonts for the PDF, then load them and
+                 * proceed.
+                 *
+                 * @private
+                 */
+                var loadPdfFonts = function (svgElement,
+                    callback) {
+                        var hasNonASCII = function (s) { return (
+                        // eslint-disable-next-line no-control-regex
+                        /[^\u0000-\u007F\u200B]+/.test(s)); };
+                    // Register an event in order to add the font once jsPDF is
+                    // initialized
+                    var addFont = function (variant,
+                        base64) {
+                            win.jspdf.jsPDF.API.events.push([
+                                'initialized',
+                                function () {
+                                    this.addFileToVFS(variant,
+                        base64);
+                                this.addFont(variant, 'HighchartsFont', variant);
+                                if (!this.getFontList().HighchartsFont) {
+                                    this.setFont('HighchartsFont');
+                                }
+                            }
+                        ]);
+                    };
+                    // If there are no non-ASCII characters in the SVG, do not use
+                    // bother downloading the font files
+                    if (pdfFont && !hasNonASCII(svgElement.textContent || '')) {
+                        pdfFont = void 0;
+                    }
+                    // Add new font if the URL is declared, #6417.
+                    var variants = ['normal', 'italic', 'bold', 'bolditalic'];
+                    // Shift the first element off the variants and add as a font.
+                    // Then asynchronously trigger the next variant until calling the
+                    // callback when the variants are empty.
+                    var normalBase64;
+                    var shiftAndLoadVariant = function () {
+                            var variant = variants.shift();
+                        // All variants shifted and possibly loaded, proceed
+                        if (!variant) {
+                            return callback();
+                        }
+                        var url = pdfFont && pdfFont[variant];
+                        if (url) {
+                            ajax({
+                                url: url,
+                                responseType: 'blob',
+                                success: function (data, xhr) {
+                                    var reader = new FileReader();
+                                    reader.onloadend = function () {
+                                        if (typeof this.result === 'string') {
+                                            var base64 = this.result.split(',')[1];
+                                            addFont(variant, base64);
+                                            if (variant === 'normal') {
+                                                normalBase64 = base64;
+                                            }
+                                        }
+                                        shiftAndLoadVariant();
+                                    };
+                                    reader.readAsDataURL(xhr.response);
+                                },
+                                error: shiftAndLoadVariant
+                            });
+                        }
+                        else {
+                            // For other variants, fall back to normal text weight/style
+                            if (normalBase64) {
+                                addFont(variant, normalBase64);
+                            }
+                            shiftAndLoadVariant();
+                        }
+                    };
+                    shiftAndLoadVariant();
+                };
                 /*
                  * @private
                  */
@@ -343,13 +431,17 @@
                     // Workaround for the text styling. Making sure it does pick up
                     // settings for parent elements.
                     [].forEach.call(textElements, function (el) {
-                        // Workaround for the text styling. making sure it does pick up@
+                        // Workaround for the text styling. making sure it does pick up
                         // the root element
                         ['font-family', 'font-size'].forEach(function (property) {
                             setStylePropertyFromParents(el, property);
                         });
-                        el.style['font-family'] = (el.style['font-family'] &&
-                            el.style['font-family'].split(' ').splice(-1));
+                        el.style.fontFamily = pdfFont && pdfFont.normal ?
+                            // Custom PDF font
+                            'HighchartsFont' :
+                            // Generic font (serif, sans-serif etc)
+                            String(el.style.fontFamily &&
+                                el.style.fontFamily.split(' ').splice(-1));
                         // Workaround for plotband with width, removing title from text
                         // nodes
                         titleElements = el.getElementsByTagName('title');
@@ -357,15 +449,21 @@
                             el.removeChild(titleElement);
                         });
                     });
-                    var svgData = svgToPdf(dummySVGContainer.firstChild, 0);
-                    try {
-                        downloadURL(svgData, filename);
-                        if (successCallback) {
-                            successCallback();
-                        }
-                    }
-                    catch (e) {
-                        failCallback(e);
+                    var svgNode = dummySVGContainer.querySelector('svg');
+                    if (svgNode) {
+                        loadPdfFonts(svgNode, function () {
+                            svgToPdf(svgNode, 0, function (pdfData) {
+                                try {
+                                    downloadURL(pdfData, filename);
+                                    if (successCallback) {
+                                        successCallback();
+                                    }
+                                }
+                                catch (e) {
+                                    failCallback(e);
+                                }
+                            });
+                        });
                     }
                 };
                 // Initiate download depending on file type
@@ -391,7 +489,7 @@
                     }
                 }
                 else if (imageType === 'application/pdf') {
-                    if (win.jsPDF && win.svg2pdf) {
+                    if (win.jspdf && win.jspdf.jsPDF) {
                         downloadPDF();
                     }
                     else {
@@ -400,9 +498,7 @@
                         // solution would be nice, but this will do for now.
                         objectURLRevoke = true;
                         getScript(libURL + 'jspdf.js', function () {
-                            getScript(libURL + 'svg2pdf.js', function () {
-                                downloadPDF();
-                            });
+                            getScript(libURL + 'svg2pdf.js', downloadPDF);
                         });
                     }
                 }
@@ -789,8 +885,8 @@
             /**
              * @private
              */
-            function svgToPdf(svgElement, margin) {
-                var width = svgElement.width.baseVal.value + 2 * margin, height = svgElement.height.baseVal.value + 2 * margin, pdf = new win.jsPDF(// eslint-disable-line new-cap
+            function svgToPdf(svgElement, margin, callback) {
+                var width = Number(svgElement.getAttribute('width')) + 2 * margin, height = Number(svgElement.getAttribute('height')) + 2 * margin, pdfDoc = new win.jspdf.jsPDF(// eslint-disable-line new-cap
                     // setting orientation to portrait if height exceeds width
                     height > width ? 'p' : 'l', 'pt', [width, height]);
                 // Workaround for #7090, hidden elements were drawn anyway. It comes
@@ -822,8 +918,13 @@
                         tspan.setAttribute('dx', -5);
                     }
                 });
-                win.svg2pdf(svgElement, pdf, { removeInvalid: true });
-                return pdf.output('datauristring');
+                pdfDoc.svg(svgElement, {
+                    x: 0,
+                    y: 0,
+                    width: width,
+                    height: height,
+                    removeInvalid: true
+                }).then(function () { return callback(pdfDoc.output('datauristring')); });
             }
             OfflineExporting.svgToPdf = svgToPdf;
         })(OfflineExporting || (OfflineExporting = {}));

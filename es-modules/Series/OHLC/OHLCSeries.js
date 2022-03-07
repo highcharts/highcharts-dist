@@ -245,6 +245,13 @@ addEvent(Series, 'afterSetOptions', function (e) {
  * @apioption series.ohlc.data
  */
 /**
+ * The closing value of each data point.
+ *
+ * @type      {number}
+ * @product   highstock
+ * @apioption series.ohlc.data.close
+ */
+/**
  * The opening value of each data point.
  *
  * @type      {number}

@@ -67,7 +67,6 @@ var Axis = /** @class */ (function () {
     function Axis(chart, userOptions) {
         this.alternateBands = void 0;
         this.bottom = void 0;
-        this.categories = void 0;
         this.chart = void 0;
         this.closestPointRange = void 0;
         this.coll = void 0;
@@ -228,7 +227,7 @@ var Axis = /** @class */ (function () {
          * @type {Array<string>}
          * @readonly
          */
-        axis.categories = options.categories || axis.hasNames;
+        axis.categories = options.categories || (axis.hasNames ? [] : void 0);
         if (!axis.names) { // Preserve on update (#3830)
             axis.names = [];
             axis.names.keys = {};
@@ -546,8 +545,9 @@ var Axis = /** @class */ (function () {
             if (doPostTranslate) { // log, ordinal and broken axis
                 val = axis.val2lin(val);
             }
+            var value = sign * (val - localMin) * localA;
             returnValue = isNumber(localMin) ?
-                (sign * (val - localMin) * localA +
+                ((!axis.isRadial ? correctFloat(value) : value) +
                     cvsOffset +
                     (sign * minPixelPadding) +
                     (isNumber(pointPlacement) ?
@@ -902,18 +902,18 @@ var Axis = /** @class */ (function () {
      * The X value that the point is given.
      */
     Axis.prototype.nameToX = function (point) {
-        var explicitCategories = isArray(this.categories), names = explicitCategories ? this.categories : this.names;
+        var explicitCategories = isArray(this.options.categories), names = explicitCategories ? this.categories : this.names;
         var nameX = point.options.x, x;
         point.series.requireSorting = false;
         if (!defined(nameX)) {
-            nameX = this.options.uniqueNames ?
+            nameX = this.options.uniqueNames && names ?
                 (explicitCategories ?
                     names.indexOf(point.name) :
                     pick(names.keys[point.name], -1)) :
                 point.series.autoIncrement();
         }
         if (nameX === -1) { // Not found in currenct categories
-            if (!explicitCategories) {
+            if (!explicitCategories && names) {
                 x = names.length;
             }
         }
@@ -1461,37 +1461,86 @@ var Axis = /** @class */ (function () {
      * True if there are other axes.
      */
     Axis.prototype.alignToOthers = function () {
-        var axis = this, others = // Whether there is another axis to pair with this one
-         {}, options = axis.options;
+        var axis = this, alignedAxes = [this], options = axis.options, alignThresholds = (this.coll === 'yAxis' &&
+            this.chart.options.chart.alignThresholds), thresholdAlignments = [];
         var hasOther;
-        if (
-        // Only if alignTicks is true
-        this.chart.options.chart.alignTicks !== false &&
-            options.alignTicks &&
+        axis.thresholdAlignment = void 0;
+        if ((
+        // Only if alignTicks or alignThresholds is true
+        (this.chart.options.chart.alignTicks !== false &&
+            options.alignTicks) || (alignThresholds)) &&
             // Disabled when startOnTick or endOnTick are false (#7604)
             options.startOnTick !== false &&
             options.endOnTick !== false &&
             // Don't try to align ticks on a log axis, they are not evenly
             // spaced (#6021)
             !axis.logarithmic) {
-            this.chart[this.coll].forEach(function (axis) {
-                var otherOptions = axis.options, horiz = axis.horiz, key = [
-                    horiz ? otherOptions.left : otherOptions.top,
-                    otherOptions.width,
-                    otherOptions.height,
-                    otherOptions.pane
+            // Get a key identifying which pane the axis belongs to
+            var getKey_1 = function (axis) {
+                var horiz = axis.horiz, options = axis.options;
+                return [
+                    horiz ? options.left : options.top,
+                    options.width,
+                    options.height,
+                    options.pane
                 ].join(',');
-                if (axis.series.length) { // #4442
-                    if (others[key]) {
-                        hasOther = true; // #4201
-                    }
-                    else {
-                        others[key] = 1;
-                    }
+            };
+            var thisKey_1 = getKey_1(this);
+            this.chart[this.coll].forEach(function (otherAxis) {
+                var series = otherAxis.series;
+                if (
+                // #4442
+                series.length &&
+                    series.some(function (s) { return s.visible; }) &&
+                    otherAxis !== axis &&
+                    getKey_1(otherAxis) === thisKey_1) {
+                    hasOther = true; // #4201
+                    alignedAxes.push(otherAxis);
                 }
             });
         }
+        if (hasOther && alignThresholds) {
+            // Handle alignThresholds. The `thresholdAlignments` array keeps
+            // records of where each axis in the group wants its threshold, from
+            // 0 which is on `axis.min`, to 1 which is on `axis.max`.
+            alignedAxes.forEach(function (otherAxis) {
+                var threshAlign = otherAxis.getThresholdAlignment(axis);
+                if (isNumber(threshAlign)) {
+                    thresholdAlignments.push(threshAlign);
+                }
+            });
+            // For each of the axes in the group, record the average
+            // `thresholdAlignment`.
+            var thresholdAlignment_1 = thresholdAlignments.length > 1 ?
+                thresholdAlignments.reduce(function (sum, n) { return (sum += n); }, 0) / thresholdAlignments.length :
+                void 0;
+            alignedAxes.forEach(function (axis) {
+                axis.thresholdAlignment = thresholdAlignment_1;
+            });
+        }
         return hasOther;
+    };
+    /**
+     * Where the axis wants its threshold, from 0 which is on `axis.min`, to 1 which
+     * is on `axis.max`.
+     *
+     * @private
+     * @function Highcharts.Axis#getThresholdAlignment
+     */
+    Axis.prototype.getThresholdAlignment = function (callerAxis) {
+        if (!isNumber(this.dataMin) ||
+            (this !== callerAxis &&
+                this.series.some(function (s) { return (s.isDirty || s.isDirtyData); }))) {
+            this.getSeriesExtremes();
+        }
+        if (isNumber(this.threshold)) {
+            var thresholdAlignment = clamp(((this.threshold - (this.dataMin || 0)) /
+                ((this.dataMax || 0) - (this.dataMin || 0))), 0, 1);
+            if (this.options.reversed) {
+                thresholdAlignment = 1 - thresholdAlignment;
+            }
+            return thresholdAlignment;
+        }
     };
     /**
      * Find the max ticks of either the x and y axis collection, and record it
@@ -1534,34 +1583,89 @@ var Axis = /** @class */ (function () {
      * @function Highcharts.Axis#adjustTickAmount
      */
     Axis.prototype.adjustTickAmount = function () {
-        var axis = this, axisOptions = axis.options, tickInterval = axis.tickInterval, tickPositions = axis.tickPositions, tickAmount = axis.tickAmount, finalTickAmt = axis.finalTickAmt, currentTickAmount = tickPositions && tickPositions.length, threshold = pick(axis.threshold, axis.softThreshold ? 0 : null);
-        var len, i;
-        if (axis.hasData() &&
-            isNumber(axis.min) &&
-            isNumber(axis.max)) { // #14769
-            if (currentTickAmount < tickAmount) {
+        var axis = this, finalTickAmt = axis.finalTickAmt, max = axis.max, min = axis.min, options = axis.options, tickPositions = axis.tickPositions, tickAmount = axis.tickAmount, thresholdAlignment = axis.thresholdAlignment, currentTickAmount = tickPositions && tickPositions.length, threshold = pick(axis.threshold, axis.softThreshold ? 0 : null);
+        var len, i, tickInterval = axis.tickInterval, thresholdTickIndex;
+        var 
+        // Extend the tickPositions by appending a position
+        append = function () { return tickPositions.push(correctFloat(tickPositions[tickPositions.length - 1] +
+            tickInterval)); }, 
+        // Extend the tickPositions by prepending a position
+        prepend = function () { return tickPositions.unshift(correctFloat(tickPositions[0] - tickInterval)); };
+        // If `thresholdAlignment` is a number, it means the `alignThresholds`
+        // option is true. The `thresholdAlignment` is a scalar value between 0
+        // and 1 for where the threshold should be relative to `axis.min` and
+        // `axis.max`. Now that we know the tick amount, convert this to the
+        // tick index. Unless `thresholdAlignment` is exactly 0 or 1, avoid the
+        // first or last tick because that would lead to series being clipped.
+        if (isNumber(thresholdAlignment)) {
+            thresholdTickIndex = thresholdAlignment < 0.5 ?
+                Math.ceil(thresholdAlignment * (tickAmount - 1)) :
+                Math.floor(thresholdAlignment * (tickAmount - 1));
+            if (options.reversed) {
+                thresholdTickIndex = tickAmount - 1 - thresholdTickIndex;
+            }
+        }
+        if (axis.hasData() && isNumber(min) && isNumber(max)) { // #14769
+            // Adjust extremes and translation to the modified tick positions
+            var adjustExtremes = function () {
+                axis.transA *= (currentTickAmount - 1) / (tickAmount - 1);
+                // Do not crop when ticks are not extremes (#9841)
+                axis.min = options.startOnTick ?
+                    tickPositions[0] :
+                    Math.min(min, tickPositions[0]);
+                axis.max = options.endOnTick ?
+                    tickPositions[tickPositions.length - 1] :
+                    Math.max(max, tickPositions[tickPositions.length - 1]);
+            };
+            // When the axis is subject to the alignThresholds option. Use
+            // axis.threshold because the local threshold includes the
+            // `softThreshold`.
+            if (isNumber(thresholdTickIndex) && isNumber(axis.threshold)) {
+                // Throw away the previously computed tickPositions and start
+                // from scratch with only the threshold itself, then add ticks
+                // below the threshold first, then fill up above the threshold.
+                // If we are not able to fill up to axis.max, double the
+                // tickInterval and run again.
+                while (tickPositions[thresholdTickIndex] !== threshold ||
+                    tickPositions.length !== tickAmount ||
+                    tickPositions[0] > min ||
+                    tickPositions[tickPositions.length - 1] < max) {
+                    tickPositions.length = 0;
+                    tickPositions.push(axis.threshold);
+                    while (tickPositions.length < tickAmount) {
+                        if (
+                        // Start by prepending positions until the threshold
+                        // is at the required index...
+                        tickPositions[thresholdTickIndex] === void 0 ||
+                            tickPositions[thresholdTickIndex] > axis.threshold) {
+                            prepend();
+                        }
+                        else {
+                            // ... then append positions until we have the
+                            // required length
+                            append();
+                        }
+                    }
+                    // Safety vent
+                    if (tickInterval > axis.tickInterval * 8) {
+                        break;
+                    }
+                    tickInterval *= 2;
+                }
+                adjustExtremes();
+            }
+            else if (currentTickAmount < tickAmount) {
                 while (tickPositions.length < tickAmount) {
                     // Extend evenly for both sides unless we're on the
                     // threshold (#3965)
-                    if (tickPositions.length % 2 ||
-                        axis.min === threshold) {
-                        // to the end
-                        tickPositions.push(correctFloat(tickPositions[tickPositions.length - 1] +
-                            tickInterval));
+                    if (tickPositions.length % 2 || min === threshold) {
+                        append();
                     }
                     else {
-                        // to the start
-                        tickPositions.unshift(correctFloat(tickPositions[0] - tickInterval));
+                        prepend();
                     }
                 }
-                axis.transA *= (currentTickAmount - 1) / (tickAmount - 1);
-                // Do not crop when ticks are not extremes (#9841)
-                axis.min = axisOptions.startOnTick ?
-                    tickPositions[0] :
-                    Math.min(axis.min, tickPositions[0]);
-                axis.max = axisOptions.endOnTick ?
-                    tickPositions[tickPositions.length - 1] :
-                    Math.max(axis.max, tickPositions[tickPositions.length - 1]);
+                adjustExtremes();
                 // We have too many ticks, run second pass to try to reduce ticks
             }
             else if (currentTickAmount > tickAmount) {

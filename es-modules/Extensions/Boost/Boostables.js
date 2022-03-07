@@ -12,6 +12,7 @@
 // These are the series we allow boosting for.
 var boostables = [
     'area',
+    'areaspline',
     'arearange',
     'column',
     'columnrange',

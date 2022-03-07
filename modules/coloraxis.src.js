@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * ColorAxis module
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Core/Axis/Color/ColorAxisComposition.js', [_modules['Core/Color/Color.js'], _modules['Core/Utilities.js']], function (Color, U) {
@@ -1086,6 +1095,16 @@
                     axis.axisParent = group;
                     // Call the base
                     _super.prototype.getOffset.call(this);
+                    var legend_1 = this.chart.legend;
+                    // Adds `maxLabelLength` needed for label padding corrections done
+                    // by `render()` and `getMargins()` (#15551).
+                    legend_1.allItems.forEach(function (item) {
+                        if (item instanceof ColorAxis) {
+                            item.drawLegendSymbol(legend_1, item);
+                        }
+                    });
+                    legend_1.render();
+                    this.chart.getMargins(true);
                     // First time only
                     if (!axis.added) {
                         axis.added = true;
@@ -1133,18 +1152,25 @@
                     horiz ? ColorAxis.defaultLegendLength : 12);
                 var height = pick(legendOptions.symbolHeight,
                     horiz ? 12 : ColorAxis.defaultLegendLength);
-                var labelPadding = pick(legendOptions.labelPadding,
+                var labelPadding = pick(
+                    // @todo: This option is not documented, nor implemented when
+                    // vertical
+                    legendOptions.labelPadding,
                     horiz ? 16 : 30);
                 var itemDistance = pick(legendOptions.itemDistance, 10);
                 this.setLegendColor();
                 // Create the gradient
-                item.legendSymbol = this.chart.renderer.rect(0, legend.baseline - 11, width, height).attr({
-                    zIndex: 1
-                }).add(item.legendGroup);
+                if (!item.legendSymbol) {
+                    item.legendSymbol = this.chart.renderer.rect(0, legend.baseline - 11, width, height).attr({
+                        zIndex: 1
+                    }).add(item.legendGroup);
+                }
                 // Set how much space this legend item takes up
                 axis.legendItemWidth = (width +
                     padding +
-                    (horiz ? itemDistance : labelPadding));
+                    (horiz ?
+                        itemDistance :
+                        this.options.labels.x + this.maxLabelLength));
                 axis.legendItemHeight = height + padding + (horiz ? labelPadding : 0);
             };
             /**

@@ -227,7 +227,7 @@ Chart.prototype.applyFixed = function () {
             .addClass('highcharts-scrollable-mask')
             .add();
         addEvent(this, 'afterShowResetZoom', this.moveFixedElements);
-        addEvent(this, 'afterDrilldown', this.moveFixedElements);
+        addEvent(this, 'afterApplyDrilldown', this.moveFixedElements);
         addEvent(this, 'afterLayOutTitles', this.moveFixedElements);
     }
     else {
@@ -348,6 +348,7 @@ addEvent(Series, 'show', function () {
  * area will become scrollable.
  *
  * @type      {number}
+ * @since     7.1.2
  * @apioption chart.scrollablePlotArea.minHeight
  */
 /**
@@ -355,6 +356,7 @@ addEvent(Series, 'show', function () {
  * area will become scrollable.
  *
  * @type      {number}
+ * @since     6.1.0
  * @apioption chart.scrollablePlotArea.minWidth
  */
 /**
@@ -363,6 +365,7 @@ addEvent(Series, 'show', function () {
  * Typically we would use 1 if the chart has right aligned Y axes.
  *
  * @type      {number}
+ * @since     6.1.0
  * @apioption chart.scrollablePlotArea.scrollPositionX
  */
 /**
@@ -370,6 +373,7 @@ addEvent(Series, 'show', function () {
  * 1, where 0 aligns the plot area to the top and 1 aligns it to the bottom.
  *
  * @type      {number}
+ * @since     7.1.2
  * @apioption chart.scrollablePlotArea.scrollPositionY
  */
 /**

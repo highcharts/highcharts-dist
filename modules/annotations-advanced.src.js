@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * Annotations module
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Extensions/Annotations/Mixins/EventEmitterMixin.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
@@ -771,7 +780,7 @@
                     this.plotX = xAxis.toPixels(options.x, true);
                 }
                 else {
-                    this.x = null;
+                    this.x = void 0;
                     this.plotX = options.x;
                 }
                 if (yAxis) {
@@ -3798,6 +3807,13 @@
                  * @apioption annotations.events.afterUpdate
                  */
                 /**
+                 * Fires when the annotation is clicked.
+                 *
+                 * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
+                 * @since     7.1.0
+                 * @apioption annotations.events.click
+                 */
+                /**
                  * Event callback when annotation is removed from the chart.
                  *
                  * @type      {Highcharts.EventCallbackFunction<Highcharts.Annotation>}
@@ -4161,11 +4177,13 @@
                 var options = this.options;
                 if (options.shapes) {
                     delete options.labelOptions;
-                    if (options.shapes[0].type) {
-                        this.basicType = options.shapes[0].type;
+                    var type = options.shapes[0].type;
+                    // The rectangle is rendered as a path, whereas other basic shapes
+                    // are rendered as their respecitve SVG shapes.
+                    if (type && type !== 'path') {
+                        this.basicType = type;
                     }
                     else {
-                        // Defalut shape would be rectangle.
                         this.basicType = 'rectangle';
                     }
                 }
@@ -8279,7 +8297,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/9.3.3/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/10.0.0/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -9597,7 +9615,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/9.3.3/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/10.0.0/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

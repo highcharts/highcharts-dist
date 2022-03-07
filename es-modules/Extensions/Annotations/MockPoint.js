@@ -329,7 +329,7 @@ var MockPoint = /** @class */ (function () {
             this.plotX = xAxis.toPixels(options.x, true);
         }
         else {
-            this.x = null;
+            this.x = void 0;
             this.plotX = options.x;
         }
         if (yAxis) {

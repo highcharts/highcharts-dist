@@ -258,9 +258,9 @@ function getPointValueDescription(point) {
  * @private
  */
 function defaultPointDescriptionFormatter(point) {
-    var series = point.series, chart = series.chart, valText = getPointValueDescription(point), description = point.options && point.options.accessibility &&
-        point.options.accessibility.description, userDescText = description ? ' ' + description : '', seriesNameText = chart.series.length > 1 && series.name ?
-        ' ' + series.name + '.' : '', annotationsDesc = getPointAnnotationDescription(point), pointAnnotationsText = annotationsDesc ? ' ' + annotationsDesc : '';
+    var series = point.series, shouldExposeSeriesName = series.chart.series.length > 1 ||
+        series.options.name, valText = getPointValueDescription(point), description = point.options && point.options.accessibility &&
+        point.options.accessibility.description, userDescText = description ? ' ' + description : '', seriesNameText = shouldExposeSeriesName ? ' ' + series.name + '.' : '', annotationsDesc = getPointAnnotationDescription(point), pointAnnotationsText = annotationsDesc ? ' ' + annotationsDesc : '';
     point.accessibility = point.accessibility || {};
     point.accessibility.valueDescription = valText;
     return valText + userDescText + seriesNameText + pointAnnotationsText;

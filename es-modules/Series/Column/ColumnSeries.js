@@ -268,8 +268,8 @@ var ColumnSeries = /** @class */ (function (_super) {
         var _this = this;
         var stacking = this.options.stacking;
         if (!point.isNull && metrics.columnCount > 1) {
-            var indexInCategory_1 = 0;
-            var totalInCategory_1 = 0;
+            var reversedStacks_1 = this.yAxis.options.reversedStacks;
+            var indexInCategory_1 = 0, totalInCategory_1 = reversedStacks_1 ? 0 : -metrics.columnCount;
             // Loop over all the stacks on the Y axis. When stacking is enabled,
             // these are real point stacks. When stacking is not enabled, but
             // `centerInCategory` is true, there is one stack handling the
@@ -289,7 +289,8 @@ var ColumnSeries = /** @class */ (function (_super) {
                                 indexInCategory_1 = totalInCategory_1;
                             }
                             if (stackItem.hasValidPoints) {
-                                totalInCategory_1++;
+                                reversedStacks_1 ? // #16169
+                                    totalInCategory_1++ : totalInCategory_1--;
                             }
                             // If `stacking` is not enabled, look for the index
                             // and total of the `group` stack.

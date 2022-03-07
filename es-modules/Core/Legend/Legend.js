@@ -68,7 +68,7 @@ var Legend = /** @class */ (function () {
         this.maxItemWidth = 0;
         this.maxLegendWidth = 0;
         this.offsetWidth = 0;
-        this.options = {};
+        this.options = void 0;
         this.padding = 0;
         this.pages = [];
         this.proximate = false;
@@ -378,7 +378,7 @@ var Legend = /** @class */ (function () {
                  * @name Highcharts.Legend#title
                  * @type {Highcharts.SVGElement}
                  */
-                this.title = this.chart.renderer.label(titleOptions.text, padding - 3, padding - 4, null, null, null, options.useHTML, null, 'legend-title')
+                this.title = this.chart.renderer.label(titleOptions.text, padding - 3, padding - 4, void 0, void 0, void 0, options.useHTML, void 0, 'legend-title')
                     .attr({ zIndex: 1 });
                 if (!this.chart.styledMode) {
                     this.title.css(titleOptions.style);
@@ -704,8 +704,7 @@ var Legend = /** @class */ (function () {
         legend.lastItemY = 0;
         legend.widthOption = relativeLength(options.width, chart.spacingBox.width - padding);
         // Compute how wide the legend is allowed to be
-        allowedWidth =
-            chart.spacingBox.width - 2 * padding - options.x;
+        allowedWidth = chart.spacingBox.width - 2 * padding - options.x;
         if (['rm', 'lm'].indexOf(legend.getAlignment().substring(0, 2)) > -1) {
             allowedWidth /= 2;
         }
@@ -778,7 +777,6 @@ var Legend = /** @class */ (function () {
                 r: options.borderRadius
             })
                 .add(legendGroup);
-            box.isNew = true;
         }
         // Presentational
         if (!chart.styledMode) {
@@ -791,13 +789,12 @@ var Legend = /** @class */ (function () {
                 .shadow(options.shadow);
         }
         if (legendWidth > 0 && legendHeight > 0) {
-            box[box.isNew ? 'attr' : 'animate'](box.crisp.call({}, {
+            box[box.placed ? 'animate' : 'attr'](box.crisp.call({}, {
                 x: 0,
                 y: 0,
                 width: legendWidth,
                 height: legendHeight
             }, box.strokeWidth()));
-            box.isNew = false;
         }
         // hide the border if no items
         box[display ? 'show' : 'hide']();
@@ -838,6 +835,11 @@ var Legend = /** @class */ (function () {
         }
         if (y !== alignTo.y) {
             alignTo = merge(alignTo, { y: y });
+        }
+        if (!chart.hasRendered) {
+            // Avoid animation when adjusting alignment for responsiveness and
+            // colorAxis label layout
+            this.group.placed = false;
         }
         this.group.align(merge(options, {
             width: this.legendWidth,
@@ -953,7 +955,7 @@ var Legend = /** @class */ (function () {
                 });
                 this.pager = renderer.text('', 15, 10)
                     .addClass('highcharts-legend-navigation');
-                if (!chart.styledMode) {
+                if (!chart.styledMode && navOptions.style) {
                     this.pager.css(navOptions.style);
                 }
                 this.pager.add(nav);

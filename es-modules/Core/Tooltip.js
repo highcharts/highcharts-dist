@@ -158,6 +158,12 @@ var Tooltip = /** @class */ (function () {
      * the context here is an object holding point, series, x, y etc.
      *
      * @function Highcharts.Tooltip#defaultFormatter
+     *
+     * @param {Highcharts.Tooltip} tooltip
+     *
+     * @return {string|Array<string>}
+     * Returns a string (single tooltip and shared)
+     * or an array of strings (split tooltip)
      */
     Tooltip.prototype.defaultFormatter = function (tooltip) {
         var items = this.points || splat(this);
@@ -710,7 +716,7 @@ var Tooltip = /** @class */ (function () {
     Tooltip.prototype.refresh = function (pointOrPoints, mouseEvent) {
         var tooltip = this, chart = this.chart, options = tooltip.options, points = splat(pointOrPoints), point = points[0], pointConfig = [], formatter = options.formatter || tooltip.defaultFormatter, shared = tooltip.shared, styledMode = chart.styledMode;
         var textConfig = {};
-        if (!options.enabled) {
+        if (!options.enabled || !point.series) { // #16820
             return;
         }
         U.clearTimeout(this.hideTimer);
@@ -1289,46 +1295,23 @@ export default Tooltip;
  * @callback Highcharts.TooltipFormatterCallbackFunction
  *
  * @param {Highcharts.TooltipFormatterContextObject} this
- *        Context to format
+ * Context to format
  *
  * @param {Highcharts.Tooltip} tooltip
- *        The tooltip instance
+ * The tooltip instance
  *
  * @return {false|string|Array<(string|null|undefined)>|null|undefined}
- *         Formatted text or false
+ * Formatted text or false
  */
 /**
+ * Configuration for the tooltip formatters.
+ *
  * @interface Highcharts.TooltipFormatterContextObject
+ * @extends Highcharts.PointLabelObject
  */ /**
-* @name Highcharts.TooltipFormatterContextObject#color
-* @type {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
-*/ /**
-* @name Highcharts.TooltipFormatterContextObject#colorIndex
-* @type {number|undefined}
-*/ /**
-* @name Highcharts.TooltipFormatterContextObject#key
-* @type {number}
-*/ /**
-* @name Highcharts.TooltipFormatterContextObject#percentage
-* @type {number|undefined}
-*/ /**
-* @name Highcharts.TooltipFormatterContextObject#point
-* @type {Highcharts.Point}
-*/ /**
+* Array of points in shared tooltips.
 * @name Highcharts.TooltipFormatterContextObject#points
 * @type {Array<Highcharts.TooltipFormatterContextObject>|undefined}
-*/ /**
-* @name Highcharts.TooltipFormatterContextObject#series
-* @type {Highcharts.Series}
-*/ /**
-* @name Highcharts.TooltipFormatterContextObject#total
-* @type {number|undefined}
-*/ /**
-* @name Highcharts.TooltipFormatterContextObject#x
-* @type {number}
-*/ /**
-* @name Highcharts.TooltipFormatterContextObject#y
-* @type {number}
 */
 /**
  * A callback function to place the tooltip in a specific position.

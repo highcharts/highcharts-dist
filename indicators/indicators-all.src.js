@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v9.3.3 (2022-02-01)
+ * @license Highstock JS v10.0.0 (2022-03-07)
  *
  * All technical indicators for Highcharts Stock
  *
@@ -7,7 +7,6 @@
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -22,10 +21,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Stock/Indicators/SMA/SMAComposition.js', [_modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (SeriesRegistry, U) {
@@ -246,12 +255,12 @@
                 var indicator = this,
                     oldData = indicator.points || [],
                     oldDataLength = (indicator.xData || []).length,
-                    processedData = (indicator.getValues(indicator.linkedParent,
-                    indicator.options.params) || {
+                    emptySet = {
                         values: [],
                         xData: [],
                         yData: []
-                    }),
+                    },
+                    processedData,
                     croppedDataValues = [],
                     overwriteData = true,
                     oldFirstPointIndex,
@@ -260,6 +269,13 @@
                     min,
                     max,
                     i;
+                // Updating an indicator with redraw=false may destroy data.
+                // If there will be a following update for the parent series,
+                // we will try to access Series object without any properties
+                // (except for prototyped ones). This is what happens
+                // for example when using Axis.setDataGrouping(). See #16670
+                processedData = indicator.linkedParent.options ?
+                    (indicator.getValues(indicator.linkedParent, indicator.options.params) || emptySet) : emptySet;
                 // We need to update points to reflect changes in all,
                 // x and y's, values. However, do it only for non-grouped
                 // data - grouping does it for us (#8572)

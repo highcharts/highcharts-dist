@@ -1,11 +1,10 @@
 /**
- * @license Highcharts JS v9.3.3 (2022-02-01)
+ * @license Highcharts JS v10.0.0 (2022-03-07)
  *
  * 3D features for Highcharts JS
  *
  * License: www.highcharts.com/license
  */
-'use strict';
 (function (factory) {
     if (typeof module === 'object' && module.exports) {
         factory['default'] = factory;
@@ -20,10 +19,20 @@
         factory(typeof Highcharts !== 'undefined' ? Highcharts : undefined);
     }
 }(function (Highcharts) {
+    'use strict';
     var _modules = Highcharts ? Highcharts._modules : {};
     function _registerModule(obj, path, args, fn) {
         if (!obj.hasOwnProperty(path)) {
             obj[path] = fn.apply(null, args);
+
+            if (typeof CustomEvent === 'function') {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        'HighchartsModuleLoaded',
+                        { detail: { path: path, module: obj[path] }
+                    })
+                );
+            }
         }
     }
     _registerModule(_modules, 'Extensions/Math3D.js', [_modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (H, U) {
@@ -323,10 +332,21 @@
                     zIndexes = paths.zIndexes;
                 // build parts
                 elem3d.parts.forEach(function (part) {
-                    elem3d[part] = renderer.path(paths[part]).attr({
-                        'class': 'highcharts-3d-' + part,
-                        zIndex: zIndexes[part] || 0
-                    }).add(elem3d);
+                    var attribs = {
+                            'class': 'highcharts-3d-' + part,
+                            zIndex: zIndexes[part] || 0
+                        };
+                    if (renderer.styledMode) {
+                        if (part === 'top') {
+                            attribs.filter = 'url(#highcharts-brighter)';
+                        }
+                        else if (part === 'side') {
+                            attribs.filter = 'url(#highcharts-darker)';
+                        }
+                    }
+                    elem3d[part] = renderer.path(paths[part])
+                        .attr(attribs)
+                        .add(elem3d);
                 });
                 elem3d.attr({
                     'stroke-linejoin': 'round',
@@ -425,11 +445,12 @@
                     this.attr({
                         zIndex: paths.zIndexes.group
                     });
-                    // If sides that are forced to render changed, recalculate
-                    // colors.
+                    // If sides that are forced to render changed, recalculate colors.
                     if (forcedSides !== this.forcedSides) {
                         this.forcedSides = forcedSides;
-                        SVGElement3D.cuboid.fillSetter.call(this, this.fill);
+                        if (!this.renderer.styledMode) {
+                            SVGElement3D.cuboid.fillSetter.call(this, this.fill);
+                        }
                     }
                 }
                 else {
@@ -2951,17 +2972,7 @@
              */
             function onAfterGetContainer() {
                 if (this.styledMode) {
-                    this.renderer.definition({
-                        tagName: 'style',
-                        textContent: '.highcharts-3d-top{' +
-                            'filter: url(#highcharts-brighter)' +
-                            '}\n' +
-                            '.highcharts-3d-side{' +
-                            'filter: url(#highcharts-darker)' +
-                            '}\n'
-                    });
-                    // Add add definitions used by brighter and darker faces of the
-                    // cuboids.
+                    // Add definitions used by brighter and darker faces of the cuboids.
                     [{
                             name: 'darker',
                             slope: 0.6
@@ -5015,6 +5026,25 @@
                             seriesOptions.slicedOffset *
                             Math.cos(alpha * deg2rad))
                     };
+                });
+            };
+            /**
+             * @private
+             */
+            Pie3DSeries.prototype.drawTracker = function () {
+                _super.prototype.drawTracker.apply(this, arguments);
+                // Do not do this if the chart is not 3D
+                if (!this.chart.is3d()) {
+                    return;
+                }
+                this.points.forEach(function (point) {
+                    if (point.graphic) {
+                        ['out', 'inn', 'side1', 'side2'].forEach(function (face) {
+                            if (point.graphic) {
+                                point.graphic[face].element.point = point;
+                            }
+                        });
+                    }
                 });
             };
             return Pie3DSeries;

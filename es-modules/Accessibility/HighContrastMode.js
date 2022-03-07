@@ -42,8 +42,8 @@ function isHighContrastModeActive() {
         doc.body.removeChild(testDiv);
         return bi === 'none';
     }
-    // Not used for other browsers
-    return false;
+    // Other browsers use the forced-colors standard
+    return win.matchMedia && win.matchMedia('(forced-colors: active)').matches;
 }
 /**
  * Force high contrast theme for the chart. The default theme is defined in

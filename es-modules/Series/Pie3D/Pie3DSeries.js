@@ -171,6 +171,25 @@ var Pie3DSeries = /** @class */ (function (_super) {
             };
         });
     };
+    /**
+     * @private
+     */
+    Pie3DSeries.prototype.drawTracker = function () {
+        _super.prototype.drawTracker.apply(this, arguments);
+        // Do not do this if the chart is not 3D
+        if (!this.chart.is3d()) {
+            return;
+        }
+        this.points.forEach(function (point) {
+            if (point.graphic) {
+                ['out', 'inn', 'side1', 'side2'].forEach(function (face) {
+                    if (point.graphic) {
+                        point.graphic[face].element.point = point;
+                    }
+                });
+            }
+        });
+    };
     return Pie3DSeries;
 }(PieSeries));
 extend(Pie3DSeries.prototype, {

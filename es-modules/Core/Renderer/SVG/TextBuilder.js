@@ -12,7 +12,7 @@ import AST from '../HTML/AST.js';
 import H from '../../Globals.js';
 var doc = H.doc, SVG_NS = H.SVG_NS, win = H.win;
 import U from '../../Utilities.js';
-var attr = U.attr, isString = U.isString, objectEach = U.objectEach, pick = U.pick;
+var attr = U.attr, extend = U.extend, isString = U.isString, objectEach = U.objectEach, pick = U.pick;
 /* *
  *
  *  Class
@@ -280,27 +280,29 @@ var TextBuilder = /** @class */ (function () {
     TextBuilder.prototype.modifyTree = function (nodes) {
         var _this = this;
         var modifyChild = function (node, i) {
-            var _a = node.attributes, attributes = _a === void 0 ? {} : _a, children = node.children, tagName = node.tagName, styledMode = _this.renderer.styledMode;
+            var _a = node.attributes, attributes = _a === void 0 ? {} : _a, children = node.children, _b = node.style, style = _b === void 0 ? {} : _b, tagName = node.tagName, styledMode = _this.renderer.styledMode;
             // Apply styling to text tags
             if (tagName === 'b' || tagName === 'strong') {
                 if (styledMode) {
-                    attributes['class'] = 'highcharts-strong'; // eslint-disable-line dot-notation
+                    // eslint-disable-next-line dot-notation
+                    attributes['class'] = 'highcharts-strong';
                 }
                 else {
-                    attributes.style = ('font-weight:bold;' + (attributes.style || ''));
+                    style.fontWeight = 'bold';
                 }
             }
             else if (tagName === 'i' || tagName === 'em') {
                 if (styledMode) {
-                    attributes['class'] = 'highcharts-emphasized'; // eslint-disable-line dot-notation
+                    // eslint-disable-next-line dot-notation
+                    attributes['class'] = 'highcharts-emphasized';
                 }
                 else {
-                    attributes.style = ('font-style:italic;' + (attributes.style || ''));
+                    style.fontStyle = 'italic';
                 }
             }
-            // Modify attributes
-            if (isString(attributes.style)) {
-                attributes.style = attributes.style.replace(/(;| |^)color([ :])/, '$1fill$2');
+            // Modify styling
+            if (style && style.color) {
+                style.fill = style.color;
             }
             // Handle breaks
             if (tagName === 'br') {
@@ -325,7 +327,7 @@ var TextBuilder = /** @class */ (function () {
             if (tagName !== '#text' && tagName !== 'a') {
                 node.tagName = 'tspan';
             }
-            node.attributes = attributes;
+            extend(node, { attributes: attributes, style: style });
             // Recurse
             if (children) {
                 children

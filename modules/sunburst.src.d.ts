@@ -13,6 +13,9 @@ import * as _Highcharts from "../highcharts.src";
  */
 export function factory(highcharts: typeof Highcharts): void;
 declare module "../highcharts.src" {
+    interface BreadcrumbsOptions {
+        buttonTheme?: SVGAttributes;
+    }
     function eachObject(): void;
     function isBoolean(): void;
     function recursive(): void;

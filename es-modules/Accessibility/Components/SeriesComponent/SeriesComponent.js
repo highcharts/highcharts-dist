@@ -59,7 +59,6 @@ var SeriesComponent = /** @class */ (function (_super) {
      * @private
      */
     SeriesComponent.compose = function (ChartClass, PointClass, SeriesClass) {
-        // Handle forcing markers
         NewDataAnnouncer.compose(SeriesClass);
         ForcedMarkers.compose(SeriesClass);
         SeriesKeyboardNavigation.compose(ChartClass, PointClass, SeriesClass);

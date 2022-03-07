@@ -21,10 +21,14 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+/* *
+ *
+ *  Imports
+ *
+ * */
+import MapPoint from '../Map/MapPoint.js';
 import SeriesRegistry from '../../Core/Series/SeriesRegistry.js';
 var _a = SeriesRegistry.seriesTypes, BubbleSeries = _a.bubble, MapSeries = _a.map;
-import U from '../../Core/Utilities.js';
-var extend = U.extend, merge = U.merge;
 /* *
  *
  *  Class
@@ -33,30 +37,18 @@ var extend = U.extend, merge = U.merge;
 var MapBubblePoint = /** @class */ (function (_super) {
     __extends(MapBubblePoint, _super);
     function MapBubblePoint() {
-        return _super !== null && _super.apply(this, arguments) || this;
+        /* *
+         *
+         *  Functions
+         *
+         * */
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.applyOptions = MapSeries.prototype.pointClass.prototype.applyOptions;
+        _this.getProjectedBounds = MapPoint.prototype.getProjectedBounds;
+        return _this;
+        /* eslint-enable valid-jsdoc */
     }
-    /* *
-     *
-     *  Functions
-     *
-     * */
     /* eslint-disable valid-jsdoc */
-    /**
-     * @private
-     */
-    MapBubblePoint.prototype.applyOptions = function (options, x) {
-        var point;
-        if (options &&
-            typeof options.lat !== 'undefined' &&
-            typeof options.lon !== 'undefined') {
-            point = _super.prototype.applyOptions.call(this, merge(options, this.series.chart.fromLatLonToPoint(options)), x);
-        }
-        else {
-            point = MapSeries.prototype.pointClass.prototype
-                .applyOptions.call(this, options, x);
-        }
-        return point;
-    };
     /**
      * @private
      */
