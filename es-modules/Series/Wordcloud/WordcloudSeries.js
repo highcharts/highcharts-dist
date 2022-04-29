@@ -268,13 +268,12 @@ var WordcloudSeries = /** @class */ (function (_super) {
      * A word cloud is a visualization of a set of words, where the size and
      * placement of a word is determined by how it is weighted.
      *
-     * @sample highcharts/demo/wordcloud
-     *         Word Cloud chart
+     * @sample highcharts/demo/wordcloud Word Cloud chart
      *
      * @extends      plotOptions.column
      * @excluding    allAreas, boostThreshold, clip, colorAxis, compare,
-     *               compareBase, crisp, cropTreshold, dataGrouping, dataLabels,
-     *               depth, dragDrop, edgeColor, findNearestPointBy,
+     *               compareBase, crisp, cropThreshold, dataGrouping,
+     *               dataLabels, depth, dragDrop, edgeColor, findNearestPointBy,
      *               getExtremesFromAll, grouping, groupPadding, groupZPadding,
      *               joinBy, maxPointWidth, minPointLength, navigatorOptions,
      *               negativeColor, pointInterval, pointIntervalUnit,
@@ -306,6 +305,7 @@ var WordcloudSeries = /** @class */ (function (_super) {
         borderWidth: 0,
         clip: false,
         colorByPoint: true,
+        cropThreshold: Infinity,
         /**
          * A threshold determining the minimum font size that can be applied to
          * a word.

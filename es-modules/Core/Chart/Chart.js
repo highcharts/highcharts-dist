@@ -29,7 +29,7 @@ import SVGRenderer from '../Renderer/SVG/SVGRenderer.js';
 import Time from '../Time.js';
 import U from '../Utilities.js';
 import AST from '../Renderer/HTML/AST.js';
-var addEvent = U.addEvent, attr = U.attr, cleanRecursively = U.cleanRecursively, createElement = U.createElement, css = U.css, defined = U.defined, discardElement = U.discardElement, erase = U.erase, error = U.error, extend = U.extend, find = U.find, fireEvent = U.fireEvent, getStyle = U.getStyle, isArray = U.isArray, isFunction = U.isFunction, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, relativeLength = U.relativeLength, removeEvent = U.removeEvent, splat = U.splat, syncTimeout = U.syncTimeout, uniqueKey = U.uniqueKey;
+var addEvent = U.addEvent, attr = U.attr, cleanRecursively = U.cleanRecursively, createElement = U.createElement, css = U.css, defined = U.defined, discardElement = U.discardElement, erase = U.erase, error = U.error, extend = U.extend, find = U.find, fireEvent = U.fireEvent, getStyle = U.getStyle, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, objectEach = U.objectEach, pick = U.pick, pInt = U.pInt, relativeLength = U.relativeLength, removeEvent = U.removeEvent, splat = U.splat, syncTimeout = U.syncTimeout, uniqueKey = U.uniqueKey;
 /* *
  *
  *  Class
@@ -1943,8 +1943,26 @@ var Chart = /** @class */ (function () {
         if (defined(this.index)) {
             this.setReflow(this.options.chart.reflow);
         }
+        this.warnIfA11yModuleNotLoaded();
         // Don't run again
         this.hasLoaded = true;
+    };
+    /**
+     * Emit console warning if the a11y module is not loaded.
+     */
+    Chart.prototype.warnIfA11yModuleNotLoaded = function () {
+        var _this = this;
+        setTimeout(function () {
+            var opts = _this && _this.options;
+            if (opts && !_this.accessibility &&
+                !(opts.accessibility && opts.accessibility.enabled === false)) {
+                error('Highcharts warning: Consider including the ' +
+                    '"accessibility.js" module to make your chart more ' +
+                    'usable for people with disabilities. Set the ' +
+                    '"accessibility.enabled" option to false to remove this ' +
+                    'warning. See https://www.highcharts.com/docs/accessibility/accessibility-module.', false, _this);
+            }
+        }, 100);
     };
     /**
      * Add a series to the chart after render time. Note that this method should
@@ -2494,7 +2512,7 @@ var Chart = /** @class */ (function () {
      * @emits Highcharts.Chart#event:beforeShowResetZoom
      */
     Chart.prototype.showResetZoom = function () {
-        var chart = this, lang = defaultOptions.lang, btnOptions = chart.options.chart.resetZoomButton, theme = btnOptions.theme, states = theme.states, alignTo = (btnOptions.relativeTo === 'chart' ||
+        var chart = this, lang = defaultOptions.lang, btnOptions = chart.options.chart.resetZoomButton, theme = btnOptions.theme, alignTo = (btnOptions.relativeTo === 'chart' ||
             btnOptions.relativeTo === 'spacingBox' ?
             null :
             'scrollablePlotBox');
@@ -2506,7 +2524,7 @@ var Chart = /** @class */ (function () {
         }
         fireEvent(this, 'beforeShowResetZoom', null, function () {
             chart.resetZoomButton = chart.renderer
-                .button(lang.resetZoom, null, null, zoomOut, theme, states && states.hover)
+                .button(lang.resetZoom, null, null, zoomOut, theme)
                 .attr({
                 align: btnOptions.position.align,
                 title: lang.resetZoomTitle

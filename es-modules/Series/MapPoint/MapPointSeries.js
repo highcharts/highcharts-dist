@@ -106,6 +106,10 @@ var MapPointSeries = /** @class */ (function (_super) {
             this.processData();
         }
         this.generatePoints();
+        if (this.getProjectedBounds && this.isDirtyData) {
+            delete this.bounds;
+            this.getProjectedBounds(); // Added point needs bounds(#16598)
+        }
         // Create map based translation
         if (mapView) {
             var hasCoordinates_1 = mapView.projection.hasCoordinates;

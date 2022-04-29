@@ -18,7 +18,7 @@ var defaultOptions = D.defaultOptions;
 import ExportingDefaults from './ExportingDefaults.js';
 import ExportingSymbols from './ExportingSymbols.js';
 import G from '../../Core/Globals.js';
-var doc = G.doc, win = G.win;
+var doc = G.doc, SVG_NS = G.SVG_NS, win = G.win;
 import HU from '../../Core/HttpUtilities.js';
 import U from '../../Core/Utilities.js';
 var addEvent = U.addEvent, css = U.css, createElement = U.createElement, discardElement = U.discardElement, extend = U.extend, find = U.find, fireEvent = U.fireEvent, isObject = U.isObject, merge = U.merge, objectEach = U.objectEach, pick = U.pick, removeEvent = U.removeEvent, uniqueKey = U.uniqueKey;
@@ -103,13 +103,12 @@ var Exporting;
         if (btnOptions.enabled === false || !btnOptions.theme) {
             return;
         }
-        var attr = btnOptions.theme, states = attr.states, hover = states && states.hover, select = states && states.select;
+        var attr = btnOptions.theme;
         var callback;
         if (!chart.styledMode) {
             attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
             attr.stroke = pick(attr.stroke, 'none');
         }
-        delete attr.states;
         if (onclick) {
             callback = function (e) {
                 if (e) {
@@ -144,7 +143,7 @@ var Exporting;
             attr.stroke = pick(attr.stroke, 'none');
         }
         var button = renderer
-            .button(btnOptions.text, 0, 0, callback, attr, hover, select)
+            .button(btnOptions.text, 0, 0, callback, attr)
             .addClass(options.className)
             .attr({
             title: pick(chart.options.lang[btnOptions._titleKey || btnOptions.titleKey], '')
@@ -825,10 +824,10 @@ var Exporting;
             visibility: 'hidden'
         });
         doc.body.appendChild(iframe);
-        var iframeDoc = iframe.contentWindow.document;
-        iframeDoc.open();
-        iframeDoc.write('<svg xmlns="http://www.w3.org/2000/svg"></svg>');
-        iframeDoc.close();
+        var iframeDoc = (iframe.contentWindow && iframe.contentWindow.document);
+        if (iframeDoc) {
+            iframeDoc.body.appendChild(iframeDoc.createElementNS(SVG_NS, 'svg'));
+        }
         /**
          * Call this on all elements and recurse to children
          * @private
@@ -836,7 +835,10 @@ var Exporting;
          *        Element child
              */
         function recurse(node) {
-            var styles, parentStyles, cssText = '', dummy, styleAttr, blacklisted, whitelisted, i;
+            var filteredStyles = {};
+            var styles, parentStyles, 
+            // cssText = '',
+            dummy, styleAttr, blacklisted, whitelisted, i;
             /**
              * Check computed styles and whether they are in the white/blacklist
              * for styles or atttributes.
@@ -883,12 +885,13 @@ var Exporting;
                             // Styles
                         }
                         else {
-                            cssText += hyphenate(prop) + ':' + val + ';';
+                            filteredStyles[prop] = val;
                         }
                     }
                 }
             }
-            if (node.nodeType === 1 &&
+            if (iframeDoc &&
+                node.nodeType === 1 &&
                 unstyledElements.indexOf(node.nodeName) === -1) {
                 styles = win.getComputedStyle(node, null);
                 parentStyles = node.nodeName === 'svg' ?
@@ -929,10 +932,16 @@ var Exporting;
                     }
                 }
                 // Apply styles
+                /*
                 if (cssText) {
                     styleAttr = node.getAttribute('style');
-                    node.setAttribute('style', (styleAttr ? styleAttr + ';' : '') + cssText);
+                    node.setAttribute(
+                        'style',
+                        (styleAttr ? styleAttr + ';' : '') + cssText
+                    );
                 }
+                */
+                css(node, filteredStyles);
                 // Set default stroke width (needed at least for IE)
                 if (node.nodeName === 'svg') {
                     node.setAttribute('stroke-width', '1px');
@@ -947,7 +956,7 @@ var Exporting;
         /**
          * Remove the dummy objects used to get defaults
          * @private
-             */
+         */
         function tearDown() {
             dummySVG.parentNode.removeChild(dummySVG);
             // Remove trash from DOM that stayed after each exporting

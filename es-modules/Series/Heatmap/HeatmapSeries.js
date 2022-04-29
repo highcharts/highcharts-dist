@@ -85,25 +85,6 @@ var HeatmapSeries = /** @class */ (function (_super) {
             this.points.forEach(function (point) {
                 if (point.graphic) {
                     point.graphic[_this.chart.styledMode ? 'css' : 'animate'](_this.colorAttribs(point));
-                    // @todo
-                    // Applying the border radius here is not optimal. It should
-                    // be set in the shapeArgs or returned from `markerAttribs`.
-                    // However, Series.drawPoints does not pick up markerAttribs
-                    // to be passed over to `renderer.symbol`. Also, image
-                    // symbols are not positioned by their top left corner like
-                    // other symbols are. This should be refactored, then we
-                    // could save ourselves some tests for .hasImage etc. And
-                    // the evaluation of borderRadius would be moved to
-                    // `markerAttribs`.
-                    if (_this.options.borderRadius) {
-                        point.graphic.attr({
-                            r: _this.options.borderRadius
-                        });
-                    }
-                    // Saving option for reapplying later
-                    // when changing point's states (#16165)
-                    (point.shapeArgs || {}).r = _this.options.borderRadius;
-                    (point.shapeArgs || {}).d = point.graphic.pathArray;
                     if (point.value === null) { // #15708
                         point.graphic.addClass('highcharts-null-point');
                     }
@@ -157,6 +138,18 @@ var HeatmapSeries = /** @class */ (function (_super) {
         this.yAxis.axisPointRange = options.rowsize || 1;
         // Bind new symbol names
         symbols.ellipse = symbols.circle;
+        // @todo
+        //
+        // Setting the border radius here is a workaround. It should be set in
+        // the shapeArgs or returned from `markerAttribs`. However,
+        // Series.drawPoints does not pick up markerAttribs to be passed over to
+        // `renderer.symbol`. Also, image symbols are not positioned by their
+        // top left corner like other symbols are. This should be refactored,
+        // then we could save ourselves some tests for .hasImage etc. And the
+        // evaluation of borderRadius would be moved to `markerAttribs`.
+        if (options.marker) {
+            options.marker.r = options.borderRadius;
+        }
     };
     /**
      * @private
@@ -270,7 +263,7 @@ var HeatmapSeries = /** @class */ (function (_super) {
                 clientX: (cellAttr.x1 + cellAttr.x2) / 2,
                 shapeType: 'path',
                 shapeArgs: merge(true, shapeArgs, {
-                    d: symbols[shape](shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height)
+                    d: symbols[shape](shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height, { r: options.borderRadius })
                 })
             };
             if (hasImage) {

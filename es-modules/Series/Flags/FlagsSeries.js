@@ -191,23 +191,18 @@ var FlagsSeries = /** @class */ (function (_super) {
             // depending on the label width or a hardcoded value, #16041.
             distribute(boxes, inverted ? yAxis.len : this.xAxis.len, maxDistance_1);
             points.forEach(function (point) {
-                var box = point.graphic && boxesMap[point.plotX];
-                if (box) {
-                    point.graphic[point.graphic.isNew ? 'attr' : 'animate']({
-                        x: box.pos + box.align * box.size,
-                        anchorX: point.anchorX
-                    });
+                var plotX = point.plotX, graphic = point.graphic, box = graphic && boxesMap[plotX];
+                if (box && graphic) {
                     // Hide flag when its box position is not specified
                     // (#8573, #9299)
                     if (!defined(box.pos)) {
-                        point.graphic.attr({
-                            x: -9999,
-                            anchorX: -9999
-                        });
-                        point.graphic.isNew = true;
+                        graphic.hide().isNew = true;
                     }
                     else {
-                        point.graphic.isNew = false;
+                        graphic[graphic.isNew ? 'attr' : 'animate']({
+                            x: box.pos + (box.align || 0) * box.size,
+                            anchorX: point.anchorX
+                        }).show().isNew = false;
                     }
                 }
             });

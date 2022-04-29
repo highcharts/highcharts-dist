@@ -321,7 +321,7 @@ var MapSeries = /** @class */ (function (_super) {
      */
     MapSeries.prototype.getProjectedBounds = function () {
         if (!this.bounds && this.chart.mapView) {
-            var MAX_VALUE = Number.MAX_VALUE, _a = this.chart.mapView, insets_1 = _a.insets, projection_1 = _a.projection, allBounds_1 = [];
+            var _a = this.chart.mapView, insets_1 = _a.insets, projection_1 = _a.projection, allBounds_1 = [];
             // Find the bounding box of each point
             (this.points || []).forEach(function (point) {
                 if (point.path || point.geometry) {
@@ -407,6 +407,16 @@ var MapSeries = /** @class */ (function (_super) {
         // all points to update the stroke-width on zooming.
         'inherit');
         return attr;
+    };
+    /**
+     * @private
+     */
+    MapSeries.prototype.updateData = function () {
+        // #16782
+        if (this.processedData) {
+            return false;
+        }
+        return _super.prototype.updateData.apply(this, arguments);
     };
     /**
      * Extend setData to call processData and generatePoints immediately.

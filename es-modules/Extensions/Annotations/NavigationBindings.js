@@ -948,6 +948,14 @@ setOptions({
                     }
                 ]
             },
+            /**
+             * A ellipse annotation bindings. Includes `start` and two events in
+             * `steps` array. First updates the second point, responsible for a
+             * rx width, and second updates the ry width.
+             *
+             * @type    {Highcharts.NavigationBindingsOptionsObject}
+             * @default {"className": "highcharts-ellipse-annotation", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
+             */
             ellipseAnnotation: {
                 className: 'highcharts-ellipse-annotation',
                 start: function (e) {
@@ -1094,7 +1102,7 @@ setOptions({
          * from a different server.
          *
          * @type      {string}
-         * @default   https://code.highcharts.com/10.0.0/gfx/stock-icons/
+         * @default   https://code.highcharts.com/10.1.0/gfx/stock-icons/
          * @since     7.1.3
          * @apioption navigation.iconsURL
          */

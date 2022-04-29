@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * (c) 2014-2021 Highsoft AS
  * Authors: Jon Arild Nygard / Oystein Moseng
@@ -1062,9 +1062,7 @@
                 var breadcrumbs = this,
                     chart = this.chart,
                     breadcrumbsOptions = breadcrumbs.options,
-                    buttonTheme = merge(breadcrumbsOptions.buttonTheme),
-                    states = buttonTheme.states;
-                delete buttonTheme.states;
+                    buttonTheme = merge(breadcrumbsOptions.buttonTheme);
                 var button = chart.renderer
                         .button(breadcrumbs.getButtonText(breadcrumb),
                     posX,
@@ -1089,7 +1087,7 @@
                         }
                         fireEvent(breadcrumbs, 'up', e);
                     }
-                }, buttonTheme, states && states.hover, states && states.select, states && states.disabled)
+                }, buttonTheme)
                     .addClass('highcharts-breadcrumbs-button')
                     .add(breadcrumbs.group);
                 if (!chart.styledMode) {

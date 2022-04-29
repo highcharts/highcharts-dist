@@ -647,11 +647,11 @@ var Tick = /** @class */ (function () {
             // Set the new position, and show or hide
             if (show && isNumber(xy.y)) {
                 xy.opacity = opacity;
-                label[tick.isNewLabel ? 'attr' : 'animate'](xy);
+                label[tick.isNewLabel ? 'attr' : 'animate'](xy).show(true);
                 tick.isNewLabel = false;
             }
             else {
-                label.attr('y', -9999); // #1338
+                label.hide(); // #1338, #15863
                 tick.isNewLabel = true;
             }
         }

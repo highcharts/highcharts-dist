@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * Exporting module
  *
@@ -46,7 +46,8 @@
          * License: www.highcharts.com/license
          */
         var doc = H.doc;
-        var addEvent = U.addEvent;
+        var addEvent = U.addEvent,
+            fireEvent = U.fireEvent;
         /**
          * The module allows user to enable display chart in full screen mode.
          * Used in StockTools too.
@@ -138,26 +139,30 @@
                 var fullscreen = this,
                     chart = fullscreen.chart,
                     optionsChart = chart.options.chart;
-                // Don't fire exitFullscreen() when user exited using 'Escape' button.
-                if (fullscreen.isOpen &&
-                    fullscreen.browserProps &&
-                    chart.container.ownerDocument instanceof Document) {
-                    chart.container.ownerDocument[fullscreen.browserProps.exitFullscreen]();
-                }
-                // Unbind event as it's necessary only before exiting from fullscreen.
-                if (fullscreen.unbindFullscreenEvent) {
-                    fullscreen.unbindFullscreenEvent = fullscreen
-                        .unbindFullscreenEvent();
-                }
-                chart.setSize(fullscreen.origWidth, fullscreen.origHeight, false);
-                fullscreen.origWidth = void 0;
-                fullscreen.origHeight = void 0;
-                optionsChart.width = fullscreen.origWidthOption;
-                optionsChart.height = fullscreen.origHeightOption;
-                fullscreen.origWidthOption = void 0;
-                fullscreen.origHeightOption = void 0;
-                fullscreen.isOpen = false;
-                fullscreen.setButtonText();
+                fireEvent(chart, 'fullscreenClose', null, function () {
+                    // Don't fire exitFullscreen() when user exited
+                    // using 'Escape' button.
+                    if (fullscreen.isOpen &&
+                        fullscreen.browserProps &&
+                        chart.container.ownerDocument instanceof Document) {
+                        chart.container.ownerDocument[fullscreen.browserProps.exitFullscreen]();
+                    }
+                    // Unbind event as it's necessary only before exiting
+                    // from fullscreen.
+                    if (fullscreen.unbindFullscreenEvent) {
+                        fullscreen.unbindFullscreenEvent = fullscreen
+                            .unbindFullscreenEvent();
+                    }
+                    chart.setSize(fullscreen.origWidth, fullscreen.origHeight, false);
+                    fullscreen.origWidth = void 0;
+                    fullscreen.origHeight = void 0;
+                    optionsChart.width = fullscreen.origWidthOption;
+                    optionsChart.height = fullscreen.origHeightOption;
+                    fullscreen.origWidthOption = void 0;
+                    fullscreen.origHeightOption = void 0;
+                    fullscreen.isOpen = false;
+                    fullscreen.setButtonText();
+                });
             };
             /**
              * Displays the chart in fullscreen mode.
@@ -175,43 +180,46 @@
                 var fullscreen = this,
                     chart = fullscreen.chart,
                     optionsChart = chart.options.chart;
-                if (optionsChart) {
-                    fullscreen.origWidthOption = optionsChart.width;
-                    fullscreen.origHeightOption = optionsChart.height;
-                }
-                fullscreen.origWidth = chart.chartWidth;
-                fullscreen.origHeight = chart.chartHeight;
-                // Handle exitFullscreen() method when user clicks 'Escape' button.
-                if (fullscreen.browserProps) {
-                    var unbindChange_1 = addEvent(chart.container.ownerDocument, // chart's document
-                        fullscreen.browserProps.fullscreenChange,
-                        function () {
-                            // Handle lack of async of browser's fullScreenChange event.
-                            if (fullscreen.isOpen) {
-                                fullscreen.isOpen = false;
-                            fullscreen.close();
-                        }
-                        else {
-                            chart.setSize(null, null, false);
-                            fullscreen.isOpen = true;
-                            fullscreen.setButtonText();
-                        }
-                    });
-                    var unbindDestroy_1 = addEvent(chart, 'destroy',
-                        unbindChange_1);
-                    fullscreen.unbindFullscreenEvent = function () {
-                        unbindChange_1();
-                        unbindDestroy_1();
-                    };
-                    var promise = chart.renderTo[fullscreen.browserProps.requestFullscreen]();
-                    if (promise) {
-                        // No dot notation because of IE8 compatibility
-                        promise['catch'](function () {
-                            alert(// eslint-disable-line no-alert
-                            'Full screen is not supported inside a frame.');
-                        });
+                fireEvent(chart, 'fullscreenOpen', null, function () {
+                    if (optionsChart) {
+                        fullscreen.origWidthOption = optionsChart.width;
+                        fullscreen.origHeightOption = optionsChart.height;
                     }
-                }
+                    fullscreen.origWidth = chart.chartWidth;
+                    fullscreen.origHeight = chart.chartHeight;
+                    // Handle exitFullscreen() method when user clicks 'Escape' button.
+                    if (fullscreen.browserProps) {
+                        var unbindChange_1 = addEvent(chart.container.ownerDocument, // chart's document
+                            fullscreen.browserProps.fullscreenChange,
+                            function () {
+                                // Handle lack of async of browser's
+                                // fullScreenChange event.
+                                if (fullscreen.isOpen) {
+                                    fullscreen.isOpen = false;
+                                fullscreen.close();
+                            }
+                            else {
+                                chart.setSize(null, null, false);
+                                fullscreen.isOpen = true;
+                                fullscreen.setButtonText();
+                            }
+                        });
+                        var unbindDestroy_1 = addEvent(chart, 'destroy',
+                            unbindChange_1);
+                        fullscreen.unbindFullscreenEvent = function () {
+                            unbindChange_1();
+                            unbindDestroy_1();
+                        };
+                        var promise = chart.renderTo[fullscreen.browserProps.requestFullscreen]();
+                        if (promise) {
+                            // No dot notation because of IE8 compatibility
+                            promise['catch'](function () {
+                                alert(// eslint-disable-line no-alert
+                                'Full screen is not supported inside a frame.');
+                            });
+                        }
+                    }
+                });
             };
             /**
              * Replaces the exporting context button's text when toogling the
@@ -282,6 +290,66 @@
              */
             this.fullscreen = new H.Fullscreen(this);
         });
+        /* *
+         *
+         *  API Declarations
+         *
+         * */
+        /**
+         * Gets fired when closing the fullscreen
+         *
+         * @callback Highcharts.FullScreenfullscreenCloseCallbackFunction
+         *
+         * @param {Highcharts.Chart} chart
+         *        The chart on which the event occured.
+         *
+         * @param {global.Event} event
+         *        The event that occured.
+         */
+        /**
+         * Gets fired when opening the fullscreen
+         *
+         * @callback Highcharts.FullScreenfullscreenOpenCallbackFunction
+         *
+         * @param {Highcharts.Chart} chart
+         *        The chart on which the event occured.
+         *
+         * @param {global.Event} event
+         *        The event that occured.
+         */
+        /* *
+         *
+         *  API Options
+         *
+         * */
+        /**
+         * Fires when a fullscreen is closed through the context menu item,
+         * or a fullscreen is closed on the `Escape` button click,
+         * or the `Chart.fullscreen.close` method.
+         *
+         * @sample highcharts/chart/events-fullscreen
+         *         Title size change on fullscreen open
+         *
+         * @type      {Highcharts.FullScreenfullscreenCloseCallbackFunction}
+         * @since 10.1.0
+         * @context   Highcharts.Chart
+         * @requires  modules/full-screen
+         * @apioption chart.events.fullscreenClose
+         */
+        /**
+         * Fires when a fullscreen is opened through the context menu item,
+         * or the `Chart.fullscreen.open` method.
+         *
+         * @sample highcharts/chart/events-fullscreen
+         *         Title size change on fullscreen open
+         *
+         * @type      {Highcharts.FullScreenfullscreenOpenCallbackFunction}
+         * @since 10.1.0
+         * @context   Highcharts.Chart
+         * @requires  modules/full-screen
+         * @apioption chart.events.fullscreenOpen
+         */
+        (''); // keeps doclets above in transpiled file
 
         return H.Fullscreen;
     });
@@ -1534,6 +1602,7 @@
          * */
         var defaultOptions = D.defaultOptions;
         var doc = G.doc,
+            SVG_NS = G.SVG_NS,
             win = G.win;
         var addEvent = U.addEvent,
             css = U.css,
@@ -1635,16 +1704,12 @@
                 if (btnOptions.enabled === false || !btnOptions.theme) {
                     return;
                 }
-                var attr = btnOptions.theme,
-                    states = attr.states,
-                    hover = states && states.hover,
-                    select = states && states.select;
+                var attr = btnOptions.theme;
                 var callback;
                 if (!chart.styledMode) {
                     attr.fill = pick(attr.fill, "#ffffff" /* backgroundColor */);
                     attr.stroke = pick(attr.stroke, 'none');
                 }
-                delete attr.states;
                 if (onclick) {
                     callback = function (e) {
                         if (e) {
@@ -1681,9 +1746,7 @@
                 var button = renderer
                         .button(btnOptions.text, 0, 0,
                     callback,
-                    attr,
-                    hover,
-                    select)
+                    attr)
                         .addClass(options.className)
                         .attr({
                         title: pick(chart.options.lang[btnOptions._titleKey || btnOptions.titleKey], '')
@@ -2391,10 +2454,10 @@
                     visibility: 'hidden'
                 });
                 doc.body.appendChild(iframe);
-                var iframeDoc = iframe.contentWindow.document;
-                iframeDoc.open();
-                iframeDoc.write('<svg xmlns="http://www.w3.org/2000/svg"></svg>');
-                iframeDoc.close();
+                var iframeDoc = (iframe.contentWindow && iframe.contentWindow.document);
+                if (iframeDoc) {
+                    iframeDoc.body.appendChild(iframeDoc.createElementNS(SVG_NS, 'svg'));
+                }
                 /**
                  * Call this on all elements and recurse to children
                  * @private
@@ -2402,9 +2465,10 @@
                  *        Element child
                      */
                 function recurse(node) {
+                    var filteredStyles = {};
                     var styles,
-                        parentStyles,
-                        cssText = '',
+                        parentStyles, 
+                        // cssText = '',
                         dummy,
                         styleAttr,
                         blacklisted,
@@ -2456,12 +2520,13 @@
                                     // Styles
                                 }
                                 else {
-                                    cssText += hyphenate(prop) + ':' + val + ';';
+                                    filteredStyles[prop] = val;
                                 }
                             }
                         }
                     }
-                    if (node.nodeType === 1 &&
+                    if (iframeDoc &&
+                        node.nodeType === 1 &&
                         unstyledElements.indexOf(node.nodeName) === -1) {
                         styles = win.getComputedStyle(node, null);
                         parentStyles = node.nodeName === 'svg' ?
@@ -2502,10 +2567,16 @@
                             }
                         }
                         // Apply styles
+                        /*
                         if (cssText) {
                             styleAttr = node.getAttribute('style');
-                            node.setAttribute('style', (styleAttr ? styleAttr + ';' : '') + cssText);
+                            node.setAttribute(
+                                'style',
+                                (styleAttr ? styleAttr + ';' : '') + cssText
+                            );
                         }
+                        */
+                        css(node, filteredStyles);
                         // Set default stroke width (needed at least for IE)
                         if (node.nodeName === 'svg') {
                             node.setAttribute('stroke-width', '1px');
@@ -2520,7 +2591,7 @@
                 /**
                  * Remove the dummy objects used to get defaults
                  * @private
-                     */
+                 */
                 function tearDown() {
                     dummySVG.parentNode.removeChild(dummySVG);
                     // Remove trash from DOM that stayed after each exporting

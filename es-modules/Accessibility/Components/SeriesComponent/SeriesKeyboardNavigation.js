@@ -279,8 +279,7 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
                     }]
             ],
             init: function () {
-                highlightFirstValidPointInChart(chart);
-                return this.response.success;
+                return keyboardNavigation.onHandlerInit(this);
             },
             validate: function () {
                 return !!getFirstValidPointInChart(chart);
@@ -300,6 +299,24 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
     SeriesKeyboardNavigation.prototype.onKbdSideways = function (handler, keyCode) {
         var keys = this.keyCodes, isNext = keyCode === keys.right || keyCode === keys.down;
         return this.attemptHighlightAdjacentPoint(handler, isNext);
+    };
+    /**
+     * When keyboard navigation inits.
+     * @private
+     * @param {Highcharts.KeyboardNavigationHandler} handler The handler object
+     * @return {number}
+     * response
+     */
+    SeriesKeyboardNavigation.prototype.onHandlerInit = function (handler) {
+        var chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
+        if (kbdNavOptions.seriesNavigation.rememberPointFocus &&
+            chart.highlightedPoint) {
+            chart.highlightedPoint.highlight();
+        }
+        else {
+            highlightFirstValidPointInChart(chart);
+        }
+        return handler.response.success;
     };
     /**
      * @private
@@ -327,7 +344,7 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
      * @private
      */
     SeriesKeyboardNavigation.prototype.onHandlerTerminate = function () {
-        var chart = this.chart;
+        var chart = this.chart, kbdNavOptions = chart.options.accessibility.keyboardNavigation;
         if (chart.tooltip) {
             chart.tooltip.hide(0);
         }
@@ -338,7 +355,9 @@ var SeriesKeyboardNavigation = /** @class */ (function () {
         if (chart.highlightedPoint && chart.highlightedPoint.onMouseOut) {
             chart.highlightedPoint.onMouseOut();
         }
-        delete chart.highlightedPoint;
+        if (!kbdNavOptions.seriesNavigation.rememberPointFocus) {
+            delete chart.highlightedPoint;
+        }
     };
     /**
      * Function that attempts to highlight next/prev point. Handles wrap around.

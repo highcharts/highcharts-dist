@@ -1,5 +1,5 @@
 /**
- * @license Highmaps JS v10.0.0 (2022-03-07)
+ * @license Highmaps JS v10.1.0 (2022-04-29)
  *
  * Highmaps as a plugin for Highcharts or Highcharts Stock.
  *
@@ -1872,13 +1872,9 @@
                         attr = buttonOptions.theme;
                         attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                         );
-                        states = attr.states;
-                        hoverStates = states && states.hover;
-                        selectStates = states && states.select;
-                        delete attr.states;
                     }
                     var button = chart.renderer
-                            .button(buttonOptions.text || '', 0, 0, outerHandler, attr, hoverStates, selectStates, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
+                            .button(buttonOptions.text || '', 0, 0, outerHandler, attr, void 0, void 0, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
                             .addClass('highcharts-map-navigation highcharts-' + {
                             zoomIn: 'zoom-in',
                             zoomOut: 'zoom-out'
@@ -2872,8 +2868,10 @@
                      * @type   {string}
                      * @sample maps/mapview/projection-explorer
                      *         Projection explorer
-                     * @sample maps/mapview/projection-custom
+                     * @sample maps/mapview/projection-custom-proj4js
                      *         Custom UTM projection definition
+                     * @sample maps/mapview/projection-custom-d3geo
+                     *         Custom Robinson projection definition
                      * @sample maps/demo/topojson-projection
                      *         Orthographic projection
                      */
@@ -3369,7 +3367,7 @@
                 sinAngle = transform.sinAngle ||
                     (transform.rotation && Math.sin(transform.rotation)), 
                 // Note: Inverted sinAngle to reverse rotation direction
-                projected = win.proj4(transform.crs, 'WGS84',
+                projected = proj4(transform.crs, 'WGS84',
                 transform.rotation ? {
                     x: normalized.x * cosAngle + normalized.y * -sinAngle,
                     y: normalized.x * sinAngle + normalized.y * cosAngle
@@ -3484,7 +3482,8 @@
                     copyrightUrl: topology.copyrightUrl,
                     features: features,
                     'hc-recommended-mapview': object['hc-recommended-mapview'],
-                    bbox: topology.bbox
+                    bbox: topology.bbox,
+                    title: topology.title
                 };
             object['hc-decoded-geojson'] = geojson;
             return geojson;
@@ -4622,7 +4621,6 @@
             pointInPolygon = MU.pointInPolygon;
         var addEvent = U.addEvent,
             clamp = U.clamp,
-            defined = U.defined,
             fireEvent = U.fireEvent,
             isArray = U.isArray,
             isNumber = U.isNumber,
@@ -4779,7 +4777,11 @@
                         _this.minZoom === _this.zoom // When resizing the chart
                     ) {
                         _this.fitToBounds(void 0, void 0, false);
-                        if (isNumber(_this.userOptions.zoom)) {
+                        if (
+                        // Set zoom only when initializing the chart
+                        // (do not overwrite when zooming in/out, #17082)
+                        !_this.chart.hasRendered &&
+                            isNumber(_this.userOptions.zoom)) {
                             _this.zoom = _this.userOptions.zoom;
                         }
                         if (_this.userOptions.center) {
@@ -5973,8 +5975,7 @@
              */
             MapSeries.prototype.getProjectedBounds = function () {
                 if (!this.bounds && this.chart.mapView) {
-                    var MAX_VALUE = Number.MAX_VALUE,
-                        _a = this.chart.mapView,
+                    var _a = this.chart.mapView,
                         insets_1 = _a.insets,
                         projection_1 = _a.projection,
                         allBounds_1 = [];
@@ -6070,6 +6071,16 @@
                 // all points to update the stroke-width on zooming.
                 'inherit');
                 return attr;
+            };
+            /**
+             * @private
+             */
+            MapSeries.prototype.updateData = function () {
+                // #16782
+                if (this.processedData) {
+                    return false;
+                }
+                return _super.prototype.updateData.apply(this, arguments);
             };
             /**
              * Extend setData to call processData and generatePoints immediately.
@@ -7177,6 +7188,10 @@
                     this.processData();
                 }
                 this.generatePoints();
+                if (this.getProjectedBounds && this.isDirtyData) {
+                    delete this.bounds;
+                    this.getProjectedBounds(); // Added point needs bounds(#16598)
+                }
                 // Create map based translation
                 if (mapView) {
                     var hasCoordinates_1 = mapView.projection.hasCoordinates;
@@ -9390,7 +9405,7 @@
 
         return MapBubblePoint;
     });
-    _registerModule(_modules, 'Series/MapBubble/MapBubbleSeries.js', [_modules['Series/Bubble/BubbleSeries.js'], _modules['Series/MapBubble/MapBubblePoint.js'], _modules['Series/Map/MapSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Globals.js'], _modules['Core/Utilities.js']], function (BubbleSeries, MapBubblePoint, MapSeries, SeriesRegistry, H, U) {
+    _registerModule(_modules, 'Series/MapBubble/MapBubbleSeries.js', [_modules['Series/Bubble/BubbleSeries.js'], _modules['Series/MapBubble/MapBubblePoint.js'], _modules['Series/Map/MapSeries.js'], _modules['Core/Series/SeriesRegistry.js'], _modules['Core/Utilities.js']], function (BubbleSeries, MapBubblePoint, MapSeries, SeriesRegistry, U) {
         /* *
          *
          *  (c) 2010-2021 Torstein Honsi
@@ -9416,7 +9431,6 @@
                 d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
             };
         })();
-        var noop = H.noop;
         var MapPointSeries = SeriesRegistry.seriesTypes.mappoint;
         var extend = U.extend,
             merge = U.merge;
@@ -9498,15 +9512,62 @@
                  * @apioption plotOptions.mapbubble.displayNegative
                  */
                 /**
-                 * @sample {highmaps} maps/demo/map-bubble/
-                 *         Bubble size
+                 * Color of the line connecting bubbles. The default value is the same
+                 * as series' color.
                  *
-                 * @apioption plotOptions.mapbubble.maxSize
+                 * In styled mode, the color can be defined by the
+                 * [colorIndex](#plotOptions.series.colorIndex) option. Also, the series
+                 * color can be set with the `.highcharts-series`,
+                 * `.highcharts-color-{n}`, `.highcharts-{type}-series` or
+                 * `.highcharts-series-{n}` class, or individual classes given by the
+                 * `className` option.
+                 *
+                 *
+                 * @sample {highmaps} maps/demo/spider-map/
+                 *         Spider map
+                 * @sample {highmaps} maps/plotoptions/spider-map-line-color/
+                 *         Different line color
+                 *
+                 * @type      {Highcharts.ColorString|Highcharts.GradientColorObject|Highcharts.PatternObject}
+                 * @apioption plotOptions.mapbubble.lineColor
                  */
                 /**
+                 * Pixel width of the line connecting bubbles.
+                 *
+                 * @sample {highmaps} maps/demo/spider-map/
+                 *         Spider map
+                 *
+                 * @product   highmaps
+                 * @apioption plotOptions.mapbubble.lineWidth
+                 */
+                lineWidth: 0,
+                /**
+                 * Maximum bubble size. Bubbles will automatically size between the
+                 * `minSize` and `maxSize` to reflect the `z` value of each bubble.
+                 * Can be either pixels (when no unit is given), or a percentage of
+                 * the smallest one of the plot width and height.
+                 *
+                 * @sample {highmaps} highcharts/plotoptions/bubble-size/
+                 *         Bubble size
+                 * @sample {highmaps} maps/demo/spider-map/
+                 *         Spider map
+                 *
+                 * @product   highmaps
+                 * @apioption plotOptions.mapbubble.maxSize
+
+                 */
+                /**
+                 * Minimum bubble size. Bubbles will automatically size between the
+                 * `minSize` and `maxSize` to reflect the `z` value of each bubble.
+                 * Can be either pixels (when no unit is given), or a percentage of
+                 * the smallest one of the plot width and height.
+                 *
                  * @sample {highmaps} maps/demo/map-bubble/
                  *         Bubble size
+                 * @sample {highmaps} maps/demo/spider-map/
+                 *         Spider map
                  *
+                 * @product   highmaps
                  * @apioption plotOptions.mapbubble.minSize
                  */
                 /**
@@ -9604,6 +9665,7 @@
             projectPoint: MapPointSeries.prototype.projectPoint,
             setData: MapSeries.prototype.setData,
             setOptions: MapSeries.prototype.setOptions,
+            updateData: MapSeries.prototype.updateData,
             useMapGeometry: true,
             xyFromShape: true
         });
@@ -9956,25 +10018,6 @@
                     this.points.forEach(function (point) {
                         if (point.graphic) {
                             point.graphic[_this.chart.styledMode ? 'css' : 'animate'](_this.colorAttribs(point));
-                            // @todo
-                            // Applying the border radius here is not optimal. It should
-                            // be set in the shapeArgs or returned from `markerAttribs`.
-                            // However, Series.drawPoints does not pick up markerAttribs
-                            // to be passed over to `renderer.symbol`. Also, image
-                            // symbols are not positioned by their top left corner like
-                            // other symbols are. This should be refactored, then we
-                            // could save ourselves some tests for .hasImage etc. And
-                            // the evaluation of borderRadius would be moved to
-                            // `markerAttribs`.
-                            if (_this.options.borderRadius) {
-                                point.graphic.attr({
-                                    r: _this.options.borderRadius
-                                });
-                            }
-                            // Saving option for reapplying later
-                            // when changing point's states (#16165)
-                            (point.shapeArgs || {}).r = _this.options.borderRadius;
-                            (point.shapeArgs || {}).d = point.graphic.pathArray;
                             if (point.value === null) { // #15708
                                 point.graphic.addClass('highcharts-null-point');
                             }
@@ -10031,6 +10074,18 @@
                 this.yAxis.axisPointRange = options.rowsize || 1;
                 // Bind new symbol names
                 symbols.ellipse = symbols.circle;
+                // @todo
+                //
+                // Setting the border radius here is a workaround. It should be set in
+                // the shapeArgs or returned from `markerAttribs`. However,
+                // Series.drawPoints does not pick up markerAttribs to be passed over to
+                // `renderer.symbol`. Also, image symbols are not positioned by their
+                // top left corner like other symbols are. This should be refactored,
+                // then we could save ourselves some tests for .hasImage etc. And the
+                // evaluation of borderRadius would be moved to `markerAttribs`.
+                if (options.marker) {
+                    options.marker.r = options.borderRadius;
+                }
             };
             /**
              * @private
@@ -10165,7 +10220,7 @@
                         clientX: (cellAttr.x1 + cellAttr.x2) / 2,
                         shapeType: 'path',
                         shapeArgs: merge(true, shapeArgs, {
-                            d: symbols[shape](shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height)
+                            d: symbols[shape](shapeArgs.x, shapeArgs.y, shapeArgs.width, shapeArgs.height, { r: options.borderRadius })
                         })
                     };
                     if (hasImage) {

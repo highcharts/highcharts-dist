@@ -1032,10 +1032,9 @@ var SVGElement = /** @class */ (function () {
      *         The bounding box with `x`, `y`, `width` and `height` properties.
      */
     SVGElement.prototype.getBBox = function (reload, rot) {
-        var wrapper = this, renderer = wrapper.renderer, element = wrapper.element, styles = wrapper.styles, textStr = wrapper.textStr, cache = renderer.cache, cacheKeys = renderer.cacheKeys, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = pick(rot, wrapper.rotation, 0), fontSize = renderer.styledMode ? (element &&
+        var wrapper = this, alignValue = wrapper.alignValue, element = wrapper.element, renderer = wrapper.renderer, styles = wrapper.styles, textStr = wrapper.textStr, cache = renderer.cache, cacheKeys = renderer.cacheKeys, isSVG = element.namespaceURI === wrapper.SVG_NS, rotation = pick(rot, wrapper.rotation, 0), fontSize = renderer.styledMode ? (element &&
             SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles && styles.fontSize);
-        var bBox, // = wrapper.bBox,
-        width, height, toggleTextShadowShim, cacheKey;
+        var bBox, width, height, toggleTextShadowShim, cacheKey;
         // Avoid undefined and null (#7316)
         if (defined(textStr)) {
             cacheKey = textStr.toString();
@@ -1052,6 +1051,7 @@ var SVGElement = /** @class */ (function () {
                 rotation,
                 fontSize,
                 wrapper.textWidth,
+                alignValue,
                 styles && styles.textOverflow,
                 styles && styles.fontWeight // #12163
             ].join(',');
@@ -1097,7 +1097,7 @@ var SVGElement = /** @class */ (function () {
                 // other condition is for Opera that returns a width of
                 // -Infinity on hidden elements.
                 if (!bBox || bBox.width < 0) {
-                    bBox = { width: 0, height: 0 };
+                    bBox = { x: 0, y: 0, width: 0, height: 0 };
                 }
                 // VML Renderer or useHTML within SVG
             }
@@ -1126,11 +1126,20 @@ var SVGElement = /** @class */ (function () {
                 }
                 // Adjust for rotated text
                 if (rotation) {
-                    var rad = rotation * deg2rad;
-                    bBox.width = Math.abs(height * Math.sin(rad)) +
-                        Math.abs(width * Math.cos(rad));
-                    bBox.height = Math.abs(height * Math.cos(rad)) +
-                        Math.abs(width * Math.sin(rad));
+                    var baseline = Number(element.getAttribute('y') || 0) - bBox.y, alignFactor = {
+                        'right': 1,
+                        'center': 0.5
+                    }[alignValue || 0] || 0, rad = rotation * deg2rad, rad90 = (rotation - 90) * deg2rad, wCosRad = width * Math.cos(rad), wSinRad = width * Math.sin(rad), cosRad90 = Math.cos(rad90), sinRad90 = Math.sin(rad90), 
+                    // Find the starting point on the left side baseline of
+                    // the text
+                    pX = bBox.x + alignFactor * (width - wCosRad), pY = bBox.y + baseline - alignFactor * wSinRad, 
+                    // Find all corners
+                    aX = pX + baseline * cosRad90, bX = aX + wCosRad, cX = bX - height * cosRad90, dX = cX - wCosRad, aY = pY + baseline * sinRad90, bY = aY + wSinRad, cY = bY - height * sinRad90, dY = cY - wSinRad;
+                    // Deduct the bounding box from the corners
+                    bBox.x = Math.min(aX, bX, cX, dX);
+                    bBox.y = Math.min(aY, bY, cY, dY);
+                    bBox.width = Math.max(aX, bX, cX, dX) - bBox.x;
+                    bBox.height = Math.max(aY, bY, cY, dY) - bBox.y;
                 }
             }
             // Cache it. When loading a chart in a hidden iframe in Firefox and
@@ -1189,21 +1198,11 @@ var SVGElement = /** @class */ (function () {
      *
      * @function Highcharts.SVGElement#hide
      *
-     * @param {boolean} [hideByTranslation=false]
-     *        The flag to determine if element should be hidden by moving out
-     *        of the viewport. Used for example for dataLabels.
-     *
      * @return {Highcharts.SVGElement}
      *         Returns the SVGElement for chaining.
      */
-    SVGElement.prototype.hide = function (hideByTranslation) {
-        if (hideByTranslation) {
-            this.attr({ y: -9999 });
-        }
-        else {
-            this.attr({ visibility: 'hidden' });
-        }
-        return this;
+    SVGElement.prototype.hide = function () {
+        return this.attr({ visibility: 'hidden' });
     };
     /**
      * @private
@@ -1604,7 +1603,7 @@ var SVGElement = /** @class */ (function () {
      *
      * @function Highcharts.SVGElement#show
      *
-     * @param {boolean} [inherit=false]
+     * @param {boolean} [inherit=true]
      *        Set the visibility attribute to `inherit` rather than `visible`.
      *        The difference is that an element with `visibility="visible"`
      *        will be visible even if the parent is hidden.
@@ -1613,6 +1612,7 @@ var SVGElement = /** @class */ (function () {
      *         Returns the SVGElement for chaining.
      */
     SVGElement.prototype.show = function (inherit) {
+        if (inherit === void 0) { inherit = true; }
         return this.attr({ visibility: inherit ? 'inherit' : 'visible' });
     };
     /**

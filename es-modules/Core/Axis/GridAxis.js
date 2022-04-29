@@ -357,7 +357,7 @@ var GridAxis;
                         });
                     }
                     // show or hide the line depending on options.showEmpty
-                    axis.axisLine[axis.showAxis ? 'show' : 'hide'](true);
+                    axis.axisLine[axis.showAxis ? 'show' : 'hide']();
                 }
             }
             (grid && grid.columns || []).forEach(function (column) {
@@ -951,7 +951,10 @@ dateFormats.E = function (timestamp) {
 };
 // Adds week date format
 dateFormats.W = function (timestamp) {
-    var d = new this.Date(timestamp);
+    var time = this, d = new this.Date(timestamp), unitsToOmit = ['Hours', 'Milliseconds', 'Minutes', 'Seconds'];
+    unitsToOmit.forEach(function (format) {
+        time.set(format, d, 0);
+    });
     var firstDay = (this.get('Day', d) + 6) % 7;
     var thursday = new this.Date(d.valueOf());
     this.set('Date', thursday, this.get('Date', d) - firstDay + 3);

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * Exporting module
  *
@@ -449,8 +449,7 @@
             if (this.options &&
                 this.options.exporting &&
                 this.options.exporting.showTable &&
-                !this.options.chart.forExport &&
-                !this.dataTableDiv) {
+                !this.options.chart.forExport) {
                 this.viewData();
             }
         });

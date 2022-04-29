@@ -562,7 +562,7 @@ addEvent(Axis, 'afterDrawCrosshair', function (event) {
         text: text,
         x: posx,
         y: posy,
-        visibility: isInside ? 'visible' : 'hidden'
+        visibility: isInside ? 'inherit' : 'hidden'
     });
     crossBox = crossLabel.getBBox();
     // now it is placed we can correct its position

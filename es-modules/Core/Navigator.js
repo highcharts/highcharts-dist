@@ -904,7 +904,7 @@ var Navigator = /** @class */ (function () {
         zoomedMin = Math.round(navigator.zoomedMin);
         if (navigatorEnabled) {
             navigator.navigatorGroup.attr({
-                visibility: 'visible'
+                visibility: 'inherit'
             });
             // Place elements
             verb = rendered && !navigator.hasDragged ? 'animate' : 'attr';

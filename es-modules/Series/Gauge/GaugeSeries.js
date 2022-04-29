@@ -198,7 +198,7 @@ var GaugeSeries = /** @class */ (function (_super) {
      * @private
      */
     GaugeSeries.prototype.render = function () {
-        this.group = this.plotGroup('group', 'series', this.visible ? 'visible' : 'hidden', this.options.zIndex, this.chart.seriesGroup);
+        this.group = this.plotGroup('group', 'series', this.visible ? 'inherit' : 'hidden', this.options.zIndex, this.chart.seriesGroup);
         Series.prototype.render.call(this);
         this.group.clip(this.chart.clipRect);
     };

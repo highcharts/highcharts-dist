@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.0.0 (2022-03-07)
+ * @license Highstock JS v10.1.0 (2022-04-29)
  *
  * Highcharts Stock as a plugin for Highcharts
  *
@@ -490,9 +490,11 @@
                         // how many ordinal units did we move?
                         movedUnits = (mouseDownX - chartX) / pointPixelWidth, 
                         // get index of all the chart's points
+                        extendedOrdinalPositions = xAxis.ordinal.getExtendedPositions(),
                         extendedAxis = {
                             ordinal: {
-                                positions: xAxis.ordinal.getExtendedPositions()
+                                positions: extendedOrdinalPositions,
+                                extendedOrdinalPositions: extendedOrdinalPositions
                             }
                         },
                         index2val_1 = xAxis.index2val,
@@ -3066,9 +3068,11 @@
         Axis.prototype.applyGrouping = function (e) {
             var axis = this,
                 series = axis.series;
+            // Reset the groupPixelWidth for all series, #17141.
             series.forEach(function (series) {
-                // Reset the groupPixelWidth, then calculate if needed.
                 series.groupPixelWidth = void 0; // #2110
+            });
+            series.forEach(function (series) {
                 series.groupPixelWidth = (axis.getGroupPixelWidth &&
                     axis.getGroupPixelWidth());
                 if (series.groupPixelWidth) {
@@ -5361,23 +5365,20 @@
                     // depending on the label width or a hardcoded value, #16041.
                     distribute(boxes, inverted ? yAxis.len : this.xAxis.len, maxDistance_1);
                     points.forEach(function (point) {
-                        var box = point.graphic && boxesMap[point.plotX];
-                        if (box) {
-                            point.graphic[point.graphic.isNew ? 'attr' : 'animate']({
-                                x: box.pos + box.align * box.size,
-                                anchorX: point.anchorX
-                            });
+                        var plotX = point.plotX,
+                            graphic = point.graphic,
+                            box = graphic && boxesMap[plotX];
+                        if (box && graphic) {
                             // Hide flag when its box position is not specified
                             // (#8573, #9299)
                             if (!defined(box.pos)) {
-                                point.graphic.attr({
-                                    x: -9999,
-                                    anchorX: -9999
-                                });
-                                point.graphic.isNew = true;
+                                graphic.hide().isNew = true;
                             }
                             else {
-                                point.graphic.isNew = false;
+                                graphic[graphic.isNew ? 'attr' : 'animate']({
+                                    x: box.pos + (box.align || 0) * box.size,
+                                    anchorX: point.anchorX
+                                }).show().isNew = false;
                             }
                         }
                     });
@@ -6629,6 +6630,8 @@
                     method = scroller.rendered ? 'animate' : 'attr';
                 var xOffset = height,
                     yOffset = 0;
+                // Make the scrollbar visible when it is repositioned, #15763.
+                scroller.group.show();
                 scroller.x = x;
                 scroller.y = y + this.trackBorderWidth;
                 scroller.width = width; // width with buttons
@@ -6688,10 +6691,12 @@
                     options = scroller.options,
                     size = scroller.size,
                     styledMode = scroller.chart.styledMode,
-                    group = renderer.g('scrollbar').attr({
-                        zIndex: options.zIndex,
-                        translateY: -99999
-                    }).add();
+                    group = renderer.g('scrollbar')
+                        .attr({
+                        zIndex: options.zIndex
+                    })
+                        .hide() // initially hide the scrollbar #15863
+                        .add();
                 // Draw the scrollbar group
                 scroller.group = group;
                 // Draw the scrollbar track:
@@ -6819,7 +6824,7 @@
                     scroller.scrollbarRifles.hide();
                 }
                 else {
-                    scroller.scrollbarRifles.show(true);
+                    scroller.scrollbarRifles.show();
                 }
                 // Show or hide the scrollbar based on the showFull setting
                 if (options.showFull === false) {
@@ -8050,7 +8055,7 @@
                 zoomedMin = Math.round(navigator.zoomedMin);
                 if (navigatorEnabled) {
                     navigator.navigatorGroup.attr({
-                        visibility: 'visible'
+                        visibility: 'inherit'
                     });
                     // Place elements
                     verb = rendered && !navigator.hasDragged ? 'animate' : 'attr';
@@ -12159,7 +12164,7 @@
                 text: text,
                 x: posx,
                 y: posy,
-                visibility: isInside ? 'visible' : 'hidden'
+                visibility: isInside ? 'inherit' : 'hidden'
             });
             crossBox = crossLabel.getBBox();
             // now it is placed we can correct its position

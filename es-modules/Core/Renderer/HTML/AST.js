@@ -91,7 +91,9 @@ var AST = /** @class */ (function () {
                 valid = isString(val) && AST.allowedReferences.some(function (ref) { return val.indexOf(ref) === 0; });
             }
             if (!valid) {
-                error("Highcharts warning: Invalid attribute '" + key + "' in config");
+                error(33, false, void 0, {
+                    'Invalid attribute in config': "" + key
+                });
                 delete attributes[key];
             }
         });
@@ -101,9 +103,9 @@ var AST = /** @class */ (function () {
         return style
             .split(';')
             .reduce(function (styles, line) {
-            var pair = line.split(':').map(function (s) { return s.trim(); }), key = pair[0].replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
-            if (pair[1]) {
-                styles[key] = pair[1];
+            var pair = line.split(':').map(function (s) { return s.trim(); }), key = pair.shift();
+            if (key && pair.length) {
+                styles[key.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); })] = pair.join(':'); // #17146
             }
             return styles;
         }, {});
@@ -203,8 +205,9 @@ var AST = /** @class */ (function () {
                         node = element;
                     }
                     else {
-                        error('Highcharts warning: Invalid tagName ' +
-                            tagName + ' in config');
+                        error(33, false, void 0, {
+                            'Invalid tagName in config': tagName
+                        });
                     }
                 }
                 // Add to the tree

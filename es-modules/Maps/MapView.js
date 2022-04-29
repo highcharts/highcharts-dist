@@ -38,7 +38,7 @@ import MU from './MapUtilities.js';
 var boundsFromPath = MU.boundsFromPath, pointInPolygon = MU.pointInPolygon;
 import Projection from './Projection.js';
 import U from '../Core/Utilities.js';
-var addEvent = U.addEvent, clamp = U.clamp, defined = U.defined, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength;
+var addEvent = U.addEvent, clamp = U.clamp, fireEvent = U.fireEvent, isArray = U.isArray, isNumber = U.isNumber, isObject = U.isObject, isString = U.isString, merge = U.merge, pick = U.pick, relativeLength = U.relativeLength;
 /**
  * The world size in terms of 10k meters in the Web Mercator projection, to
  * match a 256 square tile to zoom level 0
@@ -174,7 +174,11 @@ var MapView = /** @class */ (function () {
                 _this.minZoom === _this.zoom // When resizing the chart
             ) {
                 _this.fitToBounds(void 0, void 0, false);
-                if (isNumber(_this.userOptions.zoom)) {
+                if (
+                // Set zoom only when initializing the chart
+                // (do not overwrite when zooming in/out, #17082)
+                !_this.chart.hasRendered &&
+                    isNumber(_this.userOptions.zoom)) {
                     _this.zoom = _this.userOptions.zoom;
                 }
                 if (_this.userOptions.center) {

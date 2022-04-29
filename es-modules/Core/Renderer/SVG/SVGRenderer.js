@@ -193,7 +193,7 @@ var SVGRenderer = /** @class */ (function () {
         this.url = this.getReferenceURL();
         // Add description
         var desc = this.createElement('desc').add();
-        desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.0.0'));
+        desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.1.0'));
         renderer.defs = this.createElement('defs').add();
         renderer.allowHTML = allowHTML;
         renderer.forExport = forExport;
@@ -502,7 +502,7 @@ var SVGRenderer = /** @class */ (function () {
      * @param {Highcharts.SVGAttributes} [hoverState]
      * SVG attributes for the hover state.
      *
-     * @param {Highcharts.SVGAttributes} [pressedState]
+     * @param {Highcharts.SVGAttributes} [selectState]
      * SVG attributes for the pressed state.
      *
      * @param {Highcharts.SVGAttributes} [disabledState]
@@ -517,8 +517,11 @@ var SVGRenderer = /** @class */ (function () {
      * @return {Highcharts.SVGElement}
      * The button element.
      */
-    SVGRenderer.prototype.button = function (text, x, y, callback, theme, hoverState, pressedState, disabledState, shape, useHTML) {
-        var label = this.label(text, x, y, shape, void 0, void 0, useHTML, void 0, 'button'), styledMode = this.styledMode;
+    SVGRenderer.prototype.button = function (text, x, y, callback, theme, hoverState, selectState, disabledState, shape, useHTML) {
+        var label = this.label(text, x, y, shape, void 0, void 0, useHTML, void 0, 'button'), styledMode = this.styledMode, states = (theme && theme.states) || {};
+        if (theme) {
+            delete theme.states;
+        }
         var curState = 0, 
         // Make a copy of normalState (#13798)
         // (reference to options.rangeSelector.buttonTheme)
@@ -535,7 +538,7 @@ var SVGRenderer = /** @class */ (function () {
         label.attr(merge({ padding: 8, r: 2 }, normalState));
         // Presentational. The string type is a mistake, it is just for
         // compliance with SVGAttribute and is not used in button theme.
-        var hoverStyle, pressedStyle, disabledStyle;
+        var hoverStyle, selectStyle, disabledStyle;
         if (!styledMode) {
             // Normal state - prepare the attributes
             normalState = merge({
@@ -546,25 +549,25 @@ var SVGRenderer = /** @class */ (function () {
             // Hover state
             hoverState = merge(normalState, {
                 fill: "#e6e6e6" /* neutralColor10 */
-            }, AST.filterUserAttributes(hoverState || {}));
+            }, AST.filterUserAttributes(hoverState || states.hover || {}));
             hoverStyle = hoverState.style;
             delete hoverState.style;
             // Pressed state
-            pressedState = merge(normalState, {
+            selectState = merge(normalState, {
                 fill: "#e6ebf5" /* highlightColor10 */,
                 style: {
                     color: "#000000" /* neutralColor100 */,
                     fontWeight: 'bold'
                 }
-            }, AST.filterUserAttributes(pressedState || {}));
-            pressedStyle = pressedState.style;
-            delete pressedState.style;
+            }, AST.filterUserAttributes(selectState || states.select || {}));
+            selectStyle = selectState.style;
+            delete selectState.style;
             // Disabled state
             disabledState = merge(normalState, {
                 style: {
                     color: "#cccccc" /* neutralColor20 */
                 }
-            }, AST.filterUserAttributes(disabledState || {}));
+            }, AST.filterUserAttributes(disabledState || states.disabled || {}));
             disabledStyle = disabledState.style;
             delete disabledState.style;
         }
@@ -595,13 +598,13 @@ var SVGRenderer = /** @class */ (function () {
                     .attr([
                     normalState,
                     hoverState,
-                    pressedState,
+                    selectState,
                     disabledState
                 ][state || 0]);
                 var css_1 = [
                     normalStyle,
                     hoverStyle,
-                    pressedStyle,
+                    selectStyle,
                     disabledStyle
                 ][state || 0];
                 if (isObject(css_1)) {

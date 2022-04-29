@@ -1,5 +1,5 @@
 /**
- * @license Highcharts Gantt JS v10.0.0 (2022-03-07)
+ * @license Highcharts Gantt JS v10.1.0 (2022-04-29)
  *
  * Gantt series
  *
@@ -2095,7 +2095,7 @@
                                 });
                             }
                             // show or hide the line depending on options.showEmpty
-                            axis.axisLine[axis.showAxis ? 'show' : 'hide'](true);
+                            axis.axisLine[axis.showAxis ? 'show' : 'hide']();
                         }
                     }
                     (grid && grid.columns || []).forEach(function (column) {
@@ -2728,7 +2728,10 @@
         };
         // Adds week date format
         dateFormats.W = function (timestamp) {
-            var d = new this.Date(timestamp);
+            var time = this, d = new this.Date(timestamp), unitsToOmit = ['Hours', 'Milliseconds', 'Minutes', 'Seconds'];
+            unitsToOmit.forEach(function (format) {
+                time.set(format, d, 0);
+            });
             var firstDay = (this.get('Day',
                 d) + 6) % 7;
             var thursday = new this.Date(d.valueOf());
@@ -8563,6 +8566,8 @@
                     method = scroller.rendered ? 'animate' : 'attr';
                 var xOffset = height,
                     yOffset = 0;
+                // Make the scrollbar visible when it is repositioned, #15763.
+                scroller.group.show();
                 scroller.x = x;
                 scroller.y = y + this.trackBorderWidth;
                 scroller.width = width; // width with buttons
@@ -8622,10 +8627,12 @@
                     options = scroller.options,
                     size = scroller.size,
                     styledMode = scroller.chart.styledMode,
-                    group = renderer.g('scrollbar').attr({
-                        zIndex: options.zIndex,
-                        translateY: -99999
-                    }).add();
+                    group = renderer.g('scrollbar')
+                        .attr({
+                        zIndex: options.zIndex
+                    })
+                        .hide() // initially hide the scrollbar #15863
+                        .add();
                 // Draw the scrollbar group
                 scroller.group = group;
                 // Draw the scrollbar track:
@@ -8753,7 +8760,7 @@
                     scroller.scrollbarRifles.hide();
                 }
                 else {
-                    scroller.scrollbarRifles.show(true);
+                    scroller.scrollbarRifles.show();
                 }
                 // Show or hide the scrollbar based on the showFull setting
                 if (options.showFull === false) {
@@ -12341,7 +12348,7 @@
                 zoomedMin = Math.round(navigator.zoomedMin);
                 if (navigatorEnabled) {
                     navigator.navigatorGroup.attr({
-                        visibility: 'visible'
+                        visibility: 'inherit'
                     });
                     // Place elements
                     verb = rendered && !navigator.hasDragged ? 'animate' : 'attr';

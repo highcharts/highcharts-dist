@@ -1,5 +1,5 @@
 /**
- * @license Highstock JS v10.0.0 (2022-03-07)
+ * @license Highstock JS v10.1.0 (2022-04-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -63,7 +63,7 @@
              *  Constants
              *
              * */
-            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '10.0.0', Globals.win = (typeof window !== 'undefined' ?
+            Globals.SVG_NS = 'http://www.w3.org/2000/svg', Globals.product = 'Highcharts', Globals.version = '10.1.0', Globals.win = (typeof window !== 'undefined' ?
                 window :
                 {}), // eslint-disable-line node/no-unsupported-features/es-builtins
             Globals.doc = Globals.win.document, Globals.svg = (Globals.doc &&
@@ -884,7 +884,7 @@
             var i,
                 retInterval = interval;
             // round to a tenfold of 1, 2, 2.5 or 5
-            magnitude = pick(magnitude, 1);
+            magnitude = pick(magnitude, getMagnitude(interval));
             var normalized = interval / magnitude;
             // multiples for a linear scale
             if (!multiples) {
@@ -2679,6 +2679,17 @@
              * @since      5.0.0
              */
             colorCount: 10,
+            /**
+             * By default, (because of memory and performance reasons) the chart does
+             * not copy the data but keeps it as a reference. In some cases, this might
+             * result in mutating the original data source. In order to prevent that,
+             * set that property to false. Please note that changing that might decrease
+             * performance, especially with bigger sets of data.
+             *
+             * @type       {boolean}
+             * @since 10.1.0
+             */
+            allowMutatingData: true,
             /**
              * Alias of `type`.
              *
@@ -6402,18 +6413,20 @@
                  * @apioption tooltip.pointFormatter
                  */
                 /**
-                 * A callback function to place the tooltip in a default position. The
+                 * A callback function to place the tooltip in a custom position. The
                  * callback receives three parameters: `labelWidth`, `labelHeight` and
                  * `point`, where point contains values for `plotX` and `plotY` telling
                  * where the reference point is in the plot area. Add `chart.plotLeft`
                  * and `chart.plotTop` to get the full coordinates.
                  *
+                 * To find the actual hovered `Point` instance, use
+                 * `this.chart.hoverPoint`. For shared or split tooltips, all the hover
+                 * points are available in `this.chart.hoverPoints`.
+                 *
                  * Since v7, when [tooltip.split](#tooltip.split) option is enabled,
                  * positioner is called for each of the boxes separately, including
                  * xAxis header. xAxis header is not a point, instead `point` argument
-                 * contains info:
-                 * `{ plotX: Number, plotY: Number, isHeader: Boolean }`
-                 *
+                 * contains info: `{ plotX: Number, plotY: Number, isHeader: Boolean }`
                  *
                  * The return should be an object containing x and y values, for example
                  * `{ x: 100, y: 100 }`.
@@ -7954,7 +7967,9 @@
                         valid = isString(val) && AST.allowedReferences.some(function (ref) { return val.indexOf(ref) === 0; });
                     }
                     if (!valid) {
-                        error("Highcharts warning: Invalid attribute '" + key + "' in config");
+                        error(33, false, void 0, {
+                            'Invalid attribute in config': "" + key
+                        });
                         delete attributes[key];
                     }
                 });
@@ -7965,10 +7980,9 @@
                     .split(';')
                     .reduce(function (styles, line) {
                     var pair = line.split(':').map(function (s) { return s.trim(); }),
-                        key = pair[0].replace(/-([a-z])/g,
-                        function (g) { return g[1].toUpperCase(); });
-                    if (pair[1]) {
-                        styles[key] = pair[1];
+                        key = pair.shift();
+                    if (key && pair.length) {
+                        styles[key.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); })] = pair.join(':'); // #17146
                     }
                     return styles;
                 }, {});
@@ -8069,8 +8083,9 @@
                                 node = element;
                             }
                             else {
-                                error('Highcharts warning: Invalid tagName ' +
-                                    tagName + ' in config');
+                                error(33, false, void 0, {
+                                    'Invalid tagName in config': tagName
+                                });
                             }
                         }
                         // Add to the tree
@@ -9918,8 +9933,9 @@
              */
             SVGElement.prototype.getBBox = function (reload, rot) {
                 var wrapper = this,
-                    renderer = wrapper.renderer,
+                    alignValue = wrapper.alignValue,
                     element = wrapper.element,
+                    renderer = wrapper.renderer,
                     styles = wrapper.styles,
                     textStr = wrapper.textStr,
                     cache = renderer.cache,
@@ -9929,7 +9945,7 @@
                     wrapper.rotation, 0),
                     fontSize = renderer.styledMode ? (element &&
                         SVGElement.prototype.getStyle.call(element, 'font-size')) : (styles && styles.fontSize);
-                var bBox, // = wrapper.bBox,
+                var bBox,
                     width,
                     height,
                     toggleTextShadowShim,
@@ -9950,6 +9966,7 @@
                         rotation,
                         fontSize,
                         wrapper.textWidth,
+                        alignValue,
                         styles && styles.textOverflow,
                         styles && styles.fontWeight // #12163
                     ].join(',');
@@ -9995,7 +10012,7 @@
                         // other condition is for Opera that returns a width of
                         // -Infinity on hidden elements.
                         if (!bBox || bBox.width < 0) {
-                            bBox = { width: 0, height: 0 };
+                            bBox = { x: 0, y: 0, width: 0, height: 0 };
                         }
                         // VML Renderer or useHTML within SVG
                     }
@@ -10024,11 +10041,35 @@
                         }
                         // Adjust for rotated text
                         if (rotation) {
-                            var rad = rotation * deg2rad;
-                            bBox.width = Math.abs(height * Math.sin(rad)) +
-                                Math.abs(width * Math.cos(rad));
-                            bBox.height = Math.abs(height * Math.cos(rad)) +
-                                Math.abs(width * Math.sin(rad));
+                            var baseline = Number(element.getAttribute('y') || 0) - bBox.y,
+                                alignFactor = {
+                                    'right': 1,
+                                    'center': 0.5
+                                }[alignValue || 0] || 0,
+                                rad = rotation * deg2rad,
+                                rad90 = (rotation - 90) * deg2rad,
+                                wCosRad = width * Math.cos(rad),
+                                wSinRad = width * Math.sin(rad),
+                                cosRad90 = Math.cos(rad90),
+                                sinRad90 = Math.sin(rad90), 
+                                // Find the starting point on the left side baseline of
+                                // the text
+                                pX = bBox.x + alignFactor * (width - wCosRad),
+                                pY = bBox.y + baseline - alignFactor * wSinRad, 
+                                // Find all corners
+                                aX = pX + baseline * cosRad90,
+                                bX = aX + wCosRad,
+                                cX = bX - height * cosRad90,
+                                dX = cX - wCosRad,
+                                aY = pY + baseline * sinRad90,
+                                bY = aY + wSinRad,
+                                cY = bY - height * sinRad90,
+                                dY = cY - wSinRad;
+                            // Deduct the bounding box from the corners
+                            bBox.x = Math.min(aX, bX, cX, dX);
+                            bBox.y = Math.min(aY, bY, cY, dY);
+                            bBox.width = Math.max(aX, bX, cX, dX) - bBox.x;
+                            bBox.height = Math.max(aY, bY, cY, dY) - bBox.y;
                         }
                     }
                     // Cache it. When loading a chart in a hidden iframe in Firefox and
@@ -10087,21 +10128,11 @@
              *
              * @function Highcharts.SVGElement#hide
              *
-             * @param {boolean} [hideByTranslation=false]
-             *        The flag to determine if element should be hidden by moving out
-             *        of the viewport. Used for example for dataLabels.
-             *
              * @return {Highcharts.SVGElement}
              *         Returns the SVGElement for chaining.
              */
-            SVGElement.prototype.hide = function (hideByTranslation) {
-                if (hideByTranslation) {
-                    this.attr({ y: -9999 });
-                }
-                else {
-                    this.attr({ visibility: 'hidden' });
-                }
-                return this;
+            SVGElement.prototype.hide = function () {
+                return this.attr({ visibility: 'hidden' });
             };
             /**
              * @private
@@ -10516,7 +10547,7 @@
              *
              * @function Highcharts.SVGElement#show
              *
-             * @param {boolean} [inherit=false]
+             * @param {boolean} [inherit=true]
              *        Set the visibility attribute to `inherit` rather than `visible`.
              *        The difference is that an element with `visibility="visible"`
              *        will be visible even if the parent is hidden.
@@ -10525,6 +10556,7 @@
              *         Returns the SVGElement for chaining.
              */
             SVGElement.prototype.show = function (inherit) {
+                if (inherit === void 0) { inherit = true; }
                 return this.attr({ visibility: inherit ? 'inherit' : 'visible' });
             };
             /**
@@ -12497,7 +12529,7 @@
                 this.url = this.getReferenceURL();
                 // Add description
                 var desc = this.createElement('desc').add();
-                desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.0.0'));
+                desc.element.appendChild(doc.createTextNode('Created with Highcharts 10.1.0'));
                 renderer.defs = this.createElement('defs').add();
                 renderer.allowHTML = allowHTML;
                 renderer.forExport = forExport;
@@ -12808,7 +12840,7 @@
              * @param {Highcharts.SVGAttributes} [hoverState]
              * SVG attributes for the hover state.
              *
-             * @param {Highcharts.SVGAttributes} [pressedState]
+             * @param {Highcharts.SVGAttributes} [selectState]
              * SVG attributes for the pressed state.
              *
              * @param {Highcharts.SVGAttributes} [disabledState]
@@ -12823,7 +12855,7 @@
              * @return {Highcharts.SVGElement}
              * The button element.
              */
-            SVGRenderer.prototype.button = function (text, x, y, callback, theme, hoverState, pressedState, disabledState, shape, useHTML) {
+            SVGRenderer.prototype.button = function (text, x, y, callback, theme, hoverState, selectState, disabledState, shape, useHTML) {
                 var label = this.label(text,
                     x,
                     y,
@@ -12832,7 +12864,11 @@
                     void 0,
                     useHTML,
                     void 0, 'button'),
-                    styledMode = this.styledMode;
+                    styledMode = this.styledMode,
+                    states = (theme && theme.states) || {};
+                if (theme) {
+                    delete theme.states;
+                }
                 var curState = 0, 
                     // Make a copy of normalState (#13798)
                     // (reference to options.rangeSelector.buttonTheme)
@@ -12851,7 +12887,7 @@
                 // Presentational. The string type is a mistake, it is just for
                 // compliance with SVGAttribute and is not used in button theme.
                 var hoverStyle,
-                    pressedStyle,
+                    selectStyle,
                     disabledStyle;
                 if (!styledMode) {
                     // Normal state - prepare the attributes
@@ -12863,25 +12899,25 @@
                     // Hover state
                     hoverState = merge(normalState, {
                         fill: "#e6e6e6" /* neutralColor10 */
-                    }, AST.filterUserAttributes(hoverState || {}));
+                    }, AST.filterUserAttributes(hoverState || states.hover || {}));
                     hoverStyle = hoverState.style;
                     delete hoverState.style;
                     // Pressed state
-                    pressedState = merge(normalState, {
+                    selectState = merge(normalState, {
                         fill: "#e6ebf5" /* highlightColor10 */,
                         style: {
                             color: "#000000" /* neutralColor100 */,
                             fontWeight: 'bold'
                         }
-                    }, AST.filterUserAttributes(pressedState || {}));
-                    pressedStyle = pressedState.style;
-                    delete pressedState.style;
+                    }, AST.filterUserAttributes(selectState || states.select || {}));
+                    selectStyle = selectState.style;
+                    delete selectState.style;
                     // Disabled state
                     disabledState = merge(normalState, {
                         style: {
                             color: "#cccccc" /* neutralColor20 */
                         }
-                    }, AST.filterUserAttributes(disabledState || {}));
+                    }, AST.filterUserAttributes(disabledState || states.disabled || {}));
                     disabledStyle = disabledState.style;
                     delete disabledState.style;
                 }
@@ -12912,13 +12948,13 @@
                             .attr([
                             normalState,
                             hoverState,
-                            pressedState,
+                            selectState,
                             disabledState
                         ][state || 0]);
                         var css_1 = [
                                 normalStyle,
                                 hoverStyle,
-                                pressedStyle,
+                                selectStyle,
                                 disabledStyle
                             ][state || 0];
                         if (isObject(css_1)) {
@@ -18563,11 +18599,11 @@
                     // Set the new position, and show or hide
                     if (show && isNumber(xy.y)) {
                         xy.opacity = opacity;
-                        label[tick.isNewLabel ? 'attr' : 'animate'](xy);
+                        label[tick.isNewLabel ? 'attr' : 'animate'](xy).show(true);
                         tick.isNewLabel = false;
                     }
                     else {
-                        label.attr('y', -9999); // #1338
+                        label.hide(); // #1338, #15863
                         tick.isNewLabel = true;
                     }
                 }
@@ -18667,7 +18703,6 @@
             error = U.error,
             extend = U.extend,
             fireEvent = U.fireEvent,
-            getMagnitude = U.getMagnitude,
             isArray = U.isArray,
             isNumber = U.isNumber,
             isString = U.isString,
@@ -18679,6 +18714,16 @@
             removeEvent = U.removeEvent,
             splat = U.splat,
             syncTimeout = U.syncTimeout;
+        var getNormalizedTickInterval = function (axis,
+            tickInterval) { return normalizeTickInterval(tickInterval,
+            void 0,
+            void 0,
+            pick(axis.options.allowDecimals, 
+            // If the tick interval is greather than 0.5, avoid decimals, as
+            // linear axes are often used to render discrete values (#3363). If
+            // a tick amount is set, allow decimals by default, as it increases
+            // the chances for a good fit.
+            tickInterval < 0.5 || axis.tickAmount !== void 0), !!axis.tickAmount); };
         /* *
          *
          *  Class
@@ -20031,15 +20076,9 @@
                 if (!tickIntervalOption && axis.tickInterval < minTickInterval) {
                     axis.tickInterval = minTickInterval;
                 }
-                // for linear axes, get magnitude and normalize the interval
+                // For linear axes, normalize the interval
                 if (!axis.dateTime && !axis.logarithmic && !tickIntervalOption) {
-                    axis.tickInterval = normalizeTickInterval(axis.tickInterval, void 0, getMagnitude(axis.tickInterval), pick(options.allowDecimals, 
-                    // If the tick interval is greather than 0.5, avoid
-                    // decimals, as linear axes are often used to render
-                    // discrete values. #3363. If a tick amount is set, allow
-                    // decimals by default, as it increases the chances for a
-                    // good fit.
-                    axis.tickInterval < 0.5 || this.tickAmount !== void 0), !!this.tickAmount);
+                    axis.tickInterval = getNormalizedTickInterval(axis, axis.tickInterval);
                 }
                 // Prevent ticks from getting so close that we can't draw the labels
                 if (!this.tickAmount) {
@@ -20124,7 +20163,21 @@
                         tickPositions = axis.logarithmic.getLogTickPositions(this.tickInterval, this.min, this.max);
                     }
                     else {
-                        tickPositions = this.getLinearTickPositions(this.tickInterval, this.min, this.max);
+                        var startingTickInterval = this.tickInterval;
+                        var adjustedTickInterval = startingTickInterval;
+                        while (adjustedTickInterval <= startingTickInterval * 2) {
+                            tickPositions = this.getLinearTickPositions(this.tickInterval, this.min, this.max);
+                            // If there are more tick positions than the set tickAmount,
+                            // increase the tickInterval and continue until it fits.
+                            // (#17100)
+                            if (this.tickAmount &&
+                                tickPositions.length > this.tickAmount) {
+                                this.tickInterval = getNormalizedTickInterval(this, adjustedTickInterval *= 1.1);
+                            }
+                            else {
+                                break;
+                            }
+                        }
                     }
                     // Too dense ticks, keep only the first and last (#4477)
                     if (tickPositions.length > this.len) {
@@ -20448,11 +20501,6 @@
                             }
                         }
                         adjustExtremes();
-                        // We have too many ticks, run second pass to try to reduce ticks
-                    }
-                    else if (currentTickAmount > tickAmount) {
-                        axis.tickInterval *= 2;
-                        axis.setTickPositions();
                     }
                     // The finalTickAmt property is set in getTickAmount
                     if (defined(finalTickAmt)) {
@@ -21408,18 +21456,18 @@
                     // The part of a multiline text that is below the baseline of the
                     // first line. Subtract 1 to preserve pixel-perfectness from the
                     // old behaviour (v5.0.12), where only one line was allowed.
-                    textHeightOvershoot = Math.max(axisTitle.getBBox(null, 0).height - fontMetrics.h - 1, 0), 
+                    textHeightOvershoot = axisTitle ? Math.max(axisTitle.getBBox(false, 0).height - fontMetrics.h - 1, 0) : 0, 
                     // the position in the length direction of the axis
-                    alongAxis = {
+                    alongAxis = ({
                         low: margin + (horiz ? 0 : axisLength),
                         middle: margin + axisLength / 2,
                         high: margin + (horiz ? axisLength : 0)
-                    }[axisTitleOptions.align], 
+                    })[axisTitleOptions.align], 
                     // the position in the perpendicular direction of the axis
                     offAxis = (horiz ? axisTop + this.height : axisLeft) +
                         (horiz ? 1 : -1) * // horizontal axis reverses the margin
                             (opposite ? -1 : 1) * // so does opposite axes
-                            this.axisTitleMargin +
+                            (this.axisTitleMargin || 0) +
                         [
                             -textHeightOvershoot,
                             textHeightOvershoot,
@@ -21643,14 +21691,8 @@
                 }
                 if (axisTitle && showAxis) {
                     var titleXy = axis.getTitlePosition();
-                    if (isNumber(titleXy.y)) {
-                        axisTitle[axisTitle.isNew ? 'attr' : 'animate'](titleXy);
-                        axisTitle.isNew = false;
-                    }
-                    else {
-                        axisTitle.attr('y', -9999);
-                        axisTitle.isNew = true;
-                    }
+                    axisTitle[axisTitle.isNew ? 'attr' : 'animate'](titleXy);
+                    axisTitle.isNew = false;
                 }
                 // Stacked totals:
                 if (stackLabelOptions && stackLabelOptions.enabled && axis.stacking) {
@@ -22658,7 +22700,7 @@
                                 axisLength;
                         interval = pick(filteredTickIntervalOption, log.minorAutoInterval, (realMax - realMin) *
                             tickPixelIntervalOption / (totalPixelLength || 1));
-                        interval = normalizeTickInterval(interval, void 0, getMagnitude(interval));
+                        interval = normalizeTickInterval(interval);
                         positions = axis.getLinearTickPositions(interval, realMin, realMax).map(log.log2lin);
                         if (!minor) {
                             log.minorAutoInterval = interval / 5;
@@ -23158,7 +23200,7 @@
                 }
                 else if (svgElem) {
                     if (path) {
-                        svgElem.show(true);
+                        svgElem.show();
                         svgElem.animate({ d: path });
                     }
                     else if (svgElem.d) {
@@ -29684,7 +29726,7 @@
                     this.nav.attr({
                         translateX: padding,
                         translateY: clipHeight + this.padding + 7 + this.titleHeight,
-                        visibility: 'visible'
+                        visibility: 'inherit'
                     });
                     [this.up, this.upTracker].forEach(function (elem) {
                         elem.attr({
@@ -30136,7 +30178,6 @@
             fireEvent = U.fireEvent,
             getStyle = U.getStyle,
             isArray = U.isArray,
-            isFunction = U.isFunction,
             isNumber = U.isNumber,
             isObject = U.isObject,
             isString = U.isString,
@@ -32182,8 +32223,26 @@
                 if (defined(this.index)) {
                     this.setReflow(this.options.chart.reflow);
                 }
+                this.warnIfA11yModuleNotLoaded();
                 // Don't run again
                 this.hasLoaded = true;
+            };
+            /**
+             * Emit console warning if the a11y module is not loaded.
+             */
+            Chart.prototype.warnIfA11yModuleNotLoaded = function () {
+                var _this = this;
+                setTimeout(function () {
+                    var opts = _this && _this.options;
+                    if (opts && !_this.accessibility &&
+                        !(opts.accessibility && opts.accessibility.enabled === false)) {
+                        error('Highcharts warning: Consider including the ' +
+                            '"accessibility.js" module to make your chart more ' +
+                            'usable for people with disabilities. Set the ' +
+                            '"accessibility.enabled" option to false to remove this ' +
+                            'warning. See https://www.highcharts.com/docs/accessibility/accessibility-module.', false, _this);
+                    }
+                }, 100);
             };
             /**
              * Add a series to the chart after render time. Note that this method should
@@ -32749,7 +32808,6 @@
                     lang = defaultOptions.lang,
                     btnOptions = chart.options.chart.resetZoomButton,
                     theme = btnOptions.theme,
-                    states = theme.states,
                     alignTo = (btnOptions.relativeTo === 'chart' ||
                         btnOptions.relativeTo === 'spacingBox' ?
                         null :
@@ -32762,7 +32820,7 @@
                 }
                 fireEvent(this, 'beforeShowResetZoom', null, function () {
                     chart.resetZoomButton = chart.renderer
-                        .button(lang.resetZoom, null, null, zoomOut, theme, states && states.hover)
+                        .button(lang.resetZoom, null, null, zoomOut, theme)
                         .attr({
                         align: btnOptions.position.align,
                         title: lang.resetZoomTitle
@@ -36501,8 +36559,19 @@
                     updatedData,
                     indexOfX = 0,
                     indexOfY = 1,
-                    firstPoint = null;
-                data = data || [];
+                    firstPoint = null,
+                    copiedData;
+                if (!chart.options.chart.allowMutatingData) { // #4259
+                    // Remove old reference
+                    if (options.data) {
+                        delete series.options.data;
+                    }
+                    if (series.userOptions.data) {
+                        delete series.userOptions.data;
+                    }
+                    copiedData = merge(true, data);
+                }
+                data = copiedData || data || [];
                 var dataLength = data.length;
                 redraw = pick(redraw, true);
                 if (dataSorting && dataSorting.enabled) {
@@ -36510,7 +36579,8 @@
                 }
                 // First try to run Point.update which is cheaper, allows animation,
                 // and keeps references to points.
-                if (updatePoints !== false &&
+                if (chart.options.chart.allowMutatingData &&
+                    updatePoints !== false &&
                     dataLength &&
                     oldDataLength &&
                     !series.cropped &&
@@ -37941,10 +38011,10 @@
                 else if (series.visible) {
                     // If zones were removed, restore graph and area
                     if (graph) {
-                        graph.show(true);
+                        graph.show();
                     }
                     if (area) {
-                        area.show(true);
+                        area.show();
                     }
                 }
             };
@@ -38438,7 +38508,7 @@
                 else if (series.graph) { // create
                     series.tracker = renderer.path(trackerPath)
                         .attr({
-                        visibility: series.visible ? 'visible' : 'hidden',
+                        visibility: series.visible ? 'inherit' : 'hidden',
                         zIndex: 2
                     })
                         .addClass(trackByArea ?
@@ -38782,7 +38852,8 @@
                         series.hasOptionChanged('keys'));
                 newType = newType || initialType;
                 if (keepPoints) {
-                    preserve.push('data', 'isDirtyData', 'points', 'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 'clips', // #15420
+                    preserve.push('data', 'isDirtyData', 'points', 'processedData', // #17057
+                    'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 'clips', // #15420
                     // Networkgraph (#14397)
                     'nodes', 'layout', 
                     // Treemap
@@ -40267,7 +40338,6 @@
                             renderer
                                 .g('stack-labels')
                                 .attr({
-                                visibility: 'visible',
                                 zIndex: 6,
                                 opacity: 0
                             })
@@ -40503,7 +40573,7 @@
                     }
                     else {
                         // Move label away to avoid the overlapping issues
-                        label.alignAttr.y = -9999;
+                        label.hide();
                         isJustify = false;
                     }
                     if (isJustify) {
@@ -43809,17 +43879,18 @@
                     inverted = this.isCartesian && chart.inverted,
                     enabledDataSorting = this.enabledDataSorting,
                     plotX = pick(point.dlBox && point.dlBox.centerX,
-                    point.plotX, -9999),
-                    plotY = pick(point.plotY, -9999),
-                    bBox = dataLabel.getBBox(),
+                    point.plotX),
+                    plotY = point.plotY,
                     rotation = options.rotation,
                     align = options.align,
-                    isInsidePlot = chart.isInsidePlot(plotX,
+                    isInsidePlot = defined(plotX) &&
+                        defined(plotY) &&
+                        chart.isInsidePlot(plotX,
                     Math.round(plotY), {
-                        inverted: inverted,
-                        paneCoordinates: true,
-                        series: series
-                    }),
+                            inverted: inverted,
+                            paneCoordinates: true,
+                            series: series
+                        }),
                     setStartPos = function (alignOptions) {
                         if (enabledDataSorting && series.xAxis && !justify) {
                             series.setDataLabelStartPos(point,
@@ -43830,8 +43901,6 @@
                     }
                 };
                 var baseline,
-                    normRotation,
-                    negRotation,
                     rotCorr, // rotation correction
                     // Math.round for rounding errors (#2683), alignTo to allow column
                     // labels (#2700)
@@ -43855,7 +43924,12 @@
                                 paneCoordinates: true,
                                 series: series
                             })));
-                if (visible) {
+                if (visible && defined(plotX) && defined(plotY)) {
+                    if (rotation) {
+                        dataLabel.attr({ align: align });
+                    }
+                    var bBox = dataLabel.getBBox(true),
+                        bBoxCorrection = [0, 0];
                     baseline = chart.renderer.fontMetrics(chart.styledMode ? void 0 : options.style.fontSize, dataLabel).b;
                     // The alignment box is a singular point
                     alignTo = extend({
@@ -43884,27 +43958,12 @@
                                 { top: 0, middle: 0.5, bottom: 1 }[options.verticalAlign] *
                                     alignTo.height)
                         };
+                        bBoxCorrection = [
+                            bBox.x - Number(dataLabel.attr('x')),
+                            bBox.y - Number(dataLabel.attr('y'))
+                        ];
                         setStartPos(alignAttr); // data sorting
-                        dataLabel[isNew ? 'attr' : 'animate'](alignAttr)
-                            .attr({
-                            align: align
-                        });
-                        // Compensate for the rotated label sticking out on the sides
-                        normRotation = (rotation + 720) % 360;
-                        negRotation = normRotation > 180 && normRotation < 360;
-                        if (align === 'left') {
-                            alignAttr.y -= negRotation ? bBox.height : 0;
-                        }
-                        else if (align === 'center') {
-                            alignAttr.x -= bBox.width / 2;
-                            alignAttr.y -= bBox.height / 2;
-                        }
-                        else if (align === 'right') {
-                            alignAttr.x -= bBox.width;
-                            alignAttr.y -= negRotation ? 0 : bBox.height;
-                        }
-                        dataLabel.placed = true;
-                        dataLabel.alignAttr = alignAttr;
+                        dataLabel[isNew ? 'attr' : 'animate'](alignAttr);
                     }
                     else {
                         setStartPos(alignTo); // data sorting
@@ -43917,12 +43976,37 @@
                         // Now check that the data label is within the plot area
                     }
                     else if (pick(options.crop, true)) {
+                        var x = alignAttr.x,
+                            y = alignAttr.y;
+                        x += bBoxCorrection[0];
+                        y += bBoxCorrection[1];
+                        // Uncomment this block to visualize the bounding boxes used for
+                        // determining visibility
+                        /*
+                        chart.renderer.rect(
+                            chart.plotLeft + alignAttr.x + bBox.x,
+                            chart.plotTop + alignAttr.y + bBox.y + 9999,
+                            bBox.width,
+                            bBox.height
+                        ).attr({
+                            stroke: 'rgba(0, 0, 0, 0.3)',
+                            'stroke-width': 0.5
+                        }).add();
+                        chart.renderer.circle(
+                            chart.plotLeft + alignAttr.x,
+                            chart.plotTop + alignAttr.y,
+                            2
+                        ).attr({
+                            fill: 'red',
+                            zIndex: 20
+                        }).add();
+                        // */
                         visible =
-                            chart.isInsidePlot(alignAttr.x, alignAttr.y, {
+                            chart.isInsidePlot(x, y, {
                                 paneCoordinates: true,
                                 series: series
                             }) &&
-                                chart.isInsidePlot(alignAttr.x + bBox.width, alignAttr.y + bBox.height, {
+                                chart.isInsidePlot(x + bBox.width, y + bBox.height, {
                                     paneCoordinates: true,
                                     series: series
                                 });
@@ -43946,8 +44030,11 @@
                 }
                 // Show or hide based on the final aligned position
                 if (!visible && (!enabledDataSorting || justify)) {
-                    dataLabel.hide(true);
+                    dataLabel.hide();
                     dataLabel.placed = false; // don't animate back in
+                }
+                else {
+                    dataLabel.show();
                 }
             }
             /**
@@ -44025,7 +44112,7 @@
                         var group = series.dataLabelsGroup;
                         if (group) {
                             if (series.visible) { // #2597, #3023, #3024
-                                dataLabelsGroup.show(true);
+                                dataLabelsGroup.show();
                             }
                             group[seriesOptions.animation ? 'animate' : 'attr']({ opacity: 1 }, animationConfig);
                         }
@@ -44160,10 +44247,10 @@
                                     point.dataLabels = point.dataLabels || [];
                                     dataLabel = point.dataLabels[i] = rotation ?
                                         // Labels don't rotate, use text element
-                                        renderer.text(labelText, 0, -9999, labelOptions.useHTML)
+                                        renderer.text(labelText, 0, 0, labelOptions.useHTML)
                                             .addClass('highcharts-data-label') :
                                         // We can use label
-                                        renderer.label(labelText, 0, -9999, labelOptions.shape, null, null, labelOptions.useHTML, null, 'data-label');
+                                        renderer.label(labelText, 0, 0, labelOptions.shape, null, null, labelOptions.useHTML, null, 'data-label');
                                     // Store for backwards compatibility
                                     if (!i) {
                                         point.dataLabel = dataLabel;
@@ -44203,6 +44290,9 @@
                                 // Now the data label is created and placed at 0,0, so
                                 // we need to align it
                                 series.alignDataLabel(point, dataLabel, labelOptions, null, isNew);
+                            }
+                            else if (dataLabel) {
+                                dataLabel.hide();
                             }
                         });
                     });
@@ -45042,7 +45132,8 @@
                     plotHeight = chart.plotHeight - 2 * slicingRoom,
                     centerOption = options.center,
                     smallestSize = Math.min(plotWidth,
-                    plotHeight);
+                    plotHeight),
+                    thickness = options.thickness;
                 var handleSlicingRoom,
                     size = options.size,
                     innerSize = options.innerSize || 0,
@@ -45078,6 +45169,11 @@
                 // innerSize cannot be larger than size (#3632)
                 if (positions[3] > positions[2]) {
                     positions[3] = positions[2];
+                }
+                // thickness overrides innerSize, need to be less than pie size (#6647)
+                if (isNumber(thickness) &&
+                    thickness * 2 < positions[2] && thickness > 0) {
+                    positions[3] = positions[2] - thickness * 2;
                 }
                 return positions;
             }
@@ -46223,6 +46319,17 @@
                  * @apioption plotOptions.pie.endAngle
                  */
                 /**
+                 * Thickness describing the ring size for a donut type chart,
+                 * overriding [innerSize](#plotOptions.pie.innerSize).
+                 *
+                 * @type      {number}
+                 * @default   undefined
+                 * @product   highcharts
+                 * @since 10.1.0
+                 * @apioption plotOptions.pie.thickness
+                 * @private
+                 */
+                /**
                  * Equivalent to [chart.ignoreHiddenSeries](#chart.ignoreHiddenSeries),
                  * this option tells whether the series shall be redrawn as if the
                  * hidden point were `null`.
@@ -46249,7 +46356,7 @@
                  * The size of the inner diameter for the pie. A size greater than 0
                  * renders a donut chart. Can be a percentage or pixel value.
                  * Percentages are relative to the pie size. Pixel values are given as
-                 * integers.
+                 * integers. Setting overridden by thickness.
                  *
                  *
                  * Note: in Highcharts < 4.1.2, the percentage was relative to the plot
@@ -47011,7 +47118,9 @@
                     if (newSize < center[2]) {
                         center[2] = newSize;
                         center[3] = Math.min(// #3632
-                        relativeLength(options.innerSize || 0, newSize), newSize);
+                        options.thickness ?
+                            Math.max(0, newSize - options.thickness * 2) :
+                            Math.max(0, relativeLength(options.innerSize || 0, newSize)), newSize); // #6647
                         this.translate(center);
                         if (this.drawDataLabels) {
                             this.drawDataLabels();
@@ -47074,9 +47183,7 @@
                     !yAxis.options.stackLabels.allowOverlap) {
                     objectEach(yAxis.stacking.stacks, function (stack) {
                         objectEach(stack, function (stackItem) {
-                            if (stackItem.label &&
-                                stackItem.label.visibility !== 'hidden' // #15607
-                            ) {
+                            if (stackItem.label) {
                                 labels.push(stackItem.label);
                             }
                         });
@@ -47220,7 +47327,10 @@
                         box2 &&
                         label1 !== label2 && // #6465, polar chart with connectEnds
                         label1.newOpacity !== 0 &&
-                        label2.newOpacity !== 0) {
+                        label2.newOpacity !== 0 &&
+                        // #15863 dataLabels are no longer hidden by translation
+                        label1.visibility !== 'hidden' &&
+                        label2.visibility !== 'hidden') {
                         if (isIntersectRect(box1, box2)) {
                             (label1.labelrank < label2.labelrank ? label1 : label2)
                                 .newOpacity = 0;
@@ -48189,9 +48299,11 @@
                         // how many ordinal units did we move?
                         movedUnits = (mouseDownX - chartX) / pointPixelWidth, 
                         // get index of all the chart's points
+                        extendedOrdinalPositions = xAxis.ordinal.getExtendedPositions(),
                         extendedAxis = {
                             ordinal: {
-                                positions: xAxis.ordinal.getExtendedPositions()
+                                positions: extendedOrdinalPositions,
+                                extendedOrdinalPositions: extendedOrdinalPositions
                             }
                         },
                         index2val_1 = xAxis.index2val,
@@ -50765,9 +50877,11 @@
         Axis.prototype.applyGrouping = function (e) {
             var axis = this,
                 series = axis.series;
+            // Reset the groupPixelWidth for all series, #17141.
             series.forEach(function (series) {
-                // Reset the groupPixelWidth, then calculate if needed.
                 series.groupPixelWidth = void 0; // #2110
+            });
+            series.forEach(function (series) {
                 series.groupPixelWidth = (axis.getGroupPixelWidth &&
                     axis.getGroupPixelWidth());
                 if (series.groupPixelWidth) {
@@ -53060,23 +53174,20 @@
                     // depending on the label width or a hardcoded value, #16041.
                     distribute(boxes, inverted ? yAxis.len : this.xAxis.len, maxDistance_1);
                     points.forEach(function (point) {
-                        var box = point.graphic && boxesMap[point.plotX];
-                        if (box) {
-                            point.graphic[point.graphic.isNew ? 'attr' : 'animate']({
-                                x: box.pos + box.align * box.size,
-                                anchorX: point.anchorX
-                            });
+                        var plotX = point.plotX,
+                            graphic = point.graphic,
+                            box = graphic && boxesMap[plotX];
+                        if (box && graphic) {
                             // Hide flag when its box position is not specified
                             // (#8573, #9299)
                             if (!defined(box.pos)) {
-                                point.graphic.attr({
-                                    x: -9999,
-                                    anchorX: -9999
-                                });
-                                point.graphic.isNew = true;
+                                graphic.hide().isNew = true;
                             }
                             else {
-                                point.graphic.isNew = false;
+                                graphic[graphic.isNew ? 'attr' : 'animate']({
+                                    x: box.pos + (box.align || 0) * box.size,
+                                    anchorX: point.anchorX
+                                }).show().isNew = false;
                             }
                         }
                     });
@@ -54328,6 +54439,8 @@
                     method = scroller.rendered ? 'animate' : 'attr';
                 var xOffset = height,
                     yOffset = 0;
+                // Make the scrollbar visible when it is repositioned, #15763.
+                scroller.group.show();
                 scroller.x = x;
                 scroller.y = y + this.trackBorderWidth;
                 scroller.width = width; // width with buttons
@@ -54387,10 +54500,12 @@
                     options = scroller.options,
                     size = scroller.size,
                     styledMode = scroller.chart.styledMode,
-                    group = renderer.g('scrollbar').attr({
-                        zIndex: options.zIndex,
-                        translateY: -99999
-                    }).add();
+                    group = renderer.g('scrollbar')
+                        .attr({
+                        zIndex: options.zIndex
+                    })
+                        .hide() // initially hide the scrollbar #15863
+                        .add();
                 // Draw the scrollbar group
                 scroller.group = group;
                 // Draw the scrollbar track:
@@ -54518,7 +54633,7 @@
                     scroller.scrollbarRifles.hide();
                 }
                 else {
-                    scroller.scrollbarRifles.show(true);
+                    scroller.scrollbarRifles.show();
                 }
                 // Show or hide the scrollbar based on the showFull setting
                 if (options.showFull === false) {
@@ -55749,7 +55864,7 @@
                 zoomedMin = Math.round(navigator.zoomedMin);
                 if (navigatorEnabled) {
                     navigator.navigatorGroup.attr({
-                        visibility: 'visible'
+                        visibility: 'inherit'
                     });
                     // Place elements
                     verb = rendered && !navigator.hasDragged ? 'animate' : 'attr';
@@ -59858,7 +59973,7 @@
                 text: text,
                 x: posx,
                 y: posy,
-                visibility: isInside ? 'visible' : 'hidden'
+                visibility: isInside ? 'inherit' : 'hidden'
             });
             crossBox = crossLabel.getBBox();
             // now it is placed we can correct its position

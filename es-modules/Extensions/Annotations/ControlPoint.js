@@ -82,7 +82,7 @@ var ControlPoint = /** @class */ (function () {
      *
      */
     ControlPoint.prototype.setVisibility = function (visible) {
-        this.graphic.attr('visibility', visible ? 'visible' : 'hidden');
+        this.graphic[visible ? 'show' : 'hide']();
         this.options.visible = visible;
     };
     /**

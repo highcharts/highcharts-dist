@@ -165,7 +165,7 @@ var SVGRenderer3D = /** @class */ (function (_super) {
                 var chart = charts[renderer.chartIndex], vertexes2d = perspective(this.vertexes, chart, this.insidePlotArea), path = renderer.toLinePath(vertexes2d, true), area = shapeArea(vertexes2d);
                 hash.d = path;
                 hash.visibility = (this.enabled && area > 0) ?
-                    'visible' : 'hidden';
+                    'inherit' : 'hidden';
             }
             return SVGElement.prototype.attr.apply(this, arguments);
         };

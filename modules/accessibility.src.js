@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * Accessibility module
  *
@@ -52,7 +52,8 @@
          *
          * */
         var format = F.format;
-        var pick = U.pick;
+        var getNestedProperty = U.getNestedProperty,
+            pick = U.pick;
         /* *
          *
          *  Composition
@@ -111,7 +112,7 @@
                     var lenArg = Number(eachArguments[1]),
                         len = void 0;
                     result = '';
-                    arr = ctx[eachArguments[0]];
+                    arr = getNestedProperty(eachArguments[0], ctx);
                     if (arr) {
                         lenArg = isNaN(lenArg) ? arr.length : lenArg;
                         len = lenArg < 0 ?
@@ -126,7 +127,7 @@
                 }
                 // Dealing with a plural-function?
                 if (pluralStart > -1) {
-                    var pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(ctx[pluralArguments[0]]);
+                    var pluralEnd = (statement.slice(pluralStart).indexOf(')') + pluralStart), pluralStatement = statement.substring(pluralStart + 8, pluralEnd), pluralArguments = pluralStatement.split(','), num = Number(getNestedProperty(pluralArguments[0], ctx));
                     switch (num) {
                         case 0:
                             result = pick(pluralArguments[4], pluralArguments[1]);
@@ -149,7 +150,7 @@
                         ix = Number(statement.substring(indexStart + 1,
                         indexEnd));
                     var val = void 0;
-                    arr = ctx[arrayName];
+                    arr = getNestedProperty(arrayName, ctx);
                     if (!isNaN(ix) && arr) {
                         if (ix < 0) {
                             val = arr[arr.length + ix];
@@ -768,9 +769,11 @@
          */
         function getAxisTimeLengthDesc(axis) {
             var chart = axis.chart,
-                range = {};
+                range = {},
+                min = axis.dataMin || axis.min || 0,
+                max = axis.dataMax || axis.max || 0;
             var rangeUnit = 'Seconds';
-            range.Seconds = ((axis.max || 0) - (axis.min || 0)) / 1000;
+            range.Seconds = (max - min) / 1000;
             range.Minutes = range.Seconds / 60;
             range.Hours = range.Minutes / 60;
             range.Days = range.Hours / 24;
@@ -800,9 +803,15 @@
                     options.accessibility &&
                     options.accessibility.screenReaderSection.axisRangeDateFormat ||
                     ''),
-                format = function (axisKey) {
-                    return axis.dateTime ? chart.time.dateFormat(dateRangeFormat,
-                axis[axisKey]) : axis[axisKey];
+                extremes = {
+                    min: axis.dataMin || axis.min || 0,
+                    max: axis.dataMax || axis.max || 0
+                },
+                format = function (key) {
+                    return axis.dateTime ?
+                        chart.time.dateFormat(dateRangeFormat,
+                extremes[key]) :
+                        extremes[key].toString();
             };
             return chart.langFormat('accessibility.axis.rangeFromTo', {
                 chart: chart,
@@ -1463,20 +1472,19 @@
                 }
             };
             /**
+             * Set attributes on the chart container element.
              * @private
              */
             ContainerComponent.prototype.setRenderToAttrs = function () {
-                var chart = this.chart;
-                if (chart.options.accessibility.landmarkVerbosity !== 'disabled') {
-                    chart.renderTo.setAttribute('role', 'region');
+                var chart = this.chart, shouldHaveLandmark = chart.options.accessibility
+                        .landmarkVerbosity !== 'disabled', containerLabel = chart.langFormat('accessibility.chartContainerLabel', {
+                        title: getChartTitle(chart),
+                        chart: chart
+                    });
+                if (containerLabel) {
+                    chart.renderTo.setAttribute('role', shouldHaveLandmark ? 'region' : 'group');
+                    chart.renderTo.setAttribute('aria-label', containerLabel);
                 }
-                else {
-                    chart.renderTo.removeAttribute('role');
-                }
-                chart.renderTo.setAttribute('aria-label', chart.langFormat('accessibility.chartContainerLabel', {
-                    title: getChartTitle(chart),
-                    chart: chart
-                }));
             };
             /**
              * @private
@@ -1681,15 +1689,21 @@
                 }
                 // Add the border rect
                 var bb = this.getBBox(),
-                    pad = pick(margin, 3);
+                    pad = pick(margin, 3),
+                    parent = this.parentGroup,
+                    scaleX = this.scaleX || parent && parent.scaleX,
+                    scaleY = this.scaleY || parent && parent.scaleY,
+                    oneDefined = scaleX ? !scaleY : scaleY,
+                    scaleBoth = oneDefined ? Math.abs(scaleX || scaleY || 1) :
+                        (Math.abs(scaleX || 1) + Math.abs(scaleY || 1)) / 2;
                 bb.x += this.translateX ? this.translateX : 0;
                 bb.y += this.translateY ? this.translateY : 0;
                 var borderPosX = bb.x - pad,
                     borderPosY = bb.y - pad,
                     borderWidth = bb.width + 2 * pad,
                     borderHeight = bb.height + 2 * pad;
-                // For text elements, apply x and y offset, #11397.
                 /**
+                 * For text elements, apply x and y offset, #11397.
                  * @private
                  */
                 function getTextAnchorCorrection(text) {
@@ -1737,16 +1751,16 @@
                         }
                     }
                 }
-                this.focusBorder = this.renderer.rect(borderPosX, borderPosY, borderWidth, borderHeight, parseInt((attribs && attribs.r || 0).toString(), 10))
+                this.focusBorder = this.renderer.rect(borderPosX, borderPosY, borderWidth, borderHeight, parseInt((attribs && attribs.r || 0).toString(), 10) / scaleBoth)
                     .addClass('highcharts-focus-border')
                     .attr({
                     zIndex: 99
                 })
-                    .add(this.parentGroup);
+                    .add(parent);
                 if (!this.renderer.styledMode) {
                     this.focusBorder.attr({
                         stroke: attribs && attribs.stroke,
-                        'stroke-width': attribs && attribs.strokeWidth
+                        'stroke-width': (attribs && attribs.strokeWidth || 0) / scaleBoth
                     });
                 }
                 avgElementAddUpdateFocusBorderHooks(this, margin, attribs);
@@ -2185,11 +2199,13 @@
         function getTypeDescription(chart, types) {
             var firstType = types[0],
                 firstSeries = chart.series && chart.series[0] || {},
+                mapTitle = chart.mapView && chart.mapView.geoMap &&
+                    chart.mapView.geoMap.title,
                 formatContext = {
                     numSeries: chart.series.length,
                     numPoints: firstSeries.points && firstSeries.points.length,
                     chart: chart,
-                    mapTitle: firstSeries.mapTitle
+                    mapTitle: mapTitle
                 };
             if (!firstType) {
                 return getTypeDescForEmptyChart(chart, formatContext);
@@ -2383,23 +2399,27 @@
                 }
             };
             /**
+             * Apply a11y attributes to a screen reader info section
              * @private
              * @param {Highcharts.HTMLDOMElement} sectionDiv The section element
              * @param {string} regionKey Name/key of the region we are setting attrs for
              */
             InfoRegionsComponent.prototype.setScreenReaderSectionAttribs = function (sectionDiv, regionKey) {
-                var labelLangKey = ('accessibility.screenReaderSection.' + regionKey + 'RegionLabel'), chart = this.chart, labelText = chart.langFormat(labelLangKey, { chart: chart, chartTitle: getChartTitle(chart) }), sectionId = 'highcharts-screen-reader-region-' + regionKey + '-' +
-                        chart.index;
+                var chart = this.chart,
+                    labelText = chart.langFormat('accessibility.screenReaderSection.' + regionKey +
+                        'RegionLabel', { chart: chart,
+                    chartTitle: getChartTitle(chart) }),
+                    sectionId = "highcharts-screen-reader-region-" + regionKey + "-" + chart.index;
                 attr(sectionDiv, {
                     id: sectionId,
-                    'aria-label': labelText
+                    'aria-label': labelText || void 0
                 });
                 // Sections are wrapped to be positioned relatively to chart in case
                 // elements inside are tabbed to.
                 sectionDiv.style.position = 'relative';
-                if (chart.options.accessibility.landmarkVerbosity === 'all' &&
-                    labelText) {
-                    sectionDiv.setAttribute('role', 'region');
+                if (labelText) {
+                    sectionDiv.setAttribute('role', chart.options.accessibility.landmarkVerbosity === 'all' ?
+                        'region' : 'group');
                 }
             };
             /**
@@ -2620,7 +2640,10 @@
                     return axes.length > 1 || axes[0] &&
                         pick(axes[0].options.accessibility &&
                             axes[0].options.accessibility.enabled, defaultCondition);
-                }, hasNoMap = !!chart.types && chart.types.indexOf('map') < 0, hasCartesian = !!chart.hasCartesianSeries, showXAxes = shouldDescribeColl('xAxis', !chart.angular && hasCartesian && hasNoMap), showYAxes = shouldDescribeColl('yAxis', hasCartesian && hasNoMap), desc = {};
+                }, hasNoMap = !!chart.types &&
+                    chart.types.indexOf('map') < 0 &&
+                    chart.types.indexOf('treemap') < 0 &&
+                    chart.types.indexOf('tilemap') < 0, hasCartesian = !!chart.hasCartesianSeries, showXAxes = shouldDescribeColl('xAxis', !chart.angular && hasCartesian && hasNoMap), showYAxes = shouldDescribeColl('yAxis', hasCartesian && hasNoMap), desc = {};
                 if (showXAxes) {
                     desc.xAxis = this.getAxisDescriptionText('xAxis');
                 }
@@ -4152,14 +4175,21 @@
             }) || null;
         }
         /**
+         * Whether or not we should add a dummy point element in
+         * order to describe a point that has no graphic.
          * @private
          */
         function shouldAddDummyPoint(point) {
             // Note: Sunburst series use isNull for hidden points on drilldown.
             // Ignore these.
-            var isSunburst = point.series && point.series.is('sunburst'),
-                isNull = point.isNull;
-            return isNull && !isSunburst;
+            var series = point.series,
+                chart = series && series.chart,
+                isSunburst = series && series.is('sunburst'),
+                isNull = point.isNull,
+                shouldDescribeNull = chart &&
+                    chart
+                        .options.accessibility.point.describeNull;
+            return isNull && !isSunburst && shouldDescribeNull;
         }
         /**
          * @private
@@ -4440,15 +4470,21 @@
          */
         function describePointsInSeries(series) {
             var setScreenReaderProps = shouldSetScreenReaderPropsOnPoints(series),
-                setKeyboardProps = shouldSetKeyboardNavPropsOnPoints(series);
+                setKeyboardProps = shouldSetKeyboardNavPropsOnPoints(series),
+                shouldDescribeNullPoints = series.chart.options.accessibility
+                    .point.describeNull;
             if (setScreenReaderProps || setKeyboardProps) {
                 series.points.forEach(function (point) {
                     var pointEl = point.graphic && point.graphic.element ||
-                            shouldAddDummyPoint(point) && addDummyPointElement(point);
-                    var pointA11yDisabled = (point.options &&
+                            shouldAddDummyPoint(point) && addDummyPointElement(point),
+                        pointA11yDisabled = (point.options &&
                             point.options.accessibility &&
                             point.options.accessibility.enabled === false);
                     if (pointEl) {
+                        if (point.isNull && !shouldDescribeNullPoints) {
+                            pointEl.setAttribute('aria-hidden', true);
+                            return;
+                        }
                         // We always set tabindex, as long as we are setting props.
                         // When setting tabindex, also remove default outline to
                         // avoid ugly border on click.
@@ -4476,14 +4512,19 @@
                 description = getSeriesDescriptionText(series),
                 shouldDescribeAxis = function (coll) {
                     return chart[coll] && chart[coll].length > 1 && series[coll];
-            }, xAxisInfo = getSeriesAxisDescriptionText(series, 'xAxis'), yAxisInfo = getSeriesAxisDescriptionText(series, 'yAxis'), summaryContext = {
-                name: series.name || '',
-                ix: series.index + 1,
-                numSeries: chart.series && chart.series.length,
-                numPoints: series.points && series.points.length,
-                series: series
-            }, combinationSuffix = chartTypes.length > 1 ? 'Combination' : '', summary = chart.langFormat('accessibility.series.summary.' + series.type + combinationSuffix, summaryContext) || chart.langFormat('accessibility.series.summary.default' + combinationSuffix, summaryContext);
-            return summary + (description ? ' ' + description : '') + (shouldDescribeAxis('yAxis') ? ' ' + yAxisInfo : '') + (shouldDescribeAxis('xAxis') ? ' ' + xAxisInfo : '');
+            }, seriesNumber = series.index + 1, xAxisInfo = getSeriesAxisDescriptionText(series, 'xAxis'), yAxisInfo = getSeriesAxisDescriptionText(series, 'yAxis'), summaryContext = {
+                seriesNumber: seriesNumber,
+                series: series,
+                chart: chart
+            }, combinationSuffix = chartTypes.length > 1 ? 'Combination' : '', summary = chart.langFormat('accessibility.series.summary.' + series.type + combinationSuffix, summaryContext) || chart.langFormat('accessibility.series.summary.default' + combinationSuffix, summaryContext), axisDescription = (shouldDescribeAxis('yAxis') ? ' ' + yAxisInfo + '.' : '') + (shouldDescribeAxis('xAxis') ? ' ' + xAxisInfo + '.' : ''), formatStr = chart.options.accessibility.series.descriptionFormat || '';
+            return format(formatStr, {
+                seriesDescription: summary,
+                authorDescription: (description ? ' ' + description : ''),
+                axisDescription: axisDescription,
+                series: series,
+                chart: chart,
+                seriesNumber: seriesNumber
+            }, void 0);
         }
         /**
          * Set a11y props on a series element
@@ -4501,7 +4542,10 @@
             }
             else if (landmarkVerbosity === 'all') {
                 seriesElement.setAttribute('role', 'region');
-            } /* else do not add role */
+            }
+            else {
+                seriesElement.setAttribute('role', 'group');
+            }
             seriesElement.setAttribute('tabindex', '-1');
             if (!series.chart.styledMode) {
                 // Don't show browser outline on click, despite tabindex
@@ -4534,7 +4578,7 @@
                     describeSeriesElement(series, seriesEl);
                 }
                 else {
-                    seriesEl.setAttribute('aria-label', '');
+                    seriesEl.removeAttribute('aria-label');
                 }
             }
         }
@@ -8822,8 +8866,7 @@
                             }]
                     ],
                     init: function () {
-                        highlightFirstValidPointInChart(chart);
-                        return this.response.success;
+                        return keyboardNavigation.onHandlerInit(this);
                     },
                     validate: function () {
                         return !!getFirstValidPointInChart(chart);
@@ -8844,6 +8887,25 @@
                 var keys = this.keyCodes,
                     isNext = keyCode === keys.right || keyCode === keys.down;
                 return this.attemptHighlightAdjacentPoint(handler, isNext);
+            };
+            /**
+             * When keyboard navigation inits.
+             * @private
+             * @param {Highcharts.KeyboardNavigationHandler} handler The handler object
+             * @return {number}
+             * response
+             */
+            SeriesKeyboardNavigation.prototype.onHandlerInit = function (handler) {
+                var chart = this.chart,
+                    kbdNavOptions = chart.options.accessibility.keyboardNavigation;
+                if (kbdNavOptions.seriesNavigation.rememberPointFocus &&
+                    chart.highlightedPoint) {
+                    chart.highlightedPoint.highlight();
+                }
+                else {
+                    highlightFirstValidPointInChart(chart);
+                }
+                return handler.response.success;
             };
             /**
              * @private
@@ -8874,7 +8936,8 @@
              * @private
              */
             SeriesKeyboardNavigation.prototype.onHandlerTerminate = function () {
-                var chart = this.chart;
+                var chart = this.chart,
+                    kbdNavOptions = chart.options.accessibility.keyboardNavigation;
                 if (chart.tooltip) {
                     chart.tooltip.hide(0);
                 }
@@ -8885,7 +8948,9 @@
                 if (chart.highlightedPoint && chart.highlightedPoint.onMouseOut) {
                     chart.highlightedPoint.onMouseOut();
                 }
-                delete chart.highlightedPoint;
+                if (!kbdNavOptions.seriesNavigation.rememberPointFocus) {
+                    delete chart.highlightedPoint;
+                }
             };
             /**
              * Function that attempts to highlight next/prev point. Handles wrap around.
@@ -10206,7 +10271,17 @@
                  */
                 accessibility: {
                     /**
-                     * Enable accessibility functionality for the chart.
+                     * Enable accessibility functionality for the chart. For more
+                     * information on how to include these features, and why this is
+                     * recommended, see [Highcharts Accessibility](https://www.highcharts.com/docs/accessibility/accessibility-module).
+                     *
+                     * Highcharts will by default emit a warning to the console if
+                     * the [accessibility module](https://code.highcharts.com/modules/accessibility.js)
+                     * is not loaded. Setting this option to `false` will override
+                     * and silence the warning.
+                     *
+                     * Once the module is loaded, setting this option to `false`
+                     * will disable the module for this chart.
                      *
                      * @since 5.0.0
                      */
@@ -10320,12 +10395,43 @@
                          * of the series for a screen reader user. If `false` is returned,
                          * the default formatter will be used for that series.
                          *
+                         * @see [series.descriptionFormat](#accessibility.series.descriptionFormat)
                          * @see [series.description](#plotOptions.series.description)
                          *
                          * @type      {Highcharts.ScreenReaderFormatterCallbackFunction<Highcharts.Series>}
                          * @since 8.0.0
                          * @apioption accessibility.series.descriptionFormatter
                          */
+                        /**
+                         * Format to use for describing the data series group to assistive
+                         * technology - including screen readers.
+                         *
+                         * The series context and its subproperties are available under the
+                         * variable `{series}`, for example `{series.name}` for the series
+                         * name, and `{series.points.length}` for the number of data points.
+                         *
+                         * The chart context and its subproperties are available under the
+                         * variable `{chart}`, for example `{chart.series.length}` for the
+                         * number of series in the chart.
+                         *
+                         * `{seriesDescription}` refers to the automatic description of the
+                         * series type and number of points added by Highcharts by default.
+                         * `{authorDescription}` refers to the description added in
+                         * [series.description](#plotOptions.series.description) if one is
+                         * present. `{axisDescription}` refers to the description added if
+                         * the chart has multiple X or Y axes.
+                         *
+                         * Note that if [series.descriptionFormatter](#accessibility.series.descriptionFormatter)
+                         * is declared it will take precedence, and this option will be
+                         * overridden.
+                         *
+                         * @sample highcharts/accessibility/advanced-accessible
+                         *  Accessible low-medium-high chart
+                         *
+                         * @type      {string}
+                         * @since 10.1.0
+                         */
+                        descriptionFormat: '{seriesDescription}{authorDescription}{axisDescription}',
                         /**
                          * Whether or not to add series descriptions to charts with a single
                          * series.
@@ -10427,6 +10533,8 @@
                          * to assistive technology - including screen readers.
                          * The point context is available as `{point}`.
                          *
+                         * Other available context variables include `{index}`, `{value}`, and `{xDescription}`.
+                         *
                          * Additionally, the series name, annotation info, and
                          * description added in `point.accessibility.description`
                          * is added by default if relevant. To override this, use the
@@ -10439,7 +10547,18 @@
                          * @type      {string}
                          * @since 8.0.1
                          */
-                        valueDescriptionFormat: '{index}. {xDescription}{separator}{value}.'
+                        valueDescriptionFormat: '{xDescription}{separator}{value}.',
+                        /**
+                         * Whether or not to describe points with the value `null` to
+                         * assistive technology, such as screen readers.
+                         *
+                         * @sample {highmaps} maps/demo/all-areas-as-null
+                         *         Accessible map with null points
+                         *
+                         * @type      {boolean}
+                         * @since 10.1.0
+                         */
+                        describeNull: true
                     },
                     /**
                      * Amount of landmarks/regions to create for screen reader users. More
@@ -10683,7 +10802,16 @@
                              * @type  {boolean|number}
                              * @since 8.0.0
                              */
-                            pointNavigationEnabledThreshold: false
+                            pointNavigationEnabledThreshold: false,
+                            /**
+                             * Remember which point was focused even after navigating away
+                             * from the series, so that when navigating back to the series
+                             * you start at the last focused point.
+                             *
+                             * @type  {boolean}
+                             * @since 10.1.0
+                             */
+                            rememberPointFocus: false
                         }
                     },
                     /**
@@ -11017,7 +11145,7 @@
                      * @since 8.0.0
                      */
                     screenReaderSection: {
-                        beforeRegionLabel: 'Chart screen reader information, {chartTitle}.',
+                        beforeRegionLabel: '',
                         afterRegionLabel: '',
                         /**
                          * Language options for annotation descriptions.
@@ -11183,12 +11311,12 @@
                         xAxisDescriptionPlural: 'The chart has {numAxes} X axes displaying {#each(names, -1) }and {names[-1]}.',
                         yAxisDescriptionSingular: 'The chart has 1 Y axis displaying {names[0]}. {ranges[0]}',
                         yAxisDescriptionPlural: 'The chart has {numAxes} Y axes displaying {#each(names, -1) }and {names[-1]}.',
-                        timeRangeDays: 'Range: {range} days.',
-                        timeRangeHours: 'Range: {range} hours.',
-                        timeRangeMinutes: 'Range: {range} minutes.',
-                        timeRangeSeconds: 'Range: {range} seconds.',
-                        rangeFromTo: 'Range: {rangeFrom} to {rangeTo}.',
-                        rangeCategories: 'Range: {numCategories} categories.'
+                        timeRangeDays: 'Data range: {range} days.',
+                        timeRangeHours: 'Data range: {range} hours.',
+                        timeRangeMinutes: 'Data range: {range} minutes.',
+                        timeRangeSeconds: 'Data range: {range} seconds.',
+                        rangeFromTo: 'Data ranges from {rangeFrom} to {rangeTo}.',
+                        rangeCategories: 'Data range: {numCategories} categories.'
                     },
                     /**
                      * Exporting menu format strings for accessibility module.
@@ -11219,34 +11347,39 @@
                          * If a definition does not exist for the specific series type
                          * and mode, the 'default' lang definitions are used.
                          *
+                         * Chart and its subproperties can be accessed with the `{chart}` variable.
+                         * The series and its subproperties can be accessed with the `{series}` variable.
+                         *
+                         * The series index (starting from 1) can be accessed with the `{seriesNumber}` variable.
+                         *
                          * @since 6.0.6
                          */
                         summary: {
                             /* eslint-disable max-len */
-                            'default': '{name}, series {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-                            defaultCombination: '{name}, series {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-                            line: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-                            lineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
-                            spline: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-                            splineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
-                            column: '{name}, bar series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bars, bar)}.',
-                            columnCombination: '{name}, series {ix} of {numSeries}. Bar series with {numPoints} {#plural(numPoints, bars, bar)}.',
-                            bar: '{name}, bar series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bars, bar)}.',
-                            barCombination: '{name}, series {ix} of {numSeries}. Bar series with {numPoints} {#plural(numPoints, bars, bar)}.',
-                            pie: '{name}, pie {ix} of {numSeries} with {numPoints} {#plural(numPoints, slices, slice)}.',
-                            pieCombination: '{name}, series {ix} of {numSeries}. Pie with {numPoints} {#plural(numPoints, slices, slice)}.',
-                            scatter: '{name}, scatter plot {ix} of {numSeries} with {numPoints} {#plural(numPoints, points, point)}.',
-                            scatterCombination: '{name}, series {ix} of {numSeries}, scatter plot with {numPoints} {#plural(numPoints, points, point)}.',
-                            boxplot: '{name}, boxplot {ix} of {numSeries} with {numPoints} {#plural(numPoints, boxes, box)}.',
-                            boxplotCombination: '{name}, series {ix} of {numSeries}. Boxplot with {numPoints} {#plural(numPoints, boxes, box)}.',
-                            bubble: '{name}, bubble series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
-                            bubbleCombination: '{name}, series {ix} of {numSeries}. Bubble series with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
-                            map: '{name}, map {ix} of {numSeries} with {numPoints} {#plural(numPoints, areas, area)}.',
-                            mapCombination: '{name}, series {ix} of {numSeries}. Map with {numPoints} {#plural(numPoints, areas, area)}.',
-                            mapline: '{name}, line {ix} of {numSeries} with {numPoints} data {#plural(numPoints, points, point)}.',
-                            maplineCombination: '{name}, series {ix} of {numSeries}. Line with {numPoints} data {#plural(numPoints, points, point)}.',
-                            mapbubble: '{name}, bubble series {ix} of {numSeries} with {numPoints} {#plural(numPoints, bubbles, bubble)}.',
-                            mapbubbleCombination: '{name}, series {ix} of {numSeries}. Bubble series with {numPoints} {#plural(numPoints, bubbles, bubble)}.'
+                            'default': '{series.name}, series {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
+                            defaultCombination: '{series.name}, series {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
+                            line: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
+                            lineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#plural(series.points.length, points, point)}.',
+                            spline: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
+                            splineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#plural(series.points.length, points, point)}.',
+                            column: '{series.name}, bar series {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, bars, bar)}.',
+                            columnCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bar series with {series.points.length} {#plural(series.points.length, bars, bar)}.',
+                            bar: '{series.name}, bar series {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, bars, bar)}.',
+                            barCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bar series with {series.points.length} {#plural(series.points.length, bars, bar)}.',
+                            pie: '{series.name}, pie {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, slices, slice)}.',
+                            pieCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Pie with {series.points.length} {#plural(series.points.length, slices, slice)}.',
+                            scatter: '{series.name}, scatter plot {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, points, point)}.',
+                            scatterCombination: '{series.name}, series {seriesNumber} of {chart.series.length}, scatter plot with {series.points.length} {#plural(series.points.length, points, point)}.',
+                            boxplot: '{series.name}, boxplot {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, boxes, box)}.',
+                            boxplotCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Boxplot with {series.points.length} {#plural(series.points.length, boxes, box)}.',
+                            bubble: '{series.name}, bubble series {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, bubbles, bubble)}.',
+                            bubbleCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bubble series with {series.points.length} {#plural(series.points.length, bubbles, bubble)}.',
+                            map: '{series.name}, map {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, areas, area)}.',
+                            mapCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Map with {series.points.length} {#plural(series.points.length, areas, area)}.',
+                            mapline: '{series.name}, line {seriesNumber} of {chart.series.length} with {series.points.length} data {#plural(series.points.length, points, point)}.',
+                            maplineCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Line with {series.points.length} data {#plural(series.points.length, points, point)}.',
+                            mapbubble: '{series.name}, bubble series {seriesNumber} of {chart.series.length} with {series.points.length} {#plural(series.points.length, bubbles, bubble)}.',
+                            mapbubbleCombination: '{series.name}, series {seriesNumber} of {chart.series.length}. Bubble series with {series.points.length} {#plural(series.points.length, bubbles, bubble)}.'
                         },
                         /**
                          * User supplied description text. This is added in the point

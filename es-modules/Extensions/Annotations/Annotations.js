@@ -318,7 +318,7 @@ var Annotation = /** @class */ (function () {
             opacity: 0,
             zIndex: this.options.zIndex,
             visibility: this.options.visible ?
-                'visible' :
+                'inherit' :
                 'hidden'
         })
             .add();
@@ -355,7 +355,7 @@ var Annotation = /** @class */ (function () {
      */
     Annotation.prototype.setVisibility = function (visible) {
         var options = this.options, navigation = this.chart.navigationBindings, visibility = pick(visible, !options.visible);
-        this.graphic.attr('visibility', visibility ? 'visible' : 'hidden');
+        this.graphic.attr('visibility', visibility ? 'inherit' : 'hidden');
         if (!visibility) {
             this.setControlPointsVisibility(false);
             if (navigation.activeAnnotation === this &&

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * (c) 2009-2021 Highsoft AS
  *
@@ -67,16 +67,16 @@
             var textBright = '#F0F0F3';
             HighContrastDarkTheme.options = {
                 colors: [
-                    '#6783E7',
-                    '#8AC668',
-                    '#9630EF',
-                    '#F0A079',
-                    '#51ACD1',
-                    '#CB3F44',
-                    '#CD9FE5',
-                    '#4DA9A5',
-                    '#BBDEE0',
-                    '#E3AF3D'
+                    '#67B9EE',
+                    '#CEEDA5',
+                    '#9F6AE1',
+                    '#FEA26E',
+                    '#6BA48F',
+                    '#EA3535',
+                    '#8D96B7',
+                    '#ECCA15',
+                    '#20AA09',
+                    '#E0C3E4'
                 ],
                 chart: {
                     backgroundColor: '#1f1f20',

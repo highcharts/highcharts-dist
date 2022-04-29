@@ -167,9 +167,12 @@ bindingsUtils.manageIndicators = function (data) {
             }
             series.remove(false);
             if (indicatorsWithAxes.indexOf(series.type) >= 0) {
-                var removedYAxisHeight = yAxis.options.height;
+                var removedYAxisProps = {
+                    height: yAxis.options.height,
+                    top: yAxis.options.top
+                };
                 yAxis.remove(false);
-                navigation.resizeYAxes(removedYAxisHeight);
+                navigation.resizeYAxes(removedYAxisProps);
             }
         }
     }
@@ -370,22 +373,23 @@ extend(NavigationBindings.prototype, {
      * @param {number} defaultHeight
      *        Default height in percents.
      *
-     * @param {string} removedYAxisHeight
-     *        Height of the removed yAxis in percents.
+     * @param {Highcharts.AxisPositions} removedYAxisProps
+     *        Height and top value of the removed yAxis in percents.
      *
      * @return {Highcharts.YAxisPositions}
      *         An object containing an array of calculated positions
      *         in percentages. Format: `{top: Number, height: Number}`
      *         and maximum value of top + height of axes.
      */
-    getYAxisPositions: function (yAxes, plotHeight, defaultHeight, removedYAxisHeight) {
-        var positions, allAxesHeight = 0, previousAxisHeight, removedHeight;
+    getYAxisPositions: function (yAxes, plotHeight, defaultHeight, removedYAxisProps) {
+        var positions, allAxesHeight = 0, previousAxisHeight, removedHeight, removedTop;
         /** @private */
         function isPercentage(prop) {
             return defined(prop) && !isNumber(prop) && prop.match('%');
         }
-        if (removedYAxisHeight) {
-            removedHeight = correctFloat((parseFloat(removedYAxisHeight) / 100));
+        if (removedYAxisProps) {
+            removedTop = correctFloat((parseFloat(removedYAxisProps.top) / 100));
+            removedHeight = correctFloat((parseFloat(removedYAxisProps.height) / 100));
         }
         positions = yAxes.map(function (yAxis, index) {
             var height = correctFloat(isPercentage(yAxis.options.height) ?
@@ -393,9 +397,9 @@ extend(NavigationBindings.prototype, {
                 yAxis.height / plotHeight), top = correctFloat(isPercentage(yAxis.options.top) ?
                 parseFloat(yAxis.options.top) / 100 :
                 (yAxis.top - yAxis.chart.plotTop) / plotHeight);
-            // New axis' height is NaN so we can check if
-            // the axis is newly created this way
             if (!removedHeight) {
+                // New axis' height is NaN so we can check if
+                // the axis is newly created this way
                 if (!isNumber(height)) {
                     // Check if the previous axis is the
                     // indicator axis (every indicator inherits from sma)
@@ -410,13 +414,11 @@ extend(NavigationBindings.prototype, {
                 allAxesHeight = correctFloat(Math.max(allAxesHeight, (top || 0) + (height || 0)));
             }
             else {
-                if (top <= allAxesHeight) {
-                    allAxesHeight = correctFloat(Math.max(allAxesHeight, (top || 0) + (height || 0)));
+                // Move all axes which were below the removed axis up.
+                if (top > removedTop) {
+                    top -= removedHeight;
                 }
-                else {
-                    top = correctFloat(top - removedHeight);
-                    allAxesHeight = correctFloat(allAxesHeight + height);
-                }
+                allAxesHeight = Math.max(allAxesHeight, (top || 0) + (height || 0));
             }
             return {
                 height: height * 100,
@@ -476,22 +478,22 @@ extend(NavigationBindings.prototype, {
      *
      * @private
      * @function Highcharts.NavigationBindings#resizeYAxes
-     * @param {string} [removedYAxisHeight]
+     * @param {Highcharts.AxisPositions} [removedYAxisProps]
      *
      *
      */
-    resizeYAxes: function (removedYAxisHeight) {
+    resizeYAxes: function (removedYAxisProps) {
         // The height of the new axis before rescalling. In %, but as a number.
         var defaultHeight = 20;
         var chart = this.chart, 
         // Only non-navigator axes
         yAxes = chart.yAxis.filter(bindingsUtils.isNotNavigatorYAxis), plotHeight = chart.plotHeight, 
         // Gather current heights (in %)
-        _a = this.getYAxisPositions(yAxes, plotHeight, defaultHeight, removedYAxisHeight), positions = _a.positions, allAxesHeight = _a.allAxesHeight, resizers = this.getYAxisResizers(yAxes);
+        _a = this.getYAxisPositions(yAxes, plotHeight, defaultHeight, removedYAxisProps), positions = _a.positions, allAxesHeight = _a.allAxesHeight, resizers = this.getYAxisResizers(yAxes);
         // check if the axis is being either added or removed and
         // if the new indicator axis will fit under existing axes.
         // if so, there is no need to scale them.
-        if (!removedYAxisHeight &&
+        if (!removedYAxisProps &&
             allAxesHeight <= correctFloat(0.8 + defaultHeight / 100)) {
             positions[positions.length - 1] = {
                 height: defaultHeight,
@@ -548,6 +550,8 @@ extend(NavigationBindings.prototype, {
  * @type         {Highcharts.Dictionary<Highcharts.NavigationBindingsOptionsObject>}
  * @since        7.0.0
  * @optionparent navigation.bindings
+ *   @sample {highstock} stock/stocktools/custom-stock-tools-bindings
+ *     Custom stock tools bindings
  */
 var stockToolsBindings = {
     // Line type annotations:
@@ -1234,6 +1238,9 @@ var stockToolsBindings = {
      * A fibonacci annotation bindings. Includes `start` and two events in
      * `steps` array (updates second point, then height).
      *
+     *   @sample {highstock} stock/stocktools/custom-stock-tools-bindings
+     *     Custom stock tools bindings
+     *
      * @type    {Highcharts.NavigationBindingsOptionsObject}
      * @product highstock
      * @default {"className": "highcharts-fibonacci", "start": function() {}, "steps": [function() {}, function() {}], "annotationsOptions": {}}
@@ -1419,13 +1426,13 @@ var stockToolsBindings = {
         }
     },
     /**
-     * A vertical arrow annotation bindings. Includes `start` event. On click,
-     * finds the closest point and marks it with an arrow and a label with
-     * value.
+     * A time cycles annotation bindings. Includes `start` event and 1 `step`
+     * event. first click marks the beginning of the circle, and the second one
+     * sets its diameter.
      *
      * @type    {Highcharts.NavigationBindingsOptionsObject}
      * @product highstock
-     * @default {"className": "highcharts-vertical-label", "start": function() {}, "annotationsOptions": {}}
+     * @default {"className": "highcharts-time-cycles", "start": function() {}, "steps": [function (){}] "annotationsOptions": {}}
      */
     timeCycles: {
         className: 'highcharts-time-cycles',

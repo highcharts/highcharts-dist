@@ -1,6 +1,6 @@
 {
   "name": "highcharts",
-  "version": "10.0.0",
+  "version": "10.1.0",
   "main": "highcharts.js",
   "license": "https://www.highcharts.com/license",
   "types": "highcharts.d.ts"

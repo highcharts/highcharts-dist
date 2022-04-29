@@ -407,9 +407,10 @@ var OrdinalAxis;
             // how many ordinal units did we move?
             movedUnits = (mouseDownX - chartX) / pointPixelWidth, 
             // get index of all the chart's points
-            extendedAxis = {
+            extendedOrdinalPositions = xAxis.ordinal.getExtendedPositions(), extendedAxis = {
                 ordinal: {
-                    positions: xAxis.ordinal.getExtendedPositions()
+                    positions: extendedOrdinalPositions,
+                    extendedOrdinalPositions: extendedOrdinalPositions
                 }
             }, index2val_1 = xAxis.index2val, val2lin_1 = xAxis.val2lin;
             var trimmedRange = void 0, ordinalPositions = void 0, searchAxisLeft = void 0, searchAxisRight = void 0;

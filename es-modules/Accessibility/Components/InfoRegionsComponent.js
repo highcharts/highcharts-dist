@@ -90,11 +90,12 @@ function buildTypeDescriptionFromSeries(chart, types, context) {
  * @return {string} The text description of the chart type.
  */
 function getTypeDescription(chart, types) {
-    var firstType = types[0], firstSeries = chart.series && chart.series[0] || {}, formatContext = {
+    var firstType = types[0], firstSeries = chart.series && chart.series[0] || {}, mapTitle = chart.mapView && chart.mapView.geoMap &&
+        chart.mapView.geoMap.title, formatContext = {
         numSeries: chart.series.length,
         numPoints: firstSeries.points && firstSeries.points.length,
         chart: chart,
-        mapTitle: firstSeries.mapTitle
+        mapTitle: mapTitle
     };
     if (!firstType) {
         return getTypeDescForEmptyChart(chart, formatContext);
@@ -284,23 +285,24 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
         }
     };
     /**
+     * Apply a11y attributes to a screen reader info section
      * @private
      * @param {Highcharts.HTMLDOMElement} sectionDiv The section element
      * @param {string} regionKey Name/key of the region we are setting attrs for
      */
     InfoRegionsComponent.prototype.setScreenReaderSectionAttribs = function (sectionDiv, regionKey) {
-        var labelLangKey = ('accessibility.screenReaderSection.' + regionKey + 'RegionLabel'), chart = this.chart, labelText = chart.langFormat(labelLangKey, { chart: chart, chartTitle: getChartTitle(chart) }), sectionId = 'highcharts-screen-reader-region-' + regionKey + '-' +
-            chart.index;
+        var chart = this.chart, labelText = chart.langFormat('accessibility.screenReaderSection.' + regionKey +
+            'RegionLabel', { chart: chart, chartTitle: getChartTitle(chart) }), sectionId = "highcharts-screen-reader-region-" + regionKey + "-" + chart.index;
         attr(sectionDiv, {
             id: sectionId,
-            'aria-label': labelText
+            'aria-label': labelText || void 0
         });
         // Sections are wrapped to be positioned relatively to chart in case
         // elements inside are tabbed to.
         sectionDiv.style.position = 'relative';
-        if (chart.options.accessibility.landmarkVerbosity === 'all' &&
-            labelText) {
-            sectionDiv.setAttribute('role', 'region');
+        if (labelText) {
+            sectionDiv.setAttribute('role', chart.options.accessibility.landmarkVerbosity === 'all' ?
+                'region' : 'group');
         }
     };
     /**
@@ -499,7 +501,10 @@ var InfoRegionsComponent = /** @class */ (function (_super) {
             return axes.length > 1 || axes[0] &&
                 pick(axes[0].options.accessibility &&
                     axes[0].options.accessibility.enabled, defaultCondition);
-        }, hasNoMap = !!chart.types && chart.types.indexOf('map') < 0, hasCartesian = !!chart.hasCartesianSeries, showXAxes = shouldDescribeColl('xAxis', !chart.angular && hasCartesian && hasNoMap), showYAxes = shouldDescribeColl('yAxis', hasCartesian && hasNoMap), desc = {};
+        }, hasNoMap = !!chart.types &&
+            chart.types.indexOf('map') < 0 &&
+            chart.types.indexOf('treemap') < 0 &&
+            chart.types.indexOf('tilemap') < 0, hasCartesian = !!chart.hasCartesianSeries, showXAxes = shouldDescribeColl('xAxis', !chart.angular && hasCartesian && hasNoMap), showYAxes = shouldDescribeColl('yAxis', hasCartesian && hasNoMap), desc = {};
         if (showXAxes) {
             desc.xAxis = this.getAxisDescriptionText('xAxis');
         }

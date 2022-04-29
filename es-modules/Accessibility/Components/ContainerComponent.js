@@ -97,20 +97,19 @@ var ContainerComponent = /** @class */ (function (_super) {
         }
     };
     /**
+     * Set attributes on the chart container element.
      * @private
      */
     ContainerComponent.prototype.setRenderToAttrs = function () {
-        var chart = this.chart;
-        if (chart.options.accessibility.landmarkVerbosity !== 'disabled') {
-            chart.renderTo.setAttribute('role', 'region');
-        }
-        else {
-            chart.renderTo.removeAttribute('role');
-        }
-        chart.renderTo.setAttribute('aria-label', chart.langFormat('accessibility.chartContainerLabel', {
+        var chart = this.chart, shouldHaveLandmark = chart.options.accessibility
+            .landmarkVerbosity !== 'disabled', containerLabel = chart.langFormat('accessibility.chartContainerLabel', {
             title: getChartTitle(chart),
             chart: chart
-        }));
+        });
+        if (containerLabel) {
+            chart.renderTo.setAttribute('role', shouldHaveLandmark ? 'region' : 'group');
+            chart.renderTo.setAttribute('aria-label', containerLabel);
+        }
     };
     /**
      * @private

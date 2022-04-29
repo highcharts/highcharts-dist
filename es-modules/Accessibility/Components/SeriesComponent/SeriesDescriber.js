@@ -43,13 +43,17 @@ function findFirstPointWithGraphic(point) {
     }) || null;
 }
 /**
+ * Whether or not we should add a dummy point element in
+ * order to describe a point that has no graphic.
  * @private
  */
 function shouldAddDummyPoint(point) {
     // Note: Sunburst series use isNull for hidden points on drilldown.
     // Ignore these.
-    var isSunburst = point.series && point.series.is('sunburst'), isNull = point.isNull;
-    return isNull && !isSunburst;
+    var series = point.series, chart = series && series.chart, isSunburst = series && series.is('sunburst'), isNull = point.isNull, shouldDescribeNull = chart &&
+        chart
+            .options.accessibility.point.describeNull;
+    return isNull && !isSunburst && shouldDescribeNull;
 }
 /**
  * @private
@@ -287,15 +291,19 @@ function setPointScreenReaderAttribs(point, pointElement) {
  * @param {Highcharts.Series} series
  */
 function describePointsInSeries(series) {
-    var setScreenReaderProps = shouldSetScreenReaderPropsOnPoints(series), setKeyboardProps = shouldSetKeyboardNavPropsOnPoints(series);
+    var setScreenReaderProps = shouldSetScreenReaderPropsOnPoints(series), setKeyboardProps = shouldSetKeyboardNavPropsOnPoints(series), shouldDescribeNullPoints = series.chart.options.accessibility
+        .point.describeNull;
     if (setScreenReaderProps || setKeyboardProps) {
         series.points.forEach(function (point) {
             var pointEl = point.graphic && point.graphic.element ||
-                shouldAddDummyPoint(point) && addDummyPointElement(point);
-            var pointA11yDisabled = (point.options &&
+                shouldAddDummyPoint(point) && addDummyPointElement(point), pointA11yDisabled = (point.options &&
                 point.options.accessibility &&
                 point.options.accessibility.enabled === false);
             if (pointEl) {
+                if (point.isNull && !shouldDescribeNullPoints) {
+                    pointEl.setAttribute('aria-hidden', true);
+                    return;
+                }
                 // We always set tabindex, as long as we are setting props.
                 // When setting tabindex, also remove default outline to
                 // avoid ugly border on click.
@@ -320,14 +328,19 @@ function describePointsInSeries(series) {
 function defaultSeriesDescriptionFormatter(series) {
     var chart = series.chart, chartTypes = chart.types || [], description = getSeriesDescriptionText(series), shouldDescribeAxis = function (coll) {
         return chart[coll] && chart[coll].length > 1 && series[coll];
-    }, xAxisInfo = getSeriesAxisDescriptionText(series, 'xAxis'), yAxisInfo = getSeriesAxisDescriptionText(series, 'yAxis'), summaryContext = {
-        name: series.name || '',
-        ix: series.index + 1,
-        numSeries: chart.series && chart.series.length,
-        numPoints: series.points && series.points.length,
-        series: series
-    }, combinationSuffix = chartTypes.length > 1 ? 'Combination' : '', summary = chart.langFormat('accessibility.series.summary.' + series.type + combinationSuffix, summaryContext) || chart.langFormat('accessibility.series.summary.default' + combinationSuffix, summaryContext);
-    return summary + (description ? ' ' + description : '') + (shouldDescribeAxis('yAxis') ? ' ' + yAxisInfo : '') + (shouldDescribeAxis('xAxis') ? ' ' + xAxisInfo : '');
+    }, seriesNumber = series.index + 1, xAxisInfo = getSeriesAxisDescriptionText(series, 'xAxis'), yAxisInfo = getSeriesAxisDescriptionText(series, 'yAxis'), summaryContext = {
+        seriesNumber: seriesNumber,
+        series: series,
+        chart: chart
+    }, combinationSuffix = chartTypes.length > 1 ? 'Combination' : '', summary = chart.langFormat('accessibility.series.summary.' + series.type + combinationSuffix, summaryContext) || chart.langFormat('accessibility.series.summary.default' + combinationSuffix, summaryContext), axisDescription = (shouldDescribeAxis('yAxis') ? ' ' + yAxisInfo + '.' : '') + (shouldDescribeAxis('xAxis') ? ' ' + xAxisInfo + '.' : ''), formatStr = chart.options.accessibility.series.descriptionFormat || '';
+    return format(formatStr, {
+        seriesDescription: summary,
+        authorDescription: (description ? ' ' + description : ''),
+        axisDescription: axisDescription,
+        series: series,
+        chart: chart,
+        seriesNumber: seriesNumber
+    }, void 0);
 }
 /**
  * Set a11y props on a series element
@@ -343,7 +356,10 @@ function describeSeriesElement(series, seriesElement) {
     }
     else if (landmarkVerbosity === 'all') {
         seriesElement.setAttribute('role', 'region');
-    } /* else do not add role */
+    }
+    else {
+        seriesElement.setAttribute('role', 'group');
+    }
     seriesElement.setAttribute('tabindex', '-1');
     if (!series.chart.styledMode) {
         // Don't show browser outline on click, despite tabindex
@@ -373,7 +389,7 @@ function describeSeries(series) {
             describeSeriesElement(series, seriesEl);
         }
         else {
-            seriesEl.setAttribute('aria-label', '');
+            seriesEl.removeAttribute('aria-label');
         }
     }
 }

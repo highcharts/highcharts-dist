@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * Sankey diagram module
  *
@@ -1337,8 +1337,10 @@
                     point.dlBox.x,
                     point.dlBox.y + linkHeight / 2
                 ];
-                // Pass test in drawPoints
+                // Pass test in drawPoints. plotX/Y needs to be defined for dataLabels.
+                // #15863
                 point.y = point.plotY = 1;
+                point.x = point.plotX = 1;
                 if (!point.color) {
                     point.color = fromNode.color;
                 }

@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * Annotations module
  *
@@ -371,7 +371,7 @@
              *
              */
             ControlPoint.prototype.setVisibility = function (visible) {
-                this.graphic.attr('visibility', visible ? 'visible' : 'hidden');
+                this.graphic[visible ? 'show' : 'hide']();
                 this.options.visible = visible;
             };
             /**
@@ -2966,7 +2966,7 @@
                     opacity: 0,
                     zIndex: this.options.zIndex,
                     visibility: this.options.visible ?
-                        'visible' :
+                        'inherit' :
                         'hidden'
                 })
                     .add();
@@ -3005,7 +3005,7 @@
                 var options = this.options,
                     navigation = this.chart.navigationBindings,
                     visibility = pick(visible, !options.visible);
-                this.graphic.attr('visibility', visibility ? 'visible' : 'hidden');
+                this.graphic.attr('visibility', visibility ? 'inherit' : 'hidden');
                 if (!visibility) {
                     this.setControlPointsVisibility(false);
                     if (navigation.activeAnnotation === this &&
@@ -5219,6 +5219,14 @@
                             }
                         ]
                     },
+                    /**
+                     * A ellipse annotation bindings. Includes `start` and two events in
+                     * `steps` array. First updates the second point, responsible for a
+                     * rx width, and second updates the ry width.
+                     *
+                     * @type    {Highcharts.NavigationBindingsOptionsObject}
+                     * @default {"className": "highcharts-ellipse-annotation", "start": function() {}, "steps": [function() {}], "annotationsOptions": {}}
+                     */
                     ellipseAnnotation: {
                         className: 'highcharts-ellipse-annotation',
                         start: function (e) {
@@ -5391,7 +5399,7 @@
                  * from a different server.
                  *
                  * @type      {string}
-                 * @default   https://code.highcharts.com/10.0.0/gfx/stock-icons/
+                 * @default   https://code.highcharts.com/10.1.0/gfx/stock-icons/
                  * @since     7.1.3
                  * @apioption navigation.iconsURL
                  */
@@ -6709,7 +6717,7 @@
                 this.popup = new H.Popup(this.chart.container, (this.chart.options.navigation.iconsURL ||
                     (this.chart.options.stockTools &&
                         this.chart.options.stockTools.gui.iconsURL) ||
-                    'https://code.highcharts.com/10.0.0/gfx/stock-icons/'), this.chart);
+                    'https://code.highcharts.com/10.1.0/gfx/stock-icons/'), this.chart);
             }
             this.popup.showForm(config.formType, this.chart, config.options, config.onSubmit);
         });

@@ -1,5 +1,5 @@
 /*
- Highcharts JS v10.0.0 (2022-03-07)
+ Highcharts JS v10.1.0 (2022-04-29)
 
  Boost module
 

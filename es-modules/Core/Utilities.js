@@ -715,7 +715,7 @@ function getMagnitude(num) {
 function normalizeTickInterval(interval, multiples, magnitude, allowDecimals, hasTickAmount) {
     var i, retInterval = interval;
     // round to a tenfold of 1, 2, 2.5 or 5
-    magnitude = pick(magnitude, 1);
+    magnitude = pick(magnitude, getMagnitude(interval));
     var normalized = interval / magnitude;
     // multiples for a linear scale
     if (!multiples) {

@@ -1010,7 +1010,7 @@ var Legend = /** @class */ (function () {
             this.nav.attr({
                 translateX: padding,
                 translateY: clipHeight + this.padding + 7 + this.titleHeight,
-                visibility: 'visible'
+                visibility: 'inherit'
             });
             [this.up, this.upTracker].forEach(function (elem) {
                 elem.attr({

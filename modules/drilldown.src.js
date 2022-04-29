@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * Highcharts Drilldown module
  *
@@ -351,9 +351,7 @@
                 var breadcrumbs = this,
                     chart = this.chart,
                     breadcrumbsOptions = breadcrumbs.options,
-                    buttonTheme = merge(breadcrumbsOptions.buttonTheme),
-                    states = buttonTheme.states;
-                delete buttonTheme.states;
+                    buttonTheme = merge(breadcrumbsOptions.buttonTheme);
                 var button = chart.renderer
                         .button(breadcrumbs.getButtonText(breadcrumb),
                     posX,
@@ -378,7 +376,7 @@
                         }
                         fireEvent(breadcrumbs, 'up', e);
                     }
-                }, buttonTheme, states && states.hover, states && states.select, states && states.disabled)
+                }, buttonTheme)
                     .addClass('highcharts-breadcrumbs-button')
                     .add(breadcrumbs.group);
                 if (!chart.styledMode) {
@@ -1591,13 +1589,13 @@
                         levelOptions: drilldownLevels[0].seriesOptions
                     });
                 }
-                var lastBreadcrumb_1 = list[list.length - 1];
-                drilldownLevels.forEach(function (level) {
+                drilldownLevels.forEach(function (level, i) {
+                    var lastBreadcrumb = list[list.length - 1];
                     // If level is already added to breadcrumbs list,
                     // don't add it again- drilling categories
                     // + 1 because of the wrong levels numeration
                     // in drilldownLevels array.
-                    if (level.levelNumber + 1 > lastBreadcrumb_1.level) {
+                    if (level.levelNumber + 1 > lastBreadcrumb.level) {
                         list.push({
                             level: level.levelNumber + 1,
                             levelOptions: merge({
@@ -1709,7 +1707,9 @@
             }
             fireEvent(chart, 'afterDrillUp');
             this.redraw();
-            this.ddDupes.length = []; // #3315
+            if (this.ddDupes) {
+                this.ddDupes.length = 0; // #3315
+            } // #8324
             // Fire a once-off event after all series have been drilled up (#5158)
             fireEvent(chart, 'drillupall');
         };

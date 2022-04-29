@@ -145,7 +145,7 @@ var PlotLineOrBand = /** @class */ (function () {
         }
         else if (svgElem) {
             if (path) {
-                svgElem.show(true);
+                svgElem.show();
                 svgElem.animate({ d: path });
             }
             else if (svgElem.d) {

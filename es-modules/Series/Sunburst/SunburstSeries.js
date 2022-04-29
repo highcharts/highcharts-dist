@@ -389,7 +389,7 @@ var SunburstSeries = /** @class */ (function (_super) {
                 if (s.dataLabelsGroup) {
                     s.dataLabelsGroup.animate({
                         opacity: 1,
-                        visibility: 'visible'
+                        visibility: 'inherit'
                     });
                 }
             };

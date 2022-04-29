@@ -379,6 +379,8 @@ var Scrollbar = /** @class */ (function () {
     Scrollbar.prototype.position = function (x, y, width, height) {
         var scroller = this, options = scroller.options, vertical = options.vertical, method = scroller.rendered ? 'animate' : 'attr';
         var xOffset = height, yOffset = 0;
+        // Make the scrollbar visible when it is repositioned, #15763.
+        scroller.group.show();
         scroller.x = x;
         scroller.y = y + this.trackBorderWidth;
         scroller.width = width; // width with buttons
@@ -433,10 +435,12 @@ var Scrollbar = /** @class */ (function () {
      * @function Highcharts.Scrollbar#render
      */
     Scrollbar.prototype.render = function () {
-        var scroller = this, renderer = scroller.renderer, options = scroller.options, size = scroller.size, styledMode = scroller.chart.styledMode, group = renderer.g('scrollbar').attr({
-            zIndex: options.zIndex,
-            translateY: -99999
-        }).add();
+        var scroller = this, renderer = scroller.renderer, options = scroller.options, size = scroller.size, styledMode = scroller.chart.styledMode, group = renderer.g('scrollbar')
+            .attr({
+            zIndex: options.zIndex
+        })
+            .hide() // initially hide the scrollbar #15863
+            .add();
         // Draw the scrollbar group
         scroller.group = group;
         // Draw the scrollbar track:
@@ -558,7 +562,7 @@ var Scrollbar = /** @class */ (function () {
             scroller.scrollbarRifles.hide();
         }
         else {
-            scroller.scrollbarRifles.show(true);
+            scroller.scrollbarRifles.show();
         }
         // Show or hide the scrollbar based on the showFull setting
         if (options.showFull === false) {

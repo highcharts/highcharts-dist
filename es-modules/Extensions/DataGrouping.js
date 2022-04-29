@@ -652,9 +652,11 @@ seriesProto.generatePoints = function () {
  */
 Axis.prototype.applyGrouping = function (e) {
     var axis = this, series = axis.series;
+    // Reset the groupPixelWidth for all series, #17141.
     series.forEach(function (series) {
-        // Reset the groupPixelWidth, then calculate if needed.
         series.groupPixelWidth = void 0; // #2110
+    });
+    series.forEach(function (series) {
         series.groupPixelWidth = (axis.getGroupPixelWidth &&
             axis.getGroupPixelWidth());
         if (series.groupPixelWidth) {

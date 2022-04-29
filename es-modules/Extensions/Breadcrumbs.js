@@ -284,8 +284,7 @@ var Breadcrumbs = /** @class */ (function () {
      *        Returns the SVG button
      */
     Breadcrumbs.prototype.renderButton = function (breadcrumb, posX, posY) {
-        var breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme), states = buttonTheme.states;
-        delete buttonTheme.states;
+        var breadcrumbs = this, chart = this.chart, breadcrumbsOptions = breadcrumbs.options, buttonTheme = merge(breadcrumbsOptions.buttonTheme);
         var button = chart.renderer
             .button(breadcrumbs.getButtonText(breadcrumb), posX, posY, function (e) {
             // Extract events from button object and call
@@ -307,7 +306,7 @@ var Breadcrumbs = /** @class */ (function () {
                 }
                 fireEvent(breadcrumbs, 'up', e);
             }
-        }, buttonTheme, states && states.hover, states && states.select, states && states.disabled)
+        }, buttonTheme)
             .addClass('highcharts-breadcrumbs-button')
             .add(breadcrumbs.group);
         if (!chart.styledMode) {

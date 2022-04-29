@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * 3D features for Highcharts JS
  *
@@ -660,7 +660,7 @@
                             area = shapeArea(vertexes2d);
                         hash.d = path;
                         hash.visibility = (this.enabled && area > 0) ?
-                            'visible' : 'hidden';
+                            'inherit' : 'hidden';
                     }
                     return SVGElement.prototype.attr.apply(this, arguments);
                 };

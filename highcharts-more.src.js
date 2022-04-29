@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * (c) 2009-2021 Torstein Honsi
  *
@@ -6401,7 +6401,7 @@
              * @private
              */
             GaugeSeries.prototype.render = function () {
-                this.group = this.plotGroup('group', 'series', this.visible ? 'visible' : 'hidden', this.options.zIndex, this.chart.seriesGroup);
+                this.group = this.plotGroup('group', 'series', this.visible ? 'inherit' : 'hidden', this.options.zIndex, this.chart.seriesGroup);
                 Series.prototype.render.call(this);
                 this.group.clip(this.chart.clipRect);
             };
@@ -11911,7 +11911,10 @@
                     // visible y range
                     if (this.isRadialBar && point.shapeArgs &&
                         point.shapeArgs.start === point.shapeArgs.end) {
-                        dataLabel.hide(true);
+                        dataLabel.hide();
+                    }
+                    else {
+                        dataLabel.show();
                     }
                 }
                 else {

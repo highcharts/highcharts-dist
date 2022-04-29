@@ -826,8 +826,18 @@ var Series = /** @class */ (function () {
      */
     Series.prototype.setData = function (data, redraw, animation, updatePoints) {
         var series = this, oldData = series.points, oldDataLength = (oldData && oldData.length) || 0, options = series.options, chart = series.chart, dataSorting = options.dataSorting, xAxis = series.xAxis, turboThreshold = options.turboThreshold, xData = this.xData, yData = this.yData, pointArrayMap = series.pointArrayMap, valueCount = pointArrayMap && pointArrayMap.length, keys = options.keys;
-        var i, pt, updatedData, indexOfX = 0, indexOfY = 1, firstPoint = null;
-        data = data || [];
+        var i, pt, updatedData, indexOfX = 0, indexOfY = 1, firstPoint = null, copiedData;
+        if (!chart.options.chart.allowMutatingData) { // #4259
+            // Remove old reference
+            if (options.data) {
+                delete series.options.data;
+            }
+            if (series.userOptions.data) {
+                delete series.userOptions.data;
+            }
+            copiedData = merge(true, data);
+        }
+        data = copiedData || data || [];
         var dataLength = data.length;
         redraw = pick(redraw, true);
         if (dataSorting && dataSorting.enabled) {
@@ -835,7 +845,8 @@ var Series = /** @class */ (function () {
         }
         // First try to run Point.update which is cheaper, allows animation,
         // and keeps references to points.
-        if (updatePoints !== false &&
+        if (chart.options.chart.allowMutatingData &&
+            updatePoints !== false &&
             dataLength &&
             oldDataLength &&
             !series.cropped &&
@@ -2112,10 +2123,10 @@ var Series = /** @class */ (function () {
         else if (series.visible) {
             // If zones were removed, restore graph and area
             if (graph) {
-                graph.show(true);
+                graph.show();
             }
             if (area) {
-                area.show(true);
+                area.show();
             }
         }
     };
@@ -2565,7 +2576,7 @@ var Series = /** @class */ (function () {
         else if (series.graph) { // create
             series.tracker = renderer.path(trackerPath)
                 .attr({
-                visibility: series.visible ? 'visible' : 'hidden',
+                visibility: series.visible ? 'inherit' : 'hidden',
                 zIndex: 2
             })
                 .addClass(trackByArea ?
@@ -2886,7 +2897,8 @@ var Series = /** @class */ (function () {
             series.hasOptionChanged('keys'));
         newType = newType || initialType;
         if (keepPoints) {
-            preserve.push('data', 'isDirtyData', 'points', 'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 'clips', // #15420
+            preserve.push('data', 'isDirtyData', 'points', 'processedData', // #17057
+            'processedXData', 'processedYData', 'xIncrement', 'cropped', '_hasPointMarkers', '_hasPointLabels', 'clips', // #15420
             // Networkgraph (#14397)
             'nodes', 'layout', 
             // Treemap

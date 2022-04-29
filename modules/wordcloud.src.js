@@ -1,5 +1,5 @@
 /**
- * @license Highcharts JS v10.0.0 (2022-03-07)
+ * @license Highcharts JS v10.1.0 (2022-04-29)
  *
  * (c) 2016-2021 Highsoft AS
  * Authors: Jon Arild Nygard
@@ -1353,13 +1353,12 @@
              * A word cloud is a visualization of a set of words, where the size and
              * placement of a word is determined by how it is weighted.
              *
-             * @sample highcharts/demo/wordcloud
-             *         Word Cloud chart
+             * @sample highcharts/demo/wordcloud Word Cloud chart
              *
              * @extends      plotOptions.column
              * @excluding    allAreas, boostThreshold, clip, colorAxis, compare,
-             *               compareBase, crisp, cropTreshold, dataGrouping, dataLabels,
-             *               depth, dragDrop, edgeColor, findNearestPointBy,
+             *               compareBase, crisp, cropThreshold, dataGrouping,
+             *               dataLabels, depth, dragDrop, edgeColor, findNearestPointBy,
              *               getExtremesFromAll, grouping, groupPadding, groupZPadding,
              *               joinBy, maxPointWidth, minPointLength, navigatorOptions,
              *               negativeColor, pointInterval, pointIntervalUnit,
@@ -1391,6 +1390,7 @@
                 borderWidth: 0,
                 clip: false,
                 colorByPoint: true,
+                cropThreshold: Infinity,
                 /**
                  * A threshold determining the minimum font size that can be applied to
                  * a word.

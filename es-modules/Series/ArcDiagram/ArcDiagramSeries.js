@@ -250,6 +250,7 @@ var ArcDiagramSeries = /** @class */ (function (_super) {
         ];
         // Pass test in drawPoints
         point.y = point.plotY = 1;
+        point.x = point.plotX = 1;
         if (!point.color) {
             point.color = fromNode.color;
         }
@@ -460,11 +461,18 @@ var ArcDiagramSeries = /** @class */ (function (_super) {
              * **Note:** Only SVG-based renderer supports this option. Setting
              * `useHTML` to true will disable this option.
              *
-             * @extends plotOptions.arcdiagram.dataLabels.linkTextPath
+             * @extends plotOptions.networkgraph.dataLabels.linkTextPath
              * @since 10.0.0
              */
             linkTextPath: {
+                /**
+                 * @type    {Highcharts.SVGAttributes}
+                 * @default {"startOffset":"25%"}
+                 */
                 attributes: {
+                    /**
+                     * @ignore-option
+                     */
                     startOffset: '25%'
                 }
             }

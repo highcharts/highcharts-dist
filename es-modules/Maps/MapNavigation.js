@@ -96,13 +96,9 @@ MapNavigation.prototype.update = function (options) {
                 attr = buttonOptions.theme;
                 attr.style = merge(buttonOptions.theme.style, buttonOptions.style // #3203
                 );
-                states = attr.states;
-                hoverStates = states && states.hover;
-                selectStates = states && states.select;
-                delete attr.states;
             }
             var button = chart.renderer
-                .button(buttonOptions.text || '', 0, 0, outerHandler, attr, hoverStates, selectStates, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
+                .button(buttonOptions.text || '', 0, 0, outerHandler, attr, void 0, void 0, void 0, n === 'zoomIn' ? 'topbutton' : 'bottombutton')
                 .addClass('highcharts-map-navigation highcharts-' + {
                 zoomIn: 'zoom-in',
                 zoomOut: 'zoom-out'
